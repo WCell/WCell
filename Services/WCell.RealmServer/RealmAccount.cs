@@ -135,7 +135,7 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The last IP-Address that this Account connected with
 		/// </summary>
-		public long LastIP
+		public byte[] LastIP
 		{
 			get;
 			protected set;
@@ -429,7 +429,7 @@ namespace WCell.RealmServer
 					return;
 				}
 
-				var accountInfo = RealmServer.Instance.RequestAccountInfo(accountName, addr.Address);
+				var accountInfo = RealmServer.Instance.RequestAccountInfo(accountName, addr.GetAddressBytes());
 
 				if (accountInfo == null)
 				{

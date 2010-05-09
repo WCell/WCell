@@ -88,7 +88,7 @@ namespace WCell.Intercommunication.Client
 			}
 		}
 
-		public AccountInfo RequestAccountInfo(string accountName, long requestAddr)
+		public AccountInfo RequestAccountInfo(string accountName, byte[] requestAddr)
 		{
 			try
 			{

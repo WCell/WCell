@@ -246,8 +246,6 @@
     <Compile Include="Initialization\InitMgr.cs" />
     <Compile Include="Initialization\InitializationStep.cs" />
     <Compile Include="Manager.cs" />
-    <Compile Include="ModifyableArraySegment.cs" />
-    <Compile Include="NetworkTaskPool.cs" />
     <Compile Include="Network\AuthPacketIn.cs" />
     <Compile Include="Network\AuthPacketOut.cs" />
     <Compile Include="Network\DisposableRealmPacketIn.cs" />

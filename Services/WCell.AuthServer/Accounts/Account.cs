@@ -85,9 +85,7 @@ namespace WCell.AuthServer.Accounts
 				return;
             }
 
-#pragma warning disable 0618
-            LastIP = addr.Address;
-#pragma warning restore 0618
+            LastIP = addr.GetAddressBytes();
             LastLogin = DateTime.Now;
 			Locale = client.Info.Locale;
 			ClientVersion = client.Info.Version.ToString();
@@ -223,7 +221,7 @@ namespace WCell.AuthServer.Accounts
 		}
 
 		[Property]
-		public long LastIP
+		public byte[] LastIP
 		{
 			get;
 			set;

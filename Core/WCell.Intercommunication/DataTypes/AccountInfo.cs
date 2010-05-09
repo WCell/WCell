@@ -65,7 +65,7 @@ namespace WCell.Intercommunication.DataTypes
 		public string RoleGroupName { get; set; }
 
 		[DataMember]
-		public long LastIP { get; set; }
+		public byte[] LastIP { get; set; }
 
 		[DataMember]
 		public DateTime? LastLogin { get; set; }
@@ -132,7 +132,7 @@ namespace WCell.Intercommunication.DataTypes
 		}
 
 		[DataMember]
-		public long LastIP
+		public byte[] LastIP
 		{
 			get;
 			set;
@@ -194,7 +194,7 @@ namespace WCell.Intercommunication.DataTypes
 			get;
 		}
 
-		long LastIP
+		byte[] LastIP
 		{
 			get;
 		}

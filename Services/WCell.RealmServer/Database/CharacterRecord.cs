@@ -206,12 +206,6 @@ namespace WCell.RealmServer.Database
 			return new Character();
 		}
 
-		public bool New
-		{
-			get;
-			set;
-		}
-
 		/// <summary>
 		/// Whether this record should be saved to DB
 		/// </summary>

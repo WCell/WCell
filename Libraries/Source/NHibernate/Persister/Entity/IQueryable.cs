@@ -13,7 +13,7 @@ namespace NHibernate.Persister.Entity
 	public interface IQueryable : ILoadable, IPropertyMapping, IJoinable
 	{
 		/// <summary> Is this an abstract class?</summary>
-		bool IsAbstract { get;}
+		/* wcell */ new bool IsAbstract { get;}
 
 		/// <summary>
 		/// Is this class explicit polymorphism only?
@@ -26,7 +26,7 @@ namespace NHibernate.Persister.Entity
 		string MappedSuperclass { get; }
 
 		/// <summary> Get the names of columns used to persist the identifier</summary>
-		string[] IdentifierColumnNames { get;}
+        /* wcell */ new string[] IdentifierColumnNames { get; }
 
 		/// <summary>
 		/// The discriminator value for this particular concrete subclass, as a string that may be

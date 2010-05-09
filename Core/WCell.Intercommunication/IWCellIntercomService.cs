@@ -45,7 +45,7 @@ namespace WCell.Intercommunication
 		/// <returns>the AccountInfo for an account</returns>
 		[OperationContract(Action = "http://www.wcell.org/IServerIPC/RequestAccountInfo",
 			ReplyAction = "http://www.wcell.org/IServerIPC/RequestAccountInfoResponse")]
-		AccountInfo RequestAccountInfo(string accountName, long requestAddr);
+		AccountInfo RequestAccountInfo(string accountName, byte[] requestAddr);
 
 		/// <summary>
 		/// Retrieves all information of the corresponding Account

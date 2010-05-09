@@ -158,7 +158,7 @@ namespace WCell.AuthServer.IPC
         /// </summary>
         /// <param name="accountName">the account name to return information on</param>
         /// <returns>the AccountInfo for an account</returns>
-        public AccountInfo RequestAccountInfo(string accountName, long requestAddr)
+        public AccountInfo RequestAccountInfo(string accountName, byte[] requestAddr)
         {
             var acc = AccountMgr.GetAccount(accountName);
 

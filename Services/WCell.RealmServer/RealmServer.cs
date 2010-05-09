@@ -463,7 +463,7 @@ namespace WCell.RealmServer
 		/// <param name="requestAddr">If not null, will only return the Account if not banned.</param>
 		/// <remarks>Requires IO-Context.</remarks>
 		/// <returns>The information of the requested account or null if the Account did not exist or the AuthServer could not be reached</returns>
-		public IAccountInfo RequestAccountInfo(string accountName, long requestAddr)
+		public IAccountInfo RequestAccountInfo(string accountName, byte[] requestAddr)
 		{
 			RealmAccount acc;
 			if (!LoggedInAccounts.TryGetValue(accountName, out acc))
@@ -496,7 +496,7 @@ namespace WCell.RealmServer
 			{
 				if (m_authServiceClient.IsConnected)
 				{
-					var info = m_authServiceClient.Channel.RequestAccountInfo(accountName, 0);
+					var info = m_authServiceClient.Channel.RequestAccountInfo(accountName, null);
 					if (info != null)
 					{
 						acc = new RealmAccount(accountName, info);
