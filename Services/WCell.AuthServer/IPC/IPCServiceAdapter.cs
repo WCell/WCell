@@ -462,7 +462,8 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.RoleGroupName = role;
-                acc.SaveAndFlush();
+
+                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
                 return true;
             }
 
@@ -475,7 +476,8 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.EmailAddress = email;
-                acc.SaveAndFlush();
+
+                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
                 return true;
             }
 
@@ -491,7 +493,8 @@ namespace WCell.AuthServer.IPC
                 {
                     acc.IsActive = active;
                     acc.StatusUntil = statusUntil;
-                    acc.SaveAndFlush();
+
+                    AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
                     return true;
                 }
             }
@@ -512,8 +515,10 @@ namespace WCell.AuthServer.IPC
 						return false;
 					}
             	}
-            	acc.Password = pass;
-            	acc.SaveAndFlush();
+
+                acc.Password = pass;
+
+                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
             	return true;
             }
 
@@ -526,7 +531,8 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.HighestCharLevel = level;
-                acc.SaveAndFlush();
+
+                AuthenticationServer.Instance.AddMessage(acc.SaveAndFlush);
             }
         }
 
