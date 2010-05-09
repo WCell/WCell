@@ -11,7 +11,7 @@ namespace WCell.Core.Database
 	/// <summary>
 	/// Interface for asynchronous query procs.
 	/// </summary>
-	public abstract class AsyncQuery : IMessage, IExecutionObject
+	public abstract class AsyncQuery : IMessage
 	{
 		protected Logger s_log = LogManager.GetCurrentClassLogger();
 

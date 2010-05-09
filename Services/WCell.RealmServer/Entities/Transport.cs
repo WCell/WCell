@@ -166,7 +166,7 @@ namespace WCell.RealmServer.Entities
 				if (!mapIdsList.Contains(node.Value.MapId))
 					mapIdsList.Add(node.Value.MapId);
 
-				var tempVertice = new TransportPathTempVertex { Vertex = node.Value };
+			    var tempVertice = new TransportPathTempVertex(0.0f, 0.0f, 0.0f, node.Value);
 				var tempVerticeNode = tempVertices.AddLast(tempVertice);
 
 				if (node.Value.IsStoppingPoint)
@@ -291,7 +291,16 @@ namespace WCell.RealmServer.Entities
 
 	class TransportPathTempVertex
 	{
-		public PathVertex Vertex;
+        public TransportPathTempVertex(float fromFirstStop, float toLastStop,
+            float fromPrevious, PathVertex v)
+        {
+            MoveTimeFromFirstStop = fromFirstStop;
+            MoveTimeToLastStop = toLastStop;
+            MoveTimeFromPrevious = fromPrevious;
+            Vertex = v;
+        }
+
+	    public PathVertex Vertex;
 
 		public float DistFromFirstStop, DistToLastStop;
 

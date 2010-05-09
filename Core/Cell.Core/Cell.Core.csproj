@@ -137,7 +137,6 @@
     <Compile Include="Exceptions\NoAvailableInterfacesException.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="IClientBase.cs" />
-    <Compile Include="IExecutionObject.cs" />
     <Compile Include="IObjectPool.cs" />
     <Compile Include="IPooledObject.cs" />
     <Compile Include="Localization\Cell.Core.Designer.cs">
@@ -152,8 +151,6 @@
     <Compile Include="ServerBase.cs" />
     <Compile Include="SocketHelpers.cs" />
     <Compile Include="SpinWaitLock.cs" />
-    <Compile Include="ThreadMgr.cs" />
-    <Compile Include="UPnP.cs" />
     <Compile Include="XmlIPAddress.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -166,9 +163,7 @@
       <LastGenOutput>Cell.Core.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

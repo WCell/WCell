@@ -198,35 +198,6 @@ namespace WCell.AuthServer
 			return entry;
 		}
 
-		private void StartThreadManager()
-		{
-			try
-			{
-				ThreadMgr.Start();
-			}
-			catch (Exception ex)
-			{
-				LogUtil.ErrorException(ex, Resources.StartInitException, "thread manager");
-
-				Stop();
-			}
-		}
-
-		private void StopThreadManager()
-		{
-			try
-			{
-				s_log.Info(Resources.StopCleanup, "thread manager");
-				ThreadMgr.Stop();
-			}
-			catch (Exception ex)
-			{
-				LogUtil.ErrorException(ex, Resources.StartInitException, "thread manager");
-
-				Stop();
-			}
-		}
-
 		/// <summary>
 		/// Clears all logged in accounts of the given Server.
 		/// </summary>
@@ -290,7 +261,6 @@ namespace WCell.AuthServer
 					s_log.Fatal(Resources.AuthServiceAlreadyListening);
 					Stop();
 				}
-				StartThreadManager();
 			}
 		}
 
@@ -298,7 +268,6 @@ namespace WCell.AuthServer
 		{
 			// TODO tobz : add the ability to register cleanup stuff along with initialiation stuff
 
-			StopThreadManager();
 			IPCServiceHost.StopService();
 
 			base.Stop();
