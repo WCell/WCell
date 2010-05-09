@@ -145,15 +145,7 @@ namespace Cell.Core
 
         public static int GetLength(this IPAddress addr)
         {
-            if (addr.IsIPV4())
-            {
-                return 4;
-            }
-            if (addr.IsIPV6())
-            {
-                return 6;
-            }
-            throw new InvalidDataException("IPAddress is not of InterNetwork type: " + addr);
+            return addr.GetAddressBytes().Length;
         }
 
         #endregion
