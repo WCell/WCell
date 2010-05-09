@@ -43,11 +43,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.DefaultAddon", "Addon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Collision", "Utilities\WCell.Collision\WCell.Collision.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainAnalysis", "TerrainAnalysis\TerrainAnalysis.csproj", "{6DE90542-2129-46FC-B8F2-BC1CD719C955}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Constants", "Core\WCell.Constants\WCell.Constants.csproj", "{42F497A4-0347-491D-8FA8-50E4D8AD19EB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "3D Test Bench", "3D Test Bench\3D Test Bench.csproj", "{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Util", "Utilities\WCell.Util\WCell.Util.csproj", "{F753AF28-A251-4C12-9335-07E8236184F2}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -278,22 +274,6 @@ Global
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x64.Build.0 = Release|x64
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.ActiveCfg = Release|x86
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}.Release|x86.Build.0 = Release|x86
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|Itanium.ActiveCfg = Debug|Itanium
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|Itanium.Build.0 = Debug|Itanium
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|x64.ActiveCfg = Debug|x64
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|x64.Build.0 = Debug|x64
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|x86.ActiveCfg = Debug|x86
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Debug|x86.Build.0 = Debug|x86
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|Itanium.ActiveCfg = Release|Itanium
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|Itanium.Build.0 = Release|Itanium
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|x64.ActiveCfg = Release|x64
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|x64.Build.0 = Release|x64
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|x86.ActiveCfg = Release|x86
-		{6DE90542-2129-46FC-B8F2-BC1CD719C955}.Release|x86.Build.0 = Release|x86
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Debug|Itanium.ActiveCfg = Debug|Itanium
@@ -310,22 +290,6 @@ Global
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Release|x64.Build.0 = Release|x64
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Release|x86.ActiveCfg = Release|x86
 		{42F497A4-0347-491D-8FA8-50E4D8AD19EB}.Release|x86.Build.0 = Release|x86
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|Itanium.ActiveCfg = Debug|Itanium
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|Itanium.Build.0 = Debug|Itanium
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|x64.ActiveCfg = Debug|x64
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|x64.Build.0 = Debug|x64
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|x86.ActiveCfg = Debug|x86
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Debug|x86.Build.0 = Debug|x86
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|Itanium.ActiveCfg = Release|Itanium
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|Itanium.Build.0 = Release|Itanium
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|x64.ActiveCfg = Release|x64
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|x64.Build.0 = Release|x64
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|x86.ActiveCfg = Release|x86
-		{B6C5A3CE-0E18-4522-8BF9-4C948202A9AC}.Release|x86.Build.0 = Release|x86
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Debug|Itanium.ActiveCfg = Debug|Itanium
@@ -379,9 +343,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1
