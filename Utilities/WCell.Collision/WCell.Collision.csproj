@@ -102,11 +102,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Xna.Framework, Version=1.0.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Binaries\Release\Microsoft\Microsoft.Xna.Framework.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
