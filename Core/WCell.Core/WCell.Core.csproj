@@ -230,13 +230,8 @@
     <Compile Include="Cryptography\HashUtilities.cs" />
     <Compile Include="Cryptography\SecureRemotePassword.cs" />
     <Compile Include="AppConfig.cs" />
-    <Compile Include="Database\AsyncNonQueryGenericProc.cs" />
-    <Compile Include="Database\AsyncNonQueryProc.cs" />
-    <Compile Include="Database\AsyncQueryProc.cs" />
     <Compile Include="Database\DatabaseConfiguration.cs" />
-    <Compile Include="Database\AsyncQuery.cs" />
     <Compile Include="Database\DatabaseUtil.cs" />
-    <Compile Include="Database\QueryFactory.cs" />
     <Compile Include="DBC\DBCReader.cs" />
     <Compile Include="DBC\DBCRecordConverter.cs" />
     <Compile Include="DBC\DBCRecords.cs" />
