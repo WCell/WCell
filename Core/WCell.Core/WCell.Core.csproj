@@ -214,8 +214,8 @@
     <Compile Include="Paths\PathQuery.cs" />
     <Compile Include="ServerApp.cs" />
     <Compile Include="Statistics.cs" />
-    <Compile Include="TerrainAnalysis\ITerrain.cs" />
-    <Compile Include="TerrainAnalysis\ITerrainProvider.cs" />
+    <Compile Include="Terrain\ITerrain.cs" />
+    <Compile Include="Terrain\ITerrainProvider.cs" />
     <Compile Include="Timers\BucketTimer.cs" />
     <Compile Include="Timers\TickTimer.cs" />
     <Compile Include="Timers\TimerPriority.cs" />
@@ -323,9 +323,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="World\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
