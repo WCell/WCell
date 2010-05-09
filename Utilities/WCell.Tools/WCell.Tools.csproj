@@ -170,6 +170,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Code\CodeFileWriter.cs" />
     <Compile Include="Commands\DBCCommand.cs" />
     <Compile Include="Commands\PacketAnalyzerCommand.cs" />
@@ -233,7 +236,6 @@
     <Compile Include="Spells\SpellLineWriter.cs" />
     <Compile Include="ToolConfig.cs" />
     <Compile Include="Tools.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Domi\VariablePurifier.cs" />
     <Compile Include="Ralek\Extensions.cs" />
     <Compile Include="Ralek\Utility\CodeTimers.cs" />
@@ -298,6 +300,9 @@
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

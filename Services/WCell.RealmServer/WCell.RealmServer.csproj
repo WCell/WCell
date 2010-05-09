@@ -233,7 +233,6 @@
     <Compile Include="Global\ZoneSpacePartitionNode.cs" />
     <Compile Include="Network\RealmPacketMgr.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Network\RealmClient.cs" />
     <Compile Include="RealmServer.cs" />
     <Compile Include="Entities\Unit.cs" />

@@ -261,11 +261,6 @@
     <Compile Include="Network\PrimitiveWriter.cs" />
     <Compile Include="Network\RealmPacketIn.cs" />
     <Compile Include="Network\RealmPacketOut.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <Compile Include="Singleton.cs" />
     <Compile Include="ClientInformation.cs" />
     <Compile Include="Timers\IUpdatable.cs" />
@@ -276,7 +271,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>WCell.Core.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WCellException.cs" />
     <Compile Include="WCellUtil.cs" />
     <Compile Include="WDB\WDBReader.cs" />
@@ -303,10 +297,6 @@
     <EmbeddedResource Include="Database\Configurations\MySQL5Configuration.arconfig" />
     <EmbeddedResource Include="Database\Configurations\OracleConfiguration.arconfig" />
     <EmbeddedResource Include="Database\Configurations\PostgreSQLConfiguration.arconfig" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">

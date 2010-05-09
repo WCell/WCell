@@ -134,7 +134,6 @@
     <Compile Include="DataTypes\AuthenticationInfo.cs" />
     <Compile Include="DataTypes\StringBuffer.cs" />
     <Compile Include="DataTypes\RoleGroupInfo.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">

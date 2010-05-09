@@ -123,6 +123,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Battlegrounds\AlteracValley\AlteracValley.cs" />
     <Compile Include="Battlegrounds\AlteracValley\AVItem.cs" />
     <Compile Include="Battlegrounds\AlteracValley\AVStats.cs" />
@@ -232,7 +235,6 @@
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
     <Compile Include="Teleport\TeleportNetwork.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Samples\AmbusherQuestSample.cs" />
     <Compile Include="Samples\MixedSamples.cs" />
     <Compile Include="Samples\NPCs.cs" />
@@ -290,6 +292,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Formations\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

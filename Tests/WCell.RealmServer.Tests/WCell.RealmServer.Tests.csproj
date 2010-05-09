@@ -110,6 +110,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="AI\AIActionStub.cs" />
     <Compile Include="AI\AIComplexActionTest.cs" />
     <Compile Include="Entities\DuelTest.cs" />

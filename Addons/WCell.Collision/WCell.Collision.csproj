@@ -114,6 +114,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="Addon\CollisionCommands.cs" />
     <Compile Include="Addon\FullTerrainProvider.cs" />
     <Compile Include="Addon\CollisionAddon.cs" />
@@ -127,7 +130,6 @@
     <Compile Include="Legacy\MapStructs.cs" />
     <Compile Include="Legacy\Program.cs" />
     <Compile Include="Model.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Legacy\ReflectionUtils.cs" />
     <Compile Include="Legacy\TerrainMgr.cs" />
     <Compile Include="QuadTree.cs" />
@@ -163,6 +165,9 @@
       <Name>WCell.Util</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

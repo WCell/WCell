@@ -115,6 +115,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="ArrayBuffer.cs" />
     <Compile Include="BufferManager.cs" />
     <Compile Include="BufferSegment.cs" />
@@ -145,7 +148,6 @@
     <Compile Include="Localization\Resources.cs" />
     <Compile Include="ObjectPool.cs" />
     <Compile Include="zzObjectPoolMgr.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SegmentStream.cs" />
     <Compile Include="ServerBase.cs" />
     <Compile Include="SocketHelpers.cs" />
@@ -163,6 +165,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Cell.Core.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

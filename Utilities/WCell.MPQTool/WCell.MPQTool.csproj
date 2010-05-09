@@ -140,13 +140,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
+      <Link>Properties\SolutionInfo.cs</Link>
+    </Compile>
     <Compile Include="DBC\Compare\CompareResultType.cs" />
     <Compile Include="DBC\Compare\DBCFileComparer.cs" />
     <Compile Include="DBC\Compare\DBCDirComparer.cs" />
     <Compile Include="DBC\Compare\DBCDirCompareResult.cs" />
     <Compile Include="DBCTool.cs" />
     <Compile Include="MPQManager.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DBC\CellReaders.cs" />
     <Compile Include="DBC\CellType.cs" />
     <Compile Include="DBC\DBCReader.cs" />
@@ -203,6 +205,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
