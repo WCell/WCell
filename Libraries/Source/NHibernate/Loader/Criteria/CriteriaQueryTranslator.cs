@@ -27,7 +27,7 @@ namespace NHibernate.Loader.Criteria
 		private readonly int aliasCount = 0;
 
 		private readonly IDictionary<ICriteria, string> criteriaEntityNames = new LinkedHashMap<ICriteria, string>();
-		private readonly ISet<ICollectionPersister> criteriaCollectionPersisters = new HashedSet<ICollectionPersister>();
+		private readonly Iesi.Collections.Generic.ISet<ICollectionPersister> criteriaCollectionPersisters = new HashedSet<ICollectionPersister>();
 
 		private readonly IDictionary<ICriteria, string> criteriaSQLAliasMap = new Dictionary<ICriteria, string>();
 		private readonly IDictionary<string, ICriteria> aliasCriteriaMap = new Dictionary<string, ICriteria>();
@@ -105,9 +105,9 @@ namespace NHibernate.Loader.Criteria
 			return result;
 		}
 
-		public ISet<string> GetQuerySpaces()
+		public Iesi.Collections.Generic.ISet<string> GetQuerySpaces()
 		{
-			ISet<string> result = new HashedSet<string>();
+			Iesi.Collections.Generic.ISet<string> result = new HashedSet<string>();
 
 			foreach (string entityName in criteriaEntityNames.Values)
 			{

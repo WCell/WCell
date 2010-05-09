@@ -14,7 +14,7 @@ namespace NHibernate.Proxy.Map
 
 		#region IProxyFactory Members
 
-		public void PostInstantiate(string entityName, System.Type persistentClass, ISet<System.Type> interfaces,
+		public void PostInstantiate(string entityName, System.Type persistentClass, Iesi.Collections.Generic.ISet<System.Type> interfaces,
 																MethodInfo getIdentifierMethod, MethodInfo setIdentifierMethod,
 																IAbstractComponentType componentIdType)
 		{

@@ -22,7 +22,7 @@ namespace NHibernate.Loader.Criteria
 	public class CriteriaLoader : OuterJoinLoader
 	{
 		private readonly CriteriaQueryTranslator translator;
-		private readonly ISet<string> querySpaces;
+		private readonly Iesi.Collections.Generic.ISet<string> querySpaces;
 		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
@@ -99,7 +99,7 @@ namespace NHibernate.Loader.Criteria
 			return translator.RootCriteria.ResultTransformer.TransformTuple(result, aliases);
 		}
 
-		public ISet<string> QuerySpaces
+		public Iesi.Collections.Generic.ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

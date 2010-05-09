@@ -17,7 +17,7 @@ namespace NHibernate.Loader.Custom.Sql
 		private static readonly ILog log = LogManager.GetLogger(typeof(SQLCustomQuery));
 
 		private readonly SqlString sql;
-		private readonly ISet<string> querySpaces = new HashedSet<string>();
+		private readonly Iesi.Collections.Generic.ISet<string> querySpaces = new HashedSet<string>();
 		private readonly IDictionary namedParameterBindPoints = new Hashtable();
 		private readonly IList customQueryReturns = new ArrayList();
 
@@ -31,7 +31,7 @@ namespace NHibernate.Loader.Custom.Sql
 			get { return namedParameterBindPoints; }
 		}
 
-		public ISet<string> QuerySpaces
+		public Iesi.Collections.Generic.ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

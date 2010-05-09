@@ -925,7 +925,7 @@ namespace NHibernate.Impl
 		/// </summary>
 		/// <param name="querySpaces"></param>
 		/// <returns></returns>
-		private bool AutoFlushIfRequired(ISet<string> querySpaces)
+		private bool AutoFlushIfRequired(Iesi.Collections.Generic.ISet<string> querySpaces)
 		{
 			ErrorIfClosed();
 			if (!TransactionInProgress)
@@ -1561,7 +1561,7 @@ namespace NHibernate.Impl
 			int size = implementors.Length;
 
 			CriteriaLoader[] loaders = new CriteriaLoader[size];
-			ISet<string> spaces = new HashedSet<string>();
+			Iesi.Collections.Generic.ISet<string> spaces = new HashedSet<string>();
 
 			for (int i = 0; i < size; i++)
 			{

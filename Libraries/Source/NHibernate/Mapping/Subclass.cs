@@ -145,7 +145,7 @@ namespace NHibernate.Mapping
 			get { return new JoinedEnumerable<Join>(Superclass.JoinClosureIterator, base.JoinClosureIterator); }
 		}
 
-		public override ISet<string> SynchronizedTables
+		public override Iesi.Collections.Generic.ISet<string> SynchronizedTables
 		{
 			get
 			{

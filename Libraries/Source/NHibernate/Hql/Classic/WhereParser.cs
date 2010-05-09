@@ -26,16 +26,16 @@ namespace NHibernate.Hql.Classic
 	{
 		private readonly PathExpressionParser pathExpressionParser = new PathExpressionParser();
 
-		private static readonly ISet<string> expressionTerminators = new HashedSet<string>(); //tokens that close a sub expression
-		private static readonly ISet<string> expressionOpeners = new HashedSet<string>(); //tokens that open a sub expression
+		private static readonly Iesi.Collections.Generic.ISet<string> expressionTerminators = new HashedSet<string>(); //tokens that close a sub expression
+		private static readonly Iesi.Collections.Generic.ISet<string> expressionOpeners = new HashedSet<string>(); //tokens that open a sub expression
 
-		private static readonly ISet<string> booleanOperators = new HashedSet<string>();
+		private static readonly Iesi.Collections.Generic.ISet<string> booleanOperators = new HashedSet<string>();
 		                    //tokens that would indicate a sub expression is a boolean expression
 
 		private static readonly Dictionary<string, string> negations = new Dictionary<string, string>();
 
 		// To parse correctly the functions TRIM and EXTRACT (Note subselect inside TRIM is not supported)
-		private static readonly ISet<string> specialFunctions = new HashedSet<string>();
+		private static readonly Iesi.Collections.Generic.ISet<string> specialFunctions = new HashedSet<string>();
 
 		public WhereParser()
 		{

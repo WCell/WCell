@@ -32,7 +32,7 @@ namespace NHibernate.Mapping
 			get { return table; }
 		}
 
-		public override ISet<string> SynchronizedTables
+		public override Iesi.Collections.Generic.ISet<string> SynchronizedTables
 		{
 			get { return synchronizedTables; }
 		}

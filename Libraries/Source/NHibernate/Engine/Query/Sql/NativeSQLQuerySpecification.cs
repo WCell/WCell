@@ -8,7 +8,7 @@ namespace NHibernate.Engine.Query.Sql
 	{
 		private readonly string queryString;
 		private readonly INativeSQLQueryReturn[] sqlQueryReturns;
-		private readonly ISet<string> querySpaces;
+		private readonly Iesi.Collections.Generic.ISet<string> querySpaces;
 		private readonly int hashCode;
 
 		public NativeSQLQuerySpecification(
@@ -25,7 +25,7 @@ namespace NHibernate.Engine.Query.Sql
 			}
 			else
 			{
-				ISet<string> tmp = new HashedSet<string>();
+				Iesi.Collections.Generic.ISet<string> tmp = new HashedSet<string>();
 				tmp.AddAll(querySpaces);
 				// Can't use ImmutableSet here because it doesn't implement GetHashCode properly.
 				this.querySpaces = tmp;
@@ -55,7 +55,7 @@ namespace NHibernate.Engine.Query.Sql
 			get { return sqlQueryReturns; }
 		}
 
-		public ISet<string> QuerySpaces
+		public Iesi.Collections.Generic.ISet<string> QuerySpaces
 		{
 			get { return querySpaces; }
 		}

@@ -152,7 +152,7 @@ namespace NHibernate.Engine.Query
 		{
 			private readonly string query;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly Iesi.Collections.Generic.ISet<string> filterNames;
 			private readonly int hashCode;
 
 			public HQLQueryPlanKey(string query, bool shallow, IDictionary<string, IFilter> enabledFilters)
@@ -218,7 +218,7 @@ namespace NHibernate.Engine.Query
 			private readonly string query;
 			private readonly string collectionRole;
 			private readonly bool shallow;
-			private readonly ISet<string> filterNames;
+			private readonly Iesi.Collections.Generic.ISet<string> filterNames;
 			private readonly int hashCode;
 
 			public FilterQueryPlanKey(string query, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)

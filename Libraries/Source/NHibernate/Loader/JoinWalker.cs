@@ -16,7 +16,7 @@ namespace NHibernate.Loader
 	{
 		private readonly ISessionFactoryImplementor factory;
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
-		private readonly ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
+		private readonly Iesi.Collections.Generic.ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
 
 		private string[] suffixes;
@@ -513,7 +513,7 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Should we join this association?
 		/// </summary>
-		protected bool IsJoinable(JoinType joinType, ISet<AssociationKey> visitedAssociationKeys, string lhsTable,
+		protected bool IsJoinable(JoinType joinType, Iesi.Collections.Generic.ISet<AssociationKey> visitedAssociationKeys, string lhsTable,
 			string[] lhsColumnNames, IAssociationType type, int depth)
 		{
 			if (joinType < JoinType.InnerJoin) return false;

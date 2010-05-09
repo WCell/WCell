@@ -53,7 +53,7 @@ namespace NHibernate.Hql
 		/// <summary>
 		/// The set of query spaces (table names) that the query referrs to.
 		/// </summary>
-		ISet<string> QuerySpaces { get; }
+		Iesi.Collections.Generic.ISet<string> QuerySpaces { get; }
 
 		// <summary>
 		// The query identifier for this translator.  The query identifier is used in stats collection.

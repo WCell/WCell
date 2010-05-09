@@ -25,12 +25,12 @@ namespace NHibernate.Collection.Generic
 	/// </remarks>
 	[Serializable]
 	[DebuggerTypeProxy(typeof(CollectionProxy<>))]
-	public class PersistentGenericSet<T> : AbstractPersistentCollection, ISet<T>, ISet
+	public class PersistentGenericSet<T> : AbstractPersistentCollection, Iesi.Collections.Generic.ISet<T>, ISet
 	{
 		/// <summary>
 		/// The <see cref="ISet{T}"/> that NHibernate is wrapping.
 		/// </summary>
-		protected ISet<T> internalSet;
+		protected Iesi.Collections.Generic.ISet<T> internalSet;
 
 		/// <summary>
 		/// A temporary list that holds the objects while the set is being
@@ -119,7 +119,7 @@ namespace NHibernate.Collection.Generic
 		/// <remarks>
 		/// Only call this constructor if you consider the map initialized.
 		/// </remarks>
-		public PersistentGenericSet(ISessionImplementor session, ISet<T> collection)
+		public PersistentGenericSet(ISessionImplementor session, Iesi.Collections.Generic.ISet<T> collection)
 			: base(session)
 		{
 			internalSet = collection;
@@ -152,7 +152,7 @@ namespace NHibernate.Collection.Generic
 			}
 			else
 			{
-				internalSet = (ISet<T>)persister.CollectionType.Instantiate(-1);
+				internalSet = (Iesi.Collections.Generic.ISet<T>)persister.CollectionType.Instantiate(-1);
 			}
 		}
 
@@ -476,19 +476,19 @@ namespace NHibernate.Collection.Generic
 			return internalSet.ContainsAll(c);
 		}
 
-		public ISet<T> ExclusiveOr(ISet<T> a)
+		public Iesi.Collections.Generic.ISet<T> ExclusiveOr(Iesi.Collections.Generic.ISet<T> a)
 		{
 			Read();
 			return internalSet.ExclusiveOr(a);
 		}
 
-		public ISet<T> Intersect(ISet<T> a)
+		public Iesi.Collections.Generic.ISet<T> Intersect(Iesi.Collections.Generic.ISet<T> a)
 		{
 			Read();
 			return internalSet.Intersect(a);
 		}
 
-		public ISet<T> Minus(ISet<T> a)
+		public Iesi.Collections.Generic.ISet<T> Minus(Iesi.Collections.Generic.ISet<T> a)
 		{
 			Read();
 			return internalSet.Minus(a);
@@ -506,7 +506,7 @@ namespace NHibernate.Collection.Generic
 			return MakeDirtyIfTrue(internalSet.RetainAll(c));
 		}
 
-		public ISet<T> Union(ISet<T> a)
+		public Iesi.Collections.Generic.ISet<T> Union(Iesi.Collections.Generic.ISet<T> a)
 		{
 			Read();
 			return internalSet.Union(a);

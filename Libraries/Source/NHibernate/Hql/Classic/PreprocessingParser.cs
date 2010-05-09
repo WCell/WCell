@@ -8,7 +8,7 @@ namespace NHibernate.Hql.Classic
 	/// <summary>HQL lexical analyzer (not really a parser)</summary>
 	public class PreprocessingParser : IParser
 	{
-		private static readonly ISet<string> operators;
+		private static readonly Iesi.Collections.Generic.ISet<string> operators;
 		private static readonly IDictionary<string,string> collectionProps;
 
 		static PreprocessingParser()

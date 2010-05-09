@@ -480,7 +480,7 @@ namespace NHibernate.Impl
 		{
 			private readonly string _query;
 			private readonly bool _scalar;
-			private readonly ISet<string> _filterNames;
+			private readonly Iesi.Collections.Generic.ISet<string> _filterNames;
 			private readonly int _hashCode;
 
 			internal QueryCacheKey(string query, bool scalar, IDictionary<string, IFilter> enabledFilters)
@@ -514,7 +514,7 @@ namespace NHibernate.Impl
 				get { return _scalar; }
 			}
 
-			public ISet<string> FilterNames
+			public Iesi.Collections.Generic.ISet<string> FilterNames
 			{
 				get { return _filterNames; }
 			}

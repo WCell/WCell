@@ -9,7 +9,7 @@ using NHibernate.Persister.Collection;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps an <see cref="ISet{T}"/> collection
+	/// An <see cref="IType"/> that maps an <see cref="Iesi.Collections.Generic.ISet{T}"/> collection
 	/// to the database.
 	/// </summary>
 	[Serializable]
@@ -39,7 +39,7 @@ namespace NHibernate.Type
 
 		public override System.Type ReturnedClass
 		{
-			get { return typeof(ISet<T>); }
+			get { return typeof(Iesi.Collections.Generic.ISet<T>); }
 		}
 
 		/// <summary>
@@ -52,7 +52,7 @@ namespace NHibernate.Type
 		/// </returns>
 		public override IPersistentCollection Wrap(ISessionImplementor session, object collection)
 		{
-			return new PersistentGenericSet<T>(session, (ISet<T>) collection);
+			return new PersistentGenericSet<T>(session, (Iesi.Collections.Generic.ISet<T>) collection);
 		}
 
 		public override object Instantiate(int anticipatedSize)

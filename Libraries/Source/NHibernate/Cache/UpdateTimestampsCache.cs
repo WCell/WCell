@@ -61,7 +61,7 @@ namespace NHibernate.Cache
 		}
 
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public bool IsUpToDate(ISet<string> spaces, long timestamp /* H2.1 has Long here */)
+		public bool IsUpToDate(Iesi.Collections.Generic.ISet<string> spaces, long timestamp /* H2.1 has Long here */)
 		{
 			foreach (string space in spaces)
 			{

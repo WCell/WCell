@@ -209,7 +209,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		/// <param name="tables">The table/query-spaces to check. </param>
 		/// <returns> True if we contain pending actions against any of the given tables; false otherwise.</returns>
-		public virtual bool AreTablesToBeUpdated(ISet<string> tables)
+		public virtual bool AreTablesToBeUpdated(Iesi.Collections.Generic.ISet<string> tables)
 		{
 			return AreTablesToUpdated(updates, tables) || 
 				AreTablesToUpdated(insertions, tables) || 
@@ -228,7 +228,7 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, ISet<string> tablespaces)
+		private static bool AreTablesToUpdated(IList executables, Iesi.Collections.Generic.ISet<string> tablespaces)
 		{
 			foreach (IExecutable exec in executables)
 			{

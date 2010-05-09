@@ -45,12 +45,12 @@ namespace NHibernate.Action
 		/// <summary>
 		/// Create an action that will evict collection and entity regions based on queryspaces (table names).  
 		/// </summary>
-		public BulkOperationCleanupAction(ISessionImplementor session, ISet<string> querySpaces)
+		public BulkOperationCleanupAction(ISessionImplementor session, Iesi.Collections.Generic.ISet<string> querySpaces)
 		{
 			//from H3.2 TODO: cache the autodetected information and pass it in instead.
 			this.session = session;
 
-			ISet<string> tmpSpaces = new HashedSet<string>(querySpaces);
+			Iesi.Collections.Generic.ISet<string> tmpSpaces = new HashedSet<string>(querySpaces);
 			ISessionFactoryImplementor factory = session.Factory;
 			IDictionary acmd = factory.GetAllClassMetadata();
 			foreach (DictionaryEntry entry in acmd)
@@ -79,7 +79,7 @@ namespace NHibernate.Action
 			spaces = new List<string>(tmpSpaces);
 		}
 
-		private bool AffectedEntity(ISet<string> querySpaces, string[] entitySpaces)
+		private bool AffectedEntity(Iesi.Collections.Generic.ISet<string> querySpaces, string[] entitySpaces)
 		{
 			if (querySpaces == null || (querySpaces.Count == 0))
 			{

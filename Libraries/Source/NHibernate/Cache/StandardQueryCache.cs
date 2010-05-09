@@ -72,7 +72,7 @@ namespace NHibernate.Cache
 			return true;
 		}
 
-		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, ISet<string> spaces, ISessionImplementor session)
+		public IList Get(QueryKey key, ICacheAssembler[] returnTypes, Iesi.Collections.Generic.ISet<string> spaces, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -107,7 +107,7 @@ namespace NHibernate.Cache
 			return result;
 		}
 
-		protected bool IsUpToDate(ISet<string> spaces, long timestamp)
+		protected bool IsUpToDate(Iesi.Collections.Generic.ISet<string> spaces, long timestamp)
 		{
 			return updateTimestampsCache.IsUpToDate(spaces, timestamp);
 		}

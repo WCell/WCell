@@ -159,16 +159,16 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public override ISet<string> SynchronizedTables
+		public override Iesi.Collections.Generic.ISet<string> SynchronizedTables
 		{
 			get { return synchronizedTables; }
 		}
 
-		public virtual ISet<Table> IdentityTables
+		public virtual Iesi.Collections.Generic.ISet<Table> IdentityTables
 		{
 			get
 			{
-				ISet<Table> tables = new HashedSet<Table>();
+				Iesi.Collections.Generic.ISet<Table> tables = new HashedSet<Table>();
 				foreach (PersistentClass clazz in SubclassClosureIterator)
 				{
 					if (!clazz.IsAbstract.GetValueOrDefault())
