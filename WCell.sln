@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServer", "Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServer", "Services\WCell.RealmServer\WCell.RealmServer.csproj", "{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PacketAnalyzer", "Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj", "{65B2B094-13BB-4685-95AD-402FC9A4473A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PacketAnalyzer", "Addons\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj", "{65B2B094-13BB-4685-95AD-402FC9A4473A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Tools", "Utilities\WCell.Tools\WCell.Tools.csproj", "{99463C8A-1598-4715-A390-A1B7E7FEDA2E}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -41,7 +41,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PostBuild", "Utilitie
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.DefaultAddon", "Addons\WCell.DefaultAddon\WCell.DefaultAddon.csproj", "{38846B91-92C5-4ED0-A77C-5480FA06EDBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Collision", "Utilities\WCell.Collision\WCell.Collision.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Collision", "Addons\WCell.Collision\WCell.Collision.csproj", "{6C52AEC1-2920-4E34-83A2-93E6E719D1B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Constants", "Core\WCell.Constants\WCell.Constants.csproj", "{42F497A4-0347-491D-8FA8-50E4D8AD19EB}"
 EndProject

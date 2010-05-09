@@ -290,7 +290,7 @@
       <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>
       <Name>WCell.MPQTool</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
+    <ProjectReference Include="..\..\Addons\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
       <Name>WCell.PacketAnalyzer</Name>
     </ProjectReference>
