@@ -1,8 +1,0 @@
-Nivelo
------
-+ Create enums for class spells
-+ fix autoexec for 3.1.2
-+ calendar packet definitions, implement calendar
-+ test spell overriding 
-+ create a command for dumping spell to database
-+ quests which gives you item should not be received unless you got the space in your bag
