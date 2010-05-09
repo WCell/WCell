@@ -1,0 +1,372 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_SEND_MAIL">
+    <Simple>
+      <Name>Mailbox</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Receiver</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Subject</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Body</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Stationary</Name>
+      <Type>UInt</Type>
+      <SegmentType>MailStationary</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unknown1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List>
+      <Name>Items</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>Slot</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>ItemId</Name>
+        <Type>Guid</Type>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>CoD</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown2</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown3</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SEND_MAIL_RESULT">
+    <Simple>
+      <Name>MailId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>MailResult</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Error</Name>
+      <Type>UInt</Type>
+      <SegmentType>MailError</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GET_MAIL_LIST">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_TAKE_MONEY">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_TAKE_ITEM">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Item EntityLowId</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_MARK_AS_READ">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_RETURN_TO_SENDER">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_DELETE">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MAIL_CREATE_TEXT_ITEM">
+    <Simple>
+      <Name>Mailbox EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Mail MessageId</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_RECEIVED_MAIL"/>
+
+  <RealmPacket OpCode="SMSG_MAIL_LIST_RESULT">
+    <Simple>
+      <Name>RealCount</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List>
+      <Name>Messages</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>Version-Dependent Constant (0x0040, 0x024C)</Name>
+        <Type>UShort</Type>
+      </Simple>
+      <Simple>
+        <Name>MessageId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>MailType</Name>
+        <Type>Byte</Type>
+        <SegmentType>MailType</SegmentType>
+      </Simple>
+      <Switch CompareWith="MailType">
+        <Case Equals="Normal">
+          <Simple>
+            <Name>Sender EntityId</Name>
+            <Type>Guid</Type>
+          </Simple>
+        </Case>
+        <Case Equals="Creature">
+          <Simple>
+            <Name>Sender EntityLowId</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="GameObject">
+          <Simple>
+            <Name>Sender EntityLowId</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="Auction">
+          <Simple>
+            <Name>Auction Id</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="Item">
+          <Simple>
+            <Name>Sender EntityLowId</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+      </Switch>
+      <Simple>
+        <Name>CoD</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>TextItem EntityLowId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Unknown 0</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Stationary</Name>
+        <Type>UInt</Type>
+        <SegmentType>MailStationary</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Money</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ButtonFlags</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ExpiryInDays</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Unk02</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Subject</Name>
+        <Type>CString</Type>
+      </Simple>
+      <List>
+        <Name>Items</Name>
+        <Type>Byte</Type>
+        <Simple>
+          <Name>Slot</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>ItemEntityLowId</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>ItemTemplate</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <StaticList Length="7">
+          <Name>Enchants</Name>
+          <Simple>
+            <Name>Charges</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Duration</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Id</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </StaticList>
+        <Simple>
+          <Name>Random Property Id</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>Random Suffix Id</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>Amount</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>Charges</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>MaxDurability</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Durability</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>UnkWotlk1</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </List>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_QUERY_NEXT_MAIL_TIME"/>
+
+  <RealmPacket Sender="Server" OpCode="MSG_QUERY_NEXT_MAIL_TIME">
+    <Simple>
+      <Name>UnkFloat</Name>
+      <Type>Float</Type>
+    </Simple>
+    <List>
+      <Name>MessagesCount</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>SenderEntityId</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>UnknownUInt_1 (2 for auction, 0 else)</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>UnknownUInt_2 (2 for auction, 0 else)</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>MessageStationary</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>UnkownFloat</Name>
+        <Type>Float</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ITEM_TEXT_QUERY">
+    <Simple>
+      <Name>ItemTextId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>MailOrItemEntityLowId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ITEM_TEXT_QUERY_RESPONSE">
+    <Simple>
+      <Name>ItemTextId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Text</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

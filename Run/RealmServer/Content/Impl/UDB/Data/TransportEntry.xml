@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="TransportEntry">
+    <DefaultTable>transports</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <Flat Name="Name" Column="name" />
+    <Flat Name="Period" Column="period" />
+  </DataHolder>
+</DataHolders>

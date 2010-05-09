@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Battlegrounds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Setting>
+    <Name>AlteracValley</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.AlteracValley.AlteracValley</Type>
+  </Setting>
+  <Setting>
+    <Name>WarsongGulch</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.WarsongGulch.WarsongGulch</Type>
+  </Setting>
+  <Setting>
+    <Name>ArathiBasin</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.ArathiBasin.ArathiBasin</Type>
+  </Setting>
+  <Setting>
+    <Name>NagrandArena</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.NagrandArena</Type>
+  </Setting>
+  <Setting>
+    <Name>BladesEdgeArena</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.BladesEdgeArena</Type>
+  </Setting>
+  <Setting>
+    <Name>EyeOfTheStorm</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.EyeOfTheStorm</Type>
+  </Setting>
+  <Setting>
+    <Name>RuinsOfLordaeron</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.RuinsOfLordaeron</Type>
+  </Setting>
+  <Setting>
+    <Name>StrandOfTheAncients</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.StrandOfTheAncients</Type>
+  </Setting>
+  <Setting>
+    <Name>DalaranSewers</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.DalaranSewers</Type>
+  </Setting>
+  <Setting>
+    <Name>TheRingOfValor</Name>
+    <Type>WCell.Addons.Default.Battlegrounds.TheRingOfValor</Type>
+  </Setting>
+  <Setting>
+    <Name>IsleOfConquest</Name>
+    <Type> </Type>
+  </Setting>
+</Battlegrounds>

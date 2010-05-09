@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="VendorItemEntry">
+    <DefaultTable>npc_vendor</DefaultTable>
+    <Flat Name="VendorId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <Flat Name="StockAmount" Column="maxcount" />
+    <Flat Name="StockRefillDelay" Column="incrtime" />
+    <Flat Name="ExtendedCostId" Column="ExtendedCost" />
+  </DataHolder>
+  <!--
+  should be on item_template
+  <Flat Name="BuyStackSize" Column="SellAmount" /> 
+  -->
+</DataHolders>

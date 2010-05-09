@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="WorldZoneLocation">
+    <DefaultTable>game_tele</DefaultTable>
+    <Flat Name="Id" Column="id" />
+    <Flat Name="DefaultName" Column="name" />
+    <Flat Name="RegionId" Column="map" />
+    <!--orientation-->
+    <Nested Name="Position">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+    <Flat Name="ZoneId" Column="" /> <!-- not in udb-->
+  </DataHolder>
+</DataHolders>

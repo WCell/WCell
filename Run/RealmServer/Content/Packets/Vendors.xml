@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_LIST_INVENTORY">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SELL_ITEM">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Number to Sell</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BUYBACK_ITEM">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Buyback Slot</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BUY_ITEM_IN_SLOT">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Template Id</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Bag EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Bag Slot Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Number to Buy</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BUY_ITEM">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Template Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Number to Buy</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk1</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SELL_ITEM">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Error Code</Name>
+      <Type>Byte</Type>
+      <SegmentType>WCell.Constants.Items.SellItemError</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_BUY_FAILED">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Template Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Error Code</Name>
+      <Type>Byte</Type>
+      <SegmentType>WCell.Constants.Items.BuyItemError</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_BUY_ITEM">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Template Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bought in stacks of size:</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Number of stacks bought:</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LIST_INVENTORY">
+    <Simple>
+      <Name>Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <List>
+      <Name>NumberOfItems</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>ItemNumber</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>TemplateId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>DisplayId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>NumberForSale</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PricePerStack</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>MaxDurability</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>StackSize</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ExtendedCostId</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+</Definitions>

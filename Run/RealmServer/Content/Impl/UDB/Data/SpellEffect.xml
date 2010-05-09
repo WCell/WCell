@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!--<DataHolder Name="SpellEffect">
+		<DefaultTable>spell_effects</DefaultTable>
+		<Flat Name="SpellId" Column="SpellId" />
+		<Flat Name="EffectIndex" Column="EffectIndex" />
+		<Flat Name="EffectType" Column="SpellEffect" /> 
+		<Flat Name="DiceSides" Column="DieSides" /> 
+		<Flat Name="DiceCount" Column="BaseDice" /> 
+		<Flat Name="DiePerLevel" Column="DicePerLevel" /> 
+		<Flat Name="RealPointsPerLevel" Column="RealPointsPerLevel" /> 
+		<Flat Name="BasePoints" Column="BasePoints" /> 
+		<Flat Name="Mechanic" Column="Mechanic" /> 
+		<Flat Name="ImplicitTargetA" Column="ImplicitTargetA" /> 
+		<Flat Name="ImplicitTargetB" Column="ImplicitTargetB" /> 
+		<Flat Name="RadiusIndex" Column="RadiusIndex" /> 
+		<Flat Name="Aura" Column="ApplyAuraName" /> 
+		<Flat Name="Amplitude" Column="Amplitude" /> 
+		<Flat Name="ProcValue" Column="ProcValue" /> 
+		<Flat Name="ChainTarget" Column="ChainTarget" /> 
+		<Flat Name="ItemId" Column="ItemType" /> 
+		<Flat Name="MiscValue" Column="MiscValue" /> 
+		<Flat Name="MiscValueB" Column="MiscValueB" /> 
+		<Flat Name="TriggerSpellId" Column="TriggerSpellId" /> 
+		<Flat Name="PointsPerComboPoint" Column="PointsPerComboPoint" /> 
+		<FlatArray Name="SpellClassMask" Pattern="SpellClassMask_{#}" Offset="1" /> 
+	</DataHolder>-->
+</DataHolders>

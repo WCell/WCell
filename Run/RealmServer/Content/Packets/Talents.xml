@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_LEARN_TALENT" Sender="Client">
+    <Simple>
+      <Name>Talent Id</Name>
+      <Type>Int</Type>
+      <SegmentType>Talents.TalentId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Rank</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_LEARN_TALENT" Sender="Client">
+    <Simple>
+      <Name>Pet</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Talent Id</Name>
+      <Type>Int</Type>
+      <SegmentType>Talents.TalentId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Rank</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_TALENT_WIPE_CONFIRM" Sender="Server">
+    <Simple>
+      <Name>Trainer</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Reset Cost</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_TALENT_WIPE_CONFIRM" Sender="Client">
+    <Simple>
+      <Name>Trainer</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_TALENT_GROUP_LIST" Sender="Server">
+    <Simple>
+      <Name>IsPet</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="IsPet">
+      <Case Equals="0">
+        <!-- Player -->
+        <Simple>
+          <Name>Unspent Talent Points</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>Talent Group Count</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Talent Group Index</Name>
+          <Type>Byte</Type>
+        </Simple>
+
+        <List LengthSegment="Talent Group Count">
+          <Name>Talent Groups</Name>
+
+          <List>
+            <Name>Talents</Name>
+            <Type>Byte</Type>
+
+            <Simple>
+              <Name>Talent Id</Name>
+              <Type>Int</Type>
+              <SegmentType>Talents.TalentId</SegmentType>
+            </Simple>
+            <Simple>
+              <Name>Rank</Name>
+              <Type>Byte</Type>
+            </Simple>
+          </List>
+
+          <List>
+            <Name>Glyphs</Name>
+            <Type>Byte</Type>
+
+            <Simple>
+              <Name>Glyph</Name>
+              <Type>Short</Type>
+            </Simple>
+          </List>
+
+        </List>
+      </Case>
+      <Case Equals="1">
+        <!-- Pet -->
+        <Simple>
+          <Name>FreeTalentPoints</Name>
+          <Type>Int</Type>
+        </Simple>
+
+        <List>
+          <Name>Talents</Name>
+          <Type>Byte</Type>
+
+          <Simple>
+            <Name>TalentId</Name>
+            <Type>Int</Type>
+            <SegmentType>Talents.TalentId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Rank</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </List>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_LEARN_PREVIEWED_TALENTS" Sender="Client">
+    <List>
+      <Name>Talents</Name>
+      <Type>Int</Type>
+
+      <Simple>
+        <Name>Talent Id</Name>
+        <Type>Int</Type>
+        <SegmentType>Talents.TalentId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Rank</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_LEARN_PREVIEWED_TALENTS" Sender="Client">
+    <Simple>
+      <Name>Pet</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <List>
+      <Name>Talents</Name>
+      <Type>Int</Type>
+
+      <Simple>
+        <Name>Talent Id</Name>
+        <Type>Int</Type>
+        <SegmentType>Talents.TalentId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Rank</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SET_PROFICIENCY">
+    <Simple>
+      <Name>Item Class</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.ItemClass</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Item SubClass Mask</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemSubClassMask</SegmentType>
+    </Simple>
+  </RealmPacket>
+</Definitions>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="SMSG_INIT_WORLD_STATES">
+    <Simple>
+      <Name>Region</Name>
+      <Type>UInt</Type>
+      <SegmentType>World.MapId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Zone</Name>
+      <Type>UInt</Type>
+      <SegmentType>World.ZoneId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Area</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List>
+      <Name>States</Name>
+      <Type>UShort</Type>
+
+      <Simple>
+        <Name>Key</Name>
+        <Type>UInt</Type>
+        <SegmentType>World.WorldStateId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_UPDATE_WORLD_STATE">
+    <Simple>
+      <Name>Key</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Value</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+  
+</Definitions>

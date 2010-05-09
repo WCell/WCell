@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_WHO">
+    <Simple>
+      <Name>MinLevel</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>MaxLevel</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>GuildName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>RaceMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>RaceMask2</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ClassMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>ClassMask2</SegmentType>
+    </Simple>
+    <List>
+      <Name>Zones</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>ZoneId</Name>
+        <Type>UInt</Type>
+        <SegmentType>World.ZoneId</SegmentType>
+      </Simple>
+    </List>
+    <List>
+      <Name>Names</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Name</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_WHO">
+    <Simple>
+      <Name>ResultCount</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>DisplayedCount</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List LengthSegment="ResultCount">
+      <Name>Characters</Name>
+      <Simple>
+        <Name>Name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>GuildName</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Class</Name>
+        <Type>UInt</Type>
+        <SegmentType>ClassId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Race</Name>
+        <Type>UInt</Type>
+        <SegmentType>RaceId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Unknown</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>ZoneId</Name>
+        <Type>UInt</Type>
+        <SegmentType>World.ZoneId</SegmentType>
+      </Simple>
+    </List>
+  </RealmPacket>
+  
+</Definitions>

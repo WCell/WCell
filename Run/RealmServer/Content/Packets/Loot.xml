@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="SMSG_LOOT_START_ROLL">
+    <Simple>
+      <Name>Looted</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>ItemIndex</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>ItemTemplate</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unk1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk2</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>TimeoutMillis</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOOT_ROLL">
+    <Simple>
+      <Name>Looted</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>ItemIndex</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Looter</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>ItemTemplate</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unk1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk2</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Roll</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>RollType</Name>
+      <Type>Byte</Type>
+      <SegmentType>Looting.LootRollType</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_LOOT_ROLL">
+    <Simple>
+      <Name>Looted</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>ItemIndex</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>RollType</Name>
+      <Type>Byte</Type>
+      <SegmentType>Looting.LootRollType</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOOT_RESPONSE">
+    <Simple>
+      <Name>Looted</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Looting.LootResponseType</Name>
+      <Type>Byte</Type>
+      <SegmentType>Looting.LootResponseType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List>
+      <Name>Items</Name>
+      <Type>Byte</Type>
+
+      <Simple>
+        <Name>Index</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>ItemId</Name>
+        <Type>UInt</Type>
+        <SegmentType>Items.ItemId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>DisplayId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>RandomSuffixFactor</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>RandomPropertiesId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Decision</Name>
+        <Type>Byte</Type>
+        <SegmentType>Looting.LootDecision</SegmentType>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_OPT_OUT_OF_LOOT">
+    <Simple>
+      <Name>AutoOptOut (boolean)</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

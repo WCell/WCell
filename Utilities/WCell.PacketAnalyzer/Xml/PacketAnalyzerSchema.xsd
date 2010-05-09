@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="Definitions">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="RealmPacket" type="packetDefinition"/>
+        <xs:element name="AuthPacket" type="packetDefinition"/>
+      </xs:choice>
+      <xs:attribute name="Version" type="xs:positiveInteger"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="packetDefinition">
+        <xs:sequence>
+          <xs:element name="OpCodes" minOccurs="0" maxOccurs="unbounded">
+            <xs:complexType>
+          <xs:sequence minOccurs="1" maxOccurs="unbounded">
+            <xs:element name="OpCode" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+        </xs:element>
+        <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute name="OpCode" type="xs:string" use="optional"/>
+        <xs:attribute name="Sender" use="optional">
+          <xs:simpleType id="PacketSender">
+            <xs:restriction base="xs:string">
+              <xs:enumeration value="Client"/>
+              <xs:enumeration value="Server"/>
+              <xs:enumeration value="Any"/>
+            </xs:restriction>
+          </xs:simpleType>
+        </xs:attribute>
+</xs:complexType>
+
+      <xs:group name="optionallyNamedSegmentList">
+        <xs:sequence>
+          <xs:element name="Name" type="xs:string" minOccurs="0"/>
+          <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:group>
+
+      <xs:group name="segmentList">
+        <xs:choice>
+          <xs:element name="Simple">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Type" type="simpleType"/>
+                <xs:element name="SegmentType" type="xs:string" minOccurs="0" maxOccurs="1"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Complex">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string" minOccurs="0"/>
+                <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="List">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:element name="Type" type="simpleType" minOccurs="0"/>
+                <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:attribute name="LengthSegment" type="xs:string" use="optional"/>
+              <xs:attribute name="LengthExpr" type="xs:string" use="optional"/>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="StaticList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+              <xs:attribute name="Length" type="xs:positiveInteger"/>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="Switch">
+            <xs:complexType>
+              <xs:choice minOccurs="1" maxOccurs="unbounded">
+                <xs:element name="Case">
+                  <xs:complexType>
+                    <xs:sequence>
+                      <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                    <xs:attribute name="Equals" use="optional"/>
+                    <xs:attribute name="NotEqual" use="optional"/>
+                    <xs:attribute name="GreaterThan" use="optional"/>
+                    <xs:attribute name="GreaterOrEqual" use="optional"/>
+                    <xs:attribute name="LessThan" use="optional"/>
+                    <xs:attribute name="LessOrEqual" use="optional"/>
+                    <xs:attribute name="And" use="optional"/>
+                    <xs:attribute name="AndAny" use="optional"/>
+                    <xs:attribute name="AndNot" use="optional"/>
+                    <xs:attribute name="Either" use="optional"/>
+                    <xs:attribute name="Neither" use="optional"/>
+                  </xs:complexType>
+                </xs:element>
+              </xs:choice>
+              <xs:attribute name="CompareWith" type="xs:string"/>
+            </xs:complexType>
+          </xs:element>
+          <xs:element name="FinalList">
+            <xs:complexType>
+              <xs:sequence>
+                <xs:element name="Name" type="xs:string"/>
+                <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+              </xs:sequence>
+            </xs:complexType>
+          </xs:element>
+        </xs:choice>
+      </xs:group>
+
+      <xs:group name="namedSegmentList">
+        <xs:sequence>
+          <xs:element name="Name" type="xs:string"/>
+          <xs:group ref="segmentList" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+      </xs:group>
+
+      <xs:simpleType name="simpleType">
+        <xs:restriction base="xs:string">
+          <xs:enumeration value="Byte"/>
+          <xs:enumeration value="UShort"/>
+          <xs:enumeration value="Short"/>
+          <xs:enumeration value="UInt"/>
+          <xs:enumeration value="Int"/>
+          <xs:enumeration value="ULong"/>
+          <xs:enumeration value="Long"/>
+          <xs:enumeration value="Float"/>
+          <xs:enumeration value="Guid"/>
+          <xs:enumeration value="Vector3"/>
+          <xs:enumeration value="PackedVector3"/>
+          <xs:enumeration value="Vector4"/>
+          <xs:enumeration value="PackedGuid"/>
+          <xs:enumeration value="CString"/>
+          <xs:enumeration value="PascalStringByte"/>
+          <xs:enumeration value="PascalStringUShort"/>
+          <xs:enumeration value="PascalStringUInt"/>
+          <xs:enumeration value="Guid"/>
+		  <xs:enumeration value="UnixTime"/>
+		  <xs:enumeration value="PackedDate"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:schema>

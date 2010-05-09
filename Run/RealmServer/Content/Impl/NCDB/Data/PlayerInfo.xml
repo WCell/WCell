@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="BaseRace">
+    <DefaultTable>playercreateinfo_races</DefaultTable>
+    <Flat Name="Id" Column="race" />
+    <Flat Name="FactionTemplateId" Column="Faction" />
+    <Flat Name="MaleModelOffset" Column="MaleModelOffset" />
+    <Flat Name="FemaleModelOffset" Column="FemaleModelOffset" />
+    <Flat Name="Scale" Column="Scale" />
+  </DataHolder>
+
+  <DataHolder Name="BaseClass">
+    <DefaultTable>playercreateinfo_classes</DefaultTable>
+    <Flat Name="Id" Column="class" />
+    <Flat Name="MaxDamage" Column="MaxDamage" />
+    <Flat Name="MinDamage" Column="MinDamage" />
+    <Flat Name="PowerType" Column="PowerType" />
+    <Flat Name="BaseHealth" Column="BaseHealth" />
+    <Flat Name="BasePower" Column="BasePower" />
+  </DataHolder>
+
+  <DataHolder Name="Archetype">
+    <DefaultTable>playercreateinfo_archetype</DefaultTable>
+    <Flat Name="ClassId" Column="class" />
+    <Flat Name="RaceId" Column="race" />
+    <Flat Name="BaseAgility" Column="BaseAgility" />
+    <Flat Name="BaseIntellect" Column="BaseIntellect" />
+    <Flat Name="BaseSpirit" Column="BaseSpirit" />
+    <Flat Name="BaseStamina" Column="BaseStamina" />
+    <Flat Name="BaseStrength" Column="BaseStrength" />
+    <Nested Name="StartPosition">
+      <Flat Name="X" Column="StartX" />
+      <Flat Name="Y" Column="StartY" />
+      <Flat Name="Z" Column="StartZ" />
+    </Nested>
+    <Flat Name="StartOrientation" Column="StartO" />
+    <Flat Name="StartMapId" Column="StartMap" />
+    <Flat Name="StartZoneId" Column="StartZone" />
+    <Flat Name="IntroductionMovie" Column="Intro" />
+    <Flat Name="StartLevel" Column="minlevel" />
+  </DataHolder>
+
+
+  <DataHolder Name="PlayerSpellEntry">
+    <DefaultTable>playercreateinfo_spells</DefaultTable>
+    <Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="SpellId" Column="spellid" />
+  </DataHolder>
+
+  <DataHolder Name="PlayerSkillEntry">
+    <DefaultTable>playercreateinfo_skills</DefaultTable>
+    <Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="SkillId" Column="skillid" />
+    <Flat Name="Value" Column="level" />
+    <Flat Name="MaxValue" Column="maxlevel" />
+  </DataHolder>
+
+  <DataHolder Name="PlayerItemEntry">
+    <DefaultTable>playercreateinfo_items</DefaultTable>
+    <Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="ItemId" Column="protoid" />
+    <Flat Name="Amount" Column="amount" />
+    <Flat Name="Slot" Column="slotid" />
+  </DataHolder>
+
+  <DataHolder Name="PlayerActionButtonEntry">
+    <DefaultTable>playercreateinfo_bars</DefaultTable>
+    <Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="Index" Column="button" />
+    <Flat Name="Action" Column="action" />
+    <Flat Name="Type" Column="type" />
+    <Flat Name="Info" Column="misc" />
+  </DataHolder>
+
+  <DataHolder Name="LevelXp">
+    <DefaultTable>player_levelxp</DefaultTable>
+    <Flat Name="Level" Column="level" />
+    <Flat Name="Xp" Column="xp" />
+  </DataHolder>
+  
+  <DataHolder Name="LevelStatInfo">
+  	<DefaultTable>player_levelstats</DefaultTable>
+  	<Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="Level" Column="level" />
+    <Flat Name="Strength" Column="strength" />
+    <Flat Name="Agility" Column="agility" />
+    <Flat Name="Stamina" Column="stamina" />
+    <Flat Name="Intellect" Column="intellect" />
+    <Flat Name="Spirit" Column="spirit" />
+  </DataHolder>
+</DataHolders>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<DataHolder Name="Spell">
+		<DefaultTable>spell_base</DefaultTable>
+		<Flat Name="SpellId" Column="SpellId" />
+		<Flat Name="Category" Column="Category" />
+		<Flat Name="DispelType" Column="DispelType" />
+		<Flat Name="Mechanic" Column="Mechanic" />
+		<Flat Name="Attributes" Column="Attributes" />
+		<Flat Name="AttributesEx" Column="AttributesEx" />
+		<Flat Name="AttributesExB" Column="AttributesExB" />
+		<Flat Name="AttributesExC" Column="AttributesExC" />
+		<Flat Name="AttributesExD" Column="AttributesExD" />
+		<Flat Name="AttributesExE" Column="AttributesExE" />
+		<Flat Name="AttributesExF" Column="AttributesExF" />
+		<Flat Name="ShapeshiftMask" Column="ShapeshiftMask" />
+		<Flat Name="ExcludeShapeshiftMask" Column="ExcludeShapeshiftMask" />
+		<Flat Name="TargetType" Column="TargetType" />
+		<Flat Name="TargetCreatureTypes" Column="TargetCreatureType" />
+		<Flat Name="RequiredSpellFocus" Column="RequiresSpellFocus" />
+		<Flat Name="FacingFlags" Column="FacingFlags" />
+		<Flat Name="CasterAuraState" Column="CasterAuraState" />
+		<Flat Name="TargetAuraState" Column="TargetAuraState" />
+		<Flat Name="ExcludeCasterAuraState" Column="ExcludeCasterAuraState" />
+		<Flat Name="ExcludeTargetAuraState" Column="ExcludeTargetAuraState" />
+		<Flat Name="CasterAuraSpellId" Column="CasterAuraSpellId" />
+		<Flat Name="TargetAuraSpellId" Column="TargetAuraSpellId" />
+		<Flat Name="ExcludeCasterSpellId" Column="ExcludeCasterSpellId" />
+		<Flat Name="ExcludeTargetSpellId" Column="ExcludeTargetSpellId" />
+		<!--<Flat Name="CastDelay" Column="CastDelay" />-->
+		<Flat Name="CooldownTime" Column="CooldownTime" />
+		<Flat Name="CategoryCooldownTime" Column="CategoryCooldownTime" />
+		<Flat Name="InterruptFlags" Column="InterruptFlags" />
+		<Flat Name="AuraInterruptFlags" Column="AuraInterruptFlags" />
+		<Flat Name="ChannelInterruptFlags" Column="ChannelInterruptFlags" />
+		<Flat Name="ProcTriggerFlags" Column="ProcTriggerFlags" />
+		<Flat Name="ProcChance" Column="ProcChance" />
+		<Flat Name="ProcCharges" Column="ProcCharges" />
+		<Flat Name="MaxLevel" Column="MaxLevel" />
+		<Flat Name="BaseLevel" Column="BaseLevel" />
+		<Flat Name="Level" Column="Level" />
+		<Flat Name="DurationIndex" Column="DurationIndex" />
+		<Flat Name="PowerType" Column="PowerType" />
+		<Flat Name="PowerCost" Column="PowerCost" />
+		<Flat Name="PowerCostPerLevel" Column="PowerCostPerlevel" />
+		<Flat Name="PowerPerSecond" Column="PowerPerSecond" />
+		<Flat Name="PowerPerSecondPerLevel" Column="PowerPerSecondPerLevel" />
+		<Flat Name="RangeIndex" Column="RangeIndex" />
+		<Flat Name="ProjectileSpeed" Column="ProjectileSpeed" />
+		<Flat Name="ModalNextSpell" Column="ModalNextSpell" />
+		<Flat Name="MaxStackCount" Column="MaxStackCount" />
+		<FlatArray Name="RequiredToolIds" Pattern="RequiredToolId_{#}" Offset="1" /> 
+
+		<FlatArray Name="ReagentIds" Pattern="ReagentId_{#}" Offset="1" /> 
+		<FlatArray Name="ReagentCounts" Pattern="ReagentCount_{#}" Offset="1" />
+
+		<Flat Name="RequiredItemClass" Column="RequiredItemClass" />
+		<Flat Name="RequiredItemSubClassMask" Column="RequiredItemSubClassMask" />
+		<Flat Name="RequiredItemInventorySlotMask" Column="RequiredItemInventorySlotMask" />
+
+		<FlatArray Name="Effects" Pattern="Effects_{#}" Offset="1" />
+
+<!-- 		<FlatArray Name="Visual" Pattern="Visual_{#}" Offset="1" /> -->
+
+		<Flat Name="Visual" Column="Visual_1" />
+		<Flat Name="Field120" Column="Visual_2" />
+
+		<Flat Name="SpellbookIconId" Column="SpellbookIconId" />
+		<Flat Name="BuffIconId" Column="BuffIconId" />
+		<Flat Name="Priority" Column="Priority" />
+		<Flat Name="Name" Column="Name" />
+		<Flat Name="RankDesc" Column="RankDescription" />
+		<Flat Name="Description" Column="BookDescription" />
+		<Flat Name="BuffDescription" Column="BuffDescription" />
+		<Flat Name="PowerCostPercentage" Column="PowerCostPercentage" />
+		<Flat Name="StartRecoveryTime" Column="StartRecoveryTime" />
+		<Flat Name="StartRecoveryCategory" Column="StartRecoveryCategory" />
+		<Flat Name="MaxTargetLevel" Column="MaxTargetLevel" />
+		<Flat Name="FamilyName" Column="FamilyName" />
+		<FlatArray Name="SpellClassMask" Pattern="SpellClassMask_{#}" Offset="1" /> 
+		<Flat Name="MaxTargets" Column="MaxTargets" />
+		<Flat Name="DefenseType" Column="DefenseType" />
+		<Flat Name="PreventionType" Column="PreventionType" />
+		<Flat Name="StanceBarOrder" Column="StanceBarOrder" />
+		<FlatArray Name="DamageMultiplier" Pattern="DamageMultiplier_{#}" Offset="1" /> 
+		<Flat Name="MinFactionId" Column="MinFactionId" />
+		<Flat Name="MinReputation" Column="MinReputation" />
+		<Flat Name="RequiredAuraVision" Column="RequiredAuraVision" />
+		<FlatArray Name="RequiredTotemCategories" Pattern="RequiredTotemCategoryId_{#}" Offset="1" /> 
+		<Flat Name="AreaId" Column="RequiredAreaId" />
+		<Flat Name="SchoolMask" Column="SchoolMask" />
+		<Flat Name="RuneCostID" Column="RuneCostID" />
+		<Flat Name="MissileID" Column="MissileId" />
+	</DataHolder>
+  
+	<DataHolder Name="SpellEffect">
+		<DefaultTable>spell_effects</DefaultTable>
+		<Flat Name="SpellId" Column="SpellId" />
+		<Flat Name="EffectIndex" Column="EffectIndex" />
+		<Flat Name="EffectType" Column="SpellEffect" /> 
+		<Flat Name="DiceSides" Column="DieSides" /> 
+		<Flat Name="DiceCount" Column="BaseDice" /> 
+		<Flat Name="DicePerLevel" Column="DicePerLevel" /> 
+		<Flat Name="RealPointsPerLevel" Column="RealPointsPerLevel" /> 
+		<Flat Name="BasePoints" Column="BasePoints" /> 
+		<Flat Name="Mechanic" Column="Mechanic" /> 
+		<Flat Name="ImplicitTargetA" Column="ImplicitTargetA" /> 
+		<Flat Name="ImplicitTargetB" Column="ImplicitTargetB" /> 
+		<Flat Name="RadiusIndex" Column="RadiusIndex" /> 
+		<Flat Name="Aura" Column="ApplyAuraName" /> 
+		<Flat Name="Amplitude" Column="Amplitude" /> 
+		<Flat Name="ProcValue" Column="ProcValue" /> 
+		<Flat Name="ChainTarget" Column="ChainTarget" /> 
+		<Flat Name="ItemId" Column="ItemType" /> 
+		<Flat Name="MiscValue" Column="MiscValue" /> 
+		<Flat Name="MiscValueB" Column="MiscValueB" /> 
+		<Flat Name="TriggerSpellId" Column="TriggerSpellId" /> 
+		<Flat Name="PointsPerComboPoint" Column="PointsPerComboPoint" /> 
+		<FlatArray Name="SpellClassMask" Pattern="SpellClassMask_{#}" Offset="1" /> 
+	</DataHolder>
+
+  <DataHolder Name="SkillSpellRelation">
+    <DefaultTable>skills_initialability</DefaultTable>
+    <Flat Name="SkillId" Column="BaseSkillId" />
+    <Flat Name="SpellId" Column="GainSpellId" />
+  </DataHolder>
+</DataHolders>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ATTemplate">
+    <DefaultTable>areatriggers_template</DefaultTable>
+    <Flat Name="Id" Column="TriggerID" />
+    <Flat Name="Name" Column="name" />
+    <Flat Name="Type" Column="type" />
+    <Flat Name="TargetMap" Column="target_map" />
+    <Nested Name="TargetPos">
+      <Flat Name="X" Column="target_position_x" />
+      <Flat Name="Y" Column="target_position_y" />
+      <Flat Name="Z" Column="target_position_z" />
+    </Nested>
+    <Flat Name="TargetOrientation" Column="target_orientation" />
+    <Flat Name="TargetScreen" Column="target_screen" />
+    <Flat Name="RequiredItemId" Column="required_item" />
+    <Flat Name="RequiredItem2Id" Column="required_item2" />
+    <Flat Name="RequiredHeroicKeyId" Column="heroic_key" />
+    <Flat Name="RequiredHeroicKey2Id" Column="heroic_key2" />
+    <Flat Name="RequiredQuestId" Column="required_quest_done" />
+    <Flat Name="RequiredFailedText" Column="required_failed_text" />
+    <Flat Name="RequiredLevel" Column="required_level" />
+  </DataHolder>
+</DataHolders>

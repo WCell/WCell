@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="SMSG_SET_FACTION_STANDING">
+    <Simple>
+      <Name>Refer-A-Friend Bonus Rep</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkByte: if this is not zero, please report.</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List>
+      <Name>Factions</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Faction</Name>
+        <Type>UInt</Type>
+        <SegmentType>Factions.FactionReputationIndex</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Value</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_INITIALIZE_FACTIONS">
+    <List>
+      <Name>Factions</Name>
+      <Type>Int</Type>
+      
+      <Simple>
+        <Name>Flags</Name>
+        <Type>Byte</Type>
+        <SegmentType>Factions.ReputationFlags</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Value</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+</Definitions>

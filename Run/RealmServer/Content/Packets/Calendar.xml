@@ -1,0 +1,808 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_CALENDAR_GET_NUM_PENDING">
+    <!-- 1095 -->
+    <!--Empty-->
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_GET_CALENDAR">
+    <!-- 1065 -->
+    <!--Empty-->
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_GET_EVENT">
+    <!--1066-->
+    <Simple>
+      <Name>Event ID</Name>
+      <Type>ULong</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_GUILD_FILTER">
+    <!-- 1067 -->
+    <!--More likely CalendarMassInviteGuild-->
+    <Simple>
+      <Name>Min level</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Max level</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Min rank</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_ARENA_TEAM">
+    <!--1068--> <!--DIDN'T SEE THIS ONE YET-->
+    <Simple>
+      <Name>Arena Team Id?</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_ADD_EVENT">
+    <!--1069-->
+    <Simple>
+      <Name>Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Description</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>EventType</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarEventType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Repeat Option</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarRepeatOption</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Max Size</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>LFG Dungeon Id</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>Lockout Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>EventFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>CalendarEventFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="EventFlags">
+      <Case AndNot="GuildAnnouncement">
+          <Simple>
+            <Name>InvitedCount</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <List LengthSegment="InvitedCount">
+            <Name>Invited Players</Name>
+            <Simple>
+              <Name>Player</Name>
+              <Type>PackedGuid</Type>
+            </Simple>
+            <Simple>
+              <Name>InviteStatus</Name>
+              <Type>Byte</Type>
+              <SegmentType>CalendarInviteStatus</SegmentType>
+            </Simple>
+            <Simple>
+              <Name>Mod Type</Name>
+              <Type>Byte</Type>
+              <SegmentType>CalendarModType</SegmentType>
+            </Simple>            
+          </List>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_CALENDAR_UPDATE_EVENT">
+    <!--1070-->
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Description</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Moderator Flags</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarEventModFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Repeat Option</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Max Invites</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>LFG Dungeon Id</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Start Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>End Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>EventFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>CalendarEventFlags</SegmentType>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_REMOVE_EVENT">
+    <!-- 1071 Structure Correct, Labels not-->
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Int 1</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_COPY_EVENT">
+    <!-- 1072 -->
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Author Id (guessed)</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_EVENT_INVITE">
+    <!-- 1073 -->
+    <Simple>
+      <!--0 when the event isn't in the calendar yet-->
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <!--1 when the event isn't in the calendar yet-->
+      <Name>Author Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Player Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <!--1 when the event isn't in the calendar yet-->
+      <Name>Unknown 1</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Is Guild Event</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_EVENT_RSVP">
+    <!-- 1074 -->
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Status</Name>
+      <Type>Int</Type>
+      <SegmentType>CalendarInviteStatus</SegmentType>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_EVENT_REMOVE_INVITE">
+    <!-- 1075 -->
+    <Simple>
+      <Name>Removee's GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Removee's Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Remover's Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_EVENT_STATUS">
+    <!-- 1076 -->
+    <Simple>
+      <Name>Invitee GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invitee's Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Inviter's Invitation Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Invite Status</Name>
+      <Type>Int</Type>
+      <SegmentType>CalendarInviteStatus</SegmentType>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="CMSG_CALENDAR_EVENT_MODERATOR_STATUS">
+    <!-- 1077 -->
+    <Simple>
+      <Name>Participant</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>EventId</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Id 1</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Id 2</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Invite Status</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CALENDAR_SEND_CALENDAR">
+    <!-- 1078 -->
+    <Simple>
+      <Name>InviteCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="InviteCount">
+      <Name>Invite</Name>
+      <Simple>
+        <Name>Event Id</Name>
+        <Type>ULong</Type>
+      </Simple>
+      <Simple>
+        <Name>Invitation Id</Name>
+        <Type>ULong</Type>
+      </Simple>
+      <Simple>
+        <Name>Invite Status</Name>
+        <Type>Byte</Type>
+        <SegmentType>CalendarInviteStatus</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Mod Type</Name>
+        <Type>Byte</Type>
+        <SegmentType>CalendarModType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Invite Type</Name>
+        <!--Gotta test-->
+        <Type>Byte</Type>
+        <SegmentType>CalendarInviteType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Invited by</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>EventCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="EventCount">
+      <Name>Event</Name>
+      <Simple>
+        <Name>Event Id</Name>
+        <Type>ULong</Type>
+      </Simple>
+      <Simple>
+        <Name>Event name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>CalendarEventModFlags</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Event Date</Name>
+        <Type>PackedDate</Type>
+      </Simple>
+      <Simple>
+        <Name>Event Flags</Name>
+        <Type>Int</Type>
+        <SegmentType>WCell.Constants.CalendarEventFlags</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>LFG Dungeon Id</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Invited by</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>Current Unix Time</Name>
+      <Type>UnixTime</Type>
+    </Simple>
+    <Simple>
+      <Name>Current packet time</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>InstanceResetCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="InstanceResetCount">
+      <Name>Instance Save</Name>
+      <Simple>
+        <Name>Map Id</Name>
+        <Type>Int</Type>
+        <SegmentType>World.MapId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Difficulty</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Time until reset</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Raid Id</Name>
+        <Type>ULong</Type>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>Base Date</Name>
+      <Type>UnixTime</Type>
+    </Simple>
+    <Simple>
+      <Name>RaidResetCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="RaidResetCount">
+      <Name>Raid Reset</Name>
+      <Simple>
+        <Name>Map Id</Name>
+        <Type>UInt</Type>
+        <SegmentType>World.MapId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Reset Time (in seconds)</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Negative Offset (in seconds)</Name>
+        <Type>UInt</Type>
+        <!--86400-Negative Offset = - offset-->
+      </Simple>
+    </List>
+    <Simple>
+      <Name>Count5</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="Count5">
+      <Name>Unknown Value</Name>
+      <Simple>
+        <Name>Unknown 1</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Unknown 2</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Unknown 3</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Unknown 4</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Unknown 5</Name>
+        <Type>Int</Type>
+      </Simple>
+      <StaticList Length="26">
+        <Name>Unknown 26 values</Name>
+        <Simple>
+          <Name>Unknown</Name>
+          <Type>Int</Type>
+        </Simple>
+      </StaticList>
+      <StaticList Length="10">
+        <Name>Unknown 10 values</Name>
+        <Simple>
+          <Name>Unknown</Name>
+          <Type>Int</Type>
+        </Simple>
+      </StaticList>
+      <StaticList Length="10">
+        <Name>Unknown 10 values</Name>
+        <Simple>
+          <Name>Unknown</Name>
+          <Type>Int</Type>
+        </Simple>
+      </StaticList>
+      <Simple>
+        <Name>Unknown CString</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CALENDAR_SEND_EVENT" Sender="Server">
+    <!-- 1079 -->
+    <Simple>
+      <Name>Invite Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarInviteType</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Creator</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>EventId</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Description</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarEventType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Repeat Option</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarRepeatOption</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Max Size</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>LFG Dungeon Id</Name>
+      <Type>Int</Type>
+      <!--need to dump lfgdungeonid.dbc to constants-->
+      <!-- -1 no id -->
+    </Simple>
+    <Simple>
+      <Name>EventFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>CalendarEventFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Event Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>Lockout Date</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <List>
+      <Name>List</Name>
+      <Type>Int</Type>
+      <Simple>
+        <Name>Player</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Invite Status</Name>
+        <Type>Byte</Type>
+        <SegmentType>CalendarInviteStatus</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Mod Type</Name>
+        <Type>Byte</Type>
+        <SegmentType>CalendarModType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Unknown Byte</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Invitation Id</Name>
+        <Type>ULong</Type>
+      </Simple>
+      <Simple>
+        <Name>Last Update</Name>
+        <Type>PackedDate</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_CALENDAR_FILTER_GUILD">
+    <!--1080-->
+    <Simple>
+      <Name>GuildCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="GuildCount">
+      <Name>Member</Name>
+      <Simple>
+        <Name>GUID</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>Byte</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_ARENA_TEAM" Sender="Server">
+    <!--1081-->
+    <Simple>
+      <Name>ArenaTeamCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="ArenaTeamCount">
+      <Name>Member</Name>
+      <Simple>
+        <Name>GUID</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Level?</Name>
+        <Type>Byte</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_EVENT_INVITE" Sender="Server">
+    <!-- 1082 -->
+    <Simple>
+      <Name>Invited Player</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Level</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Status</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarInviteStatus</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>HasResponseTimeout</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="HasResponseTimeout">
+      <Case Equals="1">
+        <Simple>
+          <Name>Response Timeout</Name>
+          <Type>PackedDate</Type>
+        </Simple>
+      </Case>
+    </Switch>
+    <Simple>
+      <Name>Calendar Invite Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarInviteType</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CALENDAR_EVENT_INVITE_REMOVED" Sender="Server">
+    <!--1083-->
+    <Simple>
+      <Name>Canceled by</Name>
+      <!--guessed-->
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_EVENT_STATUS" Sender="Server">
+    <!-- 1084-->
+    <Simple>
+      <Name>PackedGuid 1</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>EventId</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Time 1</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>EventFlags</Name>
+      <Type>Int</Type>
+      <SegmentType>CalendarEventFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Invite Status</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarInviteStatus</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Mod Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarModType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ResponseTimeoutDate</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CALENDAR_SEND_NUM_PENDING" Sender="Server">
+    <Simple>
+      <Name>Num Pending</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CALENDAR_EVENT_INVITE_ALERT" Sender="Server">
+    <!-- 1088 -->
+    <Simple>
+      <Name>EventId</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Time</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+    <Simple>
+      <Name>Event Flags</Name>
+      <Type>Int</Type>
+      <SegmentType>CalendarEventFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Event Type</Name>
+      <Type>Int</Type>
+      <SegmentType>CalendarEventType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>LfgDungeonId</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Invite Status</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarInviteStatus</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Mod Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>CalendarModType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Inviter</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Inviter 2</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_EVENT_REMOVED_ALERT" Sender="Server">
+    <Simple>
+      <Name>Byte 1</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>EventId</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <Simple>
+      <Name>Time</Name>
+      <Type>PackedDate</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="CMSG_CALENDAR_UNKNOWN_1210">
+    <!--Event Signup-->
+    <Simple>
+      <Name>Event Id</Name>
+      <Type>ULong</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_UNKNOWN_1211">
+    <!--EMPTY, something like SIGNUP_ACK-->
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_CALENDAR_COMMAND_RESULT">
+    <Simple>
+      <Name>Unknown1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>UnknownCstring</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>UnknownCstring2</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Error</Name>
+      <Type>UInt</Type>
+      <SegmentType>CalendarErrors</SegmentType>
+    </Simple>
+  </RealmPacket>
+</Definitions>

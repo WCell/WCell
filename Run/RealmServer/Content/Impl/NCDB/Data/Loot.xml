@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="NPCLootItemEntry">
+    <DefaultTable>loot_creatures</DefaultTable>
+    <DefaultTable>loot_skinning</DefaultTable>
+    <DefaultTable>loot_pickpocketing</DefaultTable>
+    
+    <Flat Name="LootType"/>
+    <Flat Name="EntryId" Column="creature_entry" />
+    <Flat Name="ItemId" Column="drop_item_entry" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmount" Column="mincount" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+    <Flat Name="IsFFA" Column="ffa_loot" />
+    <Flat Name="DropChance" Column="percentchance" />
+    <Flat Name="HeroicDropChance" Column="heroicpercentchance" />
+  </DataHolder>
+  
+  <DataHolder Name="ItemLootItemEntry">
+    <DefaultTable>loot_disenchanting</DefaultTable>
+    <DefaultTable>loot_item</DefaultTable>
+    <DefaultTable>loot_prospecting</DefaultTable>
+    <DefaultTable>loot_milling</DefaultTable>
+    
+    <Flat Name="LootType"/>
+    <Flat Name="EntryId" Column="item_entry" />
+    <Flat Name="ItemId" Column="drop_item_entry" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmount" Column="mincount" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+    <Flat Name="IsFFA" Column="ffa_loot" />
+    <Flat Name="DropChance" Column="percentchance" />
+    <Flat Name="HeroicDropChance" Column="heroicpercentchance" />
+  </DataHolder>
+  
+  <DataHolder Name="GOLootItemEntry">
+    <DefaultTable>loot_gameobject</DefaultTable>
+    
+    <Flat Name="LootType"/>
+    <Flat Name="EntryId" Column="loot_entry" />
+    <Flat Name="ItemId" Column="drop_item_entry" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmount" Column="mincount" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+    <Flat Name="IsFFA" Column="ffa_loot" />
+    <Flat Name="DropChance" Column="percentchance" />
+    <Flat Name="HeroicDropChance" Column="heroicpercentchance" />
+  </DataHolder>
+
+  <DataHolder Name="FishingLootItemEntry">
+    <DefaultTable>loot_fishing</DefaultTable>
+
+    <Flat Name="LootType"/>
+    <Flat Name="EntryId" Column="fishzone_entry" />
+    <Flat Name="ItemId" Column="drop_item_entry" />
+    <Flat Name="GroupId" Column="groupid" />
+    <Flat Name="MinAmount" Column="mincount" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+    <Flat Name="IsFFA" Column="ffa_loot" />
+    <Flat Name="DropChance" Column="percentchance" />
+    <Flat Name="HeroicDropChance" Column="heroicpercentchance" />
+  </DataHolder>
+</DataHolders>

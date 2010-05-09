@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ClassLevelSetting">
+    <DefaultTable>player_classlevelstats</DefaultTable>
+    <Flat Name="ClassId" Column="class" />
+    <Flat Name="Health" Column="basehp" />
+    <Flat Name="Mana" Column="basemana" />
+    <Flat Name="Level" Column="level" />
+  </DataHolder>
+</DataHolders>

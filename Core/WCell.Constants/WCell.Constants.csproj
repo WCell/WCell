@@ -1,0 +1,252 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>WCell.Constants</RootNamespace>
+    <AssemblyName>WCell.Constants</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>
+    </DocumentationFile>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Itanium\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>Itanium</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
+    <OutputPath>bin\Itanium\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>Itanium</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build.Conversion.v3.5">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization">
+      <RequiredTargetFramework>3.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AreaTriggerId.cs" />
+    <Compile Include="Battlegrounds.cs" />
+    <Compile Include="Battlegrounds\WarsongGulch.cs" />
+    <Compile Include="Calendars.cs" />
+    <Compile Include="Characters.cs" />
+    <Compile Include="Chat\TextEmote.cs" />
+    <Compile Include="Externals.cs" />
+    <Compile Include="GameObjects\GOMisc.cs" />
+    <Compile Include="Groups.cs" />
+    <Compile Include="Instances.cs" />
+    <Compile Include="Items\EquipmentSlot.cs" />
+    <Compile Include="Items\InventorySlot.cs" />
+    <Compile Include="Items\InventorySlotType.cs" />
+    <Compile Include="Items\ItemFlags.cs" />
+    <Compile Include="Items\ItemSubClass.cs" />
+    <Compile Include="Login\Login.cs" />
+    <Compile Include="Looting\LootingMiscEnums.cs" />
+    <Compile Include="Mailing.cs" />
+    <Compile Include="Misc\Chat.cs" />
+    <Compile Include="Chat\Channels.cs" />
+    <Compile Include="ClientLocale.cs" />
+    <Compile Include="ClientVersion.cs" />
+    <Compile Include="Combat.cs" />
+    <Compile Include="Constants.Units.cs" />
+    <Compile Include="ErrorResponse.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Factions\FactionReputationIndex.cs" />
+    <Compile Include="GameObjects\GameObjectType.cs" />
+    <Compile Include="GameObjects\GOConstants.cs" />
+    <Compile Include="GameObjects\GOEntryId.cs" />
+    <Compile Include="Guilds\Misc.cs" />
+    <Compile Include="Items\BagFamily.cs" />
+    <Compile Include="Items\Enchantments.cs" />
+    <Compile Include="Items\InventoryError.cs" />
+    <Compile Include="Items\ItemClass.cs" />
+    <Compile Include="Items\ItemConstants.cs" />
+    <Compile Include="Items\ItemModType.cs" />
+    <Compile Include="Items\Professions.cs" />
+    <Compile Include="Items\TotemCategory.cs" />
+    <Compile Include="Looting\LootEntryType.cs" />
+    <Compile Include="Misc\CombatRatings.cs" />
+    <Compile Include="Misc\Gossips.cs" />
+    <Compile Include="Movement.cs" />
+    <Compile Include="NPCs\CreatureFamilyId.cs" />
+    <Compile Include="NPCs\Misc.cs" />
+    <Compile Include="NPCs\Vehicles.cs" />
+    <Compile Include="Pets\PetActionEntry.cs" />
+    <Compile Include="Pets\PetTalentType.cs" />
+    <Compile Include="NPCs\VendorInventoryError.cs" />
+    <Compile Include="OpCodes.cs" />
+    <Compile Include="Factions\Constants.Factions.cs" />
+    <Compile Include="Factions\FactionId.cs" />
+    <Compile Include="Factions\FactionTemplateId.cs" />
+    <Compile Include="Factions\ReputationFlags.cs" />
+    <Compile Include="Factions\Standing.cs" />
+    <Compile Include="Items\Constants.Items.cs" />
+    <Compile Include="Items\ItemId.cs" />
+    <Compile Include="Items\ItemSetId.cs" />
+    <Compile Include="Login\RealmState.cs" />
+    <Compile Include="Misc.cs" />
+    <Compile Include="NPCs\MountId.cs" />
+    <Compile Include="NPCs\NPCEntryFlags.cs" />
+    <Compile Include="NPCs\NPCId.cs" />
+    <Compile Include="Pathing\TaxiPathNodeFlags.cs" />
+    <Compile Include="Pets\Misc.cs" />
+    <Compile Include="Pets\PetActionFeedback.cs" />
+    <Compile Include="Pets\PetConstants.cs" />
+    <Compile Include="Pets\PetMood.cs" />
+    <Compile Include="Pets\PetNameInvalidReason.cs" />
+    <Compile Include="Pets\TameFailReason.cs" />
+    <Compile Include="Quests\Constants.Quests.cs" />
+    <Compile Include="Quests\QuestConstants.cs" />
+    <Compile Include="Quests\QuestGiverRelationType.cs" />
+    <Compile Include="Quests\QuestSort.cs" />
+    <Compile Include="Realm\RealmCategory.cs" />
+    <Compile Include="Relations\Constants.Relations.cs" />
+    <Compile Include="Skills\SkillId.cs" />
+    <Compile Include="Spells\AuraType.cs" />
+    <Compile Include="Spells\Constants.Spells.cs" />
+    <Compile Include="Spells\ProcTriggerFlags.cs" />
+    <Compile Include="Spells\Range.cs" />
+    <Compile Include="Spells\SpellConstants.cs" />
+    <Compile Include="Spells\SpellEffectType.cs" />
+    <Compile Include="Spells\SpellModifierType.cs" />
+    <Compile Include="Spells\SpellFailedReason.cs" />
+    <Compile Include="Spells\SpellFocus.cs" />
+    <Compile Include="Spells\SpellId.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Spells\SpellLineId.cs" />
+    <Compile Include="Spells\SpellMechanic.cs" />
+    <Compile Include="Talents\TalentId.cs" />
+    <Compile Include="Talents\TalentTreeId.cs" />
+    <Compile Include="TaxiConstants.cs" />
+    <Compile Include="TerrainConstants.cs" />
+    <Compile Include="Tickets.cs" />
+    <Compile Include="Updates\UpdateEnums.cs" />
+    <Compile Include="Updates\UpdateField.cs" />
+    <Compile Include="Updates\UpdateFieldCollection.cs" />
+    <Compile Include="Updates\UpdateFieldEnums.cs" />
+    <Compile Include="Updates\UpdateFieldId.cs" />
+    <Compile Include="Updates\UpdateFieldMgr.cs" />
+    <Compile Include="Updates\UpdateFields.cs" />
+    <Compile Include="Updates\UpdatePriority.cs" />
+    <Compile Include="WCellInfo.cs" />
+    <Compile Include="World\MapId.cs" />
+    <Compile Include="World\RegionBoundaries.cs" />
+    <Compile Include="World\ZoneBoundaries.cs" />
+    <Compile Include="World\WorldState.cs" />
+    <Compile Include="World\WorldStateId.cs" />
+    <Compile Include="World\WorldStates.cs" />
+    <Compile Include="World\ZoneGrid.cs" />
+    <Compile Include="World\ZoneId.cs" />
+    <Compile Include="World\ZoneTileSet.cs" />
+    <Compile Include="Xp\XpType.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

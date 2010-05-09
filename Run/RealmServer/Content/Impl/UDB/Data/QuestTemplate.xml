@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="QuestTemplate">
+    <DefaultTable>quest_template</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <!--Not sure about this-->
+    <Flat Name="IsActive" Column="Method" />
+    <Flat Name="Category" Column="ZoneOrSort" />
+    <Flat Name="RequiredLevel" Column="MinLevel" />
+    <Flat Name="Level" Column="QuestLevel" />
+    <Flat Name="QuestType" Column="Type" />
+    <Flat Name="RequiredRaces" Column="RequiredRaces" />
+    <!--http://wiki.udbforums.org/index.php/Quest_template#SkillOrClass-->
+    <Flat Name="ReqSkillOrClass" Column="SkillOrClass" />
+    <Flat Name="RequiredSkillValue" Column="RequiredSkillValue" />
+    <Nested Name="MinReqReputation">
+      <Flat Name="FactionId" Column="RequiredMinRepFaction" />
+      <Flat Name="Value" Column="RequiredMinRepValue" />
+    </Nested>
+    <Nested Name="MaxReqReputation">
+      <Flat Name="FactionId" Column="RequiredMaxRepFaction" />
+      <Flat Name="Value" Column="RequiredMaxRepValue" />
+    </Nested>
+    <Flat Name="SuggestedPlayers" Column="SuggestedPlayers" />
+    <Flat Name="TimeLimit" Column="LimitTime" />
+    <Flat Name="Flags" Column="QuestFlags" />
+    <Flat Name="SpecialFlags" Column="SpecialFlags" />
+    <Flat Name="RewardTitleId" Column="CharTitleId" />
+    <Flat Name="RewardTalents" Column="BonusTalents" />
+    <Flat Name="PreviousQuestId" Column="PrevQuestId" />
+    <Flat Name="NextQuestId" Column="NextQuestId" />
+    <Flat Name="ExclusiveGroup" Column="ExclusiveGroup" />
+    <Flat Name="FollowupQuestId" Column="NextQuestInChain" />
+	<Flat Name="RewXPId" Column="RewXPId" />
+    <Flat Name="SrcItemId" Column="SrcItemId" />
+    <Flat Name="CastSpell" Column="SrcSpell" />
+    <NestedArray Name="CollectableItems">
+      <Flat Name="ItemId" Pattern="ReqItemId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="ReqItemCount{#}" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="ObjectInteractions">
+      <Flat Name="TemplateId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="ReqCreatureOrGOCount{#}" Offset="1" />
+    </NestedArray>
+    <FlatArray Name="SpellCastObjectives" Pattern="ReqSpellCast{#}" Offset="1" />
+    <NestedArray Name="RewardChoiceItems">
+      <Flat Name="ItemId" Pattern="RewChoiceItemId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="RewChoiceItemCount{#}" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="RewardItems">
+      <Flat Name="ItemId" Pattern="RewItemId{#}" Offset="1" />
+      <Flat Name="Amount" Pattern="RewItemCount{#}" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="RewardReputations">
+      <Flat Name="Faction" Pattern="RewRepFaction{#}" Offset="1" />
+      <Flat Name="Value" Pattern="RewRepValue{#}" Offset="1" />
+    </NestedArray>
+    <!--http://wiki.udbforums.org/index.php/Quest_template#RewOrReqMoney-->
+    <Flat Name="RewMoney" Column="RewOrReqMoney" />
+    <Flat Name="MoneyAtMaxLevel" Column="RewMoneyMaxLevel" />
+    <Flat Name="RewSpell" Column="RewSpellCast" />
+
+    <Flat Name="MapId" Column="PointMapId" />
+    <Flat Name="PointX" Column="PointX" />
+    <Flat Name="PointY" Column="PointY" />
+    <Flat Name="PointOpt" Column="PointOpt" />
+
+    <NestedArray Name="QuestDetailedEmotes">
+      <!--<Flat Name="Delay" Pattern="DetailsEmoteDelay{#}" Offset="1" />-->
+      <Flat Name="Type" Pattern="DetailsEmote{#}" Offset="1" />
+    </NestedArray>
+
+    <NestedArray Name="OfferRewardEmotes">
+      <!--<Flat Name="Delay" Pattern="OfferRewardEmoteDelay{#}" Offset="1" />-->
+      <Flat Name="Type" Pattern="OfferRewardEmote{#}" Offset="1" />
+    </NestedArray>
+
+    <!--guess we do not care about this-->
+    <Flat Name="RequiredClientId" Column="" />
+    <!-- flags i believe-->
+    <Flat Name="Repeatable" Column="" />
+    <!-- is in flags-->
+    <Flat Name="Daily" Column="" />
+
+    <!--extra in UDB
+    RepObjectiveFaction
+    RepObjectiveValue
+    PlayersSlain
+    SrcItemCount
+    RewMailTemplateId
+    RewMailDelaySecs
+    incompleteemote
+    completeemote
+-->
+    <FlatArray Name="Titles">
+      <Column Name="Title" />
+      <Column Name="Title_loc2" Table="locales_quest" />
+      <Column Name="Title_loc3" Table="locales_quest" />
+      <Column Name="Title_loc4" Table="locales_quest" />
+      <Column Name="Title_loc5" Table="locales_quest" />
+      <Column Name="Title_loc6" Table="locales_quest" />
+      <Column Name="Title_loc7" Table="locales_quest" />
+      <Column Name="Title_loc8" Table="locales_quest" />
+    </FlatArray>
+
+
+    <FlatArray Name="Details">
+      <Column Name="Details" />
+      <Column Name="Details_loc2" Table="locales_quest" />
+      <Column Name="Details_loc3" Table="locales_quest" />
+      <Column Name="Details_loc4" Table="locales_quest" />
+      <Column Name="Details_loc5" Table="locales_quest" />
+      <Column Name="Details_loc6" Table="locales_quest" />
+      <Column Name="Details_loc7" Table="locales_quest" />
+      <Column Name="Details_loc8" Table="locales_quest" />
+    </FlatArray>
+
+    <FlatArray Name="Instructions">
+      <Column Name="Objectives" />
+      <Column Name="Objectives_loc2" Table="locales_quest" />
+      <Column Name="Objectives_loc3" Table="locales_quest" />
+      <Column Name="Objectives_loc4" Table="locales_quest" />
+      <Column Name="Objectives_loc5" Table="locales_quest" />
+      <Column Name="Objectives_loc6" Table="locales_quest" />
+      <Column Name="Objectives_loc7" Table="locales_quest" />
+      <Column Name="Objectives_loc8" Table="locales_quest" />
+    </FlatArray>
+
+    <FlatArray Name="OfferRewardTexts">
+      <Column Name="OfferRewardText" />
+      <Column Name="OfferRewardText_loc2" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc3" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc4" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc5" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc6" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc7" Table="locales_quest" />
+      <Column Name="OfferRewardText_loc8" Table="locales_quest" />
+    </FlatArray>
+
+    <FlatArray Name="ProgressTexts">
+      <Column Name="RequestItemsText" />
+      <Column Name="RequestItemsText_loc2" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc3" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc4" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc5" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc6" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc7" Table="locales_quest" />
+      <Column Name="RequestItemsText_loc8" Table="locales_quest" />
+    </FlatArray>
+
+    <FlatArray Name="EndTexts">
+      <Column Name="EndText" />
+      <Column Name="EndText_loc2" Table="locales_quest" />
+      <Column Name="EndText_loc3" Table="locales_quest" />
+      <Column Name="EndText_loc4" Table="locales_quest" />
+      <Column Name="EndText_loc5" Table="locales_quest" />
+      <Column Name="EndText_loc6" Table="locales_quest" />
+      <Column Name="EndText_loc7" Table="locales_quest" />
+      <Column Name="EndText_loc8" Table="locales_quest" />
+    </FlatArray>
+
+    <NestedArray Name="ObjectiveTexts">
+      <Flat Name="Text1">
+        <Column Name="ObjectiveText1" />
+        <Column Name="ObjectiveText1_loc2" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc3" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc4" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc5" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc6" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc7" Table="locales_quest" />
+        <Column Name="ObjectiveText1_loc8" Table="locales_quest" />
+      </Flat>
+      <Flat Name="Text2">
+        <Column Name="ObjectiveText2" />
+        <Column Name="ObjectiveText2_loc2" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc3" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc4" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc5" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc6" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc7" Table="locales_quest" />
+        <Column Name="ObjectiveText2_loc8" Table="locales_quest" />
+      </Flat>
+      <Flat Name="Text3">
+        <Column Name="ObjectiveText3" />
+        <Column Name="ObjectiveText3_loc2" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc3" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc4" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc5" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc6" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc7" Table="locales_quest" />
+        <Column Name="ObjectiveText3_loc8" Table="locales_quest" />
+      </Flat>
+      <Flat Name="Text4">
+        <Column Name="ObjectiveText4" />
+        <Column Name="ObjectiveText4_loc2" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc3" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc4" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc5" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc6" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc7" Table="locales_quest" />
+        <Column Name="ObjectiveText4_loc8" Table="locales_quest" />
+      </Flat>
+    </NestedArray>
+    
+  </DataHolder>
+</DataHolders>

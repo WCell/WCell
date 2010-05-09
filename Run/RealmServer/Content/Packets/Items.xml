@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_DESTROYITEM">
+    <Simple>
+      <Name>ContSlot</Name>
+      <Type>Byte</Type>
+      <SegmentType>WCell.Constants.Items.InventorySlot</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="CMSG_USE_ITEM">
+    <Simple>
+      <Name>ContSlot</Name>
+      <Type>Byte</Type>
+      <SegmentType>WCell.Constants.Items.InventorySlot</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ItemEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>GlyphSlot</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkFlag</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>TargetMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="TargetMask">
+      <Case And="Unit">
+        <Simple>
+          <Name>Target Unit Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="PvPCorpse">
+        <Simple>
+          <Name>PVP Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Object">
+        <Simple>
+          <Name>Object Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Corpse">
+        <Simple>
+          <Name>Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SpellTargetFlag_Dynamic_0x10000">
+        <Simple>
+          <Name>Flag_0x10000 Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="TradeItem">
+        <Simple>
+          <Name>Trade Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Item">
+        <Simple>
+          <Name>Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SourceLocation">
+        <Simple>
+          <Name>Source X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="DestinationLocation">
+        <Simple>
+          <Name>Destination Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="String">
+        <Simple>
+          <Name>String</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_INVENTORY_CHANGE_FAILURE">
+    <Simple>
+      <Name>Error</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.InventoryError</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Item1</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Item2</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Zero</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Error">
+      <Case Equals="YOU_MUST_REACH_LEVEL_N">
+        <Simple>
+          <Name>RequiredLevel</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_DELETE_EQUIPMENT_SET">
+    <Simple>
+      <Name>Set Guid</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_EQUIPMENT_SET">
+    <Simple>
+      <Name>Set Guid</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Set Id</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Set Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Set Icon Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <StaticList Length="19">
+      <Name>Items In Set</Name>
+      <Simple>
+        <Name>Item Guid</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+    </StaticList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_EQUIPMENT_SET_LIST">
+    <List>
+      <Name>Set Count</Name>
+      <Type>Int</Type>
+      <Simple>
+        <Name>Set Guid</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Set Id</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Set Name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>Set Icon</Name>
+        <Type>CString</Type>
+      </Simple>
+      <StaticList Length="19">
+        <Name>Items In Set</Name>
+        <Simple>
+          <Name>Item Guid</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </StaticList>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_USE_EQUIPMENT_SET">
+    <StaticList Length="19">
+      <Name>Equipment Set</Name>
+      <Simple>
+        <Name>Item Guid</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Source Container</Name>
+        <Type>Byte</Type>
+        <SegmentType>Items.InventorySlot</SegmentType>
+      </Simple>
+      <Switch CompareWith="Source Container">
+        <Case NotEqual="255">
+          <Simple>
+            <Name>Slot Inside Container</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </Case>
+        <Case Equals="255">
+          <Simple>
+            <Name>Inventory Slot</Name>
+            <Type>Byte</Type>
+            <SegmentType>Items.InventorySlot</SegmentType>
+          </Simple>
+        </Case>
+      </Switch>
+    </StaticList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_USE_EQUIPMENT_SET_RESULT">
+    <Simple>
+      <Name>Result</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.UseEquipmentSetError</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_EQUIPMENT_SET_SAVED">
+    <Simple>
+      <Name>Set Id</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Set Guid</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ITEM_PUSH_RESULT">
+    <Simple>
+      <Name>Item Guid</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>How Obtained</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.HowObtained</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>How Received</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.HowReceived</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Constant Int - 1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bag Slot</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.InventorySlot</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Slot</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Entry</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Item Property Seed</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Item Random Property</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Amount Received</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Amount in Stack</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_AUTOEQUIP_ITEM">
+    <Simple>
+      <Name>From Bag Slot</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.InventorySlot</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>From Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  
+  
+</Definitions>

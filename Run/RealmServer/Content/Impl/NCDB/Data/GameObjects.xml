@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="GOTemplate">
+    <DefaultTable>gameobject_spawns</DefaultTable>
+    <Flat Name="Id" Column="spawnid" />
+    <Flat Name="EntryId" Column="gameobject_entry" />
+    <Flat Name="State" Column="State" />
+    <Flat Name="Flags" Column="Flags" />
+    <Flat Name="MapId" Column="map" />
+    <Nested Name="Pos">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+    <Flat Name="Orientation" Column="Facing" />
+    <Flat Name="Scale" Column="Scale" />
+    <FlatArray Name="Rotations" Pattern="orientation{#}" Offset="1" />
+  </DataHolder>
+
+  <DataHolder Name="GOEntry">
+    <DefaultTable>gameobject_root</DefaultTable>
+    <Flat Name="Id" Column="gameobject_entry" />
+    <Flat Name="Type" Column="Type" />
+    <Flat Name="DisplayId" Column="displayid" />
+    <FlatArray Name="Names" Table="locales_gameobject" Pattern="name_loc{#}" Offset="1"/>
+    <Flat Name="DefaultScale" Column="Scale" />
+    <FlatArray Name="Fields" Pattern="Field{#}" Offset="0" />
+  </DataHolder>
+</DataHolders>

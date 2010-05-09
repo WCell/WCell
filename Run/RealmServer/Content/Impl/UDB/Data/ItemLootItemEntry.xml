@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <DataHolder Name="ItemLootItemEntry">
+    <DefaultTable>item_loot_template</DefaultTable>
+    <Flat Name="EntryId" Column="entry" />
+    <Flat Name="ItemId" Column="item" />
+    <!--http://wiki.udbforums.org/index.php/Fishing_loot_template#ChanceOrQuestChance-->
+    <Flat Name="DropChance" Column="ChanceOrQuestChance" />
+    <Flat Name="GroupId" Column="groupid" />
+    <!--http://wiki.udbforums.org/index.php/Fishing_loot_template#MinCountOrRef-->
+    <Flat Name="MinAmountOrRef" Column="MinCountOrRef" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+<!--not in UDB
+    <Flat Name="LootType" Column=""/>
+    <Flat Name="IsFFA" Column="" />
+    
+    I don't really think loot from heroic items is different
+    <Flat Name="HeroicDropChance" Column="" />
+-->
+<!--extra in UDB
+    http://wiki.udbforums.org/index.php/Gameobject_loot_template#lootcondition
+    lootcondition
+    condition_value1
+    condition_value2
+-->
+  </DataHolder>
+</DataHolders>

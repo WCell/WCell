@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_NAME_QUERY">
+    <Simple>
+      <Name>Entity</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_SELECTION">
+    <Simple>
+      <Name>Entity</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_EMOTE">
+    <Simple>
+      <Name>Emote</Name>
+      <Type>UInt</Type>
+      <SegmentType>Misc.EmoteType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Source</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PLAY_OBJECT_SOUND">
+    <Simple>
+      <Name>Sound</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Source</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PLAY_SOUND">
+    <Simple>
+      <Name>Sound</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_AREATRIGGER">
+    <Simple>
+      <Name>AreaTrigger</Name>
+      <Type>UInt</Type>
+      <SegmentType>AreaTriggers.AreaTriggerId</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ACTION_BUTTONS">
+    <Simple>
+      <Name>Spec</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <StaticList Length="132">
+      <Name>Action Buttons</Name>
+      <Simple>
+        <Name>Button</Name>
+        <Type>Int</Type>
+      </Simple>
+    </StaticList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOGOUT_COMPLETE"/>
+
+  <RealmPacket OpCode="SMSG_DESTROY_OBJECT">
+    <Simple>
+      <Name>Object</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk Unit Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PLAYED_TIME" />
+  
+  <RealmPacket OpCode="SMSG_PLAYED_TIME">
+    <Simple>
+      <Name>Total Time Played</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Time Played This Level</Name>
+      <Type>Int</Type>
+    </Simple> 
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ACCOUNT_DATA_TIMES">
+    <Simple>
+      <Name>Server Time</Name>
+      <Type>UnixTime</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkByte</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Mask</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <!--TODO: Add some kind of bit-mask-dependent list type-->
+    <!--<StaticList Length="8">
+      <Name>Timestamps</Name>
+      <Simple>
+        <Name>Time</Name>
+        <Type>UnixTime</Type>
+      </Simple>
+    </StaticList>-->
+
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_UPDATE_ACCOUNT_DATA">
+    <Simple>
+      <Name>Type</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Timestamp</Name>
+      <Type>UnixTime</Type>
+    </Simple>
+    <Simple>
+      <Name>Size</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_SET_DUNGEON_DIFFICULTY">
+    <Simple>
+      <Name>Int 1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Int 2</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Int 3</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ZONEUPDATE">
+    <Simple>
+      <Name>New Zone Id</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_INSPECT_TALENT">
+    <Simple>
+      <Name>FreePoints</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_FORCE_MOVE_UNROOT">
+    <Simple>
+      <Name>Entity</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkNum</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_EXPLORATION_EXPERIENCE">
+    <Simple>
+      <Name>Zone</Name>
+      <Type>UInt</Type>
+      <SegmentType>World.ZoneId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Amount</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_DEATH_RELEASE_LOC" Sender="Server">
+    <Simple>
+      <Name>SHRegion</Name>
+      <Type>UInt</Type>
+      <SegmentType>World.MapId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>SHPos</Name>
+      <Type>Vector3</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_REPOP_REQUEST"/>
+
+  <RealmPacket OpCode="SMSG_PRE_RESURRECT">
+    <Simple>
+      <Name>Entity</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_CORPSE_QUERY" Sender="Client"/>
+
+  <RealmPacket OpCode="MSG_CORPSE_QUERY" Sender="Server">
+    <Simple>
+      <Name>Active</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Active">
+      <Case Equals="1">
+        <Simple>
+          <Name>MapId</Name>
+          <Type>UInt</Type>
+          <SegmentType>World.MapId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Pos</Name>
+          <Type>Vector3</Type>
+        </Simple>
+        <Simple>
+          <Name>MapId2</Name>
+          <Type>UInt</Type>
+          <SegmentType>World.MapId</SegmentType>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CORPSE_RECLAIM_DELAY">
+    <Simple>
+      <Name>Millis</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PING">
+    <Simple>
+      <Name>Sequence</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Latency</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PONG">
+    <Simple>
+      <Name>Sequence</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_LFG_SET_ROLES">
+    <Simple>
+      <Name>Role Mask</Name>
+      <Type>Byte</Type>
+      <SegmentType>Relations.LFGRolesMask</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_POWER_UPDATE">
+    <Simple>
+      <Name>Character</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Power Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>PowerType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Value</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOGIN_SETTIMESPEED">
+    <Simple>
+      <Name>Date/Time</Name>
+      <Type>UnixTime</Type>
+    </Simple>
+    <Simple>
+      <Name>Time Speed</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOG_XPGAIN">
+    <Simple>
+      <Name>Victim</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Total XP Gained</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Xp Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>WCell.Constants.Xp.XpType</SegmentType>
+    </Simple>
+    <Switch CompareWith="Xp Type">
+      <Case Equals="Kill">
+        <Simple>
+          <Name>Xp minus Rest Bonus</Name>
+          <Type>Int</Type>
+        </Simple>
+        <Simple>
+          <Name>Percent Not Group Bonus</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+    </Switch>
+    <Simple>
+      <Name>Unknown Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_TOGGLE_PVP">
+    <FinalList>
+      <Name>Toggle PvP</Name>
+      <Simple>
+        <Name>Allow PvP?</Name>
+        <Type>Byte</Type>
+      </Simple>
+    </FinalList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_BARBER_SHOP_RESULT">
+    <Simple>
+      <Name>Purchase Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>NPCs.BarberShopPurchaseResult</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ENABLE_BARBER_SHOP">
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ALTER_APPEARANCE">
+    <Simple>
+      <Name>Hair Style</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Hair Color</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Facial Hair Style</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

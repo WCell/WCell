@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{94D665CA-D915-4DE1-AA53-913450A1AE2D}") = "WCell.FSharpAddon", "WCell.FSharpAddon.fsharpp", "{125269CA-7582-4205-8833-7A341C716C2B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{125269CA-7582-4205-8833-7A341C716C2B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{125269CA-7582-4205-8833-7A341C716C2B}.Debug|Win32.Build.0 = Debug|Win32
+		{125269CA-7582-4205-8833-7A341C716C2B}.Release|Win32.ActiveCfg = Release|Win32
+		{125269CA-7582-4205-8833-7A341C716C2B}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

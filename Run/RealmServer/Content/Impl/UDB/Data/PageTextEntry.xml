@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="PageTextEntry">
+    <DefaultTable>page_text</DefaultTable>
+    
+    <Flat Name="PageId" Column="entry" />
+    <Flat Name="NextPageId" Column="next_page" />
+    <FlatArray Name="Texts">
+      <Column Name="text" />
+      <Column Name="Text_loc2" Table="locales_page_text" />
+      <Column Name="Text_loc3" Table="locales_page_text" />
+      <Column Name="Text_loc4" Table="locales_page_text" />
+      <Column Name="Text_loc5" Table="locales_page_text" />
+      <Column Name="Text_loc6" Table="locales_page_text" />
+      <Column Name="Text_loc7" Table="locales_page_text" />
+      <Column Name="Text_loc8" Table="locales_page_text" />
+    </FlatArray>
+  </DataHolder>
+</DataHolders>

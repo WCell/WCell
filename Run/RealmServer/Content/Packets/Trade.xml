@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="SMSG_TRADE_STATUS">
+    <Simple>
+      <Name>Trade Status</Name>
+      <Type>UInt</Type>
+      <SegmentType>TradeStatus</SegmentType>
+    </Simple>
+    <Switch CompareWith="Trade Status">
+      <Case Equals="Proposed">
+        <Simple>
+          <Name>Proposer</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_INITIATE_TRADE">
+    <Simple>
+      <Name>Target</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BEGIN_TRADE" />
+
+  <RealmPacket OpCode="CMSG_BUSY_TRADE" />
+
+  <RealmPacket OpCode="CMSG_IGNORE_TRADE" />
+
+  <RealmPacket OpCode="CMSG_CANCEL_TRADE" />
+
+  <RealmPacket OpCode="CMSG_ACCEPT_TRADE" />
+  
+  <RealmPacket OpCode="CMSG_UNACCEPT_TRADE" />
+
+  <RealmPacket OpCode="CMSG_SET_TRADE_GOLD">
+    <Simple>
+      <Name>Coinage</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_TRADE_ITEM">
+    <Simple>
+      <Name>Trade Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Bag</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_CLEAR_TRADE_ITEM">
+    <Simple>
+      <Name>Trade Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  
+</Definitions>

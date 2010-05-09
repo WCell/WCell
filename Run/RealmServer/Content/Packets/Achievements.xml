@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+    <RealmPacket OpCode="SMSG_SERVER_FIRST_ACHIEVEMENT">
+      <Simple>
+        <Name>Player name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>Player GUID</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Achievement ID</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Link in chat (1 = yes)</Name>
+        <Type>UInt</Type>
+      </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ACHIEVEMENT_EARNED">
+    <Simple>
+      <Name>Player GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Achievement ID</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Time</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CRITERIA_UPDATE">
+    <Simple>
+      <Name>Criteria ID</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Progress counter</Name>
+      <!-- the counter is packed like a packed Guid -->
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Player GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown 1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Time</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Timer 1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Timer 2</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+  <RealmPacket OpCode="SMSG_ACHIEVEMENT_DELETED">
+    <Simple>
+      <Name>Achievement ID</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CRITERIA_DELETED">
+    <Simple>
+      <Name>Criteria ID</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+<!--
+  <RealmPacket OpCode="SMSG_ALL_ACHIEVEMENT_DATA">
+    <FinalList>
+      <Simple>
+        <Name>Achievement ID</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Time achieved</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Switch CompareWith="Achievement ID"></Switch>
+        <Case Equal="-1">
+          <FinalList>
+            <Simple>
+              <Name>Criteria ID</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Progress counter</Name>
+              <Type>PackedGuid</Type>
+            </Simple>
+            <Simple>
+              <Name>Player GUID</Name>
+              <Type>PackedGuid</Type>
+            </Simple>
+            <Simple>
+              <Name>Unknown 1</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Time</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Unknown Timer 1</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Unknown Timer 2</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </FinalList>
+      </Case>
+    </FinalList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_RESPOND_INSPECT_ACHIEVEMENTS">
+    <Simple>
+      <Name>Player GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <FinalList>
+      <Simple>
+        <Name>Achievement ID</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Time achieved</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Switch CompareWith="Achievement ID"></Switch>
+      <Case Equal="-1">
+        <FinalList>
+          <Simple>
+            <Name>Criteria ID</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Progress counter</Name>
+            <Type>PackedGuid</Type>
+          </Simple>
+          <Simple>
+            <Name>Player GUID</Name>
+            <Type>PackedGuid</Type>
+          </Simple>
+          <Simple>
+            <Name>Unknown 1</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Time</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Unknown Timer 1</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Unknown Timer 2</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </FinalList>
+      </Case>
+    </FinalList>
+  </RealmPacket>  
+-->
+  
+</Definitions>

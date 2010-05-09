@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_BATTLEMASTER_HELLO">
+    <Simple>
+      <Name>BattleMaster</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BATTLEFIELD_LIST">
+    <Simple>
+      <Name>Battleground</Name>
+      <Type>UInt</Type>
+      <SegmentType>BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>From UI</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_LIST">
+    <Simple>
+      <Name>BattleMaster</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>FromGUI</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Battleground</Name>
+      <Type>UInt</Type>
+      <SegmentType>BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Level Bracket</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk333</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List>
+      <Name>Battlegrounds</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Battleground</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BATTLEMASTER_JOIN">
+    <Simple>
+      <Name>BattleMaster</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>BattlegroundId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>InstanceId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>JoinAsGroup</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_BATTLEFIELD_STATUS">
+    <Simple>
+      <Name>QueueSlot</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <Simple>
+      <Name>BGID ArenaType</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID Level Bracket</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID BattlegroundId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>BGID Field_6</Name>
+      <Type>UShort</Type>
+    </Simple>
+
+    <Switch CompareWith="BGID BattlegroundId">
+      <Case NotEqual="0">
+        <Simple>
+          <Name>Unk2</Name>
+          <Type>Int</Type>
+        </Simple>
+
+        <Simple>
+          <Name>Is Rated Match</Name>
+          <Type>Byte</Type>
+        </Simple>
+
+        <Simple>
+          <Name>Status</Name>
+          <Type>UInt</Type>
+          <SegmentType>BattlegroundStatus</SegmentType>
+        </Simple>
+
+        <Switch CompareWith="Status">
+          <Case Equals="Enqueued">
+            <Simple>
+              <Name>WaitTime</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>TimeEnqueued</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+          <Case Equals="Preparing">
+            <Simple>
+              <Name>MapId</Name>
+              <Type>UInt</Type>
+              <SegmentType>World.MapId</SegmentType>
+            </Simple>
+            <Simple>
+              <Name>QueueTimeout</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+          <Case Equals="Active">
+            <Simple>
+              <Name>MapId</Name>
+              <Type>UInt</Type>
+              <SegmentType>World.MapId</SegmentType>
+            </Simple>
+            <Simple>
+              <Name>Time until Expiration</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Time Active</Name>
+              <Type>UInt</Type>
+            </Simple>
+            <Simple>
+              <Name>Arena Faction</Name>
+              <Type>Byte</Type>
+            </Simple>
+          </Case>
+        </Switch>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BATTLEFIELD_PORT">
+    <Simple>
+      <Name>BGID ArenaType</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID Level Bracket</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID BattlegroundId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>BGID Field_6</Name>
+      <Type>UShort</Type>
+    </Simple>
+    <Simple>
+      <Name>Port Accepted</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+
+  <RealmPacket OpCode="MSG_PVP_LOG_DATA" Sender="Server">
+    <Simple>
+      <Name>Is Arena</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Is Arena">
+      <Case Equals="1">
+        <StaticList Length="2">
+          <Name>Arena Team Info</Name>
+
+          <Simple>
+            <Name>Rating Change</Name>
+            <Type>Int</Type>
+          </Simple>
+          <Simple>
+            <Name>Arena Unk</Name>
+            <Type>Int</Type>
+          </Simple>
+        </StaticList>
+
+        <StaticList Length="2">
+          <Name>Arena Team Names</Name>
+
+          <Simple>
+            <Name>Team Name</Name>
+            <Type>CString</Type>
+          </Simple>          
+        </StaticList>
+      </Case>
+    </Switch>
+
+    <Simple>
+      <Name>BG Completed</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <Switch CompareWith="BG Completed">
+      <Case Equals="1">
+        <Simple>
+          <Name>Winning Team</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
+
+    <List>
+      <Name>Score Count</Name>
+      <Type>Int</Type>
+
+      <Simple>
+        <Name>Player</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Killing Blows</Name>
+        <Type>Int</Type>
+      </Simple>
+
+      <Switch CompareWith="Is Arena">
+        <Case Equals="1">
+          <Simple>
+            <Name>Is On Winning Team</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </Case>
+        <Case Equals="0">
+          <Simple>
+            <Name>Honorable Kills</Name>
+            <Type>Int</Type>
+          </Simple>
+          <Simple>
+            <Name>Deaths</Name>
+            <Type>Int</Type>
+          </Simple>
+          <Simple>
+            <Name>Bonus Honor</Name>
+            <Type>Int</Type>
+          </Simple>
+        </Case>
+      </Switch>
+
+      <Simple>
+        <Name>Damage Done</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Healing Done</Name>
+        <Type>Int</Type>
+      </Simple>
+
+      <List>
+        <Name>BG Specific Data</Name>
+        <Type>Int</Type>
+
+        <Simple>
+          <Name>Data</Name>
+          <Type>Int</Type>
+        </Simple>
+      </List>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_PVP_LOG_DATA" Sender ="Client">
+    <!-- This is just a request, therefore empty-->
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Server">
+    <Simple>
+      <Name>Player Count</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List LengthSegment="Player Count">
+      <Name>Team Positions</Name>
+
+      <Simple>
+        <Name>Player</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Position.X</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Position.Y</Name>
+        <Type>Float</Type>
+      </Simple>
+    </List>
+
+    <Simple>
+      <Name>Flag Carrier Count</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <List LengthSegment="Flag Carrier Count">
+      <Name>Flag Carriers</Name>
+      
+      <Simple>
+        <Name>Flag Carrier</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Position.X</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Position.Y</Name>
+        <Type>Float</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_BATTLEGROUND_PLAYER_POSITIONS" Sender="Client">
+    <!-- This is just a request, therefore empty-->
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_LEAVE_BATTLEFIELD" Sender="Client">
+    <Simple>
+      <Name>BGID ArenaType</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID Level Bracket</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>BGID BattlegroundId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.BattlegroundId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>BGID Field_6</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_BATTLEGROUND_PLAYER_JOINED" Sender="Server">
+    <Simple>
+      <Name>Player Id</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+  
+</Definitions>

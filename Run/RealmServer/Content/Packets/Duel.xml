@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_DUEL_ACCEPTED">
+    <Simple>
+      <Name>FlagId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_DUEL_CANCELLED"/>
+
+  <RealmPacket OpCode="SMSG_DUEL_COUNTDOWN">
+    <Simple>
+      <Name>Delay (ms)</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_DUEL_REQUESTED">
+    <Simple>
+      <Name>FlagId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>ChallengerId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_DUEL_OUTOFBOUNDS">
+    <Simple>
+      <Name>CancelDelay</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_DUEL_COMPLETE">
+    <Simple>
+      <Name>Completed</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_DUEL_WINNER">
+    <Simple>
+      <Name>Win</Name>
+      <Type>Byte</Type>
+      <SegmentType>DuelWin</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Winner</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Loser</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

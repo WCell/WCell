@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ItemTemplate">
+    <DefaultTable>item_template</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="SubClass" Column="subclass" />
+    <FlatArray Name="Names">
+      <Column Name="name" />
+      <Column Name="name_loc2" Table="locales_item" />
+      <Column Name="name_loc3" Table="locales_item" />
+      <Column Name="name_loc4" Table="locales_item" />
+      <Column Name="name_loc5" Table="locales_item" />
+      <Column Name="name_loc6" Table="locales_item" />
+      <Column Name="name_loc7" Table="locales_item" />
+      <Column Name="name_loc8" Table="locales_item" />
+    </FlatArray>
+    <FlatArray Name="Description">
+      <Column Name="description" />
+      <Column Name="description_loc2" Table="locales_item" />
+      <Column Name="description_loc3" Table="locales_item" />
+      <Column Name="description_loc4" Table="locales_item" />
+      <Column Name="description_loc5" Table="locales_item" />
+      <Column Name="description_loc6" Table="locales_item" />
+      <Column Name="description_loc7" Table="locales_item" />
+      <Column Name="description_loc8" Table="locales_item" />
+    </FlatArray>
+    <Flat Name="DisplayId" Column="displayid" />
+    <Flat Name="Quality" Column="Quality" />    
+    <Flat Name="Flags" Column="Flags" />
+    <!--<Flat Name="Faction" Column="Faction" />-->
+    <Flat Name="BuyStackSize" Column="BuyCount" />
+    <Flat Name="BuyPrice" Column="BuyPrice" />
+    <Flat Name="SellPrice" Column="SellPrice" />
+    <Flat Name="InventorySlotType" Column="InventoryType" />
+    <Flat Name="RequiredClassMask" Column="AllowableClass" />
+    <Flat Name="RequiredRaceMask" Column="AllowableRace" />
+    <Flat Name="Level" Column="ItemLevel" />
+    <Flat Name="RequiredLevel" Column="RequiredLevel" />
+    <Flat Name="RequiredSkillId" Column="RequiredSkill" />
+    <Flat Name="RequiredSkillValue" Column="RequiredSkillRank" />
+    <Flat Name="RequiredPvPRank" Column="requiredhonorrank" />
+    <Flat Name="UnknownRank" Column="RequiredCityRank" />
+    <Flat Name="RequiredFactionId" Column="RequiredReputationFaction" />    
+    <!--http://wiki.udbforums.org/index.php/Item_template#RequiredReputationRank-->
+    <Flat Name="RequiredFactionRank" Column="RequiredReputationRank" />
+    <Flat Name="MaxAmount" Column="stackable" />
+    <Flat Name="UniqueCount" Column="maxcount" />
+    <Flat Name="ContainerSlots" Column="ContainerSlots" />
+    <NestedArray Name="Mods">
+      <Flat Name="Type" Pattern="stat_type{#}" Offset="1" />
+      <Flat Name="Value" Pattern="stat_value{#}" Offset="1" />
+    </NestedArray>
+    <!--all damages got removed in 381 apart from dmg_min1, dmg_max1, dmg_type1, dmg_min2, dmg_max2, dmg_type2-->
+    <NestedArray Name="Damages">
+      <Flat Name="Minimum" Pattern="dmg_min{#}" Offset="1" />
+      <Flat Name="Maximum" Pattern="dmg_max{#}" Offset="1" />
+      <Flat Name="School" Pattern="dmg_type{#}" Offset="1" />
+    </NestedArray>
+    <FlatArray Name="Resistances">
+      <Column Name="armor"/>
+      <Column Name="holy_res"/>
+      <Column Name="fire_res"/>
+      <Column Name="nature_res"/>
+      <Column Name="frost_res"/>
+      <Column Name="shadow_res"/>
+      <Column Name="arcane_res"/>
+    </FlatArray>
+    <Flat Name="AttackTime" Column="delay"/>
+    <Flat Name="ProjectileType" Column="ammo_type"/>
+    <Flat Name="RangeModifier" Column="RangedModRange"/>
+    <NestedArray Name="Spells">
+      <Flat Name="Id" Pattern="spellid_{#}" Offset="1" />
+      <Flat Name="Trigger" Pattern="spelltrigger_{#}" Offset="1" />
+      <Flat Name="Charges" Pattern="spellcharges_{#}" Offset="1" />
+      <Flat Name="Cooldown" Pattern="spellcooldown_{#}" Offset="1" />
+      <Flat Name="CategoryId" Pattern="spellcategory_{#}" Offset="1" />
+      <Flat Name="CategoryCooldown" Pattern="spellcategorycooldown_{#}" Offset="1" />
+    </NestedArray>
+    <Flat Name="BondType" Column="bonding" />
+    <Flat Name="PageTextId" Column="PageText" />
+    <Flat Name="PageMaterial" Column="PageMaterial" />
+    <Flat Name="QuestId" Column="startquest" />
+    <Flat Name="LockId" Column="lockid" />
+    <Flat Name="Material" Column="Material" />
+    <Flat Name="SheathType" Column="sheath" />
+    <Flat Name="RandomPropertiesId" Column="RandomProperty" />
+    <Flat Name="RandomSuffixId" Column="RandomSuffix" />
+    <Flat Name="BlockValue" Column="block" />
+    <Flat Name="SetId" Column="itemset" />
+    <Flat Name="MaxDurability" Column="MaxDurability" />
+    <Flat Name="ZoneId" Column="area" />
+    <Flat Name="MapId" Column="Map" />
+    <Flat Name="BagFamily" Column="BagFamily" />
+    <Flat Name="TotemCategory" Column="TotemCategory" />
+    <NestedArray Name="Sockets">
+      <Flat Name="Color" Pattern="socketColor_{#}" Offset="1" />
+      <Flat Name="Content" Pattern="SocketContent_{#}" Offset="1" />
+    </NestedArray>
+    <Flat Name="SocketBonusEnchantId" Column="socketBonus" />
+    <Flat Name="GemPropertiesId" Column="GemProperties" />
+    <Flat Name="RequiredDisenchantingLevel" Column="RequiredDisenchantSkill" />
+    <Flat Name="ArmorModifier" Column="ArmorDamageModifier" />
+    <Flat Name="Duration" Column="Duration" />
+    <Flat Name="FoodType" Column="FoodType" />
+
+<!--<Flat Name="RequiredTargetType" Column="type" Table="item_required_target"/>
+    <Flat Name="RequiredTargetId" Column="targetEntry" Table="item_required_target"/> 
+    
+    These two don't seem to be in UDB
+-->
+    
+<!--not in UDB
+    in npc_vendor table, don't know how to select that, altough makes more sense in that table
+    <Flat Name="RequiredProfessionId" Column="" />
+    <Flat Name="RequiredFactionStanding" Column="" />
+    <Flat Name="PageCount" Column="" />
+    <Flat Name="StockAmount" Column="" />     
+    <Flat Name="StockRefillDelay" Column="" />
+-->
+
+<!--extra in UDB
+    unk0
+    name
+    requiredspell
+    stackable = StackSize
+    ScalingStatDistribution
+    ScalingStatValue
+    spellppmRate_{#}
+    LanguageId
+    ItemLimitCategory
+    HolidayId
+    ScriptName
+    DisenchantID
+    minMoneyLoot
+    maxMoneyLoot
+-->
+  </DataHolder>
+</DataHolders>

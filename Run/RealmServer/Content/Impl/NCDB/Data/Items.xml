@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="ItemTemplate">
+    <DefaultTable>item_root</DefaultTable>
+
+    <Flat Name="Id" Column="item_entry" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="SubClass" Column="subclass" />
+    <FlatArray Name="Names" Table="locales_item" Pattern="name_loc{#}" Offset="1"/>
+    <FlatArray Name="Descriptions" Table="locales_item" Pattern="description_loc{#}" Offset="1"/>
+    <Flat Name="DisplayId" Column="displayid" />
+    <Flat Name="Quality" Column="quality" />
+    <Flat Name="Flags" Column="flags" />
+    <Flat Name="BuyPrice" Column="buyprice" />
+    <Flat Name="SellPrice" Column="sellprice" />
+    <Flat Name="InventorySlotType" Column="inventorytype" />
+    <Flat Name="RequiredClassMask" Column="allowableclass" />
+    <Flat Name="RequiredRaceMask" Column="allowablerace" />
+    <Flat Name="Level" Column="itemlevel" />
+    <Flat Name="RequiredLevel" Column="requiredlevel" />
+    <Flat Name="RequiredSkillId" Column="RequiredSkill" />
+    <Flat Name="RequiredSkillValue" Column="RequiredSkillRank" />
+    <Flat Name="RequiredProfessionId" Column="RequiredSkillSubRank" />
+    <Flat Name="RequiredPvPRank" Column="RequiredPlayerRank1" />
+    <Flat Name="UnknownRank" Column="RequiredPlayerRank2" />
+    <Flat Name="RequiredFactionId" Column="RequiredFaction" />
+    <Flat Name="RequiredFactionStanding" Column="RequiredFactionStanding" />
+    <Flat Name="UniqueCount" Column="Unique" />
+    <Flat Name="MaxAmount" Column="maxcount" />
+    <Flat Name="ContainerSlots" Column="ContainerSlots" />
+    <NestedArray Name="Mods">
+      <Flat Name="Type" Pattern="stat_type{#}" Offset="1" />
+      <Flat Name="Value" Pattern="stat_value{#}" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="Damages">
+      <Flat Name="School" Pattern="dmg_type{#}" Offset="1" />
+      <Flat Name="Minimum" Pattern="dmg_min{#}" Offset="1" />
+      <Flat Name="Maximum" Pattern="dmg_max{#}" Offset="1" />
+    </NestedArray>
+    <FlatArray Name="Resistances">
+      <Column Name="armor"/>
+      <Column Name="holy_res"/>
+      <Column Name="fire_res"/>
+      <Column Name="nature_res"/>
+      <Column Name="frost_res"/>
+      <Column Name="shadow_res"/>
+      <Column Name="arcane_res"/>
+    </FlatArray>
+    <Flat Name="AttackTime" Column="delay"/>
+    <Flat Name="ProjectileType" Column="ammo_type"/>
+    <Flat Name="RangeModifier" Column="range"/>
+    <NestedArray Name="Spells">
+      <Flat Name="Id" Pattern="spellid_{#}" Offset="1" />
+      <Flat Name="Trigger" Pattern="spelltrigger_{#}" Offset="1" />
+      <Flat Name="Charges" Pattern="spellcharges_{#}" Offset="1" />
+      <Flat Name="Cooldown" Pattern="spellcooldown_{#}" Offset="1" />
+      <Flat Name="CategoryId" Pattern="spellcategory_{#}" Offset="1" />
+      <Flat Name="CategoryCooldown" Pattern="spellcategorycooldown_{#}" Offset="1" />
+    </NestedArray>
+    <Flat Name="BondType" Column="bonding" />
+    <Flat Name="PageTextId" Column="page_id" />
+    <Flat Name="PageCount" Column="page_language" />
+    <Flat Name="PageMaterial" Column="page_material" />
+    <Flat Name="QuestId" Column="quest_id" />
+    <Flat Name="LockId" Column="lock_id" />
+    <Flat Name="Material" Column="lock_material" />
+    <Flat Name="SheathType" Column="sheathID" />
+    <Flat Name="RandomPropertiesId" Column="randomprop" />
+    <Flat Name="RandomSuffixId" Column="randomsuffix" />
+    <Flat Name="BlockValue" Column="block" />
+    <Flat Name="SetId" Column="itemset" />
+    <Flat Name="MaxDurability" Column="MaxDurability" />
+    <Flat Name="ZoneId" Column="ZoneNameID" />
+    <Flat Name="MapId" Column="mapid" />
+    <Flat Name="BagFamily" Column="bagfamily" />
+    <Flat Name="TotemCategory" Column="TotemCategory" />
+    <NestedArray Name="Sockets">
+      <Flat Name="Color" Pattern="socket_color_{#}" Offset="1" />
+      <Flat Name="Content" Pattern="socket_content_{#}" Offset="1" />
+    </NestedArray>
+    <Flat Name="SocketBonusEnchantId" Column="socket_bonus" />
+    <Flat Name="GemPropertiesId" Column="GemProperties" />
+    <Flat Name="RequiredDisenchantingLevel" Column="ReqDisenchantSkill" />
+    <Flat Name="ArmorModifier" Column="armorDamageModifier" />
+    <Flat Name="Duration" Column="ExistingDuration" />
+    <Flat Name="FoodType" Table="item_foodtype" Column="food_type" />
+
+    <Flat Name="StockAmount" Table="item_amounts" Column="Stock" />
+    <Flat Name="BuyStackSize" Table="item_amounts" Column="SellAmount" />
+    <Flat Name="StockRefillDelay" Table="item_amounts" Column="StockRefill" />
+  </DataHolder>
+
+  <DataHolder Name="ItemRandomPropertyInfo">
+    <DefaultTable>item_randomprop_groups</DefaultTable>
+
+    <Flat Name="Id" Column="randomprops_group" />
+    <Flat Name="EntryId" Column="randomprops_entryid" />
+    <Flat Name="Chance" Column="chance" />
+  </DataHolder>
+
+  <DataHolder Name="ItemRandomSuffixInfo">
+    <DefaultTable>item_randomsuffix_groups</DefaultTable>
+
+    <Flat Name="Id" Column="suffix_group" />
+    <Flat Name="EntryId" Column="randomsuffix_entryid" />
+    <Flat Name="Chance" Column="chance" />
+  </DataHolder>
+</DataHolders>

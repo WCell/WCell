@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="SMSG_PARTY_COMMAND_RESULT">
+    <Simple>
+      <Name>ResultCode</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>GroupResult</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GROUP_INVITE">
+    <Simple>
+      <Name>InviteeName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GROUP_INVITE">
+    <Simple>
+      <Name>InviterName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GROUP_LIST">
+    <Simple>
+      <Name>Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>GroupFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>IsBattleGroup</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>MemberGroupId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>MemberFlags</Name>
+      <Type>Byte</Type>
+      <SegmentType>GroupMemberFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>ULong</Type>
+    </Simple>
+    <List>
+      <Name>Members</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>MemberName</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>MemberId</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Status</Name>
+        <Type>Byte</Type>
+        <SegmentType>CharacterStatus</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>SubGroupId</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>MemberFlags</Name>
+        <Type>Byte</Type>
+        <SegmentType>GroupMemberFlags</SegmentType>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>Leader</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Looting.LootMethod</Name>
+      <Type>Byte</Type>
+      <SegmentType>Looting.LootMethod</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>MasterLooter</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>LootThreshold</Name>
+      <Type>Byte</Type>
+      <SegmentType>Items.ItemQuality</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>DungeonDifficulty</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_REQUEST_PARTY_MEMBER_STATS">
+    <Simple>
+      <Name>TargetId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!--Packet changed-->
+  <!--<RealmPacket OpCode="SMSG_PARTY_MEMBER_STATS">
+    <Simple>
+      <Name>TargetId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>UpdateFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>GroupUpdateFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="UpdateFlags">
+      <Case And="Status">
+        <Simple>
+          <Name>Status</Name>
+          <Type>UShort</Type>
+          <SegmentType>CharacterStatus</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Health">
+        <Simple>
+          <Name>Health</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="MaxHealth">
+        <Simple>
+          <Name>MaxHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PowerType">
+        <Simple>
+          <Name>PowerType</Name>
+          <Type>Byte</Type>
+          <SegmentType>PowerType</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Power">
+        <Simple>
+          <Name>Power</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="MaxPower">
+        <Simple>
+          <Name>MaxPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="Level">
+        <Simple>
+          <Name>Level</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="ZoneId">
+        <Simple>
+          <Name>ZoneId</Name>
+          <Type>UShort</Type>
+          <SegmentType>World.ZoneId</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Position">
+        <Simple>
+          <Name>X</Name>
+          <Type>UShort</Type>
+        </Simple>
+        <Simple>
+          <Name>Y</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      --><!--<Case And="Auras">
+        <Simple>
+          <Name>AuraMask</Name>
+          <Type>ULong</Type>
+        </Simple>
+        <List LengthSegment="AuraMask">
+          <Name>Auras</Name>
+          <Simple>
+            <Name>AuraId</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>Enabled</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </List>
+      </Case>
+      <Case And="PetGuid">
+        <Simple>
+          <Name>PetGuid</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </Case>
+      <Case And="PetName">
+        <Simple>
+          <Name>PetName</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+      <Case And="PetDisplayId">
+        <Simple>
+          <Name>PetDisplayId</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetHealth">
+        <Simple>
+          <Name>PetHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetMaxHealth">
+        <Simple>
+          <Name>PetMaxHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetPowerType">
+        <Simple>
+          <Name>PetPowerType</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+      <Case And="PetPower">
+        <Simple>
+          <Name>PetPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetMaxPower">
+        <Simple>
+          <Name>PetMaxPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetAuras">
+        <Simple>
+          <Name>PetAuraMask</Name>
+          <Type>ULong</Type>
+        </Simple>
+        <List LengthSegment="PetAuraMask">
+          <Name>PetAuras</Name>
+          <Simple>
+            <Name>AuraId</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>Enabled</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </List>
+      </Case>
+      --><!--
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PARTY_MEMBER_STATS_FULL">
+    <Simple>
+      <Name>TargetId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>UpdateFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>GroupUpdateFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="UpdateFlags">
+      <Case And="Status">
+        <Simple>
+          <Name>Status</Name>
+          <Type>UShort</Type>
+          <SegmentType>CharacterStatus</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Health">
+        <Simple>
+          <Name>Health</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="MaxHealth">
+        <Simple>
+          <Name>MaxHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PowerType">
+        <Simple>
+          <Name>PowerType</Name>
+          <Type>Byte</Type>
+          <SegmentType>PowerType</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Power">
+        <Simple>
+          <Name>Power</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="MaxPower">
+        <Simple>
+          <Name>MaxPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="Level">
+        <Simple>
+          <Name>Level</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="ZoneId">
+        <Simple>
+          <Name>ZoneId</Name>
+          <Type>UShort</Type>
+          <SegmentType>World.ZoneId</SegmentType>
+        </Simple>
+      </Case>
+      <Case And="Position">
+        <Simple>
+          <Name>X</Name>
+          <Type>UShort</Type>
+        </Simple>
+        <Simple>
+          <Name>Y</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      --><!--<Case And="Auras">
+        <Simple>
+          <Name>AuraMask</Name>
+          <Type>ULong</Type>
+        </Simple>
+        <List LengthSegment="AuraMask">
+          <Name>Auras</Name>
+          <Simple>
+            <Name>AuraId</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>Enabled</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </List>
+      </Case>
+      <Case And="PetGuid">
+        <Simple>
+          <Name>PetGuid</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </Case>
+      <Case And="PetName">
+        <Simple>
+          <Name>PetName</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+      <Case And="PetDisplayId">
+        <Simple>
+          <Name>PetDisplayId</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetHealth">
+        <Simple>
+          <Name>PetHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetMaxHealth">
+        <Simple>
+          <Name>PetMaxHealth</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetPowerType">
+        <Simple>
+          <Name>PetPowerType</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+      <Case And="PetPower">
+        <Simple>
+          <Name>PetPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetMaxPower">
+        <Simple>
+          <Name>PetMaxPower</Name>
+          <Type>UShort</Type>
+        </Simple>
+      </Case>
+      <Case And="PetAuras">
+        <Simple>
+          <Name>PetAuraMask</Name>
+          <Type>ULong</Type>
+        </Simple>
+        <List LengthSegment="PetAuraMask">
+          <Name>PetAuras</Name>
+          <Simple>
+            <Name>AuraId</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>Enabled</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </List>
+      </Case>
+      --><!--
+    </Switch>
+  </RealmPacket>-->
+
+</Definitions>

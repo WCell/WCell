@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="QuestTemplate">
+    <DefaultTable>quests_root</DefaultTable>
+
+    <Flat Name="Id" Column="QuestId" />
+    <Flat Name="Category" Column="ZoneIdOrSort" />
+    <Flat Name="Flags" Column="Flags" />
+    <Flat Name="Level" Column="QuestLevel" />
+    <Flat Name="QuestType" Column="Type" />
+    <Flat Name="SuggestedPlayers" Column="SuggestedPlayers" />
+    <Nested Name="MinReqReputation">
+      <Flat Name="FactionId" Table="quests_requirements" Column="ReqMinRepFaction" />
+      <Flat Name="Value" Table="quests_requirements" Column="ReqMinRepFactionValue" />
+    </Nested>
+    <Nested Name="MaxReqReputation">
+      <Flat Name="FactionId" Table="quests_requirements" Column="ReqMaxRepFaction" />
+      <Flat Name="Value" Table="quests_requirements" Column="ReqMaxRepFactionValue" />
+    </Nested>
+    <Flat Name="NextQuestId" Column="NextQuestInChain" />
+    <Flat Name="SrcItemId" Column="SrcItem" />
+    <Flat Name="RewMoney" Column="RewMoney" />
+    <Flat Name="MoneyAtMaxLevel" Column="MoneyAtMaxLevel" />
+    <Flat Name="RewSpell" Column="RewSpell" />
+    <Flat Name="CastSpell" Column="CastSpell" />
+    <Flat Name="RewardTitleId" Column="RewTitleId" />
+    <Flat Name="RewardTalents" Column="rewtalents" />
+    <NestedArray Name="RewardItems">
+      <Flat Name="ItemId" Pattern="RewItemId{#}" Offset="0" />
+      <Flat Name="Amount" Pattern="RewItemCount{#}" Offset="0" />
+    </NestedArray>
+    <NestedArray Name="RewardChoiceItems">
+      <Flat Name="ItemId" Pattern="RewChoiceItemId{#}" Offset="0" />
+      <Flat Name="Amount" Pattern="RewChoiceItemCount{#}" Offset="0" />
+    </NestedArray>
+    <Flat Name="MapId" Column="PointMapId" />
+    <Flat Name="PointX" Column="PointX" />
+    <Flat Name="PointY" Column="PointY" />
+    <Flat Name="PointOpt" Column="PointOpt" />
+    <FlatArray Name="Titles" Table="locales_quest" Pattern="Title_loc{#}" Offset="1"/>
+    <FlatArray Name="Objectives" Table="locales_quest" Pattern="Objectives_loc{#}" Offset="1"/>
+    <FlatArray Name="Details" Table="locales_quest" Pattern="Details_loc{#}" Offset="1"/>
+    <FlatArray Name="EndTexts" Table="locales_quest" Pattern="EndText_loc{#}" Offset="1"/>
+    <FlatArray Name="ProgressTexts" Table="locales_quest" Pattern="RequestItemsText_loc{#}" Offset="1"/>
+    <FlatArray Name="OfferRewardTexts" Table="locales_quest" Pattern="OfferRewardText_loc{#}" Offset="1"/>
+    <NestedArray Name="AllInteractions">
+      <Flat Name="TemplateId" Pattern="ObjInteractId{#}" Offset="0" />
+      <Flat Name="Amount" Pattern="ObjInteractCount{#}" Offset="0" />
+    </NestedArray>
+    <NestedArray Name="CollectableItems">
+      <Flat Name="ItemId" Pattern="ObjItemId{#}" Offset="0" />
+      <Flat Name="Amount" Pattern="ObjITemCount{#}" Offset="0" />
+    </NestedArray>
+    <FlatArray Name="ObjTexts" Pattern="ObjText{#}" Offset="0" />
+    <Flat Name="RequiredClientId" Table="quests_settings" Column="RequiredClientId" />
+    <Flat Name="SpecialFlags" Table="quests_settings" Column="SpecialFlags" />
+    <Flat Name="TimeLimit" Table="quests_settings" Column="TimeLimit" />
+    <Flat Name="Repeatable" Table="quests_settings" Column="Repeatable" />
+    <Flat Name="Daily" Column="" />
+    <NestedArray Name="InitialItems">
+      <Flat Name="ItemId" Table="quests_rewards" Pattern="RecItemId{#}" Offset="0" />
+      <Flat Name="Amount" Table="quests_rewards" Pattern="RecItemCount{#}" Offset="0" />
+    </NestedArray>
+    <Flat Name="RequiredLevel" Table="quests_requirements" Column="ReqLevel" />
+    <Flat Name="RequiredRaces" Table="quests_requirements" Column="ReqRaces" />
+    <Flat Name="RequiredClasses" Table="quests_requirements" Column="ReqClass" />
+    <Flat Name="ReqTradeSkill" Table="quests_requirements" Column="ReqTradeSkill" />
+    <Flat Name="ReqTradeSkillValue" Table="quests_requirements" Column="ReqTradeSkillValue" />
+    <FlatArray Name="ReqQuests" Table="quests_requirements" Pattern="ReqQuests{#}" Offset="0" />
+    <!--<FlatArray Name="ReqEitherQuest" Pattern="" Offset="1" />
+    <FlatArray Name="IgnoreQuests" Pattern="" Offset="1" />-->
+
+    <FlatArray Name="TriggerIdObjectives" Table="quests_objectives" Pattern="Objtrigger{#}" Offset="0" />
+    <FlatArray Name="SpellCastObjectives" Table="quests_objectives" Pattern="ObjSpellCast{#}" Offset="0" />
+    
+    <Flat Name="RewardXP" Table="quests_rewards" Column="RewXP" />
+    <NestedArray Name="RewardReputations">
+      <Flat Name="Faction" Pattern="RewRepFaction{#}" Offset="0" Table="quests_rewards" />
+      <Flat Name="Value" Pattern="RewRepValue{#}" Offset="0" Table="quests_rewards"/>
+    </NestedArray>
+
+    <!-- Emote-info is still missing
+    <Flat Name="OfferRewardCount" Column="" />
+    <Flat Name="OfferRewardEmoteDelay" Column="" />
+    <Flat Name="OfferRewardEmoteType" Column="" />
+    <Flat Name="RequestItemsCount" Column="" />
+    <Flat Name="RequestItemsEmoteDelay" Column="" />
+    <Flat Name="RequestItemsEmoteType" Column="" />
+    <NestedArray Name="QuestDetailedEmotes">
+      <Flat Name="Count" Pattern="" Offset="1" />
+      <Flat Name="Delay" Pattern="" Offset="1" />
+      <Flat Name="Type" Pattern="" Offset="1" />
+    </NestedArray>
+    <NestedArray Name="OfferRewardEmotes">
+      <Flat Name="Count" Pattern="" Offset="1" />
+      <Flat Name="Delay" Pattern="" Offset="1" />
+      <Flat Name="Type" Pattern="" Offset="1" />
+    </NestedArray>-->
+    
+    <Flat Name="IsActive" Column="IsActive" />
+  
+</DataHolder>
+  
+  
+  <DataHolder Name="NPCQuestGiverRelation">
+    <DefaultTable>quests_creature_starter</DefaultTable>
+    <DefaultTable>quests_creature_finisher</DefaultTable>
+
+    <Flat Name="RelationType"/>
+    <Flat Name="QuestGiverId" Column="creature_entry" />
+    <Flat Name="QuestId" Column="questId" />
+  </DataHolder>
+
+
+  <DataHolder Name="GOQuestGiverRelation">
+    <DefaultTable>quests_gameobject_starter</DefaultTable>
+    <DefaultTable>quests_gameobject_finisher</DefaultTable>
+
+    <Flat Name="RelationType"/>
+    <Flat Name="QuestGiverId" Column="gameobject_entry" />
+    <Flat Name="QuestId" Column="questId" />
+  </DataHolder>
+</DataHolders>

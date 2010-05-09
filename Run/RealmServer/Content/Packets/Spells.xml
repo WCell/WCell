@@ -1,0 +1,1059 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd" Version="4">
+  <RealmPacket Sender="Client" OpCode="CMSG_CAST_SPELL">
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>UnkFlags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>TargetMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="TargetMask">
+      <Case And="Unit">
+        <Simple>
+          <Name>Target Unit Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="PvPCorpse">
+        <Simple>
+          <Name>PVP Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Object">
+        <Simple>
+          <Name>Object Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Corpse">
+        <Simple>
+          <Name>Corpse Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SpellTargetFlag_Dynamic_0x10000">
+        <Simple>
+          <Name>Flag_0x10000 Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="TradeItem">
+        <Simple>
+          <Name>Trade Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Item">
+        <Simple>
+          <Name>Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SourceLocation">
+        <Simple>
+          <Name>Source X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="DestinationLocation">
+      	<Simple>
+      		<Name>Destination Guid</Name>
+      		<Type>PackedGuid</Type>
+      	</Simple>
+        <Simple>
+          <Name>Destination X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="String">
+        <Simple>
+          <Name>String</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CAST_FAILED">
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>FailReason</Name>
+      <Type>Byte</Type>
+      <SegmentType>Spells.SpellFailedReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELL_FAILURE">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>FailReason</Name>
+      <Type>Byte</Type>
+      <SegmentType>Spells.SpellFailedReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Server" OpCode="SMSG_SPELL_FAILED_OTHER">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>FailReason</Name>
+      <Type>Byte</Type>
+      <SegmentType>Spells.SpellFailedReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode = "SMSG_SEND_UNLEARN_SPELLS">
+    <List>
+      <Name>Unlearned Spells</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Spell</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_UNIT_SPELLCAST_START">
+    <Simple>
+      <Name>Caster GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Target GUID</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell ID</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Cast Time?</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Cast Time Mod?</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELL_START">
+    <Simple>
+      <Name>Caster1</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Caster2</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>CastFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.CastFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>CastDelay</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>TargetMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="TargetMask">
+      <Case And="Unit">
+        <Simple>
+          <Name>TargetUnit</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="PvPCorpse">
+        <Simple>
+          <Name>PVPCorpse</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Object">
+        <Simple>
+          <Name>Object</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Corpse">
+        <Simple>
+          <Name>Corpse</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SpellTargetFlag_Dynamic_0x10000">
+        <Simple>
+          <Name>Flag_0x10000 Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="TradeItem">
+        <Simple>
+          <Name>Trade Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="Item">
+        <Simple>
+          <Name>Item Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SourceLocation">
+        <Simple>
+          <Name>Source X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="DestinationLocation">
+        <Simple>
+          <Name>Destination Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="String">
+        <Simple>
+          <Name>String</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+
+
+    <Switch CompareWith="CastFlags">
+      <Case And="Flag_0x800">
+        <Simple>
+          <Name>Flag_0x800 Int</Name>
+          <Type>Int</Type>
+        </Simple>
+      </Case>
+      <Case And="Flag_0x200000">
+        <Simple>
+          <Name>Flag_0x200000 Byte1</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x200000 Byte2</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Switch CompareWith="Flag_0x200000 Byte1">
+          <Case And="1">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="1">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x1</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="2">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="2">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x2</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="4">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="4">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x4</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="8">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="8">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x8</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="16">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="16">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x10</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="32">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="32">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x20</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+        </Switch>
+      </Case>      
+      <Case And="Ranged">
+        <Simple>
+          <Name>Ammo Display Id</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Ammo Inventory Type</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELL_GO">
+    <Simple>
+      <Name>Caster1</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Caster2</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>CastId</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>CastFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.CastFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>CastTime</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>HitTargetCount</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List LengthSegment="HitTargetCount">
+      <Name>Hit Target</Name>
+      <Simple>
+        <Name>TargetId</Name>
+        <Type>Guid</Type>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>MissedTargetCount</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List LengthSegment="MissedTargetCount">
+      <Name>MissedTargets</Name>
+      <Simple>
+        <Name>TargetId</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>MissReason</Name>
+        <Type>Byte</Type>
+        <SegmentType>WCell.Constants.Spells.CastMissReason</SegmentType>
+      </Simple>
+      <Switch CompareWith="MissReason">
+        <Case Equals="Reflect">
+          <Simple>
+            <Name>Reflect Result</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </Case>
+      </Switch>
+    </List>
+    <Simple>
+      <Name>TargetMask</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellTargetFlags</SegmentType>
+    </Simple>
+    <Switch CompareWith="TargetMask">
+      <Case And="Unit | PvPCorpse | Object | Corpse | SpellTargetFlag_Dynamic_0x10000">
+        <Simple>
+          <Name>TargetGuid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="TradeItem | Item">
+        <Simple>
+          <Name>ItemGuid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+      </Case>
+      <Case And="SourceLocation">
+        <Simple>
+          <Name>Source X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Source Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="DestinationLocation">
+        <Simple>
+          <Name>Destination Guid</Name>
+          <Type>PackedGuid</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination X</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Y</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Destination Z</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="String">
+        <Simple>
+          <Name>String</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+    
+    <Switch CompareWith="CastFlags">
+      <Case And="Flag_0x800">
+        <Simple>
+          <Name>Flag_0x800</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </Case>
+      <Case And="Flag_0x200000">
+        <Simple>
+          <Name>Flag_0x200000 Byte1</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x200000 Byte2</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Switch CompareWith="Flag_0x200000 Byte1">
+          <Case And="1">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="1">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x1</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="2">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="2">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x2</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="4">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="4">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x4</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="8">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="8">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x8</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="16">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="16">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x10</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+          <Case And="32">
+            <Switch CompareWith="Flag_0x200000 Byte2">
+              <Case AndNot="32">
+                <Simple>
+                  <Name>Flag_0x200000 Mask0x20</Name>
+                  <Type>Byte</Type>
+                </Simple>
+              </Case>
+            </Switch>
+          </Case>
+        </Switch>
+      </Case>
+      <Case And="Flag_0x20000">
+        <Simple>
+          <Name>Flag_0x20000 Int</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x20000 Float</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+      <Case And="Ranged">
+        <Simple>
+          <Name>Flag_0x20 Int1</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x20 Int2</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </Case>
+      <Case And="Flag_0x80000">
+        <Simple>
+          <Name>Flag_0x80000 Int1</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x80000 Int2</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </Case>
+    </Switch>
+    <Switch CompareWith="TargetMask">
+      <Case And="DestinationLocation">
+        <Simple>
+          <Name>Destination Location Byte</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLNONMELEEDAMAGELOG">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Damage</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Overkill</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>SchoolMask</Name>
+      <Type>Byte</Type>
+      <SegmentType>DamageSchoolMask</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Absorbed</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Resisted</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>UnkByte1</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkByte2 (Unused)</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Blocked</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>HitType</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>UnkByte3 (Unused)</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LEARNED_SPELL">
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PLAY_SPELL_VISUAL">
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PLAY_SPELL_IMPACT">
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_COOLDOWN_EVENT">
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLHEALLOG">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Amount</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown2</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>IsCritical</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Byte2 (Unused)</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLENERGIZELOG">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Guid2</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>PowerType</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Amount</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLLOGMISS">
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unit</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Byte1</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Target Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List LengthSegment="Target Count">
+      <Name>Target</Name>
+      <Simple>
+        <Name>Guid</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>MissReason</Name>
+        <Type>Byte</Type>
+        <SegmentType>WCell.Constants.Spells.CastMissReason</SegmentType>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLLOGEXECUTE">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unknown (1)</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <!--<Simple>
+      <Name>Effect</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellEffectType</SegmentType>
+    </Simple>-->
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELLBREAKLOG">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_SPELL_DELAYED">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Delay (in milliseconds)</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_CHANNEL_START">
+    <Simple>
+      <Name>Caster</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Duration</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- Auras Begin -->
+  <RealmPacket OpCode="SMSG_AURA_UPDATE_ALL">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <FinalList>
+      <Name>Auras</Name>
+
+      <Simple>
+        <Name>Index</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>SpellId</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Switch CompareWith="SpellId">
+        <Case NotEqual="None">
+          <Simple>
+            <Name>Flags</Name>
+            <Type>Byte</Type>
+            <SegmentType>Spells.AuraFlags</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Level</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Simple>
+            <Name>Count</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Switch CompareWith="Flags">
+            <Case AndNot="TargetIsCaster">
+              <Simple>
+                <Name>Caster</Name>
+                <Type>PackedGuid</Type>
+              </Simple>
+            </Case>
+            <Case And="HasDuration">
+              <Simple>
+                <Name>Duration</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Simple>
+                <Name>Remaining</Name>
+                <Type>UInt</Type>
+              </Simple>
+            </Case>
+          </Switch>
+        </Case>
+      </Switch>
+    </FinalList>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_AURA_UPDATE">
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <FinalList>
+      <Name>Auras</Name>
+
+      <Simple>
+        <Name>Index</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>SpellId</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Switch CompareWith="SpellId">
+        <Case NotEqual="0">
+          <Simple>
+            <Name>Flags</Name>
+            <Type>Byte</Type>
+            <SegmentType>Spells.AuraFlags</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Level</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Simple>
+            <Name>Count</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Switch CompareWith="Flags">
+            <Case AndNot="TargetIsCaster">
+              <Simple>
+                <Name>Caster</Name>
+                <Type>PackedGuid</Type>
+              </Simple>
+            </Case>
+            <Case And="HasDuration">
+              <Simple>
+                <Name>Duration</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Simple>
+                <Name>Remaining</Name>
+                <Type>UInt</Type>
+              </Simple>
+            </Case>
+          </Switch>
+        </Case>
+      </Switch>
+    </FinalList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_INITIAL_SPELLS">
+    <Simple>
+      <Name>UnkByte0</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List>
+      <Name>Spells</Name>
+      <Type>UShort</Type>
+      <Simple>
+        <Name>Spell</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>UnkShort0</Name>
+        <Type>UShort</Type>
+      </Simple>
+    </List>
+    <List>
+      <Name>Cooldowns</Name>
+      <Type>UShort</Type>
+      <Simple>
+        <Name>Spell</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Item</Name>
+        <Type>UShort</Type>
+        <SegmentType>Items.ItemId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Category</Name>
+        <Type>UShort</Type>
+      </Simple>
+      <Simple>
+        <Name>Cooldown</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>CatCooldown</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+</Definitions>

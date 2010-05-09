@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="GossipEntry">
+    <DefaultTable>npc_text</DefaultTable>
+    <Flat Name="GossipId" Column="ID" />
+    <NestedArray Name="GossipEntries">
+      <Flat Name="TextMale" Pattern="text{#}_0" Offset="0"/>
+      <Flat Name="TextFemale" Pattern="text{#}_1" Offset="0"/>
+      <Flat Name="Language" Pattern="lang{#}" Offset="0"/>
+      <Flat Name="Probability" Pattern="prob{#}" Offset="0"/>
+      <Flat Name="Emote1" Pattern="em{#}_0" Offset="0"/>
+      <Flat Name="Emote2" Pattern="em{#}_1" Offset="0"/>
+      <Flat Name="Emote3" Pattern="em{#}_2" Offset="0"/>
+      <Flat Name="Emote4" Pattern="em{#}_3" Offset="0"/>
+      <Flat Name="Emote5" Pattern="em{#}_4" Offset="0"/>
+      <Flat Name="Emote6" Pattern="em{#}_5" Offset="0"/>
+    </NestedArray>
+  </DataHolder>
+
+  <DataHolder Name="NPCGossipRelation">
+    <DefaultTable>npc_gossip</DefaultTable>
+    <Flat Name="NPCId" Column="npc_guid" />
+    <Flat Name="GossipId" Column="textid" />
+  </DataHolder>
+</DataHolders>

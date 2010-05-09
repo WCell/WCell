@@ -1,0 +1,19 @@
+﻿<activerecord>
+    <config>
+      <add 
+        key="connection.driver_class" 
+        value="NHibernate.Driver.FirebirdClientDriver" />
+      <add 
+        key="dialect"                 
+        value="NHibernate.Dialect.FirebirdDialect" />
+      <add 
+        key="connection.provider"     
+        value="NHibernate.Connection.DriverConnectionProvider" />
+      <add 
+        key="connection.connection_string" 
+        value="{0}" />
+      <add
+        key="connection.isolation"
+        value="ReadCommitted" />
+    </config>
+</activerecord> 

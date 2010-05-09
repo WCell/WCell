@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="RegionInfo">
+    <DefaultTable>world_mapinfo</DefaultTable>
+    <Flat Name="Id" Column="MapID" />
+    <Flat Name="Name" Column="MapName" />
+    <Flat Name="LoadScreen" Column="ScreenId" />
+    <Flat Name="ParentMapid" Column="ParentMap" />
+    <Flat Name="Type" Column="Type" />
+    <Flat Name="MinLevel" Column="RequiredNormalLevel" />
+    <Flat Name="MaxLevel" Column="MaxLevel" />
+    <Flat Name="MaxPlayerCount" Column="MaxPlayers" />
+    <Nested Name="RepopPosition">
+      <Flat Name="X" Column="repop_x" />
+      <Flat Name="Y" Column="repop_y" />
+      <Flat Name="Z" Column="repop_z" />
+    </Nested>
+    <Flat Name="RepopRegionId" Column="repop_map" />
+    <Flat Name="AreaTableId" Column="" />
+    <Flat Name="HeroicLevelDiff" Column="HeroicLevelMod" />
+    <Flat Name="RequiredQuestId" Column="RequiredQuest" />
+    <Flat Name="RequiredItemId" Column="RequiredItem" />
+    <Flat Name="RequiredClientId" Column="RequiredExpansion" />
+    <FlatArray Name="RequiredKeys" Pattern="HeroicKeyID{#}" Offset="1" />
+    <Flat Name="InstanceResetDelay" Column="InstanceReset" />
+    <Flat Name="HeroicResetDelay" Column="HeroicInstanceReset" />
+  </DataHolder>
+
+  <DataHolder Name="WorldZoneLocation">
+    <DefaultTable>world_cmdteleports</DefaultTable>
+    <Flat Name="Id" Column="id" />
+    <Flat Name="Name" Column="name" />
+    <Flat Name="RegionId" Column="MapId" />
+    <Nested Name="Position">
+      <Flat Name="X" Column="positionX" />
+      <Flat Name="Y" Column="positionY" />
+      <Flat Name="Z" Column="positionZ" />
+    </Nested>
+    <Flat Name="ZoneId" Column="zone_id" />
+  </DataHolder>
+
+  <DataHolder Name="BattlegroundTemplate">
+    <DefaultTable>battleground_template</DefaultTable>
+    <Flat Name="Id" Column="battleground_entry" />
+    <Flat Name="Name" Column="Name" />
+    <Flat Name="RegionId" Column="Map1" />
+    <Flat Name="MinPlayersPerTeam" Column="MinPlayersPerTeam" />
+    <Flat Name="MaxPlayersPerTeam" Column="MaxPlayersPerTeam" />
+    <Flat Name="MinLevel" Column="MinLvl" />
+    <Flat Name="MaxLevel" Column="MaxLvl" />
+    <Flat Name="MapType" Column="Type" />
+    <Flat Name="AllianceStartPosIndex" Column="AllianceStartLoc" />
+    <Flat Name="HordeStartPosIndex" Column="HordeStartLoc" />
+    <Flat Name="LevelRange" Column="Band" />
+    <Flat Name="AllianceStartO" Column="AllianceStartO" />
+    <Flat Name="HordeStartO" Column="HordeStartO" />
+  </DataHolder>
+
+  <DataHolder Name="BattlemasterRelation">
+    <DefaultTable>battleground_battlemaster</DefaultTable>
+    <Flat Name="BattleMasterId" Column="creature_entry" />
+    <Flat Name="BattlegroundId" Column="battleground_entry" />
+  </DataHolder>
+</DataHolders>

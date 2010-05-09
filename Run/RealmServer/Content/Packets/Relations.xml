@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_ADD_FRIEND">
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Note</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_DEL_FRIEND">
+    <Simple>
+      <Name>CharacterId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_CONTACT_NOTES">
+    <Simple>
+      <Name>CharacterId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Note</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ADD_IGNORE">
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_DEL_IGNORE">
+    <Simple>
+      <Name>CharacterId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- Unknown packet defs
+  <RealmPacket OpCode="CMSG_ADD_MUTED">
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_DEL_MUTED">
+    <Simple>
+      <Name>CharacterId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+  -->
+
+  <RealmPacket OpCode="SMSG_FRIEND_STATUS">
+    <Simple>
+      <Name>ResultCode</Name>
+      <Type>Byte</Type>
+      <SegmentType>RelationResult</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Id</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Switch CompareWith="ResultCode">
+      <Case Equals="FRIEND_OFFLINE">
+        <Simple>
+          <Name>Status</Name>
+          <Type>Byte</Type>
+          <SegmentType>CharacterStatus</SegmentType>
+        </Simple>
+      </Case>
+      <Case Equals="FRIEND_ADDED_OFFLINE">
+        <Simple>
+          <Name>Note</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+      <Case Equals="FRIEND_ADDED_ONLINE">
+        <Simple>
+          <Name>Note</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Status</Name>
+          <Type>Byte</Type>
+          <SegmentType>CharacterStatus</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Zone</Name>
+          <Type>UInt</Type>
+          <SegmentType>World.ZoneId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Level</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Class</Name>
+          <Type>UInt</Type>
+          <SegmentType>ClassId</SegmentType>
+        </Simple>
+      </Case>
+      <Case Equals="FRIEND_ONLINE">
+        <Simple>
+          <Name>Status</Name>
+          <Type>Byte</Type>
+          <SegmentType>CharacterStatus</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Zone</Name>
+          <Type>UInt</Type>
+          <SegmentType>World.ZoneId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Level</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Class</Name>
+          <Type>UInt</Type>
+          <SegmentType>ClassId</SegmentType>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_CONTACT_LIST">
+    <Simple>
+      <Name>RequestedList</Name>
+      <Type>UInt</Type>
+      <SegmentType>Relations.RelationTypeFlag</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CONTACT_LIST">
+    <Simple>
+      <Name>RequestedList</Name>
+      <Type>UInt</Type>
+      <SegmentType>Relations.RelationTypeFlag</SegmentType>
+    </Simple>
+    <List>
+      <Name>Contacts</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>ContactId</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>ContactFlags</Name>
+        <Type>UInt</Type>
+        <SegmentType>Relations.RelationTypeFlag</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>ContactNote</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Switch CompareWith="ContactFlags">
+        <Case And="Friend">
+          <Simple>
+            <Name>ContactStatus</Name>
+            <Type>Byte</Type>
+            <SegmentType>CharacterStatus</SegmentType>
+          </Simple>
+          <Switch CompareWith="ContactStatus">
+            <Case NotEqual="OFFLINE">
+              <Simple>
+                <Name>ContactZone</Name>
+                <Type>UInt</Type>
+                <SegmentType>World.ZoneId</SegmentType>
+              </Simple>
+              <Simple>
+                <Name>ContactLevel</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Simple>
+                <Name>ContactClass</Name>
+                <Type>UInt</Type>
+                <SegmentType>ClassId</SegmentType>
+              </Simple>
+            </Case>
+          </Switch>
+        </Case>
+      </Switch>
+    </List>
+  </RealmPacket>
+  
+</Definitions>

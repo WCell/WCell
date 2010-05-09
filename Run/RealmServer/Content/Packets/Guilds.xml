@@ -1,0 +1,894 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_GUILD_QUERY">
+    <Simple>
+      <Name>GuildId</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GUILD_QUERY_RESPONSE">
+    <Simple>
+      <Name>GuildId</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>GuildName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <StaticList Length="10">
+      <Name>Ranks</Name>
+      <Simple>
+        <Name>RankName</Name>
+        <Type>CString</Type>
+      </Simple>
+    </StaticList>
+    <Simple>
+      <Name>EmblemStyle</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>EmblemColor</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>BorderStyle</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>BorderColor</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>BackgroundColor</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_ROSTER" />
+
+  <RealmPacket OpCode="SMSG_GUILD_ROSTER">
+    <Simple>
+      <Name>MembersCount</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>MOTD</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Info</Name>
+      <Type>CString</Type>
+    </Simple>
+    <List>
+      <Name>Ranks</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Privileges</Name>
+        <Type>UInt</Type>
+        <SegmentType>Guilds.GuildPrivileges</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>BankMoneyWithdrawlAllowance</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <StaticList Length="6">
+        <Name>BankTabRights</Name>
+        <Simple>
+          <Name>BankTabPrivileges</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>ItemWithdrawlAllowance</Name>
+          <Type>UInt</Type>
+        </Simple>
+      </StaticList>
+    </List>
+    <List LengthSegment="MembersCount">
+      <Name>Members List</Name>
+      <Simple>
+        <Name>CharacterGuid</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>CharacterStatus</Name>
+        <Type>Byte</Type>
+        <SegmentType>CharacterStatus</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>RankId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Class</Name>
+        <Type>Byte</Type>
+        <SegmentType>ClassId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Unknown (always 0)</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>ZoneId</Name>
+        <Type>UInt</Type>
+        <SegmentType>World.ZoneId</SegmentType>
+      </Simple>
+      <Switch CompareWith="CharacterStatus">
+        <Case Equals="OFFLINE">
+          <Simple>
+            <Name>DaysSinceLogin</Name>
+            <Type>Float</Type>
+          </Simple>
+        </Case>
+      </Switch>
+      <Simple>
+        <Name>PublicNote</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>OfficerNote</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_INVITE">
+    <Simple>
+      <Name>InviteeName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GUILD_INVITE">
+    <Simple>
+      <Name>InviterName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>GuildName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_ACCEPT" />
+
+  <RealmPacket OpCode="CMSG_GUILD_DECLINE" />
+
+  <RealmPacket OpCode="SMSG_GUILD_DECLINE">
+    <Simple>
+      <Name>DeclinerName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_LEAVE" />
+
+  <RealmPacket OpCode="CMSG_GUILD_REMOVE">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_INFO_TEXT">
+    <Simple>
+      <Name>NewInfoText</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_INFO" />
+
+  <RealmPacket OpCode="SMSG_GUILD_INFO">
+    <Simple>
+      <Name>GuildName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Complex>
+      <Name>Created</Name>
+      <Simple>
+        <Name>Year</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Month</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>Date</Name>
+        <Type>Int</Type>
+      </Simple>
+    </Complex>
+    <Simple>
+      <Name>MembersCount</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>AccountsCount</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_MOTD">
+    <Simple>
+      <Name>NewMOTD</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_SET_PUBLIC_NOTE">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>NewNote</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_SET_OFFICER_NOTE">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>NewNote</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_ADD_RANK">
+    <Simple>
+      <Name>RankName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_DEL_RANK" />
+
+  <RealmPacket OpCode="CMSG_GUILD_RANK">
+    <Simple>
+      <Name>RankId</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>NewPrivs</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>NewName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_PROMOTE">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_DEMOTE">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_DISBAND" />
+
+  <RealmPacket OpCode="CMSG_GUILD_LEADER">
+    <Simple>
+      <Name>TargetName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GUILD_COMMAND_RESULT">
+    <Simple>
+      <Name>GuildCommand</Name>
+      <Type>Int</Type>
+      <SegmentType>Guilds.GuildCommandId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>ResultCode</Name>
+      <Type>Int</Type>
+      <SegmentType>Guilds.GuildResult</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GUILD_EVENT">
+    <Simple>
+      <Name>GuildEvent</Name>
+      <Type>Byte</Type>
+      <SegmentType>Guilds.GuildEvents</SegmentType>
+    </Simple>
+    <List>
+      <Name>Strings Count</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>String</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_GUILD_EVENT_LOG_QUERY" />
+
+  <RealmPacket Sender="Server" OpCode="MSG_GUILD_EVENT_LOG_QUERY">
+    <List>
+      <Name>Events Count</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>EventType</Name>
+        <Type>Byte</Type>
+        <SegmentType>Guilds.GuildEventLogEntryType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Character1Guid</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Switch CompareWith="EventType">
+        <Case Equals="INVITE_PLAYER">
+          <Simple>
+            <Name>Character2Guid</Name>
+            <Type>Guid</Type>
+          </Simple>
+        </Case>
+        <Case Equals="PROMOTE_PLAYER">
+          <Simple>
+            <Name>Character2Guid</Name>
+            <Type>Guid</Type>
+          </Simple>
+        </Case>
+        <Case Equals="DEMOTE_PLAYER">
+          <Simple>
+            <Name>Character2Guid</Name>
+            <Type>Guid</Type>
+          </Simple>
+        </Case>
+        <Case Equals="UNINVITE_PLAYER">
+          <Simple>
+            <Name>Character2Guid</Name>
+            <Type>Guid</Type>
+          </Simple>
+        </Case>
+      </Switch>
+      <Switch CompareWith="EventType">
+        <Case Equals="PROMOTE_PLAYER">
+          <Simple>
+            <Name>NewRankId</Name>
+            <Type>Int</Type>
+          </Simple>
+        </Case>
+        <Case Equals="DEMOTE_PLAYER">
+          <Simple>
+            <Name>NewRankId</Name>
+            <Type>Int</Type>
+          </Simple>
+        </Case>
+      </Switch>
+      <Simple>
+        <Name>TimeElapsedInSeconds</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_GUILD_BANK_MONEY_WITHDRAWN" />
+
+  <RealmPacket Sender="Server" OpCode="MSG_GUILD_BANK_MONEY_WITHDRAWN">
+    <Simple>
+      <Name>Remaining Bank Money Withdrawl Allowance</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_SAVE_GUILD_EMBLEM">
+    <Simple>
+      <Name>Tab Vendor EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Emblem Style</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Emblem Color</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Border Style</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Border Color</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Background Color</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Server" OpCode="MSG_SAVE_GUILD_EMBLEM">
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>Guilds.GuildTabardResult</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_GUILD_PERMISSIONS" />
+
+  <RealmPacket Sender="Server" OpCode="MSG_GUILD_PERMISSIONS">
+    <Simple>
+      <Name>Rank Id</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Guild Privileges</Name>
+      <Type>UInt</Type>
+      <SegmentType>Guilds.GuildPrivileges</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Daily Money Withdrawl Allowance</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Number of Purchased Bank Tabs</Name>
+      <Type>Int</Type>
+    </Simple>
+    <StaticList Length="6">
+      <Name>Bank Tab Privileges</Name>
+      <Simple>
+        <Name>Privileges</Name>
+        <Type>UInt</Type>
+        <SegmentType>Guilds.GuildBankTabPrivileges</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Daily Item Withdrawl Allowance</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANKER_ACTIVATE">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GUILD_BANK_LIST">
+    <Simple>
+      <Name>Money</Name>
+      <Type>Long</Type>
+    </Simple>
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Remaining Daily Item Withdrawl Allowance</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Has Tab Names</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Has Tab Names">
+      <Case GreaterThan="0">
+        <Switch CompareWith="Tab Id">
+          <Case Equals="0">
+            <Simple>
+              <Name>Number of Purchased Bank Tabs</Name>
+              <Type>Byte</Type>
+            </Simple>
+            <Simple>
+              <Name>Tab Name</Name>
+              <Type>CString</Type>
+            </Simple>
+            <Simple>
+              <Name>Tab Icon</Name>
+              <Type>CString</Type>
+            </Simple>
+          </Case>
+        </Switch>
+      </Case>
+    </Switch>
+    <Simple>
+      <Name>Has Item Info</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Has Item Info">
+      <Case GreaterThan="0">
+        <StaticList Length="98">
+          <Name>Bank Tab Items</Name>
+          <Simple>
+            <Name>Slot Id</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Simple>
+            <Name>Item Entry Id</Name>
+            <Type>UInt</Type>
+            <SegmentType>Items.ItemId</SegmentType>
+          </Simple>
+          <Switch CompareWith="Item Entry Id">
+            <Case NotEqual="None">
+              <Simple>
+                <Name>Random Property</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Switch CompareWith="Random Property">
+                <Case GreaterThan="0">
+                  <Simple>
+                    <Name>Random Suffix</Name>
+                    <Type>UInt</Type>
+                  </Simple>
+                </Case>
+              </Switch>
+              <Simple>
+                <Name>Amount</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Simple>
+                <Name>Unknown 1</Name>
+                <Type>UInt</Type>
+              </Simple>
+              <Simple>
+                <Name>Unknown 2</Name>
+                <Type>Byte</Type>
+              </Simple>
+              <List>
+                <Name>Enchantment List</Name>
+                <Type>Byte</Type>
+                <Simple>
+                  <Name>Enchantment Slot</Name>
+                  <Type>Byte</Type>
+                  <SegmentType>Items.EnchantSlot</SegmentType>
+                </Simple>
+                <Simple>
+                  <Name>Enchantment Id</Name>
+                  <Type>UInt</Type>
+                </Simple>
+              </List>
+            </Case>
+          </Switch>
+        </StaticList>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_QUERY_TAB">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_DEPOSIT_MONEY">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Deposit Amount</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_WITHDRAW_MONEY">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Withdrawl Amount</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_SWAP_ITEMS">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Is Bank to Bank Swap?</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Switch CompareWith="Is Bank to Bank Swap?">
+      <Case Equals="0">
+        <Simple>
+          <Name>From Bank Tab</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>From Tab Slot</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Item Entry Id</Name>
+          <Type>UInt</Type>
+          <SegmentType>Items.ItemId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Is AutoStore?</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Switch CompareWith="Is AutoStore?">
+          <Case GreaterThan="0">
+            <Simple>
+              <Name>AutoStore Count</Name>
+              <Type>Byte</Type>
+            </Simple>
+          </Case>
+        </Switch>
+        <Simple>
+          <Name>Bag</Name>
+          <Type>Byte</Type>
+          <SegmentType>Items.InventorySlot</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Bag Slot</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Switch CompareWith="Is AutoStore?">
+          <Case Equals="0">
+            <Simple>
+              <Name>Is Bank To Character?</Name>
+              <Type>Byte</Type>
+            </Simple>
+            <Simple>
+              <Name>Amount</Name>
+              <Type>Byte</Type>
+            </Simple>
+          </Case>
+        </Switch>
+      </Case>
+      <Case GreaterThan="0">
+        <Simple>
+          <Name>To Bank Tab</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>To Tab Slot</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Unknown UInt</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>From Bank Tab</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>To Tab Slot</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Item Entry Id</Name>
+          <Type>UInt</Type>
+          <SegmentType>Items.ItemId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Unknown Byte</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>Amount</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_BUY_TAB">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>New Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GUILD_BANK_UPDATE_TAB">
+    <Simple>
+      <Name>Guild Bank EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>New Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>New Icon</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_QUERY_GUILD_BANK_TEXT">
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Server" OpCode="MSG_QUERY_GUILD_BANK_TEXT">
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Text</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_GUILD_BANK_TEXT">
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>New Text</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="MSG_GUILD_BANK_LOG_QUERY">
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Server" OpCode="MSG_GUILD_BANK_LOG_QUERY">
+    <Simple>
+      <Name>Tab Id</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List>
+      <Name>Log Entries</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>Entry Type</Name>
+        <Type>Byte</Type>
+        <SegmentType>Guilds.GuildBankLogEntryType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Character EntityId</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Switch CompareWith="Entry Type">
+        <Case Equals="DepositMoney">
+          <Simple>
+            <Name>Money</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="WithdrawMoney">
+          <Simple>
+            <Name>Money</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="MoneyUsedForRepairs">
+          <Simple>
+            <Name>Money</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="Unknown1">
+          <Simple>
+            <Name>Money</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="Unknown2">
+          <Simple>
+            <Name>Money</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="DepositItem">
+          <Simple>
+            <Name>Item Entry Id</Name>
+            <Type>UInt</Type>
+            <SegmentType>Items.ItemId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Item Stack Count</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="WithdrawItem">
+          <Simple>
+            <Name>Item Entry Id</Name>
+            <Type>UInt</Type>
+            <SegmentType>Items.ItemId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Item Stack Count</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </Case>
+        <Case Equals="MoveItem">
+          <Simple>
+            <Name>Item Entry Id</Name>
+            <Type>UInt</Type>
+            <SegmentType>Items.ItemId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Item Stack Count</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Destination Tab Id</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </Case>
+        <Case Equals="MoveItem_2">
+          <Simple>
+            <Name>Item Entry Id</Name>
+            <Type>UInt</Type>
+            <SegmentType>Items.ItemId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Item Stack Count</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>Destination Tab Id</Name>
+            <Type>Byte</Type>
+          </Simple>
+        </Case>
+      </Switch>
+      <Simple>
+        <Name>Elapsed Unix Time</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+</Definitions>

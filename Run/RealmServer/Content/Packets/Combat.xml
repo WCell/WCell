@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="SMSG_ATTACKERSTATEUPDATE">
+    <Simple>
+      <Name>HitFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>HitFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Attacker</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>TotalDamage</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <!--Overkill?-->
+      <Name>Int_1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>DamageCount</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <List LengthSegment="DamageCount">
+      <Name>Damages</Name>
+      <Simple>
+        <Name>DamageSchoolMask</Name>
+        <Type>UInt</Type>
+        <SegmentType>DamageSchoolMask</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Float Damage</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Int Damage</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+
+    <Switch CompareWith="HitFlags">
+      <Case And="Absorb_1, Absorb_2">
+        <List LengthSegment="DamageCount">
+          <Name>Absorb_1</Name>
+          <Simple>
+            <Name>Absorbed</Name>
+            <Type>Int</Type>
+          </Simple>
+        </List>
+      </Case>
+      <!--Case And="Absorb_2">
+        <List LengthSegment="DamageCount">
+          <Name>Absorb_2</Name>
+          <Simple>
+            <Name>Absorbed</Name>
+            <Type>Int</Type>
+          </Simple>
+        </List>
+      </Case-->
+    </Switch>
+    <Switch CompareWith="HitFlags">
+      <Case And="Resist_1, Resist_2">
+        <List LengthSegment="DamageCount">
+          <Name>Resist_1</Name>
+          <Simple>
+            <Name>Resisted</Name>
+            <Type>Int</Type>
+          </Simple>
+        </List>
+      </Case>
+      <!--Case And="Resist_2">
+        <List LengthSegment="DamageCount">
+          <Name>Resist_2</Name>
+          <Simple>
+            <Name>Resisted</Name>
+            <Type>Int</Type>
+          </Simple>
+        </List>
+      </Case-->
+    </Switch>
+
+    <Simple>
+      <Name>VictimState</Name>
+      <Type>Byte</Type>
+      <SegmentType>VictimState</SegmentType>
+    </Simple>
+    <Simple>
+      <!--In case of Evade: 16777218; If no damage: 0;  Else: -1, 1000-->
+      <Name>Int_2</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Int_3 - SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Switch CompareWith="HitFlags">
+      <Case And="Block">
+        <Simple>
+          <Name>Blocked</Name>
+          <Type>Int</Type>
+        </Simple>
+      </Case>
+
+      <!--Case And="<0x800000">
+        <Simple>
+          <Name>Flag_0x800000 Int</Name>
+          <Type>Int</Type>
+        </Simple>
+      </Case>
+
+      <Case And="1">
+        <Simple>
+          <Name>Flag_0x1 Int</Name>
+          <Type>Int</Type>
+        </Simple>
+
+        <Simple>
+          <Name>Flag_0x1 Float_1</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_2</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_3</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_4</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_5</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_6</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_7</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Flag_0x1 Float_8</Name>
+          <Type>Float</Type>
+        </Simple>
+
+        <StaticList Length="5">
+          <Name>Flag_0x1 Float List</Name>
+          <Simple>
+            <Name>Flag_0x1 FloatList 1</Name>
+            <Type>Float</Type>
+          </Simple>
+          <Simple>
+            <Name>Flag_0x1 FloatList 2</Name>
+            <Type>Float</Type>
+          </Simple>
+        </StaticList>
+
+        <Simple>
+          <Name>Flag_0x1 Int_2</Name>
+          <Type>Int</Type>
+        </Simple>
+      </Case>-->
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_HIGHEST_THREAT_UPDATE">
+    <Simple>
+      <Name>Packed Guid</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>New Primary Target</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <List>
+      <Name>Threat List</Name>
+      <Type>Int</Type>
+      <Simple>
+        <Name>Unit</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Threat Level</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_THREAT_UPDATE">
+    <Simple>
+      <Name>Guid</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <List>
+      <Name>Threat List</Name>
+      <Type>Int</Type>
+      <Simple>
+        <Name>Unit</Name>
+        <Type>PackedGuid</Type>
+      </Simple>
+      <Simple>
+        <Name>Threat Level</Name>
+        <Type>Int</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_AI_REACTION">
+    <Simple>
+      <Name>Guid</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>AI Reaction</Name>
+      <Type>UInt</Type>
+      <!--Is there an enum for this?-->
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ATTACKSWING">
+    <Simple>
+      <Name>Attacker</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SETSHEATHED">
+    <Simple>
+      <Name>Sheath Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>SheathType</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_ATTACKSTART">
+    <Simple>
+      <Name>Attacker</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Victim</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_ATTACKSTOP" />
+  
+  <RealmPacket OpCode="SMSG_ATTACKSTOP">
+    <Simple>
+      <Name>Attacker</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Defender</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CANCEL_AUTO_REPEAT">
+    <Simple>
+      <Name>Character</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_AI_REACTION">
+    <Simple>
+      <Name>Unit GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Reaction</Name>
+      <Type>UInt</Type>
+      <SegmentType>AIReaction</SegmentType>
+    </Simple>
+  </RealmPacket>
+</Definitions>

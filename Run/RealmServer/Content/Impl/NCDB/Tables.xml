@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Tables>
+  <DBVersion Table="db_version" Column="version" MinVersion="1.88" MaxVersion="5.00" />
+
+  <!-- NPCs -->
+  <Table Name="creature_movement">
+    <PrimaryColumn Name="spawnid"/>
+    <PrimaryColumn Name="waypointid"/>
+  </Table>
+
+  <Table Name="creature_root">
+    <PrimaryColumn Name="creature_entry"/>
+  </Table>
+
+  <Table Name="creature_template">
+    <PrimaryColumn Name="creature_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="npc_trainer_defs">
+    <PrimaryColumn Name="creature_entry"/>
+  </Table>
+
+  <Table Name="npc_trainer_spell_settings">
+    <PrimaryColumn Name="SpellID"/>
+  </Table>
+
+  <Table Name="npc_trainer_spells">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="SpellId"/>
+  </Table>
+
+  <Table Name="npc_vendor">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="item_entry"/>
+  </Table>
+
+  <Table Name="npc_text" DataHolder="NPCText">
+    <PrimaryColumn Name="text_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="npc_gossip_textid">
+    <PrimaryColumn Name="textid"/>
+  </Table>
+
+  <Table Name="creature_spawns">
+    <PrimaryColumn Name="spawnid"/>
+  </Table>
+
+  
+  <!-- Items -->
+  <Table Name="item_root">
+    <PrimaryColumn Name="item_entry"/>
+  </Table>
+  
+  <Table Name="item_foodtype" PrimaryKey="item_entry" MainDataHolder="ItemTemplate">
+    <PrimaryColumn Name="item_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="item_amounts" PrimaryKey="item_entry" MainDataHolder="ItemTemplate">
+    <PrimaryColumn Name="item_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="item_randomprop_groups">
+    <PrimaryColumn Name="randomprops_group"/>
+    <PrimaryColumn Name="randomprops_entryid"/>
+  </Table>
+
+  <Table Name="item_randomsuffix_groups">
+    <PrimaryColumn Name="suffix_group"/>
+    <PrimaryColumn Name="randomsuffix_entryid"/>
+  </Table>
+
+
+  <!--GameObjects-->
+  <Table Name="gameobject_root">
+    <PrimaryColumn Name="gameobject_entry"/>
+  </Table>
+
+  <Table Name="gameobject_spawns">
+    <PrimaryColumn Name="spawnid"/>
+    <PrimaryColumn Name="gameobject_entry"/>
+  </Table>
+
+
+  <!-- Quests -->
+  <Table Name="quests_root">
+    <PrimaryColumn Name="QuestId"/>
+  </Table>
+  
+  <Table Name="quests_objectives" MainDataHolder="QuestTemplate">
+    <PrimaryColumn Name="QuestId" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="quests_requirements" MainDataHolder="QuestTemplate">
+    <PrimaryColumn Name="QuestId" TypeName="UInt32"/>
+  </Table>
+  
+  <Table Name="quests_rewards" MainDataHolder="QuestTemplate">
+    <PrimaryColumn Name="QuestId" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="quests_settings" MainDataHolder="QuestTemplate">
+    <PrimaryColumn Name="QuestId" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="quests_creature_starter">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="questId"/>
+    
+    <Var Name="RelationType" Value="Starter"/>
+  </Table>
+
+  <Table Name="quests_creature_finisher">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="questId"/>
+
+    <Var Name="RelationType" Value="Finisher"/>
+  </Table>
+
+  <Table Name="quests_gameobject_starter">
+    <PrimaryColumn Name="gameobject_entry"/>
+    <PrimaryColumn Name="questId"/>
+    
+    <Var Name="RelationType" Value="Starter"/>
+  </Table>
+
+  <Table Name="quests_gameobject_finisher">
+    <PrimaryColumn Name="gameobject_entry"/>
+    <PrimaryColumn Name="questId"/>
+
+    <Var Name="RelationType" Value="Finisher"/>
+  </Table>
+
+
+  <!-- Loot -->
+  <Table Name="loot_creatures">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="NPCCorpse"/>
+  </Table>
+
+  <Table Name="loot_disenchanting">
+    <PrimaryColumn Name="item_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Disenchanting"/>
+  </Table>
+
+  <Table Name="loot_fishing">
+    <PrimaryColumn Name="fishzone_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Fishing"/>
+  </Table>
+
+  <Table Name="loot_gameobject">
+    <PrimaryColumn Name="loot_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="GameObject"/>
+  </Table>
+
+  <Table Name="loot_item">
+    <PrimaryColumn Name="item_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Item"/>
+  </Table>
+
+  <Table Name="loot_pickpocketing">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Pickpocketing"/>
+  </Table>
+
+  <Table Name="loot_prospecting">
+    <PrimaryColumn Name="item_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Prospecting"/>
+  </Table>
+
+  <Table Name="loot_milling">
+    <PrimaryColumn Name="item_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Milling"/>
+  </Table>
+
+  <Table Name="loot_skinning">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="drop_item_entry"/>
+
+    <Var Name="LootType" Value="Skinning"/>
+  </Table>
+  
+  
+  <!--Player Creation Info-->
+  <Table Name="playercreateinfo_races">
+    <PrimaryColumn Name="race"/>
+  </Table>
+
+  <Table Name="playercreateinfo_classes">
+    <PrimaryColumn Name="class" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="playercreateinfo_archetype">
+    <PrimaryColumn Name="race"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+
+  <Table Name="playercreateinfo_spells">
+    <PrimaryColumn Name="race"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+
+  <Table Name="playercreateinfo_skills">
+    <PrimaryColumn Name="race"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+
+  <Table Name="playercreateinfo_items">
+    <PrimaryColumn Name="race"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+
+  <Table Name="playercreateinfo_bars">
+    <PrimaryColumn Name="race"/>
+    <PrimaryColumn Name="class"/>
+  </Table>
+
+  <Table Name="player_levelxp">
+    <PrimaryColumn Name="level"/>
+  </Table>
+  
+  <Table Name="player_levelstats">
+  	<PrimaryColumn Name="race" />
+  	<PrimaryColumn Name="class" />
+  	<PrimaryColumn Name="level" />
+  </Table>
+
+
+  <Table Name="areatriggers_template">
+    <PrimaryColumn Name="TriggerID"/>
+  </Table>
+
+  <!-- World -->
+  <Table Name="world_mapinfo">
+    <PrimaryColumn Name="MapID"/>
+  </Table>
+
+  <Table Name="world_cmdteleports">
+    <PrimaryColumn Name="id"/>
+  </Table>
+
+  <Table Name="battleground_template">
+    <PrimaryColumn Name="battleground_entry"/>
+  </Table>
+
+  <Table Name="battleground_battlemaster">
+    <PrimaryColumn Name="creature_entry"/>
+  </Table>
+  
+  <!-- Spells -->
+  <Table Name="skills_initialability">
+    <PrimaryColumn Name="BaseSkillId" />
+    <PrimaryColumn Name="GainSpellId" />
+  </Table>
+
+  
+  <Table Name="spell_base">
+    <PrimaryColumn Name="SpellId" />
+  </Table>
+
+  <Table Name="spell_effects">
+    <PrimaryColumn Name="SpellId" TypeName="UInt32"/>
+    <PrimaryColumn Name="EffectIndex" TypeName="UInt32"/>
+  </Table>
+
+  <!--Locales-->
+  <Table Name="locales_gameobject" MainDataHolder="GOEntry">
+    <PrimaryColumn Name="gameobject_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="locales_item" MainDataHolder="ItemTemplate">
+    <PrimaryColumn Name="item_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="locales_creature" MainDataHolder="NPCEntry">
+    <PrimaryColumn Name="creature_entry" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="locales_quest" MainDataHolder="QuestTemplate">
+    <PrimaryColumn Name="questId" TypeName="UInt32"/>
+  </Table>
+  
+  <!--Transports-->
+  <Table Name="world_transport">
+    <PrimaryColumn Name="entry"/>
+  </Table>
+</Tables>

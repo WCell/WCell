@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="LevelStatInfo">
+  	<DefaultTable>player_levelstats</DefaultTable>
+  	<Flat Name="Race" Column="race" />
+    <Flat Name="Class" Column="class" />
+    <Flat Name="Level" Column="level" />
+    <Flat Name="Strength" Column="str" />
+    <Flat Name="Agility" Column="agi" />
+    <Flat Name="Stamina" Column="sta" />
+    <Flat Name="Intellect" Column="inte" />
+    <Flat Name="Spirit" Column="spi" />
+  </DataHolder>
+</DataHolders>

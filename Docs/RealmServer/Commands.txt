@@ -1,0 +1,1574 @@
+Help
+	Aliases: Help, ?
+	Usage: Help|? [<part of cmd> [[<part of subcmd>] <part of subcmd> ...]]
+	Description: Shows an overview over all Commands or -if specified- the help for a specific Command (and its subcommands).
+
+########################################
+
+ExecFile
+	Aliases: ExecFile
+	Usage: ExecFile <filename>
+	Description: Executes the given file.
+
+########################################
+
+GiveXP
+	Aliases: GiveXP, XP, Exp
+	Usage: GiveXP|XP|Exp <amount>
+	Description: Gives the given amount of experience.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Level
+	Aliases: Level
+	Usage: Level <level>
+	Description: Sets the player to the given level. Level must be higher than the player's level.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Bank
+	Aliases: Bank
+	Usage: Bank 
+	Description: Opens the bank for the target through oneself (if one leaves the target, it won't be allowed to continue using the Bank).
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Explore
+	Aliases: Explore
+	Usage: Explore [<zone>]
+	Description: Explores the map. If zone is given it will toggle exploration of that zone, else it will explore all zones.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Battleground
+	Aliases: Battleground, BG
+	Usage: Battleground|BG 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		BattlegroundCfg
+			Aliases: Config, Cfg
+			Usage: Battleground|BG Config|Cfg 
+			Description: 
+
+			SubCommands:
+
+				BattlegroundCfgLoad
+					Aliases: Reload, L
+					Usage: Battleground|BG Config|Cfg Reload|L 
+					Description: Reloads the Battleground config.
+
+		BattlegroundList
+			Aliases: List, L
+			Usage: Battleground|BG List|L [-f <bgid>]
+			Description: Shows an overview over all existing BGs. -f (filter) switch only shows BGs of the given type.
+
+		BattlegroundInfo
+			Aliases: Info, I
+			Usage: Battleground|BG Info|I [-i <BGId> <InstanceId>]
+			Description: Shows some information about the current or (if -s switch is used) given Battleground.
+
+		BattlegroundPrepare
+			Aliases: Prepare
+			Usage: Battleground|BG Prepare [-i <BGId> <InstanceId>]
+			Description: Starts preparation time.
+
+		BattlegroundCreate
+			Aliases: Create, C
+			Usage: Battleground|BG Create|C [-[i]|[e][l <level>]] <BGId>
+			Description: Creates a new Instance of the given BG type. -e enters it right away. -i invites the target to the target's Faction's Team. -l determines the level range of the newly created instance.
+
+		BattlegroundEnter
+			Aliases: Enter, E
+			Usage: Battleground|BG Enter|E [-i <BGId> <InstanceId>] [g]
+			Description: Teleports the Character target into the given instance. g teleports the entire group.
+
+		BattlegroundJoin
+			Aliases: Invite, Inv, Join
+			Usage: Battleground|BG Invite|Inv|Join [-i <BGId> <InstanceId>] [[g][s <side>]]
+			Description: Invites oneself or the target to an existing Battleground. Use s to select a side. Use g to select the entire Group of the Character.
+
+		BattlegroundDelete
+			Aliases: Delete, Del
+			Usage: Battleground|BG Delete|Del [-i <BGId> <InstanceId>]
+			Description: Deletes the Battleground of the given Map with the given Id, or the current one if no arguments are supplied.
+
+########################################
+
+Deserter
+	Aliases: FlagDeserter, Deserter
+	Usage: FlagDeserter|Deserter 
+	Description: Flags the target as Deserter who is then kicked out of the Battleground (if he/she is in any) and is rendered unable to join any Battleground for a limited amount of time.
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+Taxi
+	Aliases: Taxi
+	Usage: Taxi 
+	Description: Provides commands to manage Taxi nodes.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		StopTaxi
+			Aliases: Stop, Cancel, C
+			Usage: Taxi Stop|Cancel|C 
+			Description: Stops the current taxi flight (if flying).
+
+		ShowTaxiMap
+			Aliases: Show
+			Usage: Taxi Show [-a]
+			Description: Shows the Taxi-Map. The -a switch automatically activates all Nodes beforehand.
+
+		GotoNode
+			Aliases: Go, Goto
+			Usage: Taxi Go|Goto [<name>|<id>]
+			Description: Goes to the first node matching the given Name or Id.
+
+		NextNode
+			Aliases: GotoNext, TeleNext, Next
+			Usage: Taxi GotoNext|TeleNext|Next 
+			Description: Teleports to the closest Taxi Node in the current Region.
+
+		ListNodes
+			Aliases: List
+			Usage: Taxi List [-rc <Map>][<name>|<id>]
+			Description: Lists all Taxi nodes or only those matching the given Name or Id. -r swtich filters Nodes of the given Region. -rc switch filters Nodes of the current Region.
+
+		TaxiInfo
+			Aliases: Info
+			Usage: Taxi Info 
+			Description: Shows information about the current Taxi-path.
+
+		ActivateNodes
+			Aliases: Activate
+			Usage: Taxi Activate [<name>|<id>]
+			Description: Activates all Taxi nodes or only those matching the given Name or Id.
+
+########################################
+
+Fly
+	Aliases: Fly
+	Usage: Fly [0/1]
+	Description: Toggles flying mode
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Knockback
+	Aliases: Knockback
+	Usage: Knockback <distance>
+	Description: Knocks the target back
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+MultiplySpeed
+	Aliases: MultiplySpeed, SpeedFactor, MultSpeed, Speed
+	Usage: MultiplySpeed|SpeedFactor|MultSpeed|Speed <speedFactor>
+	Description: Sets the overall speed-factor of a Unit
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+WaterWalk
+	Aliases: WaterWalk, WalkWater
+	Usage: WaterWalk|WalkWater [0/1]
+	Description: Toggles the ability to walk on water
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Rooted
+	Aliases: Rooted, Root
+	Usage: Rooted|Root [0/1]
+	Description: Toggles whether the Unit can move or not
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Teleport
+	Aliases: Tele, Teleport
+	Usage: Tele|Teleport [-l[r <region>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]
+	Description: Teleports to the given location. -l lists all named locations that contain the given term. -c teleports to the given coordinates. -a teleports to the location of the given AreaTrigger (if its a global one). The location menu is only going to show up for male Characters (client-side bug).
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+GoTo
+	Aliases: GoTo
+	Usage: GoTo <targetname>
+	Description: Teleports the Target to Character/Unit/GameObject. [NIY]: If Unit or GO are specified, target will be teleported to the nearest one.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+SummonAll
+	Aliases: SummonAll
+	Usage: SummonAll [-f]
+	Description: Summons all online players. -f switch will summon players instantly, not giving them a choice.
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+SummonPlayer
+	Aliases: Summon
+	Usage: Summon [-aq] <name>
+	Description: Summons the Player with the given name. -q will queries Player before teleporting (can be denied). -a switch will use the account name instead of the Char-name.
+	Needs Char: True
+	Required Targets: All
+
+########################################
+
+SpawnDO
+	Aliases: SpawnDO
+	Usage: SpawnDO <spellid> <radius> [<scale>]
+	Description: Spawns a new DynamicObjects with the given parameters
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+ClearDOs
+	Aliases: ClearDOs
+	Usage: ClearDOs 
+	Description: Removes all staticly spawned DOs
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+ListDOs
+	Aliases: ListDOs
+	Usage: ListDOs 
+	Description: Shows a list of all available Dynamic Objects
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+GO
+	Aliases: GO, GOs, GameObject
+	Usage: GO|GOs|GameObject 
+	Description: Used for interaction with and creation of GameObjects
+	Needs Char: True
+	Required Targets: None
+
+	SubCommands:
+
+		Spawn
+			Aliases: Spawn, Create, Add
+			Usage: GO|GOs|GameObject Spawn|Create|Add [-c] [<GOId>]
+			Description: Creates a new GameObject with the given id at the current position. -c spawns the closest GO in the Area and teleports you there.
+
+		Select
+			Aliases: Select, Sel
+			Usage: GO|GOs|GameObject Select|Sel 
+			Description: Selects the next GameObject in front of you
+
+		Deselect
+			Aliases: Deselect, Des
+			Usage: GO|GOs|GameObject Deselect|Des 
+			Description: Deselects your currently selected GameObject
+
+		Set
+			Aliases: Set, S
+			Usage: GO|GOs|GameObject Set|S <some.prop> <someValue>
+			Description: Sets properties on the currently selected GO
+
+		Get
+			Aliases: Get, G
+			Usage: GO|GOs|GameObject Get|G <some.prop>
+			Description: Gets properties on the currently selected GO
+
+		Call
+			Aliases: Call
+			Usage: GO|GOs|GameObject Call <some.method> [arg1 [, arg2, ...]]
+			Description: Calls the given method with parameters on the currently selected GO
+
+		Anim
+			Aliases: Anim, Animation
+			Usage: GO|GOs|GameObject Anim|Animation <animValue>
+			Description: Animates the selected GO with the given parameter
+
+########################################
+
+HighlightGO
+	Aliases: HighlightGOs, HLGOs
+	Usage: HighlightGOs|HLGOs [0/1]
+	Description: Highlights all GOs around yourself
+	Needs Char: True
+	Required Targets: None
+
+########################################
+
+Portal
+	Aliases: Portal
+	Usage: Portal <target loc>
+	Description: Creates a new Portal to the given Target location.
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+Pet
+	Aliases: Pet
+	Usage: Pet 
+	Description: A set of commands to manage pets.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+SendRaw
+	Aliases: SendRaw
+	Usage: SendRaw <opcode> [<int value1> [<int value2> ...]]
+	Description: Sends a raw packet to the client
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+SendPacket
+	Aliases: SendPacket, SendP
+	Usage: SendPacket|SendP <packet> <args>
+	Description: Sends the given packet with corresponding args to the client
+	Needs Char: False
+	Required Targets: Player
+
+	SubCommands:
+
+		SendSpellDamageLog
+			Aliases: SpellLog, SLog
+			Usage: SendPacket|SendP SpellLog|SLog [<unkBool> [<flags> [<spell> [<damage> [<overkill> [<schools> [<absorbed> [<resisted> [<blocked>]]]]]]]]]
+			Description: Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.
+
+		SendSpellMiss
+			Aliases: SpellMiss, SM
+			Usage: SendPacket|SendP SpellMiss|SM <spellId> <0/1> <defaultReason>
+			Description: Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.
+
+		SendBGError
+			Aliases: BGError, BGErr
+			Usage: SendPacket|SendP BGError|BGErr <err> [<bg>]
+			Description: 
+
+########################################
+
+POI
+	Aliases: POI
+	Usage: POI [-[e][f] <extra> <flags>] <x> <y> [<name>]
+	Description: Sends a Point of interest entry to the target (shows up on the minimap while not too close).
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+ModAuras
+	Aliases: ModAuras, MAura
+	Usage: ModAuras|MAura <n> <subcommand> ...
+	Description: Modifies the nth Aura of the target
+	Needs Char: False
+	Required Targets: Unit
+
+	SubCommands:
+
+		ModLevel
+			Aliases: Level, Lvl, L
+			Usage: ModAuras|MAura Level|Lvl|L <AuraLevel>
+			Description: Modifies the Level of the nth Aura.
+
+		ModFlags
+			Aliases: Flags, Fl, F
+			Usage: ModAuras|MAura Flags|Fl|F <AuraFlags>
+			Description: Modifies the Flags of the nth Aura.
+
+########################################
+
+Load
+	Aliases: Load
+	Usage: Load 
+	Description: Loads static data from DB.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		Items
+			Aliases: Items
+			Usage: Load Items 
+			Description: Loads all ItemTemplates and -Spawns.
+
+		GOs
+			Aliases: GOs
+			Usage: Load GOs 
+			Description: Loads all GOTemplates and spawns.
+
+		NPCs
+			Aliases: NPCs
+			Usage: Load NPCs [esw]
+			Description: Loads all NPC definitions from files and/or DB. e: Load entries; s: Load Spawns; w: Load Waypoints (together with s)
+
+		LoadQuest
+			Aliases: Quests
+			Usage: Load Quests 
+			Description: Loads all Quest definitions from files and/or DB.
+
+		Loot
+			Aliases: Loot
+			Usage: Load Loot 
+			Description: Loads all Loot from files and/or DB.
+
+		All
+			Aliases: All
+			Usage: Load All [-w]
+			Description: Loads all static content definitions from DB. The -w switch will ensure that execution (of the current Region) won't continue until Loading finished.
+
+########################################
+
+ForgetSelf
+	Aliases: ForgetSelf
+	Usage: ForgetSelf 
+	Description: 
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+WS
+	Aliases: WorldState, WS
+	Usage: WorldState|WS 
+	Description: 
+	Needs Char: False
+	Required Targets: Player
+
+	SubCommands:
+
+		InitWS
+			Aliases: Init, I
+			Usage: WorldState|WS Init|I <area> [<state> <value>[ <state2> <value2> ...]]
+			Description: 
+
+########################################
+
+Debug
+	Aliases: Debug
+	Usage: Debug 
+	Description: Provides Debug-capabilities and management of Debug-tools for Devs.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ReloadPADefs
+			Aliases: ReloadDefs, Reload
+			Usage: Debug ReloadDefs|Reload 
+			Description: Reloads the Packet-definitions for the Packet Analyzer.
+
+		GC
+			Aliases: GC
+			Usage: Debug GC 
+			Description: Don't use this unless you are well aware of the stages and heuristics involved in the GC process!
+
+		Info
+			Aliases: Info
+			Usage: Debug Info 
+			Description: Shows all available Debug information.
+
+		ObjectPool
+			Aliases: ObjectPool, Obj
+			Usage: Debug ObjectPool|Obj 
+			Description: Overviews the Object Pools
+
+		BufferPool
+			Aliases: Buffers, Buf
+			Usage: Debug Buffers|Buf 
+			Description: Overviews the Buffer Managers.
+
+########################################
+
+IOWait
+	Aliases: IOWait
+	Usage: IOWait 
+	Description: Lets the current Thread wait for the next tick of the IO Queue. Don't use on public servers if you don't know what you are doing!
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Content
+	Aliases: Content, Cont
+	Usage: Content|Cont 
+	Description: Provides commands to manage the static content.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ContentLoad
+			Aliases: Load, L, Reload
+			Usage: Content|Cont Load|L|Reload 
+			Description: Reloads the content-definitions. This is useful when applying changes to the underlying content system.
+
+		ContentCheck
+			Aliases: Check, Ch, C
+			Usage: Content|Cont Check|Ch|C 
+			Description: Checks whether all currently loaded content-definitions are correctly reflecting the DB-structure.
+
+########################################
+
+Addon
+	Aliases: Addon
+	Usage: Addon 
+	Description: Provides commands for managing Addons
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ListAddons
+			Aliases: List, L
+			Usage: Addon List|L 
+			Description: Lists all active Addons.
+
+		LoadAddon
+			Aliases: Load
+			Usage: Addon Load <Path>
+			Description: Loads a new Addon from the given file.
+
+########################################
+
+Ticket
+	Aliases: Ticket, Tickets
+	Usage: Ticket|Tickets 
+	Description: Provides all commands necessary to work with Tickets.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SelectPlayerTicket
+			Aliases: Select, Sel
+			Usage: Ticket|Tickets Select|Sel [<playername>]
+			Description: Selects the Ticket of the targeted Player or the Player with the given name.
+
+		SelectNextTicket
+			Aliases: SelectNext, SelNext, Next, N
+			Usage: Ticket|Tickets SelectNext|SelNext|Next|N 
+			Description: Selects the next unhandled ticket.
+
+		UnselectTicket
+			Aliases: Unselect, U
+			Usage: Ticket|Tickets Unselect|U 
+			Description: Unselects the current Ticket.
+
+		GotoTicket
+			Aliases: Goto, Go, Tele
+			Usage: Ticket|Tickets Goto|Go|Tele 
+			Description: Teleports directly to the ticket issuer or his/her ticket posting location if offline.
+
+		ListTickets
+			Aliases: List, L
+			Usage: Ticket|Tickets List|L 
+			Description: Shows all currently active tickets.
+
+		CurrentTicket
+			Aliases: Current, Cur
+			Usage: Ticket|Tickets Current|Cur 
+			Description: Shows the Ticket you are currently handling.
+
+		ShowTicket
+			Aliases: Show, S
+			Usage: Ticket|Tickets Show|S 
+			Description: Shows the Target's currently active Ticket.
+
+		DeleteTicket
+			Aliases: Delete, Del, D, Remove, R
+			Usage: Ticket|Tickets Delete|Del|D|Remove|R 
+			Description: Deletes the current Ticket.
+
+########################################
+
+Kill
+	Aliases: Kill
+	Usage: Kill 
+	Description: Kills your current target.
+	Needs Char: True
+	Required Targets: None
+
+########################################
+
+Resurrect
+	Aliases: Resurrect, Res
+	Usage: Resurrect|Res 
+	Description: Resurrects the Unit
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+Race
+	Aliases: Race, SetRace
+	Usage: Race|SetRace <race>
+	Description: Sets the Unit's race. Also adds the Race's language.
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+InvulMode
+	Aliases: Invul
+	Usage: Invul [0|1]
+	Description: Toggles Invulnerability
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+Say
+	Aliases: Say
+	Usage: Say <text>
+	Description: Say something
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Yell
+	Aliases: Yell
+	Usage: Yell <text>
+	Description: Yell something
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Inventory
+	Aliases: Inv, Item
+	Usage: Inv|Item 
+	Description: Used for manipulation of Items and Inventory.
+	Needs Char: False
+	Required Targets: Player
+
+	SubCommands:
+
+		PurgeInv
+			Aliases: PurgeAll, Clear
+			Usage: Inv|Item PurgeAll|Clear 
+			Description: Removes *all* Items from the target Character. Use carefully!
+
+		Strip
+			Aliases: Strip
+			Usage: Inv|Item Strip 
+			Description: Strips the Target naked and puts all the equipment into his/her bag (given there is enough space)
+
+		AddItem
+			Aliases: Add, Create
+			Usage: Inv|Item Add|Create [-ea] <itemid> [<amount> [<stacks>]]
+			Description: Adds the given amount of stacks (default: 1) of the given amount of the given item to your backpack (if there is space left). -a switch auto-equips, -e switch only adds if not already present.
+
+		CreateSet
+			Aliases: CreateSet, AddSet
+			Usage: Inv|Item CreateSet|AddSet <setId>
+			Description: Creates all items of the set with the given id and puts them into a new bag which gets auto-equipped (requires free bag-slot)
+
+		FindItem
+			Aliases: Find
+			Usage: Inv|Item Find [-l <locale>] <search text>
+			Description: Search for Items whose name contains the specified text. If no locale specified, it will use the User's default.
+
+		EnchantItem
+			Aliases: Enchant, Ench
+			Usage: Inv|Item Enchant|Ench [-l <text>]|(<slot> <enchantid> [<EnchantSlot>])
+			Description: Enchants the Item at the given slot. Alternatively the -l switch lists all enchants which match the given text
+
+		DestroyItem
+			Aliases: Destroy, Remove, Delete, Del
+			Usage: Inv|Item Destroy|Remove|Delete|Del 
+			Description: Removes the Item at the given Slot from the target Character.
+
+		ItemSet
+			Aliases: Set, S
+			Usage: Inv|Item Set|S <invslot> <some.prop> <someValue>
+			Description: Sets properties on the Item in the given slot
+
+		ItemMod
+			Aliases: Mod, M
+			Usage: Inv|Item Mod|M <invslot> <some.prop> (+-|&^*\...) <expr>
+			Description: Mods properties on the Item in the given slot
+
+		ItemGet
+			Aliases: Get, G
+			Usage: Inv|Item Get|G <invslot> <some.prop>
+			Description: Gets properties on the Item in the given slot
+
+		ItemCall
+			Aliases: Call, C
+			Usage: Inv|Item Call|C <invslot> <call-args>
+			Description: Calls the given method with parameters on the Item in the given slot.
+
+########################################
+
+DumpInventory
+	Aliases: DumpInventory, DumpInv
+	Usage: DumpInventory|DumpInv 
+	Description: Dumps all items that are currently in the backpack
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Quest
+	Aliases: Quest
+	Usage: Quest 
+	Description: Provides a set of commands to dynamically change status of Quests and more.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ResetQuest
+			Aliases: Reset, Start
+			Usage: Quest Reset|Start <questid>
+			Description: Removes all progress of the given Quest (if present) and starts it (again).
+
+		CancelQuest
+			Aliases: Cancel
+			Usage: Quest Cancel <questid>
+			Description: Cancels the given active Quest.
+
+		GiveQuestReward
+			Aliases: GiveReward, Reward
+			Usage: Quest GiveReward|Reward <questid> [<choiceSlot>]
+			Description: Gives the reward of the given quest to the Character. The optional choiceSlot determines the choosable item (if any)
+
+		QuestGoto
+			Aliases: Goto
+			Usage: Quest Goto <id>[ <starter index>[ <template index>]
+			Description: Teleports the target to the first starter of the given quest or the one at the given index.
+
+		QuestLookup
+			Aliases: Lookup, Find
+			Usage: Quest Lookup|Find <search terms>
+			Description: Lists all quests matching the given search term.
+
+########################################
+
+SendQuest
+	Aliases: QuestSend, SendQuest
+	Usage: QuestSend|SendQuest 
+	Description: Provides a set of debug commands to send quest packets dynamically.
+	Needs Char: False
+	Required Targets: Player
+
+	SubCommands:
+
+		SendQuestInvalid
+			Aliases: Invalid
+			Usage: QuestSend|SendQuest Invalid <reason>
+			Description: Sends the SendQuestInvalid packet with the given reason
+
+		SendQuestPushResult
+			Aliases: PushResult
+			Usage: QuestSend|SendQuest PushResult <reason>
+			Description: Sends the SendQuestPushResult packet with the given reason, currently sends from triggering char
+
+		SendQuestGiverQuestDetails
+			Aliases: GiverQuestDetails
+			Usage: QuestSend|SendQuest GiverQuestDetails <quest id>
+			Description: Sends the QuestGiverQuestDetails packet with the given quest id
+
+		SendQuestGiverQuestQuestComplete
+			Aliases: GiverQuestComplete
+			Usage: QuestSend|SendQuest GiverQuestComplete <quest id>
+			Description: Sends the QuestGiverQuestComplete packet with the given quest id
+
+########################################
+
+Save
+	Aliases: Save
+	Usage: Save 
+	Description: Updates all changes on the given Character
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Email
+	Aliases: Email, SetEmail
+	Usage: Email|SetEmail <email>
+	Description: Sets the Account's current email address.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Password
+	Aliases: Password, Pass
+	Usage: Password|Pass <oldpw> <newpw> <newpw>
+	Description: Changes your password.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Where
+	Aliases: Where, Wh
+	Usage: Where|Wh 
+	Description: Tells you information about your location
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Info
+	Aliases: Info, I, Address, Addr
+	Usage: Info|I|Address|Addr [-l]
+	Description: Gives some server info. -l lists all players (if not too many).
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+GodMode
+	Aliases: GodMode, GM
+	Usage: GodMode|GM [0|1]
+	Description: Toggles the GodMode
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Notify
+	Aliases: Notify, SendNotification
+	Usage: Notify|SendNotification <text>
+	Description: Notifies the target with a flashing message.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Guild
+	Aliases: Guild
+	Usage: Guild 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		CreateGuild
+			Aliases: Create, C
+			Usage: Guild Create|C [-[n <leadername>]] <name>
+			Description: Create a guild with given name. -n allows you to select the leader by name.
+
+		JoinGuild
+			Aliases: Add, A
+			Usage: Guild Add|A [-[n <membername>]] <name>
+			Description: Let somebody join the guild with the given name. -n allows you to select the new member by name.
+
+		LeaveGuild
+			Aliases: Leave, L
+			Usage: Guild Leave|L [-[n <membername>]] <name>
+			Description: Let somebody leave the guild with the given name. -n allows you to select the member by name.
+
+		GuildList
+			Aliases: List, L
+			Usage: Guild List|L [<searchterm>]
+			Description: Lists all Guild or only those with a matching name.
+
+		DisbandGuild
+			Aliases: Disband, D
+			Usage: Guild Disband|D <name> <name confirm>
+			Description: Disbands the guild with the given name.
+
+		GuildChat
+			Aliases: Say, Msg
+			Usage: Guild Say|Msg [-n <name>] <text>
+			Description: Sends the given text to your, your target's or the specified Guild. -n can be ommited if not used by/on a Character.
+
+########################################
+
+Skill
+	Aliases: Skill, Skills, Sk
+	Usage: Skill|Skills|Sk 
+	Description: Used for manipulation of Skills.
+	Needs Char: False
+	Required Targets: Player
+
+	SubCommands:
+
+		Set
+			Aliases: Set, S
+			Usage: Skill|Skills|Sk Set|S <skill> [<value> [<maxValue>]]
+			Description: Sets the given Skill to the given values (or uses 1 by default)
+
+		Lean
+			Aliases: Learn, L
+			Usage: Skill|Skills|Sk Learn|L [-r] <skill> [<amount>]
+			Description: Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.
+
+		Tier
+			Aliases: Tier, SetTier, ST
+			Usage: Skill|Skills|Sk Tier|SetTier|ST <skill> <tier>
+			Description: Set the given Skill to the given Tier
+
+########################################
+
+Region
+	Aliases: Region, Rgn
+	Usage: Region|Rgn 
+	Description: Provides Commands to manipulate Regions and their content.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SpawnRegion
+			Aliases: Spawn, S
+			Usage: Region|Rgn Spawn|S [-a|<name>]
+			Description: Spawns GOs and NPCs in the current (or specified) region. -a switch spawns all active Regions.(Only used for development purposes where the regions arent spawned automatically.)
+
+		ClearRegion
+			Aliases: Clear
+			Usage: Region|Rgn Clear [<name>]
+			Description: Removes all objects from the current or given Region.
+
+		ToggleRegionUpdates
+			Aliases: Updates, Upd
+			Usage: Region|Rgn Updates|Upd 0|1
+			Description: Toggles region updates in all Regions on or off
+
+		RegionList
+			Aliases: List, L
+			Usage: Region|Rgn List|L 
+			Description: Lists active regions
+
+########################################
+
+SpawnZone
+	Aliases: SpawnZone
+	Usage: SpawnZone [<name>]
+	Description: Spawns GOs and NPCs in the current (or specified) Zone. - Only used for development purposes where the regions arent spawned automatically.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+DB
+	Aliases: DB, Database
+	Usage: DB|Database 
+	Description: Offers commands to manipulate or interact with the DB.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		DropDB
+			Aliases: Drop, Purge
+			Usage: DB|Database Drop|Purge 
+			Description: WARNING: This drops and re-creates the entire internal WCell Database Schema.
+
+		DBInfo
+			Aliases: Info, ?
+			Usage: DB|Database Info|? 
+			Description: Shows some info about the DB currently being used.
+
+########################################
+
+AI
+	Aliases: AI
+	Usage: AI 
+	Description: Provides Commands to interact with AI.
+	Needs Char: False
+	Required Targets: Unit
+
+	SubCommands:
+
+		AIActive
+			Aliases: Active
+			Usage: AI Active <1/0>
+			Description: Activates/Deactivates AI of target.
+
+		AIMoveToMe
+			Aliases: MoveToMe, Come
+			Usage: AI MoveToMe|Come 
+			Description: Moves a target NPC to the character.
+
+		AIFollow
+			Aliases: Follow
+			Usage: AI Follow 
+			Description: Moves a target NPC to the character.
+
+########################################
+
+Mail
+	Aliases: Mail
+	Usage: Mail 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SendMail
+			Aliases: Send, S
+			Usage: Mail Send|S <recipient> <subject>, <text>
+			Description: 
+
+########################################
+
+World
+	Aliases: World
+	Usage: World 
+	Description: Provides command to macro-manage the ingame World.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SaveWorld
+			Aliases: Save, S
+			Usage: World Save|S 
+			Description: Saves all current progress in the ingame world.
+
+########################################
+
+LoveAll
+	Aliases: LoveAll
+	Usage: LoveAll 
+	Description: Makes all factions fall in love with the Owner
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+HateAll
+	Aliases: HateAll
+	Usage: HateAll 
+	Description: Makes all factions hate the Owner
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Shutdown
+	Aliases: Shutdown
+	Usage: Shutdown [<delay before shutdown in seconds>]
+	Description: Shuts down the server after the given delay (default = 10s). Once started, calling this command again will cancel the shutdown-sequence.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Broadcast
+	Aliases: Broadcast
+	Usage: Broadcast <text>
+	Description: Broadcasts the given text throughout the world.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Kick
+	Aliases: Kick, Boot
+	Usage: Kick|Boot [-n <name>][-d <seconds>] [<reason>]
+	Description: Kicks your current target with an optional delay in seconds (default: 20 - can be 0) and an optional reason.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Ban
+	Aliases: Ban
+	Usage: Ban [-[smhdw] [<seconds>] [<minutes>] [<hours>] [<days>] [<weeks>]]
+	Description: Deactivates the given Account. Reactivation time can optionally also be specified.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+SetRole
+	Aliases: SetRole, Role, SetPriv
+	Usage: SetRole|Role|SetPriv <RoleName>
+	Description: Sets the Account's Role which determines the User's rights and privileges.
+	Needs Char: False
+	Required Targets: Player
+
+########################################
+
+Global
+	Aliases: Global
+	Usage: Global [-pi] <command + command args>
+	Description: Executes the given command on everyone ingame. Use carefully! -p Only on Players (exclude staff members). -i Include self
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Cache
+	Aliases: Cache
+	Usage: Cache 
+	Description: Provides commands to manage the server-side cache of static data.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		PurgeCache
+			Aliases: Purge
+			Usage: Cache Purge 
+			Description: Removes all cache-files.
+
+########################################
+
+Config
+	Aliases: Config, Cfg
+	Usage: Config|Cfg 
+	Description: Provides commands to manage the Configuration.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SetGlobal
+			Aliases: Set, S
+			Usage: Config|Cfg Set|S <globalVar> <value>
+			Description: Sets the value of the given global variable.
+
+		GetGlobal
+			Aliases: Get, G
+			Usage: Config|Cfg Get|G <globalVar>
+			Description: Gets the value of the given global variable.
+
+		ListGlobals
+			Aliases: List, L
+			Usage: Config|Cfg List|L [<name Part>]
+			Description: Lists all global variables. If specified only shows variables that contain the given name Part.
+
+		SaveConfig
+			Aliases: Save
+			Usage: Config|Cfg Save 
+			Description: Saves the current configuration.
+
+		LoadConfig
+			Aliases: Load
+			Usage: Config|Cfg Load 
+			Description: Loads the configuration again.
+
+########################################
+
+AuthRemote
+	Aliases: AuthRemote, Auth
+	Usage: AuthRemote|Auth <Command <args>>
+	Description: Executes a command on the AuthServer.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Exception
+	Aliases: Exception, Excep
+	Usage: Exception|Excep 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ListException
+			Aliases: List, L
+			Usage: Exception|Excep List|L [<match>]
+			Description: 
+
+		ShowException
+			Aliases: Show, S
+			Usage: Exception|Excep Show|S [<index>]
+			Description: If no index is given, will show the last Exception.
+
+########################################
+
+RealmIPC
+	Aliases: IPC
+	Usage: IPC [0/1]
+	Description: Toggles the IPC-device that connects Realm- and Auth-Server.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Log
+	Aliases: Log
+	Usage: Log 
+	Description: Gets and sets logging settings.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		ToggleLevel
+			Aliases: ToggleLevel, Level, Lvl, TL
+			Usage: Log ToggleLevel|Level|Lvl|TL <Trace|Debug|Info|Warn|Error|Fatal> [<1/0>]
+			Description: Globally toggles whether messages of the corresponding level should be logged (to console, as well as to file or any other target that is specified).
+
+########################################
+
+DumpThreadPoolInfo
+	Aliases: DumpTPInfo
+	Usage: DumpTPInfo 
+	Description: Dumps information about the thread pool.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+DumpNetworkInfo
+	Aliases: DumpNetworkInfo
+	Usage: DumpNetworkInfo 
+	Description: Dumps network information including data sent and received, buffer pools, etc.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Set
+	Aliases: Set, S
+	Usage: Set|S <prop.subprop.otherprop.etc> <value>
+	Description: Sets the value of the given prop
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Get
+	Aliases: Get, G
+	Usage: Get|G <prop.subprop.otherprop.etc>
+	Description: Gets the value of the given prop
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+ModProp
+	Aliases: Mod, M
+	Usage: Mod|M <prop> <op> <value> [<op> <value> [<op> <value>...]]
+	Description: Modifies the given prop by applying it with an evaluated expression
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Call
+	Aliases: Call, C
+	Usage: Call|C <some.Method> [param1, [param2 [...]]]
+	Description: Calls the given method with the given params
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Remove
+	Aliases: Remove, Delete, Del
+	Usage: Remove|Delete|Del 
+	Description: Deletes the current target (NPC or GO)
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+ClearArea
+	Aliases: ClearArea
+	Usage: ClearArea [<radius>]
+	Description: Clears all Objects, Corpses and NPCs around yourself in the given or default radius (10), up to a max of 100 yards.
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Distance
+	Aliases: Distance, Dist
+	Usage: Distance|Dist 
+	Description: Measures the distance between you and the currently target object (including selected GOs).
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+ServerStats
+	Aliases: Stats
+	Usage: Stats 
+	Description: Provides commands to show and manage server-statistics.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+Channel
+	Aliases: Channel
+	Usage: Channel <spellid>
+	Description: Channels the given Spell on the current Target.
+	Needs Char: True
+	Required Targets: All
+
+########################################
+
+Pin
+	Aliases: Pin, PinDown, Freeze
+	Usage: Pin|PinDown|Freeze 
+	Description: Pins the targeted Unit down. Pinned down Units cannot move, fight or logout.
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+ListPlayers
+	Aliases: ListPlayers
+	Usage: ListPlayers [-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]
+	Description: Lists all currently logged in Players.
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+ShowCastFail
+	Aliases: ShowCastFail
+	Usage: ShowCastFail <spell> <reason>
+	Description: Sends a spell failed packet
+	Needs Char: False
+	Required Targets: None
+
+########################################
+
+ShowBankSlotResult
+	Aliases: ShowBankSlotResult
+	Usage: ShowBankSlotResult <value>
+	Description: Sends the BankSlotResult packet
+	Needs Char: True
+	Required Targets: None
+
+########################################
+
+RemoveAuras
+	Aliases: RemoveAuras, RemoveBuffs
+	Usage: RemoveAuras|RemoveBuffs 
+	Description: Removes all Buffs and Debuffs
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+DumpAuras
+	Aliases: DumpAuras
+	Usage: DumpAuras [<alsoPassive>]
+	Description: Dumps all currently active Auras, also shows invisible effects if second param is specified
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+ClearCooldowns
+	Aliases: ClearCooldowns
+	Usage: ClearCooldowns 
+	Description: Clears all reamining spell-cooldowns
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+AddSpell
+	Aliases: spelladd, addspell
+	Usage: spelladd|addspell 
+	Description: Deprecated - Use "spell add" instead.
+	Needs Char: False
+	Required Targets: Unit
+
+########################################
+
+Spell
+	Aliases: Spell, Spells, Sp
+	Usage: Spell|Spells|Sp 
+	Description: Provides commands to interact with the Spells of the Target.
+	Needs Char: False
+	Required Targets: Unit
+
+	SubCommands:
+
+		AddSpell
+			Aliases: Add, A
+			Usage: Spell|Spells|Sp Add|A [-[r][c [<class>]]] [<spell> [<cooldown for AI>]]
+			Description: Adds the given spell. -r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills). -c [<class>] adds all spells of the Character's or a given class.-t (talents) adds the highest rank of all spells of all talents
+
+		RemoveSpell
+			Aliases: Remove, R
+			Usage: Spell|Spells|Sp Remove|R <spell>
+			Description: Removes the given Spell
+
+		PurgeSpells
+			Aliases: Purge
+			Usage: Spell|Spells|Sp Purge 
+			Description: Removes all spells but the initial ones.
+
+		Triggerpell
+			Aliases: Trigger, T
+			Usage: Spell|Spells|Sp Trigger|T <spellid>
+			Description: Triggers the given spell on the target of the command.
+
+########################################
+
+SpellVisual
+	Aliases: SpellVisual, PlaySpellVisual, SpellAnim
+	Usage: SpellVisual|PlaySpellVisual|SpellAnim <SpellId>
+	Description: Plays the visual of the given spell
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+NPC
+	Aliases: NPC
+	Usage: NPC 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		AddNPC
+			Aliases: Add, A, Create
+			Usage: NPC Add|A|Create [-[i][d <dest>]] <entry> [<amount>]
+			Description: Creates one or more NPCs with the given entry id. NPCs are set to active by default. Use -i to spawn an idle NPC. Use -d <dest> to spawn an NPC at a given location.
+
+		SpawnNPC
+			Aliases: AddSpawn, Spawn
+			Usage: NPC AddSpawn|Spawn [-c]|[<spawnid> [<amount>]]
+			Description: Creates the NPC-spawnpoint with the given id. -c switch simply creates the spawnpoint that is closest to you
+
+		NPCGoto
+			Aliases: Goto
+			Usage: NPC Goto (-s spawnindex)|(<id>[ <spawn index>])
+			Description: Teleports the target to the first (or given spawn-index of) NPC of the given type.
+
+		SelectNPC
+			Aliases: Select, Sel
+			Usage: NPC Select|Sel [-[n][d] [<name>][[<destination>]]]
+			Description: Selects the NPC whose name matches the given name and is closest to the given location. All arguments are optional. If no arguments are supplied, the first available NPC will be selected. If the destination is not given, it will search, starting at the current Target or oneself.
+
+########################################
+
+Respawn
+	Aliases: Respawn
+	Usage: Respawn [<radius>]
+	Description: Respawns all NPCs in the area. Radius by default = 50
+	Needs Char: False
+	Required Targets: All
+
+########################################
+
+Vehicle
+	Aliases: Vehicle, Veh
+	Usage: Vehicle|Veh 
+	Description: Provides commands to manage Vehicles.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		VehicleClear
+			Aliases: Clear, C
+			Usage: Vehicle|Veh Clear|C 
+			Description: Removes all passengers from a Vehicle.
+
+########################################
+
+Spawn
+	Aliases: Spawn
+	Usage: Spawn 
+	Description: 
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		SpawnShow
+			Aliases: Show, Display
+			Usage: Spawn Show|Display 
+			Description: 
+
+		SpawnMenu
+			Aliases: Menu
+			Usage: Spawn Menu 
+			Description: 
+
+########################################
+
+Control
+	Aliases: Control, Enslave
+	Usage: Control|Enslave [-p]
+	Description: Makes the current Target your minion. -p makes it your current Pet or companion if possible.
+	Needs Char: True
+	Required Targets: None
+
+########################################
+
+Abandon
+	Aliases: Abandon
+	Usage: Abandon 
+	Description: Abandons the current Target
+	Needs Char: True
+	Required Targets: None
+
+########################################
+
+Instance
+	Aliases: Instance, Inst
+	Usage: Instance|Inst 
+	Description: Provides some Commands to manage and use Instances.
+	Needs Char: False
+	Required Targets: None
+
+	SubCommands:
+
+		InstanceListAll
+			Aliases: List, L
+			Usage: Instance|Inst List|L [<MapId>]
+			Description: Lists all active Instances, or those of the given Map.
+
+		InstanceCreate
+			Aliases: Create, C
+			Usage: Instance|Inst Create|C [-e] <MapId> [<Heroic>]
+			Description: Creates a new Instance of the given Map. -e enters it right away.
+
+		InstanceEnter
+			Aliases: Enter, E
+			Usage: Instance|Inst Enter|E <MapId> <InstanceId> [<entrance>]
+			Description: 
+
+		InstanceDelete
+			Aliases: Delete, Del
+			Usage: Instance|Inst Delete|Del [<MapId> <InstanceId>]
+			Description: Delets the Instance of the given Map with the given Id, or the current one if no arguments are supplied.
+
+########################################
+

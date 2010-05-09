@@ -1,0 +1,54 @@
+/*************************************************************************
+ *
+ *   file		: TrackCreatures.cs
+ *   copyright		: (C) The WCell Team
+ *   email		: info@wcell.org
+ *   last changed	: $LastChangedDate: 2010-01-28 13:29:18 +0100 (to, 28 jan 2010) $
+ *   last author	: $LastChangedBy: dominikseifert $
+ *   revision		: $Rev: 1230 $
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *************************************************************************/
+
+using WCell.Constants;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Entities;
+
+namespace WCell.RealmServer.Spells.Auras.Handlers
+{
+	public class TrackCreaturesHandler : AuraEffectHandler
+	{
+		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		{
+			if (!(target is Character))
+			{
+				failReason = SpellFailedReason.TargetNotPlayer;
+			}
+			else if (((Character)target).CurrentTracker != null)
+			{
+				((Character)target).CurrentTracker.Remove(true);
+			}
+		}
+
+		protected internal override void Apply()
+		{
+			var chr = ((Character)m_aura.Auras.Owner);
+			chr.CurrentTracker = m_aura;
+
+			// masked value in diguise
+			chr.CreatureTracking = (CreatureTrackingMask)(1 << (m_spellEffect.MiscValue - 1));
+		}
+
+		protected internal override void Remove(bool cancelled)
+		{
+			var chr = ((Character)m_aura.Auras.Owner);
+			chr.CurrentTracker = null;
+
+			chr.CreatureTracking = 0;
+		}
+	}
+};

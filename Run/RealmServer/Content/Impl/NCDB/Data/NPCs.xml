@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="WaypointEntry">
+    <DefaultTable>creature_movement</DefaultTable>
+    <Flat Name="SpawnId" Column="spawnid" />
+    <Flat Name="Id" Column="waypointid" />
+    <Flat Name="MapId" Column="map" />
+    <Nested Name="Position">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+    <Flat Name="WaitTime" Column="waittime" />
+    <Flat Name="Flags" Column="flags" />
+    <!--<Flat Name="Emote" Column="emote" />-->
+    <Flat Name="Orientation" Column="orientation" />
+  </DataHolder>
+
+  <DataHolder Name="NPCEntry">
+    <DefaultTable>creature_root</DefaultTable>
+    <DefaultTable>creature_template</DefaultTable>
+
+    <Flat Name="Id" Column="creature_entry" Table="creature_root" />
+    <FlatArray Name="Names" Table="locales_creature" Pattern="name_loc{#}" Offset="1"/>
+    <FlatArray Name="Titles" Table="locales_creature" Pattern="subname_loc{#}" Offset="1"/>
+    <Flat Name="Info" Column="info_str" Table="creature_root" />
+    <Flat Name="EntryFlags" Column="Flags1" Table="creature_root" />
+    <Flat Name="Type" Column="type" Table="creature_root" />
+    <Flat Name="FamilyId" Column="family" Table="creature_root" />
+    <Flat Name="Rank" Column="rank" Table="creature_root" />
+    <Flat Name="SpellGroupId" Column="unk310" Table="creature_root" />
+    <FlatArray Name="DisplayIds" Table="creature_root">
+      <Column Name="displayid"/>
+      <Column Name="displayid2"/>
+      <Column Name="displayid3"/>
+      <Column Name="displayid4"/>
+    </FlatArray>
+    <Flat Name="Float1" Column="unknown_float1" Table="creature_root" />
+    <Flat Name="Float2" Column="unknown_float2" Table="creature_root" />
+    <Flat Name="IsLeader" Column="leader" Table="creature_root" />
+    
+    <Flat Name="MinLevel" Column="MinLvl" Table="creature_template" />
+    <Flat Name="MaxLevel" Column="MaxLvl" Table="creature_template" />
+    <Flat Name="DefaultFactionId" Column="Faction" Table="creature_template" />
+    <Flat Name="MinHealth" Column="MinHP" Table="creature_template" />
+    <Flat Name="MaxHealth" Column="MaxHP" Table="creature_template" />
+    <Flat Name="Mana" Column="Mana" Table="creature_template" />
+    <Flat Name="Scale" Column="Scale" Table="creature_template" />
+    <Flat Name="Flags" Column="NpcFlags" Table="creature_template" />
+    <Flat Name="AttackPower" Column="AttackPower" Table="creature_template" />
+    <Flat Name="RangedAttackPower" Column="RangedAttackPower" Table="creature_template" />
+    <Flat Name="DamageSchool" Column="AttackType" Table="creature_template" />
+    <Flat Name="AttackTime" Column="MainAttackTime" Table="creature_template" />
+    <Flat Name="MinDamage" Column="MainMinDmg" Table="creature_template" />
+    <Flat Name="MaxDamage" Column="MainMaxDmg" Table="creature_template" />
+    <Flat Name="RangedAttackTime" Column="RangedAttackTime" Table="creature_template" />
+    <Flat Name="OffhandAttackPower" Column="AttackPower" Table="creature_template" />
+    <Flat Name="OffhandMinDamage" Column="OffMinDmg" Table="creature_template" />
+    <Flat Name="OffhandMaxDamage" Column="OffMaxDmg" Table="creature_template" />
+    <Flat Name="OffhandAttackTime" Column="OffAttackTime" Table="creature_template" />
+    <Flat Name="RangedMinDamage" Column="RangedMinDmg" Table="creature_template" />
+    <Flat Name="RangedMaxDamage" Column="RangedMaxDmg" Table="creature_template" />
+    <Flat Name="EquipmentEntry" Column="equipment_entry" Table="creature_template" />
+    <Flat Name="SpellGroup" Column="SpellGroup_entry" Table="creature_template" />
+    <Flat Name="RespawnTime" Column="RespawnTime" Table="creature_template" />
+    <FlatArray Name="Resistances" Table="creature_template">
+      <Column Name="Armor"/>
+      <Column Name="resistance1"/>
+      <Column Name="resistance2"/>
+      <Column Name="resistance3"/>
+      <Column Name="resistance4"/>
+      <Column Name="resistance5"/>
+      <Column Name="resistance6"/>
+    </FlatArray>
+    <Flat Name="CombatReach" Column="CombatReach" Table="creature_template" />
+    <Flat Name="BoundingRadius" Column="BoundingRadius" Table="creature_template" />
+    <Flat Name="IsBoss" Column="Boss" Table="creature_template" />
+    <Flat Name="MoneyDrop" Column="Money" Table="creature_template" />
+    <Flat Name="InvisibilityType" Column="InvisibilityType" Table="creature_template" />
+    <Flat Name="DeathState" Column="DeathState" Table="creature_template" />
+    <Flat Name="DynamicFlags" Column="dynamicflags" Table="creature_template" />
+    <Flat Name="ExtraFlags" Column="flags_extra" Table="creature_template" />
+    <Flat Name="MovementType" Column="Movetype" Table="creature_template" />
+    <Flat Name="WalkSpeed" Column="WalkSpeed" Table="creature_template" />
+    <Flat Name="RunSpeed" Column="RunSpeed" Table="creature_template" />
+    <Flat Name="FlySpeed" Column="Flyspeed" Table="creature_template" />
+
+    <Flat Name="LootId" Column="LootID" Table="creature_template" />
+    <Flat Name="SkinLootId" Column="SkinLoot" Table="creature_template" />
+    <Flat Name="PickPocketLootId" Column="PickPocketLoot" Table="creature_template" />
+
+    <Flat Name="InhabitType" Column="InhabitType" Table="creature_template" />
+    <Flat Name="Regenerates" Column="HasRegan" Table="creature_template" />
+    <Flat Name="RespawnMod" Column="RespawnMod" Table="creature_template" />
+    <Flat Name="ArmorMod" Column="ArmorMod" Table="creature_template" />
+    <Flat Name="DamageMod" Column="DamageMod" Table="creature_template" />
+    <Flat Name="HealthMod" Column="HealthMod" Table="creature_template" />
+    <Flat Name="ExtraA9Flags" Column="ExtraA9Flags" Table="creature_template" />
+  </DataHolder>
+
+
+  <!--Vendors-->
+  <DataHolder Name="VendorItemEntry">
+    <DefaultTable>npc_vendor</DefaultTable>
+    <Flat Name="VendorId" Column="creature_entry" />
+    <Flat Name="ItemId" Column="item_entry" />
+    <Flat Name="StockAmount" Column="Stock" />
+    <Flat Name="BuyStackSize" Column="SellAmount" />
+    <Flat Name="StockRefillDelay" Column="StockRefill" />
+    <Flat Name="ExtendedCostId" Column="ExtendedCost" />
+  </DataHolder>
+
+
+  <!--Trainers-->
+  <DataHolder Name="TrainerEntry">
+    <DefaultTable>npc_trainer_defs</DefaultTable>
+    <Flat Name="Id" Column="creature_entry" />
+    <Flat Name="TrainerType" Column="trainer_type" />
+    <!--<Flat Name="TrainerSubType" Column="" />-->
+    <Flat Name="Message" Column="trainer_ui_window_message" />
+    <Flat Name="RequiredClass" Column="req_class" />
+    <Flat Name="RequiredRace" Column="req_race" />
+    <Flat Name="RequiredSpellId" Column="req_spell" />
+    <Flat Name="RequiredSkillId" Column="required_skill" />
+    <Flat Name="RequiredSkillAmount" Column="required_skillvalue" />
+  </DataHolder>
+
+
+  <DataHolder Name="TrainerSpellEntry">
+    <DefaultTable>npc_trainer_spell_settings</DefaultTable>
+    <Flat Name="SpellId" Column="SpellID" />
+    <Flat Name="Cost" Column="SpellCost" />
+    <Flat Name="IsProfession" Column="IsProf" />
+    <Flat Name="DeleteSpellId" Column="DeleteSpell" />
+    <Flat Name="RequiredSpellId" Column="ReqSpell" />
+    <Flat Name="RequiredLevel" Column="ReqLevel" />
+    <Flat Name="RequiredSkillId" Column="ReqSkill" />
+    <Flat Name="RequiredSkillAmount" Column="ReqSkillValue" />
+  </DataHolder>
+
+
+  <DataHolder Name="TrainerSpellRelation">
+    <DefaultTable>npc_trainer_spells</DefaultTable>
+    <Flat Name="TrainerId" Column="creature_entry" />
+    <Flat Name="SpellId" Column="SpellId" />
+  </DataHolder>
+
+  <DataHolder Name="NPCGossipEntry">
+    <DefaultTable>npc_text</DefaultTable>
+    <DefaultTable>npc_gossip_textid</DefaultTable>
+
+    <Flat Name="NPCId" Column="creature_entry" Table="npc_gossip_textid" />
+    <Flat Name="GossipId" Column="textid" Table="npc_gossip_textid"/>
+
+    <!--<Flat Name="Id" Column="text_entry" />-->
+    <NestedArray Name="GossipEntries" Table="npc_text">
+      <Flat Name="TextMale" Pattern="text{#}_0" Offset="0"  Table="npc_text"/>
+      <Flat Name="TextFemale" Pattern="text{#}_1" Offset="0"  Table="npc_text"/>
+      <Flat Name="Language" Pattern="lang{#}" Offset="0"  Table="npc_text"/>
+      <Flat Name="Probability" Pattern="prob{#}" Offset="0"  Table="npc_text"/>
+      <!--<Flat Name="Emotes" Pattern="em{#}_" Offset="0" />
+      <Flat Name="EmoteDelays" Pattern="" Offset="0" />-->
+    </NestedArray>
+  </DataHolder>
+
+  <DataHolder Name="SpawnEntry">
+    <DefaultTable>creature_spawns</DefaultTable>
+    <Flat Name="SpawnId" Column="spawnid" />
+    <Flat Name="EntryId" Column="creature_entry" />
+    <Flat Name="RegionId" Column="map" />
+    <Nested Name="Position">
+      <Flat Name="X" Column="position_x" />
+      <Flat Name="Y" Column="position_y" />
+      <Flat Name="Z" Column="position_z" />
+    </Nested>
+    <Flat Name="Orientation" Column="orientation" />
+    <Flat Name="MoveType" Column="movetype" />
+    <Flat Name="FactionId" Column="faction" />
+    <Flat Name="Flags" Column="flags" />
+    <Flat Name="Bytes" Column="bytes0" />
+    <Flat Name="Bytes2" Column="bytes2" />
+    <Flat Name="EmoteState" Column="emote_state" />
+    <Flat Name="MountId" Column="mount" />
+    <Flat Name="DisplayIdOverride" Column="displayid" />
+    <Flat Name="MaxAmount" Column="" />
+    <Flat Name="DelayMin" Column="" />
+    <Flat Name="DelayMax" Column="" />
+  </DataHolder>
+</DataHolders>

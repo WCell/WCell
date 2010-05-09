@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_MESSAGECHAT">
+    <Simple>
+      <Name>Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Misc.ChatMsgType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Language</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Misc.ChatLanguage</SegmentType>
+    </Simple>
+    <Switch CompareWith="Type">
+      <Case Either="Say, Yell, Emote, Party, Raid, RaidLeader, RaidWarn, Guild">
+        <Simple>
+          <Name>Message</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+      <Case Either="Whisper, WhisperInform">
+        <Simple>
+          <Name>Receiver</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Message</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+      <Case Equals="Channel">
+        <Simple>
+          <Name>Channel Name</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Message</Name>
+          <Type>CString</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_MESSAGECHAT">
+    <Simple>
+      <Name>Type</Name>
+      <Type>Byte</Type>
+      <SegmentType>Misc.ChatMsgType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Language</Name>
+      <Type>UInt</Type>
+      <SegmentType>Misc.ChatLanguage</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Sender</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Switch CompareWith="Type">
+      <Case Either="MonsterSay, MonsterParty, MonsterYell, MonsterWhisper, MonsterEmote, RaidBossWhisper, RaidBossEmote, Battlenet">
+        <Simple>
+          <Name>Sender's Name</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Switch CompareWith="Receiving Character">
+          <Case And="0xF040000000000000"><!--Not a Character and not a pet-->
+            <Simple>
+              <Name>Unknown String -- the object's Name?</Name>
+              <Type>PascalStringUInt</Type>
+            </Simple>
+          </Case> 
+        </Switch>
+        <Simple>
+          <Name>Message</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+      </Case>
+      
+      <Case Equals="WhisperInform">
+        <Simple>
+          <Name>Message</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>Unknown String -- object's Name?</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+      </Case>
+      
+      <Case Either="BGSystemNeutral, BGSystemAlliance, BGSystemHorde">
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Switch CompareWith="Receiving Character">
+          <Case And="0xF000000000000000">
+            <Simple>
+              <Name>Message</Name>
+              <Type>PascalStringUInt</Type>
+            </Simple>
+          </Case>
+        </Switch>
+        <Simple>
+          <Name>Unknown String</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+      </Case>
+      
+      <Case Either="Achievment, ArenaPoints">
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>Message</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Unknown_Int</Name>
+          <Type>Int</Type>
+        </Simple>
+      </Case>
+      
+      <Case Equals="Channel">
+        <Simple>
+          <Name>Channel Name</Name>
+          <Type>CString</Type>
+        </Simple>
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>Message</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+      </Case>
+      
+      <Case Neither="Channel, Achievment, ArenaPoints, BGSystemNeutral, BGSystemAlliance, BGSystemHorde, WhisperInform, MonsterSay, MonsterParty, MonsterYell, MonsterWhisper, MonsterEmote, RaidBossWhisper, RaidBossEmote, Battlenet">
+        <Simple>
+          <Name>Receiving Character</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>Message</Name>
+          <Type>PascalStringUInt</Type>
+        </Simple>
+        <Simple>
+          <Name>Chat Tag</Name>
+          <Type>Byte</Type>
+          <SegmentType>ChatTag</SegmentType>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CHANNEL_NOTIFY">
+    <Simple>
+      <Name>Response</Name>
+      <Type>Byte</Type>
+      <SegmentType>Chat.ChannelNotification</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_CHANNEL_LIST">
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CHANNEL_LIST">
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel Flags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Player Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List LengthSegment="Player Count">
+      <Name>Player List</Name>
+      <Simple>
+        <Name>Player GUID</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Player Channel Flags</Name>
+        <Type>Byte</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_JOIN_CHANNEL">
+    <Simple>
+      <Name>ChannelId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk1</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unk2</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Password</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_LEAVE_CHANNEL">
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+     </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_CHANNEL_PASSWORD">
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Password</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GET_CHANNEL_MEMBER_COUNT">
+    <Simple>
+      <Name>UnkInt</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkZero</Name>
+      <Type>UShort</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client">
+    <OpCodes>
+      <OpCode>SMSG_USERLIST_ADD</OpCode>
+      <OpCode>SMSG_USERLIST_UPDATE</OpCode>
+    </OpCodes>
+    <Simple>
+      <Name>Player GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Player Channel Flags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel Flags</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Player Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Channel</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_TEXT_EMOTE">
+    <Simple>
+      <Name>Emote Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>Chat.TextEmote</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int - Always -1?</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Target Character</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_TEXT_EMOTE">
+    <Simple>
+      <Name>Acting Character</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Emote Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>Chat.TextEmote</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Unknown Int - Always -1?</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Target Character's Name</Name>
+      <Type>PascalStringUInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_EMOTE">
+    <Simple>
+      <Name>Emote Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>Chat.TextEmote</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Acting Character</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LEARNED_DANCE_MOVES">
+    <Simple>
+      <Name>Unknown Mask</Name>
+      <Type>ULong</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="TrainerSpellEntry">
+    <DefaultTable>npc_trainer</DefaultTable>
+
+    <Flat Name="TrainerId" Column="entry" />
+    <Flat Name="SpellId" Column="spell" />
+    <Flat Name="Cost" Column="spellcost" />
+    <Flat Name="RequiredLevel" Column="reqlevel" />
+    <Flat Name="RequiredSkillId" Column="reqskill" />
+    <Flat Name="RequiredSkillAmount" Column="reqskillvalue" />
+  </DataHolder>
+</DataHolders>

@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="SMSG_PET_TAME_FAILURE">
+    <Simple>
+      <Name>Error</Name>
+      <Type>Byte</Type>
+      <SegmentType>Pets.TameFailReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_SPELLS">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Switch CompareWith="PetEntityId">
+      <Case NotEqual="0">
+        <Simple>
+          <Name>CreatureFamily</Name>
+          <Type>UShort</Type>
+          <SegmentType>NPCs.CreatureFamilyId</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Duration</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>AttackMode</Name>
+          <Type>Byte</Type>
+          <SegmentType>Pets.PetAttackMode</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Action</Name>
+          <Type>Byte</Type>
+          <SegmentType>Pets.PetAction</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>Flags</Name>
+          <Type>UShort</Type>
+          <SegmentType>Pets.PetFlags</SegmentType>
+        </Simple>
+        <!--<Simple>
+          <Name>AttackMode</Name>
+          <Type>Byte</Type>
+          <SegmentType>Pets.PetAttackMode</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>CommandState</Name>
+          <Type>Byte</Type>
+        </Simple>
+        <Simple>
+          <Name>UnkUshort1</Name>
+          <Type>UShort</Type>
+        </Simple>-->
+        <StaticList Length="10">
+          <Name>Actions</Name>
+          <Simple>
+            <Name>ActionId</Name>
+            <Type>UShort</Type>
+            <!--<SegmentType>Pets.PetAction</SegmentType>-->
+          </Simple>
+          <Simple>
+            <Name>UnkActionByte</Name>
+            <Type>Byte</Type>
+          </Simple>
+          <Simple>
+            <Name>Type</Name>
+            <Type>Byte</Type>
+            <SegmentType>Pets.PetActionType</SegmentType>
+          </Simple>
+        </StaticList>
+        <List>
+          <Name>Spells</Name>
+          <Type>Byte</Type>
+          <Simple>
+            <Name>SpellId</Name>
+            <Type>UShort</Type>
+            <SegmentType>Spells.SpellId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>State</Name>
+            <Type>UShort</Type>
+            <SegmentType>Pets.PetSpellState</SegmentType>
+          </Simple>
+        </List>
+        <List>
+          <Name>Cooldowns</Name>
+          <Type>Byte</Type>
+          <Simple>
+            <Name>SpellId</Name>
+            <Type>UShort</Type>
+            <SegmentType>Spells.SpellId</SegmentType>
+          </Simple>
+          <Simple>
+            <Name>Unk1</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>Unk322</Name>
+            <Type>UShort</Type>
+          </Simple>
+          <Simple>
+            <Name>SpellCooldown</Name>
+            <Type>UInt</Type>
+          </Simple>
+          <Simple>
+            <Name>CatCooldown</Name>
+            <Type>UInt</Type>
+          </Simple>
+        </List>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_CAST_FAILED">
+    <Simple>
+      <Name>Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Error</Name>
+      <Type>Byte</Type>
+      <SegmentType>Spells.SpellFailedReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_NAME_QUERY">
+    <Simple>
+      <Name>PetNumber</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_NAME_QUERY_RESPONSE">
+    <Simple>
+      <Name>PetNumber</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Timestamp</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_REQUEST_PET_INFO">
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_SET_ACTION">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <FinalList>
+      <Name>Actions</Name>
+      <Simple>
+        <Name>Index</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Action</Name>
+        <Type>UInt</Type>
+        <SegmentType>Pets.PetActionEntry</SegmentType>
+      </Simple>
+    </FinalList>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_ACTION">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Action</Name>
+      <Type>UInt</Type>
+      <SegmentType>Pets.PetActionEntry</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Target</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_RENAME">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>NewName</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_NAME_INVALID">
+    <Simple>
+      <Name>Reason</Name>
+      <Type>UInt</Type>
+      <SegmentType>Pets.PetNameInvalidReason</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>NewName</Name>
+      <Type>CString</Type>
+    </Simple>
+    <List>
+      <Name>DeclinedNames</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>DeclinedName</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_ABANDON">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_UNLEARN">
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_SPELL_AUTOCAST">
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_CANCEL_AURA">
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_STOP_ATTACK">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_ACTION_SOUND">
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_MODE">
+    <Simple>
+      <Name>PetId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>AttackMode</Name>
+      <Type>Byte</Type>
+      <SegmentType>Pets.PetAttackMode</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Action</Name>
+      <Type>Byte</Type>
+      <SegmentType>Pets.PetAction</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Flags</Name>
+      <Type>UShort</Type>
+      <SegmentType>Pets.PetFlags</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_ACTION_FEEDBACK">
+    <Simple>
+      <Name>Code</Name>
+      <Type>Byte</Type>
+      <SegmentType>Pets.PetActionFeedback</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_LEARNED_SPELL">
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_REMOVED_SPELL">
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_RENAMEABLE">
+    <!--Emtpy-->
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_BROKEN">
+    <!--Empty-->
+  </RealmPacket>
+
+  <!-- Stabling -->
+  <RealmPacket OpCode="CMSG_UNSTABLE_PET">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>PetNumber</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_STABLE_PET">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_BUY_STABLE_SLOT">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_STABLE_SWAP_PET">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>PetNumber</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_LIST_STABLED_PETS" Sender="Client">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="MSG_LIST_STABLED_PETS" Sender="Server">
+    <Simple>
+      <Name>VendorEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>NumPets</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>NumOwnedSlots</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <List LengthSegment="NumPets">
+      <Name>Pets</Name>
+      <Simple>
+        <Name>PetNumber</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PetEntryId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PetLevel</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PetName</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>SlotNum</Name>
+        <Type>Byte</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_STABLE_RESULT">
+    <Simple>
+      <Name>Result</Name>
+      <Type>Byte</Type>
+      <SegmentType>Pets.StableResult</SegmentType>
+    </Simple>
+  </RealmPacket>
+  <!-- /Stabling/ -->
+
+  <!-- Talents -->
+
+  <RealmPacket OpCode="CMSG_PET_LEARN_TALENT">
+    <Simple>
+      <Name>PetEntityId</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>TalentId</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Rank</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_PET_LEARNED_SPELL">
+    <Simple>
+      <Name>SpellId</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_PET_UNLEARN">
+    <Simple>
+      <Name>PetGuid</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+  <!-- /Talents/ -->
+
+  <RealmPacket OpCode="SMSG_PET_GUIDS">
+    <List>
+      <Name>Pets</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Pet</Name>
+        <Type>Guid</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+</Definitions>

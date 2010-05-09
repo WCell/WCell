@@ -1,0 +1,33 @@
+﻿A list of all Spells that will need extra SpellEffects or simple corrections due to incorrect information, supplied in the DBC files:
+	Required Custom Effects (Dummies etc):
+
+	Required corrections:
+		- Priest Discipline Pain Suppression (Id: 33206): Needs to be connected with ClassSkill Pain Suppression (Id: 44416)
+		- Ascendance (Id: 28200): Missing ProcCharges
+		- Consecrated Weapon (Id: 28891): Missing Duration
+		- ClassSkill Heroic Strike: Requires a TriggerSpell with additional damage against Dazed
+		- Bloodthirst of any kind need to be connected with their corresponding TriggerSpells
+		- ClassSkill Spellsteal (Id: 30449): Missing duration (2 mins)
+		- Shackle Undead (Id: 11444): Missing Mechanic: Stunned
+		- Increased Hunter Pet Damage (Id: 22854): Effect has to change from AddModifierFlat to AddModifierPercent and value from 8 to 4
+		- Rogue Subtlety Preparation (Id: 14185): Only has a dummy effect, should reset cooldowns
+		
+	
+	Required extra fields:
+		Per Spell:
+			- ChainMod: The modifier to apply to each successive hit for chain-spells (eg -20% or +100%)
+			- RequiredItemGroup: A new identifier to group tools of certain kinds together (eg Pickaxes for mining: Profession Mining, Apprentice (Id: 2575) etc)
+				- also requires a new Group field for Items to group this kind of Items
+
+		Per SpellEffect:
+			- IsValueSplitUp: A bool that indicates whether the EffectValue is split up between all targets (or only applied against one)
+				See: Meteor (Id: 28884)
+			- EffectedSpells: AddModifierFlat and AddModifierPercent usually are effecting one or more spells (and not all)
+			- TeleportUnits: A lot of teleport spells need the actual target location associated with them
+			
+			
+	Professions:
+   
+   Skills / SkillLineAbility:
+	- if the field after the supercededbyspell is 2, then its acquired on class/race creation and 1 is get on profession learn
+	- skilltiers struct needs to be changed

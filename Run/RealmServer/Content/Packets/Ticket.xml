@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_GMTICKET_CREATE">
+    <Simple>
+      <Name>Region</Name>
+      <Type>UInt</Type>
+      <SegmentType>World.MapId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>PosX</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>PosY</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>PosZ</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Message</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Type</Name>
+      <Type>UInt</Type>
+      <!--<SegmentType>Tickets.TicketType</SegmentType>-->
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GMTICKET_CREATE">
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>Tickets.TicketInfoResponse</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GMTICKET_UPDATETEXT">
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Message</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GMTICKET_UPDATETEXT">
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>Tickets.TicketInfoResponse</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_GMTICKET_DELETETICKET" />
+
+  <RealmPacket OpCode="SMSG_GMTICKET_DELETETICKET">
+    <Simple>
+      <Name>Result</Name>
+      <Type>UInt</Type>
+      <SegmentType>Tickets.TicketInfoResponse</SegmentType>
+    </Simple>
+  </RealmPacket>
+</Definitions>

@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket Sender="Client">
+    <OpCodes>
+      <OpCode>MSG_MOVE_HEARTBEAT</OpCode>
+      <OpCode>MSG_MOVE_JUMP</OpCode>
+      <OpCode>MSG_MOVE_START_FORWARD</OpCode>
+      <OpCode>MSG_MOVE_START_BACKWARD</OpCode>
+      <OpCode>MSG_MOVE_SET_FACING</OpCode>
+      <OpCode>MSG_MOVE_STOP</OpCode>
+      <OpCode>MSG_MOVE_START_STRAFE_LEFT</OpCode>
+      <OpCode>MSG_MOVE_START_STRAFE_RIGHT</OpCode>
+      <OpCode>MSG_MOVE_STOP_STRAFE</OpCode>
+      <OpCode>MSG_MOVE_START_TURN_LEFT</OpCode>
+      <OpCode>MSG_MOVE_START_TURN_RIGHT</OpCode>
+      <OpCode>MSG_MOVE_STOP_TURN</OpCode>
+      <OpCode>MSG_MOVE_START_PITCH_UP</OpCode>
+      <OpCode>MSG_MOVE_START_PITCH_DOWN</OpCode>
+      <OpCode>MSG_MOVE_STOP_PITCH</OpCode>
+      <OpCode>MSG_MOVE_SET_RUN_MODE</OpCode>
+      <OpCode>MSG_MOVE_SET_WALK_MODE</OpCode>
+      <OpCode>MSG_MOVE_SET_PITCH</OpCode>
+      <OpCode>MSG_MOVE_START_SWIM</OpCode>
+      <OpCode>MSG_MOVE_STOP_SWIM</OpCode>
+      <OpCode>MSG_MOVE_FALL_LAND</OpCode>
+      <OpCode>CMSG_MOVE_SET_FLY</OpCode>
+      <OpCode>MSG_MOVE_HOVER</OpCode>
+      <OpCode>MSG_MOVE_KNOCK_BACK</OpCode>
+      <OpCode>CMSG_MOVE_CHNG_TRANSPORT</OpCode>
+      <OpCode>MSG_MOVE_START_ASCEND</OpCode>
+      <OpCode>MSG_MOVE_STOP_ASCEND</OpCode>
+    </OpCodes>
+    <Simple>
+      <Name>MoverId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>MovementFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags2</Name>
+      <Type>UShort</Type>
+      <SegmentType>MovementFlags2</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ClientTime</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Position</Name>
+      <Type>Vector4</Type>
+    </Simple>
+    <Switch CompareWith="MoveFlags">
+      <Case And="OnTransport">
+        <Simple>
+          <Name>TransportId</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportLocation</Name>
+          <Type>Vector4</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportTime</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportSeat</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+      <Case And="Falling">
+        <Simple>
+          <Name>Falling1</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Falling2</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Falling3</Name>
+          <Type>Float</Type>
+        </Simple>
+        <Simple>
+          <Name>Falling4</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+  <RealmPacket Sender="Server">
+    <OpCodes>
+      <OpCode>MSG_MOVE_HEARTBEAT</OpCode>
+      <OpCode>MSG_MOVE_JUMP</OpCode>
+      <OpCode>MSG_MOVE_START_FORWARD</OpCode>
+      <OpCode>MSG_MOVE_START_BACKWARD</OpCode>
+      <OpCode>MSG_MOVE_SET_FACING</OpCode>
+      <OpCode>MSG_MOVE_STOP</OpCode>
+      <OpCode>MSG_MOVE_START_STRAFE_LEFT</OpCode>
+      <OpCode>MSG_MOVE_START_STRAFE_RIGHT</OpCode>
+      <OpCode>MSG_MOVE_STOP_STRAFE</OpCode>
+      <OpCode>MSG_MOVE_START_TURN_LEFT</OpCode>
+      <OpCode>MSG_MOVE_START_TURN_RIGHT</OpCode>
+      <OpCode>MSG_MOVE_STOP_TURN</OpCode>
+      <OpCode>MSG_MOVE_START_PITCH_UP</OpCode>
+      <OpCode>MSG_MOVE_START_PITCH_DOWN</OpCode>
+      <OpCode>MSG_MOVE_STOP_PITCH</OpCode>
+      <OpCode>MSG_MOVE_SET_RUN_MODE</OpCode>
+      <OpCode>MSG_MOVE_SET_WALK_MODE</OpCode>
+      <OpCode>MSG_MOVE_SET_PITCH</OpCode>
+      <OpCode>MSG_MOVE_START_SWIM</OpCode>
+      <OpCode>MSG_MOVE_STOP_SWIM</OpCode>
+      <OpCode>MSG_MOVE_FALL_LAND</OpCode>
+      <OpCode>CMSG_MOVE_SET_FLY</OpCode>
+      <OpCode>MSG_MOVE_HOVER</OpCode>
+      <OpCode>MSG_MOVE_KNOCK_BACK</OpCode>
+      <OpCode>CMSG_MOVE_CHNG_TRANSPORT</OpCode>
+      <OpCode>MSG_MOVE_START_ASCEND</OpCode>
+      <OpCode>MSG_MOVE_STOP_ASCEND</OpCode>
+    </OpCodes>
+    <Simple>
+      <Name>Unit</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>MovementFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags2</Name>
+      <Type>UShort</Type>
+      <SegmentType>MovementFlags2</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ClientTime</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Position</Name>
+      <Type>Vector4</Type>
+    </Simple>
+    <Switch CompareWith="MoveFlags">
+      <Case And="OnTransport">
+        <Simple>
+          <Name>TransportId</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportLocation</Name>
+          <Type>Vector4</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportTime</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportSeat</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+
+  <RealmPacket Sender="Server">
+    <OpCodes>
+      <OpCode>MSG_MOVE_TELEPORT_ACK</OpCode>
+    </OpCodes>
+    <Simple>
+      <Name>MoverId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkInt1</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags</Name>
+      <Type>UInt</Type>
+      <SegmentType>MovementFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>MoveFlags2</Name>
+      <Type>UShort</Type>
+      <SegmentType>MovementFlags2</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>ClientTime</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Position</Name>
+      <Type>Vector4</Type>
+    </Simple>
+    <Switch CompareWith="MoveFlags">
+      <Case And="OnTransport">
+        <Simple>
+          <Name>TransportId</Name>
+          <Type>Guid</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportLocation</Name>
+          <Type>Vector4</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportTime</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>TransportSeat</Name>
+          <Type>Byte</Type>
+        </Simple>
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+
+  <RealmPacket OpCode="CMSG_MOVE_TIME_SKIPPED">
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>OutOfSyncDelay</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+
+  <RealmPacket OpCode="SMSG_MONSTER_MOVE">
+    <Simple>
+      <Name>EntityId</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+	  <Simple>
+		  <Name>UnkFlag</Name>
+		  <Type>Byte</Type>
+	  </Simple>
+    <Simple>
+      <Name>Starting Position</Name>
+      <Type>Vector3</Type>
+    </Simple>
+    <Simple>
+      <Name>Current Time</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>MoveType</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <Switch CompareWith="MoveType">
+      <Case Equals="2">
+        <Simple>
+          <Name>Type2 Vector3</Name>
+          <Type>Vector3</Type>
+        </Simple>
+      </Case>
+      <Case Equals="3">
+        <Simple>
+          <Name>Type3 Guid</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </Case>
+      <Case Equals="4">
+        <Simple>
+          <Name>Orientation</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+    </Switch>
+
+    <!-- workaround since type 1 is a stop packet -->
+    <Switch CompareWith="MoveType">
+      <Case NotEqual="1">
+
+        <Simple>
+          <Name>MonsterMovementFlags</Name>
+          <Type>UInt</Type>
+          <SegmentType>NPCs.MonsterMoveFlags</SegmentType>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+          <Case And="2097152">
+            <!-- flag 0x200000 -->
+            <Simple>
+              <Name>Flag0x200000 Byte</Name>
+              <Type>Byte</Type>
+            </Simple>
+            <Simple>
+              <Name>Flag0x200000 Int</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+        </Switch>
+
+        <Simple>
+          <Name>Waypoint Time</Name>
+          <Type>UInt</Type>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+          <Case And="2048">
+            <!-- flag 0x800 -->
+            <Simple>
+              <Name>Flag0x800 Float</Name>
+              <Type>Float</Type>
+            </Simple>
+            <Simple>
+              <Name>Flag0x800 Int</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+        </Switch>
+
+        <Simple>
+          <Name>PointCount</Name>
+          <Type>UInt</Type>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+
+          <Case AndNot="270336">
+            <!-- does not have flag 0x42000 -->
+            <Simple>
+              <Name>Flag_0x42000 Vector3</Name>
+              <Type>Vector3</Type>
+            </Simple>
+            <List LengthSegment="PointCount" LengthExpr="{0} - 1">
+              <Name>PackedVector3 Delta</Name>
+              <Simple>
+                <Name>Point Delta</Name>
+                <Type>PackedVector3</Type>
+              </Simple>
+            </List>
+          </Case>
+          <Case And="768">
+            <!-- standard -->
+            <List LengthSegment="PointCount">
+              <Name>Points</Name>
+              <Simple>
+                <Name>Point</Name>
+                <Type>Vector3</Type>
+              </Simple>
+            </List>
+          </Case>
+        </Switch>
+
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+
+  <RealmPacket OpCode="SMSG_MONSTER_MOVE_TRANSPORT">
+    <Simple>
+      <Name>Unit</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Transporter</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>UnkShort</Name>
+      <Type>Short</Type>
+    </Simple>
+    <Simple>
+      <Name>RelativePosition</Name>
+      <Type>Vector3</Type>
+    </Simple>
+    <Simple>
+      <Name>Current Time</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>MoveType</Name>
+      <Type>Byte</Type>
+      <SegmentType>MovementState</SegmentType>
+    </Simple>
+
+    <Switch CompareWith="MoveType">
+      <Case Equals="2">
+        <Simple>
+          <Name>Type2 Vector3</Name>
+          <Type>Vector3</Type>
+        </Simple>
+      </Case>
+      <Case Equals="3">
+        <Simple>
+          <Name>Type3 Guid</Name>
+          <Type>Guid</Type>
+        </Simple>
+      </Case>
+      <Case Equals="4">
+        <Simple>
+          <Name>Orientation</Name>
+          <Type>Float</Type>
+        </Simple>
+      </Case>
+    </Switch>
+
+    <!-- workaround since type 1 is a stop packet -->
+    <Switch CompareWith="MoveType">
+      <Case NotEqual="1">
+
+        <Simple>
+          <Name>MonsterMovementFlags</Name>
+          <Type>UInt</Type>
+          <SegmentType>NPCs.MonsterMoveFlags</SegmentType>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+          <Case And="4194304">
+            <!-- flag 0x400000 -->
+            <Simple>
+              <Name>Flag0x400000 Byte</Name>
+              <Type>Byte</Type>
+            </Simple>
+            <Simple>
+              <Name>Flag0x400000 Int</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+        </Switch>
+
+        <Simple>
+          <Name>Waypoint Time</Name>
+          <Type>UInt</Type>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+          <Case And="8">
+            <!-- flag 0x8 -->
+            <Simple>
+              <Name>Flag0x8 Float</Name>
+              <Type>Float</Type>
+            </Simple>
+            <Simple>
+              <Name>Flag0x8 Int</Name>
+              <Type>UInt</Type>
+            </Simple>
+          </Case>
+        </Switch>
+
+        <Simple>
+          <Name>PointCount</Name>
+          <Type>UInt</Type>
+        </Simple>
+
+        <Switch CompareWith="MonsterMovementFlags">
+
+          <Case AndNot="524800">
+            <!-- does not have flag 0x80200 -->
+            <Simple>
+              <Name>Flag_0x80200 Vector3</Name>
+              <Type>Vector3</Type>
+            </Simple>
+            <List LengthSegment="PointCount" LengthExpr="{0} - 1">
+              <Name>PackedVector3 Delta</Name>
+              <Simple>
+                <Name>Point Delta</Name>
+                <Type>PackedVector3</Type>
+              </Simple>
+            </List>
+          </Case>
+          <Case And="768">
+            <!-- standard -->
+            <List LengthSegment="PointCount">
+              <Name>Points</Name>
+              <Simple>
+                <Name>Point</Name>
+                <Type>Vector3</Type>
+              </Simple>
+            </List>
+          </Case>
+
+
+          <Case And="524800">
+
+          </Case>
+        </Switch>
+
+      </Case>
+    </Switch>
+  </RealmPacket>
+
+
+  <RealmPacket OpCode="SMSG_TIME_SYNC_REQ">
+    <Simple>
+      <Name>Sequence</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_TIME_SYNC_RESP" Sender="Client">
+    <Simple>
+      <Name>Sequence</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Client Time</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_MOVE_SPLINE_DONE">
+
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_SET_ACTIVE_MOVER">
+    <Simple>
+      <Name>Mover</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_STANDSTATE_UPDATE">
+    <Simple>
+      <Name>Stand State</Name>
+      <Type>Byte</Type>
+      <SegmentType>StandState</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_FORCE_MOVE_ROOT">
+    <Simple>
+      <Name>Character</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown UInt -- some sort of counter?</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_FORCE_MOVE_ROOT_ACK">
+    <Simple>
+      <Name>Character</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown UInt1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown UInt2</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Position - X</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position - Y</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Position - Z</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Orientation</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

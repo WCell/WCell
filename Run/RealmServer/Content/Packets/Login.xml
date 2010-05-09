@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  
+  <RealmPacket Sender="Client" OpCode="CMSG_REALM_SPLIT">
+    <Simple>
+      <Name>Unknown1</Name>
+      <Type>UShort</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown2</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_REALM_SPLIT">
+    <Simple>
+      <Name>Unknown1</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>RealmState</Name>
+      <Type>UInt</Type>
+      <SegmentType>Login.RealmState</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>SplitDate</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="CMSG_CHAR_ENUM">
+    <!--Only happens sometimes:
+    <Simple>
+      <Name>Unknown1</Name>
+      <Type>UShort</Type>
+    </Simple>-->
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_CHAR_ENUM">
+    <List>
+      <Name>Characters</Name>
+      <Type>Byte</Type>
+      <Simple>
+        <Name>Id</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Name</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>Race</Name>
+        <Type>Byte</Type>
+        <SegmentType>RaceId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Class</Name>
+        <Type>Byte</Type>
+        <SegmentType>ClassId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Gender</Name>
+        <Type>Byte</Type>
+        <SegmentType>GenderType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Skin</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Face</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>HairStyle</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>HairColor</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>FacialHair</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Zone</Name>
+        <Type>UInt</Type>
+        <SegmentType>WCell.Constants.World.ZoneId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Region</Name>
+        <Type>UInt</Type>
+        <SegmentType>WCell.Constants.World.MapId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>X</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Y</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Z</Name>
+        <Type>Float</Type>
+      </Simple>
+      <Simple>
+        <Name>Guild</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>CharacterFlags</Name>
+        <Type>UInt</Type>
+        <SegmentType>Login.CharEnumFlags</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>CustomizationFlags</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>FirstLogin</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>PetDisplayId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PetLevel</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>PetFamily</Name>
+        <Type>UInt</Type>
+        <SegmentType>NPCs.CreatureFamilyId</SegmentType>
+      </Simple>
+
+      <StaticList Length="23">
+        <Name>Items</Name>
+        <Simple>
+          <Name>DisplayId</Name>
+          <Type>UInt</Type>
+        </Simple>
+        <Simple>
+          <Name>InventorySlotType</Name>
+          <Type>Byte</Type>
+          <SegmentType>Items.InventorySlotType</SegmentType>
+        </Simple>
+        <Simple>
+          <Name>EnchantSpellId</Name>
+          <Type>UInt</Type>
+          <Type>WCell.Constants.Spells.SpellId</Type>
+        </Simple>
+      </StaticList>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="CMSG_CHAR_CREATE">
+    <Simple>
+      <Name>Name</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Race</Name>
+      <Type>Byte</Type>
+      <SegmentType>RaceId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Class</Name>
+      <Type>Byte</Type>
+      <SegmentType>ClassId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Gender</Name>
+      <Type>Byte</Type>
+      <SegmentType>GenderType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Skin</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Face</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>HairStyle</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>HairColor</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>FacialHair</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Outfit</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="CMSG_VOICE_SESSION_ENABLE">
+    <Simple>
+      <Name>Enabled</Name>
+      <Type>UShort</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_MOTD">
+    <List>
+      <Name>Messages</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Message</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket Sender="Client" OpCode="CMSG_PLAYER_LOGIN">
+    <Simple>
+      <Name>CharacterId</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_LOGIN_VERIFY_WORLD">
+    <Simple>
+      <Name>Region Id</Name>
+      <Type>Int</Type>
+      <SegmentType>World.MapId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Position</Name>
+      <Type>Vector3</Type>
+    </Simple>
+    <Simple>
+      <Name>Orientation</Name>
+      <Type>Float</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

@@ -1,0 +1,150 @@
+/*************************************************************************
+ *
+ *   file		: CommandConsole.cs
+ *   copyright		: (C) The WCell Team
+ *   email		: info@wcell.org
+ *   last changed	: $LastChangedDate: 2009-04-05 08:29:47 +0800 (Sun, 05 Apr 2009) $
+ *   last author	: $LastChangedBy: dominikseifert $
+ *   revision		: $Rev: 864 $
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ *************************************************************************/
+
+using System;
+using System.Collections.Generic;
+using System.Reflection;
+using WCell.Core;
+using WCell.RealmServer.Commands;
+using WCell.Core.Database;
+using System.IO;
+using NLog;
+using System.Threading;
+using WCell.RealmServer.Entities;
+using WCell.Util.Commands;
+using WCell.Util;
+using System.Diagnostics;
+using WCell.Util.NLog;
+using System.Text.RegularExpressions;
+
+namespace WCell.RealmServerConsole
+{
+	/// <summary>
+	/// Delegate for consome command methods
+	/// </summary>
+	/// <param name="arguments">the arguments of the command</param>
+	public delegate void CommandDelegate(string[] arguments);
+
+	///<summary>
+	/// 
+	///</summary>
+	public static class RealmServerConsole
+	{
+		private static Logger log = LogManager.GetCurrentClassLogger();
+
+		/// <summary>
+		/// Default command trigger.
+		/// </summary>
+		public static DefaultCmdTrigger DefaultTrigger;
+
+		internal static void Run()
+		{
+			DatabaseUtil.ReleaseConsole();
+			var server = RealmServer.RealmServer.Instance;
+
+			if (!server.IsRunning)
+			{
+				Thread.Sleep(300);
+				Console.WriteLine("Press any key to exit...");
+				Console.ReadKey();
+			}
+			else
+			{
+				Console.WriteLine("Console ready. Type ? for help");
+
+				DefaultTrigger = new DefaultCmdTrigger
+				{
+					Args = new RealmServerCmdArgs(null, false, null)
+				};
+
+                while (ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
+				{
+					string line;
+					try
+					{
+                        while (Console.KeyAvailable == false && ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
+                            Thread.Sleep(100);
+					    if (!ServerApp<RealmServer.RealmServer>.Instance.IsRunning) break;
+                        //NOTE if some key pressed in console without Enter will lock
+						line = Console.ReadLine();
+					}
+					catch
+					{
+						// console shutdown
+						break;
+					}
+					if (line == null || !ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
+					{
+						break;
+					}
+					try
+					{
+						if (DatabaseUtil.IsWaiting)
+						{
+							DatabaseUtil.Input.Write(line);
+						}
+						else
+						{
+							var text = new StringStream(line);
+							DefaultTrigger.Text = text;
+							if (!DefaultTrigger.InitTrigger())
+							{
+								continue;
+							}
+
+							var isSelect = text.ConsumeNext(RealmCommandHandler.SelectCommandPrefix);
+							if (isSelect)
+							{
+								var cmd = RealmCommandHandler.Instance.SelectCommand(text);
+								if (cmd != null)
+								{
+									Console.WriteLine("Selected: " + cmd);
+									DefaultTrigger.SelectedCommand = cmd;
+								}
+								else if (DefaultTrigger.SelectedCommand != null)
+								{
+									Console.WriteLine("Cleared Command selection.");
+									DefaultTrigger.SelectedCommand = null;
+								}
+							}
+							else
+							{
+								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger, true,
+									OnExecuted,
+									OnFail);
+							}
+						}
+					}
+					catch (Exception e)
+					{
+						LogUtil.ErrorException(e, false, "Failed to execute Command.");
+					}
+				}
+			}
+		}
+
+		private static void OnExecuted(CmdTrigger<RealmServerCmdArgs> obj)
+		{
+		}
+
+		private static void OnFail(CmdTrigger<RealmServerCmdArgs> obj)
+		{
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.WriteLine("Type ? for help");
+			Console.ResetColor();
+		}
+	}
+}

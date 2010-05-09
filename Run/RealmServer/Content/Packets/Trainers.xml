@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="SMSG_TRAINER_LIST">
+    <Simple>
+      <Name>Trainer</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Trainer Type</Name>
+      <Type>Int</Type>
+    </Simple>
+    <List>
+      <Name>Spells</Name>
+      <Type>Int</Type>
+
+      <Simple>
+        <Name>Spell</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>LearnState</Name>
+        <Type>Byte</Type>
+<!--        <SegmentType>NPCs.TrainerSpellState</SegmentType> -->
+      </Simple>
+      <Simple>
+        <Name>MoneyCost</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>TalentCost</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>ProfessionPointCost</Name>
+        <Type>Int</Type>
+      </Simple>
+      <Simple>
+        <Name>RequiredLevel</Name>
+        <Type>Byte</Type>
+      </Simple>
+
+      <Simple>
+        <Name>RequiredSkill</Name>
+        <Type>UInt</Type>
+        <SegmentType>Skills.SkillId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>RequiredSkillLevel</Name>
+        <Type>Int</Type>
+      </Simple>
+
+      <Simple>
+        <Name>RequiredSpellId1</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>RequiredSpellId2</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>RequiredSpellId3</Name>
+        <Type>UInt</Type>
+        <SegmentType>Spells.SpellId</SegmentType>
+      </Simple>
+    </List>
+    <Simple>
+      <Name>GreetingText</Name>
+      <Type>CString</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

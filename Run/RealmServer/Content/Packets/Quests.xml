@@ -1,0 +1,928 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUEST_QUERY">
+    <!-- 92 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUEST_QUERY_RESPONSE">
+    <!-- 93 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Is Active?</Name>
+      <Type>UInt</Type>
+      <SegmentType>Quests.QuestTemplateStatus</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Quest Level</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>ZoneId or Sort</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Type</Name>
+      <Type>UInt</Type>
+      <SegmentType>Quests.QuestType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Recommended Players</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Required Faction Id</Name>
+      <Type>UInt</Type>
+      <SegmentType>Factions.FactionReputationIndex</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Required Faction Standing</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Opposite Faction Id</Name>
+      <Type>UInt</Type>
+      <SegmentType>Factions.FactionReputationIndex</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Opposite Faction Standing</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Next QuestId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Max Level Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Cast SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Reward SpellId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Bonus Honor</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Source ItemId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Flags</Name>
+      <Type>UInt</Type>
+      <SegmentType>Quests.QuestFlags</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Reward Title Id</Name>
+      <Type>UInt</Type>
+      <!--        <SegmentType>CharacterTitleId</SegmentType>-->
+    </Simple>
+    <Simple>
+      <Name>Player Kill Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Talent Points</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <StaticList Length="4">
+      <Name>Reward Items</Name>
+
+      <Simple>
+        <Name>ItemId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Item Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="6">
+      <Name>Choice Reward Items</Name>
+
+      <Simple>
+        <Name>Item Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Item Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <Simple>
+      <Name>Point Map Id</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.World.MapId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Point X</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Point Y</Name>
+      <Type>Float</Type>
+    </Simple>
+    <Simple>
+      <Name>Point Options</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Objectives</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Details</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>End Text</Name>
+      <Type>CString</Type>
+    </Simple>
+
+    <StaticList Length="4">
+      <Name>GOMobInteractions</Name>
+
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Count</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ItemId</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="5">
+      <Name>CollectableItems</Name>
+
+      <Simple>
+        <Name>ItemId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ItemCount</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </StaticList>
+
+    <StaticList Length="4">
+      <Name>ObjectiveList</Name>
+
+      <Simple>
+        <Name>Objective</Name>
+        <Type>CString</Type>
+      </Simple>
+    </StaticList>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_STATUS_QUERY">
+    <!-- 386 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_STATUS">
+    <!-- 387 -->
+    <Simple>
+      <Name>QuestGiver Id</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Status</Name>
+      <Type>Byte</Type>
+      <SegmentType>Quests.QuestStatus</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_HELLO">
+    <!-- 388 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_QUEST_LIST">
+    <!-- 389 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Questgiver Chatter</Name>
+      <Type>CString</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Player emote</Name>
+      <Type>UInt</Type>
+      <SegmentType>Misc.EmoteType</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Questgiver emote</Name>
+      <Type>UInt</Type>
+      <SegmentType>Misc.EmoteType</SegmentType>
+    </Simple>
+
+    <List LengthSegment="">
+      <Name>Quest</Name>
+      <Type>Byte</Type>
+
+      <Simple>
+        <Name>Quest Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest status</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest level</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest Title</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_QUERY_QUEST">
+    <!-- 390 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 Not in Client-->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_QUEST_AUTOLAUNCH">
+    <!-- 391 -->
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_QUEST_DETAILS">
+    <!-- 392 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Details</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Objectives</Name>
+      <Type>CString</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Acceptable</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Suggested players</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Flags PVP</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+
+    <List>
+      <Name>ChoiceItems</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>ChoiceItemId</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ChoiceItemAmount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>ChoiceItemDisplayID</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+
+    <List>
+      <Name>RewardItems</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Reward Item Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Reward Item Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Reward Item Display ID</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+
+    <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bonus Honor</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Spell</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Cast Spell</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Title Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Talent Points</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <List>
+      <Name>Emote Count</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Emote Type</Name>
+        <Type>UInt</Type>
+        <SegmentType>Misc.EmoteType</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Emote Delay</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_ACCEPT_QUEST">
+    <!-- 393 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_COMPLETE_QUEST">
+    <!-- 394 -->
+    <Simple>
+      <Name>QuestGiver GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_REQUEST_ITEMS">
+    <!-- 395 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Progress Text</Name>
+      <Type>CString</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Emote Delay</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>EmoteId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Misc.EmoteType</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Close on cancel (0 or 1, if differs, please report)</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Required Money</Name>
+      <Type>Int</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Zero, if differs, please report</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <List>
+      <Name>Objective Item</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Item Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Item Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Display Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+
+    <Simple>
+      <Name>Two (if differs, report)</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Can Advance (0 or 4)</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Eight (if differs report)</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Ten (if differs report)</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3-->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_REQUEST_REWARD">
+    <!-- 396 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_OFFER_REWARD">
+    <!-- 397 -->
+    <Simple>
+      <Name>QuestGiver</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Title</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Offer Reward Text</Name>
+      <Type>CString</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Has Next?</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Suggested Players</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <List>
+      <Name>Emotes</Name>
+      <Type>UInt</Type>
+
+      <Simple>
+        <Name>Emote Delay</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Emote Type</Name>
+        <Type>UInt</Type>
+        <SegmentType>Misc.EmoteType</SegmentType>
+      </Simple>
+    </List>
+
+    <List>
+      <Name>Choice Item</Name>
+      <Type>UInt</Type>
+
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Display ID</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+
+    <List>
+      <Name>Reward Item</Name>
+      <Type>UInt</Type>
+
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name> Amount</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Display ID</Name>
+        <Type>UInt</Type>
+      </Simple>
+    </List>
+
+    <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bonus Honor</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name>Eight (if it differs, please report)</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+    <Simple>
+      <Name> Reward Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name> Casted Spell</Name>
+      <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Spells.SpellId</SegmentType>
+    </Simple>
+
+    <Simple>
+      <Name>Reward Title Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Talent Points</Name>
+      <Type>UInt</Type>
+    </Simple>
+
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_CHOOSE_REWARD">
+    <!-- 398 -->
+    <Simple>
+      <Name>QuestGiver GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward slot</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_QUEST_INVALID">
+    <!-- 399 -->
+    <Simple>
+      <Name>Error</Name>
+      <Type>UInt</Type>
+      <SegmentType>Quests.QuestInvalidReason</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 - Not in Client-->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_CANCEL">
+    <!-- 400 -->
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_QUEST_COMPLETE">
+    <!-- 401 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward XP</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Money</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bonus Honor</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward Talent Points</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_QUEST_FAILED">
+    <!-- 402 -->
+    <Simple>
+      <Name>QuestId</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Reason?</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 Not in Client-->
+  <RealmPacket OpCode="CMSG_QUESTLOG_SWAP_QUEST">
+    <!-- 403 -->
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTLOG_REMOVE_QUEST">
+    <!-- 404 -->
+    <Simple>
+      <Name>Quest Slot</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTLOG_FULL">
+    <!-- 405 -->
+    <!-- Empty -->
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTUPDATE_FAILED">
+    <!-- 406 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTUPDATE_FAILEDTIMER">
+    <!-- 407 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTUPDATE_COMPLETE">
+    <!-- 408 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTUPDATE_ADD_KILL">
+    <!-- 409 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Entry Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>New Interaction Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Target Interaction Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Guid of interacted entity</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 Client seems to ignore this packet -->
+  <RealmPacket OpCode="SMSG_QUESTUPDATE_ADD_ITEM">
+    <!-- 410 -->
+    <Simple>
+      <Name>ItemId</Name>
+      <Type>UInt</Type>
+      <SegmentType>Items.ItemId</SegmentType>
+    </Simple>
+    <Simple>
+      <Name>Count</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUEST_CONFIRM_ACCEPT">
+    <!-- 411 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUEST_CONFIRM_ACCEPT">
+    <!-- 412 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>String</Name>
+      <Type>CString</Type>
+    </Simple>
+    <Simple>
+      <Name>Guid</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_PUSHQUESTTOPARTY">
+    <!-- 413 -->
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="MSG_QUEST_PUSH_RESULT" Sender="Client">
+    <!-- 630 -->
+    <Simple>
+      <Name>Target GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Result</Name>
+      <Type>Byte</Type>
+      <SegmentType>Quests.QuestPushResponse</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="MSG_QUEST_PUSH_RESULT" Sender="Server">
+    <!-- 630 -->
+    <Simple>
+      <Name>Target GUID</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Result</Name>
+      <Type>Byte</Type>
+      <SegmentType>Quests.QuestPushResponse</SegmentType>
+    </Simple>
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY">
+    <!-- 1047 -->
+    <!--Empty-->
+  </RealmPacket>
+
+  <!-- 3.0.3 -->
+  <RealmPacket OpCode="SMSG_QUESTGIVER_STATUS_MULTIPLE">
+    <!-- 1048 -->
+    <List>
+      <Name>QuestGiver</Name>
+      <Type>UInt</Type>
+
+      <Simple>
+        <Name>QuestGiver</Name>
+        <Type>Guid</Type>
+      </Simple>
+      <Simple>
+        <Name>Quest Status</Name>
+        <Type>Byte</Type>
+        <SegmentType>Quests.QuestStatus</SegmentType>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_QUEST_FORCE_REMOVE">
+    <Simple>
+      <Name>Quest ID</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+</Definitions>

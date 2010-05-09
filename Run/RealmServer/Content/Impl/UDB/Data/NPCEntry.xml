@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="NPCEntry">
+    <DefaultTable>creature_template</DefaultTable>
+
+    <Flat Name="Id" Column="entry" Type="UInt32" />
+    <FlatArray Name="DisplayIds">
+      <Column Name="modelid_A"/>
+      <Column Name="modelid_A2"/>
+      <Column Name="modelid_H"/>
+      <Column Name="modelid_H2"/>
+    </FlatArray>
+    <FlatArray Name="Names">
+      <Column Name="name" />
+      <Column Name="name_loc2" Table="locales_creature" />
+      <Column Name="name_loc3" Table="locales_creature" />
+      <Column Name="name_loc4" Table="locales_creature" />
+      <Column Name="name_loc5" Table="locales_creature" />
+      <Column Name="name_loc6" Table="locales_creature" />
+      <Column Name="name_loc7" Table="locales_creature" />
+      <Column Name="name_loc8" Table="locales_creature" />
+    </FlatArray>
+    <FlatArray Name="Titles">
+      <Column Name="subname" />
+      <Column Name="subname_loc2" Table="locales_creature" />
+      <Column Name="subname_loc3" Table="locales_creature" />
+      <Column Name="subname_loc4" Table="locales_creature" />
+      <Column Name="subname_loc5" Table="locales_creature" />
+      <Column Name="subname_loc6" Table="locales_creature" />
+      <Column Name="subname_loc7" Table="locales_creature" />
+      <Column Name="subname_loc8" Table="locales_creature" />
+    </FlatArray>
+    <Flat Name="InfoString" Column="IconName" />
+    <Flat Name="MinLevel" Column="minlevel" />
+    <Flat Name="MaxLevel" Column="maxlevel" />
+    <Flat Name="MinHealth" Column="minhealth" />
+    <Flat Name="MaxHealth" Column="maxhealth" />
+    <Flat Name="MinMana" Column="minmana" />
+    <Flat Name="MaxMana" Column="maxmana" />
+    <Flat Name="MinDamage" Column="mindmg" />
+    <Flat Name="MaxDamage" Column="maxdmg" />
+    <FlatArray Name="Resistances">
+      <Column Name="armor"/>
+      <Column Name="resistance1"/>
+      <Column Name="resistance2"/>
+      <Column Name="resistance3"/>
+      <Column Name="resistance4"/>
+      <Column Name="resistance5"/>
+      <Column Name="resistance6"/>
+    </FlatArray>
+    <Flat Name="AllianceFactionId" Column="faction_A" />
+    <Flat Name="HordeFactionId" Column="faction_H" />
+    <Flat Name="NPCFlags" Column="npcflag" />
+    <Flat Name="UnitFlags" Column="unit_flags" />
+    <Flat Name="DynamicFlags" Column="dynamicflags" />
+    <Flat Name="EntryFlags" Column="type_flags" />
+    <Flat Name="SpeedFactor" Column="speed" />
+    <Flat Name="Scale" Column="scale" />
+    <Flat Name="Rank" Column="rank" />
+    <Flat Name="DamageSchool" Column="dmgschool" />
+    <Flat Name="AttackPower" Column="attackpower" />
+    <!-- not sure if it's the same mod-->
+    <Flat Name="DamageMod" Column="dmg_multiplier" />
+    <Flat Name="AttackTime" Column="baseattacktime" />
+    <!--<Flat Name="OffhandAttackPower" Column="attackpower"/>
+    <Flat Name="OffhandMinDamage" Column="mindmg" />
+    <Flat Name="OffhandMaxDamage" Column="maxdmg" />
+    <Flat Name="OffhandAttackTime" Column="baseattacktime" />-->
+    <Flat Name="RangedAttackTime" Column="rangeattacktime" />
+    <Flat Name="FamilyId" Column="family" />
+    <Flat Name="RangedMinDamage" Column="minrangedmg" />
+    <Flat Name="RangedMaxDamage" Column="maxrangedmg" />
+    <Flat Name="RangedAttackPower" Column="rangedattackpower" />
+    <Flat Name="Type" Column="type" />
+    <Flat Name="LootId" Column="lootid" />
+    <Flat Name="PickPocketLootId" Column="pickpocketloot" />
+    <Flat Name="SkinLootId" Column="skinloot" />
+    <Flat Name="MoneyDrop" Column="maxgold" />
+    <Flat Name="MovementType" Column="MovementType" />
+    <Flat Name="InhabitType" Column="InhabitType" />
+    <Flat Name="Float1" Column="unk16" />
+    <Flat Name="Float2" Column="unk17" />
+    <Flat Name="IsLeader" Column="RacialLeader" />
+    <Flat Name="Regenerates" Column="RegenHealth" />
+    <Flat Name="EquipmentId" Column="equipment_id" />
+    <!--<Flat Name="" Column="mechanic_immune_mask" />-->
+    <Flat Name="ExtraA9Flags" Column="flags_extra" />
+    <Flat Name="ClassId" Column="unit_class" />
+    <Flat Name="RaceId" Column="trainer_race" />
+    <Flat Name="SpellGroupId" Column="PetSpellDataId" />
+
+    <FlatArray Name="FixedSpells" Pattern="spell{#}" Offset="1" />
+
+    <Nested Name="TrainerEntry">
+      <Flat Name="TrainerType" Column="trainer_type" />
+      <Flat Name="RequiredSpellId" Column="trainer_spell" />
+    </Nested>
+
+    <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
+    <Flat Name="Emote" Table="creature_template_addon" Column="emote" />
+  </DataHolder>
+  <!--not in UDB
+    <Flat Name="IsIdle" Column="" />
+
+    <Flat Name="EntryFlags" Column="" />
+    <Flat Name="Info" Column="info_str" />
+    <Flat Name="RespawnTime" Column="RespawnTime" />
+    <Flat Name="IsBoss" Column="Boss" />
+    <Flat Name="InvisibilityType" Column="InvisibilityType" />
+    <Flat Name="VehicleAimAdjustment" Column="" />
+    <Flat Name="HoverHeight" Column="" />
+-->
+  <!--extra in UDB
+    heroic_entry
+    AiName
+    movementId     
+-->
+</DataHolders>

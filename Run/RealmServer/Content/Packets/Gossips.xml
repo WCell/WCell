@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+  <RealmPacket OpCode="CMSG_GOSSIP_HELLO">
+    <Simple>
+      <Name>Target</Name>
+      <Type>Guid</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="CMSG_GOSSIP_SELECT_OPTION">
+    <Simple>
+      <Name>Target</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Option</Name>
+      <Type>UInt</Type>
+    </Simple>
+  </RealmPacket>
+  
+  <RealmPacket OpCode="SMSG_GOSSIP_MESSAGE">
+    <Simple>
+      <Name>Owner</Name>
+      <Type>Guid</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Body Text's Id</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <List>
+      <Name>Gossip Items</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Type</Name>
+        <Type>Byte</Type>
+        <SegmentType>GossipMenuIcon</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Input</Name>
+        <Type>Byte</Type>
+      </Simple>
+      <Simple>
+        <Name>Required Money</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Text</Name>
+        <Type>CString</Type>
+      </Simple>
+      <Simple>
+        <Name>Accept Text</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+    <List>
+      <Name>Quest Items</Name>
+      <Type>UInt</Type>
+      <Simple>
+        <Name>Id</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Status</Name>
+        <Type>UInt</Type>
+        <SegmentType>Quests.QuestStatus</SegmentType>
+      </Simple>
+      <Simple>
+        <Name>Level</Name>
+        <Type>UInt</Type>
+      </Simple>
+      <Simple>
+        <Name>Text</Name>
+        <Type>CString</Type>
+      </Simple>
+    </List>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_GOSSIP_COMPLETE"></RealmPacket>
+</Definitions>

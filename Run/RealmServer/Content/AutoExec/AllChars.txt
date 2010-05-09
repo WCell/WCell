@@ -1,0 +1,6 @@
+# Add a set of commands to be executed everytime any Character logs in.
+# Every line with "#" in front is ignored as a comment.
+# Example:
+#  Level 80
+#  s health 1
+#  s basehealth 1000000

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
+             Version="4">
+
+  <RealmPacket OpCode="CMSG_SET_ACTIVE_VOICE_CHANNEL">
+    <Simple>
+      <Name>Channel Id (?)</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Unknown Byte</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="CMSG_VOICE_SESSION_ENABLE">
+    <Simple>
+      <Name>Voice Enabled (bool)</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Mic Enabled (bool)</Name>
+      <Type>Byte</Type>
+    </Simple>
+  </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_FEATURE_SYSTEM_STATUS">
+    <Simple>
+      <Name>Unknown Const: 2</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>System Status</Name>
+      <Type>Byte</Type>
+      <SegmentType>VoiceSystemStatus</SegmentType>
+    </Simple>
+  </RealmPacket>
+</Definitions>

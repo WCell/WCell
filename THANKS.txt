@@ -1,0 +1,7 @@
+Thanks for various items in this project go to:
+
+Corillian - Cell framework
+Nomad (RunWoW Developer) - SynchronizedDictionary.cs
+Julian M Bucknall (boyet.com) - LockFreeStack, LockfreeQueue, SingleLinkNode, SyncUtilities
+Ascent/MaNGOS/RunWoW - doing some of the hard reverse engineering work for us :)
+Mono Project - Sha1 implementation
