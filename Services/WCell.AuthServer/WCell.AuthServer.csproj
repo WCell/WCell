@@ -138,7 +138,6 @@
     <Compile Include="Accounts\AccountMgr.cs" />
     <Compile Include="Accounts\AuthenticationRecord.cs" />
     <Compile Include="Addons\AuthAddonMgr.cs" />
-    <Compile Include="AuthExtensions.cs" />
     <Compile Include="AuthServerConfiguration.cs" />
     <Compile Include="Commands\AccountCommands.cs" />
     <Compile Include="Commands\AdminCommands.cs" />
