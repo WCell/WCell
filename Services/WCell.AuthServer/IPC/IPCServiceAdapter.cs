@@ -462,10 +462,7 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.RoleGroupName = role;
-
-				AsyncQuery acctSaveQuery = QueryFactory.CreateNonResultQuery(acc.SaveAndFlush);
-                acctSaveQuery.Execute();
-
+                acc.SaveAndFlush();
                 return true;
             }
 
@@ -478,10 +475,7 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.EmailAddress = email;
-
-                AsyncQuery acctSaveQuery = QueryFactory.CreateNonResultQuery(acc.SaveAndFlush);
-                acctSaveQuery.Execute();
-
+                acc.SaveAndFlush();
                 return true;
             }
 
@@ -497,9 +491,7 @@ namespace WCell.AuthServer.IPC
                 {
                     acc.IsActive = active;
                     acc.StatusUntil = statusUntil;
-
-                    var acctSaveQuery = QueryFactory.CreateNonResultQuery(acc.SaveAndFlush);
-                    acctSaveQuery.Execute();
+                    acc.SaveAndFlush();
                     return true;
                 }
             }
@@ -534,9 +526,7 @@ namespace WCell.AuthServer.IPC
             if (acc != null)
             {
                 acc.HighestCharLevel = level;
-
-                var acctSaveQuery = QueryFactory.CreateNonResultQuery(acc.SaveAndFlush);
-                acctSaveQuery.Execute();
+                acc.SaveAndFlush();
             }
         }
 

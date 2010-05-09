@@ -207,11 +207,12 @@ namespace WCell.AuthServer
 			//}
 			else
 			{
-				var acctQuery = QueryFactory.CreateResultQuery(
-					() => AccountMgr.GetAccount(client.AccountName),
-												QueryAccountCallback,
-												client
-											);
+			    var acctQuery = new Action(() =>
+			    {
+			        var acc = AccountMgr.GetAccount(client.AccountName);
+			        QueryAccountCallback(client, acc);
+			    });
+
 				AuthenticationServer.Instance.AddMessage(acctQuery);
 			}
 		}
