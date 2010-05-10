@@ -6,7 +6,7 @@ using WCell.Util.Data;
 
 namespace WCell.Util.DB
 {
-	public abstract class BaseDataColumn : IDataColumn
+	public abstract class BaseDataColumn
 	{
 		protected readonly string m_ColumnName;
 		//private NestedDataColumn m_parent;

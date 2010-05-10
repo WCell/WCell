@@ -29,6 +29,7 @@ using WCell.Util;
 using System.Diagnostics;
 using WCell.Util.NLog;
 using System.Text.RegularExpressions;
+using WCell.Util.Strings;
 
 namespace WCell.RealmServerConsole
 {

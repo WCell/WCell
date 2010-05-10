@@ -15,6 +15,7 @@ using NHibernate.Tool.hbm2ddl;
 using NLog;
 using WCell.Util;
 using WCell.Util.NLog;
+using WCell.Util.Strings;
 using HibernateCfg = NHibernate.Cfg.Configuration;
 
 namespace WCell.Core.Database

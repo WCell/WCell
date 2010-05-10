@@ -7,6 +7,7 @@ using WCell.Util.Commands;
 using WCell.Core.Initialization;
 using WCell.Constants;
 using WCell.RealmServer.Chat;
+using WCell.Util.Strings;
 
 namespace WCell.Tools.Commands
 {

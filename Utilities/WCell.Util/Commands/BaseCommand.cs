@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using WCell.Util;
+using WCell.Util.Strings;
 
 namespace WCell.Util.Commands
 {

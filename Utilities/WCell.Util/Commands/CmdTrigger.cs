@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using WCell.Util.Strings;
 
 namespace WCell.Util.Commands
 {

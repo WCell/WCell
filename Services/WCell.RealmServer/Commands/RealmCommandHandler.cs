@@ -9,6 +9,7 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Commands;
+using WCell.Util.Strings;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Commands

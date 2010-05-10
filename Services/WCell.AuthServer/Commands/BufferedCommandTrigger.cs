@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Util;
 using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
+using WCell.Util.Strings;
 
 namespace WCell.AuthServer.Commands
 {

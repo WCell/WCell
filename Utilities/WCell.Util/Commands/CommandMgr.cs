@@ -21,6 +21,7 @@ using System.Reflection;
 using NLog;
 using WCell.Util;
 using WCell.Util.DynamicAccess;
+using WCell.Util.Strings;
 using WCell.Util.Toolshed;
 using System.IO;
 

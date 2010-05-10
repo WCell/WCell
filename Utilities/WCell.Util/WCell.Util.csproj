@@ -212,7 +212,6 @@
     <Compile Include="Graphics\Vector2.cs" />
     <Compile Include="Graphics\Vector3.cs" />
     <Compile Include="Graphics\Vector4.cs" />
-    <Compile Include="IDataColumn.cs" />
     <Compile Include="IGetterSetter.cs" />
     <Compile Include="DynamicAccess\PropertyAccessorException.cs" />
     <Compile Include="DynamicAccess\AccessorMgr.cs" />
@@ -228,7 +227,7 @@
     <Compile Include="NLog\LogUtil.cs" />
     <Compile Include="NLog\StreamLogger.cs" />
     <Compile Include="ReflectionUtils.cs" />
-    <Compile Include="StringStream.cs" />
+    <Compile Include="Strings\StringStream.cs" />
     <Compile Include="Strings\StringNode.cs" />
     <Compile Include="Strings\StringTree.cs">
       <SubType>Code</SubType>
@@ -262,9 +261,7 @@
       <Name>Cell.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Expressions\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

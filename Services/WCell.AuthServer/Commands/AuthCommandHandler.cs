@@ -8,6 +8,7 @@ using WCell.Util.Commands;
 using WCell.Core.Initialization;
 using WCell.Constants;
 using WCell.AuthServer.Accounts;
+using WCell.Util.Strings;
 using WCell.Util.Variables;
 using System.IO;
 
