@@ -269,7 +269,6 @@
     <Compile Include="Spells\Warrior\WarriorFixes.cs" />
     <Compile Include="Teleport\TeleportNode.cs" />
     <Compile Include="Teleport\ZeppelinMaster.cs" />
-    <Compile Include="UnitExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">

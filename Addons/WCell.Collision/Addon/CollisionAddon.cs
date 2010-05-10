@@ -7,17 +7,12 @@ namespace WCell.Collision.Addon
 {
     public class CollisionAddon : WCellAddonBase
     {
-        private const string name = "Terrain Provider";
-        private const string shortName = "TerrainProvider";
-        private const string author = "fubeca";
-        private const string website = "www.wcell.org";
-
         /// <summary>
         /// The culture-invariant name of this Addon
         /// </summary>
         public override string Name
         {
-            get { return name; }
+            get { return "Terrain Provider"; }
         }
 
         /// <summary>
@@ -26,7 +21,7 @@ namespace WCell.Collision.Addon
         /// </summary>
         public override string ShortName
         {
-            get { return shortName; }
+            get { return "Terrain"; }
         }
 
         /// <summary>
@@ -34,7 +29,7 @@ namespace WCell.Collision.Addon
         /// </summary>
         public override string Author
         {
-            get { return author; }
+            get { return "fubeca"; }
         }
 
         /// <summary>
@@ -42,7 +37,7 @@ namespace WCell.Collision.Addon
         /// </summary>
         public override string Website
         {
-            get { return website; }
+            get { return "http://www.wcell.org"; }
         }
 
         /// <summary>
@@ -50,7 +45,7 @@ namespace WCell.Collision.Addon
         /// </summary>
         public override string GetLocalizedName(CultureInfo culture)
         {
-            return name;
+            return "Terrain Provider";
         }
 
     	public override void TearDown()

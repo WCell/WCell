@@ -27,7 +27,7 @@ namespace WCell.Addons
 		#region WCellAddon Members
 		public override string Name
 		{
-			get { return "WCell Default Addon"; }
+			get { return "Default Addon"; }
 		}
 
 		public override string ShortName
@@ -42,12 +42,12 @@ namespace WCell.Addons
 
 		public override string Website
 		{
-			get { return "http://wcell.org"; }
+			get { return "http://www.wcell.org"; }
 		}
 
 		public override string GetLocalizedName(CultureInfo culture)
 		{
-			return "WCell Default Addon";
+			return "Default Addon";
 		}
 
 		public override void TearDown()
