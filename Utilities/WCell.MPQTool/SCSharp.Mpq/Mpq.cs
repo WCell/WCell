@@ -37,8 +37,8 @@ namespace SCSharp
 		}
 
 		public abstract Stream GetStreamForResource (string path);
-
-#if false	    
+    
+        /*
 		protected Type GetTypeFromResourcePath (string path)
 		{
 			string ext = Path.GetExtension (path);
@@ -55,7 +55,7 @@ namespace SCSharp
 				return typeof (Grp);
 			}
 			else if (ext.ToLower () == ".bin") {
-				if (path.ToLower().EndsWith ("aiscript.bin")) /* must come before iscript.bin */
+				if (path.ToLower().EndsWith ("aiscript.bin")) // must come before iscript.bin 
 					return null;
 				else if (path.ToLower().EndsWith ("iscript.bin"))
 					return typeof (IScriptBin);
@@ -107,13 +107,14 @@ namespace SCSharp
 
 			res.ReadFromStream (stream);
 
-			/* don't cache .smk files */
+			// don't cache .smk files 
 			if (!path.ToLower().EndsWith (".smk"))
 				cached_resources [path] = res;
 
 			return res;
 		}
-#endif
+        */
+
 		public virtual void Dispose ()
 		{
 		}
