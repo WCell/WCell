@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.AuthServer", "Service
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.RealmServer", "Services\WCell.RealmServer\WCell.RealmServer.csproj", "{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PacketAnalyzer", "Addons\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj", "{65B2B094-13BB-4685-95AD-402FC9A4473A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.PacketAnalyzer", "Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj", "{65B2B094-13BB-4685-95AD-402FC9A4473A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Tools", "Utilities\WCell.Tools\WCell.Tools.csproj", "{99463C8A-1598-4715-A390-A1B7E7FEDA2E}"
 	ProjectSection(ProjectDependencies) = postProject
