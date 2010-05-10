@@ -1,0 +1,8 @@
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Run\Debug\WCell.PacketAnalyzer.dll
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Run\Debug\WCell.PacketAnalyzer.pdb
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Addons\WCell.PacketAnalyzer\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Addons\WCell.PacketAnalyzer\obj\Debug\WCell.PacketAnalyzer.dll
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Addons\WCell.PacketAnalyzer\obj\Debug\WCell.PacketAnalyzer.pdb
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Utilities\WCell.PacketAnalyzer\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Utilities\WCell.PacketAnalyzer\obj\Debug\WCell.PacketAnalyzer.dll
+C:\Users\Zor\Documents\Visual Studio 2010\Projects\WCell\Utilities\WCell.PacketAnalyzer\obj\Debug\WCell.PacketAnalyzer.pdb
