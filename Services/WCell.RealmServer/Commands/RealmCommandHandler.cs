@@ -18,12 +18,12 @@ namespace WCell.RealmServer.Commands
 		public static readonly RealmCommandHandler Instance = new RealmCommandHandler();
 
 		/// <summary>
-		/// A directory (within the Content dir) containing a list of autoexec files, containing autoexec files similar to this:
+		/// A directory containing a list of autoexec files, containing autoexec files similar to this:
 		/// charname.txt
 		/// Every file will be executed when the Character with the given name logs in.
 		/// </summary>
 		[Variable("AutoExecDir")]
-		public static string AutoExecDir = "AutoExec";
+		public static string AutoExecDir = "../RealmServerAutoExec/";
 
 		/// <summary>
 		/// The file (within the Content dir) containing a set of commands to be executed upon startup
@@ -424,7 +424,7 @@ namespace WCell.RealmServer.Commands
 		public static void AutoexecStartup()
 		{
 			var args = new RealmServerCmdArgs(null, false, null);
-			var file = RealmServerConfiguration.GetContentPath(Path.Combine(AutoExecDir, AutoExecStartupFile));
+		    var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
 				Instance.ExecFile(file, args);
@@ -452,22 +452,21 @@ namespace WCell.RealmServer.Commands
 
 		public static void ExecFileFor(Character user)
 		{
-			var dir = RealmServerConfiguration.GetContentPath(AutoExecDir);
 			if (AutoExecDir != null)
 			{
-				var file = Path.Combine(dir, "Chars/" + user.Account.Name + ".txt");
+				var file = Path.Combine(AutoExecDir, "Chars/" + user.Account.Name + ".txt");
 				ExecFileFor(file, user);
 			}
 		}
 
 		public static void ExecFirstLoginFileFor(Character user)
 		{
-			ExecFileFor(Path.Combine(RealmServerConfiguration.GetContentPath(AutoExecDir), AutoExecAllCharsFirstLoginFile), user);
+		    ExecFileFor(AutoExecDir + AutoExecAllCharsFirstLoginFile, user);
 		}
 
 		public static void ExecAllCharsFileFor(Character user)
 		{
-			ExecFileFor(Path.Combine(RealmServerConfiguration.GetContentPath(AutoExecDir), AutoExecAllCharsFile), user);
+		    ExecFileFor(AutoExecDir + AutoExecAllCharsFile, user);
 		}
 
 		public static void ExecFileFor(string file, Character user)

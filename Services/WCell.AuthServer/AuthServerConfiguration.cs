@@ -46,7 +46,7 @@ namespace WCell.AuthServer
 
 		public override string Filename
 		{
-			get { return GetFullPath("Config.xml"); }
+			get { return GetFullPath("AuthServerConfig.xml"); }
 		}
 
 		static void OnError(string msg)

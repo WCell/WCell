@@ -21,7 +21,7 @@ namespace WCell.AuthServer.Addons
 	{
 		static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static string AddonFolder = "../AddonBin";
+		public static string AddonFolder = "AuthServerAddons";
 
 		//[Variable("IgnoredAddonFiles")]
 		public static string IgnoredAddonFiles = "";

@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Addons
 	{
 		static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static string AddonFolder = "../AddonBin";
+		public static string AddonFolder = "RealmServerAddons";
 
 		/// <summary>
 		/// A list of all libs or folders in the AddonDir that are not to be loaded.

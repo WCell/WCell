@@ -46,7 +46,7 @@ namespace WCell.RealmServer
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private const string ConfigFilename = "Config.xml";
+		private const string ConfigFilename = "RealmServerConfig.xml";
 
 		private static RealmServerConfiguration s_instance;
 		public static RealmServerConfiguration Instance

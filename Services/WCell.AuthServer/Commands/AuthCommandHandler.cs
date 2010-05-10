@@ -29,7 +29,7 @@ namespace WCell.AuthServer.Commands
 		/// Every file will be executed when the account with the given name logs in.
 		/// </summary>
 		[Variable("AutoExecDir")]
-		public static string AutoExecDir = "AutoExec";
+		public static string AutoExecDir = "../AuthServerAutoExec/";
 
 		public override string ExecFileDir
 		{
@@ -138,7 +138,7 @@ namespace WCell.AuthServer.Commands
 		public static void AutoexecStartup()
 		{
 			var args = new AuthServerCmdArgs(null);
-			var file = AuthServerConfiguration.GetFullPath(Path.Combine(AutoExecDir, AutoExecStartupFile));
+		    var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
 				Instance.ExecFile(file, args);
@@ -149,7 +149,7 @@ namespace WCell.AuthServer.Commands
 		{
 			if (!string.IsNullOrEmpty(AutoExecDir) && Directory.Exists(AutoExecDir))
 			{
-				var file = AuthServerConfiguration.GetFullPath(acc.Name + ".txt");
+			    var file = AutoExecDir + acc.Name + ".txt";
 				if (File.Exists(file))
 				{
 					Instance.ExecFile(file, new AuthServerCmdArgs(acc));
