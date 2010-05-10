@@ -32,7 +32,7 @@ namespace NHibernate.Impl
 		private bool isCacheable = false;
 		private bool forceCacheRefresh = false;
 		private string cacheRegion;
-		private IResultTransformer resultTransformer;
+		private IResultTransformer resultTransformer = null;
 		private Dictionary<CriteriaLoader, int> loaderToResultIndex = new Dictionary<CriteriaLoader, int>();
 
 		/// <summary>
