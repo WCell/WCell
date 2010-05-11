@@ -9,3 +9,4 @@ Run/Release/RealmServerAddons/*.*
 /Applications/WCell.RealmServerConsole/WCell.RealmServerConsole.xml
 /Utilities/WCell.SolutionItems/bin/Debug/*.*
 /Run/Docs/*
+*.dbc
