@@ -10,3 +10,5 @@ Run/Release/RealmServerAddons/*.*
 /Utilities/WCell.SolutionItems/bin/Debug/*.*
 /Run/Docs/*
 *.dbc
+*.wcelllog
+Run/Debug/cfg/*
