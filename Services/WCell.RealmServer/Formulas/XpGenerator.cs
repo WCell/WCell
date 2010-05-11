@@ -49,8 +49,6 @@ namespace WCell.RealmServer.Formulas
 	/// <summary>
 	/// Static utility class that holds and calculates Level- and Experience-information.
 	/// Has exchangable Calculator delegates to allow custom xp-calculations.
-	/// 
-	/// <see cref="http://www.wowwiki.com/Formulas:XP_To_Level"/>
 	/// </summary>
 	public static class XpGenerator
 	{

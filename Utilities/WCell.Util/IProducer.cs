@@ -160,7 +160,7 @@ namespace WCell.Util
 	public class DefaultProducer<T> : IProducer<T>
 	{
 		/// <summary>
-		/// Creates a new object of Type <see cref="T"/>
+		/// Creates a new object of Type T
 		/// </summary>
 		public T Produce()
 		{
@@ -176,7 +176,7 @@ namespace WCell.Util
 	public class DefaultArrayProducer<T> : IProducer<T>
 	{
 		/// <summary>
-		/// Creates a new object of Type <see cref="T"/>
+		/// Creates a new object of Type T
 		/// </summary>
 		public T Produce()
 		{

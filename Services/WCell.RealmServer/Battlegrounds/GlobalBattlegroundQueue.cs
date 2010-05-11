@@ -136,7 +136,6 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Make sure to load GOs before calling this method
 		/// </summary>
-		/// <typeparam name="B"></typeparam>
 		/// <returns></returns>
 		public Battleground CreateBattleground()
 		{

@@ -9,8 +9,7 @@ using WCell.Core.Timers;
 namespace WCell.RealmServer.Instances
 {
 	/// <summary>
-	/// Represents an ingame Dungeon Instance for small parties. 
-	/// <see cref="http://www.wowwiki.com/Instance"/>
+	/// Represents an ingame Dungeon Instance for small parties.
 	/// </summary>
 	public abstract class DungeonInstance : BaseInstance, IUpdatable
 	{

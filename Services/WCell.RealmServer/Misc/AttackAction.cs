@@ -543,7 +543,7 @@ namespace WCell.RealmServer.Misc
 
 		#region Chances
 		/// <summary>
-        /// Calculated in <see cref="UnitUpdates.UpdateBlockChance"/>
+        /// Calculated in UnitUpdates.UpdateBlockChance
 		/// </summary>
 		public int CalcBlockDamage()
 		{

@@ -109,7 +109,7 @@ namespace WCell.Util
 		}
 
 		/// <summary>
-		/// Returns either the list or a new List if <see cref="list"/> is null.
+		/// Returns either the list or a new List if list is null.
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name="list"></param>

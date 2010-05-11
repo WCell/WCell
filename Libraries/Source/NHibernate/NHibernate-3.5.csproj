@@ -30,10 +30,8 @@
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <WarningsAsErrors>
     </WarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -54,10 +52,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
@@ -81,10 +77,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>Itanium</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
@@ -108,10 +102,8 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <NoWarn>
-    </NoWarn>
+    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>

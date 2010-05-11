@@ -381,7 +381,7 @@ namespace WCell.RealmServer.Content
 		#region Editing
 		/// <summary>
 		/// Updates changes to the Object in the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+        /// FlushCommit() needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitUpdate(this IDataHolder obj)
 		{
@@ -391,7 +391,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Inserts the Object into the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+        /// FlushCommit() needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitInsert(this IDataHolder obj)
 		{
@@ -401,7 +401,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Deletes the Object from the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+        /// FlushCommit() needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitDelete(this IDataHolder obj)
 		{
@@ -411,7 +411,6 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Updates changes to the Object in the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitUpdateAndFlush(this IDataHolder obj)
 		{
@@ -421,7 +420,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Inserts the Object into the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+		/// FlushCommit() needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitInsertAndFlush(this IDataHolder obj)
 		{
@@ -431,7 +430,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Deletes the Object from the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+		/// FlushCommit() needs to be called to persist the operation.
 		/// </summary>
 		public static void CommitDeleteAndFlush(this IDataHolder obj)
 		{
@@ -440,7 +439,7 @@ namespace WCell.RealmServer.Content
 		}
 
 		/// <summary>
-		/// Ignore all changes before last <see cref="Flush"/> (will not change the Object's state).
+		/// Ignore all changes before last FlushCommit() (will not change the Object's state).
 		/// </summary>
 		public static void IgnoreUnflushedChanges<T>() where T : IDataHolder
 		{
@@ -450,7 +449,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Flush all commited changes to the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+		/// FlushCommit() needs to be called to persist the operation.
 		/// Will be executed in the global IO context.
 		/// </summary>
 		public static void FlushCommit<T>() where T : IDataHolder
@@ -461,7 +460,7 @@ namespace WCell.RealmServer.Content
 
 		/// <summary>
 		/// Flush all commited changes to the underlying Database.
-		/// <see cref="Flush" /> needs to be called to persist the operation.
+		/// FlushCommit() needs to be called to persist the operation.
 		/// Will be executed in the global IO context.
 		/// </summary>
 		public static void FlushCommit(Type t)

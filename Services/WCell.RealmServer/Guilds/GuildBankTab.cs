@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Guilds
         }
         
         /// <summary>
-        /// Places the given item in the given slot (or tries mergeing at <see cref="slot" /> if indicated).
+        /// Places the given item in the given slot (or tries mergeing at slot> if indicated).
         /// Make sure that the depositer has deposit rights to this BankTab!
         /// </summary>
         /// <param name="item">The <see cref="ItemRecord" /> to store.</param>
@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Guilds
         }
 
         /// <summary>
-        /// Places the given amount of the given item stack in the given slot (or tries mergeing at <see cref="slot" /> if indicated).
+        /// Places the given amount of the given item stack in the given slot (or tries mergeing at slot if indicated).
         /// Make sure that the depositer has deposit rights to this BankTab!
         /// </summary>
         /// <param name="item">The <see cref="ItemRecord" /> to store.</param>

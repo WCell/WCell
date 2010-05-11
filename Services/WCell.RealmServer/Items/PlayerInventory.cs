@@ -651,10 +651,11 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		#region Searching
-		/// <summary>
-		/// Gets a free slot in the backpack (use <see cref="FindFreeSlot(IMountableItem, uint)"/> to also look through equipped bags and optionally the bank)
-		/// </summary>
-		public override int FindFreeSlot()
+
+	    /// <summary>
+	    /// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
+	    /// </summary>
+	    public override int FindFreeSlot()
 		{
 			var slot = BackPack.FindFreeSlot();
 			return slot;
@@ -760,7 +761,7 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
-		/// Sets <see cref="slotId"/> to the slot that the given templ would prefer (if it has any bag preference).
+		/// Sets slotId to the slot that the given templ would prefer (if it has any bag preference).
 		/// </summary>
 		/// <param name="templ"></param>
 		/// <param name="slotId"></param>

@@ -23,7 +23,6 @@ namespace Cell.Core
     /// <summary>
     /// This class provides a wrapper for <see cref="System.Net.IPAddress"/> that can be serialized with XML.
     /// </summary>
-    /// <seealso cref="XmlConfig"/>
     /// <seealso cref="System.Xml.Serialization"/>
     /// <seealso cref="System.Net.IPAddress"/>
     [Serializable]
