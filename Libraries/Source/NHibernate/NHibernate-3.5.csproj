@@ -24,13 +24,13 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Run\Debug\</OutputPath>
+    <OutputPath>..\..\..\Run\Debug\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\Run\Debug\NHibernate.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <WarningsAsErrors>
     </WarningsAsErrors>
@@ -39,7 +39,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Run\Release\</OutputPath>
+    <OutputPath>..\..\..\Run\Release\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
     <DefineConstants>
