@@ -29,7 +29,7 @@ namespace WCell.MPQTool
 	public class DBCTool
 	{
 		//static string DBCOutputDir = string.Format(@"{0}\Content\dbc", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-		public static readonly string DBCDir = new DirectoryInfo(string.Format(@"../../../../Run/RealmServer/Content/dbc")).FullName;
+		public static readonly string DBCDir = new DirectoryInfo(string.Format(@"../Content/dbc")).FullName;
 		public static readonly string DefaultDBCOutputDir = DBCDir + WCellInfo.RequiredVersion.BasicString + "/";
 		public static string DBCOutputDir = DefaultDBCOutputDir;
 		public static DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
