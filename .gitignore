@@ -3,4 +3,9 @@ obj
 Run/Debug/*.*
 Run/Debug/RealmServerAddons/*.*
 /Applications/WCell.RealmServerConsole/WCell.RealmServerConsole.xml
+/Utilities/WCell.SolutionItems/bin/*
+Run/Release/*.*
+Run/Release/RealmServerAddons/*.*
+/Applications/WCell.RealmServerConsole/WCell.RealmServerConsole.xml
 /Utilities/WCell.SolutionItems/bin/Debug/*.*
+/Run/Docs/*
