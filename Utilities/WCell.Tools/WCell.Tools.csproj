@@ -246,7 +246,6 @@
     <Compile Include="Domi\VariablePurifier.cs" />
     <Compile Include="Ralek\Extensions.cs" />
     <Compile Include="Ralek\Utility\CodeTimers.cs" />
-    <Compile Include="Ralek\Utility\ZLib.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
