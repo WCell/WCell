@@ -13,16 +13,11 @@ namespace WCell.PostBuild
 	/// </summary>
 	public class Program
 	{
-		public const string DocsDir = "Docs/";
+		public const string DocsDir = "../Docs/";
 
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Performing Post-Build steps (Docs in: {0}) ...", new DirectoryInfo(DocsDir).FullName);
-
 			CommandDocs.CreateCommandDocs(DocsDir);
-
-			Console.WriteLine("Done. - Please press ANY key to continue...");
-			Console.ReadKey();
 		}
 	}
 }

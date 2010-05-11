@@ -14,15 +14,10 @@ namespace WCell.PostBuild.Docs
 	{
 		public const string DefaultFile = "Commands.txt";
 
-
 		public static void CreateCommandDocs(string dir)
 		{
-			RealmServer.RealmServer.Instance.Start();
 			RealmCommandHandler.Initialize();
-
-			AuthenticationServer.Instance.Start();
 			AuthCommandHandler.Initialize();
-
 			ToolCommandHandler.Initialize();
 
 			CreateCommandDocs(Path.Combine(dir, "RealmServer"), RealmCommandHandler.Instance.Commands);
