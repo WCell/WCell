@@ -12,3 +12,4 @@ Run/Release/RealmServerAddons/*.*
 *.dbc
 *.wcelllog
 Run/Debug/cfg/*
+*.cache
