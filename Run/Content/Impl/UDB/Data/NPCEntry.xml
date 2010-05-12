@@ -54,7 +54,7 @@
     <Flat Name="UnitFlags" Column="unit_flags" />
     <Flat Name="DynamicFlags" Column="dynamicflags" />
     <Flat Name="EntryFlags" Column="type_flags" />
-    <Flat Name="SpeedFactor" Column="speed" />
+    <Flat Name="SpeedFactor" Column="speed_walk" />
     <Flat Name="Scale" Column="scale" />
     <Flat Name="Rank" Column="rank" />
     <Flat Name="DamageSchool" Column="dmgschool" />
@@ -112,6 +112,7 @@
 -->
   <!--extra in UDB
     heroic_entry
+    speed_run
     AiName
     movementId     
 -->

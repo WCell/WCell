@@ -20,6 +20,8 @@
     <Flat Name="Flags" Column="flags" />
     <FlatArray Name="Fields" Pattern="data{#}" Offset="0" />
 <!--extra in UDB
+    mingold
+    maxgold
     IconName
     castBarCaption
     unk1 (string)

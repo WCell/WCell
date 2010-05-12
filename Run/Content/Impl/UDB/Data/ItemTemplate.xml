@@ -103,7 +103,6 @@
     <Flat Name="ArmorModifier" Column="ArmorDamageModifier" />
     <Flat Name="Duration" Column="Duration" />
     <Flat Name="FoodType" Column="FoodType" />
-
 <!--<Flat Name="RequiredTargetType" Column="type" Table="item_required_target"/>
     <Flat Name="RequiredTargetId" Column="targetEntry" Table="item_required_target"/> 
     
@@ -121,6 +120,7 @@
 
 <!--extra in UDB
     unk0
+    ExtraFlags
     name
     requiredspell
     stackable = StackSize

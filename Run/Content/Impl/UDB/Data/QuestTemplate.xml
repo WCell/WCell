@@ -83,6 +83,13 @@
     <Flat Name="Daily" Column="" />
 
     <!--extra in UDB
+    RewRepValueId1
+    RewRepValueId2
+    RewRepValueId3
+    RewRepValueId4
+    RewRepValueId5
+    RewHonorMultiplier
+    RewHonorAddition
     RepObjectiveFaction
     RepObjectiveValue
     PlayersSlain
