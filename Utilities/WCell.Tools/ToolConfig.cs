@@ -20,7 +20,7 @@ namespace WCell.Tools
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		public static readonly string ConfigFile = "Tools.xml";
 
-		public static string ToolsRoot = "../../";
+		public static string ToolsRoot = "../../Utilities/WCell.Tools/";
 		public static string WCellRoot = ToolsRoot + "../../";
 		public static string CoreDir = WCellRoot + "Core/";
 		public static string WCellCoreRoot = CoreDir + "WCell.Core/";
@@ -30,15 +30,15 @@ namespace WCell.Tools
 		public static string RealmServerRoot = ServicesRoot + "WCell.RealmServer/";
 		public static string AuthServerRoot = ServicesRoot + "WCell.AuthServer/";
 		public static string RunDir = WCellRoot + "Run/";
-		public static string ContentDir = RunDir + "RealmServer/Content/";
+		public static string ContentDir = RunDir + "Content/";
 		public static string MapDir = ContentDir + "Maps/";
 		public static string WMODir = ContentDir + "Maps/";
 		public static string M2Dir = ContentDir + "Maps/";
-		public static string AddonDir = RunDir + "RealmServer/AddonBin/";
+        public static string AddonDir = "RealmServerAddons/";
 		public static string AddonSourceDir = WCellRoot + "Addons/";
 		public static string DefaultAddonSourceDir = AddonSourceDir + "WCell.DefaultAddon/";
-		public static string RealmServerRunDir = RunDir + "RealmServer/";
-		public static string RealmServerDebugDir = RealmServerRunDir + "Debug/";
+		public static string RealmServerRunDir = RunDir + "Debug/";
+		public static string RealmServerDebugDir = RunDir + "Debug/";
 
 		/// <summary>
 		/// The location of WCell's executable in the Debug/ folder
