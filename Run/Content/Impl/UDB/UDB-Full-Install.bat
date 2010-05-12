@@ -46,11 +46,10 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (385-387)
+ECHO		 c = Install all Changesets (389-390)
 ECHO.
-ECHO		 385 = Install Changeset 385
-ECHO		 386 = Install Changeset 386
-ECHO		 387 = Install Changeset 387
+ECHO		 389 = Install Changeset 389
+ECHO		 390 = Install Changeset 390
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -65,9 +64,8 @@ if %l%==c goto changesets
 if %l%==C goto changesets
 if %l%==x goto quit
 if %l%==X goto quit
-if %l%==385 goto changeset385
-if %l%==386 goto changeset386
-if %l%==387 goto changeset387
+if %l%==389 goto changeset385
+if %l%==390 goto changeset386
 goto error
 
 :import
@@ -75,8 +73,8 @@ CLS
 ECHO.
 ECHO.
 ECHO [Importing] Started...
-ECHO [Importing] UDB database rev 384...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\UDB_0.11.6_Core_8734_SD2_1480.sql
+ECHO [Importing] UDB database rev 388...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\UDB_0.12.0_mangos_9582_SD2_1639.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -88,20 +86,15 @@ ECHO.
 ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] UDB database changesets...
-ECHO [Importing] UDB database changeset 385...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\385_corepatch_mangos_8735_to_8798.sql
-ECHO [Importing] UDB updatepack 385...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\385_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 389...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\389_corepatch_mangos_9583_to_9630.sql
+ECHO [Importing] UDB updatepack 389...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\389_updatepack_mangos.sql
 ECHO [Importing] Finished
-ECHO [Importing] UDB database changeset 386...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\386_corepatch_mangos_8799_to_8994.sql
-ECHO [Importing] UDB updatepack 386...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\386_updatepack_mangos.sql
-ECHO [Importing] Finished
-ECHO [Importing] UDB database changeset 387...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\387_corepatch_mangos_8994_to_9310.sql
-ECHO [Importing] UDB updatepack 387...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\387_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 390...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\390_corepatch_mangos_9631_to_9763.sql
+ECHO [Importing] UDB updatepack 390...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\390_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -112,9 +105,10 @@ CLS
 ECHO.
 ECHO.
 ECHO Started...
-ECHO [Importing] UDB database changeset 385...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\385_corepatch_mangos_8735_to_8798.sql
-ECHO [Importing] UDB updatepack 385...
+ECHO [Importing] UDB database changeset 389...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\389_corepatch_mangos_9583_to_9630.sql
+ECHO [Importing] UDB updatepack 389...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\389_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -125,34 +119,21 @@ CLS
 ECHO.
 ECHO.
 ECHO Started...
-ECHO [Importing] UDB database changeset 386...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\386_corepatch_mangos_8799_to_8994.sql
-ECHO [Importing] UDB updatepack 386...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\386_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 390...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\390_corepatch_mangos_9631_to_9763.sql
+ECHO [Importing] UDB updatepack 390...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.0_additions\390_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
 GOTO menu
 
-:changeset387
-CLS
-ECHO.
-ECHO.
-ECHO Started...
-ECHO [Importing] UDB database changeset 387...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\387_corepatch_mangos_8994_to_9310.sql
-ECHO [Importing] UDB updatepack 387...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.11.6_additions\387_updatepack_mangos.sql
-ECHO [Importing] Finished
-ECHO.
-PAUSE    
-GOTO menu
 
 :extract
 CLS
 ECHO.
 unrar.exe
-unrar x -y %udbdir%Full_DB\UDB_0.11.6_Core_8734_SD2_1480.rar %udbdir%Full_DB\
+unrar x -y %udbdir%Full_DB\UDB_0.12.0_mangos_9582_SD2_1639.rar %udbdir%Full_DB\
 ECHO.
 PAUSE.
 GOTO menu
