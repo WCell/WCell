@@ -50,9 +50,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\</OutputPath>
+    <OutputPath>..\..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\Run\Debug\NHibernate.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -62,7 +62,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>..\..\Run\Release\</OutputPath>
+    <OutputPath>..\..\..\Run\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -75,9 +75,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\</OutputPath>
+    <OutputPath>..\..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\Run\Debug\NHibernate.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>Itanium</PlatformTarget>
@@ -87,7 +87,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
-    <OutputPath>..\..\Run\Release\</OutputPath>
+    <OutputPath>..\..\..\Run\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -100,9 +100,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\Debug\</OutputPath>
+    <OutputPath>..\..\..\Run\Debug\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DocumentationFile>..\..\Run\Debug\NHibernate.xml</DocumentationFile>
+    <DocumentationFile>..\..\..\Run\Debug\NHibernate.xml</DocumentationFile>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -112,7 +112,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\Run\Release\</OutputPath>
+    <OutputPath>..\..\..\Run\Release\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
