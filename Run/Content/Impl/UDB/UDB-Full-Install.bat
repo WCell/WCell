@@ -9,13 +9,13 @@ REM # server - Base Table host
 REM # user - MySQL username
 REM # pass - MySQL login password
 REM # wdb  -  Database name
-REM # udbdir  - Main UDB directory on your harddisk (for example "E:\Documents\My Documents\Code\UDB")
+REM # udbdir  - Main UDB directory on your harddisk (for example "E:\Documents\My Documents\Code\UDB\", note the trailing backslash!)
 REM #########################################
 
-set user=root
-set pass=r00t
+set user=changeme
+set pass=changeme
 set wdb=wcellrealmserver
-set udbdir="e:\coding\C#\WCellOther\UDB\"
+set udbdir="changeme"
 
 REM ############################################################################
 REM #
@@ -24,6 +24,7 @@ REM #
 REM ############################################################################
 set server=localhost
 set port=3306
+set udb-main=UDB_0.12.0_mangos_9582_SD2_1639
 REM ############################################################################
 REM #
 REM #     D O   N O T   M O D I F Y   B E Y O N D   T H I S   P O I N T
@@ -64,8 +65,8 @@ if %l%==c goto changesets
 if %l%==C goto changesets
 if %l%==x goto quit
 if %l%==X goto quit
-if %l%==389 goto changeset385
-if %l%==390 goto changeset386
+if %l%==389 goto changeset389
+if %l%==390 goto changeset390
 goto error
 
 :import
@@ -74,7 +75,7 @@ ECHO.
 ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] UDB database rev 388...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\UDB_0.12.0_mangos_9582_SD2_1639.sql
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\udb-main.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -100,7 +101,7 @@ ECHO.
 PAUSE    
 GOTO menu
 
-:changeset385
+:changeset389
 CLS
 ECHO.
 ECHO.
@@ -114,7 +115,7 @@ ECHO.
 PAUSE    
 GOTO menu
 
-:changeset386
+:changeset390
 CLS
 ECHO.
 ECHO.
@@ -128,15 +129,47 @@ ECHO.
 PAUSE    
 GOTO menu
 
-
 :extract
 CLS
 ECHO.
-unrar.exe
-unrar x -y %udbdir%Full_DB\UDB_0.12.0_mangos_9582_SD2_1639.rar %udbdir%Full_DB\
+ECHO		####################################
+ECHO		######        Extracting      ######
+ECHO		####################################
+ECHO.
+ECHO.
+ECHO        Is the file in ZIP or RAR format? Enter C to return to the menu.
+ECHO.
+ECHO.
+ECHO.
+set /p t=        Enter format:
+if %t% == ZIP GOTO unzip
+if %t% == RAR GOTO unrar
+if %t% == zip GOTO unzip
+if %t% == rar GOTO unrar
+if %t% == C GOTO menu
+if %t% == c GOTO menu
+GOTO extract-error1
+
+:unzip
+ECHO.
+7za e -y %udbdir%Full_DB\udb-main.zip -o%udbdir%Full_DB\
 ECHO.
 PAUSE.
 GOTO menu
+
+:unrar
+ECHO.
+unrar x -y %udbdir%Full_DB\udb-main.rar %udbdir%Full_DB\
+ECHO.
+PAUSE
+GOTO menu
+
+:extract-error1
+ECHO.
+ECHO [ERROR] Extracting from .%t% type of archives is not supported
+ECHO [ERROR] Please enter ZIP or RAR
+PAUSE
+GOTO extract
 
 :error
 CLS
@@ -160,7 +193,7 @@ GOTO quit
 :error3
 ECHO [FAILURE] You did not change the UDB directory variable
 ECHO [FAILURE] Please edit this script and enter the proper directory
-ECHO [FAILURE] (e.g. set udbdir="E:\Code\UDB")
+ECHO [FAILURE] (e.g. set udbdir="E:\Code\UDB\")
 PAUSE
 GOTO quit
 
