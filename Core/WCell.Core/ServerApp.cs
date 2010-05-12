@@ -43,7 +43,6 @@ namespace WCell.Core
 
 		protected static Logger s_log = LogManager.GetCurrentClassLogger();
 
-		protected static int s_revision;
 		protected static string s_entryLocation;
 		protected static readonly string[] EmptyStringArr = new string[0];
 
@@ -59,8 +58,6 @@ namespace WCell.Core
 
 		protected ServerApp()
 		{
-			GetRevision();
-
 			s_log.Debug(Resources.ServerStarting);
 
 			AppUtil.AddApplicationExitHandler(_OnShutdown);
@@ -130,24 +127,6 @@ namespace WCell.Core
 		}
 
 		/// <summary>
-		/// Gets the SVN revision for the current server build.
-		/// </summary>
-		[NotVariable]
-		public static int Revision
-		{
-			get { return s_revision; }
-			set { s_revision = value; }
-		}
-
-		/// <summary>
-		/// Gets the string representation of the SVN revision for the current server build.
-		/// </summary>
-		public static string RevisionString
-		{
-			get { return s_revision == -1 ? "[Unknown]" : s_revision.ToString(); }
-		}
-
-		/// <summary>
 		/// Gets the assembly version information for the entry assembly of the process.
 		/// </summary>
 		public static string AssemblyVersion
@@ -201,20 +180,6 @@ namespace WCell.Core
 		public abstract int Port
 		{
 			get;
-		}
-
-		protected static void GetRevision()
-		{
-			var dir = Path.GetDirectoryName(EntryLocation);
-			var svnDir = Path.Combine(dir, ".svn");
-			if (!Directory.Exists(svnDir))
-			{
-				s_revision = -1;
-			}
-			else
-			{
-				s_revision = SvnUtil.GetVersionNumber(dir);
-			}
 		}
 
 		private void LogSystemInfo(Action<string> logger)
@@ -490,7 +455,7 @@ namespace WCell.Core
 
 		public override string ToString()
 		{
-			return string.Format("WCell {0},{1} (v{2})", GetType().Name, Revision > 0 ? " Rev. " + Revision : "", AssemblyVersion);
+			return string.Format("WCell {0} (v{1})", GetType().Name, AssemblyVersion);
 		}
 	}
 

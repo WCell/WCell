@@ -588,8 +588,7 @@ namespace WCell.RealmServer
 		{
 			get
 			{
-				return string.Format("{0} - WCell {1} (Rev. {2})", RealmServerConfiguration.RealmName, WCellInfo.Codename,
-									 RevisionString);
+				return string.Format("{0} - WCell {1}", RealmServerConfiguration.RealmName, WCellInfo.Codename);
 			}
 		}
 
@@ -601,7 +600,7 @@ namespace WCell.RealmServer
 
 		public override string ToString()
 		{
-			return string.Format("{3} - WCell {0},{1} (v{2})", GetType().Name, Revision > 0 ? " Rev. " + RevisionString : "",
+			return string.Format("{2} - WCell {0} (v{1})", GetType().Name,
 				AssemblyVersion, RealmServerConfiguration.RealmName);
 		}
 	}
