@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Talents
 				var abilities = new List<Spell>(5);
 				uint spellId;
 
-				for (uint i = 0; i < 9; i++)
+				for (int i = 0; i < 9; i++)
 				{
 					spellId = GetUInt32(rawData, i + 4);
 

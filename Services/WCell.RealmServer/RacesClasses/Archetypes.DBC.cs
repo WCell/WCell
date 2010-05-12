@@ -49,7 +49,7 @@ namespace WCell.RealmServer.RacesClasses
 
 			var items = archetype.GetInitialItems(gender);
 
-			for (var i = 2u; i <= 25; i++)
+			for (var i = 2; i <= 25; i++)
 			{
 				var itemId = GetInt32(rawData, i);
 				if (itemId > 0)

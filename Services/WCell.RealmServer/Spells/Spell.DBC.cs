@@ -198,7 +198,7 @@ namespace WCell.RealmServer.Spells
 			public override void Convert(byte[] rawData)
 			{
 				#region Parsing
-				uint currentIndex = 0;
+				int currentIndex = 0;
 
 				var spell = new Spell {
 					Id = GetUInt32(rawData, currentIndex++),
@@ -292,7 +292,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					List<ItemStackDescription> reagents = null;
-					uint reagentStart = currentIndex;
+					int reagentStart = currentIndex;
 					for (int i = 0; i < 8; i++)                                             //52-59
 					{
 						ReadReagent(rawData, reagentStart, i, out currentIndex, ref reagents);
@@ -324,7 +324,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					var effects = new List<SpellEffect>(3);     // 71 - 127
-					uint effectStart = currentIndex;
+					int effectStart = currentIndex;
 					for (int i = 0; i < 3; i++)
 					{
 						SpellEffect effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
@@ -402,13 +402,13 @@ namespace WCell.RealmServer.Spells
 				ArrayUtil.Set(ref SpellHandler.ById, spell.Id, spell);
 			}
 
-			private void ReadReagent(byte[] rawData, uint reagentStart, int reagentNum, out uint currentIndex, ref List<ItemStackDescription> list)
+			private void ReadReagent(byte[] rawData, int reagentStart, int reagentNum, out int currentIndex, ref List<ItemStackDescription> list)
 			{
-				currentIndex = (uint)(reagentStart + reagentNum);
+				currentIndex = reagentStart + reagentNum;
 				var id = (ItemId)GetUInt32(rawData, currentIndex);
 				currentIndex += 8;
 				var count = GetInt32(rawData, currentIndex);
-				currentIndex += (uint)(8 - reagentNum);
+				currentIndex += 8 - reagentNum;
 
 				if (id > 0 && count > 0)
 				{
@@ -421,11 +421,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			private SpellEffect ReadEffect(Spell spell, byte[] rawData, uint effectStartIndex, int effectNum, out uint currentIndex)
+			private SpellEffect ReadEffect(Spell spell, byte[] rawData, int effectStartIndex, int effectNum, out int currentIndex)
 			{
 				var effect = new SpellEffect(spell, effectNum);
 
-				currentIndex = (uint)(effectStartIndex + effectNum);
+				currentIndex = effectStartIndex + effectNum;
 
 				effect.EffectType = (SpellEffectType)GetUInt32(rawData, currentIndex);  // 71
 				currentIndex += 3;
@@ -490,18 +490,18 @@ namespace WCell.RealmServer.Spells
                 currentIndex += 3;
 
 				effect.PointsPerComboPoint = GetFloat(rawData, currentIndex);       // 119
-				currentIndex += (uint)(3 - effectNum);
+				currentIndex += 3 - effectNum;
 
 
 				// since the masks are stored congruently instead of indexed
-				currentIndex += (uint)(effectNum * 3);
+				currentIndex += effectNum * 3;
 
 				effect.AffectMask[0] = GetUInt32(rawData, currentIndex++);
 				effect.AffectMask[1] = GetUInt32(rawData, currentIndex++);
 				effect.AffectMask[2] = GetUInt32(rawData, currentIndex++);
 
 				// skip ahead 6 for index 0, 3 for index 1, and 0 for index 2
-				currentIndex += (uint)((2 - effectNum) * 3);
+				currentIndex += (2 - effectNum) * 3;
 
 				return effect;
 			}

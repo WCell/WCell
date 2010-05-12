@@ -42,79 +42,67 @@ namespace WCell.Core.DBC
 		{
 		}
 
-        protected static unsafe uint GetUInt32(byte[] data, uint field)
+        protected static uint GetUInt32(byte[] data, int field)
         {
-            uint startIndex = field * 4;
+            int startIndex = field * 4;
             if (startIndex + 4 > data.Length)
-                return uint.MaxValue;
+                throw new IndexOutOfRangeException();
 
-            fixed (byte* pData = &data[startIndex])
-            {
-                return *(uint*)pData;
-            }
+            return BitConverter.ToUInt32(data, startIndex);
         }
 
-        protected static unsafe int GetInt32(byte[] data, uint field)
+        protected static int GetInt32(byte[] data, int field)
         {
-            uint startIndex = field * 4;
+            int startIndex = field * 4;
             if (startIndex + 4 > data.Length)
-                return int.MaxValue;
+                throw new IndexOutOfRangeException();
 
-            fixed (byte* pData = &data[startIndex])
-            {
-                return *(int*)pData;
-            }
+            return BitConverter.ToInt32(data, startIndex);
         }
 
-        protected static unsafe float GetFloat(byte[] data, uint field)
+        protected static float GetFloat(byte[] data, int field)
         {
-            uint startIndex = field * 4;
+            int startIndex = field * 4;
             if (startIndex + 4 > data.Length)
-                return float.NaN;
+                throw new IndexOutOfRangeException();
 
-            fixed (byte* pData = &data[startIndex])
-            {
-                return *(float*)pData;
-            }
+            return BitConverter.ToSingle(data, startIndex);
         }
 
-        protected static unsafe ulong GetUInt64(byte[] data, uint startingField)
+        protected static ulong GetUInt64(byte[] data, int startingField)
         {
-            uint startIndex = startingField * 4;
+            int startIndex = startingField * 4;
             if (startIndex + 8 > data.Length)
-                return ulong.MaxValue;
+                throw new IndexOutOfRangeException();
 
-            fixed (byte* pData = &data[startIndex])
-            {
-                return *(ulong*)pData;
-            }
+            return BitConverter.ToUInt64(data, startIndex);
         }
 
-        public string GetString(byte[] data, uint stringOffset)
+        public string GetString(byte[] data, int stringOffset)
         {
         	return GetString(data, WCellDef.DefaultLocale, stringOffset);
 		}
 
-		public string[] GetStrings(byte[] data, uint stringOffset)
+		public string[] GetStrings(byte[] data, int stringOffset)
 		{
 			var strings = new string[(int) ClientLocale.End];
-			for (var l = 0; l < (int) ClientLocale.End; l++)
+			for (var l = 0; l < (int)ClientLocale.End; l++)
 			{
 				strings[l] = GetString(data, (ClientLocale) l, stringOffset);
 			}
 			return strings;
 		}
 
-		public string GetString(byte[] data, ref uint offset)
+		public string GetString(byte[] data, ref int offset)
 		{
 			var ret = GetString(data, offset);
 			offset += 17;
 			return ret;
 		}
 
-		public string GetString(byte[] data, ClientLocale locale, uint stringOffset)
+		public string GetString(byte[] data, ClientLocale locale, int stringOffset)
 		{
-			var startOffset = GetInt32(data, stringOffset + (uint)locale);
+			var startOffset = GetInt32(data, stringOffset + (int)locale);
 			var len = 0;
 			
 			while (m_stringTable[(startOffset + len++)] != 0)

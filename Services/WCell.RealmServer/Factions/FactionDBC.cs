@@ -46,25 +46,25 @@ namespace WCell.RealmServer.Factions
             entry.FactionIndex = (FactionReputationIndex)GetInt32(rawData, 1);
 
             entry.RaceMask = new RaceMask[4];
-            for (uint i = 0; i < entry.RaceMask.Length; i++)
+            for (int i = 0; i < entry.RaceMask.Length; i++)
             {
                 entry.RaceMask[i] = (RaceMask)GetUInt32(rawData, 2 + i);
             }
 
             entry.ClassMask = new ClassMask[4];
-            for (uint i = 0; i < entry.ClassMask.Length; i++)
+            for (int i = 0; i < entry.ClassMask.Length; i++)
             {
                 entry.ClassMask[i] = (ClassMask)GetUInt32(rawData, 6 + i);
             }
 
             entry.BaseRepValue = new int[4];
-            for (uint i = 0; i < entry.BaseRepValue.Length; i++)
+            for (int i = 0; i < entry.BaseRepValue.Length; i++)
             {
                 entry.BaseRepValue[i] = GetInt32(rawData, 10 + i);
             }
 
             entry.BaseFlags = new int[4];
-            for (uint i = 0; i < entry.BaseFlags.Length; i++)
+            for (int i = 0; i < entry.BaseFlags.Length; i++)
             {
                 entry.BaseFlags[i] = GetInt32(rawData, 14 + i);
             }
@@ -104,7 +104,7 @@ namespace WCell.RealmServer.Factions
 		public override FactionTemplateEntry ConvertTo(byte[] rawData, ref int id)
 		{
 			var entry = new FactionTemplateEntry();
-			uint x = 0;
+			int x = 0;
 			id = (int)(entry.Id = GetUInt32(rawData, x++));
 			entry.FactionId = (FactionId)GetUInt32(rawData, x++);
 			entry.Flags = GetUInt32(rawData, x++);

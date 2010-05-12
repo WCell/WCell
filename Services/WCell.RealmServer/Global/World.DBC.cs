@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Global
 
 			rgn.Id = (MapId)GetUInt32(rawData, 0);
 
-			uint i = 2;
+			int i = 2;
 			//rgn.InternalName = GetString(rawData, 1);
 			rgn.Type = (MapType)GetUInt32(rawData, i++);
 			i++;

@@ -44,7 +44,7 @@ namespace WCell.RealmServer.NPCs
 			id = (int)GetUInt32(rawData, 0);
 
 			Spell spell;
-			for (uint i = 1; i <= 4; i++)
+			for (int i = 1; i <= 4; i++)
 			{
 				var spellId = GetUInt32(rawData, i);
 				if (spellId != 0)
@@ -91,9 +91,9 @@ namespace WCell.RealmServer.NPCs
                 Seats = new VehicleSeatEntry[8],
             };
 
-        	var lastSeatId = 0u;
+        	var lastSeatId = 0;
         	int count = 0;
-			for (uint i = 0; i < vehicle.Seats.Length; i++)
+			for (int i = 0; i < vehicle.Seats.Length; i++)
 			{
 				var seatId = GetUInt32(rawData, 6 + i);
 				if (seatId > 0)

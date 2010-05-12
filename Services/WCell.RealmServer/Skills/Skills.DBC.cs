@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Skills
 			{
 				SkillLine skill = new SkillLine();
 
-			    uint index = 0;
+			    int index = 0;
 				id = (int)(skill.Id = (SkillId)GetUInt32(rawData, index++));
 			    
 				skill.Category = (SkillCategory)GetInt32(rawData, index++);
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Skills
 			public override SkillAbility ConvertTo(byte[] rawData, ref int id)
 			{
 				SkillAbility ability = new SkillAbility();
-			    uint index = 0;
+			    int index = 0;
 			    id = (int) (ability.AbilityId = GetUInt32(rawData, index++));
 				ability.Skill = ById[GetUInt32(rawData, index++)];
 			    SpellId spellId = (SpellId) GetUInt32(rawData, index++);
@@ -115,17 +115,17 @@ namespace WCell.RealmServer.Skills
 			{
 				id = GetInt32(rawData, 0);
 
-				uint currentIndex = 0;
+				int currentIndex = 0;
 				SkillTier tier = new SkillTier();
 
 				tier.Id = GetUInt32(rawData, currentIndex++);
                 uint[] cost = new uint[16];
                 uint[] value = new uint[16];
 
-                for (uint i = 0; i < 16; i++)
+                for (int i = 0; i < 16; i++)
                 {
-                    cost[i] = rawData.GetUInt32(currentIndex + i);
-                    value[i] = rawData.GetUInt32(currentIndex + i + 16);
+                    cost[i] = GetUInt32(rawData, currentIndex + i);
+                    value[i] = GetUInt32(rawData, currentIndex + i + 16);
                 }
 
                 tier.Values = value.Where(i => i != 0).ToArray();
@@ -162,7 +162,7 @@ namespace WCell.RealmServer.Skills
 			{
 				id = GetInt32(rawData, 0);
 
-				uint currentIndex = 0;
+				int currentIndex = 0;
 
 				var info = new SkillRaceClassInfo();
 
