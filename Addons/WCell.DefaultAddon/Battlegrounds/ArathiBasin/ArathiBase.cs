@@ -18,9 +18,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         // TODO: Figure out score appending
         // TODO: (Tick length and score/tick changes according to the number of bases capped)
 
+        public static uint ABConversionTime = 20;
+
         #region Events
 
-        public event BaseHandler BaseCapture;
+        public event BaseHandler BaseChallenged;
 
         public event BaseHandler CaptureInterrupted;
 
@@ -42,13 +44,19 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         //Whether or not the flag is being captured.
         public bool Challenged;
+        public bool GivesScore;
 
+        public TimerEntry StartScoreTimer = new TimerEntry();
+        public TimerEntry CaptureTimer = new TimerEntry();
         #endregion
 
         protected ArathiBase(ArathiBasin instance, GOEntry flagstand)
         {
             Instance = instance;
             FlagStand = flagstand;
+
+            Instance.RegisterUpdatableLater(StartScoreTimer);
+            Instance.RegisterUpdatableLater(CaptureTimer);
         }
 
         public abstract string BaseName
@@ -67,7 +75,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         }
 
         /// <summary>
-        /// Begins the capturing process.
+        /// TODO: Spawn the neutral flag
+        /// Begins the capturing process. A base will turn if not taken back
         /// </summary>
         /// <param name="chr"></param>
         public void BeginCapture(Character chr)
@@ -75,57 +84,73 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Capturer = chr;
             Challenged = true;
 
-            var evt = BaseCapture;
+            var evt = BaseChallenged;
             if (evt != null)
             {
                 evt(chr);
             }
+
+            CaptureTimer.Start(0, ABConversionTime * 1000, (i) =>
+                                                 {
+                                                     Capture(); 
+                                                     CaptureTimer.Stop();
+                                                 });
         }
 
         /// <summary>
         /// Call to interrupt the capturing process
         /// </summary>
+        /// <param name="chr">The interrupting character</param>
         public void InterruptCapture(Character chr)
         {
             Capturer = null;
             Challenged = false;
+
+            var stats = (ArathiStats)chr.Battlegrounds.Stats;
+            stats.BasesDefended++;
 
             var evt = CaptureInterrupted;
             if (evt != null)
             {
                 evt(chr);
             }
+
+            CaptureTimer.Stop();
+            StartScoreTimer.Stop();
         }
 
         /// <summary>
-        /// Captures a base. (Changes side, casts spell, etc)
+        /// TODO: Spawn the side's flag
+        /// Finalizes a capture (Flag changes colour (de/respawns, casts spells, etc)
         /// </summary>
         public void Capture()
         {
+            var stats = (ArathiStats)Capturer.Battlegrounds.Stats;
+            stats.BasesAssaulted++;
+
+            if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Horde)
+            {
+                Instance.HordeBaseCount++;
+            }
+            else
+            {
+                Instance.AllianceBaseCount++;
+            }
+
             var evt = BaseCaptured;
             if (evt != null)
             {
                 evt(Capturer);
             }
+
+            // It takes a few minutes before a captured flag begins to give score.
+            StartScoreTimer.Start(0, 2 * 1000 * 60, (i) =>
+                                                        {
+                                                            GivesScore = true;
+                                                            StartScoreTimer.Stop();
+                                                        });
         }
 
-        ///// <summary>
-        ///// Call periodically to give score to the current owner.
-        ///// </summary>
-        //public void UpdateBase()
-        //{
-        //    if (BaseOwner == BattlegroundSide.End)
-        //    {
-        //        return;
-        //    }
-
-        //    if (BaseOwner == BattlegroundSide.Alliance)
-        //    {
-        //        Instance.AllianceScore++;
-        //        return;
-        //    }
-        //    Instance.HordeScore++;
-        //}
 
         public void RegisterFlagstand()
         {

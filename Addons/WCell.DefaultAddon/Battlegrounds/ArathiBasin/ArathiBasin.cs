@@ -1,4 +1,6 @@
-﻿using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
+﻿using System.Linq;
+using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
+using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
@@ -12,7 +14,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 	{
         #region Static Fields
         [Variable("ABMaxScore")]
-        public static int MaxScoreDefault = 2000;
+        public static int MaxScoreDefault = 1600;
 
         [Variable("ABFlagRespawnTime")]
         public static int FlagRespawnTime = 20;
@@ -26,19 +28,15 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [Variable("ABPowerUpRespawnTime")]
         public static float PowerUpRespawnTime = 1.5f * 60f;
 
-	    public static float TickDecreaseRate = 3f;
-
+        public float DefaultScoreTickDelay = 12;
         #endregion
 
         public readonly ArathiBase[] Bases;
         public int MaxScore;
-	    public float AllianceUpdateTickDelay = 12;
-	    public float HordeUpdateTickDelay = 12;
-
+	    
 	    private uint _hordeScore, _allianceScore;
-        private bool _update;
-	    private int _hordeBasesCount, _allianceBasesCount;
-        #region Props
+
+	    #region Props
 
         public uint HordeScore
         {
@@ -72,51 +70,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             }
         }
 
-        public int HordeBasesCount
-        {
-            get
-            {
-                return _hordeBasesCount;
-            }
-            set
-            {
-                //Bases increased, tick delay decreases.
-                if (value > _hordeBasesCount)
-                {
-                    HordeUpdateTickDelay -= TickDecreaseRate;
-                }
-                //Bases decreased, tick delay increases
-                if (_hordeBasesCount > value)
-                {
-                    HordeUpdateTickDelay += TickDecreaseRate;
-                }
-                _hordeBasesCount = value;
-            }
-        }
+	    public int HordeBaseCount { get; set; }
 
-        public int AllianceBasesCount
-        {
-            get
-            {
-                return _allianceBasesCount;
-            }
-            set
-            {
-                //Bases increased, tick delay decreases.
-                if(value > _allianceBasesCount)
-                {
-                    AllianceUpdateTickDelay -= TickDecreaseRate;
-                }
-                //Bases decreased, tick delay increases
-                if(_allianceBasesCount > value)
-                {
-                    AllianceUpdateTickDelay += TickDecreaseRate;
-                }
-                _allianceBasesCount = value;
-            }
-        }
+	    public int AllianceBaseCount { get; set; }
 
-        public override float PreparationTimeSeconds
+	    public override float PreparationTimeSeconds
         {
             get { return PreparationTimeSecs; }
         }
@@ -154,9 +112,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             base.OnStart();
 
             Characters.SendSystemMessage("Let the battle for Arathi Basin begin!");
-            _update = true;
-            //UpdateHordeScore();
-            //UpdateAllianceScore();
+            CallPeriodically(BattleUpdateDelay, Update);
         }
 
         protected override void OnFinish(bool disposing)
@@ -213,38 +169,50 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Characters.SendSystemMessage("{0} has entered the battle!", chr.Name);
         }
 
-        //public override void OnDeath(Character chr)
-        //{
-        //    base.OnDeath(chr);
-        //    foreach (var arathiBase in Bases)
-        //    {
-        //        if (chr == arathiBase.Capturer)
-        //        {
-        //            arathiBase.InterruptCapture();
-        //        }
-        //    }
-        //}
-
         #endregion
 
-        /// <summary>
-        /// Begins giving score for each base periodically. Requires _update to be true.
-        /// </summary>
-        /// <returns>If update enqueued successfully, calls itself and returns true. 
-        /// Will not call periodically if _update is false.</returns>
-        public bool UpdateHordeScore()
+        private void Update()
         {
-            if (_update)
+            foreach(var team in _teams)
             {
-                CallDelayed(UpdateDelay, () => UpdateHordeScore());
-                return true;
-            }
-            return false;
-        }
+                int scoreTick = 10;
+                int bases = 0;
 
-        public void UpdateAllianceScore()
-        {
-            
+                if(team.Side == BattlegroundSide.Horde)
+                {
+                    foreach(var node in Bases)
+                    {
+                        if(node.BaseOwner == BattlegroundSide.Horde && node.GivesScore)
+                        {
+                            bases++;
+                        }
+                    }
+                }
+
+                else
+                {
+                    foreach (var node in Bases)
+                    {
+                        if (node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore)
+                        {
+                            bases++;
+                        }
+                    }
+                }
+
+                if(bases > 4)
+                {
+                    scoreTick = 30;
+                }
+
+                // See http://www.wowwiki.com/Arathi_Basin#Accumulating_Resources
+                var tickLength = (5 - bases) * DefaultScoreTickDelay / 4;
+
+                if(tickLength < 1)
+                {
+                    tickLength = 1;
+                }
+            }
         }
 
         #region Spell/GO fixes
