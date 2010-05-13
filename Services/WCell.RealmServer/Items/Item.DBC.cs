@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Items
 		{
 			var entry = new ItemRandomPropertyEntry();
 
-			uint currentIndex = 0;
+			int currentIndex = 0;
 			entry.Id = (uint)(id = GetInt32(rawData, currentIndex++));
 			currentIndex++; // skip the name
 
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Items
 			var suffix = new ItemRandomSuffixEntry();
 			var maxCount = 5u;
 
-			uint currentIndex = 0;
+			int currentIndex = 0;
 			suffix.Id = id = GetInt32(rawData, currentIndex++);//0
 
 			currentIndex += 18;
@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Items
 					if (enchant != null)
 					{
 						suffix.Enchants[i] = enchant;
-						suffix.Values[i] = GetInt32(rawData, currentIndex + maxCount);
+						suffix.Values[i] = GetInt32(rawData, (int)(currentIndex + maxCount));
 					}
 				}
 				currentIndex++;
@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Items
 		{
 			var info = new ItemLevelInfo();
 
-			uint currentIndex = 0;
+			int currentIndex = 0;
 			info.Level = (uint)(id = GetInt32(rawData, currentIndex++));
 
 			for (var i = 0; i < ItemConstants.MaxRandPropPoints; i++)
@@ -103,20 +103,20 @@ namespace WCell.RealmServer.Items
 
 			for (var i = 0; i < 3; i++)
 			{
-				var type = (ItemEnchantmentType)GetUInt32(rawData, (uint)(2 + i));
+				var type = (ItemEnchantmentType)GetUInt32(rawData, 2 + i);
 				if (type != ItemEnchantmentType.None)
 				{
 					var effect = new ItemEnchantmentEffect();
 					enchant.Effects[i] = effect;
 					effect.Type = type;
-					effect.MinAmount = GetInt32(rawData, (uint)(5 + i));
-					effect.MaxAmount = GetInt32(rawData, (uint)(8 + i));
-					effect.Misc = GetUInt32(rawData, (uint)(11 + i));
+					effect.MinAmount = GetInt32(rawData, 5 + i);
+					effect.MaxAmount = GetInt32(rawData, 8 + i);
+					effect.Misc = GetUInt32(rawData, 11 + i);
 				}
 			}
 			ArrayUtil.Prune(ref enchant.Effects);
 
-			var currentIndex = 31u;
+			var currentIndex = 31;
 
 			enchant.Visual = GetUInt32(rawData, currentIndex++);
 			enchant.Flags = GetUInt32(rawData, currentIndex++);
@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Items
 		{
 			var condition = new ItemEnchantmentCondition();
 
-			uint currentIndex = 0;
+			int currentIndex = 0;
 			condition.Id = (uint)(id = GetInt32(rawData, currentIndex++));
 			return condition;
 		}

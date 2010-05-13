@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells
         {
             var ssInfo = new ShapeshiftInfo();
 
-            uint index = 0;
+            int index = 0;
             ssInfo.Id = id = GetInt32(rawData, index++);
             ssInfo.BarOrder = GetUInt32(rawData, index++);
             ssInfo.Name = GetString(rawData, ref index);

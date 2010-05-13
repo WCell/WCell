@@ -34,7 +34,7 @@ namespace WCell.Tools.Maps.Parsing
 	{
 		public override DBCMapEntry ConvertTo(byte[] rawData, ref int id)
 		{
-			uint i = 0;
+			int i = 0;
 			var mapEntry = new DBCMapEntry();
 			id = (int)(mapEntry.Id = GetUInt32(rawData, i++)); // 0
 			mapEntry.MapDirName = GetString(rawData, i++); // 1

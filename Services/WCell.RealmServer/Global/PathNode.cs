@@ -69,14 +69,14 @@ namespace WCell.RealmServer.Global
 		{
 			var node = new PathNode();
 
-			uint currentIndex = 0;
-			id = (int)(node.Id = rawData.GetUInt32(currentIndex++));// col 0
-			node.MapId = (MapId)rawData.GetUInt32(currentIndex++);// col 1
-			node.Position = rawData.GetLocation(currentIndex);// col 2, 3, 4
+			int currentIndex = 0;
+            id = (int)(node.Id = GetUInt32(rawData, currentIndex++));// col 0
+            node.MapId = (MapId)GetUInt32(rawData, currentIndex++);// col 1
+            node.Position = rawData.GetLocation((uint)currentIndex);// col 2, 3, 4
 			currentIndex += 3;// 3 floats for location
 			node.Name = GetString(rawData, ref currentIndex); // col 5 - 21
-			node.HordeMountId = (NPCId)rawData.GetUInt32(currentIndex++);// col 22
-			node.AllianceMountId = (NPCId)rawData.GetUInt32(currentIndex);// col 23
+            node.HordeMountId = (NPCId)GetUInt32(rawData, currentIndex++);// col 22
+            node.AllianceMountId = (NPCId)GetUInt32(rawData, currentIndex);// col 23
 
 			return node;
 		}

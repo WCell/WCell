@@ -233,7 +233,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="StringUtils.cs" />
-    <Compile Include="SvnUtil.cs" />
     <Compile Include="Threading\IContextHandler.cs" />
     <Compile Include="Threading\Messages.cs" />
     <Compile Include="Toolshed\Attributes.cs" />

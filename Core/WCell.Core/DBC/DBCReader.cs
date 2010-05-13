@@ -86,10 +86,6 @@ namespace WCell.Core.DBC
 		}
 	}
 
-	public class DBCReaderUtil
-	{
-	}
-		
 	public class DBCReader<TConverter>
         where TConverter : DBCRecordConverter, new()
     {
@@ -120,8 +116,8 @@ namespace WCell.Core.DBC
             {
                 using (var binReader = new BinaryReader(fileStream))
                 {
-                    if (binReader.ReadUInt32() != DBCHeader) 
-                        return;
+                    if (binReader.ReadUInt32() != DBCHeader)
+                        throw new InvalidDataException("Not a (W)DBC file.");
 
                     m_recordCount = binReader.ReadInt32();
                     m_fieldCount = binReader.ReadInt32();

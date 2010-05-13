@@ -184,7 +184,7 @@ namespace WCell.Core.DBC
 		{
 			id = GetInt32(rawData, 0);
 
-			uint currIndex = 0;
+			int currIndex = 0;
 
 			CharStartOutfit outfit = new CharStartOutfit();
 			outfit.Id = GetUInt32(rawData, currIndex++);
