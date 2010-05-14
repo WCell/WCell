@@ -227,6 +227,7 @@
     <Compile Include="NLog\LogUtil.cs" />
     <Compile Include="NLog\StreamLogger.cs" />
     <Compile Include="ReflectionUtils.cs" />
+    <Compile Include="SortedTopN.cs" />
     <Compile Include="Strings\StringStream.cs" />
     <Compile Include="Strings\StringNode.cs" />
     <Compile Include="Strings\StringTree.cs">
@@ -234,7 +235,21 @@
     </Compile>
     <Compile Include="StringUtils.cs" />
     <Compile Include="Threading\IContextHandler.cs" />
+    <Compile Include="Threading\TaskParallel\AggregateExceptionExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\BlockingCollectionExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\CancellationTokenExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\DelegateBasedObserver.cs" />
+    <Compile Include="Threading\TaskParallel\DelegateExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\LazyExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\LinqToTasks.cs" />
     <Compile Include="Threading\Messages.cs" />
+    <Compile Include="Threading\TaskParallel\ParallelLinqExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\ParallelLinqOptions.cs" />
+    <Compile Include="Threading\TaskParallel\ParallelOptionsExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\TaskCompletionSourceExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\TaskExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\TaskFactoryExtensions.cs" />
+    <Compile Include="Threading\TaskParallel\TaskSchedulerExtensions.cs" />
     <Compile Include="Toolshed\Attributes.cs" />
     <Compile Include="DynamicAccess\MethodExcecutable.cs" />
     <Compile Include="Toolshed\ToolException.cs" />
