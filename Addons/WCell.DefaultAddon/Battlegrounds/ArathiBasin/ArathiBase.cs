@@ -102,6 +102,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         /// <summary>
         /// Call to interrupt the capturing process
+        /// TODO: Change the flag back to the owner's
         /// </summary>
         /// <param name="chr">The interrupting character</param>
         public void InterruptCapture(Character chr)
