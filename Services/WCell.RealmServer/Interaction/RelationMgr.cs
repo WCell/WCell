@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using WCell.Constants;
 using WCell.Constants.Relations;
@@ -574,11 +575,11 @@ namespace WCell.RealmServer.Interaction
 
 			try
 			{
-				HashSet<IBaseRelation> relationList;
-				for (int i = 1; i < m_activeRelations.Length && (i != (int)CharacterRelationType.GroupInvite); i++)
+			    for (int i = 1; i < m_activeRelations.Length && (i != (int)CharacterRelationType.GroupInvite); i++)
 				{
 					var relations = m_activeRelations[i];
-					if (relations.TryGetValue(lowUid, out relationList))
+				    HashSet<IBaseRelation> relationList;
+				    if (relations.TryGetValue(lowUid, out relationList))
 					{
 						foreach (var relation in relationList)
 						{
@@ -812,7 +813,7 @@ namespace WCell.RealmServer.Interaction
 			{
 				foreach (IBaseRelation relation in friendRelations)
 				{
-					relations[relation.RelatedCharacterId] = relation as BaseRelation;
+				    relations[relation.RelatedCharacterId] = new RelationListEntry(relation, RelationTypeFlag.Friend);
 				}
 			}
 
@@ -827,7 +828,7 @@ namespace WCell.RealmServer.Interaction
 					}
 					else
 					{
-						relations[relation.RelatedCharacterId] = relation as BaseRelation;
+					    relations[relation.RelatedCharacterId] = new RelationListEntry(relation, RelationTypeFlag.Ignore);
 					}
 				}
 			}
@@ -843,20 +844,16 @@ namespace WCell.RealmServer.Interaction
 					}
 					else
 					{
-						relations[relation.RelatedCharacterId] = relation as BaseRelation;
+					    relations[relation.RelatedCharacterId] = new RelationListEntry(relation, RelationTypeFlag.Muted);
 					}
 				}
 			}
 
-			var removedKeys = new List<uint>();
+			var removedKeys = from entry in relations
+                              where !entry.Value.Flag.HasFlag(flags)
+                              select entry.Key;
 
-			foreach (KeyValuePair<uint, RelationListEntry> entry in relations)
-			{
-				if ((entry.Value.Flag & flags) == RelationTypeFlag.None)
-					removedKeys.Add(entry.Key);
-			}
-
-			foreach (uint key in removedKeys)
+		    foreach (uint key in removedKeys)
 			{
 				relations.Remove(key);
 			}
@@ -884,8 +881,8 @@ namespace WCell.RealmServer.Interaction
 		{
 			public uint RelatedCharacterId
 			{
-				get;
-				set;
+				get; 
+                private set;
 			}
 
 			public RelationTypeFlag Flag
@@ -898,49 +895,18 @@ namespace WCell.RealmServer.Interaction
 			public string Note
 			{
 				get { return _note; }
-                set { _note = string.IsNullOrEmpty(value) ? string.Empty : value; }
+			    private set
+                {
+                    _note = string.IsNullOrEmpty(value) ? string.Empty : value;
+                }
 			}
 
-			public RelationListEntry(uint relatedCharId, RelationTypeFlag flag, string note)
-			{
-				RelatedCharacterId = relatedCharId;
-				Flag = flag;
-				Note = note;
-			}
-
-			public RelationListEntry()
-			{
-				RelatedCharacterId = 0;
-				Flag = RelationTypeFlag.None;
-				Note = string.Empty;
-			}
-
-			public static implicit operator RelationListEntry(BaseRelation relation)
-			{
-			    var entry = new RelationListEntry
-			                    {
-			                        RelatedCharacterId = relation.RelatedCharacterId,
-			                        Note = relation.Note
-			                    };
-
-			    if (relation is FriendRelation)
-				{
-					entry.Flag = RelationTypeFlag.Friend;
-				}
-				else if (relation is IgnoredRelation)
-				{
-					entry.Flag = RelationTypeFlag.Ignore;
-				}
-				else if (relation is MutedRelation)
-				{
-					entry.Flag = RelationTypeFlag.Muted;
-				}
-				else
-				{
-					entry.Flag = RelationTypeFlag.None;
-				}
-				return entry;
-			}
+		    public RelationListEntry(IBaseRelation relation, RelationTypeFlag flag)
+		    {
+		        RelatedCharacterId = relation.RelatedCharacterId;
+		        Flag = flag;
+		        Note = relation.Note;
+		    }
 		}
 	}
 }
