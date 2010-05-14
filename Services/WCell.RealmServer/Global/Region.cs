@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Cell.Core.Collections;
 using NLog;
 using WCell.Constants;
@@ -34,6 +35,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
+using WCell.Util.Threading.TaskParallel;
 using WCell.Core.Timers;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
@@ -682,7 +684,7 @@ namespace WCell.RealmServer.Global
 					m_regionTime.Start();
 
 					// start updating
-					ThreadPool.RegisterWaitForSingleObject(m_taskHandle, RegionUpdateCallback, this, m_updateDelay, true);
+				    Task.Factory.StartNewDelayed(m_updateDelay, RegionUpdateCallback, this);
 
 					if (AutoSpawn)
 					{
@@ -1135,8 +1137,7 @@ namespace WCell.RealmServer.Global
 		/// Callback for executing updates of the region, which includes updates for all inhabiting objects.
 		/// </summary>
 		/// <param name="state">the <see cref="Region" /> to update</param>
-		/// <param name="timedOut">whether the last update ran over the update interval</param>
-		private void RegionUpdateCallback(object state, bool timedOut)
+		private void RegionUpdateCallback(object state)
 		{
 			// we need some locking here because for some reason sometimes RegionUpdateCallback would be called twice
 			if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
@@ -1309,7 +1310,8 @@ namespace WCell.RealmServer.Global
 						// even if we are in a hurry: For the sake of load-balance we have to give control back to the ThreadPool
 						callbackTimeout = 0;
 					}
-					ThreadPool.RegisterWaitForSingleObject(m_taskHandle, RegionUpdateCallback, this, callbackTimeout, true);
+
+				    Task.Factory.StartNewDelayed((int)callbackTimeout, RegionUpdateCallback, this);
 				}
 				else
 				{
