@@ -385,9 +385,7 @@ namespace WCell.RealmServer.Interaction
 		internal void AddRelation(Character character, string relatedCharName, string note,
 			CharacterRelationType relationType)
 		{
-			RelationResult relResult;
-
-			var target = World.GetCharacter(relatedCharName, false);
+		    var target = World.GetCharacter(relatedCharName, false);
 			CharacterRecord relatedCharInfo;
 			if (target != null)
 			{
@@ -403,7 +401,8 @@ namespace WCell.RealmServer.Interaction
 				BaseRelation relation = CreateRelation(character.EntityId.Low, relatedCharInfo.EntityLowId, relationType);
 				relation.Note = note;
 
-				if (!relation.Validate(character.Record, relatedCharInfo, out relResult))
+			    RelationResult relResult;
+			    if (!relation.Validate(character.Record, relatedCharInfo, out relResult))
 				{
 					s_log.Debug(Resources.CharacterRelationValidationFailed, character.Name,
 						character.EntityId, relatedCharName, relatedCharInfo.EntityLowId, relationType, relResult);

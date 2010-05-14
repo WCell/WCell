@@ -273,38 +273,47 @@
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
       <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
       <Name>Cell.Core</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-3.5</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\WCell.RealmServer\WCell.RealmServer.csproj">
       <Project>{A38FAA6D-86B5-4429-85D0-BC93EB5E2C56}</Project>
       <Name>WCell.RealmServer</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.MPQTool\WCell.MPQTool.csproj">
       <Project>{5F96293A-1276-4515-8048-EBC49CD81D71}</Project>
       <Name>WCell.MPQTool</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
       <Name>WCell.PacketAnalyzer</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
+	  <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
