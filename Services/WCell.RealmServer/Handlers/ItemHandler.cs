@@ -494,7 +494,7 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((uint)dmg.School);
 				}
 
-				for (i = 0; i < ItemConstants.MaxResCount; i++)
+				for (var i = 0; i < ItemConstants.MaxResCount; i++)
 				{
 					var res = item.Resistances[i];
 					packet.Write(res);
@@ -550,11 +550,12 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((uint)item.BagFamily);
 				packet.Write((uint)item.TotemCategory);
 
-				for (i = 0; i < ItemConstants.MaxSocketCount; i++)
+				for (var i = 0; i < ItemConstants.MaxSocketCount; i++)
 				{
 					packet.Write((uint)item.Sockets[i].Color);
 					packet.Write(item.Sockets[i].Content);
 				}
+
 				packet.Write(item.SocketBonusEnchantId);
 				packet.Write(item.GemPropertiesId);
 				packet.Write(item.RequiredDisenchantingLevel);
