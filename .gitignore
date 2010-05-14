@@ -2,9 +2,9 @@ obj
 *.suo
 *.user
 *.cache
+*_ReSharper.*
 Run/Content/dbc*
 Run/Docs/*
 Run/Debug/*
 Run/Release/*
 Utilities/WCell.SolutionItems/bin/*
-
