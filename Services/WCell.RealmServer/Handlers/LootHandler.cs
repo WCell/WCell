@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOOT_START_ROLL))
 			{
 				packet.Write(loot.Lootable.EntityId);
-			    packet.WriteUInt(mapid);
+			    packet.WriteUInt(mapid); // TODO: actually use this
 				packet.Write(item.Index);
 				packet.Write(item.Template.Id);
 				packet.Write(item.Template.RandomSuffixFactor);

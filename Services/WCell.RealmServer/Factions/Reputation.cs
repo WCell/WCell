@@ -331,34 +331,6 @@ namespace WCell.RealmServer.Factions
 			return DiscountPercents.Get((uint)lvl);
 		}
 
-		//public static Reputation operator +(Reputation r, int val)
-		//{
-		//    r.Value += val;
-		//}
-
-		//public static Reputation operator +(Reputation r, Reputation val)
-		//{
-		//    r.Value += val.Value;
-		//}
-
-		//public static Reputation operator -(Reputation r, int val)
-		//{
-		//    r.Value -= val;
-		//}
-
-		//public static Reputation operator -(Reputation r, Reputation val)
-		//{
-		//    r.Value -= val.Value;
-		//}
-
-		//public static Reputation operator *(Reputation r, int val)
-		//{
-		//    r.Value *= val;
-		//}
-
-		//public static Reputation operator *(Reputation r, Reputation val) {
-		//    r.Value *= val.Value;
-		//}
 		#endregion
 	}
 }

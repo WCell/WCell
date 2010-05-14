@@ -38,14 +38,15 @@ namespace WCell.Constants.Login
 	[Flags]
 	public enum RealmFlags : byte
 	{
-		None = 0,
-		RedName = 1,
-		Offline = 2,
-		SpecifyBuild = 4,
-
-		Recommended = 0x20,// client checks pop == 600f
-		New = 0x40,// client checks pop == 200f
-		Full = 0x80,// client checks pop == 400f
+        None = 0x0,
+        RedName = 0x1,
+        Offline = 0x2,
+        SpecifyBuild = 0x4,
+        Unk1 = 0x8,
+        Unk2 = 0x10,
+		NewPlayers = 0x20,
+		Recommended = 0x40,
+		Full = 0x80,
 	}
 
 	[Flags]

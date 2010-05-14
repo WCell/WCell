@@ -88,7 +88,21 @@ namespace WCell.Constants
 		/// Your group has joined a battleground queue but you are not eglible.
 		/// (This is the same error message for all other numbers but valid BattlegroundIds)
 		/// </summary>
-		GroupJoinedNotEligible = -8
+		GroupJoinedNotEligible = -8,
+
+        JoinXpGain = -9,
+
+        JoinRangeIndex = -10,
+
+        JoinTimedOut = -11,
+
+        JoinFailed = -12,
+
+        LfgCantUseBg = -13,
+
+        InRandomBg = -14,
+
+        InNonRandomBg = -15
 	}
 
 	public enum BattlegroundSide

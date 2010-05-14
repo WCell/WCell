@@ -1086,7 +1086,6 @@ namespace WCell.RealmServer.Items
 				{
 					charter = new PetitionRecord((uint)record.OwnerId, record.EntityLowId);
 				}
-				record.CustomData.AttachData(charter);
 			}
 		}
 	}

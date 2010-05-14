@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using System.Threading;
 using Castle.ActiveRecord;
@@ -67,8 +68,6 @@ namespace WCell.RealmServer.Database
 			var cfg = ActiveRecordBase.Holder.GetConfiguration(typeof(ActiveRecordBase));
 			// cfg.SetListener(MyIPostLoadEventListener);
 		}
-
-		public readonly DataAttachment CustomData;
 
 		[Field("EntryId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _entryId;

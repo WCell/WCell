@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System.Dynamic;
 using WCell.Constants.Looting;
 using WCell.Constants.Updates;
 using WCell.Core;
@@ -26,7 +27,7 @@ namespace WCell.RealmServer.Entities
 	public partial class ObjectBase
 	{
 		protected Loot m_loot;
-		public readonly DataAttachment CustomData;
+		public readonly dynamic CustomData = new ExpandoObject();
 
 		/// <summary>
 		///  The entity ID of the object
