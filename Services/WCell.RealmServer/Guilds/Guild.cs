@@ -1176,11 +1176,6 @@ namespace WCell.RealmServer.Guilds
 
 		#endregion
 
-		#region GuildBanking
-
-
-		#endregion
-
 		public override string ToString()
 		{
 			return Name + string.Format(" (Id: {0}, Members:{1}) - {2}", Id, MemberCount, Info);

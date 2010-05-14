@@ -377,8 +377,6 @@
     <Compile Include="Items\ItemStack.cs" />
     <Compile Include="Items\PetitionCharter.cs" />
     <Compile Include="Looting\LootGroup.cs" />
-    <Compile Include="Misc\DataAttachment.cs" />
-    <Compile Include="Misc\LFGMgr.cs" />
     <Compile Include="Misc\ObjectPoolMgr.cs" />
     <Compile Include="Misc\PageTextEntry.cs" />
     <Compile Include="NPCs\NPCAiText.cs" />
@@ -408,7 +406,6 @@
     <Compile Include="Database\GuildBankTab.cs" />
     <Compile Include="Database\GuildBankTabItemMapping.cs" />
     <Compile Include="Database\GuildBankTabRights.cs" />
-    <Compile Include="Database\IdMgr.cs" />
     <Compile Include="NPCs\PetitionerEntry.cs" />
     <Compile Include="NPCs\Pets\IActivePetSettings.cs" />
     <Compile Include="NPCs\Pets\IPetRecord.cs" />
@@ -617,7 +614,6 @@
     <Compile Include="Looting\LootRollEntry.cs" />
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
-    <Compile Include="Misc\Experience.cs" />
     <Compile Include="Misc\IdQueue.cs" />
     <Compile Include="Instances\InstanceBinding.cs" />
     <Compile Include="Instances\RaidInstance.cs" />
@@ -820,7 +816,6 @@
     <Compile Include="Items\BaseInventory.cs" />
     <Compile Include="Items\ItemTemplate.cs" />
     <Compile Include="Items\PlayerInventory.cs" />
-    <Compile Include="Misc\HighestToLowestComparer.cs" />
     <Compile Include="NPCs\NPC.DBC.cs" />
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
@@ -854,14 +849,6 @@
     <Compile Include="RacesClasses\Archetype.cs" />
     <Compile Include="RacesClasses\ArchetypeData.cs" />
     <Compile Include="RacesClasses\ArchetypeMgr.cs" />
-    <Compile Include="Server\ServerRule.cs" />
-    <Compile Include="Server\ServerRuleMgr.cs" />
-    <Compile Include="Server\ServerRuleType.cs" />
-    <Compile Include="Server\IServerRules.cs" />
-    <Compile Include="Server\NormalRealm.cs" />
-    <Compile Include="Server\PvPRealm.cs" />
-    <Compile Include="Server\ServerRulesMgr.cs" />
-    <Compile Include="Server\ServerTypeAttribute.cs" />
     <Compile Include="Skills\SkillAbility.cs" />
     <Compile Include="Skills\Skill.cs" />
     <Compile Include="Skills\SkillRaceClassInfo.cs" />
@@ -1260,12 +1247,7 @@
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Spells\TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NPCs\InnKeeper\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
