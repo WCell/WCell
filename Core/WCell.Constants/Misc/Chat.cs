@@ -95,6 +95,11 @@ namespace WCell.Constants.Misc
 		Troll = 14,
 		Gutterspeak = 33,
 		Draenei = 35,
+        Zombie = 36,
+        GnomishBinary = 37,
+        GoblinBinary = 38,
+        Worgen = 39,
+        Goblin = 40,
 		End
 	}
 
