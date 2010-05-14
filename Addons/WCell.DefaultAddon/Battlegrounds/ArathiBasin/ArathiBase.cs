@@ -8,15 +8,14 @@ using WCell.Constants;
 using WCell.RealmServer.Battlegrounds;
 using WCell.Core.Timers;
 using WCell.RealmServer.GameObjects;
+using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 {
     public abstract class ArathiBase
     {
-        // TODO: Spawn a different flag (GO) whenever a state changes 
-        // TODO: (horde capped, challenged, alliance capped, neutral)
-        // TODO: Figure out score appending
-        // TODO: (Tick length and score/tick changes according to the number of bases capped)
+        // TODO: Spawn a flag from one template from each GOEntry
+        // TODO: Check GO Use registering
 
         public static uint ABConversionTime = 20;
 
@@ -33,8 +32,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         #region Fields
         private BattlegroundSide _side = BattlegroundSide.End;
 
-        public GOEntry FlagStand;
-
+        public GameObject FlagStand;
+        public GOEntry FlagStandNeutral;
+        public GOEntry FlagStandHorde;
+        public GOEntry FlagStandAlliance;
+        
         /// <summary>
         /// The character currently capturing the flag.
         /// </summary>
@@ -53,10 +55,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected ArathiBase(ArathiBasin instance, GOEntry flagstand)
         {
             Instance = instance;
-            FlagStand = flagstand;
+            FlagStandNeutral = flagstand;
 
             Instance.RegisterUpdatableLater(StartScoreTimer);
             Instance.RegisterUpdatableLater(CaptureTimer);
+
+            SpawnNeutral();
         }
 
         public abstract string BaseName
@@ -84,17 +88,16 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Capturer = chr;
             Challenged = true;
 
-            var evt = BaseChallenged;
-            if (evt != null)
-            {
-                evt(chr);
-            }
-
             CaptureTimer.Start(0, ABConversionTime * 1000, (i) =>
                                                  {
                                                      Capture(); 
                                                      CaptureTimer.Stop();
                                                  });
+            var evt = BaseChallenged;
+            if (evt != null)
+            {
+                evt(chr);
+            }
         }
 
         /// <summary>
@@ -109,14 +112,14 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             var stats = (ArathiStats)chr.Battlegrounds.Stats;
             stats.BasesDefended++;
 
+            CaptureTimer.Stop();
+            StartScoreTimer.Stop();
+
             var evt = CaptureInterrupted;
             if (evt != null)
             {
                 evt(chr);
             }
-
-            CaptureTimer.Stop();
-            StartScoreTimer.Stop();
         }
 
         /// <summary>
@@ -131,16 +134,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Horde)
             {
                 Instance.HordeBaseCount++;
+                BaseOwner = BattlegroundSide.Horde;
             }
             else
             {
                 Instance.AllianceBaseCount++;
-            }
-
-            var evt = BaseCaptured;
-            if (evt != null)
-            {
-                evt(Capturer);
+                BaseOwner = BattlegroundSide.Alliance;
             }
 
             // It takes a few minutes before a captured flag begins to give score.
@@ -149,30 +148,52 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                                                             GivesScore = true;
                                                             StartScoreTimer.Stop();
                                                         });
+            var evt = BaseCaptured;
+            if (evt != null)
+            {
+                evt(Capturer);
+            }
         }
 
 
-        public void RegisterFlagstand()
+        public void RegisterFlagstand(GOTemplate template)
         {
-            FlagStand.Used += (go, chr) =>
+            template.Entry.Used += (go, chr) =>
             {
-                if(Challenged)
+                if (go == FlagStand)
                 {
-                    InterruptCapture(chr);
+                    if (Challenged)
+                    {
+                        InterruptCapture(chr);
+                        return true;
+                    }
+
+                    BeginCapture(chr);
                     return true;
                 }
-
-                BeginCapture(chr);
-                return true;
+                return false;
             };
         }
 
+        private void SpawnNeutral()
+        {
+            
+        }
+
+        private void SpawnHorde()
+        {
+            
+        }
+
+        private void SpawnAlliance()
+        {
+
+        }
         
         public void Destroy()
         {
             Capturer = null;
             Instance = null;
-            FlagStand = null;
         }
     }
 }

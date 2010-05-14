@@ -35,6 +35,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         public int MaxScore;
 	    
 	    private uint _hordeScore, _allianceScore;
+	    private uint _hordeTicks, _allianceTicks;
 
 	    #region Props
 
@@ -175,29 +176,19 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             foreach(var team in _teams)
             {
-                int scoreTick = 10;
+                uint scoreTick = 10;
                 int bases = 0;
 
                 if(team.Side == BattlegroundSide.Horde)
                 {
-                    foreach(var node in Bases)
-                    {
-                        if(node.BaseOwner == BattlegroundSide.Horde && node.GivesScore)
-                        {
-                            bases++;
-                        }
-                    }
+                    bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Horde && node.GivesScore);
+                    _hordeTicks++;
                 }
 
                 else
                 {
-                    foreach (var node in Bases)
-                    {
-                        if (node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore)
-                        {
-                            bases++;
-                        }
-                    }
+                    bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore);
+                    _allianceTicks++;
                 }
 
                 if(bases > 4)
@@ -212,6 +203,24 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                 {
                     tickLength = 1;
                 }
+
+                if (team.Side == BattlegroundSide.Horde)
+                {
+                    if(_hordeTicks == tickLength)
+                    {
+                        HordeScore += scoreTick;
+                        _hordeTicks = 0;
+                    }
+                }
+
+                else
+                {
+                    if(_allianceTicks == tickLength)
+                    {
+                        AllianceScore += scoreTick;
+                        _allianceTicks = 0;
+                    }
+                }
             }
         }
 
@@ -221,6 +230,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [DependentInitialization(typeof(GOMgr))]
         public static void FixGOs()
         {
+            //Fix the neutral/horde/alliance flags
+            //3 entries for each colour
+            //5 templates for each base
         }
 
         #endregion
