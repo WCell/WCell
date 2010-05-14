@@ -188,7 +188,6 @@ namespace WCell.RealmServer.Global
 
 		protected LockfreeQueue<IMessage> m_messageQueue = new LockfreeQueue<IMessage>();
 		protected List<IUpdatable> m_updatables = new List<IUpdatable>();
-		protected WaitHandle m_taskHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 		protected int m_currentThreadId;
 
 		bool m_npcsSpawned, m_gosSpawned, m_isUpdating;
