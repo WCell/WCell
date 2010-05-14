@@ -469,6 +469,9 @@ namespace WCell.RealmServer.Handlers
             {
                 packet.Write((int)err);
 
+                if (err == BattlegroundJoinError.JoinTimedOut || err == BattlegroundJoinError.JoinFailed)
+                    packet.Write((ulong)0);
+
                 rcv.Send(packet);
             }
         }
