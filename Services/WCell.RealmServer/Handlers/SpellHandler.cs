@@ -609,7 +609,6 @@ namespace WCell.RealmServer.Spells
 				//target.EntityId.WritePacked(packet);
 				packet.Write(target.EntityId);
 				packet.Write(visualId);
-			    packet.Write(0xB3); // SpellVisualKit.dbc idx
 
 				target.SendPacketToArea(packet, true);
 			}
@@ -631,7 +630,6 @@ namespace WCell.RealmServer.Spells
 				//target.EntityId.WritePacked(packet);
 				packet.Write(target.EntityId);
 				packet.Write(visualId);
-			    packet.Write(0x016A); // SpellVisualKit.dbc idx
 
 				target.SendPacketToArea(packet, true);
 			}
