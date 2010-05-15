@@ -68,8 +68,7 @@ namespace WCell.Core.Tests
 
 			bool done = false;
 			var q = new LockfreeQueue<int>();
-			int lastItem = -1;
-			for (int i = 0; i < num; i++)
+		    for (int i = 0; i < num; i++)
 			{
 				q.Enqueue(i);
 			}

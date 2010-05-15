@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.World;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
@@ -270,12 +271,12 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendStartRoll(Loot loot, LootItem item, IEnumerable<LooterEntry> looters, uint mapid)
+		public static void SendStartRoll(Loot loot, LootItem item, IEnumerable<LooterEntry> looters, MapId mapid)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOOT_START_ROLL))
 			{
 				packet.Write(loot.Lootable.EntityId);
-			    packet.WriteUInt(mapid);
+			    packet.WriteUInt((uint)mapid); // TODO: actually use this
 				packet.Write(item.Index);
 				packet.Write(item.Template.Id);
 				packet.Write(item.Template.RandomSuffixFactor);

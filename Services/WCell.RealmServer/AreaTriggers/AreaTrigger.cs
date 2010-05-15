@@ -64,7 +64,7 @@ namespace WCell.RealmServer.AreaTriggers
                 return false;
             }
 
-            if(Radius > 0) // Sphere
+            if (Radius > 0) // Sphere
             {
                 var distSq = chr.GetDistanceSq(Position);
 
@@ -88,7 +88,7 @@ namespace WCell.RealmServer.AreaTriggers
                 var rotPlayerX = Position.X + playerBoxDistX * cosval - playerBoxDistY * sinval;
                 var rotPlayerY = Position.Y + playerBoxDistY * cosval + playerBoxDistX * sinval;
 
-                // Box edges are parallel to coordiante axis, so we can treat every dimension independently.
+                // Box edges are parallel to coordinate axis, so we can treat every dimension independently.
                 var dx = rotPlayerX - Position.X;
                 var dy = rotPlayerY - Position.Y;
                 var dz = chr.Position.Z - Position.Z;

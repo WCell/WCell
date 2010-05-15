@@ -233,7 +233,6 @@ namespace WCell.RealmServer.Formulas
 
 		/// <summary>
 		/// Gets the amount of xp, required to gain this level (from level-1)
-		/// <see cref="Experience"/>
 		/// </summary>
 		public static int GetXpForlevel(int level)
 		{

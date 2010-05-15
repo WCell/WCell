@@ -160,9 +160,9 @@ namespace WCell.RealmServer.Tests.Spells
 
 				Assert.IsNotNull(aura);
 
-				Assert.AreEqual(spell.GetDuration(chr), (uint)aura.Duration);
-				Assert.AreNotEqual(0, spell.GetDuration(chr));
-				Asser.GreaterOrEqual(spell.GetDuration(chr), (uint)aura.TimeLeft);
+				Assert.AreEqual(spell.GetDuration(chr.CasterInfo, chr), (uint)aura.Duration);
+				Assert.AreNotEqual(0, spell.GetDuration(chr.CasterInfo, chr));
+				Asser.GreaterOrEqual(spell.GetDuration(chr.CasterInfo, chr), (uint)aura.TimeLeft);
 
 				aura.Cancel();
 
@@ -196,17 +196,17 @@ namespace WCell.RealmServer.Tests.Spells
 				Assert.AreEqual(err, SpellFailedReason.Ok);
 				Assert.IsTrue(npc.IsUsingSpell);
 
-				var timeleft = cast.TimeLeft;
-				cast.TimeLeft -= 2000;
-				Asser.Approx(timeleft - 2000, 40, cast.TimeLeft);
-				timeleft = cast.TimeLeft;
+			    var timeleft = cast.RemainingCastTime;
+				cast.RemainingCastTime -= 2000;
+                Asser.Approx(timeleft - 2000, 40, cast.RemainingCastTime);
+                timeleft = cast.RemainingCastTime;
 
 				cast.Pushback();
-				Asser.Approx(timeleft + 1000, 40, cast.TimeLeft);
-				timeleft = cast.TimeLeft;
+                Asser.Approx(timeleft + 1000, 40, cast.RemainingCastTime);
+                timeleft = cast.RemainingCastTime;
 
 				cast.Pushback();
-				Asser.Approx(timeleft + 800, 40, cast.TimeLeft);
+                Asser.Approx(timeleft + 800, 40, cast.RemainingCastTime);
 			}));
 		}
 

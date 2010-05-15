@@ -485,8 +485,7 @@ namespace WCell.RealmServer.Handlers
 
 
 				// In 3.1 there are only 2 damages instead of 5
-				var i = 0;
-				for (; i < item.Damages.Length && i < 2; i++)
+				for (var i = 0; i < item.Damages.Length && i < 2; i++)
 				{
 					var dmg = item.Damages[i];
 
@@ -495,14 +494,7 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((uint)dmg.School);
 				}
 
-				for (; i < ItemConstants.MaxDmgCount; i++)
-				{
-					packet.Write(0f);
-					packet.Write(0f);
-					packet.Write(0);
-				}
-
-				for (i = 0; i < ItemConstants.MaxResCount; i++)
+				for (var i = 0; i < ItemConstants.MaxResCount; i++)
 				{
 					var res = item.Resistances[i];
 					packet.Write(res);
@@ -558,11 +550,12 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((uint)item.BagFamily);
 				packet.Write((uint)item.TotemCategory);
 
-				for (i = 0; i < ItemConstants.MaxSocketCount; i++)
+				for (var i = 0; i < ItemConstants.MaxSocketCount; i++)
 				{
 					packet.Write((uint)item.Sockets[i].Color);
 					packet.Write(item.Sockets[i].Content);
 				}
+
 				packet.Write(item.SocketBonusEnchantId);
 				packet.Write(item.GemPropertiesId);
 				packet.Write(item.RequiredDisenchantingLevel);

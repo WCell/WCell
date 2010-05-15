@@ -249,10 +249,10 @@ namespace WCell.RealmServer.NPCs
 
 	public enum BuyBankBagResponse
 	{
-		Ok = 0xFF,
 		LimitReached = 0,
 		CantAfford = 1,
-		NotABanker = 2
+		NotABanker = 2,
+        Ok = 3
 	}
 
     public enum TrainerBuyError

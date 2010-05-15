@@ -256,30 +256,37 @@
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
       <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
       <Name>Cell.Core</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
       <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
       <Name>WCell.Core</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
       <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
       <Name>NHibernate-3.5</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.PacketAnalyzer\WCell.PacketAnalyzer.csproj">
       <Project>{65B2B094-13BB-4685-95AD-402FC9A4473A}</Project>
       <Name>WCell.PacketAnalyzer</Name>
+	  <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
+	  <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -377,8 +384,6 @@
     <Compile Include="Items\ItemStack.cs" />
     <Compile Include="Items\PetitionCharter.cs" />
     <Compile Include="Looting\LootGroup.cs" />
-    <Compile Include="Misc\DataAttachment.cs" />
-    <Compile Include="Misc\LFGMgr.cs" />
     <Compile Include="Misc\ObjectPoolMgr.cs" />
     <Compile Include="Misc\PageTextEntry.cs" />
     <Compile Include="NPCs\NPCAiText.cs" />
@@ -408,7 +413,6 @@
     <Compile Include="Database\GuildBankTab.cs" />
     <Compile Include="Database\GuildBankTabItemMapping.cs" />
     <Compile Include="Database\GuildBankTabRights.cs" />
-    <Compile Include="Database\IdMgr.cs" />
     <Compile Include="NPCs\PetitionerEntry.cs" />
     <Compile Include="NPCs\Pets\IActivePetSettings.cs" />
     <Compile Include="NPCs\Pets\IPetRecord.cs" />
@@ -617,7 +621,6 @@
     <Compile Include="Looting\LootRollEntry.cs" />
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
-    <Compile Include="Misc\Experience.cs" />
     <Compile Include="Misc\IdQueue.cs" />
     <Compile Include="Instances\InstanceBinding.cs" />
     <Compile Include="Instances\RaidInstance.cs" />
@@ -820,7 +823,6 @@
     <Compile Include="Items\BaseInventory.cs" />
     <Compile Include="Items\ItemTemplate.cs" />
     <Compile Include="Items\PlayerInventory.cs" />
-    <Compile Include="Misc\HighestToLowestComparer.cs" />
     <Compile Include="NPCs\NPC.DBC.cs" />
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
@@ -854,14 +856,6 @@
     <Compile Include="RacesClasses\Archetype.cs" />
     <Compile Include="RacesClasses\ArchetypeData.cs" />
     <Compile Include="RacesClasses\ArchetypeMgr.cs" />
-    <Compile Include="Server\ServerRule.cs" />
-    <Compile Include="Server\ServerRuleMgr.cs" />
-    <Compile Include="Server\ServerRuleType.cs" />
-    <Compile Include="Server\IServerRules.cs" />
-    <Compile Include="Server\NormalRealm.cs" />
-    <Compile Include="Server\PvPRealm.cs" />
-    <Compile Include="Server\ServerRulesMgr.cs" />
-    <Compile Include="Server\ServerTypeAttribute.cs" />
     <Compile Include="Skills\SkillAbility.cs" />
     <Compile Include="Skills\Skill.cs" />
     <Compile Include="Skills\SkillRaceClassInfo.cs" />
@@ -1260,12 +1254,7 @@
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Spells\TODO.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="NPCs\InnKeeper\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

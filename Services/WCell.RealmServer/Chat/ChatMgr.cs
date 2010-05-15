@@ -315,7 +315,7 @@ namespace WCell.RealmServer.Chat
 
 			if (targetChr.Faction.Group != sender.Faction.Group)
 			{
-				SendChatPlayerWrongTeamReply(sender.Client, recipient);
+				SendChatPlayerWrongTeamReply(sender.Client);
 				return;
 			}
 
@@ -422,12 +422,11 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		/// <param name="client">the client to send to</param>
 		/// <param name="recipient">the name of the target player</param>
-		public static void SendChatPlayerWrongTeamReply(IPacketReceiver client, string recipient)
+		public static void SendChatPlayerWrongTeamReply(IPacketReceiver client)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CHAT_WRONG_FACTION))
 			{
 				// just guessing here.
-				packet.WriteCString(recipient);
 				client.Send(packet);
 			}
 		}

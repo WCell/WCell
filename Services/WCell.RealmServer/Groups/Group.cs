@@ -1020,7 +1020,7 @@ namespace WCell.RealmServer.Groups
 				packet.Write(resultType);
 				packet.WriteCString(name);
 				packet.Write((uint)resultCode);
-			    packet.Write((uint)0);
+			    packet.Write((uint)0); // 3.3.3, lfg cooldown?
 
 				client.Send(packet);
 			}

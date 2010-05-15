@@ -467,15 +467,6 @@ namespace WCell.RealmServer.Entities
 			set { SetInt32(PlayerFields.XP, value); }
 		}
 
-		/// <summary>
-		/// Returns a new Experience object that represents this Character's total XP, to allow simple xp-related calculations.
-		/// </summary>
-		/// <returns></returns>
-		public Experience GetExperience()
-		{
-			return new Experience(Level, XP);
-		}
-
 		public int NextLevelXP
 		{
 			get { return GetInt32(PlayerFields.NEXT_LEVEL_XP); }
