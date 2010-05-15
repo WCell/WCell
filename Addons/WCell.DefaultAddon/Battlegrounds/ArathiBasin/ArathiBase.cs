@@ -33,9 +33,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         private BattlegroundSide _side = BattlegroundSide.End;
 
         public GameObject FlagStand;
-        public GOEntry FlagStandNeutral;
-        public GOEntry FlagStandHorde;
-        public GOEntry FlagStandAlliance;
+
         
         /// <summary>
         /// The character currently capturing the flag.

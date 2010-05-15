@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
 using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
@@ -13,8 +14,17 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 	public class ArathiBasin : Battleground
 	{
         #region Static Fields
-        [Variable("ABMaxScore")]
-        public static int MaxScoreDefault = 1600;
+	    [Variable("ABMaxScore")]
+	    public static int MaxScoreDefault
+	    {
+            get { return Constants.World.WorldStates.GetState(WorldStateId.ABMaxResources).DefaultValue; }
+            set { Constants.World.WorldStates.GetState(WorldStateId.ABMaxResources).DefaultValue = value; }
+	    }
+
+        static ArathiBasin()
+        {
+            MaxScoreDefault = 1600;
+        }
 
         [Variable("ABFlagRespawnTime")]
         public static int FlagRespawnTime = 20;
@@ -31,40 +41,37 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         public float DefaultScoreTickDelay = 12;
         #endregion
 
+        public static GOEntry FlagStandNeutral;
+        public static GOEntry FlagStandHorde;
+        public static GOEntry FlagStandAlliance;
+
         public readonly ArathiBase[] Bases;
         public int MaxScore;
 	    
-	    private uint _hordeScore, _allianceScore;
 	    private uint _hordeTicks, _allianceTicks;
 
 	    #region Props
 
-        public uint HordeScore
+        public int HordeScore
         {
-            get
-            {
-                return _hordeScore;
-            }
+            get { return WorldStates.GetInt32(WorldStateId.ABResourcesAlliance); }
             set
             {
-                _hordeScore = value;
-                if (_hordeScore >= MaxScore)
+                WorldStates.SetInt32(WorldStateId.ABResourcesAlliance, value);
+                if (value >= MaxScore)
                 {
                     FinishFight();
                 }
             }
         }
 
-        public uint AllianceScore
+        public int AllianceScore
         {
-            get
-            {
-                return _allianceScore;
-            }
+            get { return WorldStates.GetInt32(WorldStateId.ABResourcesHorde); }
             set
             {
-                _allianceScore = value;
-                if (_allianceScore >= MaxScore)
+                WorldStates.SetInt32(WorldStateId.ABResourcesHorde, value);
+                if (value >= MaxScore)
                 {
                     FinishFight();
                 }
