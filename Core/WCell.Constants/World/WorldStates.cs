@@ -99,6 +99,9 @@ namespace WCell.Constants.World
 			AddState(new WorldState(MapId.WarsongGulch, WorldStateId.WSGMaxScore, 3));
 			AddState(new WorldState(MapId.WarsongGulch, WorldStateId.WSGHordeFlagState, 1));
 			AddState(new WorldState(MapId.WarsongGulch, WorldStateId.WSGAllianceFlagState, 1));
+
+            // Arathi Basin
+            AddState(new WorldState(MapId.ArathiBasin, WorldStateId.ABMaxResources, 1600));
 		}
 		#endregion
 	}
