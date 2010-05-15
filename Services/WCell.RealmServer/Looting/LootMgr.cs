@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Looting;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
@@ -221,7 +222,7 @@ namespace WCell.RealmServer.Looting
 		/// <param name="initialLooter"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static T CreateLoot<T>(ILootable lootable, Character initialLooter, LootEntryType type, bool heroic, uint mapid)
+		public static T CreateLoot<T>(ILootable lootable, Character initialLooter, LootEntryType type, bool heroic, MapId mapid)
 			where T : Loot, new()
 		{
 			var looters = FindLooters(lootable, initialLooter);

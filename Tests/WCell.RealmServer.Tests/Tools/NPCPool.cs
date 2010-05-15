@@ -29,7 +29,6 @@ namespace WCell.RealmServer.Tests.Tools
 		{
 			DisplayIds = new[] { 10u },
 			DefaultName = "Default Vendor",
-			VendorItems = new Dictionary<ItemId, VendorItemEntry>(),
 			InstanceTypeHandlers = new NPCTypeHandler[0],
 			MaxHealth = 100
 		};

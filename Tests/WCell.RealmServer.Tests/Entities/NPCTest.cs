@@ -83,36 +83,5 @@ namespace WCell.RealmServer.Tests.Entities
 		public void TestCreation()
 		{
 		}
-
-
-		[TestMethod]
-		public void TestXpDistribution()
-		{
-			var npc = Setup.NPCPool.CreateDummy();
-			npc.EnsureInWorldAndLiving();
-
-			var chr = Setup.AllianceCharacterPool.Create();
-
-			var oldExp = new Experience(chr.Level, chr.XP);
-
-			chr.Level = npc.Level = 1;
-
-			// be close in order to gain any xp
-			chr.EnsureXDistance(npc, 1.0f, true);
-
-			// calc the xp that chr will gain
-			var gainedXp = npc.Region.XpCalculator(chr.Level, npc);
-			Asser.GreaterThan(gainedXp, 0u);
-
-			// let the npc die and chr be the killer
-			npc.Region.AddMessageAndWait(() => {
-				npc.FirstAttacker = chr;
-				npc.Health = 0;
-
-				var currentExp = chr.GetExperience();
-				Assert.AreEqual(oldExp + gainedXp, currentExp);
-			});
-		}
-
 	}
 }
