@@ -183,7 +183,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             foreach(var team in _teams)
             {
-                uint scoreTick = 10;
+                int scoreTick = 10;
                 int bases = 0;
 
                 if(team.Side == BattlegroundSide.Horde)

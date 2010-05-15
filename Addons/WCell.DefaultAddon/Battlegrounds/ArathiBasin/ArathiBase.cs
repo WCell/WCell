@@ -53,7 +53,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected ArathiBase(ArathiBasin instance, GOEntry flagstand)
         {
             Instance = instance;
-            FlagStandNeutral = flagstand;
 
             Instance.RegisterUpdatableLater(StartScoreTimer);
             Instance.RegisterUpdatableLater(CaptureTimer);
