@@ -7,12 +7,11 @@ using WCell.RealmServer.Battlegrounds;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 {
-    // TODO: finish this (placeholder)
     class ArathiStats : BattlegroundStats
     {
-        public int BaseCaptures;
+        public int BasesAssaulted;
 
-        public int BaseSaves;
+        public int BasesDefended;
 
         public override int SpecialStatCount
         {
@@ -24,8 +23,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         public override void WriteSpecialStats(RealmPacketOut packet)
         {
-            packet.WriteInt(BaseCaptures); // correct?
-            packet.WriteInt(BaseSaves); // correct?
+            packet.WriteInt(BasesAssaulted);
+            packet.WriteInt(BasesDefended);
         }
     }
 }
