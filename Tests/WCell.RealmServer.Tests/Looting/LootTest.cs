@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Tests.Looting
 				Assert.AreEqual(group.Count, looters.Count);
 
 				// initialize the Loot
-				loot.Initialize(leader, looters);
+				loot.Initialize(leader, looters, npc.RegionId);
 			});
 			
 			Assert.IsNotNull(lootItem.RollProgress);
