@@ -1,4 +1,7 @@
-﻿using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
+﻿using System.Linq;
+using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
+using WCell.Constants;
+using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
@@ -11,8 +14,17 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 	public class ArathiBasin : Battleground
 	{
         #region Static Fields
-        [Variable("ABMaxScore")]
-        public static int MaxScoreDefault = 2000;
+	    [Variable("ABMaxScore")]
+	    public static int MaxScoreDefault
+	    {
+            get { return Constants.World.WorldStates.GetState(WorldStateId.ABMaxResources).DefaultValue; }
+            set { Constants.World.WorldStates.GetState(WorldStateId.ABMaxResources).DefaultValue = value; }
+	    }
+
+        static ArathiBasin()
+        {
+            MaxScoreDefault = 1600;
+        }
 
         [Variable("ABFlagRespawnTime")]
         public static int FlagRespawnTime = 20;
@@ -26,97 +38,51 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [Variable("ABPowerUpRespawnTime")]
         public static float PowerUpRespawnTime = 1.5f * 60f;
 
-	    public static float TickDecreaseRate = 3f;
-
+        public float DefaultScoreTickDelay = 12;
         #endregion
+
+        public static GOEntry FlagStandNeutral;
+        public static GOEntry FlagStandHorde;
+        public static GOEntry FlagStandAlliance;
 
         public readonly ArathiBase[] Bases;
         public int MaxScore;
-	    public float AllianceUpdateTickDelay = 12;
-	    public float HordeUpdateTickDelay = 12;
+	    
+	    private uint _hordeTicks, _allianceTicks;
 
-	    private uint _hordeScore, _allianceScore;
-        private bool _update;
-	    private int _hordeBasesCount, _allianceBasesCount;
-        #region Props
+	    #region Props
 
-        public uint HordeScore
+        public int HordeScore
         {
-            get
-            {
-                return _hordeScore;
-            }
+            get { return WorldStates.GetInt32(WorldStateId.ABResourcesAlliance); }
             set
             {
-                _hordeScore = value;
-                if (_hordeScore >= MaxScore)
+                WorldStates.SetInt32(WorldStateId.ABResourcesAlliance, value);
+                if (value >= MaxScore)
                 {
                     FinishFight();
                 }
             }
         }
 
-        public uint AllianceScore
+        public int AllianceScore
         {
-            get
-            {
-                return _allianceScore;
-            }
+            get { return WorldStates.GetInt32(WorldStateId.ABResourcesHorde); }
             set
             {
-                _allianceScore = value;
-                if (_allianceScore >= MaxScore)
+                WorldStates.SetInt32(WorldStateId.ABResourcesHorde, value);
+                if (value >= MaxScore)
                 {
                     FinishFight();
                 }
             }
         }
 
-        public int HordeBasesCount
-        {
-            get
-            {
-                return _hordeBasesCount;
-            }
-            set
-            {
-                //Bases increased, tick delay decreases.
-                if (value > _hordeBasesCount)
-                {
-                    HordeUpdateTickDelay -= TickDecreaseRate;
-                }
-                //Bases decreased, tick delay increases
-                if (_hordeBasesCount > value)
-                {
-                    HordeUpdateTickDelay += TickDecreaseRate;
-                }
-                _hordeBasesCount = value;
-            }
-        }
+	    public int HordeBaseCount { get; set; }
 
-        public int AllianceBasesCount
-        {
-            get
-            {
-                return _allianceBasesCount;
-            }
-            set
-            {
-                //Bases increased, tick delay decreases.
-                if(value > _allianceBasesCount)
-                {
-                    AllianceUpdateTickDelay -= TickDecreaseRate;
-                }
-                //Bases decreased, tick delay increases
-                if(_allianceBasesCount > value)
-                {
-                    AllianceUpdateTickDelay += TickDecreaseRate;
-                }
-                _allianceBasesCount = value;
-            }
-        }
+	    public int AllianceBaseCount { get; set; }
 
-        public override float PreparationTimeSeconds
+	    public override float PreparationTimeSeconds
         {
             get { return PreparationTimeSecs; }
         }
@@ -154,9 +120,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             base.OnStart();
 
             Characters.SendSystemMessage("Let the battle for Arathi Basin begin!");
-            _update = true;
-            //UpdateHordeScore();
-            //UpdateAllianceScore();
+            CallPeriodically(BattleUpdateDelay, Update);
         }
 
         protected override void OnFinish(bool disposing)
@@ -213,38 +177,58 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Characters.SendSystemMessage("{0} has entered the battle!", chr.Name);
         }
 
-        //public override void OnDeath(Character chr)
-        //{
-        //    base.OnDeath(chr);
-        //    foreach (var arathiBase in Bases)
-        //    {
-        //        if (chr == arathiBase.Capturer)
-        //        {
-        //            arathiBase.InterruptCapture();
-        //        }
-        //    }
-        //}
-
         #endregion
 
-        /// <summary>
-        /// Begins giving score for each base periodically. Requires _update to be true.
-        /// </summary>
-        /// <returns>If update enqueued successfully, calls itself and returns true. 
-        /// Will not call periodically if _update is false.</returns>
-        public bool UpdateHordeScore()
+        private void Update()
         {
-            if (_update)
+            foreach(var team in _teams)
             {
-                CallDelayed(UpdateDelay, () => UpdateHordeScore());
-                return true;
-            }
-            return false;
-        }
+                int scoreTick = 10;
+                int bases = 0;
 
-        public void UpdateAllianceScore()
-        {
-            
+                if(team.Side == BattlegroundSide.Horde)
+                {
+                    bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Horde && node.GivesScore);
+                    _hordeTicks++;
+                }
+
+                else
+                {
+                    bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore);
+                    _allianceTicks++;
+                }
+
+                if(bases > 4)
+                {
+                    scoreTick = 30;
+                }
+
+                // See http://www.wowwiki.com/Arathi_Basin#Accumulating_Resources
+                var tickLength = (5 - bases) * DefaultScoreTickDelay / 4;
+
+                if(tickLength < 1)
+                {
+                    tickLength = 1;
+                }
+
+                if (team.Side == BattlegroundSide.Horde)
+                {
+                    if(_hordeTicks == tickLength)
+                    {
+                        HordeScore += scoreTick;
+                        _hordeTicks = 0;
+                    }
+                }
+
+                else
+                {
+                    if(_allianceTicks == tickLength)
+                    {
+                        AllianceScore += scoreTick;
+                        _allianceTicks = 0;
+                    }
+                }
+            }
         }
 
         #region Spell/GO fixes
@@ -253,6 +237,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [DependentInitialization(typeof(GOMgr))]
         public static void FixGOs()
         {
+            //Fix the neutral/horde/alliance flags
+            //3 entries for each colour
+            //5 templates for each base
         }
 
         #endregion
