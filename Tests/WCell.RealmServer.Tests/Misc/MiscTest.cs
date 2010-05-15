@@ -138,27 +138,17 @@ namespace WCell.RealmServer.Tests.Misc
 		}
 
 		[TestMethod]
-		public void TestExperienceCalc()
-		{
-			var exp = new Experience(1, 10);
-			exp += 50;
-
-			Assert.AreEqual((uint)60, exp.TotalXp);
-			Assert.AreEqual((uint)1, exp.Level);
-		}
-
-		[TestMethod]
 		public void TestDirections()
 		{
 			var v = new Vector3(100, 100, 1);
 			var v2 = new Vector3(0, 0, 2);
 
-			v.GetPointXY(MathUtil.PI, 10, ref v2);
+			v.GetPointXY(MathUtil.PI, 10, out v2);
 
 			Assert.AreEqual(new Vector3(100, 90, 2), v2);
 
 			var v3 = new Vector3(20, 20, 5);
-			v3.GetPointXY(WorldObject.BehindAngleMax, 10, ref v2);
+			v3.GetPointXY(WorldObject.BehindAngleMax, 10, out v2);
 		}
 
 		[TestMethod]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
+using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
@@ -195,7 +196,7 @@ namespace WCell.RealmServer.Looting
 		/// Adds all initial Looters of nearby Characters who may loot this Loot.
 		/// When all of the initial Looters gave up the Loot, the Loot becomes free for all.
 		/// </summary>
-		public void Initialize(Character chr, IList<LooterEntry> looters, uint mapid)
+		public void Initialize(Character chr, IList<LooterEntry> looters, MapId mapid)
 		{
 			Looters = looters;
 			if (IsGroupLoot)

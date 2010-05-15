@@ -321,7 +321,7 @@ namespace WCell.RealmServer.Tests.Misc
 				Setup.EnsureItemsLoaded();
 			}
 			var chr = new TestCharacter(archetype, isNew);
-			chr.Load();
+			//chr.Load(); TODO: Fix this!
 			return chr;
 		}
 
