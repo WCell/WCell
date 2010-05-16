@@ -75,7 +75,7 @@ ECHO.
 ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] UDB database rev 388...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\udb-main.sql
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\%udb-main%.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -152,14 +152,14 @@ GOTO extract-error1
 
 :unzip
 ECHO.
-7za e -y %udbdir%Full_DB\udb-main.zip -o%udbdir%Full_DB\
+7za e -y %udbdir%Full_DB\%udb-main%.zip -o%udbdir%Full_DB\
 ECHO.
 PAUSE.
 GOTO menu
 
 :unrar
 ECHO.
-unrar x -y %udbdir%Full_DB\udb-main.rar %udbdir%Full_DB\
+unrar x -y %udbdir%Full_DB\%udb-main%.rar %udbdir%Full_DB\
 ECHO.
 PAUSE
 GOTO menu
