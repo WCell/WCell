@@ -9,12 +9,13 @@ REM # server - Base Table host
 REM # user - MySQL username
 REM # pass - MySQL login password
 REM # wdb  -  Database name
-REM # udbdir  - Main UDB directory on your harddisk (for example "E:\Documents\My Documents\Code\UDB\", note the trailing backslash!)
+REM # udbdir  - Main UDB directory on your harddisk (note the trailing backslash!, for example "E:\Documents\My Documents\Code\UDB\")
+REM # Remember not to include FULL_DB on the end of udbdir, only the main directory should be set here.
 REM #########################################
 
-set user=changeme
-set pass=changeme
-set wdb=wcellrealmserver
+set user="changeme"
+set pass="changeme"
+set wdb="wcellrealmserver"
 set udbdir="changeme"
 
 REM ############################################################################
@@ -22,9 +23,18 @@ REM #
 REM #    A D V A N C E D   U S E R   C O N F I G U R A T I O N   A R E A
 REM #
 REM ############################################################################
-set server=localhost
-set port=3306
-set udb-main=UDB_0.12.0_mangos_9582_SD2_1639
+set server="localhost"
+set port="3306"
+set udb-main="UDB_0.12.0_mangos_9582_SD2_1639"
+@ECHO "User:"     %user%
+@ECHO "Pass:"     %pass%
+@ECHO "wdb:"      %wdb%
+@ECHO "udbdir:"   %udbdir%
+@ECHO "server:"   %server%
+@ECHO "port:"     %port%
+@ECHO "udb-main:" %udb-main%
+@ECHO "Check the above variables to see if they are correct before continuing"
+pause
 REM ############################################################################
 REM #
 REM #     D O   N O T   M O D I F Y   B E Y O N D   T H I S   P O I N T
@@ -75,7 +85,7 @@ ECHO.
 ECHO.
 ECHO [Importing] Started...
 ECHO [Importing] UDB database rev 388...
-mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\udb-main.sql
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Full_DB\%udb-main%.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -152,14 +162,14 @@ GOTO extract-error1
 
 :unzip
 ECHO.
-7za e -y %udbdir%Full_DB\udb-main.zip -o%udbdir%Full_DB\
+7za e -y %udbdir%Full_DB\%udb-main%.zip -o%udbdir%Full_DB\
 ECHO.
 PAUSE.
 GOTO menu
 
 :unrar
 ECHO.
-unrar x -y %udbdir%Full_DB\udb-main.rar %udbdir%Full_DB\
+unrar x -y %udbdir%Full_DB\%udb-main%.rar %udbdir%Full_DB\
 ECHO.
 PAUSE
 GOTO menu
