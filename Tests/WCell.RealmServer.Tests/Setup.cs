@@ -46,7 +46,7 @@ namespace WCell.RealmServer.Tests
 		/// </summary>
 		public static string WCellRealmServerConsoleExe { get { return RealmServerDebugDir + "WCell.RealmServerConsole.exe"; } }
 
-		public static string ContentDir { get { return RealmServerDir + "/Content/"; } }
+		public static string ContentDir { get { return RealmServerDir + "../Content/"; } }
 		public static string RealmAddonDir { get { return RealmServerDir + "/Lib/"; } }
 
 		public static string TestResultsDir { get { return RunDir + "../TestResults/"; } }
