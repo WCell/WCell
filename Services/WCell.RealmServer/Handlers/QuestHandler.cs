@@ -439,7 +439,20 @@ namespace WCell.RealmServer.Handlers
 						pckt.Write("");
 					}
 				}
-				chr.Client.Send(pckt);
+
+                for (var k = 0; k < 4; k++)
+                {
+                    pckt.Write((uint)0);
+                    pckt.Write((uint)0);
+                }
+
+                for (var k = 0; k < 4; k++)
+                {
+                    pckt.Write((uint)0);
+                    pckt.Write((uint)0);
+                }
+
+			    chr.Client.Send(pckt);
 			}
 		}
 
