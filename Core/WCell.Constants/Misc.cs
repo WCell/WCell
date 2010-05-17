@@ -7,17 +7,21 @@ namespace WCell.Constants
 	public enum ClientId
 	{
 		/// <summary>
-		/// Classic WoW
+		/// World of Warcraft
 		/// </summary>
-		Original = 0,
+		WorldOfWarcraft = 0,
 		/// <summary>
 		/// The Burning Crusade
 		/// </summary>
-		TBC = 1,
+		TheBurningCrusade = 1,
 		/// <summary>
 		/// Wrath of the Lich King
 		/// </summary>
-		Wotlk = 2
+		WrathOfTheLichKing = 2,
+        /// <summary>
+        /// Cataclysm
+        /// </summary>
+        Cataclysm = 3
 	}
 
 	public enum SkillCategory

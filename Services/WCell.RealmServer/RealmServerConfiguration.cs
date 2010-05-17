@@ -339,7 +339,7 @@ namespace WCell.RealmServer
 		/// <summary>
 		/// The highest supported version
 		/// </summary>
-		public static ClientId ClientId = ClientId.Wotlk;
+		public static ClientId ClientId = ClientId.Cataclysm;
 
 		/// <summary>
 		/// whether or not to use blizz like character name restrictions (blizzlike = 'Lama', not blizzlike = 'lAmA').
