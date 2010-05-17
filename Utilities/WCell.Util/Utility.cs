@@ -49,10 +49,10 @@ namespace WCell.Util
 
         static Utility()
         {
-            //foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
-            //{
-            //    InitEnums(asm);
-            //}
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                InitEnums(asm);
+            }
             AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
             // init all operators
             
