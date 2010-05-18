@@ -197,7 +197,7 @@ namespace WCell.RealmServer.Skills
 						foreach (var raceMask in WCellDef.RaceTypesByMask.Keys)
 						{
 							RaceId raceId = WCellDef.GetRaceType(raceMask);
-							if ((info.RaceMask & raceMask) != 0 && (info.ClassMask & classMask) != 0)
+							if (info.RaceMask.HasFlag(raceMask) && info.ClassMask.HasFlag(classMask))
 							{
 								Dictionary<SkillId, SkillRaceClassInfo>[] byClass = RaceClassInfos[(int)raceId];
 								if (byClass == null)

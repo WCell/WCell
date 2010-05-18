@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsOwner
 		{
-			get { return (Flags & ChannelMemberFlags.Owner) != ChannelMemberFlags.None; }
+			get { return Flags.HasFlag(ChannelMemberFlags.Owner); }
 			set
 			{
 				if (value)
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsModerator
 		{
-			get { return (Flags & ChannelMemberFlags.Moderator) != ChannelMemberFlags.None; }
+            get { return Flags.HasFlag(ChannelMemberFlags.Moderator); }
 			set
 			{
 				if (value)
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsVoiced
 		{
-			get { return (Flags & ChannelMemberFlags.Voiced) != ChannelMemberFlags.None; }
+			get { return Flags.HasFlag(ChannelMemberFlags.Voiced); }
 			set
 			{
 				if (value)
@@ -100,7 +100,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsMuted
 		{
-			get { return (Flags & ChannelMemberFlags.Muted) != ChannelMemberFlags.None; }
+			get { return Flags.HasFlag(ChannelMemberFlags.Muted); }
 			set
 			{
 				if (value)
@@ -119,7 +119,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsVoiceMuted
 		{
-			get { return (Flags & ChannelMemberFlags.VoiceMuted) != ChannelMemberFlags.None; }
+            get { return Flags.HasFlag(ChannelMemberFlags.VoiceMuted); }
 			set
 			{
 				if (value)

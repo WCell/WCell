@@ -359,7 +359,7 @@ namespace WCell.RealmServer.Entities
 						MovementHandler.SendRooted((Character)this, 1);
 					}
 					//UnitFlags |= UnitFlags.Influenced;
-					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.Has(InterruptFlags.OnStunned))
+                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
 					{
 						SpellCast.Cancel();
 					}
@@ -388,7 +388,7 @@ namespace WCell.RealmServer.Entities
 					// check if we can still cast spells
 					m_canCastSpells = false;
 					UnitFlags |= UnitFlags.Silenced;
-					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.Has(InterruptFlags.OnSilence))
+                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
 					{
 						SpellCast.Cancel();
 					}
@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Entities
 			if (val == 0)
 			{
 				// new immunity: Gets rid of all Auras that use this school
-				Auras.RemoveWhere(aura => (aura.Spell.SchoolMask & (DamageSchoolMask)(1 << (int)school)) != 0);
+			    Auras.RemoveWhere(aura => aura.Spell.SchoolMask.HasFlag((DamageSchoolMask) (1 << (int) school)));
 			}
 
 			m_dmgImmunities[(int)school]++;
@@ -619,8 +619,8 @@ namespace WCell.RealmServer.Entities
 
 			Auras.RemoveWhere(aura =>
 				aura.Spell.AuraUID != effect.Spell.AuraUID &&
-				(aura.Spell.SchoolMask & effect.Spell.SchoolMask) != 0 &&
-				!aura.Spell.Attributes.Has(SpellAttributes.UnaffectedByInvulnerability));
+				aura.Spell.SchoolMask.HasFlag(effect.Spell.SchoolMask) &&
+                !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
 		}
 
 		/// <summary>
@@ -665,7 +665,7 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
-					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.Has(SpellAttributes.UnaffectedByInvulnerability)));
+                    ((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
 			m_mechanicImmunities[(int)mechanic]++;
@@ -782,7 +782,7 @@ namespace WCell.RealmServer.Entities
 			}
 			if (m_AttackAction != null)
 			{
-				if (m_AttackAction.Spell.AttributesExD.Has(SpellAttributesExD.CannotBeAbsorbed))
+                if (m_AttackAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
 					return 0;
 			}
 			var absorb = 0;
@@ -791,7 +791,7 @@ namespace WCell.RealmServer.Entities
 			for (var i = m_absorbers.Count - 1; i >= 0; i--)
 			{
 				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.Has(school))
+				if (absorber.AbsorbSchool.HasFlag(school))
 				{
 					var abs = Math.Min(amount, absorber.AbsorbValue);
 					absorb += abs;

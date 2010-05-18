@@ -84,12 +84,12 @@ namespace WCell.RealmServer.Spells.Auras
 			packet.Write((byte)aura.StackCount);
 
 			// If the target was not the caster
-			if (!aura.Flags.Has(AuraFlags.TargetIsCaster))
+			if (!aura.Flags.HasFlag(AuraFlags.TargetIsCaster))
 			{
 				aura.CasterInfo.CasterId.WritePacked(packet);
 			}
 
-			if (aura.Flags.Has(AuraFlags.HasDuration))
+            if (aura.Flags.HasFlag(AuraFlags.HasDuration))
 			{
 				packet.Write(aura.Duration);
 				packet.Write(aura.TimeLeft);

@@ -334,11 +334,11 @@ namespace WCell.RealmServer.Entities
 
 		private void LoadEquipmentState()
 		{
-			if ((m_record.CharacterFlags & CharEnumFlags.HideCloak) != 0)
+			if (m_record.CharacterFlags.HasFlag(CharEnumFlags.HideCloak))
 			{
 				PlayerFlags |= PlayerFlags.HideCloak;
 			}
-			if ((m_record.CharacterFlags & CharEnumFlags.HideHelm) != 0)
+			if (m_record.CharacterFlags.HasFlag(CharEnumFlags.HideHelm))
 			{
 				PlayerFlags |= PlayerFlags.HideHelm;
 			}

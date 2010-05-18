@@ -148,7 +148,7 @@ namespace WCell.RealmServer.Factions
         {
             get
             {
-                return m_record.Flags.Has(ReputationFlags.Visible);
+                return m_record.Flags.HasFlag(ReputationFlags.Visible);
             }
             internal set
             {
@@ -174,7 +174,7 @@ namespace WCell.RealmServer.Factions
 		{
 			get
 			{
-			    return m_record.Flags.Has(ReputationFlags.AtWar);
+			    return m_record.Flags.HasFlag(ReputationFlags.AtWar);
 			}
 			internal set
 			{
@@ -197,7 +197,7 @@ namespace WCell.RealmServer.Factions
 	    {
 	        get
 	        {
-	            return m_record.Flags.Has(ReputationFlags.Hidden);
+                return m_record.Flags.HasFlag(ReputationFlags.Hidden);
 	        }
             set
             {
@@ -216,7 +216,7 @@ namespace WCell.RealmServer.Factions
 	    {
 	        get
 	        {
-	            return m_record.Flags.Has(ReputationFlags.ForcedInvisible);
+                return m_record.Flags.HasFlag(ReputationFlags.ForcedInvisible);
 	        }
             internal set
             {
@@ -235,7 +235,7 @@ namespace WCell.RealmServer.Factions
 	    {
 	        get
 	        {
-	            return m_record.Flags.Has(ReputationFlags.ForcedPeace);
+	            return m_record.Flags.HasFlag(ReputationFlags.ForcedPeace);
 	        }
             internal set
             {
@@ -252,7 +252,7 @@ namespace WCell.RealmServer.Factions
 
 	    public bool IsInactive
 	    {
-            get { return m_record.Flags.Has(ReputationFlags.Inactive); }
+            get { return m_record.Flags.HasFlag(ReputationFlags.Inactive); }
             set
             {
                 if (value)

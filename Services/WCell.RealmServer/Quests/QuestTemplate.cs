@@ -475,7 +475,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public bool Sharable
 		{
-			get { return (Flags & QuestFlags.Sharable) != 0; }
+			get { return Flags.HasFlag(QuestFlags.Sharable); }
 		}
 
 		/// <summary>
@@ -483,7 +483,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public bool IsDaily
 		{
-			get { return (Flags & QuestFlags.Daily) != 0; }
+			get { return Flags.HasFlag(QuestFlags.Daily); }
 		}
 
 		#region Modify Templates
@@ -579,7 +579,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public QuestInvalidReason CheckBasicRequirements(Character chr)
 		{
-			if (RequiredRaces != 0 && (RequiredRaces & chr.RaceMask) == 0)
+			if (RequiredRaces != 0 && !RequiredRaces.HasFlag(chr.RaceMask))
 			{
 				return QuestInvalidReason.WrongRace;
 			}

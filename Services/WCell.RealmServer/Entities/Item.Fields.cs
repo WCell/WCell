@@ -238,17 +238,17 @@ namespace WCell.RealmServer.Entities
 
 		public bool IsSoulbound
 		{
-			get { return (Flags & ItemFlags.Soulbound) != ItemFlags.None; }
+			get { return Flags.HasFlag(ItemFlags.Soulbound); }
 		}
 
 		public bool IsGiftWrapped
 		{
-			get { return (Flags & ItemFlags.GiftWrapped) != ItemFlags.None; }
+			get { return Flags.HasFlag(ItemFlags.GiftWrapped); }
 		}
 
 		public bool IsConjured
 		{
-			get { return (Flags & ItemFlags.Conjured) != ItemFlags.None; }
+			get { return Flags.HasFlag(ItemFlags.Conjured); }
 		}
 
 		#endregion

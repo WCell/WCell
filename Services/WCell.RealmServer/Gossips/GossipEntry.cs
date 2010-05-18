@@ -229,7 +229,7 @@ namespace WCell.RealmServer.Gossips
 
 				entry.DefaultGossip = menu;
 
-				if ((entry.NPCFlags & (NPCFlags.SpiritHealer)) == 0)
+				if (entry.NPCFlags.HasFlag(NPCFlags.SpiritHealer))
 				{
 					entry.NPCFlags |= NPCFlags.Gossip;
 				}
