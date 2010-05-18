@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Stealth Required			
-		    if (Attributes.Has(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+            if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 		    {
 		        return SpellFailedReason.OnlyStealthed;
 			}
@@ -47,12 +47,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 		    // Not while silenced			
-		    if (InterruptFlags.Has(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+            if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
 		    {
 		        return SpellFailedReason.Silenced;
 		    }
 
-		    if (!AttributesExD.Has(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
+            if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 		    {
 		        return SpellFailedReason.CantDoThatRightNow;
 		    }
@@ -69,20 +69,20 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// shapeshift
-			if (Attributes.Has(SpellAttributes.NotWhileShapeshifted) &&
+            if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
 				caster.ShapeShiftForm != ShapeShiftForm.Normal)
 			{
 				//return SpellFailedReason.NotShapeshift;
 			}
 
 			// Stealth Required			
-			else if (Attributes.Has(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+            else if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 			{
 				return SpellFailedReason.OnlyStealthed;
 			}
 
 			// Not while silenced		
-			else if (InterruptFlags.Has(InterruptFlags.OnSilence) &&
+            else if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
 					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
 			{
 				return SpellFailedReason.Silenced;
@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return SpellFailedReason.Pacified;
 			}
-			else if (!AttributesExD.Has(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
+            else if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 			{
 				return SpellFailedReason.Stunned;
 			}
@@ -121,8 +121,8 @@ namespace WCell.RealmServer.Spells
 			{
 				// check AuraStates
 				var state = caster.AuraState;
-				if ((RequiredCasterAuraState != 0 && !state.Has(RequiredCasterAuraState)) ||
-					(ExcludeCasterAuraState != 0 && state.Has(ExcludeCasterAuraState)))
+                if ((RequiredCasterAuraState != 0 && !state.HasFlag(RequiredCasterAuraState)) ||
+                    (ExcludeCasterAuraState != 0 && state.HasFlag(ExcludeCasterAuraState)))
 				{
 					return SpellFailedReason.CasterAurastate;
 				}
@@ -181,7 +181,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					if (RequiredItemSubClassMask > 0 &&
-						(usedItem.Template.SubClassMask & RequiredItemSubClassMask) == 0)
+						!usedItem.Template.SubClassMask.HasFlag(RequiredItemSubClassMask))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Spells
 			}
 			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
-				if (usedItem != null && (usedItem.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0)
+				if (usedItem != null && !usedItem.Template.InventorySlotMask.HasFlag(RequiredItemInventorySlotMask))
 				{
 					return SpellFailedReason.EquippedItemClass;
 				}
@@ -221,12 +221,12 @@ namespace WCell.RealmServer.Spells
 				{
 					return SpellFailedReason.EquippedItem;
 				}
-				if (AttributesExC.Has(SpellAttributesExC.RequiresWand) &&
+                if (AttributesExC.HasFlag(SpellAttributesExC.RequiresWand) &&
 					item.Template.SubClass != ItemSubClass.WeaponWand)
 				{
 					return SpellFailedReason.EquippedItem;
 				}
-				if (AttributesExC.Has(SpellAttributesExC.ShootRangedWeapon) &&
+                if (AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
 					!item.Template.IsRangedWeapon)
 				{
 					return SpellFailedReason.EquippedItem;
@@ -250,8 +250,8 @@ namespace WCell.RealmServer.Spells
 				if (RequiredTargetAuraState != 0 || ExcludeTargetAuraState != 0)
 				{
 					var state = ((Unit)target).AuraState;
-					if ((RequiredTargetAuraState != 0 && !state.Has(RequiredTargetAuraState)) ||
-						(ExcludeTargetAuraState != 0 && state.Has(ExcludeTargetAuraState)))
+                    if ((RequiredTargetAuraState != 0 && !state.HasFlag(RequiredTargetAuraState)) ||
+                        (ExcludeTargetAuraState != 0 && state.HasFlag(ExcludeTargetAuraState)))
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-			if (TargetFlags.Has(SpellTargetFlags.UnkUnit_0x100) &&
+            if (TargetFlags.HasFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
@@ -287,10 +287,10 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (ReqDeadTarget)
 			{
-				if (TargetFlags.Has(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+                if (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-						(TargetFlags.Has(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+                        (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -310,7 +310,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Rogues do it from behind
-			if (AttributesExB.Has(SpellAttributesExB.RequiresBehindTarget))
+            if (AttributesExB.HasFlag(SpellAttributesExB.RequiresBehindTarget))
 			{
 				if (!caster.IsBehind(target))
 				{
@@ -318,7 +318,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (AttributesExC.Has(SpellAttributesExC.NoInitialAggro))
+            if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
 			{
 				if (target is Unit && ((Unit)target).IsInCombat)
 				{

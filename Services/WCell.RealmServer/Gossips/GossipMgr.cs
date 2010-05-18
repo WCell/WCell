@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Gossips
 				var entry = _entry;					// copy object to prevent access to modified closure in callbacks
 				if (entry != null)
 				{
-					if ((entry.NPCFlags & NPCFlags.Gossip) != 0)
+					if (entry.NPCFlags.HasFlag(NPCFlags.Gossip))
 					{
 						var menu = entry.DefaultGossip;
 						if (menu == null)
@@ -152,14 +152,14 @@ namespace WCell.RealmServer.Gossips
 						}
 
 						// NPC professions
-						if (entry.NPCFlags.And(NPCFlags.Banker))
+						if (entry.NPCFlags.HasFlag(NPCFlags.Banker))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Bank, "Show Bank Account...", convo =>
 							{
 								convo.Character.OpenBank(convo.Speaker);
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.BattleMaster))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.BattleMaster))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Battlefield, "Battlefield...", convo =>
 							{
@@ -169,56 +169,56 @@ namespace WCell.RealmServer.Gossips
 								}
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.InnKeeper))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.InnKeeper))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Bind, "Bind...", convo =>
 							{
 								convo.Character.BindTo((NPC)convo.Speaker);
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.GuildBanker))
+						if (entry.NPCFlags.HasFlag(NPCFlags.GuildBanker))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Guild, "Guild Bank...", convo =>
 							{
 								convo.Character.SendSystemMessage("Feature Not Yet Implemented");
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.SpiritHealer))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.SpiritHealer))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Resurrect, "Resurrect...", convo =>
 							{
 								convo.Character.ResurrectSH();
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.Petitioner))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.Petitioner))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Bank, "Petitions...", convo =>
 							{
 								((NPC)convo.Speaker).SendPetitionList(convo.Character);
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.TabardDesigner))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.TabardDesigner))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Tabard, "Tabard...", convo =>
 							{
 								convo.Character.SendSystemMessage("Feature Not Yet Implemented");
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.FlightMaster))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.FlightMaster))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Taxi, "Fly...", convo =>
 							{
 								((NPC)convo.Speaker).TalkToFM(convo.Character);
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.AnyTrainer))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.AnyTrainer))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Train, "Train...", convo =>
 							{
 								((NPC)convo.Speaker).TalkToTrainer(convo.Character);
 							}));
 						}
-						if (entry.NPCFlags.And(NPCFlags.AnyVendor))
+                        if (entry.NPCFlags.HasFlag(NPCFlags.AnyVendor))
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Trade, "Trade...", convo =>
 							{

@@ -172,12 +172,12 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.CastDelay);
 				WriteTargets(packet, cast);
 
-				if ((cast.StartFlags & CastFlags.Flag_0x800) != 0)
+				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x800))
 				{
 					packet.Write(0);
 				}
 
-				if ((cast.StartFlags & CastFlags.Flag_0x200000) != 0)
+				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x200000))
 				{
 					byte b1 = 0;
 					byte b2 = 0;
@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Spells
 						byte mask = (byte)(1 << i);
 						if ((mask & b1) != 0)
 						{
-							if (!((mask & b2) != 0))
+							if ((mask & b2) == 0)
 							{
 								packet.WriteByte(0);
 							}
@@ -196,19 +196,19 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				if ((cast.StartFlags & CastFlags.Ranged) != 0)
+				if (cast.StartFlags.HasFlag(CastFlags.Ranged))
 				{
 					WriteAmmoInfo(cast, packet);
 				}
 
-				if ((cast.StartFlags & CastFlags.Flag_0x4000000) != 0)
+				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x4000000))
 				{
 					// since 3.2.0
 					packet.Write(0);
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.Has(SpellTargetFlags.DestinationLocation))
+                if (cast.TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
                 {
                     packet.Write((byte)0); // unk 3.3.x?
                 }
@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			packet.Write((uint)flags);
-			if (flags.Has(
+            if (flags.HasFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
 				SpellTargetFlags.Object |
@@ -280,7 +280,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x1010
-			if (flags.Has(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+            if (flags.HasFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				if (cast.UsedItem != null)
 				{
@@ -288,7 +288,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x20
-			if (flags.Has(SpellTargetFlags.SourceLocation))
+            if (flags.HasFlag(SpellTargetFlags.SourceLocation))
 			{
 				if (cast.Selected != null)
 				{
@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.SourceLoc.Z);
 			}
 			// 0x40
-			if (flags.Has(SpellTargetFlags.DestinationLocation))
+            if (flags.HasFlag(SpellTargetFlags.DestinationLocation))
 			{
 				if (cast.Selected != null)
 				{
@@ -316,7 +316,7 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.TargetLoc);
 			}
 			// 0x2000
-			if (flags.Has(SpellTargetFlags.String))
+            if (flags.HasFlag(SpellTargetFlags.String))
 			{
 				packet.WriteCString(cast.StringTarget);
 			}
@@ -402,12 +402,12 @@ namespace WCell.RealmServer.Spells
 
 				WriteTargets(packet, cast);
 
-				if ((castGoFlags & CastFlags.Flag_0x800) != 0)
+				if (castGoFlags.HasFlag(CastFlags.Flag_0x800))
 				{
 					packet.Write(0);
 				}
 
-				if ((castGoFlags & CastFlags.Flag_0x200000) != 0)
+				if (castGoFlags.HasFlag(CastFlags.Flag_0x200000))
 				{
 					byte b1 = 0;
 					byte b2 = 0;
@@ -418,7 +418,7 @@ namespace WCell.RealmServer.Spells
 						byte mask = (byte)(1 << i);
 						if ((mask & b1) != 0)
 						{
-							if (!((mask & b2) != 0))
+							if ((mask & b2) == 0)
 							{
 								packet.WriteByte(0);
 							}
@@ -426,24 +426,24 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				if ((castGoFlags & CastFlags.Flag_0x20000) != 0)
+				if (castGoFlags.HasFlag(CastFlags.Flag_0x20000))
 				{
 					packet.WriteFloat(0);
 					packet.Write(0);
 				}
 
-				if ((cast.StartFlags & CastFlags.Ranged) != 0)
+				if (cast.StartFlags.HasFlag(CastFlags.Ranged))
 				{
 					WriteAmmoInfo(cast, packet);
 				}
 
-				if ((castGoFlags & CastFlags.Flag_0x80000) != 0)
+				if (castGoFlags.HasFlag(CastFlags.Flag_0x80000))
 				{
 					packet.Write(0);
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.Has(SpellTargetFlags.DestinationLocation))
+                if (cast.TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
                 {
                     packet.Write((byte)0); // unk 3.3.x?
                 }

@@ -306,7 +306,7 @@ namespace WCell.AuthServer
 				flags = RealmFlags.Offline;
 				name += " [" + ClientVersion.BasicString + "]";
 			}
-            else if ((Flags & RealmFlags.Offline) == 0 && Status == RealmStatus.Locked)
+            else if (Flags.HasFlag(RealmFlags.Offline) && Status == RealmStatus.Locked)
             {
             	var acc = client.Account;
                 var role = acc.Role;

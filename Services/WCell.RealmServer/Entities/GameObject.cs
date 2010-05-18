@@ -452,7 +452,7 @@ namespace WCell.RealmServer.Entities
 		protected override void WriteMovementUpdate(PrimitiveWriter packet, UpdateFieldFlags relation)
 		{
 			// StationaryObjectOnTransport
-			if (UpdateFlags.Has(UpdateFlags.StationaryObjectOnTransport))
+            if (UpdateFlags.HasFlag(UpdateFlags.StationaryObjectOnTransport))
 			{
 				EntityId.Zero.WritePacked(packet);
 				packet.Write(Position);
@@ -460,7 +460,7 @@ namespace WCell.RealmServer.Entities
 				packet.Write(Orientation);
 				packet.Write(0.0f);
 			}
-			else if (UpdateFlags.Has(UpdateFlags.StationaryObject))
+            else if (UpdateFlags.HasFlag(UpdateFlags.StationaryObject))
 			{
 				#region UpdateFlag.Flag_0x40 (StationaryObject)
 
@@ -474,11 +474,11 @@ namespace WCell.RealmServer.Entities
 		protected override void WriteTypeSpecificMovementUpdate(PrimitiveWriter writer, UpdateFieldFlags relation, UpdateFlags updateFlags)
 		{
 			// Will only be GameObjects
-			if (updateFlags.Has(UpdateFlags.Transport))
+            if (updateFlags.HasFlag(UpdateFlags.Transport))
 			{
 				writer.Write(Utility.GetSystemTime());
 			}
-			if (updateFlags.Has(UpdateFlags.HasRotation))
+            if (updateFlags.HasFlag(UpdateFlags.HasRotation))
 			{
 				writer.Write(Rotation);
 			}

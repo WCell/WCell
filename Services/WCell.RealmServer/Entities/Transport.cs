@@ -126,8 +126,8 @@ namespace WCell.RealmServer.Entities
 
 			while (node != null)
 			{
-				bool teleport = (node.Value.Vertex.MapId != prevNode.Value.Vertex.MapId) ||
-					(node.Value.Vertex.Flags & TaxiPathNodeFlags.IsTeleport) != 0;
+			    bool teleport = (node.Value.Vertex.MapId != prevNode.Value.Vertex.MapId) ||
+			                    node.Value.Vertex.Flags.HasFlag(TaxiPathNodeFlags.IsTeleport);
 
 				var pathVertice = new TransportPathVertex
 				{
@@ -198,7 +198,7 @@ namespace WCell.RealmServer.Entities
 
 			while (currentNode != pathStop && currentNode != null)
 			{
-				if ((currentNode.Value.Vertex.Flags & TaxiPathNodeFlags.IsTeleport) != 0)
+				if (currentNode.Value.Vertex.Flags.HasFlag(TaxiPathNodeFlags.IsTeleport))
 					distance = 0;
 				else
 					distance += currentNode.Value.Vertex.DistFromPrevious;
@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Entities
 
 				currentNode.Value.DistToLastStop = distance;
 
-				if ((currentNode.Value.Vertex.Flags & TaxiPathNodeFlags.IsTeleport) != 0)
+				if (currentNode.Value.Vertex.Flags.HasFlag(TaxiPathNodeFlags.IsTeleport))
 					distance = 0;
 
 				currentNode = currentNode.Previous ?? tempVertices.Last;

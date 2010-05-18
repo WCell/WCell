@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsModalAura =
-				AttributesExB.Has(SpellAttributesExB.AutoRepeat);
+                AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
 			if (IsAura)
 			{

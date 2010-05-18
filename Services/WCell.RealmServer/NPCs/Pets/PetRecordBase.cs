@@ -153,7 +153,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		public bool IsStabled
 		{
-			get { return Flags.Has(PetFlags.Stabled); }
+            get { return Flags.HasFlag(PetFlags.Stabled); }
 			set
 			{
 				if (value)

@@ -87,8 +87,8 @@ namespace WCell.RealmServer.Factions
 			Id = entry.Id;
 			ReputationIndex = entry.FactionIndex;
 
-		    IsAlliance = template.FactionGroup.Has(FactionGroupMask.Alliance);
-		    IsHorde = template.FactionGroup.Has(FactionGroupMask.Horde);
+            IsAlliance = template.FactionGroup.HasFlag(FactionGroupMask.Alliance);
+		    IsHorde = template.FactionGroup.HasFlag(FactionGroupMask.Horde);
 		}
 
 		internal void Init()
@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Factions
 				var faction = FactionMgr.ByTemplateId[i];
 				if (faction != null)
 				{
-                    if (Template.FriendGroup.Has(faction.Template.FactionGroup))
+                    if (Template.FriendGroup.HasFlag(faction.Template.FactionGroup))
                     {
                         Friends.Add(faction);
                         if (IsPlayer && faction.Template.EnemyGroup != 0)
@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Factions
 			{
 				if (faction != null)
 				{
-					if (Template.EnemyGroup.Has(faction.Template.FactionGroup))
+                    if (Template.EnemyGroup.HasFlag(faction.Template.FactionGroup))
 					{
 						Enemies.Add(faction);
 						if (IsPlayer && faction.Template.EnemyGroup != 0)
@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Factions
             }
 
             // Fall back to a general check
-            return Template.EnemyGroup.Has(otherFaction.Template.FactionGroup);
+            return Template.EnemyGroup.HasFlag(otherFaction.Template.FactionGroup);
         }
 
         public bool IsFriendlyTowards(Faction otherFaction)
@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Factions
             }
 
             // Fall back to a general check
-            return Template.FriendGroup.Has(otherFaction.Template.FactionGroup);
+            return Template.FriendGroup.HasFlag(otherFaction.Template.FactionGroup);
         }
 
 

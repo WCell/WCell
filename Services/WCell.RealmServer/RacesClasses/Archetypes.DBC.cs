@@ -38,8 +38,8 @@ namespace WCell.RealmServer.RacesClasses
 		{
 			var raceClassGender = GetUInt32(rawData, 1);
 			var race = (RaceId)(raceClassGender & 0xFF);
-			var clss = (ClassId)((raceClassGender & 0xFFFF) / 0xFF);
-			var gender = (GenderType)((raceClassGender & 0xFFFFFF) / 0xFFFF);
+		    var clss = (ClassId) ((raceClassGender & 0xFF00) >> 8);
+		    var gender = (GenderType) ((raceClassGender & 0xFF0000) >> 16);
 
 			var archetype = ArchetypeMgr.GetArchetype(race, clss);
 			if (archetype == null)

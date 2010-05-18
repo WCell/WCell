@@ -561,7 +561,7 @@ namespace WCell.RealmServer.Spells
 				selected = Caster;
 			}
 			// 0x18A02
-			if (TargetFlags.Has(
+            if (TargetFlags.HasFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
 				SpellTargetFlags.Object |
@@ -582,7 +582,7 @@ namespace WCell.RealmServer.Spells
 				TargetLoc = selected.Position;
 			}
 			// 0x1010
-			if (Caster is Character && TargetFlags.Has(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+            if (Caster is Character && TargetFlags.HasFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				var uid = packet.ReadPackedEntityId();
 				UsedItem = ((Character)Caster).Inventory.GetItem(uid);
@@ -593,13 +593,13 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x20
-			if (TargetFlags.Has(SpellTargetFlags.SourceLocation))
+            if (TargetFlags.HasFlag(SpellTargetFlags.SourceLocation))
 			{
 				region.GetObject(packet.ReadPackedEntityId());		// since 3.2.0
 				SourceLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
 			}
 			// 0x40
-			if (TargetFlags.Has(SpellTargetFlags.DestinationLocation))
+            if (TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
 			{
 				selected = region.GetObject(packet.ReadPackedEntityId());
 				TargetLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
@@ -607,7 +607,7 @@ namespace WCell.RealmServer.Spells
 				targetFound = true;
 			}
 			// 0x2000
-			if (TargetFlags.Has(SpellTargetFlags.String))
+            if (TargetFlags.HasFlag(SpellTargetFlags.String))
 			{
 				StringTarget = packet.ReadCString();
 			}
@@ -782,13 +782,13 @@ namespace WCell.RealmServer.Spells
 				// don't sit on a ride (even if you try to, the Client will show you dismounted - maybe add auto-remount for GodMode)
 				var spell = m_spell;
 
-				if (!spell.Attributes.Has(SpellAttributes.CastableWhileMounted))
+                if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileMounted))
 				{
 					CasterUnit.Dismount();
 				}
 
 				// make sure, the Caster is standing
-				if (!spell.Attributes.Has(SpellAttributes.CastableWhileSitting))
+                if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileSitting))
 				{
 					CasterUnit.StandState = StandState.Stand;
 				}
@@ -1155,7 +1155,7 @@ namespace WCell.RealmServer.Spells
 					return CastMissReason.Evade;
 				}
 
-				if (!spell.Attributes.Has(SpellAttributes.UnaffectedByInvulnerability) ||
+                if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
 					(target is Character && ((Character)target).Role.IsStaff))
 				{
 					if (target.IsInvulnerable)
@@ -1179,7 +1179,7 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				if (target.CheckResist(CasterUnit, target.GetLeastResistant(spell), spell.Mechanic) && !spell.AttributesExB.Has(SpellAttributesExB.CannotBeResisted))
+                if (target.CheckResist(CasterUnit, target.GetLeastResistant(spell), spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
 				{
 					return CastMissReason.Resist;
 				}
@@ -1212,7 +1212,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// check for interruption
-			if (m_spell.InterruptFlags.Has(InterruptFlags.OnTakeDamage))
+            if (m_spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 			{
 				Cancel();
 			}

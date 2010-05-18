@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var vendorId = packet.ReadEntityId();
 			var npc = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
-			if (npc != null && npc.NPCFlags.Has(NPCFlags.Petitioner))
+            if (npc != null && npc.NPCFlags.HasFlag(NPCFlags.Petitioner))
 			{
 				npc.SendPetitionList(client.ActiveCharacter);
 			}

@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 			#endregion
 
 			#region Spline Info
-			if (MovementFlags.Has(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
 			{
 				// TODO: Write spline flags
 				//var splineFlags = SplineFlags.None;
@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Entities
 		protected override void WriteTypeSpecificMovementUpdate(PrimitiveWriter writer, UpdateFieldFlags relation, UpdateFlags updateFlags)
 		{
 			// Probably specific to Unit
-			if (updateFlags.Has(UpdateFlags.AttackingTarget))
+            if (updateFlags.HasFlag(UpdateFlags.AttackingTarget))
 			{
 				writer.Write((byte)0); // pguid
 			}
@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Entities
 			var moveFlags = MovementFlags;
 			var moveFlags2 = MovementFlags2;
 
-            if (moveFlags.Has(MovementFlags.OnTransport) && TransportInfo == null)
+            if (moveFlags.HasFlag(MovementFlags.OnTransport) && TransportInfo == null)
             {
                 // should never happen
                 moveFlags ^= MovementFlags.OnTransport;
@@ -145,7 +145,7 @@ namespace WCell.RealmServer.Entities
 			packet.Write(pos.Z);
 			packet.Write(orientation);
 
-			if (moveFlags.Has(MovementFlags.OnTransport))
+            if (moveFlags.HasFlag(MovementFlags.OnTransport))
 			{
 // ReSharper disable PossibleNullReferenceException
 				TransportInfo.EntityId.WritePacked(packet);
@@ -158,15 +158,15 @@ namespace WCell.RealmServer.Entities
 				packet.Write(TransportSeat);
 			}
 
-			if (moveFlags.Has(MovementFlags.Swimming | MovementFlags.Flying) ||
-				moveFlags2.Has(MovementFlags2.AlwaysAllowPitching))
+            if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+                moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				packet.Write(PitchRate);
 			}
 
 			packet.Write(0); // air time
 
-			if (moveFlags.Has(MovementFlags.Falling))
+            if (moveFlags.HasFlag(MovementFlags.Falling))
 			{
 				// yet somewhat unknown values (Client sends them)
 				packet.Write(0f);
@@ -175,7 +175,7 @@ namespace WCell.RealmServer.Entities
 				packet.Write(1f);
 			}
 
-			if (moveFlags.Has(MovementFlags.Spline))
+            if (moveFlags.HasFlag(MovementFlags.Spline))
 			{
 				packet.Write(0.0f);
 			}

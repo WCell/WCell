@@ -184,7 +184,7 @@ namespace WCell.Tools.Spells
 				}
 
 				var clss = spell.ClassId;
-				if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.Has(clss))
+                if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.HasFlag(clss))
 				{
 					if (spell.SpellId.ToString().Contains("_"))
 					{

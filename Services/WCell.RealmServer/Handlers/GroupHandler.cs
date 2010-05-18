@@ -678,44 +678,44 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((uint)flags);
 
 				var chr = member.Character;
-				if ((flags & GroupUpdateFlags.Status) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Status))
 				{
 					packet.Write((ushort)chr.Status);
 				}
-				if ((flags & GroupUpdateFlags.Health) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Health))
 				{
 					packet.Write(chr.Health);
 				}
-				if ((flags & GroupUpdateFlags.MaxHealth) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.MaxHealth))
 				{
 					packet.Write(chr.MaxHealth);
 				}
-				if ((flags & GroupUpdateFlags.PowerType) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PowerType))
 				{
 					packet.Write((byte)chr.PowerType);
 				}
-				if ((flags & GroupUpdateFlags.Power) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Power))
 				{
 					packet.Write((ushort)chr.Power);
 				}
-				if ((flags & GroupUpdateFlags.MaxPower) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.MaxPower))
 				{
 					packet.Write((ushort)chr.MaxPower);
 				}
-				if ((flags & GroupUpdateFlags.Level) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Level))
 				{
 					packet.Write((ushort)chr.Level);
 				}
-				if ((flags & GroupUpdateFlags.ZoneId) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.ZoneId))
 				{
 					packet.Write((ushort)(chr.Zone != null ? chr.Zone.Id : ZoneId.None));
 				}
-				if ((flags & GroupUpdateFlags.Position) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Position))
 				{
 					packet.Write((ushort)chr.Position.X);
 					packet.Write((ushort)chr.Position.Y);
 				}
-				if ((flags & GroupUpdateFlags.Auras) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.Auras))
 				{
 					ulong auraMask = chr.AuraUpdateMask;
 					packet.Write(auraMask);
@@ -743,47 +743,47 @@ namespace WCell.RealmServer.Handlers
 					return;
 				}
 
-				if ((flags & GroupUpdateFlags.PetGuid) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetGuid))
 				{
 					packet.Write(targetPet.EntityId);
 				}
 
-				if ((flags & GroupUpdateFlags.PetName) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetName))
 				{
 					packet.WriteCString(targetPet.Name);
 				}
 
-				if ((flags & GroupUpdateFlags.PetDisplayId) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetDisplayId))
 				{
 					packet.Write((ushort)targetPet.DisplayId);
 				}
 
-				if ((flags & GroupUpdateFlags.PetHealth) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetHealth))
 				{
 					packet.Write(targetPet.Health);
 				}
 
-				if ((flags & GroupUpdateFlags.PetMaxHealth) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetMaxHealth))
 				{
 					packet.Write(targetPet.MaxHealth);
 				}
 
-				if ((flags & GroupUpdateFlags.PetPowerType) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetPowerType))
 				{
 					packet.Write((byte)targetPet.PowerType);
 				}
 
-				if ((flags & GroupUpdateFlags.PetPower) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetPower))
 				{
 					packet.Write((ushort)targetPet.Power);
 				}
 
-				if ((flags & GroupUpdateFlags.PetMaxPower) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetMaxPower))
 				{
 					packet.Write((ushort)targetPet.MaxPower);
 				}
 
-				if ((flags & GroupUpdateFlags.PetAuras) != GroupUpdateFlags.None)
+				if (flags.HasFlag(GroupUpdateFlags.PetAuras))
 				{
 					ulong auraMask = targetPet.AuraUpdateMask;
 					packet.Write(auraMask);

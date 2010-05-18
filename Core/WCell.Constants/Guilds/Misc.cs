@@ -186,17 +186,4 @@ namespace WCell.Constants.Guilds
 		Unknown1 = 8,
 		Unknown2 = 9
 	}
-
-	public static class _GuildEnumExtensions
-	{
-		public static bool HasFlag(this GuildPrivileges flags, GuildPrivileges toCheck)
-		{
-			return (flags & toCheck) != GuildPrivileges.EMPTY;
-		}
-
-		public static bool HasFlag(this GuildBankTabPrivileges flags, GuildBankTabPrivileges toCheck)
-		{
-			return (flags & toCheck) != GuildBankTabPrivileges.None;
-		}
-	}
 }

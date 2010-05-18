@@ -143,7 +143,7 @@ namespace WCell.RealmServer.Groups
 					{
 						foreach (var member in GetCharacters())
 						{
-							if (Flags.Has(GroupFlags.Raid))
+                            if (Flags.HasFlag(GroupFlags.Raid))
 							{
 								InstanceHandler.SendDungeonDifficulty(member);
 							}
@@ -883,7 +883,7 @@ namespace WCell.RealmServer.Groups
 							packet.Write(IsBattleGroup); //Is BG Group ?? : 0 == false, 1 == true;
 							packet.Write(groupUnit.Id);
 							packet.Write((byte)member.Flags);
-							if ((Flags & GroupFlags.LFD) != 0)		// since 3.3
+							if (Flags.HasFlag(GroupFlags.LFD))		// since 3.3
 							{
 								packet.Write((byte)0);
 								packet.Write(0);

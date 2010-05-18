@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Handlers
             var bm = chr.Region.GetObject(bmId) as NPC;
 
             if (bm != null &&
-                bm.NPCFlags.And(NPCFlags.BattleMaster)
+                bm.NPCFlags.HasFlag(NPCFlags.BattleMaster)
                 // && bm.CanInteractWith(chr)
                 )
             {

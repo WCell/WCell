@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.Login;
 using WCell.Constants.World;
 using WCell.Core.DBC;
 using WCell.RealmServer.Entities;
@@ -107,7 +108,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public bool IsArena
 		{
-			get { return (Flags & ZoneFlags.Arena) != ZoneFlags.None; }
+			get { return Flags.HasFlag(ZoneFlags.Arena); }
 		}
 
 		/// <summary>
@@ -115,7 +116,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public bool IsSanctuary
 		{
-			get { return Flags.And(ZoneFlags.Sanctuary); }
+            get { return Flags.HasFlag(ZoneFlags.Sanctuary); }
 		}
 
 		/// <summary>
@@ -123,7 +124,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public bool IsCity
 		{
-			get { return Flags.And(ZoneFlags.CapitalCity); }
+            get { return Flags.HasFlag(ZoneFlags.CapitalCity); }
 		}
 
 		/// <summary>
@@ -133,11 +134,12 @@ namespace WCell.RealmServer.Global
 		/// <returns>Whether or not to set the PvP flag.</returns>
 		public bool IsHostileTo(Character chr)
 		{
-			return ((IsArena) ||
-					(IsPvP) ||
-					(RealmServerConfiguration.ServerType.IsPvP() && Ownership == FactionGroupMask.None ||
-					(chr.FactionGroup == FactionGroup.Alliance && Ownership == FactionGroupMask.Horde) ||
-					(chr.FactionGroup == FactionGroup.Horde && Ownership == FactionGroupMask.Alliance)));
+		    return ((IsArena) ||
+		            (IsPvP) ||
+		            (RealmServerConfiguration.ServerType.HasFlag(RealmServerType.PVP | RealmServerType.RPPVP) &&
+		             Ownership == FactionGroupMask.None ||
+		             (chr.FactionGroup == FactionGroup.Alliance && Ownership == FactionGroupMask.Horde) ||
+		             (chr.FactionGroup == FactionGroup.Horde && Ownership == FactionGroupMask.Alliance)));
 		}
 
 		#region Events
