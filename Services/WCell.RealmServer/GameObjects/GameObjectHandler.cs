@@ -92,7 +92,7 @@ namespace WCell.RealmServer.GameObjects
 			}
 
 			// can't use objects that are in use
-			if ((m_go.Flags & GameObjectFlags.InUse) != 0)
+			if (m_go.Flags.HasFlag(GameObjectFlags.InUse))
 			{
 				return false;
 			}

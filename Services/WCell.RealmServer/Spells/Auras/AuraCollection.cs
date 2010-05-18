@@ -608,7 +608,7 @@ namespace WCell.RealmServer.Spells.Auras
 			//Aura[] auras = m_nonPassiveAuras.ToArray();
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && (aura.Spell.AuraInterruptFlags & interruptFlag) != 0)
+				if (aura != null && aura.Spell.AuraInterruptFlags.HasFlag(interruptFlag))
 				{
 					aura.Remove(true);
 				}
@@ -888,7 +888,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null &&
 					aura != GhostAura &&
-					!aura.Spell.AttributesExC.Has(SpellAttributesExC.HonorlessTarget) &&
+					!aura.Spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
 					!aura.CasterInfo.IsItem &&
 					(!aura.HasTimeout || aura.TimeLeft > 20000)
 					)

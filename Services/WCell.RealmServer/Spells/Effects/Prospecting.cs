@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if ((m_cast.UsedItem.Template.Flags & ItemFlags.Prospectable) == 0)
+			if (!m_cast.UsedItem.Template.Flags.HasFlag(ItemFlags.Prospectable))
 			{
 				failReason = SpellFailedReason.CantBeProspected;
 			}

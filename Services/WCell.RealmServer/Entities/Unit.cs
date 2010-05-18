@@ -807,7 +807,7 @@ namespace WCell.RealmServer.Entities
 				critChance = (GetSpellCritChance((DamageSchool)effect.Spell.SchoolMask) * 100);
 
 				// do a critcheck
-				if (!effect.Spell.AttributesExB.Has(SpellAttributesExB.CannotCrit) && critChance != 0)
+                if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
 				{
 					var roll = Utility.Random(1f, 101);
 
@@ -1591,7 +1591,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public void Proc(ProcTriggerFlags flags, Unit triggerer, IUnitAction action, bool active)
 		{
-			if (m_brain != null && m_brain.CurrentAction != null && (m_brain.CurrentAction.InterruptFlags & flags) != 0)
+			if (m_brain != null && m_brain.CurrentAction != null && m_brain.CurrentAction.InterruptFlags.HasFlag(flags))
 			{
 				// check if the current action has been interrupted
 				m_brain.StopCurrentAction();
@@ -1602,7 +1602,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			if (flags.And(ProcTriggerFlags.GainExperience) && !YieldsXpOrHonor)
+            if (flags.HasFlag(ProcTriggerFlags.GainExperience) && !YieldsXpOrHonor)
 			{
 				flags ^= ProcTriggerFlags.GainExperience;
 			}
@@ -1621,7 +1621,7 @@ namespace WCell.RealmServer.Entities
 			for (var i = 0; i < m_procHandlers.Count; i++)
 			{
 				var proc = m_procHandlers[i];
-				if ((proc.ProcTriggerFlags & flags) != 0 &&
+				if (proc.ProcTriggerFlags.HasFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					if (Utility.Random(0, 101) <= proc.ProcChance)

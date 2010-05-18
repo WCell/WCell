@@ -459,7 +459,7 @@ namespace WCell.RealmServer.Items
 		internal InventoryError CheckEquipCount(IMountableItem mountItem)
 		{
 			var templ = mountItem.Template;
-			if ((templ.Flags & ItemFlags.UniqueEquipped) != 0)
+			if (templ.Flags.HasFlag(ItemFlags.UniqueEquipped))
 			{
 				// may only equip a certain maximum of this item
 				foreach (var slot in templ.EquipmentSlots)
@@ -489,7 +489,7 @@ namespace WCell.RealmServer.Items
 
 		internal bool CheckEquippedGems(ItemTemplate gemTempl)
 		{
-			if (gemTempl != null && (gemTempl.Flags & ItemFlags.UniqueEquipped) != 0)
+			if (gemTempl != null && gemTempl.Flags.HasFlag(ItemFlags.UniqueEquipped))
 			{
 				// may only equip a certain maximum of this kind of gem
 				for (var slot = EquipmentSlot.Head; slot < EquipmentSlot.Bag1; slot++)
