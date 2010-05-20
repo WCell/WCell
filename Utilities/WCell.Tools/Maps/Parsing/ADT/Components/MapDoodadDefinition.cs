@@ -7,7 +7,7 @@ using WCell.Util.Graphics;
 namespace WCell.Tools.Maps
 {
     /// <summary>
-    /// MDDF Chunk Class - Placement information for M2 Models
+    /// MDDF Chunk Class - Placement information for M2 Models on map tiles
     /// </summary>
     public class MapDoodadDefinition
     {

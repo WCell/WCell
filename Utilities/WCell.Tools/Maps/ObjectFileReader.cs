@@ -22,6 +22,7 @@ namespace WCell.Tools.Maps
 		[Tool]
 		public static void ViewRegionBuildings()
 		{
+            // Debug constraints here
 			var regionBuildings = ReadRegionBuildings(MapId.EasternKingdoms);
 			var buildings = regionBuildings.ObjectsByTile[36, 49];
 
@@ -73,6 +74,7 @@ namespace WCell.Tools.Maps
 			{
 				for (var tileX = 0; tileX < max; tileX++)
 				{
+                    // Debug constraints here
 					if (tileX != 36) continue;
 					if (tileY != 49) continue;
 
@@ -126,9 +128,9 @@ namespace WCell.Tools.Maps
 		{
 			var building = new WMO
 			{
-				Bounds = reader.ReadPackedBoundingBox(),
-				RotationModelY = reader.ReadPackedFloat(),
-				WorldPos = reader.ReadPackedVector3()
+				Bounds = reader.ReadBoundingBox(),
+				RotationModelY = reader.ReadSingle(),
+				WorldPos = reader.ReadVector3()
 			};
 
 			WMOSubGroup[] groups;
@@ -154,7 +156,7 @@ namespace WCell.Tools.Maps
 		{
 			var group = new WMOSubGroup
 			{
-				Bounds = reader.ReadPackedBoundingBox()
+				Bounds = reader.ReadBoundingBox()
 			};
 
 			Vector3[] vertices;
@@ -164,7 +166,7 @@ namespace WCell.Tools.Maps
 				vertices = new Vector3[numVerts];
 				for (var i = 0; i < numVerts; i++)
 				{
-					vertices[i] = reader.ReadPackedVector3();
+					vertices[i] = reader.ReadVector3();
 				}
 			}
 			else
@@ -206,7 +208,7 @@ namespace WCell.Tools.Maps
 				flags = ((BSPNodeFlags)reader.ReadByte()),
 				negChild = reader.ReadInt16(),
 				posChild = reader.ReadInt16(),
-				planeDist = reader.ReadPackedFloat()
+				planeDist = reader.ReadSingle()
 			};
 
 			var numIndices = reader.ReadUInt16();

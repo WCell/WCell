@@ -53,6 +53,13 @@ namespace WCell.Collision
             return (result < tMax) ? result : null;
         }
 
+        /// <summary>
+        /// Determines the earliest point of intersection between a ray and this Building.
+        /// </summary>
+        /// <param name="ray">The Ray to test against.</param>
+        /// <param name="tMax">The earliest point of intersection (tmax*Ray.Direction + Ray.Position)</param>
+        /// <param name="intersection">The vectorized point of first intersection</param>
+        /// <returns></returns>
         public float? IntersectsWith(ref Ray ray, ref float tMax, out Vector3 intersection)
         {
             intersection = Vector3.Zero;
@@ -82,6 +89,11 @@ namespace WCell.Collision
             return result < tMax ? result : null;
         }
 
+        /// <summary>
+        /// Transforms a Ray in World Coords into Building-space coords
+        /// </summary>
+        /// <param name="ray">A ray in World Coordinates</param>
+        /// <returns>A Ray in Building Coords</returns>
         private Ray GetLocalRay(ref Ray ray)
         {
             var localRayPos = ReCenter(ray.Position);
@@ -93,6 +105,11 @@ namespace WCell.Collision
             return new Ray(localRayPos, localRayDir);
         }
 
+        /// <summary>
+        /// Re-centers a vector relative to the World center to the Building center
+        /// </summary>
+        /// <param name="vec">A vector relative to the World center</param>
+        /// <returns>A vector relative to the building center</returns>
         private Vector3 ReCenter(Vector3 vec)
         {
             return vec - Center;
