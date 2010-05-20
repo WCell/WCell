@@ -65,7 +65,7 @@ namespace WCell.Tools.Maps
 			var objs = new RegionObjects<O>();
 
 			if (wdt == null) return null;
-			if ((wdt.Header.Header1 & WDTFlags.GlobalWMO) != 0)
+			if (wdt.Header.Header1.HasFlag(WDTFlags.GlobalWMO))
 			{
 				objs.HasTiles = false;
 				// No terrain, load the global WMO
@@ -224,11 +224,15 @@ namespace WCell.Tools.Maps
 			return m2model;
 		}
 
-		private static M2Object TransformM2Model(MapDoodadDefinition definition, M2Model m2model)
+        /// <summary>
+        /// Transforms an M2s vertices into World Coordinates
+        /// This function is for M2s present on the world map
+        /// </summary>
+        private static M2Object TransformM2Model(MapDoodadDefinition definition, M2Model m2Model)
 		{
 			var model = new M2Object
 			{
-				Vertices = new Vector3[m2model.BoundingVertices.Length]
+				Vertices = new Vector3[m2Model.BoundingVertices.Length]
 			};
 
 			// Rotate
@@ -241,7 +245,7 @@ namespace WCell.Tools.Maps
 			for (var i = 0; i < model.Vertices.Length; i++)
 			{
 				// Reverse the previos coord transform for the rotation.
-				var vector = TransformToIntermediateCoords(m2model.BoundingVertices[i]);
+				var vector = TransformToIntermediateCoords(m2Model.BoundingVertices[i]);
 
 				// Create the rotation matrices
 				var rotateX = Matrix.CreateRotationX(definition.OrientationC * RadiansPerDegree);
@@ -261,10 +265,10 @@ namespace WCell.Tools.Maps
 
 
 			// Add the triangle indices to the model
-			model.Triangles = new Index3[m2model.BoundingTriangles.Length];
-			for (var i = 0; i < m2model.BoundingTriangles.Length; i++)
+			model.Triangles = new Index3[m2Model.BoundingTriangles.Length];
+			for (var i = 0; i < m2Model.BoundingTriangles.Length; i++)
 			{
-				var tri = m2model.BoundingTriangles[i];
+				var tri = m2Model.BoundingTriangles[i];
 				model.Triangles[i] = new Index3
 				{
 					Index0 = (short)tri[2],
@@ -279,20 +283,24 @@ namespace WCell.Tools.Maps
 			return model;
 		}
 
-		private static M2Object TransformM2Model(MapObjectDefinition wmo, DoodadDefinition definition, M2Model m2model)
+        /// <summary>
+        /// Transforms an M2s vertices into Building Coordinates
+        /// This function is for M2s which decorate buildings
+        /// </summary>
+        private static M2Object TransformM2Model(MapObjectDefinition wmo, DoodadDefinition definition, M2Model m2Model)
 		{
 			var model = new M2Object
 			{
-				Vertices = new Vector3[m2model.BoundingVertices.Length]
+				Vertices = new Vector3[m2Model.BoundingVertices.Length]
 			};
 
 			var origin = new Vector3(-definition.Position.X, definition.Position.Z, definition.Position.Y);
 			var wmoOrigin = CorrectWMOOrigin(wmo.Position);
 			var rotation = definition.Rotation;
 			var rotateY = Matrix.CreateRotationY((wmo.OrientationB - 90) * RadiansPerDegree);
-			for (var i = 0; i < m2model.BoundingVertices.Length; i++)
+			for (var i = 0; i < m2Model.BoundingVertices.Length; i++)
 			{
-				var vector = m2model.BoundingVertices[i];
+				var vector = m2Model.BoundingVertices[i];
 				var rotatedVector = Vector3.Transform(vector, rotation);
 				rotatedVector = TransformToIntermediateCoords(rotatedVector);
 				var finalModelVector = rotatedVector + origin;
@@ -304,10 +312,10 @@ namespace WCell.Tools.Maps
 			}
 
 			// Add the triangle indices to the model
-			model.Triangles = new Index3[m2model.BoundingTriangles.Length];
-			for (var i = 0; i < m2model.BoundingTriangles.Length; i++)
+			model.Triangles = new Index3[m2Model.BoundingTriangles.Length];
+			for (var i = 0; i < m2Model.BoundingTriangles.Length; i++)
 			{
-				var tri = m2model.BoundingTriangles[i];
+				var tri = m2Model.BoundingTriangles[i];
 				model.Triangles[i] = new Index3
 				{
 					Index0 = (short)tri[2],
@@ -341,7 +349,7 @@ namespace WCell.Tools.Maps
 		#endregion
 
 		#region M2 Write
-		private static void WriteTileM2s(Stream file, TileObjects<M2Object> models)
+		private static void WriteTileM2s(Stream file, ICollection<M2Object> models)
 		{
 			if (models == null)
 			{
@@ -664,7 +672,7 @@ namespace WCell.Tools.Maps
 				return;
 			}
 
-			// Pack and store the Group's Bounds
+			// Store the Group's Bounds
 			writer.Write(buildingGroup.Bounds);
 
 			writer.Write(buildingGroup.Vertices.Length);
