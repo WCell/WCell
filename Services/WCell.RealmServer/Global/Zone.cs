@@ -17,6 +17,7 @@
 using System;
 using WCell.Constants;
 using WCell.Constants.Factions;
+using WCell.Constants.Login;
 using WCell.Constants.World;
 using WCell.Core.DBC;
 using WCell.RealmServer.Entities;
@@ -155,7 +156,7 @@ namespace WCell.RealmServer.Global
 
 			// update PvPState
 			var isBg = Region.IsBattleground;
-			if (RealmServerConfiguration.ServerType.IsPvP() || isBg)
+			if (RealmServerConfiguration.ServerType.HasFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
 			{
 				if (isBg || Info.IsHostileTo(chr))
 				{
@@ -213,9 +214,9 @@ namespace WCell.RealmServer.Global
 			var alliance = ChatChannelGroup.Alliance;
 			var horde = ChatChannelGroup.Horde;
 
-			if (!Info.Flags.And(ZoneFlags.Arena))
+            if (!Info.Flags.HasFlag(ZoneFlags.Arena))
 			{
-				if (!Info.Flags.And(ZoneFlags.AlwaysContested))
+                if (!Info.Flags.HasFlag(ZoneFlags.AlwaysContested))
 				{
 					AllianceChatChannels.Add(m_allianceLocalDefenseChannel = alliance.CreateLocalDefenseChannel(Info));
 					HordeChatChannels.Add(m_hordeLocalDefenseChannel = horde.CreateLocalDefenseChannel(Info));

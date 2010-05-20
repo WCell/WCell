@@ -216,7 +216,7 @@ namespace WCell.RealmServer.Entities
 
 		protected override void WriteMovementUpdate(PrimitiveWriter packet, UpdateFieldFlags relation)
 		{
-            if (UpdateFlags.Has(UpdateFlags.StationaryObjectOnTransport))
+            if (UpdateFlags.HasFlag(UpdateFlags.StationaryObjectOnTransport))
             {
                 // corpses had this, but seemed to just send their own info for both
                 EntityId.Zero.WritePacked(packet);
@@ -225,7 +225,7 @@ namespace WCell.RealmServer.Entities
                 packet.Write(Orientation);
                 packet.Write(Orientation);
             }
-            else if (UpdateFlags.Has(UpdateFlags.StationaryObject))
+            else if (UpdateFlags.HasFlag(UpdateFlags.StationaryObject))
             {
                 #region UpdateFlag.Flag_0x40 (StationaryObject)
 

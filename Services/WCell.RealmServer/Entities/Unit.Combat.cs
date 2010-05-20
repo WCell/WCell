@@ -348,7 +348,7 @@ namespace WCell.RealmServer.Entities
 				{
 					// single target
 					if (!action.DoAttack() &&
-						ability.Spell.AttributesExC.Has(SpellAttributesExC.RequiresTwoWeapons))
+                        ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
 					{
 						// missed and is not attacking with both weapons -> don't trigger spell
 						CancelPendingAbility();
@@ -437,7 +437,7 @@ namespace WCell.RealmServer.Entities
 			{
 				action.Damage = attacker.AddDamageMods(dmg, action.SpellEffect, action.UsedSchool);
 
-				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.Has(SpellAttributesExB.CannotCrit) &&
+                if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, resChance, effect.Spell) > Utility.Random(0f, 100f))
 				{
 					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
@@ -1108,7 +1108,7 @@ namespace WCell.RealmServer.Entities
 						// Pushback SpellCast
 						if (IsUsingSpell)
 						{
-							if (SpellCast.Spell.InterruptFlags.Has(InterruptFlags.OnTakeDamage))
+                            if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 							{
 								SpellCast.Cancel();
 							}

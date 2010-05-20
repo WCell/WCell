@@ -125,7 +125,7 @@ namespace WCell.RealmServer.Misc
 			get
 			{
 				return Weapon != null && SpellEffect != null &&
-					SpellEffect.Spell.AttributesExB.Has(SpellAttributesExB.AutoRepeat);
+                    SpellEffect.Spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 			}
 		}
 
@@ -139,7 +139,7 @@ namespace WCell.RealmServer.Misc
 
 	    public bool CanDodge
 	    {
-	        get { return SpellEffect == null || !SpellEffect.Spell.Attributes.Has(SpellAttributes.CannotDodgeBlockParry); }
+            get { return SpellEffect == null || !SpellEffect.Spell.Attributes.HasFlag(SpellAttributes.CannotDodgeBlockParry); }
 	    }
 
 	    public bool CanBlockParry
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Misc
 
 		public bool CanCrit
 		{
-			get { return (SpellEffect == null || !Spell.AttributesExB.Has(SpellAttributesExB.CannotCrit)); }
+            get { return (SpellEffect == null || !Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit)); }
 		}
 
 		public int ActualDamage

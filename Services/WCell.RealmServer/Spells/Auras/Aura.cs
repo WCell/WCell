@@ -224,7 +224,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool CanBeCancelled
 		{
-			get { return m_spell != null && m_beneficial && !m_spell.Attributes.Has(SpellAttributes.CannotRemove); }
+            get { return m_spell != null && m_beneficial && !m_spell.Attributes.HasFlag(SpellAttributes.CannotRemove); }
 		}
 
 		/// <summary>
@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				return !m_spell.IsPassive ||
-					m_spell.AttributesEx.Has(SpellAttributesEx.Negative) ||
+                    m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative) ||
 					m_casterInfo.Caster != m_auras.Owner;
 			}
 		}
@@ -684,7 +684,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			if (owner.EntityId == m_casterInfo.CasterId &&
-				(m_spell.Attributes & SpellAttributes.StartCooldownAfterEffectFade) != 0)
+				m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade))
 			{
 				if (owner is Character)
 				{
@@ -808,8 +808,8 @@ namespace WCell.RealmServer.Spells.Auras
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
 			var proced = false;
-			if (!m_spell.Attributes.Has(SpellAttributes.MovementImpairing) &&
-				!m_spell.AttributesEx.Has(SpellAttributesEx.Negative))
+            if (!m_spell.Attributes.HasFlag(SpellAttributes.MovementImpairing) &&
+                !m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative))
 			{
 				// normal proc trigger
 				var hasProcEffects = m_spell.ProcTriggerEffects != null;

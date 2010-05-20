@@ -343,7 +343,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(qt.FollowupQuestId);
 				pckt.Write(0);										// since 3.3
 
-				if ((qt.Flags & QuestFlags.HiddenRewards) != 0)
+				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
 					pckt.Write(0);
 				}
@@ -519,7 +519,7 @@ namespace WCell.RealmServer.Handlers
 					}
 				}
 
-				if ((qt.Flags & QuestFlags.HiddenRewards) != 0)
+				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
 					pckt.Write(0);
 				}

@@ -201,8 +201,8 @@ namespace WCell.RealmServer.Factions
             var entry = faction.Entry;
             for (int i = 0; i < 4; i++)
             {
-                if ((entry.ClassMask[i] == 0 || entry.ClassMask[i].Has(Owner.ClassMask)) &&
-                    (entry.RaceMask[i] == 0 || entry.RaceMask[i].Has(Owner.RaceMask)))
+                if ((entry.ClassMask[i] == 0 || entry.ClassMask[i].HasFlag(Owner.ClassMask)) &&
+                    (entry.RaceMask[i] == 0 || entry.RaceMask[i].HasFlag(Owner.RaceMask)))
                 {
                     return (ReputationFlags) entry.BaseFlags[i];
                 }
@@ -215,8 +215,8 @@ namespace WCell.RealmServer.Factions
             var entry = faction.Entry;
             for (int i = 0; i < 4; i++)
             {
-                if ((entry.ClassMask[i] == 0 || entry.ClassMask[i].Has(Owner.ClassMask)) &&
-                    (entry.RaceMask[i] == 0 || entry.RaceMask[i].Has(Owner.RaceMask)))
+                if ((entry.ClassMask[i] == 0 || entry.ClassMask[i].HasFlag(Owner.ClassMask)) &&
+                    (entry.RaceMask[i] == 0 || entry.RaceMask[i].HasFlag(Owner.RaceMask)))
                 {
                     return entry.BaseRepValue[i];
                 }

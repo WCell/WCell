@@ -186,7 +186,7 @@ namespace WCell.RealmServer.Entities
 
 			UpdateUnitState();
 
-			if ((m_entry.InhabitType & InhabitType.Air) != 0)
+			if (m_entry.InhabitType.HasFlag(InhabitType.Air))
 			{
 				Flying++;
 			}
@@ -905,7 +905,7 @@ namespace WCell.RealmServer.Entities
 		public bool CheckCreatureType(TargetCreatureMask mask)
 		{
 			var type = Entry.Type;
-			return (mask & (TargetCreatureMask)(1 << ((int)type - 1))) != 0;
+		    return mask.HasFlag((TargetCreatureMask) (1 << ((int) type - 1)));
 		}
 
 		internal void SetScale()
@@ -1352,7 +1352,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsPetitioner
 		{
-			get { return (NPCFlags & NPCFlags.Petitioner) != 0; }
+			get { return NPCFlags.HasFlag(NPCFlags.Petitioner); }
 		}
 
 		/// <summary>
@@ -1376,7 +1376,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsArenaPetitioner
 		{
-			get { return (NPCFlags & (NPCFlags.TabardDesigner | NPCFlags.Petitioner)) == NPCFlags.Petitioner; }
+			get { return NPCFlags.HasFlag(NPCFlags.Petitioner); }
 		}
 
 		#endregion

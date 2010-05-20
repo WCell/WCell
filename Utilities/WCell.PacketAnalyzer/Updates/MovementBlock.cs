@@ -106,8 +106,8 @@ namespace WCell.PacketAnalysis.Updates
 			writer.WriteLine(indent + "Timestamp: " + Timestamp);
 			writer.WriteLine(indent + "Position: " + Position);
 
-			if (MovementFlags.Has(MovementFlags.OnTransport) ||
-				UpdateFlags.Has(UpdateFlags.StationaryObjectOnTransport))
+            if (MovementFlags.HasFlag(MovementFlags.OnTransport) ||
+                UpdateFlags.HasFlag(UpdateFlags.StationaryObjectOnTransport))
 			{
 				writer.WriteLine(indent + "Transporter: " + TransporterId);
 				writer.WriteLine(indent + "TransporterPosition: " + TransporterPosition);
@@ -115,8 +115,8 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "TransportSeatPosition: " + TransportSeatPosition);
 			}
 
-			if (MovementFlags.Has(MovementFlags.Swimming | MovementFlags.Flying) ||
-				MovementFlags2.Has(MovementFlags2.AlwaysAllowPitching))
+            if (MovementFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+                MovementFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				writer.WriteLine(indent + "Pitch: " + Pitch);
 			}
@@ -126,7 +126,7 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "FallTime: " + FallTime);
 			}
 
-			if (MovementFlags.Has(MovementFlags.Falling))
+            if (MovementFlags.HasFlag(MovementFlags.Falling))
 			{
 				writer.WriteLine(indent + "FallFloat1: " + FallFloat1);
 				writer.WriteLine(indent + "FallFloat2: " + FallFloat2);
@@ -134,7 +134,7 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "FallFloat4: " + FallFloat4);
 			}
 
-			if (MovementFlags.Has(MovementFlags.Spline))
+            if (MovementFlags.HasFlag(MovementFlags.Spline))
 			{
 				writer.WriteLine(indent + "Spline0x4000000: " + Spline0x4000000);
 			}
@@ -144,39 +144,38 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "Speeds: " + Speeds);
 			}
 
-			if (MovementFlags.Has(MovementFlags.SplinePath))
+            if (MovementFlags.HasFlag(MovementFlags.SplinePath))
 			{
 				DumpSpline(indent, writer);
 			}
 
-			if ((UpdateFlags & UpdateFlags.Flag_0x8) != 0)
+			if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x8))
 			{
 				writer.WriteLine(indent + "Flag_0x8: " + Flag0x8);
 			}
 
-			if ((UpdateFlags & UpdateFlags.Flag_0x10) != 0)
+			if (UpdateFlags.HasFlag(UpdateFlags.Flag_0x10))
 			{
 				writer.WriteLine(indent + "Flag0x10: " + Flag0x10);
-				writer.WriteLine(indent + "Flag0x10F: " + Flag0x10F);
 			}
 
-			if ((UpdateFlags & UpdateFlags.AttackingTarget) != 0)
+			if (UpdateFlags.HasFlag(UpdateFlags.AttackingTarget))
 			{
 				writer.WriteLine(indent + "AttackingTarget: " + AttackingTarget);
 			}
 
-			if ((UpdateFlags & UpdateFlags.Transport) != 0)
+			if (UpdateFlags.HasFlag(UpdateFlags.Transport))
 			{
 				writer.WriteLine(indent + "TransportTimeSync: " + TransportTimeSync);
 			}
 
-			if ((UpdateFlags & UpdateFlags.Vehicle) != 0)
+			if (UpdateFlags.HasFlag(UpdateFlags.Vehicle))
 			{
 				writer.WriteLine(indent + "VehicleId: " + VehicleId);
 				writer.WriteLine(indent + "VehicleAimAdjustment: " + VehicleAimAdjustment);
 			}
 
-			if (UpdateFlags.Has(UpdateFlags.HasRotation))
+            if (UpdateFlags.HasFlag(UpdateFlags.HasRotation))
 			{
 				writer.WriteLine(indent + "Flag_0x200_Rotation: " + Flag0x200);
 			}
@@ -186,12 +185,12 @@ namespace WCell.PacketAnalysis.Updates
 		{
 			writer.WriteLine(indent + "SplineFlags: " + SplineFlags);
 
-			if (SplineFlags.Has(SplineFlags.XYZ | SplineFlags.Orientation))
+            if (SplineFlags.HasFlag(SplineFlags.XYZ | SplineFlags.Orientation))
 			{
 				writer.WriteLine(indent + "SplinePosition: " + SplinePosition);
 			}
 
-			if (SplineFlags.Has(SplineFlags.GUID))
+            if (SplineFlags.HasFlag(SplineFlags.GUID))
 			{
 				writer.WriteLine(indent + "SplineGuid: " + SplineId);
 			}
@@ -249,47 +248,47 @@ namespace WCell.PacketAnalysis.Updates
 		public static void Parse(this MovementBlock block)
 		{
 			// a world object will always be one of these.
-			if (block.UpdateFlags.Has(UpdateFlags.Living))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Living))
 			{
 				ParseLiving(block);
 			}
-			else if (block.UpdateFlags.Has(UpdateFlags.StationaryObjectOnTransport))
+            else if (block.UpdateFlags.HasFlag(UpdateFlags.StationaryObjectOnTransport))
 			{
 				ParseStationaryObjectOnTransport(block);
 			}
-			else if (block.UpdateFlags.Has(UpdateFlags.StationaryObject))
+            else if (block.UpdateFlags.HasFlag(UpdateFlags.StationaryObject))
 			{
 				ParseStationaryObject(block);
 			}
 
-			if (block.UpdateFlags.Has(UpdateFlags.Flag_0x8))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x8))
 			{
 				block.Flag0x8 = block.Update.ReadUInt();
 			}
 
-			if (block.UpdateFlags.Has(UpdateFlags.Flag_0x10))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Flag_0x10))
 			{
 				block.Flag0x10 = block.Update.ReadUInt();
 				block.Update.packet.index -= 4;
 				block.Flag0x10F = block.Update.ReadFloat();
 			}
 
-			if (block.UpdateFlags.Has(UpdateFlags.AttackingTarget))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.AttackingTarget))
 			{
 				block.AttackingTarget = block.Update.ReadPackedEntityId();
 			}
 
-			if (block.UpdateFlags.Has(UpdateFlags.Transport))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Transport))
 			{
 				block.TransportTimeSync = block.Update.ReadUInt();
 			}
 
-			if (block.UpdateFlags.Has(UpdateFlags.Vehicle))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.Vehicle))
 			{
 				block.VehicleId = block.Update.ReadUInt();
 				block.VehicleAimAdjustment = block.Update.ReadFloat();
 			}
-			if (block.UpdateFlags.Has(UpdateFlags.HasRotation))
+            if (block.UpdateFlags.HasFlag(UpdateFlags.HasRotation))
 			{
 				block.Flag0x200 = block.Update.ReadUInt64();
 			}
@@ -306,7 +305,7 @@ namespace WCell.PacketAnalysis.Updates
 			// Console.WriteLine("\tParsing Movement for {0}", block.UpdateFlags);
 
 			// Client checks for 0x200
-			if (block.MovementFlags.Has(MovementFlags.OnTransport))
+            if (block.MovementFlags.HasFlag(MovementFlags.OnTransport))
 			{
 				block.TransporterId = block.Update.ReadPackedEntityId();
 				block.TransporterPosition = block.Update.ReadVector4();
@@ -315,8 +314,8 @@ namespace WCell.PacketAnalysis.Updates
 			}
 
 			// Client checks for 0x2200000
-			if (block.MovementFlags.Has(MovementFlags.Swimming | MovementFlags.Flying) ||
-				block.MovementFlags2.Has(MovementFlags2.AlwaysAllowPitching))
+            if (block.MovementFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+                block.MovementFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				block.Pitch = block.Update.ReadFloat();
 			}
@@ -324,7 +323,7 @@ namespace WCell.PacketAnalysis.Updates
 			block.FallTime = block.Update.ReadUInt();
 
 			// Client checks for 0x1000
-			if (block.MovementFlags.Has(MovementFlags.Falling))
+            if (block.MovementFlags.HasFlag(MovementFlags.Falling))
 			{
 				// no idea
 				block.FallFloat1 = block.Update.ReadFloat();
@@ -334,7 +333,7 @@ namespace WCell.PacketAnalysis.Updates
 			}
 
 			// Client checks for 0x4000000
-			if (block.MovementFlags.Has(MovementFlags.Spline))
+            if (block.MovementFlags.HasFlag(MovementFlags.Spline))
 			{
 				block.Spline0x4000000 = block.Update.ReadFloat();
 			}
@@ -354,19 +353,19 @@ namespace WCell.PacketAnalysis.Updates
 			};
 
 
-			if (block.MovementFlags.Has(MovementFlags.SplinePath))
+            if (block.MovementFlags.HasFlag(MovementFlags.SplinePath))
 			{
 				block.SplineFlags = (SplineFlags)block.Update.ReadUInt();
 
-				if (block.SplineFlags.Has(SplineFlags.Orientation))
+                if (block.SplineFlags.HasFlag(SplineFlags.Orientation))
 				{
 					block.SplinePosition.W = block.Update.ReadFloat();
 				}
-				else if (block.SplineFlags.Has(SplineFlags.GUID))
+                else if (block.SplineFlags.HasFlag(SplineFlags.GUID))
 				{
 					block.SplineId = block.Update.ReadEntityId();
 				}
-				else if (block.SplineFlags.Has(SplineFlags.XYZ))
+                else if (block.SplineFlags.HasFlag(SplineFlags.XYZ))
 				{
 					block.SplinePosition = block.Update.ReadVector4NoO();
 				}

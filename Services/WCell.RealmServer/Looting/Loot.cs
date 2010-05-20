@@ -215,7 +215,7 @@ namespace WCell.RealmServer.Looting
 					// TODO: masterlooter
 					foreach (var item in Items)
 					{
-						if ((item.Template.Flags & ItemFlags.MultiLoot) != 0 ||
+						if (item.Template.Flags.HasFlag(ItemFlags.MultiLoot) ||
 							item.Template.Quality >= Threshold)
 						{
 							if (UsesRoundRobin)
@@ -229,7 +229,7 @@ namespace WCell.RealmServer.Looting
 							}
 						}
 
-						if ((item.Template.Flags & ItemFlags.MultiLoot) != 0)
+						if (item.Template.Flags.HasFlag(ItemFlags.MultiLoot))
 						{
 							item.AddMultiLooters(nearbyLooters);
 						}

@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells
 			if (spell.Mechanic != SpellMechanic.None &&
 						hostile == spell.Mechanic.IsNegative() &&
 						((spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
-						!spell.Attributes.Has(SpellAttributes.UnaffectedByInvulnerability) &&
+                        !spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
 						(target.IsImmune(SpellMechanic.Invulnerable_2) || target.IsImmune(SpellMechanic.Invulnerable))) ||
 						(target.IsImmune(spell.Mechanic) || target.IsImmune(spell.DispelType)))
 			{
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Spells
 		protected SpellFailedReason PrePerform()
 		{
 			// Make sure that there is an Item for Spells that require an Item target
-			if (m_spell.TargetFlags.Has(SpellTargetFlags.Item))
+            if (m_spell.TargetFlags.HasFlag(SpellTargetFlags.Item))
 			{
 				if (UsedItem == null || !UsedItem.IsInWorld || UsedItem.Owner != Caster)
 				{
@@ -256,13 +256,13 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// break stealth
-			if (Caster is Unit && !m_spell.AttributesEx.Has(SpellAttributesEx.RemainStealthed))
+            if (Caster is Unit && !m_spell.AttributesEx.HasFlag(SpellAttributesEx.RemainStealthed))
 			{
 				((Unit)Caster).Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Stealth);
 			}
 
 			// toggle autoshot
-			if (IsPlayerCast && m_spell.AttributesExB.Has(SpellAttributesExB.AutoRepeat))
+            if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
 			{
 				if (CasterUnit.Target == null)
 				{
@@ -289,7 +289,7 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.DontReport;
 			}
 
-			if (m_spell.Attributes.Has(SpellAttributes.StopsAutoAttack))
+            if (m_spell.Attributes.HasFlag(SpellAttributes.StopsAutoAttack))
 			{
 				// deactivate
 				CasterUnit.AutorepeatSpell = null;
@@ -683,14 +683,14 @@ namespace WCell.RealmServer.Spells
 			if (!GodMode)
 			{
 				// add cooldown (if not autoshot)
-				if (!m_spell.AttributesExB.Has(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
+                if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
 				{
 					caster.Spells.AddCooldown(m_spell, CasterItem);
 				}
 
 				if (Client != null)
 				{
-					if ((m_spell.Attributes & SpellAttributes.StartCooldownAfterEffectFade) == 0 &&
+					if (!m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade) &&
 						CasterItem != null)
 					{
 						SpellHandler.SendItemCooldown(Client, m_spell.Id, CasterItem);

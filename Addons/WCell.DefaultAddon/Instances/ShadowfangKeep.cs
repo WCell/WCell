@@ -40,52 +40,51 @@ namespace WCell.Addons.Default.Instances
         public static void InitNPCs()
         {
             // (!)Rethilgore
-            rethilgoreEntry = NPCMgr.GetEntry(3914);
-            rethilgoreEntry.AddSpell((SpellId)7295);		// add Rethilgore Spell
+            rethilgoreEntry = NPCMgr.GetEntry(NPCId.Rethilgore);
+            rethilgoreEntry.AddSpell(SpellId.SoulDrain);		// add Rethilgore Spell
             rethilgoreEntry.BrainCreator = rethilgore => new RethilgoreBrain(rethilgore);
 
             // Rethilgore spell has a cooldown of about 30s
-            SpellHandler.Apply(spell => { spell.CooldownTime = 30000; }, (SpellId)7295);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 30000; }, SpellId.SoulDrain);
 
 
             // (!)Baron Silverlaine
-            baronsilverlaineEntry = NPCMgr.GetEntry(3887);
-            baronsilverlaineEntry.AddSpell((SpellId)7068);
-
-            SpellHandler.Apply(spell => { spell.CooldownTime = 15000; }, (SpellId)7068);
+            baronsilverlaineEntry = NPCMgr.GetEntry(NPCId.BaronSilverlaine);
+            baronsilverlaineEntry.AddSpell(SpellId.VeilOfShadow);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 15000; }, SpellId.VeilOfShadow);
 
 
             // (!)Commander Springvale
-            commanderspringvaleEntry = NPCMgr.GetEntry(4278);
-            commanderspringvaleEntry.AddSpell((SpellId)5588);
-            commanderspringvaleEntry.AddSpell((SpellId)31713);
+            commanderspringvaleEntry = NPCMgr.GetEntry(NPCId.CommanderSpringvale);
+            commanderspringvaleEntry.AddSpell(SpellId.ClassSkillHammerOfJusticeRank2);
+            commanderspringvaleEntry.AddSpell(SpellId.HolyLight_7);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, (SpellId)5588);
-            SpellHandler.Apply(spell => { spell.CooldownTime = 45000; }, (SpellId)31713);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.ClassSkillHammerOfJusticeRank2);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 45000; }, SpellId.HolyLight_7);
 
 
             // (!)Odo the Blindwatcher
-            blindwatcherEntry = NPCMgr.GetEntry(4279);
-            blindwatcherEntry.AddSpell((SpellId)7484);
+            blindwatcherEntry = NPCMgr.GetEntry(NPCId.OdoTheBlindwatcher);
+            blindwatcherEntry.AddSpell(SpellId.SkullforgeBrand);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, (SpellId)7484);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.HowlingRage_3);
 
 
             // (!)Fenrus the Devourer
-            fenrusEntry = NPCMgr.GetEntry(4274);
-            fenrusEntry.AddSpell((SpellId)7125);
+            fenrusEntry = NPCMgr.GetEntry(NPCId.FenrusTheDevourer);
+            fenrusEntry.AddSpell(SpellId.ToxicSaliva);
             fenrusEntry.BrainCreator = fenrus => new FenrusBrain(fenrus);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, (SpellId)7125);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 60000; }, SpellId.ToxicSaliva);
 
 
             // (!)Archmage Arugal
-            arugalEntry = NPCMgr.GetEntry(4275);
-            arugalEntry.AddSpell((SpellId)7803);
-            arugalEntry.AddSpell((SpellId)7588);
+            arugalEntry = NPCMgr.GetEntry(NPCId.Arugal);
+            arugalEntry.AddSpell(SpellId.Thundershock);
+            arugalEntry.AddSpell(SpellId.VoidBolt);
 
-            SpellHandler.Apply(spell => { spell.CooldownTime = 25000; }, (SpellId)7803);
-            SpellHandler.Apply(spell => { spell.CooldownTime = 40000; }, (SpellId)7588);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 25000; }, SpellId.Thundershock);
+            SpellHandler.Apply(spell => { spell.CooldownTime = 40000; }, SpellId.VoidBolt);
         }
 
         [Initialization]
@@ -93,7 +92,7 @@ namespace WCell.Addons.Default.Instances
         public static void InitGOs()
         {
 
-            var rethilgoreDoorEntry = GOMgr.GetEntry((GOEntryId)18895);		// rethilgore door
+            var rethilgoreDoorEntry = GOMgr.GetEntry(GOEntryId.CourtyardDoor);		// rethilgore door
 
             if (rethilgoreDoorEntry != null)
             {
@@ -108,7 +107,7 @@ namespace WCell.Addons.Default.Instances
                 };
             }
 
-            var fenrusDoorEntry = GOMgr.GetEntry((GOEntryId)18972);		// fenrus door
+            var fenrusDoorEntry = GOMgr.GetEntry(GOEntryId.SorcerersGate);		// fenrus door
 
             if (fenrusDoorEntry != null)
             {

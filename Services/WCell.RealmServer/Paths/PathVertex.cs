@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Paths
 
 		public bool IsStoppingPoint
 		{
-			get { return (Flags & TaxiPathNodeFlags.ArrivalOrDeparture) != 0; }
+			get { return Flags.HasFlag(TaxiPathNodeFlags.ArrivalOrDeparture); }
 		}
         
 		public float Orientation

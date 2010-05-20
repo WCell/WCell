@@ -70,17 +70,4 @@ namespace WCell.Constants.Factions
         Horde = 2,
         Invalid = 3
     }
-
-    public static class FactionConstantExtensions
-    {
-        public static bool Has(this ReputationFlags flags, ReputationFlags toCheck)
-        {
-            return (flags & toCheck) != 0;
-        }
-
-        public static bool Has(this FactionGroupMask mask, FactionGroupMask toCheck)
-        {
-            return (mask & toCheck) != 0;
-        }
-    }
 }

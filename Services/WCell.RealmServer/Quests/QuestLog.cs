@@ -213,7 +213,7 @@ namespace WCell.RealmServer.Quests
 				else
 				{
 					var quest = m_Owner.QuestLog.AddQuest(template, slot);
-					if ((quest.Template.Flags & QuestFlags.Escort) != 0)
+					if (quest.Template.Flags.HasFlag(QuestFlags.Escort))
 					{
 						AutoComplete(quest, m_Owner);
 					}

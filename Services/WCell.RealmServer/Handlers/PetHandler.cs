@@ -541,11 +541,11 @@ namespace WCell.RealmServer.Handlers
 					packet.Write(pet.Level);
 					packet.Write(pet.Name);
 
-					if (pet.IsActivePet && (pet.Flags & PetFlags.Stabled) == 0)
+					if (pet.IsActivePet && !pet.Flags.HasFlag(PetFlags.Stabled))
 					{
 						packet.Write((byte)(0x01));
 					}
-					else if (!pet.IsActivePet && (pet.Flags & PetFlags.Stabled) != 0)
+					else if (!pet.IsActivePet && pet.Flags.HasFlag(PetFlags.Stabled))
 					{
 						packet.Write((byte)(0x02 + count));
 						count++;

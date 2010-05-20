@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Cell.Core;
@@ -40,11 +41,9 @@ namespace WCell.RealmServer
         /// <param name="elements">the elements to add</param>
         public static void AddRange<T>(this HashSet<T> set, IEnumerable<T> elements)
         {
-            var enumerator = elements.GetEnumerator();
-
-            while (enumerator.MoveNext())
+            foreach (var element in elements)
             {
-                set.Add(enumerator.Current);
+                set.Add(element);
             }
         }
 
@@ -58,32 +57,17 @@ namespace WCell.RealmServer
 		#region ItemDamage
 		public static float TotalMin(this DamageInfo[] damages)
 		{
-			var val = 0f;
-			foreach (var dmg in damages)
-			{
-				val += dmg.Minimum;
-			}
-			return val;
+		    return damages.Sum(dmg => dmg.Minimum);
 		}
 
 		public static float TotalMax(this DamageInfo[] damages)
 		{
-			var val = 0f;
-			foreach (var dmg in damages)
-			{
-				val += dmg.Maximum;
-			}
-			return val;
+		    return damages.Sum(dmg => dmg.Maximum);
 		}
 
 		public static DamageSchoolMask AllSchools(this DamageInfo[] damages)
 		{
-			var val = DamageSchoolMask.None;
-			foreach (var dmg in damages)
-			{
-				val |= dmg.School;
-			}
-			return val;
+		    return damages.Aggregate(DamageSchoolMask.None, (current, dmg) => current | dmg.School);
 		}
 		#endregion
 

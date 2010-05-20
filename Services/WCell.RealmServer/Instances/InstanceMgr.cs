@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Instances
 
 			var isRaid = (regionInfo.Type == MapType.Raid);
 			var group = chr.Group;
-			if (isRaid && !chr.Role.IsStaff && !group.Flags.Has(GroupFlags.Raid))
+            if (isRaid && !chr.Role.IsStaff && !group.Flags.HasFlag(GroupFlags.Raid))
 			{
 				InstanceHandler.SendRequiresRaid(chr.Client, 0);
 				return false;
