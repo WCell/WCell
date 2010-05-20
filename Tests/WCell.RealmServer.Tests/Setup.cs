@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Tests
 {
 	public static class Setup
 	{
-		public static string RunDir = "../../../Run/";
+		public static string RunDir = "../../Run/";
 		public static string RealmServerDir { get { return RunDir + "Debug/"; } }
 
 		public static string RealmServerDebugDir = RunDir + "Debug/";
