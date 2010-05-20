@@ -7,8 +7,5 @@ Run/Content/dbc*
 Run/Docs/*
 Run/Debug/*
 Run/Release/*
-TestResults/*
 Utilities/WCell.SolutionItems/bin/*
-
 *.trx
-TestResults*
