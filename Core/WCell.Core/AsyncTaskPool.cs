@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using NLog;
 using System.Threading;
 using System.Diagnostics;
 using Cell.Core.Collections;
 using WCell.Util.Threading;
+using WCell.Util.Threading.TaskParallel;
 
 namespace WCell.Core
 {
@@ -16,7 +18,6 @@ namespace WCell.Core
 	public class AsyncTaskPool
 	{
 		protected readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		protected WaitHandle m_waitHandle;
 		protected LockfreeQueue<IMessage> m_taskQueue;
 		protected Stopwatch m_taskTimer;
 		protected long m_updateFrequency;
@@ -35,12 +36,11 @@ namespace WCell.Core
 		/// <param name="updateFrequency">the update frequency of the task pool</param>
 		public AsyncTaskPool(long updateFrequency)
 		{
-			m_waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 			m_taskQueue = new LockfreeQueue<IMessage>();
 			m_taskTimer = Stopwatch.StartNew();
 			m_updateFrequency = updateFrequency;
 
-			ThreadPool.RegisterWaitForSingleObject(m_waitHandle, TaskUpdateCallback, null, m_updateFrequency, true);
+		    Task.Factory.StartNewDelayed((int)m_updateFrequency, TaskUpdateCallback, this);
 		}
 
 		/// <summary>
@@ -85,12 +85,12 @@ namespace WCell.Core
 			m_updateFrequency = frequency;
 		}
 
-		protected void TaskUpdateCallback(object state, bool timedOut)
+		protected void TaskUpdateCallback(object state)
 		{
 			// get the time at the start of our task processing
 			long timerStart = m_taskTimer.ElapsedMilliseconds;
 
-			ProcessTasks(timerStart, timedOut);
+			ProcessTasks(timerStart);
 
 			// get the end time
 			long timerStop = m_taskTimer.ElapsedMilliseconds;
@@ -99,10 +99,10 @@ namespace WCell.Core
 			long callbackTimeout = updateLagged ? 0 : ((timerStart + m_updateFrequency) - timerStop);
 
 			// re-register the update to be called
-			ThreadPool.RegisterWaitForSingleObject(m_waitHandle, TaskUpdateCallback, null, callbackTimeout, true);
+		    Task.Factory.StartNewDelayed((int)callbackTimeout, TaskUpdateCallback, this);
 		}
 
-		protected virtual void ProcessTasks(long startTime, bool timedOut)
+		protected virtual void ProcessTasks(long startTime)
 		{
 			IMessage msg;
 

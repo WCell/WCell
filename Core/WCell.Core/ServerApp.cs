@@ -5,6 +5,7 @@ using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Cell.Core;
 using Cell.Core.Collections;
 using NLog;
@@ -16,6 +17,7 @@ using WCell.Core.Timers;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
+using WCell.Util.Threading.TaskParallel;
 using IMessage = WCell.Util.Threading.IMessage;
 using WCell.Core.Addons;
 
@@ -47,7 +49,6 @@ namespace WCell.Core
 		protected static readonly string[] EmptyStringArr = new string[0];
 
 		protected List<IUpdatable> m_updatables;
-		protected WaitHandle m_waitHandle;
 		protected LockfreeQueue<IMessage> m_messageQueue;
 
 		protected int m_currentThreadId;
@@ -67,7 +68,6 @@ namespace WCell.Core
 			LogUtil.SystemInfoLogger = LogSystemInfo;
 
 			m_updatables = new List<IUpdatable>();
-			m_waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 			m_messageQueue = new LockfreeQueue<IMessage>();
 			m_queueTimer = Stopwatch.StartNew();
 			m_updateFrequency = WCellDef.SERVER_UPDATE_INTERVAL;
@@ -149,8 +149,8 @@ namespace WCell.Core
 			set
 			{
 				_running = value;
-				// start message loop
-				ThreadPool.RegisterWaitForSingleObject(m_waitHandle, QueueUpdateCallback, null, m_updateFrequency, true);
+                // start message loop
+                Task.Factory.StartNewDelayed((int)m_updateFrequency, QueueUpdateCallback, this);
 			}
 		}
 
@@ -287,7 +287,7 @@ namespace WCell.Core
 			m_messageQueue.Enqueue(msg);
 		}
 
-		protected void QueueUpdateCallback(object state, bool timedOut)
+		protected void QueueUpdateCallback(object state)
 		{
 			if (!_running)
 			{
@@ -344,7 +344,7 @@ namespace WCell.Core
 			if (_running)
 			{
 				// re-register the Update-callback
-				ThreadPool.RegisterWaitForSingleObject(m_waitHandle, QueueUpdateCallback, null, callbackTimeout, true);
+			    Task.Factory.StartNewDelayed((int)callbackTimeout, QueueUpdateCallback, this);
 			}
 		}
 
