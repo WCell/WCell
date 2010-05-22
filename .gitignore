@@ -12,3 +12,12 @@ Utilities/WCell.SolutionItems/bin/*
 
 *.trx
 TestResults*
+gitit.bat
+Logs/*
+Run/Content/Maps/*
+Private/*
+trunk/*
+WDB/*
+WCellPrivate/*
+*.patch
+website/*

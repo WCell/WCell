@@ -205,7 +205,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return IsLeader || Flags.HasFlag(GroupMemberFlags.Assistant | GroupMemberFlags.MainAssistant);
+				return IsLeader || Flags.HasAnyFlag(GroupMemberFlags.Assistant | GroupMemberFlags.MainAssistant);
 			}
 		}
 
@@ -217,7 +217,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return Flags.HasFlag(GroupMemberFlags.MainAssistant);
+				return Flags.HasAnyFlag(GroupMemberFlags.MainAssistant);
 			}
 		}
 
@@ -229,7 +229,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return Flags.HasFlag(GroupMemberFlags.MainTank);
+				return Flags.HasAnyFlag(GroupMemberFlags.MainTank);
 			}
 		}
 
@@ -240,7 +240,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return IsLeader || Flags.HasFlag(GroupMemberFlags.MainAssistant);
+				return IsLeader || Flags.HasAnyFlag(GroupMemberFlags.MainAssistant);
 			}
 		}
 		#endregion

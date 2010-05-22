@@ -280,7 +280,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x1010
-            if (flags.HasFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+            if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				if (cast.UsedItem != null)
 				{
@@ -288,7 +288,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x20
-            if (flags.HasFlag(SpellTargetFlags.SourceLocation))
+			if (flags.HasAnyFlag(SpellTargetFlags.SourceLocation))
 			{
 				if (cast.Selected != null)
 				{
@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.SourceLoc.Z);
 			}
 			// 0x40
-            if (flags.HasFlag(SpellTargetFlags.DestinationLocation))
+			if (flags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
 			{
 				if (cast.Selected != null)
 				{
@@ -316,7 +316,7 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.TargetLoc);
 			}
 			// 0x2000
-            if (flags.HasFlag(SpellTargetFlags.String))
+			if (flags.HasAnyFlag(SpellTargetFlags.String))
 			{
 				packet.WriteCString(cast.StringTarget);
 			}

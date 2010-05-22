@@ -217,7 +217,7 @@ namespace WCell.RealmServer.Entities
 
 		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags relation)
 		{
-			if (relation.HasFlag(UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly))
+			if (relation.HasAnyFlag(UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly))
 			{
 				return UpdateType.CreateSelf;
 			}

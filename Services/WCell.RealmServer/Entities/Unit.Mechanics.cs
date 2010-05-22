@@ -619,7 +619,7 @@ namespace WCell.RealmServer.Entities
 
 			Auras.RemoveWhere(aura =>
 				aura.Spell.AuraUID != effect.Spell.AuraUID &&
-				aura.Spell.SchoolMask.HasFlag(effect.Spell.SchoolMask) &&
+				aura.Spell.SchoolMask.HasAnyFlag(effect.Spell.SchoolMask) &&
                 !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
 		}
 

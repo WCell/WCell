@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public bool IsUpdateFieldPublic(int fieldIndex)
 		{
-		    return _UpdateFieldInfos.FieldFlags[fieldIndex].HasFlag(UpdateFieldFlags.Public | UpdateFieldFlags.Dynamic);
+		    return _UpdateFieldInfos.FieldFlags[fieldIndex].HasAnyFlag(UpdateFieldFlags.Public | UpdateFieldFlags.Dynamic);
 		}
 
 		/// <summary>
@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Entities
              *       - Contents: int64 - old rotation field from GameObjects
              */
 
-            if (updateFlags.HasFlag(UpdateFlags.Living | UpdateFlags.StationaryObject | UpdateFlags.StationaryObjectOnTransport))
+            if (updateFlags.HasAnyFlag(UpdateFlags.Living | UpdateFlags.StationaryObject | UpdateFlags.StationaryObjectOnTransport))
             {
                 WriteMovementUpdate(packet, relation);
             }
@@ -184,7 +184,7 @@ namespace WCell.RealmServer.Entities
 				for (var i = 0; i <= m_highestUsedUpdateIndex; i++)
 				{
 					var flags = _UpdateFieldInfos.FieldFlags[i];
-					if (flags.HasFlag(relation) && m_updateValues[i].UInt32 != 0)
+					if (flags.HasAnyFlag(relation) && m_updateValues[i].UInt32 != 0)
 					{
 						mask.SetBit(i);
 						WriteUpdateValue(receiver.m_updatePacket, receiver, i);
@@ -198,12 +198,12 @@ namespace WCell.RealmServer.Entities
 				//WriteUpdateValues(receiver, relation, 0, _UpdateFieldInfos.Fields.Length, true);
 			}
 
-		    if (relation.HasFlag(UpdateFieldFlags.Private))
+			if (relation.HasAnyFlag(UpdateFieldFlags.Private))
 		    {
 		        // Private
 		        mask = m_privateUpdateMask;
 		    }
-		    else if (relation.HasFlag(UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.GroupOnly))
+		    else if (relation.HasAnyFlag(UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.GroupOnly))
 		    {
 		        // Group or Owner
 		        var pos = receiver.m_updatePacket.Position;
@@ -212,8 +212,8 @@ namespace WCell.RealmServer.Entities
 		        for (var i = m_privateUpdateMask.m_lowestIndex; i <= m_privateUpdateMask.m_highestIndex; i++)
 		        {
 		            var flags = _UpdateFieldInfos.FieldFlags[i];
-                    if (flags.HasFlag(relation) &&
-                        (!flags.HasFlag(UpdateFieldFlags.Public) || m_publicUpdateMask.GetBit(i)))
+					if (flags.HasFlag(relation) &&
+						(!flags.HasAnyFlag(UpdateFieldFlags.Public) || m_publicUpdateMask.GetBit(i)))
                     {
                         mask.SetBit(i);
                         WriteUpdateValue(receiver.m_updatePacket, receiver, i);

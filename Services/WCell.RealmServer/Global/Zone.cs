@@ -156,7 +156,7 @@ namespace WCell.RealmServer.Global
 
 			// update PvPState
 			var isBg = Region.IsBattleground;
-			if (RealmServerConfiguration.ServerType.HasFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
+			if (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
 			{
 				if (isBg || Info.IsHostileTo(chr))
 				{

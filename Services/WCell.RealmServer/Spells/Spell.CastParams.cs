@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Spells
 			}
 			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
-				if (usedItem != null && !usedItem.Template.InventorySlotMask.HasFlag(RequiredItemInventorySlotMask))
+				if (usedItem != null && (usedItem.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0)	// don't use Enum.HasFlag!
 				{
 					return SpellFailedReason.EquippedItemClass;
 				}

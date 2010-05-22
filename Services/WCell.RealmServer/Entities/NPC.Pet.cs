@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanEat(PetFoodType petFoodType)
 		{
-            return m_entry.Family.PetFoodMask.HasFlag(petFoodType);
+            return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
 		}
 
 		public int GetHappinessGain(ItemTemplate food)

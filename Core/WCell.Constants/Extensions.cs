@@ -58,5 +58,47 @@ namespace WCell.Constants
 			}
 			return classIds;
 		}
+
+		#region HasAnyFlag (thanks Microsoft, for giving us HasFlag, but not HasAnyFlag)
+		public static bool HasAnyFlag(this UnitFlags flags, UnitFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this NPCFlags flags, NPCFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchoolMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this GroupMemberFlags flags, GroupMemberFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this HitFlags flags, HitFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this MovementFlags flags, MovementFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this MonsterMoveFlags flags, MonsterMoveFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this SplineFlags flags, SplineFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+		#endregion
 	}
 }
