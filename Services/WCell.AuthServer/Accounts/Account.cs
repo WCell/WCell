@@ -63,6 +63,10 @@ namespace WCell.AuthServer.Accounts
 		/// </summary>
 		public static event Action<Account, IAuthClient> LoggedIn;
 
+		public Account()
+		{
+		}
+
 		public Account(string username, byte[] hash, string email)
 		{
 			Name = username;
