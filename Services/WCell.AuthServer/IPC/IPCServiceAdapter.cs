@@ -342,12 +342,13 @@ namespace WCell.AuthServer.IPC
             if (isNew)
             {
                 realm = AuthenticationServer.GetRealmByName(serverName);
-                if (isNew = (realm == null))
+                if (realm == null)
 				{
 					if (!AuthServerConfiguration.RealmIPs.Contains(ep.Address))
 					{
 						// Ignore unknown realms
-						log.Warn("Unallowed Realm (\"{0}\") tried to register from: {1}", serverName, ep.Address);
+						log.Warn("Unallowed Realm (\"{0}\") tried to register from: {1} (For more info, see the <RealmIPs> entry in your configuration)", 
+							serverName, ep.Address, AuthServerConfiguration.Instance.FilePath);
 						var chan = OperationContext.Current.Channel;
 						if (chan != null)
 						{
@@ -359,9 +360,15 @@ namespace WCell.AuthServer.IPC
 						}
 						return;
 					}
-                    realm = new RealmEntry();
+					realm = new RealmEntry();
                 }
-                realm.ChannelId = id;
+				else
+                {
+                	lock (AuthenticationServer.Realms)
+					{
+						AuthenticationServer.Realms.Remove(id);
+                	}
+                }
             }
 
             if (string.IsNullOrEmpty(addr))
@@ -370,6 +377,7 @@ namespace WCell.AuthServer.IPC
                 addr = ep.Address;
             }
 
+			realm.ChannelId = id;
             realm.Name = serverName;
             realm.Address = addr;
             realm.Port = port;
@@ -391,7 +399,6 @@ namespace WCell.AuthServer.IPC
                 // register after setting all infos
                 lock (AuthenticationServer.Realms)
                 {
-                    realm.ChannelId = id;
                     AuthenticationServer.Realms.Add(id, realm);
                 }
             }

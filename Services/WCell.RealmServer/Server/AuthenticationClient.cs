@@ -18,6 +18,7 @@ using System;
 using System.ServiceModel;
 using System.Threading;
 using NLog;
+using WCell.Core.Timers;
 using WCell.Intercommunication.Client;
 using WCell.RealmServer.Localization;
 using WCell.Util;
@@ -40,19 +41,18 @@ namespace WCell.RealmServer.Server
 		[Variable("IPCUpdateInterval")]
 		public static int UpdateInterval = 5;
 
-		private Timer m_maintainConnTimer;
 		private AuthenticationClientAdapter m_ClientProxy;
 		private string m_netAddr;
 		private bool m_IsRunning;
 		readonly object lck = new object();
 		private readonly NetTcpBinding binding;
+		private DateTime lastUpdate;
 
 		/// <summary>
 		/// Initializes this Authentication Client
 		/// </summary>
 		public AuthenticationClient()
 		{
-			m_maintainConnTimer = new Timer(MaintainConnectionCallback);
 			m_IsRunning = true;
 			binding = new NetTcpBinding();
 			binding.Security.Mode = SecurityMode.None;
@@ -66,17 +66,8 @@ namespace WCell.RealmServer.Server
 			get { return m_IsRunning; }
 			set
 			{
-				if (m_IsRunning != value)
-				{
-					if (!(m_IsRunning = value))
-					{
-						Disconnect(true);
-					}
-					else
-					{
-						Connect();
-					}
-				}
+				m_IsRunning = value;
+				ForceUpdate();
 			}
 		}
 
@@ -105,23 +96,34 @@ namespace WCell.RealmServer.Server
             internal set;
         }
 
-		void Initialize()
+		public void ForceUpdate()
 		{
-			m_ClientProxy = new AuthenticationClientAdapter(binding, new EndpointAddress(m_netAddr));
-			m_ClientProxy.Error += OnError;
+			// little trick to force an update
+			lastUpdate = DateTime.Now - TimeSpan.FromSeconds(UpdateInterval);
 		}
 
-		public void Connect(string netAddr)
+		public void StartConnect(string netAddr)
 		{
 			m_netAddr = netAddr;
-
-			Connect();
+			m_IsRunning = true;
+			if (lastUpdate == default(DateTime))
+			{
+				RealmServer.Instance.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
+				lastUpdate = DateTime.Now;
+			}
 		}
 
-		public bool Connect()
+		/// <summary>
+		/// Must be executed in RealmServer context
+		/// </summary>
+		protected bool Connect()
 		{
+			RealmServer.Instance.EnsureContext();
+
 			Disconnect(true);
-			Initialize();
+			
+			m_ClientProxy = new AuthenticationClientAdapter(binding, new EndpointAddress(m_netAddr));
+			m_ClientProxy.Error += OnError;
 
 			bool conn;
 
@@ -131,10 +133,8 @@ namespace WCell.RealmServer.Server
 
 				//if (!RealmServer.Instance.IsRegisteredAtAuthServer)
 				RealmServer.Instance.RegisterRealm();
-				if (conn = IsConnected)
-				{
-					m_maintainConnTimer.Change(UpdateInterval * 1000, UpdateInterval * 1000);
-				}
+				conn = IsConnected;
+				lastUpdate = DateTime.Now;
 			}
 			catch (Exception e)
 			{
@@ -183,17 +183,23 @@ namespace WCell.RealmServer.Server
 		protected void Reconnect()
 		{
 			Disconnect(false);
-			m_maintainConnTimer.Change(ReconnectInterval * 1000, Timeout.Infinite);
 		}
 
-		private void MaintainConnectionCallback(object sender)
+		private void MaintainConnectionCallback()
 		{
-			if (!m_IsRunning)
+			if ((DateTime.Now - lastUpdate).TotalSeconds < UpdateInterval)
 			{
 				return;
 			}
 
-			if (!IsConnected)
+			if (!m_IsRunning)
+			{
+				if (IsConnected)
+				{
+					Disconnect(true);
+				}
+			}
+			else if (!IsConnected)
 			{
 				lock (lck)
 				{
@@ -214,17 +220,19 @@ namespace WCell.RealmServer.Server
 			{
 				lock (lck)
 				{
-					if (IsConnected)
+					if (IsConnected) // check again if we are connected after obtaining the lock
 					{
 						RealmServer.Instance.UpdateRealm();
+						lastUpdate = DateTime.Now;
 					}
 				}
 			}
 		}
 
-
-		public void Disconnect(bool notify)
+		protected void Disconnect(bool notify)
 		{
+			RealmServer.Instance.EnsureContext();
+
 			if (m_ClientProxy != null &&
 				m_ClientProxy.State != CommunicationState.Closed &&
 			    m_ClientProxy.State != CommunicationState.Closing)
@@ -253,11 +261,6 @@ namespace WCell.RealmServer.Server
 				{
 					evt(this, null);
 				}
-			}
-
-			if (!m_IsRunning)
-			{
-				m_maintainConnTimer.Change(Timeout.Infinite, Timeout.Infinite);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Addons
 	{
 		static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static string AddonFolder = "RealmServerAddons";
+		public static string AddonDir = "RealmServerAddons";
 
 		/// <summary>
 		/// A list of all libs or folders in the AddonDir that are not to be loaded.
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Addons
 			}
 			inited = true;
 
-			LoadAddons(AddonFolder, IgnoredAddonFiles);
+			LoadAddons(AddonDir, IgnoredAddonFiles);
 
 			if (Contexts.Count > 0)
 			{
@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Addons
 		{
 			if (!Path.IsPathRooted(libName))
 			{
-				libName = Path.Combine(AddonFolder, libName);
+				libName = Path.Combine(AddonDir, libName);
 			}
 
 			var file = new FileInfo(libName);
