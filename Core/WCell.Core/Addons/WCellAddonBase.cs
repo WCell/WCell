@@ -73,7 +73,7 @@ namespace WCell.Core.Addons
 		public void InitConfig(WCellAddonContext context)
 		{
 			Context = context;
-			config.Filename = Path.Combine(context.File.DirectoryName, GetType().Name + "Config.xml");
+			config.FilePath = Path.Combine(context.File.DirectoryName, GetType().Name + "Config.xml");
 			if (UseConfig)
 			{
 				config.AutoSave = true;

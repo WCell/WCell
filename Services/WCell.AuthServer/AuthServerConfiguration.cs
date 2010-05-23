@@ -44,7 +44,7 @@ namespace WCell.AuthServer
 			get { return s_instance; }
 		}
 
-		public override string Filename
+		public override string FilePath
 		{
 			get { return GetFullPath("AuthServerConfig.xml"); }
 		}
@@ -63,7 +63,7 @@ namespace WCell.AuthServer
 				if (!s_instance.Load())
 				{
 					s_instance.Save(false, false);
-					log.Warn("Config-file \"{0}\" not found - Created new \"{0}\". Please take a little time to configure your server and then restart the Application.",Instance.Filename);
+					log.Warn("Config-file \"{0}\" not found - Created new \"{0}\". Please take a little time to configure your server and then restart the Application.",Instance.FilePath);
 					return false;
 				}
 				else

@@ -54,7 +54,7 @@ namespace WCell.RealmServer
 			get { return s_instance; }
 		}
 
-		public override string Filename
+		public override string FilePath
 		{
 			get { return RealmServer.Instance.Configuration.GetFullPath(ConfigFilename); }
 			set
@@ -103,7 +103,7 @@ namespace WCell.RealmServer
 					if (!s_instance.Load())
 					{
 						s_instance.Save(true, false);
-						log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.Filename);
+						log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.FilePath);
 						log.Warn("Please take a little time to configure your server and then restart the Application.");
 						log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
 						return false;

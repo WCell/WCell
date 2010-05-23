@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Threading;
 using WCell.AuthServer;
 using WCell.AuthServer.Commands;
 using WCell.Core.Database;
@@ -35,6 +36,14 @@ namespace WCell.AuthServerConsole
 				string line;
 				try
 				{
+					while (!Console.KeyAvailable && AuthenticationServer.Instance.IsRunning)
+					{
+						Thread.Sleep(100);
+					}
+					if (!AuthenticationServer.Instance.IsRunning)
+					{
+						break;
+					}
 					line = Console.ReadLine();
 				}
 				catch

@@ -31,6 +31,8 @@ using WCell.Util.NLog;
 using System.Text.RegularExpressions;
 using WCell.Util.Strings;
 
+using RealmServ = WCell.RealmServer.RealmServer;
+
 namespace WCell.RealmServerConsole
 {
 	/// <summary>
@@ -54,7 +56,7 @@ namespace WCell.RealmServerConsole
 		internal static void Run()
 		{
 			DatabaseUtil.ReleaseConsole();
-			var server = RealmServer.RealmServer.Instance;
+			var server = RealmServ.Instance;
 
 			if (!server.IsRunning)
 			{
@@ -71,15 +73,19 @@ namespace WCell.RealmServerConsole
 					Args = new RealmServerCmdArgs(null, false, null)
 				};
 
-                while (ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
+				while (RealmServ.Instance.IsRunning)
 				{
 					string line;
 					try
 					{
-                        while (Console.KeyAvailable == false && ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
-                            Thread.Sleep(100);
-					    if (!ServerApp<RealmServer.RealmServer>.Instance.IsRunning) break;
-                        //NOTE if some key pressed in console without Enter will lock
+						while (!Console.KeyAvailable && RealmServ.Instance.IsRunning)
+                        {
+                        	Thread.Sleep(100);
+                        }
+						if (!RealmServ.Instance.IsRunning)
+						{
+							break;
+						}
 						line = Console.ReadLine();
 					}
 					catch
@@ -87,7 +93,7 @@ namespace WCell.RealmServerConsole
 						// console shutdown
 						break;
 					}
-					if (line == null || !ServerApp<RealmServer.RealmServer>.Instance.IsRunning)
+					if (line == null || !RealmServ.Instance.IsRunning)
 					{
 						break;
 					}
@@ -112,12 +118,12 @@ namespace WCell.RealmServerConsole
 								var cmd = RealmCommandHandler.Instance.SelectCommand(text);
 								if (cmd != null)
 								{
-									Console.WriteLine("Selected: " + cmd);
+									Console.WriteLine(@"Selected: {0}", cmd);
 									DefaultTrigger.SelectedCommand = cmd;
 								}
 								else if (DefaultTrigger.SelectedCommand != null)
 								{
-									Console.WriteLine("Cleared Command selection.");
+									Console.WriteLine(@"Cleared Command selection.");
 									DefaultTrigger.SelectedCommand = null;
 								}
 							}
