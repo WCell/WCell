@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants;
+using WCell.Util;
 using WCell.Util.Commands;
 using WCell.Tools.Domi.Output;
 
@@ -9,10 +11,13 @@ namespace WCell.Tools.Commands
 {
     public class DumpCommand : ToolCommand
     {
+        public static bool TypesMapped;
+
         protected override void Initialize()
         {
             Init("Dump", "D");
             EnglishDescription = "Provides commands to create dump files.";
+            EnsureTypesMapped();
         }
 
         public class DumpSpellsCommand : SubCommand
@@ -140,6 +145,15 @@ namespace WCell.Tools.Commands
 				trigger.Reply("Dumped AreaTriggers to: " + ATOutput.DumpFile);
 			}
 		}
+
+        public static void EnsureTypesMapped()
+        {
+            if(!TypesMapped)
+            {
+                Utility.AddTypesToTypeMap(typeof(WCellInfo).Assembly);
+                TypesMapped = true;
+            }
+        }
 
         public class DumpAllCommand : SubCommand
         {
