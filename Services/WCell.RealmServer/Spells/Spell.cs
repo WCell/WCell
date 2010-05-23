@@ -648,7 +648,7 @@ namespace WCell.RealmServer.Spells
 			}
 			inited = true;
 
-            IsChanneled = AttributesEx.HasFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
+            IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
 				ChannelInterruptFlags > 0;
 
             IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
@@ -689,18 +689,18 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            IsOnNextStrike = Attributes.HasFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
+			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);	// don't use Enum.HasFlag!
 
 			IsRangedAbility = !IsTriggeredSpell &&
-                (Attributes.HasFlag(SpellAttributes.Ranged) ||
-                       AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+				(Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
+					   AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
 			IsWeaponAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
 
 			IsFinishingMove =
-                AttributesEx.HasFlag(SpellAttributesEx.FinishingMove) ||
+				AttributesEx.HasAnyFlag(SpellAttributesEx.FinishingMove) ||
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
@@ -780,7 +780,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            ReqDeadTarget = TargetFlags.HasFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+            ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 

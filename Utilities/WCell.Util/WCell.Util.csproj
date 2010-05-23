@@ -201,6 +201,7 @@
     <Compile Include="Graphics\BoundingBox.cs" />
     <Compile Include="Graphics\BoundingSphere.cs" />
     <Compile Include="Graphics\Color.cs" />
+    <Compile Include="Graphics\Extensions.cs" />
     <Compile Include="Graphics\HalfSingle.cs" />
     <Compile Include="Graphics\HalfUtils.cs" />
     <Compile Include="Graphics\IPackedVector.cs" />
@@ -273,7 +274,7 @@
     <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
       <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
       <Name>Cell.Core</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

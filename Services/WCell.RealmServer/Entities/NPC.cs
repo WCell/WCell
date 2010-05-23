@@ -221,7 +221,7 @@ namespace WCell.RealmServer.Entities
 			if (flags != UnitFlags.None)
 			{
 				if (
-					flags.HasFlag(UnitFlags.SelectableNotAttackable | UnitFlags.SelectableNotAttackable_2 |
+					flags.HasAnyFlag(UnitFlags.SelectableNotAttackable | UnitFlags.SelectableNotAttackable_2 |
 								  UnitFlags.SelectableNotAttackable_3))
 				{
 					Invulnerable++;
@@ -1368,7 +1368,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsGuildPetitioner
 		{
-			get { return NPCFlags.HasFlag(NPCFlags.TabardDesigner | NPCFlags.Petitioner); }
+			get { return NPCFlags.HasAnyFlag(NPCFlags.TabardDesigner | NPCFlags.Petitioner); }
 		}
 
 		/// <summary>

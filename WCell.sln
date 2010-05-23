@@ -77,7 +77,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documents", "Documents", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution", "Solution", "{E9692B93-A05C-490C-A8FE-260FA002E12D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consoles", "Consoles", "{10A0B4C6-BD1F-4517-9FF8-D9F142944383}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Applications", "Applications", "{10A0B4C6-BD1F-4517-9FF8-D9F142944383}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Core.Tests", "Tests\WCell.Core.Tests\WCell.Core.Tests.csproj", "{C447618A-0B7B-4B57-9217-CB2AB4DBC57D}"
 EndProject
@@ -413,9 +413,9 @@ Global
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Global
 		{
 		    return ((IsArena) ||
 		            (IsPvP) ||
-		            (RealmServerConfiguration.ServerType.HasFlag(RealmServerType.PVP | RealmServerType.RPPVP) &&
+		            (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) &&
 		             Ownership == FactionGroupMask.None ||
 		             (chr.FactionGroup == FactionGroup.Alliance && Ownership == FactionGroupMask.Horde) ||
 		             (chr.FactionGroup == FactionGroup.Horde && Ownership == FactionGroupMask.Alliance)));

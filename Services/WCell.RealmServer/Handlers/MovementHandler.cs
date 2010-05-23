@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Handlers
 				var spline = packet.ReadFloat();
 			}
 
-			var onlyOrientation = !moveFlags.HasFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
+			var onlyOrientation = !moveFlags.HasAnyFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_HEARTBEAT &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP_ASCEND &&
@@ -561,7 +561,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(numWaypoints);
 
-            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
+            if (moveFlags.HasAnyFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
 			{
 				foreach (IPathVertex waypoint in waypoints)
 				{

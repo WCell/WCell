@@ -106,8 +106,8 @@ namespace WCell.PacketAnalysis.Updates
 			writer.WriteLine(indent + "Timestamp: " + Timestamp);
 			writer.WriteLine(indent + "Position: " + Position);
 
-            if (MovementFlags.HasFlag(MovementFlags.OnTransport) ||
-                UpdateFlags.HasFlag(UpdateFlags.StationaryObjectOnTransport))
+			if (MovementFlags.HasAnyFlag(MovementFlags.OnTransport) ||
+				UpdateFlags.HasAnyFlag(UpdateFlags.StationaryObjectOnTransport))
 			{
 				writer.WriteLine(indent + "Transporter: " + TransporterId);
 				writer.WriteLine(indent + "TransporterPosition: " + TransporterPosition);
@@ -115,8 +115,8 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "TransportSeatPosition: " + TransportSeatPosition);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
-                MovementFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
+            if (MovementFlags.HasAnyFlag(MovementFlags.Swimming | MovementFlags.Flying) ||	// don't use HasFlag!
+				MovementFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				writer.WriteLine(indent + "Pitch: " + Pitch);
 			}
@@ -126,7 +126,7 @@ namespace WCell.PacketAnalysis.Updates
 				writer.WriteLine(indent + "FallTime: " + FallTime);
 			}
 
-            if (MovementFlags.HasFlag(MovementFlags.Falling))
+			if (MovementFlags.HasAnyFlag(MovementFlags.Falling))
 			{
 				writer.WriteLine(indent + "FallFloat1: " + FallFloat1);
 				writer.WriteLine(indent + "FallFloat2: " + FallFloat2);
@@ -185,7 +185,7 @@ namespace WCell.PacketAnalysis.Updates
 		{
 			writer.WriteLine(indent + "SplineFlags: " + SplineFlags);
 
-            if (SplineFlags.HasFlag(SplineFlags.XYZ | SplineFlags.Orientation))
+			if (SplineFlags.HasAnyFlag(SplineFlags.XYZ | SplineFlags.Orientation))
 			{
 				writer.WriteLine(indent + "SplinePosition: " + SplinePosition);
 			}
@@ -314,7 +314,7 @@ namespace WCell.PacketAnalysis.Updates
 			}
 
 			// Client checks for 0x2200000
-            if (block.MovementFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+            if (block.MovementFlags.HasAnyFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
                 block.MovementFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
 				block.Pitch = block.Update.ReadFloat();

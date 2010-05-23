@@ -582,7 +582,7 @@ namespace WCell.RealmServer.Spells
 				TargetLoc = selected.Position;
 			}
 			// 0x1010
-            if (Caster is Character && TargetFlags.HasFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+            if (Caster is Character && TargetFlags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				var uid = packet.ReadPackedEntityId();
 				UsedItem = ((Character)Caster).Inventory.GetItem(uid);
