@@ -64,7 +64,7 @@ namespace WCell.Collision
             var heightMap = HeightMaps[chunkCoord.ChunkX, chunkCoord.ChunkY];
             if (heightMap == null) return float.NaN;
 
-            var medianHeight = HalfUtils.Unpack(heightMap.MedianHeight);
+            var medianHeight = heightMap.MedianHeight;
             if (heightMap.IsFlat) return medianHeight;
 
             // Fixme:  Indexing is backwards.
@@ -95,15 +95,10 @@ namespace WCell.Collision
                     // | |    |    |      h5 1/2,1/2
                     // | h3--------h4
                     // V Y
-                    var packed1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var packed2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var packed3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var packed5 = heightMap.InnerHeightDiff[heightX, heightY];
-
-                    var h1 = HalfUtils.Unpack(packed1);
-                    var h2 = HalfUtils.Unpack(packed2);
-                    var h3 = HalfUtils.Unpack(packed3);
-                    var h5 = HalfUtils.Unpack(packed5);
+                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
 
                     topLeft = h1;
                     topRight = (h1 + h2)/2.0f;
@@ -122,15 +117,10 @@ namespace WCell.Collision
                     // | |    |    |      h5 1/2,1/2
                     // | h3--------h4
                     // V Y
-                    var packed1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var packed3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var packed4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var packed5 = heightMap.InnerHeightDiff[heightX, heightY];
-
-                    var h1 = HalfUtils.Unpack(packed1);
-                    var h3 = HalfUtils.Unpack(packed3);
-                    var h4 = HalfUtils.Unpack(packed4);
-                    var h5 = HalfUtils.Unpack(packed5);
+                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
 
                     topLeft = (h1 + h3) / 2.0f;
                     topRight = h5;
@@ -154,15 +144,10 @@ namespace WCell.Collision
                     // | |    |    |      h5 1/2,1/2
                     // | h3--------h4
                     // V Y
-                    var packed1 = heightMap.OuterHeightDiff[heightX, heightY];
-                    var packed2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var packed4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var packed5 = heightMap.InnerHeightDiff[heightX, heightY];
-
-                    var h1 = HalfUtils.Unpack(packed1);
-                    var h2 = HalfUtils.Unpack(packed2);
-                    var h4 = HalfUtils.Unpack(packed4);
-                    var h5 = HalfUtils.Unpack(packed5);
+                    var h1 = heightMap.OuterHeightDiff[heightX, heightY];
+                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
 
                     topLeft = (h1 + h2) / 2.0f;
                     topRight = h2;
@@ -183,15 +168,10 @@ namespace WCell.Collision
                     // | |    |    |      h5 1/2,1/2
                     // | h3--------h4
                     // V Y
-                    var packed2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
-                    var packed3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
-                    var packed4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
-                    var packed5 = heightMap.InnerHeightDiff[heightX, heightY];
-
-                    var h2 = HalfUtils.Unpack(packed2);
-                    var h3 = HalfUtils.Unpack(packed3);
-                    var h4 = HalfUtils.Unpack(packed4);
-                    var h5 = HalfUtils.Unpack(packed5);
+                    var h2 = heightMap.OuterHeightDiff[heightX, heightY + 1];
+                    var h3 = heightMap.OuterHeightDiff[heightX + 1, heightY];
+                    var h4 = heightMap.OuterHeightDiff[heightX + 1, heightY + 1];
+                    var h5 = heightMap.InnerHeightDiff[heightX, heightY];
 
                     topLeft = h5;
                     topRight = (h2 + h4) / 2.0f;
@@ -234,7 +214,7 @@ namespace WCell.Collision
             var heightMap = HeightMaps[chunkCoord.ChunkX, chunkCoord.ChunkY];
             if (heightMap == null) return;
 
-            var medianHeight = HalfUtils.Unpack(heightMap.MedianHeight);
+            var medianHeight = heightMap.MedianHeight;
             
             var fileName = String.Format("Chunk_{0}_{1}.txt", chunkCoord.ChunkX, chunkCoord.ChunkY);
             var filePath = Path.Combine("C:\\Users\\Nate\\Desktop", fileName);
@@ -252,9 +232,8 @@ namespace WCell.Collision
             {
                 for (var col = 0; col < 9; col++)
                 {
-                    var packed = heightMap.OuterHeightDiff[row, col];
-                    var unpacked = HalfUtils.Unpack(packed);
-                    var value = Math.Round(unpacked, 2);
+                    var height = heightMap.OuterHeightDiff[row, col];
+                    var value = Math.Round(height, 2);
                     if (value >= 0) writer.Write(" ");
                     writer.Write(String.Format("{0:00.00}    ", value));
                 }
@@ -267,9 +246,8 @@ namespace WCell.Collision
                     writer.Write("    ");
                     for (var col = 0; col < 8; col++)
                     {
-                        var packed = heightMap.InnerHeightDiff[row, col];
-                        var unpacked = HalfUtils.Unpack(packed);
-                        var value = Math.Round(unpacked, 2);
+                        var height = heightMap.InnerHeightDiff[row, col];
+                        var value = Math.Round(height, 2);
                         if (value >= 0) writer.Write(" ");
                         writer.Write(String.Format("{0:00.00}    ", value));
                     }
@@ -334,7 +312,7 @@ namespace WCell.Collision
                 {
                     for (var x = 0; x < 9; x++)
                     {
-                        map.OuterHeightDiff[x, y] = reader.ReadUInt16();
+                        map.OuterHeightDiff[x, y] = reader.ReadSingle();
                     }
                 }
 
@@ -342,7 +320,7 @@ namespace WCell.Collision
                 {
                     for (var x = 0; x < 8; x++)
                     {
-                        map.InnerHeightDiff[x, y] = reader.ReadUInt16();
+                        map.InnerHeightDiff[x, y] = reader.ReadSingle();
                     }
                 }
             }
@@ -353,7 +331,7 @@ namespace WCell.Collision
                 {
                     for (var x = 0; x < 9; x++)
                     {
-                        map.LiquidHeight[x, y] = reader.ReadUInt16();
+                        map.LiquidHeight[x, y] = reader.ReadSingle();
                     }
                 }
             }
@@ -365,6 +343,7 @@ namespace WCell.Collision
             return map;
         }
 
+/*
         private static float InterpolateTriangle(ref Vector3 point1, ref Vector3 point2, ref Vector3 point3, HeightMapFraction heightMapFraction)
         {
             var Ax = point2.X - point1.X;
@@ -389,6 +368,7 @@ namespace WCell.Collision
             var temp = D - (Nx * heightMapFraction.FractionX) - (Ny * heightMapFraction.FractionY);
             return (temp / Nz);
         }
+*/
 
         private static float BilinearInterpolate(ref float topLeft, ref float topRight, ref float bottomLeft, ref float bottomRight, ref float xf, ref float yf)
         {
@@ -424,9 +404,9 @@ namespace WCell.Collision
     public class HeightMap
     {
         public bool IsFlat;
-        public ushort MedianHeight;
-        public ushort[,] LiquidHeight = new ushort[9, 9];
-        public ushort[,] OuterHeightDiff = new ushort[9, 9];
-        public ushort[,] InnerHeightDiff = new ushort[8, 8];
+        public float MedianHeight;
+        public float[,] LiquidHeight = new float[9, 9];
+        public float[,] OuterHeightDiff = new float[9, 9];
+        public float[,] InnerHeightDiff = new float[8, 8];
     }
 }

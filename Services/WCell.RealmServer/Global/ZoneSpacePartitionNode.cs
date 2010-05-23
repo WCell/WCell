@@ -335,7 +335,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref box) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref box).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetObjectsOfSpecificType(ref box, entities, phase, ref limitCounter);
 						}
@@ -380,7 +380,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref box) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref box).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref box, entities, phase, ref limitCounter);
 						}
@@ -431,7 +431,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref box) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref box).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref box, entities, filter, phase, ref limitCounter);
 						}
@@ -457,7 +457,7 @@ namespace WCell.RealmServer.Global
 
 						if (box.Contains(ref objPos) && obj.IsInPhase(phase))
 						{
-							if ((obj.Type & filter) != 0)
+							if (obj.Type.HasAnyFlag(filter))
 							{
 								entities.Add(obj);
 
@@ -476,7 +476,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref box) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref box).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref box, entities, filter, phase, ref limitCounter);
 						}
@@ -521,7 +521,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref box) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref box).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref box, entities, filter, phase, ref limitCounter);
 						}
@@ -569,7 +569,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetObjectsOfSpecificType(ref sphere, entities, phase, ref limitCounter);
 						}
@@ -614,7 +614,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref sphere, entities, phase, ref limitCounter);
 						}
@@ -665,7 +665,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref sphere, entities, filter, phase, ref limitCounter);
 						}
@@ -691,7 +691,7 @@ namespace WCell.RealmServer.Global
 
 						if (sphere.Contains(ref objPos) && obj.IsInPhase(phase))
 						{
-							if ((obj.Type & filter) != 0)
+							if (obj.Type.HasAnyFlag(filter))
 							{
 								entities.Add(obj);
 
@@ -710,7 +710,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref sphere, entities, filter, phase, ref limitCounter);
 						}
@@ -754,7 +754,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							node.GetEntitiesInArea(ref sphere, entities, filter, phase, ref limitCounter);
 						}
@@ -793,7 +793,7 @@ namespace WCell.RealmServer.Global
 					for (var i1 = 0; i1 < Two; i1++)
 					{
 						var node = m_children[i0, i1];
-						if ((node.Bounds.Intersects(ref sphere) & IntersectionType.Touches) != 0)
+						if (node.Bounds.Intersects(ref sphere).HasAnyFlag(IntersectionType.Touches))
 						{
 							if (!node.Iterate(ref sphere, predicate, phase))
 							{

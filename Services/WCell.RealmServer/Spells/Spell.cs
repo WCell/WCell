@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsTame
 		{
-			get { return AttributesExB.Has(SpellAttributesExB.TamePet); }
+            get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
 		}
 
 		/// <summary>
@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool PersistsThroughDeath
 		{
-			get { return AttributesExC.Has(SpellAttributesExC.PersistsThroughDeath); }
+            get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
 		}
 
 		/// <summary>
@@ -648,10 +648,10 @@ namespace WCell.RealmServer.Spells
 			}
 			inited = true;
 
-			IsChanneled = AttributesEx.Has(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
+            IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
 				ChannelInterruptFlags > 0;
 
-			IsPassive = (!IsChanneled && Attributes.Has(SpellAttributes.Passive)) ||
+            IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
 				// tracking spells are also passive		     
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
@@ -689,18 +689,18 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			IsOnNextStrike = Attributes.Has(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
+			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);	// don't use Enum.HasFlag!
 
 			IsRangedAbility = !IsTriggeredSpell &&
-				(Attributes.Has(SpellAttributes.Ranged) ||
-					   AttributesExC.Has(SpellAttributesExC.ShootRangedWeapon));
+				(Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
+					   AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
 			IsWeaponAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
 
 			IsFinishingMove =
-				AttributesEx.Has(SpellAttributesEx.FinishingMove) ||
+				AttributesEx.HasAnyFlag(SpellAttributesEx.FinishingMove) ||
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
@@ -714,9 +714,9 @@ namespace WCell.RealmServer.Spells
 			else
 			{
 				EquipmentSlot =
-					(IsRangedAbility || AttributesExC.Has(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
-					(AttributesExC.Has(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
-					(AttributesExC.Has(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
+                    (IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
+                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
+                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
@@ -780,7 +780,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			ReqDeadTarget = TargetFlags.Has(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+            ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 
@@ -816,9 +816,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-				(Attributes.Has(SpellAttributes.CannotBeCastInCombat) ||
-										AttributesEx.Has(SpellAttributesEx.RemainOutOfCombat) ||
-										AuraInterruptFlags.Has(AuraInterruptFlags.OnStartAttack));
+                (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+                                        AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+                                        AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -826,8 +826,8 @@ namespace WCell.RealmServer.Spells
 				InterruptFlags |= InterruptFlags.OnTakeDamage;
 			}
 
-			IsThrow = AttributesExC.Has(SpellAttributesExC.ShootRangedWeapon) &&
-					   Attributes.Has(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+            IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
+                       Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 			ForeachEffect(effect =>
@@ -1189,8 +1189,8 @@ namespace WCell.RealmServer.Spells
 
 				var weapon = ((Item)aAction.Weapon).Template;
 
-				return weapon.Class == RequiredItemClass &&
-					(RequiredItemSubClassMask == 0 || (weapon.SubClassMask & RequiredItemSubClassMask) != 0);
+			    return weapon.Class == RequiredItemClass &&
+			           (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasFlag(RequiredItemSubClassMask));
 			}
 			return true;
 		}

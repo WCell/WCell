@@ -51,10 +51,10 @@ namespace WCell.RealmServer.Entities
 		{
 			if (!PetMgr.InfinitePetRenames && !chr.GodMode)
 			{
-				if ((PetState & PetState.CanBeRenamed) == 0)
-				{
-					return PetNameInvalidReason.Invalid;
-				}
+                if (!PetState.HasFlag(PetState.CanBeRenamed))
+                {
+                    return PetNameInvalidReason.Invalid;
+                }
 			}
 
 			var response = PetMgr.IsPetNameValid(ref name);
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanEat(PetFoodType petFoodType)
 		{
-			return m_entry.Family.PetFoodMask.Has(petFoodType);
+            return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
 		}
 
 		public int GetHappinessGain(ItemTemplate food)

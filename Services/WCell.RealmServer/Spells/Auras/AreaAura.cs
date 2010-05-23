@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
@@ -298,16 +299,9 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (m_targets != null)
 			{
-				var toRemove = new List<KeyValuePair<Unit, Aura>>();
-				foreach (var target in m_targets)
-				{
-					if (!target.Key.IsInRadius(m_holder, m_radius))
-					{
-						toRemove.Add(target);
-					}
-				}
+				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius));
 
-				foreach (var target in toRemove)
+			    foreach (var target in toRemove)
 				{
 					if (target.Value.IsActive)
 					{

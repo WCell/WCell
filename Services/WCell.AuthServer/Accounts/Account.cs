@@ -72,6 +72,7 @@ namespace WCell.AuthServer.Accounts
 			Name = username;
 			Password = hash;
 			EmailAddress = email;
+		    LastIP = IPAddress.Any.GetAddressBytes();
 			AccountId = NextId();
 			New = true;
 		}

@@ -356,7 +356,7 @@ namespace WCell.RealmServer.Entities
 
 		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags flags)
 		{
-			return (flags & UpdateFieldFlags.Private) != 0 ? UpdateType.CreateSelf : UpdateType.Create;
+			return flags.HasAnyFlag(UpdateFieldFlags.Private) ? UpdateType.CreateSelf : UpdateType.Create;
 		}
 
 		public void PushFieldUpdate(UpdateFieldId field, uint value)

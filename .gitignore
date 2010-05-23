@@ -4,6 +4,7 @@ obj
 *.cache
 *_ReSharper.*
 Run/Content/dbc*
+Run/Content/Maps/*
 Run/Docs/*
 Run/Debug/*
 Run/Release/*

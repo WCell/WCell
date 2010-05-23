@@ -786,7 +786,7 @@ namespace WCell.RealmServer.Interaction
 					packet.WriteCString(entry.Note);
 
 					//If this relation type requires online notification
-					if ((entry.Flag & RelationTypeFlag.Friend) != RelationTypeFlag.None)
+					if (entry.Flag.HasFlag(RelationTypeFlag.Friend))
 					{
 						var relatedChar = World.GetCharacter(entry.RelatedCharacterId);
 						if (relatedChar != null)

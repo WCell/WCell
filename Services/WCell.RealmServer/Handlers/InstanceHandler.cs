@@ -213,7 +213,7 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_SET_DUNGEON_DIFFICULTY, 12))
 			{
 				var group = chr.Group;
-				if (group != null && !group.Flags.Has(GroupFlags.Raid))
+                if (group != null && !group.Flags.HasFlag(GroupFlags.Raid))
 				{
 					packet.Write(group.DungeonDifficulty);
 					packet.Write(1); // val

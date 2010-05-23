@@ -851,12 +851,12 @@ namespace WCell.RealmServer.NPCs
 
 		public bool IsTamable
 		{
-			get { return (EntryFlags & NPCEntryFlags.Tamable) != 0; }
+			get { return EntryFlags.HasFlag(NPCEntryFlags.Tamable); }
 		}
 
 		public bool IsExoticPet
 		{
-			get { return (EntryFlags & NPCEntryFlags.ExoticCreature) != 0; }
+            get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
 		}
 
 		#region Creators

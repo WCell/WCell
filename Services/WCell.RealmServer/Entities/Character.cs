@@ -898,7 +898,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool IsSwimming
 		{
-			get { return MovementFlags.Has(MovementFlags.Swimming); }
+            get { return MovementFlags.HasFlag(MovementFlags.Swimming); }
 		}
 
 		public bool IsUnderwater
@@ -1465,8 +1465,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return (m_region.CanFly && (m_zone == null || (m_zone.Flags & ZoneFlags.CanFly) != 0)) ||
-					Role.IsStaff;
+			    return (m_region.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
 			}
 		}
 

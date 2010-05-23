@@ -14,17 +14,22 @@ namespace WCell.Collision
         private const string fileType = "wmo";
         private static readonly Dictionary<string, bool> tileLoaded = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> noTileExists = new Dictionary<string, bool>();
-        private static readonly Dictionary<MapId, bool> mapExists = new Dictionary<MapId, bool>();
+        private static readonly Dictionary<MapId, bool> mapData = new Dictionary<MapId, bool>();
         private static readonly Dictionary<MapId, TreeReference<Building>> worldBuildings =
             new Dictionary<MapId, TreeReference<Building>>();
 
 
+        /// <summary>
+        /// Returns the height of the floor directly beneath a position on the world map.
+        /// </summary>
+        /// <param name="map">The MapId of the map the position is on</param>
+        /// <param name="pos">The position to check the floor height at</param>
         public static float? GetWMOHeight(MapId map, Vector3 pos)
         {
             // Start at the character's head and send a ray pointed at the floor
-            var startPos = pos + Vector3.Up*2.0f; // what should the scalar be?
-            var endPos = startPos + Vector3.Down*2000.0f; // what should the scalar be?
-
+            var startPos = pos + Vector3.Up*2.0f; // how tall is each character? working with 2 yards at this point.
+            var endPos = startPos + Vector3.Down*2000.0f; // how far down should we go in checking for floor?
+            
             var buildings = GetPotentialColliders(map, ref startPos, ref endPos);
             if (buildings.Count == 0) return null;
 
@@ -37,11 +42,26 @@ namespace WCell.Collision
             return (startPos.Z + Vector3.Down.Z*dist.Value);
         }
 
+        /// <summary>
+        /// Whether there is a clear line of sight between two points.
+        /// </summary>
+        /// <param name="map">The MapId of the map in question</param>
+        /// <param name="startPos">Vector in World Coords of the start position</param>
+        /// <param name="endPos">Vector in World Coords of the end position</param>
+        /// <returns>True of a clear line of sight exists</returns>
         public static bool HasLOS(MapId map, Vector3 startPos, Vector3 endPos)
         {
             return (CheckCollision(map, startPos, endPos) == null);
         }
 
+        /// <summary>
+        /// Whether the line from startPos to endPos intersects a Building on this Map
+        /// </summary>
+        /// <param name="map">The MapId of the Map in question</param>
+        /// <param name="startPos">Vector in World Coords of the start point</param>
+        /// <param name="endPos">Vector in World Coords of the end point</param>
+        /// <returns>Null if no collision occurs, else the earliest time of collision. 
+        /// To get the point of collision, a vector calculation of (startPos + (endPos - startPos)*returnValue) is required.</returns>
         public static float? CheckCollision(MapId map, Vector3 startPos, Vector3 endPos)
         {
             var buildings = GetPotentialColliders(map, ref startPos, ref endPos);
@@ -54,6 +74,7 @@ namespace WCell.Collision
 
             return CollideWithRay(buildings, tMax, ray);
         }
+
 
         private static float? CollideWithRay(IList<Building> buildings, float tMax, Ray ray)
         {
@@ -70,33 +91,33 @@ namespace WCell.Collision
         }
 
         #region Load Data
-        internal static QuadTree<Building> GetBuildingTree(MapId map, TileCoord tileCoord)
+        internal static QuadTree<Building> GetBuildingTree(MapId mapId, TileCoord tileCoord)
         {
-            if (!HasMap(map))
+            if (!MapDataExists(mapId))
                 return null;
 
-            TreeReference<Building> tree;
+            TreeReference<Building> treeRef;
 
             lock (worldBuildings)
             {
                 // map has tree?
-                if (worldBuildings.TryGetValue(map, out tree))
+                if (worldBuildings.TryGetValue(mapId, out treeRef))
                 {
-                    if (tree.Tree != null)
-                        return tree.Tree;
+                    if (treeRef.Tree != null)
+                        return treeRef.Tree;
                 }
                 else
                 {
                     // Create map tree
-                    var box = RegionBoundaries.GetRegionBoundaries()[(int)map];
-                    worldBuildings[map] = tree = new TreeReference<Building>(new QuadTree<Building>(box));
+                    var box = RegionBoundaries.GetRegionBoundaries()[(int)mapId];
+                    worldBuildings[mapId] = treeRef = new TreeReference<Building>(new QuadTree<Building>(box));
                 }
             }
 
-            lock (tree.LoadLock)
+            lock (treeRef.LoadLock)
             {
-                EnsureGroupLoaded(tree, map, tileCoord);
-                return tree.Tree;
+                EnsureGroupLoaded(treeRef, mapId, tileCoord);
+                return treeRef.Tree;
             }
         }
 
@@ -165,26 +186,26 @@ namespace WCell.Collision
             return LoadTileBuildings(tree, fullPath);
         }
 
-        private static bool HasMap(MapId mapId)
+        private static bool MapDataExists(MapId mapId)
         {
-            lock (mapExists)
+            lock (mapData)
             {
                 if (!IsLoaded(mapId))
                 {
 					var mapPath = Path.Combine(WorldMap.HeightMapFolder, ((uint)mapId).ToString());
                     var exists = Directory.Exists(mapPath);
 
-                    mapExists[mapId] = exists;
+                    mapData[mapId] = exists;
                     return exists;
                 }
 
-                return mapExists[mapId];
+                return mapData[mapId];
             }
         }
 
         private static bool IsLoaded(MapId mapId)
         {
-            return mapExists.ContainsKey(mapId);
+            return mapData.ContainsKey(mapId);
         }
 
         private static bool IsTileLoaded(MapId map, TileCoord tileCoord)
@@ -213,7 +234,7 @@ namespace WCell.Collision
                 var key = br.ReadString();
                 if (key != fileType)
                 {
-                    Console.WriteLine("Invalid file format, suckah!");
+                    Console.WriteLine(String.Format("{0} has an invalid file format, suckah!", filePath));
                 }
 
                 ReadBuildings(br, tree);

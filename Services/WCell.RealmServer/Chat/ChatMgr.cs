@@ -710,15 +710,15 @@ namespace WCell.RealmServer.Chat
 		{
 			var flags = ChatChannelFlagsClient.Predefined;
 
-			if ((dbcFlags & ChatChannelFlags.Trade) != 0)
+			if (dbcFlags.HasFlag(ChatChannelFlags.Trade))
 			{
 				flags |= ChatChannelFlagsClient.Trade;
 			}
-			if ((dbcFlags & ChatChannelFlags.CityOnly) != 0)
+			if (dbcFlags.HasFlag(ChatChannelFlags.CityOnly))
 			{
 				flags |= ChatChannelFlagsClient.CityOnly;
 			}
-			if ((dbcFlags & ChatChannelFlags.LookingForGroup) != 0)
+			if (dbcFlags.HasFlag(ChatChannelFlags.LookingForGroup))
 			{
 				flags |= ChatChannelFlagsClient.LFG;
 			}

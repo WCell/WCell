@@ -243,12 +243,12 @@ namespace WCell.RealmServer.Chat
 
 		public bool IsCityOnly
 		{
-			get { return (m_flagsEntry.Flags & ChatChannelFlags.CityOnly) == ChatChannelFlags.CityOnly; }
+			get { return m_flagsEntry.Flags.HasFlag(ChatChannelFlags.CityOnly); }
 		}
 
 		public bool IsZoneSpecific
 		{
-			get { return (m_flagsEntry.Flags & ChatChannelFlags.ZoneSpecific) == ChatChannelFlags.ZoneSpecific; }
+			get { return m_flagsEntry.Flags.HasFlag(ChatChannelFlags.ZoneSpecific); }
 		}
 
 		/// <summary>
@@ -256,7 +256,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsLFG
 		{
-			get { return (m_flagsEntry.Flags & ChatChannelFlags.LookingForGroup) != 0; }
+            get { return m_flagsEntry.Flags.HasFlag(ChatChannelFlags.LookingForGroup); }
 		}
 
 		/// <summary>
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool IsTrade
 		{
-			get { return (m_flagsEntry.Flags & ChatChannelFlags.Trade) != 0; }
+            get { return m_flagsEntry.Flags.HasFlag(ChatChannelFlags.Trade); }
 		}
 
 		/// <summary>
@@ -272,7 +272,7 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		public bool RequiresUnguilded
 		{
-			get { return (m_flagsEntry.Flags & ChatChannelFlags.RequiresUnguilded) != 0; }
+			get { return m_flagsEntry.Flags.HasFlag(ChatChannelFlags.RequiresUnguilded); }
 		}
 
 		//public uint ChannelId

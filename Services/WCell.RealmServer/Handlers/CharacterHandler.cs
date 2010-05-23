@@ -825,7 +825,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
-				if ((record.CharacterFlags & CharEnumFlags.NeedsRename) != CharEnumFlags.NeedsRename)
+				if (record.CharacterFlags.HasFlag(CharEnumFlags.NeedsRename))
 				{
 					// their character isn't flagged to be renamed, what do they think they're doing? ;)
 					client.Disconnect();

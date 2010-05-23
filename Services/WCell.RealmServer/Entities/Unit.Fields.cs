@@ -1198,7 +1198,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return UnitFlags.HasFlag(UnitFlags.PlayerControlled);
+				return UnitFlags.HasAnyFlag(UnitFlags.PlayerControlled);
 			}
 		}
 

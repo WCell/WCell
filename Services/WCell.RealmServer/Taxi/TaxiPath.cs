@@ -48,7 +48,11 @@ namespace WCell.RealmServer.Taxi
 
 		public override string ToString()
 		{
-			return string.Format("Path from {0} to {1}", From.Name, To.Name);
+            if (From != null && To != null)
+            {
+                return string.Format("Path from {0} to {1}", From.Name, To.Name);
+            }
+		    return string.Empty;
 		}
 	}
 

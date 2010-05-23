@@ -113,7 +113,7 @@ namespace WCell.RealmServer.Handlers
                     packet.Write(dmg);
                 }
 
-                if (action.HitFlags.HasAny(HitFlags.Absorb_1 | HitFlags.Absorb_2))
+				if (action.HitFlags.HasAnyFlag(HitFlags.Absorb_1 | HitFlags.Absorb_2))
                 {
                     for (byte i = 0; i < damageCount; i++)
                     {
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Handlers
                     }
                 }
 
-                if (action.HitFlags.HasAny(HitFlags.Resist_1 | HitFlags.Resist_2))
+				if (action.HitFlags.HasAnyFlag(HitFlags.Resist_1 | HitFlags.Resist_2))
                 {
                     for (byte i =0;i<damageCount;i++)
                     {
@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Handlers
 
                 packet.Write(0);// this is a spell id
 
-                if (action.HitFlags.HasAny(HitFlags.Block))
+                if (action.HitFlags.HasAnyFlag(HitFlags.Block))
                 {
                     packet.Write(action.Blocked);
                 }

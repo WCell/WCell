@@ -152,6 +152,7 @@
     <Compile Include="Items\InventorySlotType.cs" />
     <Compile Include="Items\ItemFlags.cs" />
     <Compile Include="Items\ItemSubClass.cs" />
+    <Compile Include="Login\Extensions.cs" />
     <Compile Include="Login\Login.cs" />
     <Compile Include="Looting\LootingMiscEnums.cs" />
     <Compile Include="Mailing.cs" />
@@ -183,6 +184,7 @@
     <Compile Include="NPCs\CreatureFamilyId.cs" />
     <Compile Include="NPCs\Misc.cs" />
     <Compile Include="NPCs\Vehicles.cs" />
+    <Compile Include="Pets\Extensions.cs" />
     <Compile Include="Pets\PetActionEntry.cs" />
     <Compile Include="Pets\PetTalentType.cs" />
     <Compile Include="NPCs\VendorInventoryError.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="Skills\SkillId.cs" />
     <Compile Include="Spells\AuraType.cs" />
     <Compile Include="Spells\Constants.Spells.cs" />
+    <Compile Include="Spells\Extensions.cs" />
     <Compile Include="Spells\ProcTriggerFlags.cs" />
     <Compile Include="Spells\Range.cs" />
     <Compile Include="Spells\SpellConstants.cs" />
@@ -231,6 +234,7 @@
     <Compile Include="TaxiConstants.cs" />
     <Compile Include="TerrainConstants.cs" />
     <Compile Include="Tickets.cs" />
+    <Compile Include="Updates\Extensions.cs" />
     <Compile Include="Updates\UpdateEnums.cs" />
     <Compile Include="Updates\UpdateField.cs" />
     <Compile Include="Updates\UpdateFieldCollection.cs" />

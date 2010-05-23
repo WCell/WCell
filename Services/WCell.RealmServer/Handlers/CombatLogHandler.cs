@@ -331,7 +331,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(state.Absorbed);
 				packet.Write(state.Resisted);
 				//packet.Write(0);				// is always 0
-				packet.Write((state.Schools & DamageSchoolMask.Physical) != 0);
+			    packet.Write(state.Schools.HasFlag(DamageSchoolMask.Physical));
 				packet.Write((byte)0);			// 0 or 1
 				packet.Write(state.Blocked);
 

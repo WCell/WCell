@@ -112,8 +112,8 @@ namespace WCell.RealmServer.NPCs.Trainers
 		public bool CanTrain(Character chr)
 		{
 			return (RequiredSpellId == 0 || chr.Spells.Contains(RequiredSpellId)) &&
-				(RaceMask == 0 || RaceMask.Has(chr.RaceMask)) &&
-				(ClassMask == 0 || ClassMask.Has(chr.ClassMask));
+                (RaceMask == 0 || RaceMask.HasFlag(chr.RaceMask)) &&
+                (ClassMask == 0 || ClassMask.HasFlag(chr.ClassMask));
 		}
 
 		/// <summary>

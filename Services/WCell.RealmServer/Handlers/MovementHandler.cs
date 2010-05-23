@@ -93,7 +93,7 @@ namespace WCell.RealmServer.Handlers
 			var newPosition = packet.ReadVector3();
 			var orientation = packet.ReadFloat();
 
-			if (moveFlags.Has(MovementFlags.OnTransport))
+            if (moveFlags.HasFlag(MovementFlags.OnTransport))
 			{
 				var transportId = packet.ReadPackedEntityId();
 				var transportPosition = packet.ReadVector3();
@@ -138,10 +138,10 @@ namespace WCell.RealmServer.Handlers
 				chr.Transport.RemovePassenger(chr);
 			}
 
-			if (moveFlags.Has(MovementFlags.Swimming | MovementFlags.Flying) ||
-				moveFlags2.Has(MovementFlags2.AlwaysAllowPitching))
+            if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+                moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
-				if (moveFlags.Has(MovementFlags.Flying) && !chr.CanFly)
+                if (moveFlags.HasFlag(MovementFlags.Flying) && !chr.CanFly)
 				{
 					return;
 				}
@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Handlers
 
 			var airTime = packet.ReadUInt32();
 
-			if (moveFlags.Has(MovementFlags.Falling))
+            if (moveFlags.HasFlag(MovementFlags.Falling))
 			{
 				// constant, but different when jumping in water and on land?                
 				var jumpFloat1 = packet.ReadFloat();
@@ -173,7 +173,7 @@ namespace WCell.RealmServer.Handlers
 				chr.OnFalling();
 			}
 
-			if (moveFlags.Has(MovementFlags.Swimming))
+            if (moveFlags.HasFlag(MovementFlags.Swimming))
 			{
 				chr.OnSwim();
 			}
@@ -182,12 +182,12 @@ namespace WCell.RealmServer.Handlers
 				chr.OnStopSwimming();
 			}
 
-			if (moveFlags.Has(MovementFlags.Spline))
+            if (moveFlags.HasFlag(MovementFlags.Spline))
 			{
 				var spline = packet.ReadFloat();
 			}
 
-			var onlyOrientation = ((moveFlags & ~(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right)) == 0) &&
+			var onlyOrientation = !moveFlags.HasAnyFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_HEARTBEAT &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP_ASCEND &&
@@ -543,7 +543,7 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			packet.Write((uint)moveFlags);
-			if (moveFlags.Has(MonsterMoveFlags.Flag_0x200000))
+            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
 			{
 				// TODO: what does this flag mean?
 				packet.Write((byte)0);
@@ -552,7 +552,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(moveTime);
 
-			if (moveFlags.Has(MonsterMoveFlags.Flag_0x800))
+            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
 			{
 				// TODO: what does this flag mean?
 				packet.Write(0.0f);
@@ -561,7 +561,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(numWaypoints);
 
-			if (moveFlags.Has(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
+            if (moveFlags.HasAnyFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
 			{
 				foreach (IPathVertex waypoint in waypoints)
 				{
@@ -608,7 +608,7 @@ namespace WCell.RealmServer.Handlers
 			packet.Write((byte)MonsterMoveType.Normal);
 			packet.Write((uint)moveFlags);
 
-			if (moveFlags.Has(MonsterMoveFlags.Flag_0x200000))
+            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
 			{
 				packet.Write((byte)0);
 				packet.Write(0);
@@ -617,7 +617,7 @@ namespace WCell.RealmServer.Handlers
 			var timePos = packet.Position;
 			packet.Position += 4;
 
-			if (moveFlags.Has(MonsterMoveFlags.Flag_0x800))
+            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
 			{
 				packet.Write(0.0f);
 				packet.Write(0);
