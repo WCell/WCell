@@ -232,7 +232,7 @@ namespace WCell.RealmServer.Tests
 				RealmServer.ConsoleActive = false;
 				RealmServerConfiguration.ContentDirName = Path.GetFullPath(ContentDir);
 				RealmServerConfiguration.Initialize();
-				RealmAddonMgr.AddonFolder = RealmAddonDir;
+				RealmAddonMgr.AddonDir = RealmAddonDir;
 
 				DebugUtil.DumpDirName = DumpDir;
 				DebugUtil.Init();
