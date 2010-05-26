@@ -589,18 +589,17 @@ namespace WCell.RealmServer.Entities
 			TryLevelUp();
 		}
 
-		internal void TryLevelUp()
+		internal bool TryLevelUp()
 		{
 			var nextLevelXp = NextLevelXP;
 			var level = Level;
-			if ((XP >= nextLevelXp) && (level < RealmServerConfiguration.MaxCharacterLevel))
+			if (XP >= nextLevelXp && level < RealmServerConfiguration.MaxCharacterLevel)
 			{
 				// base.LevelUp();
 
 				XP -= nextLevelXp;
 				Level = ++level;
-				nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
-				NextLevelXP = nextLevelXp;
+				NextLevelXP = XpGenerator.GetXpForlevel(level + 1);
 
 				if (Level >= 10)
 				{
@@ -612,17 +611,19 @@ namespace WCell.RealmServer.Entities
 				{
 					evt(this);
 				}
-
-				if (XP >= nextLevelXp)
+				
+				if (TryLevelUp())
 				{
-					TryLevelUp();
-					return;
+					// already leveled up
+					return true;
 				}
 
 				ModStatsForLevel(level);
 				m_auras.ReapplyAllAuras();
 				SaveLater();
+				return true;
 			}
+			return false;
 		}
 
 		public void ModStatsForLevel(int level)

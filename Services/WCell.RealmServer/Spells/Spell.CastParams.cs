@@ -52,6 +52,7 @@ namespace WCell.RealmServer.Spells
 		        return SpellFailedReason.Silenced;
 		    }
 
+			// Check if castable while stunned
             if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 		    {
 		        return SpellFailedReason.CantDoThatRightNow;
