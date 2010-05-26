@@ -199,6 +199,22 @@ namespace WCell.AuthServer
 		}
 
 		/// <summary>
+		/// Returns the no'th Realm
+		/// </summary>
+		public static RealmEntry GetRealmByNumber(int no)
+		{
+			int i = 1;
+			foreach (var realm in Realms.Values)
+			{
+				if (i++ == no)
+				{
+					return realm;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Clears all logged in accounts of the given Server.
 		/// </summary>
 		/// <param name="serverId"></param>

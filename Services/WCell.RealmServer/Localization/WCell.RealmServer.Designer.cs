@@ -394,6 +394,15 @@ namespace WCell.RealmServer.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to IPC device disconnected from AuthServer!.
+        /// </summary>
+        internal static string IPCProxyDisconnected {
+            get {
+                return ResourceManager.GetString("IPCProxyDisconnected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to IPC device failed to connect to the AuthServer because the AuthServer is probably not running. Retrying in {0} seconds....
         /// </summary>
         internal static string IPCProxyFailed {

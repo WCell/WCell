@@ -655,9 +655,7 @@ namespace WCell.Core.Cryptography
 			if (buf.Length > 20)
 			{
 				// should never happen, since we're using SHA1, which always outputs a 20byte hash
-				var newBuff = new byte[20];
-				Array.Copy(buf, newBuff, 20);
-				return newBuff;
+			    throw new CryptographicException("SHA-1 hash too long - " + buf.Length + " bytes, should be 20!");
 			}
 			return buf;
 		}

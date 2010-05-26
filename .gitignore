@@ -10,3 +10,4 @@ Run/Debug/*
 Run/Release/*
 TestResults/*
 Utilities/WCell.SolutionItems/bin/*
+Addons/.gitignore

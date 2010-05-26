@@ -711,7 +711,8 @@ namespace WCell.RealmServer.Commands
 
 			RealmServer.Instance.AuthClient.IsRunning = run;
 
-			trigger.Reply("Done. - IPC-Client is now {0}.", run ? "Online" : "Offline");
+			//trigger.Reply("Done. - IPC-Client is now {0}.", run ? "Online" : "Offline");
+			trigger.Reply("Done.");
 			//base.Process(trigger);
 		}
 	}

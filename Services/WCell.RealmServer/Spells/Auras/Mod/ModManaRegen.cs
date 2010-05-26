@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class ModManaRegenHandler : AuraEffectHandler
 	{
 		/// <summary>
-		/// Used for ModManaRegen effects that don't have an UpdateRate
+		/// Used for ModManaRegen effects that don't have an Amplitude
 		/// </summary>
 		[Variable("DefaultManaRegenBuffAmplitude")]
 		public static int DefaultAmplitude = 5000;
