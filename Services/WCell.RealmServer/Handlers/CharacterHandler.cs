@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="client">the Session the incoming packet belongs to</param>
 		/// <param name="packet">the full packet</param>        
 		[ClientPacketHandler(RealmServerOpCode.CMSG_CHAR_CREATE, IsGamePacket = false, RequiresLogin = false)]
-		public static void CharCreateRequest(IRealmClient client, RealmPacketIn packet)
+		public static void HandleCharCreateRequest(IRealmClient client, RealmPacketIn packet)
 		{
 			var acc = client.Account;
 			if (acc == null || client.ActiveCharacter != null)

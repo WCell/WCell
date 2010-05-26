@@ -194,6 +194,7 @@ namespace WCell.RealmServer.Database
 		public CharacterRecord(long accountId)
 		{
 			New = true;
+			JustCreated = true;
 
 			AccountId = accountId;
 			CanSave = true;
@@ -204,6 +205,12 @@ namespace WCell.RealmServer.Database
 		public virtual Character CreateCharacter()
 		{
 			return new Character();
+		}
+
+		public bool JustCreated
+		{
+			get;
+			internal set;
 		}
 
 		/// <summary>
@@ -291,7 +298,7 @@ namespace WCell.RealmServer.Database
 				m_lastLogin = value;
 				if (m_lastLogin == null)
 				{
-					New = true;
+					JustCreated = true;
 				}
 			}
 		}

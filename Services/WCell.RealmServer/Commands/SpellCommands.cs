@@ -243,7 +243,7 @@ namespace WCell.RealmServer.Commands
 				if (trigger.Args.Target.HasSpells)
 				{
 					trigger.Args.Target.Spells.Clear();
-					trigger.Args.Target.Spells.AddDefaults();
+					trigger.Args.Target.Spells.AddDefaultSpells();
 					trigger.Reply("Purged spells.");
 				}
 				else

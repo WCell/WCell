@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Spells
 			m_sendPackets = true;
 		}
 
-		public override void AddDefaults()
+		public override void AddDefaultSpells()
 		{
 			// add the default Spells for the race/class
 			for (var i = 0; i < OwnerChar.Archetype.Spells.Count; i++)

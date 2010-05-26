@@ -549,6 +549,7 @@ namespace WCell.RealmServer.Spells
 			// die += (uint)Math.Round(Effect.DicePerLevel * caster.Level);
 
 			// dice boni
+			value += DiceSides;
 			//value += Utility.Random(DiceCount, DiceCount * DiceSides);
 
 			return value;
@@ -617,7 +618,7 @@ namespace WCell.RealmServer.Spells
 			}
 			//if (DiceCount != 0)
 			//{
-			//	writer.WriteLine(indent + "DiceCount: {0}", DiceCount);
+			//    writer.WriteLine(indent + "DiceCount: {0}", DiceCount);
 			//}
 			if (DiceSides != 0)
 			{

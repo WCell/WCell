@@ -19,14 +19,21 @@ namespace WCell.Addons.Default.Spells.Priest
 			// only can be proced when priest casts the given spells
 			// TODO: Only cast on crit
 			SpellLineId.PriestHolyInspiration.Apply(spell => spell.AddCasterProcSpells(
-																SpellLineId.PriestFlashHeal,
-																SpellLineId.PriestHeal,
-																SpellLineId.PriestGreaterHeal,
-																SpellLineId.PriestBindingHeal,
-																SpellLineId.PriestDisciplinePenance,
-																SpellLineId.PriestPrayerOfMending,
-																SpellLineId.PriestPrayerOfHealing,
-																SpellLineId.PriestHolyCircleOfHealing));
+				SpellLineId.PriestFlashHeal,
+				SpellLineId.PriestHeal,
+				SpellLineId.PriestGreaterHeal,
+				SpellLineId.PriestBindingHeal,
+				SpellLineId.PriestDisciplinePenance,
+				SpellLineId.PriestPrayerOfMending,
+				SpellLineId.PriestPrayerOfHealing,
+				SpellLineId.PriestHolyCircleOfHealing));
+
+			SpellLineId.PriestShadowMindFlay.Apply(spell =>
+			{
+				var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
+				effect.BasePoints = spell.Effects[2].BasePoints * 3;
+				effect.Amplitude = spell.Effects[2].Amplitude;
+			});
 		}
 	}
 }

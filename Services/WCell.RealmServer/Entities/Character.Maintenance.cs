@@ -111,7 +111,7 @@ namespace WCell.RealmServer.Entities
 
 			// spells
 			PlayerSpellCollection spells;
-			if (!record.New && SpellHandler.PlayerSpellCollections.TryGetValue(EntityId.Low, out spells))
+			if (!record.JustCreated && SpellHandler.PlayerSpellCollections.TryGetValue(EntityId.Low, out spells))
 			{
 				SpellHandler.PlayerSpellCollections.Remove(EntityId.Low);
 				m_spells = spells;
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Entities
 			CanMelee = true;
 
 			// basic setup
-			if (record.New)
+			if (record.JustCreated)
 			{
 				Power = PowerType == PowerType.Rage ? 0 : MaxPower;
 				SetInt32(UnitFields.HEALTH, MaxHealth);
@@ -203,7 +203,7 @@ namespace WCell.RealmServer.Entities
 			}
 			Model = model;
 
-			if (m_record.New)
+			if (m_record.JustCreated)
 			{
 				if (m_zone != null)
 				{
@@ -447,7 +447,7 @@ namespace WCell.RealmServer.Entities
 
 						m_zone = m_region.GetZone(m_record.Zone);
 
-						if (m_zone != null && m_record.New)
+						if (m_zone != null && m_record.JustCreated)
 						{
 							// set initial zone explored automatically
 							SetZoneExplored(m_zone.Id, false);
@@ -479,7 +479,7 @@ namespace WCell.RealmServer.Entities
 
 				OnLogin();
 
-				if (!m_record.New)
+				if (!m_record.JustCreated)
 				{
 					LoadDeathState();
 					LoadEquipmentState();
@@ -491,7 +491,7 @@ namespace WCell.RealmServer.Entities
 #endif
 					InitItems();
 
-				if (m_record.New)
+				if (m_record.JustCreated)
 				{
 					if (!m_client.Account.Role.IsStaff)
 					{
@@ -502,7 +502,7 @@ namespace WCell.RealmServer.Entities
 						m_zone.EnterZone(this, null);
 					}
 
-					m_spells.AddDefaults();
+					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
 				}
 
@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Entities
 				RelationMgr.Instance.OnCharacterLogin(this);
 
 				LastLogin = DateTime.Now;
-				var isNew = m_record.New;
+				var isNew = m_record.JustCreated;
 
 				AddMessage(() =>
 				{
@@ -584,10 +584,10 @@ namespace WCell.RealmServer.Entities
 					}
 				});
 
-				if (m_record.New)
+				if (m_record.JustCreated)
 				{
 					SaveLater();
-					m_record.New = false;
+					m_record.JustCreated = false;
 				}
 				else
 				{
@@ -619,7 +619,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected internal void InitItems()
 		{
-			if (m_record.New)
+			if (m_record.JustCreated)
 			{
 				m_inventory.AddDefaultItems();
 			}
