@@ -51,9 +51,14 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Through items and racial abilities, one Unit can easily have 100 Auras active at a time -		
 		/// No need to iterate over all of them when checking for interruption etc.		
 		/// </summary>        
-		private readonly Aura[] m_visibleAuras = new Aura[64];
+		protected readonly Aura[] m_visibleAuras = new Aura[64];
 
-		private int m_visAuraCount;
+		protected int m_visAuraCount;
+
+		/// <summary>
+		/// TODO: 
+		/// </summary>
+		protected internal List<SpellEffect> DamagePctAmplifiers;
 
 
 		public AuraCollection(Unit owner)

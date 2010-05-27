@@ -174,6 +174,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
 			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifyHandler();
 			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfSpirit] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

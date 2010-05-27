@@ -804,7 +804,7 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.Transform, typeof(NPCId));
 			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));
-			SetAuraEffectMiscValueType(AuraType.DamageTakenFromCasterPct, typeof(DamageSchoolMask));
+			SetAuraEffectMiscValueType(AuraType.DamagePctAmplifier, typeof(DamageSchoolMask));
 
 			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(StatType));
 			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(StatType));
