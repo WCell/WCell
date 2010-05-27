@@ -904,7 +904,10 @@ namespace Cell.Core
 
 		protected virtual void Dispose(bool disposing)
 		{
-			Stop();
+			if (_running)
+			{
+				Stop();
+			}
 		}
 
 		#endregion
