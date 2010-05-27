@@ -367,7 +367,7 @@ namespace Cell.Core
 		{
 			log.Info(Resources.BaseStop);
 
-			if (_running)
+			if (IsRunning)
 			{
 				IsRunning = false;
 

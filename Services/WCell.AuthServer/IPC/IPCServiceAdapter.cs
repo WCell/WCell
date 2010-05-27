@@ -311,12 +311,12 @@ namespace WCell.AuthServer.IPC
         /// <summary>
         /// Registers a realm server with the authentication server
         /// </summary>
-        /// <param name="serverName">the name of the server</param>
+        /// <param name="realmName">the name of the server</param>
         /// <param name="serverType">the type of the server</param>
         /// <param name="flags">the up/down status of the serer (green/red)</param>
         /// <param name="serverCategory">the timezone the server is in</param>
         /// <param name="serverStatus">the status of the server (locked or not)</param>
-        public void RegisterRealmServer(string serverName, string addr, int port, int chrCount, int capacity, 
+        public void RegisterRealmServer(string realmName, string addr, int port, int chrCount, int capacity, 
 			RealmServerType serverType, RealmFlags flags, RealmCategory serverCategory, 
 			RealmStatus serverStatus, ClientVersion clientVersion)
         {
@@ -341,14 +341,14 @@ namespace WCell.AuthServer.IPC
 
             if (isNew)
             {
-                realm = AuthenticationServer.GetRealmByName(serverName);
+                realm = AuthenticationServer.GetRealmByName(realmName);
                 if (realm == null)
 				{
 					if (!AuthServerConfiguration.RealmIPs.Contains(ep.Address))
 					{
 						// Ignore unknown realms
 						log.Warn("Unallowed Realm (\"{0}\") tried to register from: {1} (For more info, see the <RealmIPs> entry in your configuration)", 
-							serverName, ep.Address, AuthServerConfiguration.Instance.FilePath);
+							realmName, ep.Address, AuthServerConfiguration.Instance.FilePath);
 						var chan = OperationContext.Current.Channel;
 						if (chan != null)
 						{
@@ -366,7 +366,7 @@ namespace WCell.AuthServer.IPC
                 {
                 	lock (AuthenticationServer.Realms)
 					{
-						AuthenticationServer.Realms.Remove(id);
+						AuthenticationServer.Realms.RemoveFirst(pair => pair.Value.Name.Equals(realmName, StringComparison.InvariantCultureIgnoreCase) );
                 	}
                 }
             }
@@ -378,7 +378,7 @@ namespace WCell.AuthServer.IPC
             }
 
 			realm.ChannelId = id;
-            realm.Name = serverName;
+            realm.Name = realmName;
             realm.Address = addr;
             realm.Port = port;
             realm.Flags = flags;

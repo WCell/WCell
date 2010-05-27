@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Spells
 		protected SpellFailedReason PrePerform()
 		{
 			// Make sure that there is an Item for Spells that require an Item target
-            if (m_spell.TargetFlags.HasFlag(SpellTargetFlags.Item))
+            if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
 			{
 				if (UsedItem == null || !UsedItem.IsInWorld || UsedItem.Owner != Caster)
 				{

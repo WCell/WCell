@@ -173,17 +173,16 @@ namespace WCell.RealmServer.Spells
 
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
 
+			CanStack = MaxStackCount > 0;
 			// procs and stacking:
 			if (ProcCharges > 0)
 			{
 				// applications will be used up by procs
-				CanStack = MaxStackCount < ProcCharges;
 				StackCount = ProcCharges;
 			}
 			else
 			{
 				// applications can be added by re-applying
-				CanStack = MaxStackCount > 0;
 				StackCount = 1;
 			}
 

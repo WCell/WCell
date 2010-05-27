@@ -208,7 +208,7 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
+                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
                 {
                     packet.Write((byte)0); // unk 3.3.x?
                 }
@@ -443,7 +443,7 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
+                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
                 {
                     packet.Write((byte)0); // unk 3.3.x?
                 }
