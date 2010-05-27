@@ -267,7 +267,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-            if (TargetFlags.HasFlag(SpellTargetFlags.UnkUnit_0x100) &&
+            if (TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
@@ -288,10 +288,10 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (ReqDeadTarget)
 			{
-                if (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+                if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-                        (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+                        (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}

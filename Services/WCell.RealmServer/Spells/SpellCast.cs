@@ -561,7 +561,7 @@ namespace WCell.RealmServer.Spells
 				selected = Caster;
 			}
 			// 0x18A02
-            if (TargetFlags.HasFlag(
+            if (TargetFlags.HasAnyFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
 				SpellTargetFlags.Object |
@@ -593,13 +593,13 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x20
-            if (TargetFlags.HasFlag(SpellTargetFlags.SourceLocation))
+            if (TargetFlags.HasAnyFlag(SpellTargetFlags.SourceLocation))
 			{
 				region.GetObject(packet.ReadPackedEntityId());		// since 3.2.0
 				SourceLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
 			}
 			// 0x40
-            if (TargetFlags.HasFlag(SpellTargetFlags.DestinationLocation))
+            if (TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
 			{
 				selected = region.GetObject(packet.ReadPackedEntityId());
 				TargetLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
@@ -607,7 +607,7 @@ namespace WCell.RealmServer.Spells
 				targetFound = true;
 			}
 			// 0x2000
-            if (TargetFlags.HasFlag(SpellTargetFlags.String))
+            if (TargetFlags.HasAnyFlag(SpellTargetFlags.String))
 			{
 				StringTarget = packet.ReadCString();
 			}

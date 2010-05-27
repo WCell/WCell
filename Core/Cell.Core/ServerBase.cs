@@ -143,7 +143,6 @@ namespace Cell.Core
 		/// The buffer for incoming UDP data.
 		/// </summary>
 		private byte[] _udpBuffer = new byte[1024];
-
 	    #endregion
 
 	    #region Public Properties
@@ -367,7 +366,7 @@ namespace Cell.Core
 		{
 			log.Info(Resources.BaseStop);
 
-			if (_running)
+			if (IsRunning)
 			{
 				IsRunning = false;
 
@@ -905,7 +904,10 @@ namespace Cell.Core
 
 		protected virtual void Dispose(bool disposing)
 		{
-			Stop();
+			if (_running)
+			{
+				Stop();
+			}
 		}
 
 		#endregion
