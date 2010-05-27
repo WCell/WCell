@@ -51,7 +51,8 @@ namespace WCell.Core
 		protected List<IUpdatable> m_updatables;
 		protected LockfreeQueue<IMessage> m_messageQueue;
 
-		protected int m_currentThreadId;
+		protected Task _updateTask; 
+		protected int _currentUpdateThreadId;
 		protected Stopwatch m_queueTimer;
 		protected long m_updateFrequency, m_lastUpdate;
 		protected TimerEntry m_shutdownTimer;
@@ -148,9 +149,15 @@ namespace WCell.Core
 			get { return _running; }
 			set
 			{
-				_running = value;
-                // start message loop
-                Task.Factory.StartNewDelayed((int)m_updateFrequency, QueueUpdateCallback, this);
+				if (_running != value)
+				{
+					_running = value;
+					if (value)
+					{
+						// start message loop
+						_updateTask = Task.Factory.StartNewDelayed((int) m_updateFrequency, QueueUpdateCallback, this);
+					}
+				}
 			}
 		}
 
@@ -264,7 +271,7 @@ namespace WCell.Core
 
 		public void EnsureContext()
 		{
-			if (Thread.CurrentThread.ManagedThreadId != m_currentThreadId)
+			if (Thread.CurrentThread.ManagedThreadId != _currentUpdateThreadId)
 			{
 				throw new InvalidOperationException("Not in context");
 			}
@@ -275,7 +282,7 @@ namespace WCell.Core
 		/// </summary>
 		public bool IsInContext
 		{
-			get { return Thread.CurrentThread.ManagedThreadId == m_currentThreadId; }
+			get { return Thread.CurrentThread.ManagedThreadId == _currentUpdateThreadId; }
 		}
 
 		/// <summary>
@@ -294,57 +301,58 @@ namespace WCell.Core
 				return;
 			}
 
-			m_currentThreadId = Thread.CurrentThread.ManagedThreadId;
-
-			// get the time at the start of our task processing
-			var timerStart = m_queueTimer.ElapsedMilliseconds;
-			var updateDt = (timerStart - m_lastUpdate) / 1000.0f;
-
-			// run timers!
-			foreach (var updatable in m_updatables)
+			if (Interlocked.CompareExchange(ref _currentUpdateThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
 			{
-				try
+				// get the time at the start of our task processing
+				var timerStart = m_queueTimer.ElapsedMilliseconds;
+				var updateDt = (timerStart - m_lastUpdate)/1000.0f;
+
+				// run timers!
+				foreach (var updatable in m_updatables)
 				{
-					updatable.Update(updateDt);
+					try
+					{
+						updatable.Update(updateDt);
+					}
+					catch (Exception e)
+					{
+						LogUtil.ErrorException(e, "Failed to update: " + updatable);
+					}
 				}
-				catch (Exception e)
+
+				m_lastUpdate = m_queueTimer.ElapsedMilliseconds;
+
+				// process messages
+				IMessage msg;
+
+				while (m_messageQueue.TryDequeue(out msg))
 				{
-					LogUtil.ErrorException(e, "Failed to update: " + updatable);
+					try
+					{
+						msg.Execute();
+					}
+					catch (Exception e)
+					{
+						LogUtil.ErrorException(e, "Failed to execute message: " + msg);
+					}
+					if (!_running)
+					{
+						return;
+					}
 				}
-			}
 
-			m_lastUpdate = m_queueTimer.ElapsedMilliseconds;
+				// get the end time
+				long timerStop = m_queueTimer.ElapsedMilliseconds;
 
-			// process messages
-			IMessage msg;
+				bool updateLagged = timerStop - timerStart > m_updateFrequency;
+				long callbackTimeout = updateLagged ? 0 : ((timerStart + m_updateFrequency) - timerStop);
 
-			while (m_messageQueue.TryDequeue(out msg))
-			{
-				try
+				Interlocked.Exchange(ref _currentUpdateThreadId, 0);
+				if (_running)
 				{
-					msg.Execute();
+					// re-register the Update-callback
+					_updateTask = Task.Factory.StartNewDelayed((int) callbackTimeout, QueueUpdateCallback, this);
 				}
-				catch (Exception e)
-				{
-					LogUtil.ErrorException(e, "Failed to execute message: " + msg);
-				}
-				if (!_running)
-				{
-					return;
-				}
-			}
-
-			// get the end time
-			long timerStop = m_queueTimer.ElapsedMilliseconds;
-
-			bool updateLagged = timerStop - timerStart > m_updateFrequency;
-			long callbackTimeout = updateLagged ? 0 : ((timerStart + m_updateFrequency) - timerStop);
-
-			m_currentThreadId = 0;
-			if (_running)
-			{
-				// re-register the Update-callback
-			    Task.Factory.StartNewDelayed((int)callbackTimeout, QueueUpdateCallback, this);
 			}
 		}
 

@@ -143,7 +143,6 @@ namespace Cell.Core
 		/// The buffer for incoming UDP data.
 		/// </summary>
 		private byte[] _udpBuffer = new byte[1024];
-
 	    #endregion
 
 	    #region Public Properties
