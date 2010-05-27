@@ -465,7 +465,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Uses AffectMask for spells that are influenced
 		/// </summary>
-		DamageTakenFromCasterPct = 271,
+		DamagePctAmplifier = 271,
 		Aura_272 = 272,
 		Aura_273 = 273,
 		Aura_274 = 274,

@@ -153,12 +153,16 @@ namespace WCell.RealmServer.Spells.Auras
 
 		private void SetAmplitude()
 		{
+			if (m_amplitude != 0) 
+				return;
+
 			foreach (var handler in m_handlers)
 			{
 				// Aura has the Amplitude of the first effect with Amplitude set
-				if (m_amplitude == 0 && handler.SpellEffect.Amplitude > 0)
+				if (handler.SpellEffect.Amplitude > 0)
 				{
 					m_amplitude = handler.SpellEffect.Amplitude;
+					break;
 				}
 			}
 		}

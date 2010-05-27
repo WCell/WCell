@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// The Xp Reward Level that is used to determine the Xp reward upon completion.
 		/// </summary>
-		public static readonly QuestXPInfo[] QuestXpInfos = new QuestXPInfo[101];
+		public static readonly QuestXPInfo[] QuestXpInfos = new QuestXPInfo[200];
 
 		/// <summary>
 		/// Amount of levels above the Character level at which a player is not allowed to do the Quest
