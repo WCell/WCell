@@ -26,7 +26,7 @@ namespace WCell.AuthServer
     /// </summary>
     public class Program
     {
-        private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// Starts up the authentication server.

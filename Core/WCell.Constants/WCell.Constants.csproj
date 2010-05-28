@@ -144,10 +144,13 @@
     <Compile Include="Characters.cs" />
     <Compile Include="Chat\TextEmote.cs" />
     <Compile Include="Externals.cs" />
+    <Compile Include="Factions\Extensions.cs" />
     <Compile Include="GameObjects\GOMisc.cs" />
     <Compile Include="Groups.cs" />
+    <Compile Include="Guilds\Extensions.cs" />
     <Compile Include="Instances.cs" />
     <Compile Include="Items\EquipmentSlot.cs" />
+    <Compile Include="Items\Extensions.cs" />
     <Compile Include="Items\InventorySlot.cs" />
     <Compile Include="Items\InventorySlotType.cs" />
     <Compile Include="Items\ItemFlags.cs" />
@@ -215,6 +218,7 @@
     <Compile Include="Quests\QuestSort.cs" />
     <Compile Include="Realm\RealmCategory.cs" />
     <Compile Include="Relations\Constants.Relations.cs" />
+    <Compile Include="Relations\Extensions.cs" />
     <Compile Include="Skills\SkillId.cs" />
     <Compile Include="Spells\AuraType.cs" />
     <Compile Include="Spells\Constants.Spells.cs" />

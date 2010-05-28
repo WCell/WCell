@@ -8,6 +8,11 @@ namespace WCell.Constants.Login
 		{
 			return (flags & otherFlags) != 0;
 		}
+
+		public static bool HasAnyFlag(this CharEnumFlags flags, CharEnumFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
 		#endregion
 	}
 }

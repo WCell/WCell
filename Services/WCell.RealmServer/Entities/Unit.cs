@@ -1591,7 +1591,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public void Proc(ProcTriggerFlags flags, Unit triggerer, IUnitAction action, bool active)
 		{
-			if (m_brain != null && m_brain.CurrentAction != null && m_brain.CurrentAction.InterruptFlags.HasFlag(flags))
+			if (m_brain != null && m_brain.CurrentAction != null && m_brain.CurrentAction.InterruptFlags.HasAnyFlag(flags))
 			{
 				// check if the current action has been interrupted
 				m_brain.StopCurrentAction();
@@ -1621,7 +1621,7 @@ namespace WCell.RealmServer.Entities
 			for (var i = 0; i < m_procHandlers.Count; i++)
 			{
 				var proc = m_procHandlers[i];
-				if (proc.ProcTriggerFlags.HasFlag(flags) &&
+				if (proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					if (Utility.Random(0, 101) <= proc.ProcChance)

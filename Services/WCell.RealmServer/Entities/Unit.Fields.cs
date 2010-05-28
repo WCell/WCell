@@ -1198,10 +1198,6 @@ namespace WCell.RealmServer.Entities
 				}
 
 				SetByte(UnitFields.BYTES_2, 3, (byte)value);
-				if (this is Character)
-				{
-					SendFieldUpdateTo((Character)this, UnitFields.BYTES_2);
-				}
 			}
 		}
 
