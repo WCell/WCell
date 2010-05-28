@@ -468,7 +468,7 @@ namespace WCell.RealmServer.Entities
 		/// Is called after Character has been added to a region the first time and 
 		/// before it receives the first Update packet
 		/// </summary>
-		internal void InitializeCharacter()
+		internal protected void InitializeCharacter()
 		{
 			World.AddCharacter(this);
 			m_initialized = true;

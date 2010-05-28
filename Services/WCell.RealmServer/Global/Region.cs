@@ -1356,15 +1356,15 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Instantly updates all active Characters' environment: Collect environment info and send update deltas
 		/// </summary>
-		public void ForceUpdateCharacters(bool now)
+		public void ForceUpdateCharacters()
 		{
-			if (now)
+			if (IsInContext && !IsUpdating)
 			{
 				UpdateCharacters();
 			}
 			else
 			{
-				AddMessage(UpdateCharacters);
+				AddMessageAndWait(UpdateCharacters);
 			}
 		}
 
@@ -1844,9 +1844,6 @@ namespace WCell.RealmServer.Global
 					ArrayUtil.Set(ref m_gos, go.EntityId.Low, go);
 				}
 
-				obj.OnEnterRegion();
-				obj.RequestUpdate();
-
 				// TODO: For now enforce the MainZone and send the states of the default zone to force an update
 				if (MainZoneCount == 1)
 				{
@@ -1859,6 +1856,9 @@ namespace WCell.RealmServer.Global
 						MiscHandler.SendInitWorldStates((Character)obj, DefaultZone.WorldStates, DefaultZone);
 					}
 				}
+
+				obj.OnEnterRegion();
+				obj.RequestUpdate();
 
 				if (obj is Character)
 				{

@@ -322,6 +322,15 @@ namespace WCell.RealmServer.Tests.Misc
 			World.RemoveCharacter(this);
 		}
 
+		protected override void OnEnterRegion()
+		{
+			if (!m_initialized)
+			{
+				InitializeCharacter();
+			}
+			base.OnEnterRegion();
+		}
+
 		/// <summary>
 		/// Logs out and deletes this Character.
 		/// </summary>

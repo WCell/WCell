@@ -126,7 +126,7 @@ namespace WCell.RealmServer.Tests.Misc
 		/// <summary>
 		/// Ensures that all Characters in this Pool are in the world after creation and after this is set to true
 		/// </summary>
-		public bool EnsureInWorld
+		public bool InWorld
 		{
 			get { return m_inWorld; }
 			set
@@ -255,13 +255,14 @@ namespace WCell.RealmServer.Tests.Misc
 			{
 				chr.EnsureLiving();
 			}
+
 			if (EnsureSameRegion)
 			{
 				chr.TeleportTo(Setup.Kalimdor, true);
 			}
-			else if (EnsureInWorld)
+			else// if (!InWorld)
 			{
-				chr.EnsureInWorld();
+				InWorld = true;
 			}
 		}
 
@@ -298,7 +299,7 @@ namespace WCell.RealmServer.Tests.Misc
 					}
 				}
 
-				// make sure all logout messages have been processed before existing this method
+				// make sure all logout messages have been processed before exiting this method
 				foreach (var region in regions)
 				{
 					region.WaitOneTick();
