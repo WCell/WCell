@@ -1341,13 +1341,13 @@ namespace WCell.RealmServer.Entities
 					if (m_stealthed > 0 && value <= 0)
 					{
 						// deactivated stealth
-						ShapeShiftForm = ShapeShiftForm.Normal;
+						ShapeshiftForm = ShapeshiftForm.Normal;
 						StateFlags &= ~StateFlag.Sneaking;
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
 						// activated stealth
-						ShapeShiftForm = ShapeShiftForm.Stealth;
+						ShapeshiftForm = ShapeshiftForm.Stealth;
 						StateFlags |= StateFlag.Sneaking;
 
 						// some auras don't live through Stealth

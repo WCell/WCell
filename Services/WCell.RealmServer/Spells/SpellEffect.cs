@@ -800,7 +800,7 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.DispelImmunity, typeof(DispelType));
 			SetAuraEffectMiscValueType(AuraType.MechanicImmunity, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.Mounted, typeof(NPCId));
-			SetAuraEffectMiscValueType(AuraType.ModShapeshift, typeof(ShapeShiftForm));
+			SetAuraEffectMiscValueType(AuraType.ModShapeshift, typeof(ShapeshiftForm));
 			SetAuraEffectMiscValueType(AuraType.Transform, typeof(NPCId));
 			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));

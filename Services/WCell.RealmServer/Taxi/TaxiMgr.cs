@@ -318,11 +318,11 @@ namespace WCell.RealmServer.Taxi
 			}
 
 			// Cheat check -- can't fly shape-shifted
-			if (!(curChar.ShapeShiftForm == ShapeShiftForm.Normal ||
-				   curChar.ShapeShiftForm == ShapeShiftForm.BattleStance ||
-				   curChar.ShapeShiftForm == ShapeShiftForm.BerserkerStance ||
-				   curChar.ShapeShiftForm == ShapeShiftForm.DefensiveStance ||
-				   curChar.ShapeShiftForm == ShapeShiftForm.Shadow))
+			if (!(curChar.ShapeshiftForm == ShapeshiftForm.Normal ||
+				   curChar.ShapeshiftForm == ShapeshiftForm.BattleStance ||
+				   curChar.ShapeshiftForm == ShapeshiftForm.BerserkerStance ||
+				   curChar.ShapeshiftForm == ShapeshiftForm.DefensiveStance ||
+				   curChar.ShapeshiftForm == ShapeshiftForm.Shadow))
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.PlayerShapeShifted);
 				return false;

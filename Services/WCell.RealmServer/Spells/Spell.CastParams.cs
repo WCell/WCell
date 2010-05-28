@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Spells
 
 			// shapeshift
             if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
-				caster.ShapeShiftForm != ShapeShiftForm.Normal)
+				caster.ShapeshiftForm != ShapeshiftForm.Normal)
 			{
 				//return SpellFailedReason.NotShapeshift;
 			}

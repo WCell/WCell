@@ -1011,7 +1011,7 @@
     <Compile Include="Spells\Auras\Mod\ModScale.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Passive\Shapeshift.cs">
+    <Compile Include="Spells\Auras\Passive\ShapeshiftHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModSilenceDurationPercent.cs">
@@ -1161,7 +1161,7 @@
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />
     <Compile Include="Spells\PlayerSpellCollection.cs" />
-    <Compile Include="Spells\ShapeshiftInfo.cs" />
+    <Compile Include="Spells\ShapeshiftEntry.cs" />
     <Compile Include="Spells\Spell.CastParams.cs" />
     <Compile Include="Spells\SpellCollection.cs" />
     <Compile Include="Spells\Effects\AddComboPoints.cs" />

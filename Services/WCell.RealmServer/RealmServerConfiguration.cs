@@ -424,11 +424,11 @@ namespace WCell.RealmServer
 
 		public static string GetDBCFile(string filename)
 		{
-			var path = Path.Combine(Instance.DBCFolder, filename);
 			if (!filename.EndsWith(".dbc", StringComparison.InvariantCultureIgnoreCase))
 			{
 				filename += ".dbc";
 			}
+			var path = Path.Combine(Instance.DBCFolder, filename);
 
 			if (!File.Exists(path))
 			{
@@ -439,6 +439,7 @@ namespace WCell.RealmServer
 
 			return path;
 		}
+
 
 		public static string GetContentPath(string file)
 		{

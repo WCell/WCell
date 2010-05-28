@@ -96,6 +96,8 @@ namespace WCell.RealmServer.Spells
 		public static readonly Dictionary<SummonType, SpellSummonHandler> SummonHandlers =
 			new Dictionary<SummonType, SpellSummonHandler>();
 
+		public static readonly ShapeshiftEntry[] ShapeshiftEntries = new ShapeshiftEntry[(int) (ShapeshiftForm.End + 10)];
+
 		public static readonly SpellSummonHandler DefaultSummonHandler = new SpellSummonHandler(),
 			PetSummonHandler = new SpellSummonPetHandler();
 
@@ -281,6 +283,7 @@ namespace WCell.RealmServer.Spells
 		{
 			InitEffectHandlers();
 			InitSummonHandlers();
+			InitShapeShiftInfos();
 
 			LoadSpells(false);
 			SkillHandler.Initialize();
@@ -535,6 +538,11 @@ namespace WCell.RealmServer.Spells
 			return handler;
 		}
 		#endregion
+
+		private static void InitShapeShiftInfos()
+		{
+			new DBCReader<ShapeshiftEntryConverter>(RealmServerConfiguration.GetDBCFile("SpellShapeshiftForm"));
+		}
 
 		public static void UnsetHandler(SpellEffectType type)
 		{
