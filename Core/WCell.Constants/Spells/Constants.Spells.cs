@@ -614,9 +614,9 @@ namespace WCell.Constants.Spells
         AttrExC_25_0x2000000 = 0x2000000,//25
 
 		/// <summary>
-		/// Not in the old land or instances
+		/// Not in the old land or instances (probably labeled incorrectly)
 		/// </summary>
-		OnlyInOutlands = 0x4000000,
+		OldOnlyInOutlands = 0x4000000,
 
         AttrExC_27_0x8000000 = 0x8000000,//27
         AttrExC_28_0x10000000 = 0x10000000,//28

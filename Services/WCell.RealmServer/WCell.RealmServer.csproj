@@ -184,6 +184,10 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Extensions.cs" />
+    <Compile Include="Commands\LocalizerCommand.cs" />
+    <Compile Include="Lang\LangKey.cs" />
+    <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />
@@ -661,7 +665,7 @@
     <Compile Include="Items\IItemSlotHandler.cs" />
     <Compile Include="Items\PartialInventories.cs" />
     <Compile Include="Items\SlotId.cs" />
-    <Compile Include="Lang\Localizer.cs" />
+    <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
     <Compile Include="NPCs\PetMgr.cs" />
@@ -1255,7 +1259,6 @@
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

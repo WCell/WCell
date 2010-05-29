@@ -56,12 +56,12 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// While pausing, resuming and saving, the World locks against this Lock, 
-		/// so resuming cannot start before all regions have been paused
+		/// so resuming cannot start before all Contexts have been paused
 		/// </summary>
-		private static readonly object PauseLock = new object();
+		public static readonly object PauseLock = new object();
 
 		/// <summary>
-		/// Global PauseObject that all Regions wait for when pausing
+		/// Global PauseObject that all Contexts wait for when pausing
 		/// </summary>
 		public static readonly object PauseObject = new object();
 
@@ -72,6 +72,7 @@ namespace WCell.RealmServer.Global
 		private static readonly Dictionary<uint, INamedEntity> s_namedEntities = new Dictionary<uint, INamedEntity>();
 
 		private static bool m_paused;
+		private static int m_pauseThreadId;
 		private static bool m_saving;
 
 		internal static RegionInfo[] s_regionInfos = new RegionInfo[(int)MapId.End];
@@ -153,17 +154,40 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Pausing
+		public static int PauseThreadId
+		{
+			get { return m_pauseThreadId; }
+		}
+
+		public static bool IsInPauseContext
+		{
+			get { return Thread.CurrentThread.ManagedThreadId == m_pauseThreadId; }
+		}
+
+		/// <summary>
+		/// Pauses the World, executes the given Action and unpauses the world again
+		/// </summary>
+		public static void Pause(Action onPause)
+		{
+			RealmServer.Instance.AddMessageAndWait(true, () =>
+			{
+				Paused = true;
+				onPause();
+				Paused = false;
+			});
+		}
+
 		[NotVariable]
 		/// <summary>
-		/// If set, pauses all Regions.
+		/// Pauses/unpauses all Regions.
 		/// Setting Paused to true blocks until all regions have been paused.
 		/// Setting Paused to false blocks during world-safe.
 		/// 
 		/// TODO: Freeze all players before pausing to make sure, movement is not out of sync
-		/// TODO: Redirect staff packets to another queue during pause?
+		/// (TODO: Also sync the RealmServer queue)
 		/// </summary>
 		// [MethodImpl(MethodImplOptions.Synchronized)]
-		public static bool Paused
+		internal static bool Paused
 		{
 			get { return m_paused; }
 			set
@@ -176,7 +200,11 @@ namespace WCell.RealmServer.Global
 					{
 						if (m_paused != value) // check again to make sure that we are not pausing/unpausing twice
 						{
-							m_paused = value;
+							lock (PauseObject)
+							{
+								m_paused = value;
+							}
+
 							if (!value)
 							{
 								// resume
@@ -189,7 +217,8 @@ namespace WCell.RealmServer.Global
 							else
 							{
 								// pause
-								var activeRegions = s_Regions.Where((region) => region != null);
+								m_pauseThreadId = Thread.CurrentThread.ManagedThreadId;
+								var activeRegions = s_Regions.Where((region) => region != null && region.IsRunning);
 								var pauseCount = activeRegions.Count();
 								foreach (var region in activeRegions)
 								{
@@ -202,25 +231,23 @@ namespace WCell.RealmServer.Global
 												// unpause all
 												Monitor.PulseAll(PauseObject);
 											}
-											throw new InvalidOperationException("Cannot pause World from within a Region's context.");
+											throw new InvalidOperationException("Cannot pause World from within a Region's context - Use the Pause() method instead.");
 										}
 										pauseCount--;
 									}
 									else
 									{
-										var stopRgn = !region.IsRunning;
-										region.AddMessage(new Message(() =>
+										if (region.IsRunning)
 										{
-											pauseCount--;
-											lock (PauseObject)
+											region.AddMessage(new Message(() =>
 											{
-												Monitor.Wait(PauseObject);
-											}
-											if (stopRgn)
-											{
-												region.Stop();
-											}
-										}));
+												pauseCount--;
+												lock (PauseObject)
+												{
+													Monitor.Wait(PauseObject);
+												}
+											}));
+										}
 									}
 								}
 
@@ -230,11 +257,12 @@ namespace WCell.RealmServer.Global
 								}
 							}
 
-							var evt = Pause;
+							var evt = WorldPaused;
 							if (evt != null)
 							{
 								evt(value);
 							}
+							m_pauseThreadId = 0;
 						}
 					}
 				}
@@ -299,7 +327,7 @@ namespace WCell.RealmServer.Global
 					{
 						for (var i = 0; i < chars.Count; i++)
 						{
-							var chr = chars[i];;
+							var chr = chars[i]; ;
 							if (chr.IsInWorld)
 							{
 								if (beforeShutdown)

@@ -6,6 +6,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Commands;
@@ -96,7 +97,7 @@ namespace WCell.RealmServer.Commands
 					{
 						if (!silent)
 						{
-							trigger.Reply("You are not allowed to use the \"{0}\"-Command!", cmd.Name);
+							trigger.Reply(LangKey.MustNotUseCommand, cmd.Name);
 						}
 						return false;
 					}

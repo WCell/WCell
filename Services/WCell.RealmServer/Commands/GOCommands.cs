@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Spawn", "Create", "Add");
-				ParamInfo = "[-c] [<GOId>]";
+				EnglishParamInfo = "[-c] [<GOId>]";
 				EnglishDescription = "Creates a new GameObject with the given id at the current position. " +
 					"-c spawns the closest GO in the Area and teleports you there.";
 			}
@@ -143,7 +143,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Select", "Sel");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Selects the next GameObject in front of you";
 			}
 
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Deselect", "Des");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Deselects your currently selected GameObject";
 			}
 
@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				ParamInfo = "<some.prop> <someValue>";
+				EnglishParamInfo = "<some.prop> <someValue>";
 				EnglishDescription = "Sets properties on the currently selected GO";
 			}
 
@@ -213,7 +213,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Get", "G");
-				ParamInfo = "<some.prop>";
+				EnglishParamInfo = "<some.prop>";
 				EnglishDescription = "Gets properties on the currently selected GO";
 			}
 
@@ -247,7 +247,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Call");
-				ParamInfo = "<some.method> [arg1 [, arg2, ...]]";
+				EnglishParamInfo = "<some.method> [arg1 [, arg2, ...]]";
 				EnglishDescription = "Calls the given method with parameters on the currently selected GO";
 			}
 
@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Anim", "Animation");
-				ParamInfo = "<animValue>";
+				EnglishParamInfo = "<animValue>";
 				EnglishDescription = "Animates the selected GO with the given parameter";
 			}
 
@@ -306,7 +306,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("HighlightGOs", "HLGOs");
-			ParamInfo = "[0/1]";
+			EnglishParamInfo = "[0/1]";
 			EnglishDescription = "Highlights all GOs around yourself";
 
 			// uh, let's reconsider this a little
@@ -379,7 +379,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Portal");
-			ParamInfo = "<target loc>";
+			EnglishParamInfo = "<target loc>";
 			EnglishDescription = "Creates a new Portal to the given Target location.";
 		}
 

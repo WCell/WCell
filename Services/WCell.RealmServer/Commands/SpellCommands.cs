@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("spelladd", "addspell");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Deprecated - Use \"spell add\" instead.";
 		}
 
@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Spell", "Spells", "Sp");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Provides commands to interact with the Spells of the Target.";
 		}
 
@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "A");
-				ParamInfo = "[-[r][c [<class>]]] [<spell> [<cooldown for AI>]]";
+				EnglishParamInfo = "[-[r][c [<class>]]] [<spell> [<cooldown for AI>]]";
 				EnglishDescription = "Adds the given spell. " +
 									 "-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills). " +
 									 "-c [<class>] adds all spells of the Character's or a given class." +
@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Remove", "R");
-				ParamInfo = "<spell>";
+				EnglishParamInfo = "<spell>";
 				EnglishDescription = "Removes the given Spell";
 			}
 
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Trigger", "T");
-				ParamInfo = "<spellid>";
+				EnglishParamInfo = "<spellid>";
 				EnglishDescription = "Triggers the given spell on the target of the command.";
 			}
 
@@ -304,7 +304,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SpellVisual", "PlaySpellVisual", "SpellAnim");
-			ParamInfo = "<SpellId>";
+			EnglishParamInfo = "<SpellId>";
 			EnglishDescription = "Plays the visual of the given spell";
 		}
 

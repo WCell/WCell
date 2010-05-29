@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				base.Init("Dump");
-				ParamInfo = "[<alsoPassive>]";
+				EnglishParamInfo = "[<alsoPassive>]";
 				EnglishDescription = "Dumps all currently active Auras, also shows passive effects if second param is specified";
 			}
 

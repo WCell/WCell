@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				ParamInfo = "<skill> [<value> [<maxValue>]]";
+				EnglishParamInfo = "<skill> [<value> [<maxValue>]]";
 				EnglishDescription = "Sets the given Skill to the given values (or uses 1 by default)";
 			}
 
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Learn", "L");
-				ParamInfo = "[-r] <skill> [<amount>]";
+				EnglishParamInfo = "[-r] <skill> [<amount>]";
 				EnglishDescription = "Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.";
 			}
 
@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Tier", "SetTier", "ST");
-				ParamInfo = "<skill> <tier>";
+				EnglishParamInfo = "<skill> <tier>";
 				EnglishDescription = "Set the given Skill to the given Tier";
 			}
 

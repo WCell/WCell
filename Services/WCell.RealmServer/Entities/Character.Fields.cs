@@ -1587,6 +1587,7 @@ namespace WCell.RealmServer.Entities
 		public ClientLocale Locale
 		{
 			get { return m_client.Info.Locale; }
+			set { m_client.Info.Locale = value; }
 		}
 
 		/// <summary>

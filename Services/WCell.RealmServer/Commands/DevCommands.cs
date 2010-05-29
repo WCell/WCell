@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SendRaw");
-			ParamInfo = "<opcode> [<int value1> [<int value2> ...]]";
+			EnglishParamInfo = "<opcode> [<int value1> [<int value2> ...]]";
 			EnglishDescription = "Sends a raw packet to the client";
 		}
 
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SendPacket", "SendP");
-			ParamInfo = "<packet> <args>";
+			EnglishParamInfo = "<packet> <args>";
 			EnglishDescription = "Sends the given packet with corresponding args to the client";
 		}
 
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("SpellLog", "SLog");
-				ParamInfo = "[<unkBool> [<flags> [<spell> [<damage> [<overkill> [<schools> [<absorbed> [<resisted> [<blocked>]]]]]]]]]";
+				EnglishParamInfo = "[<unkBool> [<flags> [<spell> [<damage> [<overkill> [<schools> [<absorbed> [<resisted> [<blocked>]]]]]]]]]";
 				EnglishDescription = "Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.";
 			}
 
@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("SpellMiss", "SM");
-				ParamInfo = "<spellId> <0/1> <defaultReason>";
+				EnglishParamInfo = "<spellId> <0/1> <defaultReason>";
 				EnglishDescription = "Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.";
 			}
 
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("BGError", "BGErr");
-				ParamInfo = "<err> [<bg>]";
+				EnglishParamInfo = "<err> [<bg>]";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("POI");
-			ParamInfo = "[-[e][f] <extra> <flags>] <x> <y> [<name>]";
+			EnglishParamInfo = "[-[e][f] <extra> <flags>] <x> <y> [<name>]";
 			EnglishDescription = "Sends a Point of interest entry to the target (shows up on the minimap while not too close).";
 		}
 
@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("ModAuras", "MAura");
-			ParamInfo = "<n> <subcommand> ...";
+			EnglishParamInfo = "<n> <subcommand> ...";
 			EnglishDescription = "Modifies the nth Aura of the target";
 		}
 
@@ -239,7 +239,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				base.Init("Level", "Lvl", "L");
-				ParamInfo = "<AuraLevel>";
+				EnglishParamInfo = "<AuraLevel>";
 				EnglishDescription = "Modifies the Level of the nth Aura.";
 			}
 
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				base.Init("Flags", "Fl", "F");
-				ParamInfo = "<AuraFlags>";
+				EnglishParamInfo = "<AuraFlags>";
 				EnglishDescription = "Modifies the Flags of the nth Aura.";
 			}
 
@@ -390,7 +390,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("NPCs");
-				ParamInfo = "[esw]";
+				EnglishParamInfo = "[esw]";
 				EnglishDescription = "Loads all NPC definitions from files and/or DB. e: Load entries; s: Load Spawns; w: Load Waypoints (together with s)";
 			}
 
@@ -501,7 +501,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("All");
-				ParamInfo = "[-w]";
+				EnglishParamInfo = "[-w]";
 				EnglishDescription = "Loads all static content definitions from DB. "
 						+ "The -w switch will ensure that execution (of the current Region) won't continue until Loading finished.";
 			}
@@ -649,7 +649,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("ForgetSelf");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -681,7 +681,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Init", "I");
-				ParamInfo = "<area> [<state> <value>[ <state2> <value2> ...]]";
+				EnglishParamInfo = "<area> [<state> <value>[ <state2> <value2> ...]]";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)

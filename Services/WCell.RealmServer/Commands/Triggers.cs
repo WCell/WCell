@@ -3,6 +3,7 @@ using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Commands;

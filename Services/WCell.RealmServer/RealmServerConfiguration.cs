@@ -76,6 +76,16 @@ namespace WCell.RealmServer
 
 		private static bool init;
 
+		public static string LangDirName = "Lang";
+
+		public static string LangDir
+		{
+			get
+			{
+				return GetContentPath(LangDirName) + "/";
+			}
+		}
+
 		private static ClientLocale defaultLocale = ClientLocale.English;
 
 		public static ClientLocale DefaultLocale

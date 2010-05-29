@@ -48,8 +48,9 @@ namespace WCell.PostBuild.Docs
 			indent += "\t";
 			writer.WriteLine(indent + "Aliases: {0}", cmd.Aliases.ToString(", "));
 
-			writer.WriteLine(indent + "Usage: {0}", cmd.Usage);
-			writer.WriteLine(indent + "Description: {0}", cmd.EnglishDescription);
+			writer.WriteLine(indent + "Usage: {0}", cmd.CreateUsage());
+			writer.WriteLine(indent + "Description: {0}", cmd.GetDescription(null));
+
 			var command = cmd as RealmServerCommand;
 			if (command != null)
 			{

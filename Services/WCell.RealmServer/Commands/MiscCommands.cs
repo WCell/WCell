@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Set", "S");
-            ParamInfo = "<prop.subprop.otherprop.etc> <value>";
+            EnglishParamInfo = "<prop.subprop.otherprop.etc> <value>";
             EnglishDescription = "Sets the value of the given prop";
         }
 
@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Commands
             else
             {
                 trigger.Reply("Invalid arguments.");
-                trigger.Reply(trigger.Command.CreateInfo());
+                trigger.Reply(trigger.Command.CreateInfo(trigger));
             }
             return true;
         }
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Get", "G");
-            ParamInfo = "<prop.subprop.otherprop.etc>";
+            EnglishParamInfo = "<prop.subprop.otherprop.etc>";
             EnglishDescription = "Gets the value of the given prop";
         }
 
@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Commands
             else
             {
                 trigger.Reply("Invalid arguments:");
-                trigger.Reply(trigger.Command.CreateInfo());
+                trigger.Reply(trigger.Command.CreateInfo(trigger));
             }
         }
 
@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Mod", "M");
-            ParamInfo = "<prop> <op> <value> [<op> <value> [<op> <value>...]]";
+            EnglishParamInfo = "<prop> <op> <value> [<op> <value> [<op> <value>...]]";
             EnglishDescription = "Modifies the given prop by applying it with an evaluated expression";
         }
 
@@ -353,7 +353,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Call", "C");
-            ParamInfo = "<some.Method> [param1, [param2 [...]]]";
+            EnglishParamInfo = "<some.Method> [param1, [param2 [...]]]";
             EnglishDescription = "Calls the given method with the given params";
         }
 
@@ -465,7 +465,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("ClearArea");
-            ParamInfo = "[<radius>]";
+            EnglishParamInfo = "[<radius>]";
             EnglishDescription = "Clears all Objects, Corpses and NPCs around yourself in the given or default radius (" + DefaultRadius + "), up to a max of 100 yards.";
         }
 
@@ -569,7 +569,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Channel");
-            ParamInfo = "<spellid>";
+            EnglishParamInfo = "<spellid>";
             EnglishDescription = "Channels the given Spell on the current Target.";
         }
 
@@ -679,7 +679,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("ListPlayers");
-            ParamInfo = "[-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
+            EnglishParamInfo = "[-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
             EnglishDescription = "Lists all currently logged in Players.";
         }
 

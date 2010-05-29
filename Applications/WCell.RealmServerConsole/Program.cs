@@ -19,6 +19,8 @@ using Cell.Core;
 using NLog;
 using System.Runtime;
 using System.Threading;
+using WCell.RealmServer.Lang;
+using WCell.Util.Lang;
 using WCell.Util.NLog;
 using System.Text.RegularExpressions;
 
@@ -29,7 +31,7 @@ namespace WCell.RealmServerConsole
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private static void Main(string[] args)
-        {
+		{
         	if (GCSettings.IsServerGC)
         	{
         		GCSettings.LatencyMode = GCLatencyMode.Batch;

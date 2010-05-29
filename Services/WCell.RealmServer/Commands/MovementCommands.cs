@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("Fly");
-			ParamInfo = "[0/1]";
+			EnglishParamInfo = "[0/1]";
 			EnglishDescription = "Toggles flying mode";
 		}
 
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("Knockback");
-			ParamInfo = "<verticalSpeed> [<horizontalSpeed>]";
+			EnglishParamInfo = "<verticalSpeed> [<horizontalSpeed>]";
 			EnglishDescription = "Knocks the target back";
 		}
 
@@ -95,7 +95,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("MultiplySpeed", "SpeedFactor", "MultSpeed", "Speed");
-			ParamInfo = "<speedFactor>";
+			EnglishParamInfo = "<speedFactor>";
 			EnglishDescription = "Sets the overall speed-factor of a Unit";
 		}
 
@@ -129,7 +129,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("WaterWalk", "WalkWater");
-			ParamInfo = "[0/1]";
+			EnglishParamInfo = "[0/1]";
 			EnglishDescription = "Toggles the ability to walk on water";
 		}
 
@@ -167,7 +167,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Rooted", "Root");
-			ParamInfo = "[0/1]";
+			EnglishParamInfo = "[0/1]";
 			EnglishDescription = "Toggles whether the Unit can move or not";
 		}
 
@@ -205,7 +205,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Tele", "Teleport");
-			ParamInfo = "[-l[r <region>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
+			EnglishParamInfo = "[-l[r <region>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
 			EnglishDescription = "Teleports to the given location. " +
 				"-l lists all named locations that contain the given term. " +
 				"-c teleports to the given coordinates. " +
@@ -217,7 +217,7 @@ namespace WCell.RealmServer.Commands
 		{
 			if (!trigger.Text.HasNext)
 			{
-				trigger.Reply("Invalid position. Usage: " + ParamInfo);
+				trigger.Reply("Invalid position. Usage: " + EnglishParamInfo);
 				return;
 			}
 
@@ -273,7 +273,7 @@ namespace WCell.RealmServer.Commands
 
 				if (x < -50000 || y < -50000 || z < -50000)
 				{
-					trigger.Reply("Invalid position. Usage: " + ParamInfo);
+					trigger.Reply("Invalid position. Usage: " + EnglishParamInfo);
 					return;
 				}
 				if (region == null)
@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("GoTo");
-			ParamInfo = "<targetname>";
+			EnglishParamInfo = "<targetname>";
 			EnglishDescription =
 				"Teleports the Target to Character/Unit/GameObject. [NIY]: If Unit or GO are specified, target will be teleported to the nearest one.";
 		}
@@ -392,7 +392,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SummonAll");
-			ParamInfo = "[-f]";
+			EnglishParamInfo = "[-f]";
 			EnglishDescription = "Summons all online players. -f switch will summon players instantly, not giving them a choice.";
 		}
 
@@ -435,7 +435,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Summon");
-			ParamInfo = "[-aq] <name>";
+			EnglishParamInfo = "[-aq] <name>";
 			EnglishDescription = "Summons the Player with the given name. " +
 				"-q will queries Player before teleporting (can be denied). " +
 				"-a switch will use the account name instead of the Char-name.";

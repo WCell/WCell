@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace WCell.Util.DB.Xml
 {
 	[XmlRoot("DataHolders")]
-	public class LightRecordXmlConfig : XmlConfig<LightRecordXmlConfig>
+	public class LightRecordXmlConfig : XmlFile<LightRecordXmlConfig>
 	{
 		private static readonly XmlDataHolderDefinition[] emptyArr = new XmlDataHolderDefinition[0];
 

@@ -30,7 +30,7 @@ namespace WCell.Addons.Default.Commands
 			protected override void Initialize()
 			{
 				Init("NPC");
-				ParamInfo = "[-f]";
+				EnglishParamInfo = "[-f]";
 				EnglishDescription = "Adds a sample NPC. -f makes it friendly.";
 			}
 
@@ -63,7 +63,7 @@ namespace WCell.Addons.Default.Commands
 			protected override void Initialize()
 			{
 				Init("Bow");
-				ParamInfo = "[-ea] [<amount>]";
+				EnglishParamInfo = "[-ea] [<amount>]";
 				EnglishDescription = "Adds a sample Bow." +
 					"-a switch auto-equips, -e switch only adds if not already present.";
 			}

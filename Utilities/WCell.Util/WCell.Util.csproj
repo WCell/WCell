@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
-    <DocumentationFile>..\..\Run\Debug\WCell.Util.xml</DocumentationFile>
+    <DocumentationFile>..\..\Run\Debug\WCell.Util.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -224,6 +224,11 @@
     <Compile Include="DotNetDocs\DocEntry.cs" />
     <Compile Include="DotNetDocs\DotNetDocumentation.cs" />
     <Compile Include="IStreamTarget.cs" />
+    <Compile Include="Lang\ILocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="Lang\TranslatedItem.cs" />
+    <Compile Include="Lang\Translation.cs" />
+    <Compile Include="Lang\Localizer.cs" />
     <Compile Include="MathUtil.cs" />
     <Compile Include="NLog\LogUtil.cs" />
     <Compile Include="NLog\StreamLogger.cs" />
@@ -264,7 +269,7 @@
     <Compile Include="Variables\TypeVariableDefinition.cs" />
     <Compile Include="SerializablePairCollection.cs" />
     <Compile Include="Variables\VariableException.cs" />
-    <Compile Include="XmlConfig.cs" />
+    <Compile Include="XmlFile.cs" />
     <Compile Include="Xml\XmlUtil.cs" />
   </ItemGroup>
   <ItemGroup>

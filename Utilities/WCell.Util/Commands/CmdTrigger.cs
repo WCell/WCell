@@ -113,14 +113,14 @@ namespace WCell.Util.Commands
 		/// </summary>
 		public abstract void ReplyFormat(string text);
 
-		public void Reply(Object format, params Object[] args)
+		public void Reply(string format, params Object[] args)
 		{
-			Reply(string.Format(format.ToString(), args));
+			Reply(string.Format(format, args));
 		}
 
-		public void ReplyFormat(Object format, params Object[] args)
+		public void ReplyFormat(string format, params Object[] args)
 		{
-			ReplyFormat(string.Format(format.ToString(), args));
+			ReplyFormat(string.Format(format, args));
 		}
 
 	    public T EvalNext<T>(T deflt)

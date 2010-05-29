@@ -15,7 +15,7 @@ using WCell.MPQTool;
 
 namespace WCell.Tools
 {
-	public class ToolConfig : XmlConfig<ToolConfig>
+	public class ToolConfig : XmlFile<ToolConfig>
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		public static readonly string ConfigFile = "Tools.xml";

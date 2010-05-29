@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("PurgeAll", "Clear");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Removes *all* Items from the target Character. Use carefully!";
 			}
 
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Strip");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Strips the Target naked and puts all the equipment into his/her bag (given there is enough space)";
 			}
 
@@ -76,7 +76,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "Create");
-				ParamInfo = "[-ea] <itemid> [<amount> [<stacks>]]";
+				EnglishParamInfo = "[-ea] <itemid> [<amount> [<stacks>]]";
 				EnglishDescription = "Adds the given amount of stacks (default: 1) of the given amount " +
 					"of the given item to your backpack (if there is space left). " +
 					 "-a switch auto-equips, -e switch only adds if not already present.";
@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("CreateSet", "AddSet");
-				ParamInfo = "<setId>";
+				EnglishParamInfo = "<setId>";
 				EnglishDescription = "Creates all items of the set with the given id and puts them into a new bag which gets auto-equipped (requires free bag-slot)";
 			}
 
@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Find");
-				ParamInfo = "[-l <locale>] <search text>";
+				EnglishParamInfo = "[-l <locale>] <search text>";
 				EnglishDescription = "Search for Items whose name contains the specified text. " +
 					"If no locale specified, it will use the User's default.";
 			}
@@ -237,7 +237,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Enchant", "Ench");
-				ParamInfo = "[-l <text>]|(<slot> <enchantid> [<EnchantSlot>])";
+				EnglishParamInfo = "[-l <text>]|(<slot> <enchantid> [<EnchantSlot>])";
 				EnglishDescription = "Enchants the Item at the given slot. Alternatively the -l switch lists all enchants which match the given text";
 			}
 
@@ -300,7 +300,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Destroy", "Remove", "Delete", "Del");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Removes the Item at the given Slot from the target Character.";
 			}
 
@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				ParamInfo = "<invslot> <some.prop> <someValue>";
+				EnglishParamInfo = "<invslot> <some.prop> <someValue>";
 				EnglishDescription = "Sets properties on the Item in the given slot";
 			}
 
@@ -379,7 +379,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Mod", "M");
-				ParamInfo = @"<invslot> <some.prop> (+-|&^*\...) <expr>";
+				EnglishParamInfo = @"<invslot> <some.prop> (+-|&^*\...) <expr>";
 				EnglishDescription = "Mods properties on the Item in the given slot";
 			}
 
@@ -417,7 +417,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Get", "G");
-				ParamInfo = "<invslot> <some.prop>";
+				EnglishParamInfo = "<invslot> <some.prop>";
 				EnglishDescription = "Gets properties on the Item in the given slot";
 			}
 
@@ -468,7 +468,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Call", "C");
-				ParamInfo = "<invslot> <call-args>";
+				EnglishParamInfo = "<invslot> <call-args>";
 				EnglishDescription = "Calls the given method with parameters on the Item in the given slot.";
 			}
 
