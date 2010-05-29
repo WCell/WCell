@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Stealth Required			
-            if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+            if (Attributes.HasAnyFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 		    {
 		        return SpellFailedReason.OnlyStealthed;
 			}
@@ -122,8 +122,8 @@ namespace WCell.RealmServer.Spells
 			{
 				// check AuraStates
 				var state = caster.AuraState;
-                if ((RequiredCasterAuraState != 0 && !state.HasFlag(RequiredCasterAuraState)) ||
-                    (ExcludeCasterAuraState != 0 && state.HasFlag(ExcludeCasterAuraState)))
+                if ((RequiredCasterAuraState != 0 && !state.HasAnyFlag(RequiredCasterAuraState)) ||
+					(ExcludeCasterAuraState != 0 && state.HasAnyFlag(ExcludeCasterAuraState)))
 				{
 					return SpellFailedReason.CasterAurastate;
 				}
@@ -182,7 +182,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					if (RequiredItemSubClassMask > 0 &&
-						!usedItem.Template.SubClassMask.HasFlag(RequiredItemSubClassMask))
+						!usedItem.Template.SubClassMask.HasAnyFlag(RequiredItemSubClassMask))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
@@ -251,8 +251,8 @@ namespace WCell.RealmServer.Spells
 				if (RequiredTargetAuraState != 0 || ExcludeTargetAuraState != 0)
 				{
 					var state = ((Unit)target).AuraState;
-                    if ((RequiredTargetAuraState != 0 && !state.HasFlag(RequiredTargetAuraState)) ||
-                        (ExcludeTargetAuraState != 0 && state.HasFlag(ExcludeTargetAuraState)))
+                    if ((RequiredTargetAuraState != 0 && !state.HasAnyFlag(RequiredTargetAuraState)) ||
+                        (ExcludeTargetAuraState != 0 && state.HasAnyFlag(ExcludeTargetAuraState)))
 					{
 						return SpellFailedReason.TargetAurastate;
 					}

@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			packet.Write((uint)flags);
-            if (flags.HasFlag(
+			if (flags.HasAnyFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
 				SpellTargetFlags.Object |

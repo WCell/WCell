@@ -1190,7 +1190,7 @@ namespace WCell.RealmServer.Spells
 				var weapon = ((Item)aAction.Weapon).Template;
 
 			    return weapon.Class == RequiredItemClass &&
-			           (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasFlag(RequiredItemSubClassMask));
+					   (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(RequiredItemSubClassMask));
 			}
 			return true;
 		}
