@@ -405,7 +405,7 @@ namespace WCell.RealmServer.Items
 		/// <returns></returns>
 		public bool MayAddToContainer(ItemTemplate templ)
 		{
-			return BagFamily == 0 || templ.BagFamily.HasFlag(BagFamily);
+			return BagFamily == 0 || templ.BagFamily.HasAnyFlag(BagFamily);
 		}
 
 		public object GetId()
@@ -661,13 +661,13 @@ namespace WCell.RealmServer.Items
 			}
 
 			// class
-			if (RequiredClassMask != 0 && !RequiredClassMask.HasFlag(chr.ClassMask))
+			if (RequiredClassMask != 0 && !RequiredClassMask.HasAnyFlag(chr.ClassMask))
 			{
 				return InventoryError.YOU_CAN_NEVER_USE_THAT_ITEM;
 			}
 
 			// race
-			if (RequiredRaceMask != 0 && !RequiredRaceMask.HasFlag(chr.RaceMask))
+			if (RequiredRaceMask != 0 && !RequiredRaceMask.HasAnyFlag(chr.RaceMask))
 			{
 				return InventoryError.YOU_CAN_NEVER_USE_THAT_ITEM2;
 			}

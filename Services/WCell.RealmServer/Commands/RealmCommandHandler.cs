@@ -510,7 +510,7 @@ namespace WCell.RealmServer.Commands
 						else
 						{
 							var clss = (ClassMask)val;
-							mayExec = clss == ClassMask.None || user.ClassMask.HasFlag(clss);
+							mayExec = clss == ClassMask.None || user.ClassMask.HasAnyFlag(clss);
 						}
 						return false;
 					}

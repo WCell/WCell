@@ -109,10 +109,10 @@ namespace WCell.RealmServer.Interaction
 			if (!string.IsNullOrEmpty(GuildName) /*&& character.Guild.Name != GuildName */)
 				return false;
 
-			if (!RaceMask.HasFlag(character.RaceMask2))
+			if (!RaceMask.HasAnyFlag(character.RaceMask2))
 				return false;
 
-			if (!ClassMask .HasFlag(character.ClassMask2))
+			if (!ClassMask.HasAnyFlag(character.ClassMask2))
 				return false;
 
 			if (Zones.Count > 0 && !Zones.Contains(character.Zone.Id))

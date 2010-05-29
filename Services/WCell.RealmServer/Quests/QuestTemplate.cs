@@ -579,7 +579,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public QuestInvalidReason CheckBasicRequirements(Character chr)
 		{
-			if (RequiredRaces != 0 && !RequiredRaces.HasFlag(chr.RaceMask))
+			if (RequiredRaces != 0 && !RequiredRaces.HasAnyFlag(chr.RaceMask))
 			{
 				return QuestInvalidReason.WrongRace;
 			}

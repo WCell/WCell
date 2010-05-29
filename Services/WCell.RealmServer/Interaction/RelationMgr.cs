@@ -850,7 +850,7 @@ namespace WCell.RealmServer.Interaction
 			}
 
 			var removedKeys = from entry in relations
-                              where !entry.Value.Flag.HasFlag(flags)
+							  where !entry.Value.Flag.HasAnyFlag(flags)
                               select entry.Key;
 
 		    foreach (uint key in removedKeys)

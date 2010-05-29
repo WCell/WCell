@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Entities
 			if (val == 0)
 			{
 				// new immunity: Gets rid of all Auras that use this school
-			    Auras.RemoveWhere(aura => aura.Spell.SchoolMask.HasFlag((DamageSchoolMask) (1 << (int) school)));
+				Auras.RemoveWhere(aura => aura.Spell.SchoolMask.HasAnyFlag((DamageSchoolMask)(1 << (int)school)));
 			}
 
 			m_dmgImmunities[(int)school]++;
@@ -791,7 +791,7 @@ namespace WCell.RealmServer.Entities
 			for (var i = m_absorbers.Count - 1; i >= 0; i--)
 			{
 				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.HasFlag(school))
+				if (absorber.AbsorbSchool.HasAnyFlag(school))
 				{
 					var abs = Math.Min(amount, absorber.AbsorbValue);
 					absorb += abs;
