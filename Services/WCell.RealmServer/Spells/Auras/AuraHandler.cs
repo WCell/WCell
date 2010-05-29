@@ -287,15 +287,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <returns></returns>
 		static bool IsTransform(Spell spell)
 		{
-			return spell.HasEffectWith(effect =>
-			{
-				if (effect.AuraType == AuraType.ModShapeshift)
-				{
-					var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
-					return info.CreatureType > 0;
-				}
-				return effect.AuraType == AuraType.Transform;
-			});
+			return spell.IsShapeshift;
 		}
 
 		static bool IsStealth(Spell spell)

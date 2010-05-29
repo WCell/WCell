@@ -2,6 +2,7 @@
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -76,14 +77,19 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsPureDebuff;
 
+		/// <summary>
+		/// whether this Spell applies the death effect
+		/// </summary>
+		public bool IsGhost;
+
 		public bool IsProc;
 
 		public bool IsVehicle;
 
 		/// <summary>
-		/// whether this Spell applies the death effect
+		/// Spell lets one shapeshift into another creature
 		/// </summary>
-		public bool IsGhost;
+		public bool IsShapeshift;
 
 		/// <summary>
 		/// whether this spell applies makes the targets fly
@@ -140,8 +146,7 @@ namespace WCell.RealmServer.Spells
 				});
 			}
 
-			IsModalAura =
-                AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+			IsModalAura = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
 			if (IsAura)
 			{
@@ -172,6 +177,16 @@ namespace WCell.RealmServer.Spells
 			IsPureDebuff = IsPureAura && HasHarmfulEffects && !HasBeneficialEffects;
 
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
+
+			IsShapeshift = HasEffectWith(effect =>
+			{
+				if (effect.AuraType == AuraType.ModShapeshift)
+				{
+					var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
+					return info.CreatureType > 0;
+				}
+				return effect.AuraType == AuraType.Transform;
+			});
 
 			CanStack = MaxStackCount > 0;
 			// procs and stacking:

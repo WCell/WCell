@@ -1011,6 +1011,25 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
+		/// Adds a SpellEffect that will trigger the given Spell on oneself
+		/// </summary>
+		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell)
+		{
+			return AddPeriodicTriggerSpellEffect(triggerSpell, ImplicitTargetType.Self);
+		}
+
+		/// <summary>
+		/// Adds a SpellEffect that will trigger the given Spell on the given type of target
+		/// </summary>
+		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
+		{
+			var effect = AddAuraEffect(AuraType.PeriodicTriggerSpell);
+			effect.TriggerSpellId = triggerSpell;
+			effect.ImplicitTargetA = targetType;
+			return effect;
+		}
+
+		/// <summary>
 		/// Adds a SpellEffect that will be applied to an Aura to be casted on oneself
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraType type)

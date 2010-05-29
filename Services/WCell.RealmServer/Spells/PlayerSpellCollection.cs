@@ -470,7 +470,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-
 		#region Cooldowns
 		/// <summary>
 		/// Tries to add the given Spell to the cooldown List.
