@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using WCell.AuthServer.Commands;
+using WCell.RealmServer;
 using WCell.RealmServer.Commands;
 using System.IO;
 using Cell.Core;
@@ -7,6 +8,8 @@ using WCell.Util.Commands;
 using WCell.Tools.Commands;
 using WCell.Util;
 using WCell.AuthServer;
+
+using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.PostBuild.Docs
 {

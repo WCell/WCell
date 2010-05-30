@@ -11,23 +11,36 @@ namespace WCell.RealmServer.Lang
 {
 	public class RealmLocalizer : Localizer<ClientLocale, LangKey>
 	{
-		public static RealmLocalizer Instance;
+		private static RealmLocalizer instance;
 
-		[Initialization(InitializationPass.First, "Initialize Localizer")]
-		public static void InitLocalizer()
+		public static RealmLocalizer Instance
 		{
-			try
+			get
 			{
-				Instance = new RealmLocalizer(ClientLocale.English,
-				                              RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
+				if (!RealmServerConfiguration.Loaded)
+				{
+					throw new InvalidOperationException("Must not use RealmLocalizer before Configuration was loaded.");
+				}
 
-				Instance.LoadTranslations();
-			}
-			catch (Exception e)
-			{
-				throw new InitializationException(e, "Unable to load Localizations");
+				try
+				{
+					instance = new RealmLocalizer(ClientLocale.English,
+												  RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
+
+					instance.LoadTranslations();
+				}
+				catch (Exception e)
+				{
+					throw new InitializationException(e, "Unable to load Localizations");
+				}
+				return instance;
 			}
 		}
+
+		//[Initialization(InitializationPass.First, "Initialize Localizer")]
+		//public static void InitLocalizer()
+		//{
+		//}
 
 		public RealmLocalizer(ClientLocale baseLocale, ClientLocale defaultLocale, string folder)
 			: base(baseLocale, defaultLocale, folder)
