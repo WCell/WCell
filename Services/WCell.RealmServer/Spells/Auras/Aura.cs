@@ -574,6 +574,40 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		void RemoveEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.Remove(false);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		void ApplyEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.Apply();
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Do certain special behavior everytime Aura is applied
 		/// </summary>
 		private void OnApply()
@@ -591,15 +625,17 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (IsActive)
 			{
-				m_casterInfo = caster;
+				// remove non-periodic effects:
+				RemoveEffects();
 
+				m_casterInfo = caster;
 				if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
 				}
 
 				// re-apply non-periodic effects:
-				ReApplyEffects();
+				ApplyEffects();
 
 				// reset timer:
 				TimeLeft = m_spell.GetDuration(caster, m_auras.Owner);

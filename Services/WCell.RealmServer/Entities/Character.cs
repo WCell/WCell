@@ -593,15 +593,16 @@ namespace WCell.RealmServer.Entities
 		{
 			var nextLevelXp = NextLevelXP;
 			var level = Level;
-			if (XP >= nextLevelXp && level < RealmServerConfiguration.MaxCharacterLevel)
+			var leveled = false;
+			var xp = XP;
+
+			while (xp >= nextLevelXp && level < RealmServerConfiguration.MaxCharacterLevel)
 			{
-				// base.LevelUp();
-
-				XP -= nextLevelXp;
+				XP = xp -= nextLevelXp;
 				Level = ++level;
-				NextLevelXP = XpGenerator.GetXpForlevel(level + 1);
+				NextLevelXP = nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
 
-				if (Level >= 10)
+				if (level >= 10)
 				{
 					FreeTalentPoints++;
 				}
@@ -611,13 +612,11 @@ namespace WCell.RealmServer.Entities
 				{
 					evt(this);
 				}
-				
-				if (TryLevelUp())
-				{
-					// already leveled up
-					return true;
-				}
+				leveled = true;
+			}
 
+			if (leveled)
+			{
 				ModStatsForLevel(level);
 				m_auras.ReapplyAllAuras();
 				SaveLater();
@@ -1310,7 +1309,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public override int AddDamageMods(int dmg, SpellEffect effect, DamageSchool school)
 		{
-			dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school) / 100f, dmg);
+			dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school) / 100f, dmg);
 			if (effect != null)
 			{
 				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, dmg);

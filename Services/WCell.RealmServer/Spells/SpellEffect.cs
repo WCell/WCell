@@ -848,6 +848,17 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+		#region Modify Effects
+		public void AddToEffectMask(SpellLineId ability)
+		{
+			var spell = SpellLines.GetLine(ability).FirstRank;
+			for (int i = 0; i < AffectMask.Length; i++)
+			{
+				AffectMask[i] |= spell.SpellClassMask[i];
+			}
+		}
+
+		#endregion
 	}
 }
 

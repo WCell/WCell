@@ -907,6 +907,21 @@ namespace WCell.RealmServer.Spells
 			return null;
 		}
 
+		/// <summary>
+		/// Returns the first SpellEffect of the given Type within this Spell
+		/// </summary>
+		public SpellEffect GetEffect(AuraType type)
+		{
+			foreach (var effect in Effects)
+			{
+				if (effect.AuraType == type)
+				{
+					return effect;
+				}
+			}
+			return null;
+		}
+
 		public SpellEffect GetFirstEffectWith(Predicate<SpellEffect> predicate)
 		{
 			foreach (var effect in Effects)

@@ -16,7 +16,7 @@ namespace WCell.Addons.Default.Spells.Priest
 			// only proc on kill that rewards xp or honor
 			SpellLineId.PriestShadowSpiritTap.Apply(spell => spell.ProcTriggerFlags |= ProcTriggerFlags.GainExperience);
 
-			// only can be proced when priest casts the given spells
+			// Holy Inspiration can be proced when priest casts the given spells
 			// TODO: Only cast on crit
 			SpellLineId.PriestHolyInspiration.Apply(spell => spell.AddCasterProcSpells(
 				SpellLineId.PriestFlashHeal,
@@ -28,6 +28,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				SpellLineId.PriestPrayerOfHealing,
 				SpellLineId.PriestHolyCircleOfHealing));
 
+			//
 			SpellLineId.PriestShadowMindFlay.Apply(spell =>
 			{
 				var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
@@ -35,7 +36,14 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.Amplitude = spell.Effects[2].Amplitude;
 			});
 
-            //FIXED Mana regen on Priest Dispersion Talant
+			SpellLineId.PriestShadowShadowWeaving.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.AddTargetTrigger);
+				effect.ImplicitTargetA = ImplicitTargetType.Self;
+				effect.AddToEffectMask(SpellLineId.PriestShadowMindFlay);
+			});
+
+            // Mana regen on Priest Dispersion Talant
             SpellLineId.PriestShadowDispersion.Apply(spell =>
             {
                 var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);

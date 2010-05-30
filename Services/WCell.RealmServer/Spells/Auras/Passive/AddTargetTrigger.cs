@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			var owner = m_aura.Auras.Owner as Character;
+			var owner = Owner as Character;
 			if (owner != null)
 			{
 				owner.PlayerSpells.TargetTriggers.Add(this);
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected internal override void Remove(bool cancelled)
 		{
-			var owner = m_aura.Auras.Owner as Character;
+			var owner = Owner as Character;
 			if (owner != null)
 			{
 				owner.PlayerSpells.TargetTriggers.Remove(this);

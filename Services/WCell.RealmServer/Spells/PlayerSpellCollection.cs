@@ -232,7 +232,9 @@ namespace WCell.RealmServer.Spells
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive && !spell.HasHarmfulEffects)
+				if (spell.IsPassive 
+					&& !spell.HasHarmfulEffects
+					)
 				{
 					chr.SpellCast.Start(spell, true, Owner);
 				}
@@ -343,13 +345,14 @@ namespace WCell.RealmServer.Spells
 				var effect = triggerHandler.SpellEffect;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
 					spell.MatchesMask(effect.AffectMask) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) ||
-					Utility.Random(0, 101) <= val))
+					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
+					spell != effect.TriggerSpell)	// prevent inf loops
 				{
 					var caster = triggerHandler.Aura.Caster;
 					if (caster != null)
 					{
-						cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+						cast.Trigger(effect.TriggerSpell);
 					}
 				}
 			}
