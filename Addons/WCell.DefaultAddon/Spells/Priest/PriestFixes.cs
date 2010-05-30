@@ -43,12 +43,12 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.AddToEffectMask(SpellLineId.PriestShadowMindFlay);
 			});
 
-            // Mana regen on Priest Dispersion Talant
-            SpellLineId.PriestShadowDispersion.Apply(spell =>
-            {
-                var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
-                effect.Amplitude = 1000;
-            });
+			// Mana regen on Priest Dispersion Talant
+			SpellLineId.PriestShadowDispersion.Apply(spell =>
+			{
+				var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
+				effect.Amplitude = 1000;
+			});
 		}
 	}
 }
