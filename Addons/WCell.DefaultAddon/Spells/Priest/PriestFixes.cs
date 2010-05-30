@@ -34,6 +34,13 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.BasePoints = spell.Effects[2].BasePoints * 3;
 				effect.Amplitude = spell.Effects[2].Amplitude;
 			});
+
+            //FIXED Mana regen on Priest Dispersion Talant
+            SpellLineId.PriestShadowDispersion.Apply(spell =>
+            {
+                var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
+                effect.Amplitude = 1000;
+            });
 		}
 	}
 }
