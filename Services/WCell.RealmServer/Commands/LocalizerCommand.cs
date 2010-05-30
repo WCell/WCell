@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				World.Pause(() =>
+				World.ExecuteWhilePaused(() =>
 				{
 					RealmLocalizer.Instance.Resync();
 				});

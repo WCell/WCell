@@ -222,6 +222,26 @@ namespace WCell.Util.Lang
 			}
 			return msg;
 		}
+
+		/// <summary>
+		/// Get all translations of the given key, in an array which is indexed by Locale.
+		/// You can use the returned array to get a translated string, like this:
+		/// <code>
+		/// var translations = GetTranslations(key);
+		/// var translation = translation[(int)mylocale];
+		/// </code>
+		/// </summary>
+		public string[] GetTranslations(Key key)
+		{
+			var strings = new string[MaxLocaleValue+1];
+			foreach (var trans in Translations)
+			{
+				if (trans == null) continue;
+				var num = trans.Locale.ToInt32(null);
+				strings[num] = trans.GetValue(key);
+			}
+			return strings;
+		}
 		#endregion
 	}
 }

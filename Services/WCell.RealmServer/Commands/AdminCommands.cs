@@ -6,6 +6,7 @@ using Cell.Core;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.Lang;
 using WCell.Util.Threading;
 using WCell.Core.Variables;
 using WCell.RealmServer.Entities;
@@ -98,16 +99,31 @@ namespace WCell.RealmServer.Commands
 			else
 			{
 				var chr = trigger.Args.Target as Character;
+
+				var mod = trigger.Text.NextModifiers();
 				if (chr == null)
 				{
-					
+					if (!mod.Contains("n") || !trigger.Text.HasNext)
+					{
+						trigger.Reply(LangKey.CmdKickMustProvideName);
+						return;
+					}
+					else
+					{
+						var name = trigger.Text.NextWord();
+						chr = World.GetCharacter(name, false);
+						if (chr == null)
+						{
+							trigger.Reply(LangKey.PlayerNotOnline, name);
+							return;
+						}
+					}
 				}
 
 				var delay = Character.DefaultLogoutDelay;
 
 				// check for different delay
-				var mod = trigger.Text.NextModifiers();
-				if (mod == "d")
+				if (mod.Contains("d"))
 				{
 					delay = trigger.Text.NextFloat(delay);
 				}

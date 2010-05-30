@@ -10,14 +10,26 @@
     <Item Key="Library">
       <Value>Library</Value>
     </Item>
-    
+    <Item Key="PlayerNotOnline">
+      <Value>Player is not online: {0}</Value>
+    </Item>
+
     <Item Key="SubCommandNotFound">
       <Value>SubCommand not found: {0}</Value>
     </Item>
     <Item Key="MustNotUseCommand">
       <Value>You are not allowed to use the {0}-Command!</Value>
     </Item>
-    
+
+    <Item Key="CmdSummonPlayerNotOnline">
+      <Value>Player {0} is not online.</Value>
+    </Item>
+
+
+    <Item Key="CmdKickMustProvideName">
+      <Value>Must provide name, using the -n modifier</Value>
+    </Item>
+
     <Item Key="CmdLocalizerDescription">
       <Value>Provides commands to manage the localizer</Value>
     </Item>

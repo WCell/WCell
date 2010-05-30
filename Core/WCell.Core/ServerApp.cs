@@ -516,7 +516,6 @@ namespace WCell.Core
 		/// <param name="delayMillis">the time to wait before shutting down</param>
 		public virtual void ShutdownIn(uint delayMillis)
 		{
-			IsShuttingDown = true;
 			m_shutdownTimer = new TimerEntry(delayMillis / 1000f, 0f, upd =>
 			{
 				AppUtil.UnhookAll();

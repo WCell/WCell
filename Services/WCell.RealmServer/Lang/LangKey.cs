@@ -11,14 +11,19 @@ namespace WCell.RealmServer.Lang
 	public enum LangKey
 	{
 		None = 0,
+		Done,
 		Addon,
 		Library,
-		Done,
+		PlayerNotOnline,
 
 		// #######################################################################
 		// Commands
 		SubCommandNotFound,
 		MustNotUseCommand,
+
+		CmdSummonPlayerNotOnline,
+
+		CmdKickMustProvideName,
 
 		CmdLocalizerDescription,
 		CmdLocalizerReloadDescription,

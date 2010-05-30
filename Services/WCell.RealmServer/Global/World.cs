@@ -165,9 +165,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Pauses the World, executes the given Action and unpauses the world again
+		/// Pauses the World, executes the given Action, unpauses the world again and blocks while doing so
 		/// </summary>
-		public static void Pause(Action onPause)
+		public static void ExecuteWhilePaused(Action onPause)
 		{
 			RealmServer.Instance.AddMessageAndWait(true, () =>
 			{

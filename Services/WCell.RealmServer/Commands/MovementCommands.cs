@@ -473,7 +473,7 @@ namespace WCell.RealmServer.Commands
 
 				if (chr == null)
 				{
-					trigger.Reply("Player {0} is not online.", name);
+					trigger.Reply(LangKey.CmdSummonPlayerNotOnline, name);
 				}
 				else
 				{

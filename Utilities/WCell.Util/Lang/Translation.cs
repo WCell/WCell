@@ -58,12 +58,22 @@ namespace WCell.Util.Lang
 		{
 		}
 
-		public string Translate(K key, params object[] args)
+		public string GetValue(K key)
 		{
 			var item = Items[key.ToInt32(null)];
 			if (item != null)
 			{
 				return item.Value;
+			}
+			return null;
+		}
+
+		public string Translate(K key, params object[] args)
+		{
+			var item = Items[key.ToInt32(null)];
+			if (item != null)
+			{
+				return string.Format(item.Value, args);
 			}
 			return null;
 		}
