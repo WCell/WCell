@@ -799,6 +799,7 @@ namespace WCell.RealmServer.Entities
 				{
 					value = ((Character) healer).AddHealingMods(value, effect, effect.Spell.Schools[0]);
 				}
+
 				if (this is Character)
 				{
 					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
@@ -1618,16 +1619,19 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
+			var now = DateTime.Now;
 			for (var i = 0; i < m_procHandlers.Count; i++)
 			{
 				var proc = m_procHandlers[i];
-				if (proc.ProcTriggerFlags.HasAnyFlag(flags) &&
+				if (proc.NextProcTime <= now &&
+				proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					if (Utility.Random(0, 101) <= proc.ProcChance)
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);
+						proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
 
 						if (charges > 0 && proc.StackCount == 0)
 						{

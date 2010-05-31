@@ -335,45 +335,6 @@ namespace WCell.RealmServer.Spells
 		public SpellLine Line;
 		#endregion
 
-		#region Spell Variables (that may be modified by spell customizations)
-		public bool CanCastOnPlayer = true;
-
-		/// <summary>
-		/// Whether this is a Spell that is only used to prevent other Spells (cannot be cancelled etc)
-		/// </summary>
-		public bool IsPreventionDebuff;
-
-		/// <summary>
-		/// Whether this is an Aura that can override other instances of itself if they have the same rank (true by default)
-		/// </summary>
-		public bool CanOverrideEqualAuraRank = true;
-
-		/// <summary>
-		/// Spells casted whenever this Spell is casted
-		/// </summary>
-		public Spell[] TargetTriggerSpells, CasterTriggerSpells;
-
-		/// <summary>
-		/// Set of specific Spells which, when used, can proc this Spell.
-		/// </summary>
-		public HashSet<Spell> CasterProcSpells;
-
-		/// <summary>
-		/// Set of specific Spells which can proc this Spell on their targets.
-		/// </summary>
-		public HashSet<Spell> TargetProcSpells;
-
-		/// <summary>
-		/// ProcHandlers to be added to the caster of this Spell
-		/// </summary>
-		public List<ProcHandlerTemplate> CasterProcHandlers;
-
-		/// <summary>
-		/// ProcHandlers to be added to the targets of this Spell
-		/// </summary>
-		public List<ProcHandlerTemplate> TargetProcHandlers;
-		#endregion
-
 		#region Trigger Spells
 		/// <summary>
 		/// Add Spells to be casted on the targets of this Spell
@@ -450,7 +411,7 @@ namespace WCell.RealmServer.Spells
 
 		#region Proc Spells
 		/// <summary>
-		/// Add Spells which, when used, can proc this Spell 
+		/// Add Spells which, when used, can proc this Spell  on the caster
 		/// </summary>
 		public void AddCasterProcSpells(params SpellId[] spellIds)
 		{
@@ -469,7 +430,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when used, can proc this Spell 
+		/// Add Spells which, when used, can proc this Spell on the caster 
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -483,7 +444,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when used, can proc this Spell 
+		/// Add Spells which, when used, can proc this Spell on the caster
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -539,7 +500,7 @@ namespace WCell.RealmServer.Spells
 				TargetProcSpells = new HashSet<Spell>();
 			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
 		}
 		#endregion
 
@@ -698,6 +659,8 @@ namespace WCell.RealmServer.Spells
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
 			IsWeaponAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
+
+			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 
 			IsFinishingMove =
 				AttributesEx.HasAnyFlag(SpellAttributesEx.FinishingMove) ||

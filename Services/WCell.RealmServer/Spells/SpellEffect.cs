@@ -50,10 +50,6 @@ namespace WCell.RealmServer.Spells
 			ImplicitTargetType.ScriptedObjectLocation
 		};
 
-		private static readonly AuraType[] ExclusiveTypes = new[] {
-			AuraType.ModStealth, AuraType.Transform, AuraType.ModShapeshift
-		};
-
 		#region Variables
 		/// <summary>
 		/// Amount of AP to be added to the EffectValue

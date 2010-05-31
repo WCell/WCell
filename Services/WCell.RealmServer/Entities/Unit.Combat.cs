@@ -394,6 +394,20 @@ namespace WCell.RealmServer.Entities
 			if (effect != null)
 			{
 				school = GetLeastResistant(effect.Spell);
+				if (effect.Spell.DamageIncreasedByAP)
+				{
+					int ap;
+					if (effect.Spell.IsRangedAbility)
+					{
+						ap = TotalRangedAP;
+					}
+					else
+					{
+						ap = TotalMeleeAP;
+					}
+					
+					dmg += (ap+7)/14;	// round
+				}
 			}
 			else
 			{

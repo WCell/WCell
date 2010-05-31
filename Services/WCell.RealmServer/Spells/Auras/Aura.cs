@@ -220,6 +220,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spell; }
 		}
 
+		/// <summary>
+		/// The amount of times that this Aura has been applied
+		/// </summary>
+		public int StackCount
+		{
+			get { return m_stackCount; }
+			set { m_stackCount = value; }
+		}
+
 		public bool IsActive
 		{
 			get;
@@ -827,13 +836,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spell.ProcChance > 0 ? m_spell.ProcChance : 100; }
 		}
 
-		/// <summary>
-		/// The amount of times that this Aura has been applied
-		/// </summary>
-		public int StackCount
+		public int MinProcDelay
 		{
-			get { return m_stackCount; }
-			set { m_stackCount = value; }
+			get { return m_spell.ProcDelay; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
 		}
 
 		public bool CanBeTriggeredBy(Unit target, IUnitAction action, bool active)
