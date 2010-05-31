@@ -154,8 +154,22 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					var id = trigger.Text.NextEnum(SpellId.None);
-					var spell = SpellHandler.Get(id);
+					var lineid = trigger.Text.NextEnum(SpellLineId.None);
+					Spell spell = null;
+					if (lineid != 0)
+					{
+						var line = SpellLines.GetLine(lineid);
+						if (line != null)
+						{
+							spell = line.HighestRank;
+						}
+					}
+
+					if (spell == null)
+					{
+						var id = trigger.Text.NextEnum(SpellId.None);
+						spell = SpellHandler.Get(id);
+					}
 
 					if (spell != null)
 					{

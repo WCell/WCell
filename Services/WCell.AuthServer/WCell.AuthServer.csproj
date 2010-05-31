@@ -166,6 +166,7 @@
     <Compile Include="Commands\AuthServerCommand.cs" />
     <Compile Include="Commands\AuthCommandHandler.cs" />
     <Compile Include="Commands\BufferedCommandTrigger.cs" />
+    <Compile Include="Commands\DevCommands.cs" />
     <Compile Include="Commands\RealmCommands.cs" />
     <Compile Include="Commands\IPCCommands.cs" />
     <Compile Include="Firewall\BanEntry.cs" />

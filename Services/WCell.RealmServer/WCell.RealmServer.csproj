@@ -234,6 +234,8 @@
       <DependentUpon>WCell.RealmServer.resx</DependentUpon>
     </Compile>
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
@@ -461,7 +463,7 @@
     <Compile Include="Instances\InstanceConfigBase.cs" />
     <Compile Include="Instances\InstanceTemplate.cs" />
     <Compile Include="Items\ItemHitProcHandler.cs" />
-    <Compile Include="Misc\AttackAction.cs" />
+    <Compile Include="Misc\UnitActions.cs" />
     <Compile Include="Misc\ExceptionHandler.cs" />
     <Compile Include="Misc\ProcHandler.cs" />
     <Compile Include="Misc\SimpleRange.cs" />

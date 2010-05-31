@@ -485,7 +485,7 @@ namespace WCell.Core
 
 				Start(true, false);
 
-				if (!(_running = _tcpEnabled))
+				if (!(_running = TcpEnabledEnabled))
 				{
 					s_log.Fatal(Resources.InitFailed);
 					Stop();

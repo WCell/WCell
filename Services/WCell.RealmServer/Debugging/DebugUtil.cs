@@ -8,6 +8,7 @@ using WCell.Core.Network;
 using WCell.Intercommunication.DataTypes;
 using WCell.PacketAnalysis;
 using WCell.PacketAnalysis.Logs;
+using WCell.RealmServer.Network;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
@@ -53,8 +54,18 @@ namespace WCell.RealmServer.Debugging
 			get { return dumps; }
 			set
 			{
-				dumps = value;
-				// TODO: Add/remove handler
+				if (dumps != value)
+				{
+					dumps = value;
+					if (value)
+					{
+						
+					}
+					else
+					{
+						
+					}
+				}
 			}
 		}
 
@@ -93,13 +104,17 @@ namespace WCell.RealmServer.Debugging
 				m_initialized = true;
 				DumpDir.Create();
 
-				LoginHandler.ClientDisconnected += client => {
-					if (client.Account != null)
-					{
-						RemoveWriter(client.Account);
-					}
-				};
+				LoginHandler.ClientDisconnected += OnDisconnect;
 			}
+		}
+
+		private static void OnDisconnect(IRealmClient client)
+		{
+			if (client.Account != null)
+			{
+				RemoveWriter(client.Account);
+			}
+				
 		}
 
 		public static void Init()

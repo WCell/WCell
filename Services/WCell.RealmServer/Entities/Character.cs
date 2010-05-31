@@ -1307,16 +1307,17 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds all damage boni and mali
 		/// </summary>
-		public override int AddDamageMods(int dmg, SpellEffect effect, DamageSchool school)
+		public override void AddDamageMods(AttackAction action)
 		{
-			dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school) / 100f, dmg);
-			if (effect != null)
+			base.AddDamageMods(action);
+			var dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool) / 100f, action.Damage);
+			if (action.Spell != null)
 			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, dmg);
+				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, action.Spell, dmg);
 			}
 
-			dmg += GetDamageDoneMod(school);
-			return dmg;
+			dmg += GetDamageDoneMod(action.UsedSchool);
+			action.Damage = dmg;
 		}
 
 		public override int AddHealingMods(int dmg, SpellEffect effect, DamageSchool school)

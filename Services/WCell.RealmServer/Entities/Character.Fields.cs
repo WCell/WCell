@@ -1104,7 +1104,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		/// <summary>
-		/// Returns the SpellCritChance for the given DamageType
+		/// Returns the SpellCritChance for the given DamageType (0-100)
 		/// </summary>
 		public override float GetSpellCritChance(DamageSchool school)
 		{

@@ -181,9 +181,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual int AddDamageMods(int dmg, SpellEffect effect, DamageSchool school)
+		public virtual void AddDamageMods(AttackAction action)
 		{
-			return dmg;
+			foreach (var mod in AttackModifiers)
+			{
+				mod.ModAttack(action);
+			}
 		}
 
 		/// <summary>
@@ -429,16 +432,16 @@ namespace WCell.RealmServer.Entities
 				action.IsDot = false;
 			}
 
-			var resChance = GetResistChance(this, action.UsedSchool);
+			action.ResistPct = GetResistChancePct(this, action.UsedSchool);
 
 			action.Victim = this;
 
 			if (attacker != null)
 			{
-				action.Damage = attacker.AddDamageMods(dmg, action.SpellEffect, action.UsedSchool);
+				attacker.AddDamageMods(action);
 
                 if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
-					attacker.CalcSpellCritChance(this, action.UsedSchool, resChance, effect.Spell) > Utility.Random(0f, 100f))
+					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
 					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 					action.IsCritical = true;
@@ -451,7 +454,7 @@ namespace WCell.RealmServer.Entities
 
 
 			action.Absorbed = Absorb(action.UsedSchool, action.Damage);
-			action.Resisted = (int)Math.Round(action.Damage * resChance);
+			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
 			action.Blocked = 0; // TODO: Deflect
 			action.SpellEffect = effect;
 
@@ -492,7 +495,7 @@ namespace WCell.RealmServer.Entities
 			return res;
 		}
 
-		public float CalcSpellCritChance(Unit defender, DamageSchool dmgSchool, float resistChance, Spell spell)
+		public float CalcSpellCritChance(Unit defender, DamageSchool dmgSchool, float resistPct, Spell spell)
 		{
 			var chance = GetSpellCritChance(dmgSchool);
 			if (this is Character)
@@ -506,9 +509,9 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Calculates this Unit's chance to resist the given school.
-		/// Value is between 0 and 1
+		/// Value is between 0 and 100
 		/// </summary>
-		public float GetResistChance(Unit attacker, DamageSchool school)
+		public float GetResistChancePct(Unit attacker, DamageSchool school)
 		{
 			int attackerLevel;
 			var res = GetResistance(school);
@@ -524,11 +527,11 @@ namespace WCell.RealmServer.Entities
 
 			res = Math.Max(0, res);
 
-			var resist = (res / (attackerLevel * 5f)) * 0.0075f;
+			var resist = (res / (attackerLevel * 5f)) * 0.75f;
 
-			if (resist > 0.75)
+			if (resist > 75)
 			{
-				resist = 0.75f;
+				resist = 75f;
 			}
 
 			if (resist < 0)
@@ -636,7 +639,7 @@ namespace WCell.RealmServer.Entities
 		public bool CheckResist(Unit attacker, DamageSchool school, SpellMechanic mechanic)
 		{
 			if (GetMechanicResistance(mechanic) +
-				GetResistChance(attacker, school) > Utility.Random(0f, 100f))
+				GetResistChancePct(attacker, school) > Utility.Random(0f, 100f))
 				return true;
 
 			return false;
@@ -1015,7 +1018,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Is called whenever an this Unit receives any kind of damage
+		/// Is called whenever this Unit receives any kind of damage
 		/// 
 		/// TODO: There is a small chance with each hit by your weapon that it will lose 1 durability point.
 		/// TODO: There is a small chance with each spell cast that you will lose 1 durability point to your weapon. 

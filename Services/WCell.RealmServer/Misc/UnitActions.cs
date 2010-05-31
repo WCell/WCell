@@ -85,13 +85,19 @@ namespace WCell.RealmServer.Misc
 
 		public DamageSchoolMask Schools;
 
+		/// <summary>
+		/// Can only be modified in AddDamageMods, not later.
+		/// Value between 0 and 100.
+		/// </summary>
+		public float ResistPct;
+
 		public int Absorbed, Resisted, Blocked;
 
 		public VictimState VictimState;
 
 		public HitFlags HitFlags;
 
-		#region Properties
+		#region Situational Properties
 		public DamageSchool UsedSchool
 		{
 			get;
@@ -191,10 +197,7 @@ namespace WCell.RealmServer.Misc
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
 					}
 				}
-				if (SpellEffect != null)
-				{
-					flags |= ProcTriggerFlags.SpellHit;
-				}
+
 				if (SpellEffect != null)
 				{
 					flags |= ProcTriggerFlags.SpellHit;
@@ -464,7 +467,6 @@ namespace WCell.RealmServer.Misc
 			if (Damage > 0)
 			{
 				var level = Attacker.Level;
-				float resPct;
 				var res = Victim.GetResistance(UsedSchool) - Attacker.GetTargetResistanceMod(UsedSchool);
 
 
@@ -475,37 +477,37 @@ namespace WCell.RealmServer.Misc
                     {
                         if (level < 60)
                         {
-                            resPct = (res/(res + 400f + 85f*level))*100f;
+                            ResistPct = (res/(res + 400f + 85f*level))*100f;
                         }
                         else
                         {
-                            resPct = (res/(res - 22167.5f + 467.5f*level))*100f;
+                            ResistPct = (res/(res - 22167.5f + 467.5f*level))*100f;
                         }
 
                     }
                     else
                     {
                         // Magical damageschool
-                        resPct = Victim.GetResistChance(Attacker, UsedSchool);
+                        ResistPct = Victim.GetResistChancePct(Attacker, UsedSchool);
                     }
                 }
                 else
                 {
-                    resPct = 0;
+                    ResistPct = 0;
                 }
 
-			    if (resPct > 75)
+			    if (ResistPct > 75)
 			    {
-			        resPct = 75;
+			        ResistPct = 75;
 			    }
-			    if (resPct < 0)
+			    if (ResistPct < 0)
 			    {
-			        resPct = 0;
+			        ResistPct = 0;
 			    }
 
-			    Damage = Attacker.AddDamageMods(Damage, SpellEffect, UsedSchool);
+			    Attacker.AddDamageMods(this);
 
-				Resisted = (resPct * Damage / 100f).RoundInt();
+				Resisted = (ResistPct * Damage / 100f).RoundInt();
 				Absorbed = Victim.Absorb(UsedSchool, Damage);
 				if (Absorbed > 0)
 				{
@@ -1067,4 +1069,9 @@ namespace WCell.RealmServer.Misc
 		}
 	}
 	#endregion
+
+	public interface IAttackModifier
+	{
+		void ModAttack(AttackAction action);
+	}
 }
