@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using NLog;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 
@@ -35,7 +36,15 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			{
                 var owner = m_aura.Auras.Owner;
                 //owner.SpellCast.Trigger(m_spellEffect.TriggerSpell, m_spellEffect, target);
-                owner.SpellCast.Trigger(m_spellEffect.TriggerSpell, target);
+				if (m_spellEffect.IsAreaEffect || m_spellEffect.HasTarget(ImplicitTargetType.Self))
+				{
+					// finds targets on it's own
+					owner.SpellCast.Trigger(m_spellEffect.TriggerSpell);
+				}
+				else
+				{
+					owner.SpellCast.Trigger(m_spellEffect.TriggerSpell, target);
+				}
 			}
 		}
 	}

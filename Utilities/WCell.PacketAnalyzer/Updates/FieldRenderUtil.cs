@@ -404,7 +404,7 @@ namespace WCell.PacketAnalysis.Updates
 				str.Add("SheathType: " + (SheathType)val[0]);
 				str.Add("PVP State: " + (PvPState)val[1]);
 				str.Add("PetState: " + (PetState)val[2]);
-                str.Add("ShapeShift: " + (ShapeShiftForm)val[3]);
+                str.Add("ShapeShift: " + (ShapeshiftForm)val[3]);
 				strVal = str.ToString(", ");
 				return 1;
 			};

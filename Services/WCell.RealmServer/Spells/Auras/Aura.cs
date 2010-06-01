@@ -220,6 +220,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spell; }
 		}
 
+		/// <summary>
+		/// The amount of times that this Aura has been applied
+		/// </summary>
+		public int StackCount
+		{
+			get { return m_stackCount; }
+			set { m_stackCount = value; }
+		}
+
 		public bool IsActive
 		{
 			get;
@@ -574,6 +583,40 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		void RemoveEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.Remove(false);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		void ApplyEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.Apply();
+					}
+				}
+			}
+		}
+
+		/// <summary>
 		/// Do certain special behavior everytime Aura is applied
 		/// </summary>
 		private void OnApply()
@@ -591,15 +634,17 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (IsActive)
 			{
-				m_casterInfo = caster;
+				// remove non-periodic effects:
+				RemoveEffects();
 
+				m_casterInfo = caster;
 				if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
 				}
 
 				// re-apply non-periodic effects:
-				ReApplyEffects();
+				ApplyEffects();
 
 				// reset timer:
 				TimeLeft = m_spell.GetDuration(caster, m_auras.Owner);
@@ -791,13 +836,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spell.ProcChance > 0 ? m_spell.ProcChance : 100; }
 		}
 
-		/// <summary>
-		/// The amount of times that this Aura has been applied
-		/// </summary>
-		public int StackCount
+		public int MinProcDelay
 		{
-			get { return m_stackCount; }
-			set { m_stackCount = value; }
+			get { return m_spell.ProcDelay; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
 		}
 
 		public bool CanBeTriggeredBy(Unit target, IUnitAction action, bool active)

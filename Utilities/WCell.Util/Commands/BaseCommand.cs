@@ -21,9 +21,8 @@ namespace WCell.Util.Commands
 		/// All Aliases which can trigger the Process method of this Command.
 		/// </summary>
 		public string[] Aliases;
-		public string Usage;
 
-		protected string m_paramInfo;
+		protected string m_englishParamInfo;
 		protected string m_EnglishDescription;
 		protected bool m_enabled;
 
@@ -32,38 +31,6 @@ namespace WCell.Util.Commands
 		protected IDictionary<string, SubCommand> m_subCommands = new Dictionary<string, SubCommand>(StringComparer.InvariantCultureIgnoreCase);
 		protected HashSet<SubCommand> m_subCommandSet = new HashSet<SubCommand>();
 		internal protected CommandMgr<C> mgr;
-
-	    internal void DoInit()
-		{
-			Initialize();
-			if (Aliases.Length == 0)
-			{
-				throw new Exception("Command has no Aliases: " + this);
-			}
-			foreach (var alias in Aliases)
-			{
-				if (alias.Contains(" "))
-				{
-					throw new Exception("Command-Alias \"" + alias + "\" must not contain spaces in " + this);
-				}
-				if (alias.Length == 0)
-				{
-					throw new Exception("Command has empty Alias: " + this);
-				}
-			}
-			Usage = CreateUsage();
-		}
-
-		protected abstract void Initialize();
-
-		protected void Init(params string[] aliases)
-		{
-			m_enabled = true;
-			m_paramInfo = "";
-			Aliases = aliases;
-
-			AddSubCmds();
-		}
 
 		/// <summary>
 		/// The actual Command itself to which this SubCommand (and maybe its ancestors) belongs
@@ -81,39 +48,12 @@ namespace WCell.Util.Commands
 			}
 		}
 
-		public string CreateInfo()
-		{
-			return CreateUsage() + "(" + EnglishDescription + ")";
-			//return CreateUsage();
-		}
-
-		/// <summary>
-		/// Returns a simple usage string
-		/// </summary>
-		public string CreateUsage()
-		{
-			return CreateUsage(m_paramInfo);
-		}
-
-		public virtual string CreateUsage(string usage)
-		{
-			usage = Aliases.ToString("|") + " " + usage;
-			if (m_parentCmd != null)
-			{
-				usage = m_parentCmd.CreateUsage(usage);
-			}
-			return usage;
-		}
-
 		/// <summary>
 		/// The parent of this SubCommand (can be a further SubCommand or a Command)
 		/// </summary>
 		public BaseCommand<C> ParentCmd
 		{
-			get
-			{
-				return m_parentCmd;
-			}
+			get { return m_parentCmd; }
 		}
 
 		public IDictionary<string, SubCommand> SubCommandsByAlias
@@ -161,35 +101,107 @@ namespace WCell.Util.Commands
 		/// <summary>
 		/// A human-readable list of expected parameters
 		/// </summary>
-		public string ParamInfo
+		[Obsolete("Use a localized version of this")]
+		public string EnglishParamInfo
 		{
-			get { return m_paramInfo; }
-			set { m_paramInfo = value; }
+			get { return m_englishParamInfo; }
+			set { m_englishParamInfo = value; }
 		}
 
 		/// <summary>
 		/// Describes the command itself.
 		/// </summary>
+		[Obsolete("Use a localized version of this")]
 		public string EnglishDescription
 		{
 			get { return m_EnglishDescription; }
 			set { m_EnglishDescription = value; }
 		}
 
+		internal void DoInit()
+		{
+			Initialize();
+			if (Aliases.Length == 0)
+			{
+				throw new Exception("Command has no Aliases: " + this);
+			}
+			foreach (var alias in Aliases)
+			{
+				if (alias.Contains(" "))
+				{
+					throw new Exception("Command-Alias \"" + alias + "\" must not contain spaces in " + this);
+				}
+				if (alias.Length == 0)
+				{
+					throw new Exception("Command has empty Alias: " + this);
+				}
+			}
+		}
+
+		protected abstract void Initialize();
+
+		protected void Init(params string[] aliases)
+		{
+			m_enabled = true;
+			m_englishParamInfo = "";
+			Aliases = aliases;
+
+			AddSubCmds();
+		}
+
+		public virtual string GetDescription(CmdTrigger<C> trigger)
+		{
+			return EnglishDescription;
+		}
+
+		public virtual string GetParamInfo(CmdTrigger<C> trigger)
+		{
+			return m_englishParamInfo;
+		}
+
+		public string CreateInfo(CmdTrigger<C> trigger)
+		{
+			return CreateUsage(trigger) + " (" + GetDescription(trigger) + ")";
+			//return CreateUsage();
+		}
+
+		/// <summary>
+		/// Returns a simple usage string
+		/// </summary>
+		public string CreateUsage()
+		{
+			return CreateUsage(GetParamInfo(null));
+		}
+
+		public string CreateUsage(CmdTrigger<C> trigger)
+		{
+			return CreateUsage(GetParamInfo(trigger));
+		}
+
+		public virtual string CreateUsage(string paramInfo)
+		{
+			paramInfo = Aliases.ToString("|") + " " + paramInfo;
+			if (m_parentCmd != null)
+			{
+				paramInfo = m_parentCmd.CreateUsage(paramInfo);
+			}
+			return paramInfo;
+		}
+
 		/// <summary>
 		/// Is called when the command is triggered (case-insensitive).
 		/// </summary>
-        public abstract void Process(CmdTrigger<C> trigger);
+		public abstract void Process(CmdTrigger<C> trigger);
 
-        /// <summary>
-        /// Processes a command that yields an object to return
-        /// </summary>
-        /// <param name="trigger"></param>
-        /// <returns></returns>
-        public virtual object Eval(CmdTrigger<C> trigger)
-        {
-            return null;
-        }
+		/// <summary>
+		/// Processes a command that yields an object to return
+		/// </summary>
+		/// <param name="trigger"></param>
+		/// <returns></returns>
+		public virtual object Eval(CmdTrigger<C> trigger)
+		{
+			return null;
+		}
 
 		protected void TriggerSubCommand(CmdTrigger<C> trigger)
 		{
@@ -242,7 +254,6 @@ namespace WCell.Util.Commands
 		{
 			cmd.m_parentCmd = this;
 			cmd.Initialize();
-			cmd.Usage = cmd.CreateUsage();
 
 			foreach (var alias in cmd.Aliases)
 			{

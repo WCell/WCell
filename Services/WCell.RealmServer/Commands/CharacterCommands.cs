@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("GiveXP", "XP", "Exp");
-			ParamInfo = "<amount>";
+			EnglishParamInfo = "<amount>";
 			EnglishDescription = "Gives the given amount of experience.";
 		}
 
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Level");
-			ParamInfo = "<level>";
+			EnglishParamInfo = "<level>";
 			EnglishDescription = "Sets the player to the given level. Level must be higher than the player's level.";
 		}
 
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("Bank");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Opens the bank for the target through oneself (if one leaves the target, it won't be allowed to continue using the Bank).";
 		}
 
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Explore");
-			ParamInfo = "[<zone>]";
+			EnglishParamInfo = "[<zone>]";
 			EnglishDescription = "Explores the map. If zone is given it will toggle exploration of that zone, else it will explore all zones.";
 		}
 

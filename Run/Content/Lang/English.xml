@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Items>
+    <Item Key="Done">
+      <Value>Done.</Value>
+    </Item>
+    <Item Key="Addon">
+      <Value>Addon</Value>
+    </Item>
+    <Item Key="Library">
+      <Value>Library</Value>
+    </Item>
+    <Item Key="PlayerNotOnline">
+      <Value>Player is not online: {0}</Value>
+    </Item>
+
+    <Item Key="SubCommandNotFound">
+      <Value>SubCommand not found: {0}</Value>
+    </Item>
+    <Item Key="MustNotUseCommand">
+      <Value>You are not allowed to use the {0}-Command!</Value>
+    </Item>
+
+    <Item Key="CmdSummonPlayerNotOnline">
+      <Value>Player {0} is not online.</Value>
+    </Item>
+
+
+    <Item Key="CmdKickMustProvideName">
+      <Value>Must provide name, using the -n modifier</Value>
+    </Item>
+
+    <Item Key="CmdLocalizerDescription">
+      <Value>Provides commands to manage the localizer</Value>
+    </Item>
+    <Item Key="CmdLocalizerReloadDescription">
+      <Value>Reloads the language files.</Value>
+    </Item>
+    <Item Key="CmdLocalizerSetLocaleDescription">
+      <Value>Allows you to set your own Locale (use "Cfg Set DefaultLocale" to set the server's locale)</Value>
+    </Item>
+    <Item Key="CmdLocalizerSetLocaleParamInfo">
+      <Value>&lt;locale&gt;</Value>
+    </Item>
+    <Item Key="UnableToSetUserLocale">
+      <Value>Could not change the current user's locale.</Value>
+    </Item>
+  </Items>
+</Translation>

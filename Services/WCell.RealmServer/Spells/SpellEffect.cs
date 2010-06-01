@@ -50,10 +50,6 @@ namespace WCell.RealmServer.Spells
 			ImplicitTargetType.ScriptedObjectLocation
 		};
 
-		private static readonly AuraType[] ExclusiveTypes = new[] {
-			AuraType.ModStealth, AuraType.Transform, AuraType.ModShapeshift
-		};
-
 		#region Variables
 		/// <summary>
 		/// Amount of AP to be added to the EffectValue
@@ -800,7 +796,7 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.DispelImmunity, typeof(DispelType));
 			SetAuraEffectMiscValueType(AuraType.MechanicImmunity, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.Mounted, typeof(NPCId));
-			SetAuraEffectMiscValueType(AuraType.ModShapeshift, typeof(ShapeShiftForm));
+			SetAuraEffectMiscValueType(AuraType.ModShapeshift, typeof(ShapeshiftForm));
 			SetAuraEffectMiscValueType(AuraType.Transform, typeof(NPCId));
 			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));
@@ -848,6 +844,17 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+		#region Modify Effects
+		public void AddToEffectMask(SpellLineId ability)
+		{
+			var spell = SpellLines.GetLine(ability).FirstRank;
+			for (int i = 0; i < AffectMask.Length; i++)
+			{
+				AffectMask[i] |= spell.SpellClassMask[i];
+			}
+		}
+
+		#endregion
 	}
 }
 

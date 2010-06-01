@@ -124,6 +124,15 @@ namespace Cell.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TCP Listen socket for port {0} closed.
+        /// </summary>
+        internal static string ListeningTCPSocketStopped {
+            get {
+                return ResourceManager.GetString("ListeningTCPSocketStopped", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Listening to UDP socket on {0}.
         /// </summary>
         internal static string ListeningUDPSocket {

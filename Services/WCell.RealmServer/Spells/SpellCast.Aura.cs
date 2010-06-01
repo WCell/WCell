@@ -162,8 +162,8 @@ namespace WCell.RealmServer.Spells
 						// check for debuff
 						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld)
 						{
-							// trigger Debuff event
-							target.OnDebuff(this, newAura);
+							// force combat mode
+							target.IsInCombat = true;
 						}
 					}
 				}

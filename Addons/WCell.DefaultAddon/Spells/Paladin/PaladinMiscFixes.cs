@@ -59,7 +59,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				}
 
 				// add custom proc
-				spell.AddTargetProcHandler(new SpellProcHandler(ProcTriggerFlags.MeleeAttack, 
+				spell.AddTargetProcHandler(new TriggerSpellProcHandler(ProcTriggerFlags.MeleeAttack, 
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.BlessingOfSanctuary)
 					));

@@ -268,7 +268,7 @@ namespace WCell.RealmServer.Handlers
 
 				SendCharacterLoginFail(client, LoginErrorCode.CHAR_LOGIN_NO_CHARACTER);
 			}
-			else if (record.CharacterFlags.HasFlag(CharEnumFlags.NeedsRename | CharEnumFlags.LockedForBilling))
+			else if (record.CharacterFlags.HasAnyFlag(CharEnumFlags.NeedsRename | CharEnumFlags.LockedForBilling))
 			{
 				// TODO: Check in Char Enum?
 				SendCharacterLoginFail(client, LoginErrorCode.AUTH_BILLING_EXPIRED);

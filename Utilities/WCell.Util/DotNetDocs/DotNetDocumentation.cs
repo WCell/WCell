@@ -9,7 +9,7 @@ using WCell.Util.DotNetDocs;
 namespace WCell.Util.DotNetDocs
 {
 	[XmlRoot("doc")]
-	public class DotNetDocumentation : XmlConfig<DotNetDocumentation>
+	public class DotNetDocumentation : XmlFile<DotNetDocumentation>
 	{
 		private static readonly Dictionary<char, MemberType> TypeMap = new Dictionary<char,MemberType>();
 

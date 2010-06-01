@@ -157,11 +157,6 @@ namespace WCell.Util.Variables
 			}
 		}
 
-		public void Save()
-		{
-			Save(true, false);
-		}
-
 		public bool Contains(string name)
 		{
 			return Definitions.ContainsKey(name);
@@ -171,6 +166,11 @@ namespace WCell.Util.Variables
 		{
 			var def = GetDefinition(name);
 			return def.IsReadOnly;
+		}
+
+		public void Save()
+		{
+			Save(true, false);
 		}
 
 		public virtual void Save(bool backupFirst, bool auto)

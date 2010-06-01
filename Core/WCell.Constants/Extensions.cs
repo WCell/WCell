@@ -75,6 +75,11 @@ namespace WCell.Constants
 			return (flags & otherFlags) != 0;
 		}
 
+		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchool school)
+		{
+			return (flags & (DamageSchoolMask)(1 << (int) school)) != 0;
+		}
+
 		public static bool HasAnyFlag(this GroupMemberFlags flags, GroupMemberFlags otherFlags)
 		{
 			return (flags & otherFlags) != 0;
@@ -96,6 +101,31 @@ namespace WCell.Constants
 		}
 
 		public static bool HasAnyFlag(this SplineFlags flags, SplineFlags otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this ClassMask flags, ClassMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this ClassMask flags, ClassId clss)
+		{
+			return (flags & (ClassMask)(1 << (int) (clss-1))) != 0;
+		}
+
+		public static bool HasAnyFlag(this  RaceMask flags, RaceMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this ClassMask2 flags, ClassMask2 otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static bool HasAnyFlag(this  RaceMask2 flags, RaceMask2 otherFlags)
 		{
 			return (flags & otherFlags) != 0;
 		}

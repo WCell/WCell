@@ -90,7 +90,7 @@ namespace WCell.AuthServer.Accounts
             LastLogin = DateTime.Now;
 			Locale = client.Info.Locale;
 			ClientVersion = client.Info.Version.ToString();
-			Update();
+			UpdateAndFlush();
 
 			AuthCommandHandler.AutoExecute(this);
 

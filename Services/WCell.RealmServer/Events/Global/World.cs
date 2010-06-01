@@ -8,7 +8,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Is called after the World paused or unpaused completely and before the PauseLock is released.
 		/// </summary>
-		public static event Action<bool> Pause;
+		public static event Action<bool> WorldPaused;
 
 		/// <summary>
 		/// Is called after the World has been saved and before the PauseLock is released (eg. during shutdown)

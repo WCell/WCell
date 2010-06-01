@@ -16,19 +16,19 @@ namespace WCell.Addons.Default.Spells.Warrior
 		public static void FixWarrior()
 		{
 
-            // Charge doesn't generate rage
-		    SpellLineId.WarriorCharge.Apply(spell =>
-		                                        {
-		                                            var effect = spell.GetEffect(SpellEffectType.Dummy);
-		                                            if (effect != null)
-		                                            {
-		                                                effect.EffectType = SpellEffectType.Energize;
-		                                                //effect.SpellEffectHandlerCreator =
-		                                                    //(cast, efct) => new EnergizeEffectHandler(cast, efct);
-		                                                effect.MiscValue = (int) PowerType.Rage;
-		                                            }
-		                                        });
-                
+			// Charge doesn't generate rage
+			SpellLineId.WarriorCharge.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				if (effect != null)
+				{
+					effect.EffectType = SpellEffectType.Energize;
+					//effect.SpellEffectHandlerCreator =
+					//(cast, efct) => new EnergizeEffectHandler(cast, efct);
+					effect.MiscValue = (int)PowerType.Rage;
+				}
+			});
+
 			// Slam has the wrong effect type
 			SpellLineId.WarriorSlam.Apply(spell =>
 			{
@@ -41,7 +41,14 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// Intimidating Shout should not have a single enemy target
 			SpellLineId.WarriorChallengingShout.Apply(spell => spell.ForeachEffect(
-																   effect => { effect.ImplicitTargetA = ImplicitTargetType.AllEnemiesAroundCaster; }));
+				effect => { effect.ImplicitTargetA = ImplicitTargetType.AllEnemiesAroundCaster; }));
+
+			// Sword Spec should only proc once every 6 sec
+			SpellLineId.WarriorArmsSwordSpecialization.Apply(spell => spell.ProcDelay = 6000);
+
+			// Improved Hamstring can only be proc'ed by Hamstring
+			SpellLineId.WarriorArmsImprovedHamstring.Apply(spell =>
+				spell.AddCasterProcSpells(SpellLineId.WarriorHamstring));
 		}
 	}
 }

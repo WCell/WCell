@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Tests.Spells
 
 			chr.EnsureInWorld();
 
-			chr.ShapeShiftForm = ShapeShiftForm.Normal;
+			chr.ShapeshiftForm = ShapeshiftForm.Normal;
 			chr.Auras.Clear();
 
 			Assert.AreEqual(0, chr.Auras.Count);

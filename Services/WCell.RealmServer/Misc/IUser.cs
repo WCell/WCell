@@ -54,6 +54,7 @@ namespace WCell.RealmServer.Misc
 		ClientLocale Locale
 		{ 
 			get;
+			set;
 		}
 	}
 

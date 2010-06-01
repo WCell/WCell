@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Factions
 				var faction = FactionMgr.ByTemplateId[i];
 				if (faction != null)
 				{
-                    if (Template.FriendGroup.HasFlag(faction.Template.FactionGroup))
+					if (Template.FriendGroup.HasAnyFlag(faction.Template.FactionGroup))
                     {
                         Friends.Add(faction);
                         if (IsPlayer && faction.Template.EnemyGroup != 0)
@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Factions
 			{
 				if (faction != null)
 				{
-                    if (Template.EnemyGroup.HasFlag(faction.Template.FactionGroup))
+                    if (Template.EnemyGroup.HasAnyFlag(faction.Template.FactionGroup))
 					{
 						Enemies.Add(faction);
 						if (IsPlayer && faction.Template.EnemyGroup != 0)
@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Factions
             }
 
             // Fall back to a general check
-            return Template.EnemyGroup.HasFlag(otherFaction.Template.FactionGroup);
+			return Template.EnemyGroup.HasAnyFlag(otherFaction.Template.FactionGroup);
         }
 
         public bool IsFriendlyTowards(Faction otherFaction)
@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Factions
             }
 
             // Fall back to a general check
-            return Template.FriendGroup.HasFlag(otherFaction.Template.FactionGroup);
+			return Template.FriendGroup.HasAnyFlag(otherFaction.Template.FactionGroup);
         }
 
 

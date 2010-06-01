@@ -659,23 +659,16 @@ namespace WCell.RealmServer.Global
 					if (m_running)
 						return;
 
-					m_running = true;
-
 					// global sync
-					if (World.Paused)
+					lock (World.PauseLock)
 					{
-						// add message so pausing won't hold execution
-						AddMessage(() =>
+						if (World.Paused)
 						{
-							lock (World.PauseObject)
-							{
-								// double check: The world could have just been unpaused
-								if (World.Paused)
-								{
-									Monitor.Wait(World.PauseObject);
-								}
-							}
-						});
+							// must ensure that IsRunning does not change during World Pause
+							throw new InvalidOperationException("Tried to start Region while World is paused.");
+						}
+						
+						m_running = true;
 					}
 
 					s_log.Debug(Resources.RegionStarted, m_regionInfo.Id);
@@ -1041,14 +1034,6 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Registers the given Updatable during the next Region Tick
-		/// </summary>
-		public void RegisterUpdatableLater(IUpdatable updatable)
-		{
-			m_messageQueue.Enqueue(new Message(() => RegisterUpdatable(updatable)));
-		}
-
-		/// <summary>
 		/// Adds a new Updatable right away.
 		/// Requires Region context.
 		/// <see cref="RegisterUpdatableLater"/>
@@ -1061,14 +1046,6 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Unregisters the given Updatable during the next Region Update
-		/// </summary>
-		public void UnregisterUpdatableLater(IUpdatable updatable)
-		{
-			m_messageQueue.Enqueue(new Message(() => UnregisterUpdatable(updatable)));
-		}
-
-		/// <summary>
 		/// Unregisters an Updatable right away.
 		/// In region context.
 		/// <see cref="UnregisterUpdatableLater"/>
@@ -1077,6 +1054,22 @@ namespace WCell.RealmServer.Global
 		{
 			EnsureContext();
 			m_updatables.Remove(updatable);
+		}
+
+		/// <summary>
+		/// Registers the given Updatable during the next Region Tick
+		/// </summary>
+		public void RegisterUpdatableLater(IUpdatable updatable)
+		{
+			m_messageQueue.Enqueue(new Message(() => RegisterUpdatable(updatable)));
+		}
+
+		/// <summary>
+		/// Unregisters the given Updatable during the next Region Update
+		/// </summary>
+		public void UnregisterUpdatableLater(IUpdatable updatable)
+		{
+			m_messageQueue.Enqueue(new Message(() => UnregisterUpdatable(updatable)));
 		}
 
 		/// <summary>
@@ -1356,15 +1349,15 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Instantly updates all active Characters' environment: Collect environment info and send update deltas
 		/// </summary>
-		public void ForceUpdateCharacters(bool now)
+		public void ForceUpdateCharacters()
 		{
-			if (now)
+			if (IsInContext && !IsUpdating)
 			{
 				UpdateCharacters();
 			}
 			else
 			{
-				AddMessage(UpdateCharacters);
+				AddMessageAndWait(UpdateCharacters);
 			}
 		}
 
@@ -1844,9 +1837,6 @@ namespace WCell.RealmServer.Global
 					ArrayUtil.Set(ref m_gos, go.EntityId.Low, go);
 				}
 
-				obj.OnEnterRegion();
-				obj.RequestUpdate();
-
 				// TODO: For now enforce the MainZone and send the states of the default zone to force an update
 				if (MainZoneCount == 1)
 				{
@@ -1859,6 +1849,9 @@ namespace WCell.RealmServer.Global
 						MiscHandler.SendInitWorldStates((Character)obj, DefaultZone.WorldStates, DefaultZone);
 					}
 				}
+
+				obj.OnEnterRegion();
+				obj.RequestUpdate();
 
 				if (obj is Character)
 				{

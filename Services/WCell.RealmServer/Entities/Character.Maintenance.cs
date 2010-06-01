@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Entities
 
 			foreach (var school in WCellDef.AllDamageSchools)
 			{
-				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
+				SetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
 
@@ -468,7 +468,7 @@ namespace WCell.RealmServer.Entities
 		/// Is called after Character has been added to a region the first time and 
 		/// before it receives the first Update packet
 		/// </summary>
-		internal void InitializeCharacter()
+		internal protected void InitializeCharacter()
 		{
 			World.AddCharacter(this);
 			m_initialized = true;
@@ -721,10 +721,13 @@ namespace WCell.RealmServer.Entities
 			{
 				return false;
 			}
-#if DEBUG
-			var writer = DebugUtil.GetTextWriter(m_client.Account);
-			writer.WriteLine("Saving {0}...", Name);
-#endif
+
+			if (DebugUtil.Dumps)
+			{
+				var writer = DebugUtil.GetTextWriter(m_client.Account);
+				writer.WriteLine("Saving {0}...", Name);
+			}
+
 			try
 			{
 				if (m_record == null)
@@ -849,9 +852,13 @@ namespace WCell.RealmServer.Entities
 					saveScope.Flush();
 				}
 				m_record.LastSaveTime = DateTime.Now;
-#if DEBUG
-				writer.WriteLine("Saved {0} (Region: {1}).", Name, m_record.RegionId);
-#endif
+
+				if (DebugUtil.Dumps)
+				{
+					var writer = DebugUtil.GetTextWriter(m_client.Account);
+					writer.WriteLine("Saved {0} (Region: {1}).", Name, m_record.RegionId);
+				}
+
 				return true;
 			}
 			catch (Exception ex)
@@ -876,10 +883,12 @@ namespace WCell.RealmServer.Entities
 		{
 			SendSystemMessage("Saving failed - Please excuse the inconvenience!");
 
-#if DEBUG
-			var writer = DebugUtil.GetTextWriter(m_client.Account);
-			writer.WriteLine("Failed to save {0}: {1}", Name, ex);
-#endif
+			if (DebugUtil.Dumps)
+			{
+				var writer = DebugUtil.GetTextWriter(m_client.Account);
+				writer.WriteLine("Failed to save {0}: {1}", Name, ex);
+			}
+
 			LogUtil.ErrorException(ex, "Could not save Character " + this);
 		}
 

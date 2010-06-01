@@ -184,6 +184,10 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Commands\Extensions.cs" />
+    <Compile Include="Commands\LocalizerCommand.cs" />
+    <Compile Include="Lang\LangKey.cs" />
+    <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />
@@ -230,6 +234,8 @@
       <DependentUpon>WCell.RealmServer.resx</DependentUpon>
     </Compile>
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
@@ -457,7 +463,7 @@
     <Compile Include="Instances\InstanceConfigBase.cs" />
     <Compile Include="Instances\InstanceTemplate.cs" />
     <Compile Include="Items\ItemHitProcHandler.cs" />
-    <Compile Include="Misc\AttackAction.cs" />
+    <Compile Include="Misc\UnitActions.cs" />
     <Compile Include="Misc\ExceptionHandler.cs" />
     <Compile Include="Misc\ProcHandler.cs" />
     <Compile Include="Misc\SimpleRange.cs" />
@@ -661,7 +667,7 @@
     <Compile Include="Items\IItemSlotHandler.cs" />
     <Compile Include="Items\PartialInventories.cs" />
     <Compile Include="Items\SlotId.cs" />
-    <Compile Include="Lang\Localizer.cs" />
+    <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
     <Compile Include="NPCs\PetMgr.cs" />
@@ -1011,7 +1017,7 @@
     <Compile Include="Spells\Auras\Mod\ModScale.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Passive\Shapeshift.cs">
+    <Compile Include="Spells\Auras\Passive\ShapeshiftHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModSilenceDurationPercent.cs">
@@ -1161,7 +1167,7 @@
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />
     <Compile Include="Spells\PlayerSpellCollection.cs" />
-    <Compile Include="Spells\ShapeshiftInfo.cs" />
+    <Compile Include="Spells\ShapeshiftEntry.cs" />
     <Compile Include="Spells\Spell.CastParams.cs" />
     <Compile Include="Spells\SpellCollection.cs" />
     <Compile Include="Spells\Effects\AddComboPoints.cs" />
@@ -1255,7 +1261,6 @@
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

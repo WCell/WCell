@@ -74,7 +74,21 @@ namespace WCell.RealmServer
 			set;
 		}
 
-		private static bool init;
+		public static bool Loaded
+		{
+			get;
+			private set;
+		}
+
+		public static string LangDirName = "Lang";
+
+		public static string LangDir
+		{
+			get
+			{
+				return GetContentPath(LangDirName) + "/";
+			}
+		}
 
 		private static ClientLocale defaultLocale = ClientLocale.English;
 
@@ -91,9 +105,9 @@ namespace WCell.RealmServer
 		[Initialization(InitializationPass.Config, "Initialize Config")]
 		public static bool Initialize()
 		{
-			if (!init)
+			if (!Loaded)
 			{
-				init = true;
+				Loaded = true;
 				BadWordString = "";
 
 				s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(RealmServerConfiguration).Assembly);
@@ -424,11 +438,11 @@ namespace WCell.RealmServer
 
 		public static string GetDBCFile(string filename)
 		{
-			var path = Path.Combine(Instance.DBCFolder, filename);
 			if (!filename.EndsWith(".dbc", StringComparison.InvariantCultureIgnoreCase))
 			{
 				filename += ".dbc";
 			}
+			var path = Path.Combine(Instance.DBCFolder, filename);
 
 			if (!File.Exists(path))
 			{
@@ -439,6 +453,7 @@ namespace WCell.RealmServer
 
 			return path;
 		}
+
 
 		public static string GetContentPath(string file)
 		{

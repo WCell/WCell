@@ -7,7 +7,7 @@ using WCell.RealmServer.Spells;
 namespace WCell.RealmServer.Items
 {
 	/// <summary>
-	/// Handles Item OnHit-procs
+	/// Handles Item OnHit-procs which are applied to the wearer of the Item
 	/// </summary>
 	public class ItemHitProcHandler : IProcHandler
 	{
@@ -53,6 +53,17 @@ namespace WCell.RealmServer.Items
 		{
 			get { return 0; }
 			set { throw new NotImplementedException("Items do not have proc charges."); }
+		}
+
+		public int MinProcDelay
+		{
+			get { return 0; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
 		}
 
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)

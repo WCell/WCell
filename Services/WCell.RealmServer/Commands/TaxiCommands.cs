@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Stop", "Cancel", "C");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Stops the current taxi flight (if flying).";
 			}
 
@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Commands
 			{
 				Init("Show");
 				//ParamInfo = "[-r[a] <Region>]";
-				ParamInfo = "[-a]";
+				EnglishParamInfo = "[-a]";
 				EnglishDescription = "Shows the Taxi-Map. The -a switch automatically activates all Nodes beforehand."
 					//+ " The -r switch shows the Map of the given Region rather than the current one."
 					;
@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Go", "Goto");
-				ParamInfo = "[<name>|<id>]";
+				EnglishParamInfo = "[<name>|<id>]";
 				EnglishDescription = "Goes to the first node matching the given Name or Id.";
 			}
 
@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("List");
-				ParamInfo = "[-rc <Map>][<name>|<id>]";
+				EnglishParamInfo = "[-rc <Map>][<name>|<id>]";
 				EnglishDescription = "Lists all Taxi nodes or only those matching the given Name or Id. " +
 					"-r swtich filters Nodes of the given Region. -rc switch filters Nodes of the current Region.";
 			}
@@ -236,7 +236,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (map == MapId.End || node.MapId == map)
 					{
-						trigger.Reply(node);
+						trigger.Reply(node.ToString());
 					}
 				}
 			}
@@ -249,7 +249,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Info");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Shows information about the current Taxi-path.";
 			}
 
@@ -287,7 +287,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Activate");
-				ParamInfo = "[<name>|<id>]";
+				EnglishParamInfo = "[<name>|<id>]";
 				EnglishDescription = "Activates all Taxi nodes or only those matching the given Name or Id.";
 			}
 

@@ -720,7 +720,7 @@ namespace WCell.RealmServer.Entities
 								// destroy the newly applied Gem
 								((Item)(IMountableItem)gem).Destroy();
 							}
-							matchingColors = matchingColors && gem.Template.GemProperties.Color.HasFlag(socket.Color);
+							matchingColors = matchingColors && gem.Template.GemProperties.Color.HasAnyFlag(socket.Color);
 						}
 					}
 					else
@@ -730,7 +730,7 @@ namespace WCell.RealmServer.Entities
 						matchingColors = matchingColors &&
 							(socket.Color == 0 ||
 							(m_enchantments[(uint)EnchantSlot.Socket1 + i] != null &&
-							(m_enchantments[(uint)EnchantSlot.Socket1 + i].Entry.GemTemplate.GemProperties.Color.HasFlag(socket.Color))));
+							(m_enchantments[(uint)EnchantSlot.Socket1 + i].Entry.GemTemplate.GemProperties.Color.HasAnyFlag(socket.Color))));
 					}
 				}
 

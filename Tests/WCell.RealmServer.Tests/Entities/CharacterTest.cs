@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using WCell.Core.Database;
@@ -74,6 +75,7 @@ namespace WCell.RealmServer.Tests.Entities
 		[ClassInitialize]
 		public static void Initialize(TestContext testContext)
 		{
+			var dir = Directory.GetCurrentDirectory();
 			Setup.EnsureBasicSetup();
 		}
 
@@ -335,7 +337,7 @@ namespace WCell.RealmServer.Tests.Entities
 			// lets die
 			chr.Region.AddMessageAndWait(new Message(() => {
 				chr.Health = 0;
-				chr.Region.ForceUpdateCharacters(true);
+				chr.Region.ForceUpdateCharacters();
 			}));
 
 			Assert.IsFalse(chr.IsAlive);

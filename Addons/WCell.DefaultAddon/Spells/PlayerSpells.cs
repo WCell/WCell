@@ -60,7 +60,8 @@ namespace WCell.Addons.Default.Spells
 		#endregion
 
 		#region Skills
-		private static void FixSkillSpells()
+		[Initialization(InitializationPass.Fifth)]
+		public static void FixSkills()
 		{
 			// Throw does not require to be behind the target
 			SpellHandler.Apply(spell =>
@@ -69,11 +70,6 @@ namespace WCell.Addons.Default.Spells
 			},
 			SpellId.WeaponProficiencyThrow);
 
-		}
-
-		[Initialization(InitializationPass.Fifth)]
-		public static void FixSkills()
-		{
 			// Jewelcrafting also gives Prospecting
 			SpellHandler.Apply(spell => spell.AdditionallyTaughtSpells.Add(SpellHandler.Get(SpellId.ProfessionProspecting)),
 				SpellId.ProfessionJewelcraftingApprentice);

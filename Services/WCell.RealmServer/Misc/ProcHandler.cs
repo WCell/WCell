@@ -16,6 +16,9 @@ namespace WCell.RealmServer.Misc
 			get;
 		}
 
+		/// <summary>
+		/// Probability to proc in percent (0-100)
+		/// </summary>
 		uint ProcChance { get; }
 
 		/// <summary>
@@ -24,6 +27,20 @@ namespace WCell.RealmServer.Misc
 		Spell ProcSpell { get; }
 
 		int StackCount { get; }
+
+		int MinProcDelay
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Time when this proc may be triggered again (or small value, if always)
+		/// </summary>
+		DateTime NextProcTime
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Whether this handler can trigger the given Proc
@@ -89,6 +106,17 @@ namespace WCell.RealmServer.Misc
 		public uint ProcChance
 		{
 			get { return Template.ProcChance; }
+		}
+
+		public int MinProcDelay
+		{
+			get { return Template.MinProcDelay; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
 		}
 
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
@@ -182,32 +210,44 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// In Milliseconds
+		/// </summary>
+		public int MinProcDelay
+		{
+			get;
+			set;
+		}
 	}
 
-	public class SpellProcHandler : ProcHandlerTemplate
+	/// <summary>
+	/// Triggers a spell on proc
+	/// </summary>
+	public class TriggerSpellProcHandler : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
 
-		public SpellProcHandler(ProcValidator validator, Spell spell)
+		public TriggerSpellProcHandler(ProcValidator validator, Spell spell)
 		{
 			Validator = validator;
 			ProcAction = ProcSpell;
 			Spell = spell;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
 			this(validator, spell)
 		{
 			ProcTriggerFlags = triggerFlags;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
 			: this(triggerFlags, validator, spell)
 		{
 			ProcChance = procChance;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
 			: this(triggerFlags, validator, spell, procChance)
 		{
 			StackCount = stackCount;

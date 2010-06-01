@@ -132,20 +132,20 @@ namespace Cell.Core
 		/// <summary>
 		/// True if TCP is enabled, default is true.
 		/// </summary>
-		protected bool _tcpEnabled;
+		protected bool TcpEnabledEnabled;
 
 		/// <summary>
 		/// True if UDP is enabled, default is false.
 		/// </summary>
-		protected bool _udpEnabled;
+		protected bool UdpEnabledEnabled;
 
 		/// <summary>
 		/// The buffer for incoming UDP data.
 		/// </summary>
 		private byte[] _udpBuffer = new byte[1024];
-	    #endregion
+		#endregion
 
-	    #region Public Properties
+		#region Public Properties
 
 		/// <summary>
 		/// Gets the current status of the server.
@@ -251,12 +251,12 @@ namespace Cell.Core
 		/// <summary>
 		/// Gets/Sets whether or not to use TCP communications.
 		/// </summary>
-		public bool EnableTCP
+		public bool TCPEnabled
 		{
-			get { return _tcpEnabled; }
+			get { return TcpEnabledEnabled; }
 			set
 			{
-				if (_running && _tcpEnabled != value)
+				if (_running && TcpEnabledEnabled != value)
 				{
 					if (value)
 					{
@@ -264,8 +264,7 @@ namespace Cell.Core
 					}
 					else
 					{
-						RemoveAllClients();
-						_tcpListen.Close(60);
+						StopTCP();
 					}
 				}
 			}
@@ -274,28 +273,28 @@ namespace Cell.Core
 		/// <summary>
 		/// Gets/Sets whether or not to use UDP communications.
 		/// </summary>
-		public bool EnableUDP
+		public bool UDPEnabled
 		{
-			get { return _udpEnabled; }
+			get { return UdpEnabledEnabled; }
 			set
 			{
-				if (_udpEnabled && !value && _running)
+				if (UdpEnabledEnabled && !value && _running)
 				{
 					_udpListen.Close(60);
 				}
-				else if (!_udpEnabled && value && _running)
+				else if (!UdpEnabledEnabled && value && _running)
 				{
 					StartUDP();
 				}
 			}
 		}
 
-	    /// <summary>
-	    /// Holds the sequence number for UDP packets
-	    /// </summary>
-	    public ushort UdpCounter { get; set; }
+		/// <summary>
+		/// Holds the sequence number for UDP packets
+		/// </summary>
+		public ushort UdpCounter { get; set; }
 
-	    #endregion
+		#endregion
 
 		#region Public Events
 
@@ -320,18 +319,12 @@ namespace Cell.Core
 
 					if (useTcp)
 					{
-						if (_tcpEndpoint == null)
-						{
-							_tcpEndpoint = new IPEndPoint(GetDefaultExternalIPAddress(), 0);
-						}
+						//_tcpEndpoint = new IPEndPoint(GetDefaultExternalIPAddress(), 0);
 						StartTCP();
 					}
 					if (useUdp)
 					{
-						if (_udpEndpoint == null)
-						{
-							_udpEndpoint = new IPEndPoint(GetDefaultExternalIPAddress(), 0);
-						}
+						//_udpEndpoint = new IPEndPoint(GetDefaultExternalIPAddress(), 0);
 						StartUDP();
 					}
 
@@ -538,7 +531,7 @@ namespace Cell.Core
 
 					throw new InvalidEndpointException(endPoint);
 				}
-			    throw new NoAvailableAdaptersException();
+				throw new NoAvailableAdaptersException();
 			}
 		}
 
@@ -554,11 +547,11 @@ namespace Cell.Core
 
 		/// <summary>
 		/// Begin listening for TCP connections. Should not be called directly - instead use <see cref="Start"/>
-		/// <seealso cref="EnableTCP"/>
+		/// <seealso cref="TCPEnabled"/>
 		/// </summary>
 		protected void StartTCP()
 		{
-			if (!_tcpEnabled && _running)
+			if (!TcpEnabledEnabled && _running)
 			{
 				VerifyEndpointAddress(TcpEndPoint);
 
@@ -581,18 +574,42 @@ namespace Cell.Core
 				// We pass null the first time to create the arg
 				StartAccept(null);
 
-				_tcpEnabled = true;
+				TcpEnabledEnabled = true;
 				Info(null, Resources.ListeningTCPSocket, TcpEndPoint);
 			}
 		}
 
 		/// <summary>
-		/// Begin listening for UDP connections. Should not be called directly - instead use <see cref="Start"/>
-		/// <seealso cref="EnableTCP"/>
+		/// Begin listening for TCP connections. Should not be called directly - instead use <see cref="Start"/>
+		/// <seealso cref="TCPEnabled"/>
 		/// </summary>
-		protected void StartUDP()
+		protected void StopTCP()
 		{
-			if (!_udpEnabled && _running)
+			if (TcpEnabledEnabled)
+			{
+				try
+				{
+					_tcpListen.Close();
+				}
+				catch (Exception ex)
+				{
+					log.Warn("Exception occured while trying to close the TCP Connection", TcpEndPoint, ex);
+				}
+
+				_tcpListen = null;
+
+				TcpEnabledEnabled = false;
+				Info(null, Resources.ListeningTCPSocketStopped, TcpEndPoint);
+			}
+		}
+
+		/// <summary>
+		/// Begin listening for UDP connections. Should not be called directly - instead use <see cref="Start"/>
+		/// <seealso cref="TCPEnabled"/>
+		/// </summary>
+		public void StartUDP()
+		{
+			if (!UdpEnabledEnabled && _running)
 			{
 				IPEndPoint udpEndpoint = new IPEndPoint(UdpIP, UdpPort);
 				VerifyEndpointAddress(udpEndpoint);
@@ -603,7 +620,7 @@ namespace Cell.Core
 				// We pass null the first time to create the arg
 				StartReceivingUdp(null);
 
-				_udpEnabled = true;
+				UdpEnabledEnabled = true;
 				Info(null, Resources.ListeningUDPSocket, UdpEndPoint);
 			}
 		}

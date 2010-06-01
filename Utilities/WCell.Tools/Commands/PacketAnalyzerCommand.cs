@@ -118,7 +118,7 @@ namespace WCell.Tools.Commands
 			{
 				if (!trigger.Text.HasNext)
 				{
-					trigger.Reply("No arguments specified - " + CreateInfo());
+					trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 				}
 				else
 				{
@@ -174,7 +174,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("Parse", "P");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Parses all selected log-files with the current settings - Use Info for more information.";
 			}
 
@@ -195,7 +195,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("Save", "S");
-				ParamInfo = "[<newlocation>]";
+				EnglishParamInfo = "[<newlocation>]";
 				EnglishDescription =
 					"Saves the current settings of the PATool. You can optionally add a new location where it should be saved to.";
 			}
@@ -224,7 +224,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("Load");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Reloads the packet definitions.";
 			}
 
@@ -243,7 +243,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("Info", "I");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Displays information about the current PATool settings.";
 			}
 
@@ -275,7 +275,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("SelectDir", "SelDir", "SD");
-				ParamInfo = "[<directory>]";
+				EnglishParamInfo = "[<directory>]";
 				EnglishDescription = "Selects the given directory or -if directory is ommited- shows the currently selected directory.";
 			}
 
@@ -319,7 +319,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("SelectOut", "SelOut", "SO");
-				ParamInfo = "<file>";
+				EnglishParamInfo = "<file>";
 				EnglishDescription = "Selects the given file to write the output to.";
 			}
 
@@ -346,7 +346,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("SelectParser", "SetParser", "Parser", "SP");
-				ParamInfo = "<parsername>";
+				EnglishParamInfo = "<parsername>";
 				EnglishDescription = "Selects the given log-parser. Make sure to choose the right one for the format of your log files.";
 			}
 
@@ -362,7 +362,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("ListParsers", "LP");
-				ParamInfo = "<parsername>";
+				EnglishParamInfo = "<parsername>";
 				EnglishDescription = "Lists all available parsers. Use SelectParser to select the right one for your log files.";
 			}
 
@@ -385,7 +385,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("SelectFiles", "SF");
-				ParamInfo = "<file>[,<file2>[,<file3> ...]]|[-l <dir>]";
+				EnglishParamInfo = "<file>[,<file2>[,<file3> ...]]|[-l <dir>]";
 				EnglishDescription =
 					"Adds the given log-file(s) to the list of selected log-files. All selected log-files will be parsed. " +
 					"Parameters can either be fully qualified file-names (relative or absolute) or numbers that correspond to the index within the currently selected Directory. The -l switch optionally lists all files (with numbers) of the given directory.";
@@ -395,7 +395,7 @@ namespace WCell.Tools.Commands
 			{
 				if (!trigger.Text.HasNext)
 				{
-					trigger.Reply("No arguments specified - " + CreateInfo());
+					trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 				}
 				else
 				{
@@ -428,7 +428,7 @@ namespace WCell.Tools.Commands
 			protected override void Initialize()
 			{
 				Init("DeselectFiles", "DeselFiles", "UnselFiles", "DF", "UF");
-				ParamInfo = "[-a]<file>[,<file2>[,<file3> ...]]";
+				EnglishParamInfo = "[-a]<file>[,<file2>[,<file3> ...]]";
 				EnglishDescription =
 					"Removes either all (-a) or the given log-file(s) to the list of selected log-files. Only selected log-files will be parsed. " +
 					"Parameters can either be fully qualified file-names (relative or absolute) or numbers that correspond to the index of the currently selected files.";
@@ -438,7 +438,7 @@ namespace WCell.Tools.Commands
 			{
 				if (!trigger.Text.HasNext)
 				{
-					trigger.Reply("No arguments specified - " + CreateInfo());
+					trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 				}
 				else
 				{
@@ -479,7 +479,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("IncAnd", "IA");
-					ParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Adds inclusive And-filters: A packet is only parsed if its opcode contains *all* of these.";
 				}
 
@@ -487,7 +487,7 @@ namespace WCell.Tools.Commands
 				{
 					if (!trigger.Text.HasNext)
 					{
-						trigger.Reply("No arguments specified - " + CreateInfo());
+						trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 					}
 					else
 					{
@@ -506,7 +506,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("IncOr", "IO");
-					ParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Adds inclusive Or-filters: A packet is only parsed if its opcode contains *any* of these.";
 				}
 
@@ -514,7 +514,7 @@ namespace WCell.Tools.Commands
 				{
 					if (!trigger.Text.HasNext)
 					{
-						trigger.Reply("No arguments specified - " + CreateInfo());
+						trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 					}
 					else
 					{
@@ -533,7 +533,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("ExcAnd", "EA");
-					ParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Adds exclusive And-filters: A packet is only parsed if *no* opcode contains *all* of these.";
 				}
 
@@ -541,7 +541,7 @@ namespace WCell.Tools.Commands
 				{
 					if (!trigger.Text.HasNext)
 					{
-						trigger.Reply("No arguments specified - " + CreateInfo());
+						trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 					}
 					else
 					{
@@ -560,7 +560,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("ExcOr", "EO");
-					ParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Adds exclusive Or-filters: A packet is only parsed if *no* opcode contains *any* of these.";
 				}
 
@@ -568,7 +568,7 @@ namespace WCell.Tools.Commands
 				{
 					if (!trigger.Text.HasNext)
 					{
-						trigger.Reply("No arguments specified - " + CreateInfo());
+						trigger.Reply("No arguments specified - " + CreateInfo(trigger));
 					}
 					else
 					{
@@ -605,7 +605,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("IncAnd", "IA");
-					ParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Removes inclusive And-filters. - A packet is only parsed if its opcode contains all of these. " +
 						"-a removes all filters. Parts can also be indices.";
 				}
@@ -621,7 +621,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("IncOr", "IO");
-					ParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Removes inclusive Or-filters. - A packet is only parsed if its opcode contains at least one these." +
 						"-a removes all filters. Parts can also be indices.";
 				}
@@ -637,7 +637,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("ExcAnd", "EA");
-					ParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Removes exclusive And-filters. - A packet is only parsed if *no* opcode contains *all* of these." +
 						"-a removes all filters. Parts can also be indices.";
 				}
@@ -653,7 +653,7 @@ namespace WCell.Tools.Commands
 				protected override void Initialize()
 				{
 					Init("ExcOr", "EO");
-					ParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
+					EnglishParamInfo = "[-a]|<part of opcode-name>[,<another part>[,<yet another part> ...]]";
 					EnglishDescription = "Removes exclusive Or-filters. - A packet is only parsed if *no* opcode contains *any* of these." +
 						"-a removes all filters. Parts can also be indices.";
 				}

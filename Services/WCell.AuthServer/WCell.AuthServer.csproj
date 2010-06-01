@@ -130,6 +130,7 @@
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Source\Castle\bin\log4net.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="MySql.Data, Version=5.0.8.1, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -165,6 +166,7 @@
     <Compile Include="Commands\AuthServerCommand.cs" />
     <Compile Include="Commands\AuthCommandHandler.cs" />
     <Compile Include="Commands\BufferedCommandTrigger.cs" />
+    <Compile Include="Commands\DevCommands.cs" />
     <Compile Include="Commands\RealmCommands.cs" />
     <Compile Include="Commands\IPCCommands.cs" />
     <Compile Include="Firewall\BanEntry.cs" />

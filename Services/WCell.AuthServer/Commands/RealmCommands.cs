@@ -42,7 +42,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Delete", "Del", "D");
-				ParamInfo = "<name or number>";
+				EnglishParamInfo = "<name or number>";
 			}
 
 			public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
