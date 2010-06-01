@@ -20,6 +20,11 @@ namespace WCell.RealmServer.Items
 			m_Spell = spell;
 		}
 
+		public Unit Owner
+		{
+			get { return m_Item.Owner; }
+		}
+
 		/// <summary>
 		/// ItemHitProcs always trigger
 		/// </summary>
@@ -68,12 +73,12 @@ namespace WCell.RealmServer.Items
 
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return m_Spell.CanProcBeTriggeredBy(action, active);
+			return m_Spell.CanProcBeTriggeredBy(m_Item.Owner, action, active);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
-			m_Item.Owner.SpellCast.ValidateAndTrigger(m_Spell, triggerer);
+			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, triggerer);
 		}
 
 		public void Dispose()

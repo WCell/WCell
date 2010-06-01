@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Tests.Utilities
 {

@@ -34,17 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 			else
 			{
-                var owner = m_aura.Auras.Owner;
-                //owner.SpellCast.Trigger(m_spellEffect.TriggerSpell, m_spellEffect, target);
-				if (m_spellEffect.IsAreaEffect || m_spellEffect.HasTarget(ImplicitTargetType.Self))
-				{
-					// finds targets on it's own
-					owner.SpellCast.Trigger(m_spellEffect.TriggerSpell);
-				}
-				else
-				{
-					owner.SpellCast.Trigger(m_spellEffect.TriggerSpell, target);
-				}
+				Owner.SpellCast.ValidateAndTrigger(m_spellEffect.TriggerSpell, target);
 			}
 		}
 	}

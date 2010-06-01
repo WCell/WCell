@@ -109,8 +109,8 @@ namespace WCell.RealmServer.Handlers
 				target.EntityId.WritePacked(packet);
 				caster.EntityId.WritePacked(packet);
 				packet.Write(spellId);
-				packet.Write(value);
 				packet.Write((int)powerType);
+				packet.Write(value);
 				caster.SendPacketToArea(packet, true);
 			}
 		}
@@ -310,7 +310,7 @@ namespace WCell.RealmServer.Handlers
 			HitFlags: 37
 			UnkByte3 (Unused): 0
 		 */
-		public static void SendMagicDamage(AttackAction state)
+		public static void SendMagicDamage(DamageAction state)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLNONMELEEDAMAGELOG, 40))
 			{

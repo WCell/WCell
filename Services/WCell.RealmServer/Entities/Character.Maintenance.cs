@@ -182,8 +182,6 @@ namespace WCell.RealmServer.Entities
 				SetInt32(UnitFields.HEALTH, m_record.Health);
 			}
 
-			InitializeRegeneration();
-
 		}
 		#endregion
 
@@ -475,6 +473,7 @@ namespace WCell.RealmServer.Entities
 
 			try
 			{
+				InitializeRegeneration();
 				((PlayerSpellCollection)m_spells).PlayerInitialize();
 
 				OnLogin();

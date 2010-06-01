@@ -16,7 +16,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Chat;
 using WCell.Constants.Misc;

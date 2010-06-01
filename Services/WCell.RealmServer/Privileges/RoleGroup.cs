@@ -28,10 +28,8 @@ namespace WCell.RealmServer.Privileges
 	/// Defines a group with specific traits and permissions.
 	/// </summary>
 	[Serializable]
-	public class RoleGroup : IComparable<RoleGroup>, IComparable<int>
+	public class RoleGroup : IComparable<RoleGroup>, IComparable<int>, IRoleGroup
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		readonly HashSet<Command<RealmServerCmdArgs>> m_commands = new HashSet<Command<RealmServerCmdArgs>>();
 
 		/// <summary>
@@ -41,7 +39,7 @@ namespace WCell.RealmServer.Privileges
 		{
 			Name = "";
 			Rank = 0;
-			InheritanceList = new List<string>();
+			InheritanceList = new string[0];
 			CommandNames = new string[0];
 		}
 
@@ -59,11 +57,11 @@ namespace WCell.RealmServer.Privileges
 
 			if (info.InheritanceList != null)
 			{
-				InheritanceList = info.InheritanceList.ToList();
+				InheritanceList = info.InheritanceList;
 			}
 			else
 			{
-				InheritanceList = new List<string>();
+				InheritanceList = new string[0];
 			}
 
 			CommandNames = info.CommandNames;
@@ -103,7 +101,7 @@ namespace WCell.RealmServer.Privileges
 					}
 					else
 					{
-						log.Warn("Invalid Command \"{0}\" specified for Role \"{1}\"", cmdName, info);
+						LogManager.GetCurrentClassLogger().Warn("Invalid Command \"{0}\" specified for Role \"{1}\"", cmdName, info);
 					}
 				}
 			}
@@ -197,7 +195,7 @@ namespace WCell.RealmServer.Privileges
 		/// <summary>
 		/// A list of the other roles the role inherits from, permissions-wise.
 		/// </summary>
-		public List<string> InheritanceList
+		public string[] InheritanceList
 		{
 			get;
 			set;

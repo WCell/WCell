@@ -19,7 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
 	/// <summary>
 	/// Represents a lock-free, thread-safe, last-in, first-out collection of objects.

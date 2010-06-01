@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Formulas
 	/// </summary>
 	public static class RageGenerator
 	{
-		public delegate void RageCalculator(AttackAction action);
+		public delegate void RageCalculator(DamageAction action);
 
 		public static RageCalculator GenerateAttackerRage = GenerateDefaultAttackerRage;
 
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Formulas
 		/// <summary>
 		/// Rage for the attacker of an AttackAction
 		/// </summary>
-		public static void GenerateDefaultAttackerRage(AttackAction action)
+		public static void GenerateDefaultAttackerRage(DamageAction action)
 		{
 			var attacker = action.Attacker;
 
@@ -53,13 +53,13 @@ namespace WCell.RealmServer.Formulas
 		/// <summary>
 		/// Rage for the victim of an AttackAction
 		/// </summary>
-		public static void GenerateDefaultVictimRage(AttackAction action)
+		public static void GenerateDefaultVictimRage(DamageAction action)
 		{
 			var victim = action.Victim;
 
 			var lvl = victim.Level;
 			var c = (int)(0.0092 * lvl * lvl + 3.23f * lvl + 4.27f);			// polynomial rage co-efficient
-			victim.Power += (5 * (action.ActualDamage + 1) / (2 * c))*10;
+			victim.Power += ((5 * (action.ActualDamage + 1)) / (2 * c))*10;
 		}
 	}
 }

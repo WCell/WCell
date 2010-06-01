@@ -30,7 +30,10 @@ namespace WCell.RealmServer.Lang
 		CmdLocalizerSetLocaleDescription,
 		CmdLocalizerSetLocaleParamInfo,
 		LocaleSet,
-		UnableToSetUserLocale
+		UnableToSetUserLocale,
+
+		CmdSpellGetDescription,
+		CmdSpellGetParamInfo,
 	}
 
 	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>

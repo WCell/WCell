@@ -29,6 +29,7 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Paths;
 using WCell.RealmServer.Spells;
@@ -61,9 +62,9 @@ namespace WCell.RealmServer.Entities
 		public static uint MinStandStillDelay = 400;
 
 		/// <summary>
-		/// The default delay between 2 Regeneration ticks (for Health and your default Power) in seconds
+		/// The default delay between 2 Regeneration ticks (for Health and the default Power) in seconds
 		/// </summary>
-		public static float RegenTickDelay = 2.0f;
+		public static float RegenTickSeconds = 5.0f;
 
 		/// <summary>
 		/// The amount of milliseconds for the time of "Interrupted" power regen
@@ -361,7 +362,10 @@ namespace WCell.RealmServer.Entities
 
 			m_auras.RemoveWhere(aura => !aura.Spell.PersistsThroughDeath);
 
+			this.UpdatePowerRegen();
+
 			Power = 0;	// no more power
+
 			IsInCombat = false;
 
 			CancelTaxiFlight();
@@ -576,10 +580,16 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_PowerRegenPerTick != value)
 				{
+					Power += 0;	// update Power before updating the regeneration
 					m_PowerRegenPerTick = value;
 					SetFloat(UnitFields.POWER_REGEN_FLAT_MODIFIER + (int)PowerType, value);
 				}
 			}
+		}
+
+		public float PowerRegenPerSecond
+		{
+			get { return m_PowerRegenPerTick / m_RegenerationDelay; }
 		}
 
 		/// <summary>
@@ -615,7 +625,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void InitializeRegeneration()
 		{
-			m_RegenerationDelay = RegenTickDelay;
+			this.UpdatePowerRegen();
+			m_RegenerationDelay = RegenTickSeconds;
 			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regen);
 			m_regenTimer.Start();
 			m_regenerates = true;
@@ -650,22 +661,16 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// regen Power
-			var power = PowerType == PowerType.Rage ? 0 : PowerRegenPerTick;
-			if (IsManaRegenInterrupted)
-			{
-				power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
-			}
-			// Rage doesn't decay during combat.
-			else if (PowerType == PowerType.Rage && !m_isInCombat)
-			{
-				// We add since BasePowerRegenPerTick is negative.
-				power += PowerRegenPerTick;
-			}
+			//var power = PowerRegenPerTick;
 
-			if (power != 0)
-			{
-				Power += power;
-			}
+			//if (IsManaRegenInterrupted)
+			//{
+			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
+			//}
+
+			// Power is interpolated automagically
+			// TODO: Find out when client is in interrupted mode
+			Power += 0;
 
 			//if (Health == MaxHealth)
 			//{
@@ -676,6 +681,7 @@ namespace WCell.RealmServer.Entities
 			//        m_regenTimer.Stop();
 			//}
 		}
+
 		#endregion
 
 		#region Powers and Power costs
@@ -780,8 +786,11 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Heals and sends the corresponding animation (healer might be null)
+		/// Heals this unit and sends the corresponding animation (healer might be null)
 		/// </summary>
+		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
+		/// <param name="healer">The object that heals this Unit (or null)</param>
+		/// <param name="value">The amount to be healed</param>
 		public void Heal(WorldObject healer, int value, SpellEffect effect)
 		{
 			var critChance = 0f;
@@ -797,7 +806,7 @@ namespace WCell.RealmServer.Entities
 				var oldVal = value;
 				if (healer is Character)
 				{
-					value = ((Character) healer).AddHealingMods(value, effect, effect.Spell.Schools[0]);
+					value = ((Character)healer).AddHealingMods(value, effect, effect.Spell.Schools[0]);
 				}
 
 				if (this is Character)
@@ -805,10 +814,10 @@ namespace WCell.RealmServer.Entities
 					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
 				}
 
-				critChance = (GetSpellCritChance((DamageSchool)effect.Spell.SchoolMask) * 100);
+				critChance = GetSpellCritChance((DamageSchool)effect.Spell.SchoolMask) * 100;
 
 				// do a critcheck
-                if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
+				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
 				{
 					var roll = Utility.Random(1f, 101);
 
@@ -834,7 +843,7 @@ namespace WCell.RealmServer.Entities
 
 			if (healer is Unit)
 			{
-				OnHeal((Unit) healer, effect, value);
+				OnHeal((Unit)healer, effect, value);
 			}
 		}
 
@@ -951,6 +960,7 @@ namespace WCell.RealmServer.Entities
 		internal protected override void OnEnterRegion()
 		{
 			m_lastMoveTime = Environment.TickCount;
+			m_lastPowerUpdate = m_lastHealthUpdate = Region.CurrentTime;
 
 			if (Flying > 0)
 			{
@@ -1603,11 +1613,6 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-            if (flags.HasFlag(ProcTriggerFlags.GainExperience) && !YieldsXpOrHonor)
-			{
-				flags ^= ProcTriggerFlags.GainExperience;
-			}
-
 			if (flags == ProcTriggerFlags.None)
 			{
 				return;
@@ -1620,14 +1625,14 @@ namespace WCell.RealmServer.Entities
 			}
 
 			var now = DateTime.Now;
-			for (var i = 0; i < m_procHandlers.Count; i++)
+			for (var i = m_procHandlers.Count - 1; i >= 0; i--)	// need to reverse iteration because procs can be removed in the process
 			{
 				var proc = m_procHandlers[i];
 				if (proc.NextProcTime <= now &&
-				proc.ProcTriggerFlags.HasAnyFlag(flags) &&
+					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
-					if (Utility.Random(0, 101) <= proc.ProcChance)
+					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= proc.ProcChance)
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);

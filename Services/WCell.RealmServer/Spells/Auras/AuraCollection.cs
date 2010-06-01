@@ -569,7 +569,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region Remove
 		/// <summary>
-		/// Removes all Auras that match the given predicate
+		/// Removes all visible Auras that match the given predicate
 		/// </summary>
 		/// <param name="predicate"></param>
 		public void RemoveWhere(Predicate<Aura> predicate)
@@ -686,6 +686,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				m_owner.RemoveProcHandler(aura);
 			}
+
 			if (!aura.Spell.IsPassive)
 			{
 				//m_nonPassiveAuras.Remove(aura);

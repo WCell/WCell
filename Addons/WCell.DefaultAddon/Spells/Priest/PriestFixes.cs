@@ -14,7 +14,7 @@ namespace WCell.Addons.Default.Spells.Priest
 		public static void FixPriest()
 		{
 			// only proc on kill that rewards xp or honor
-			SpellLineId.PriestShadowSpiritTap.Apply(spell => spell.ProcTriggerFlags |= ProcTriggerFlags.GainExperience);
+			SpellLineId.PriestShadowSpiritTap.Apply(spell => spell.ProcTriggerFlags = ProcTriggerFlags.GainExperience);
 
 			// Holy Inspiration can be proced when priest casts the given spells
 			// TODO: Only cast on crit
@@ -28,7 +28,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				SpellLineId.PriestPrayerOfHealing,
 				SpellLineId.PriestHolyCircleOfHealing));
 
-			//
+			// Mind Flay: Assault the target's mind with Shadow energy, causing ${$m3*3} Shadow damage over $d and slowing their movement speed by $s2%.
 			SpellLineId.PriestShadowMindFlay.Apply(spell =>
 			{
 				var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
@@ -36,6 +36,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.Amplitude = spell.Effects[2].Amplitude;
 			});
 
+			// Shadow Weaving applies to caster and can also be proc'ed by Mind Flay
 			SpellLineId.PriestShadowShadowWeaving.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.AddTargetTrigger);
@@ -43,7 +44,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.AddToEffectMask(SpellLineId.PriestShadowMindFlay);
 			});
 
-			// Mana regen on Priest Dispersion Talant
+			// Dispersion also regenerates Mana
 			SpellLineId.PriestShadowDispersion.Apply(spell =>
 			{
 				var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);

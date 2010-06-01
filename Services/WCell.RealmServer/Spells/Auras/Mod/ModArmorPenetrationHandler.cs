@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Auras.Effects
 	/// </summary>
 	public class ModArmorPenetrationHandler : AttackModifierHandler
 	{
-		public override void ModAttack(AttackAction action)
+		public override void ModAttack(DamageAction action)
 		{
 			var weapon = action.Weapon as Item;
 			var spell = m_spellEffect.Spell;

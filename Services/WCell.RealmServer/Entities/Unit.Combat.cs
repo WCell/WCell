@@ -7,6 +7,7 @@ using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.Util;
@@ -87,7 +88,7 @@ namespace WCell.RealmServer.Entities
 
 		protected int m_lastCombatTime;
 
-		protected AttackAction m_AttackAction;
+		protected DamageAction m_DamageAction;
 
 		protected int m_extraAttacks;
 
@@ -106,15 +107,15 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Recycled AttackState (not actually relevant)
 		/// </summary>
-		internal AttackAction AttackAction
+		internal DamageAction DamageAction
 		{
 			get
 			{
-				return m_AttackAction;
+				return m_DamageAction;
 			}
 			set
 			{
-				m_AttackAction = value;
+				m_DamageAction = value;
 			}
 		}
 
@@ -181,7 +182,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddDamageMods(AttackAction action)
+		public virtual void AddDamageMods(DamageAction action)
 		{
 			foreach (var mod in AttackModifiers)
 			{
@@ -210,13 +211,13 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		internal AttackAction GetUnusedAction()
+		internal DamageAction GetUnusedAction()
 		{
-			if (m_AttackAction == null || m_AttackAction.IsInUse)
+			if (m_DamageAction == null || m_DamageAction.IsInUse)
 			{
-				return new AttackAction(this);
+				return new DamageAction(this);
 			}
-			return m_AttackAction;
+			return m_DamageAction;
 		}
 
 		#region Standard Attack
@@ -244,6 +245,8 @@ namespace WCell.RealmServer.Entities
 			{
 				target = m_target;
 			}
+
+			target.IsInCombat = true;
 			Strike(weapon, action, target);
 		}
 
@@ -252,7 +255,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
-		public void Strike(IWeapon weapon, AttackAction action, Unit target)
+		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
 			if (weapon == null)
 			{
@@ -419,11 +422,11 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			var action = attacker != null ? attacker.m_AttackAction : m_AttackAction;
+			var action = attacker != null ? attacker.m_DamageAction : m_DamageAction;
 			if (action == null || action.IsInUse)
 			{
 				// currently in use
-				action = new AttackAction(attacker);
+				action = new DamageAction(attacker);
 			}
 			else
 			{
@@ -562,12 +565,12 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public int CalcDodgeChance(WorldObject attacker)
 		{
-			float dodgeChance = 0;
+			float dodgeChance;
 
 			if (this is Character)
 			{
 				var def = (Character)this;
-				dodgeChance += def.DodgeChance;
+				dodgeChance = def.DodgeChance;
 			}
 			else
 			{
@@ -684,6 +687,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_isInCombat == value) return;
 
+				this.UpdatePowerRegen();
 				if (m_isInCombat = value)
 				{
 					UnitFlags |= UnitFlags.Combat;
@@ -789,7 +793,7 @@ namespace WCell.RealmServer.Entities
 			// if currently casting a spell, skip this
 			if (IsUsingSpell)
 			{
-				m_attackTimer.Start(AttackAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
 				return;
 			}
 
@@ -798,14 +802,14 @@ namespace WCell.RealmServer.Entities
 				if (m_isInCombat)
 				{
 					// if still in combat - check soon again
-					m_attackTimer.Start(AttackAction.DefaultCombatDelay);
+					m_attackTimer.Start(DamageAction.DefaultCombatDelay);
 				}
 				return;
 			}
 
 			if (!CanDoHarm || !CanMelee)
 			{
-				m_attackTimer.Start(AttackAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
 				return;
 			}
 
@@ -906,12 +910,12 @@ namespace WCell.RealmServer.Entities
 				if (offHandReady || !usesOffHand)
 				{
 					// mainhand is ready and offhand is either also ready or not present
-					delay = AttackAction.DefaultCombatDelay;
+					delay = DamageAction.DefaultCombatDelay;
 				}
 				else
 				{
 					// mainhand is ready and offhand is still waiting
-					delay = Math.Min(AttackAction.DefaultCombatDelay, offhandDelay);
+					delay = Math.Min(DamageAction.DefaultCombatDelay, offhandDelay);
 				}
 			}
 			else
@@ -920,7 +924,7 @@ namespace WCell.RealmServer.Entities
 				if (offHandReady)
 				{
 					// mainhand is not ready but offhand is ready
-					delay = Math.Min(AttackAction.DefaultCombatDelay, mainHandDelay);
+					delay = Math.Min(DamageAction.DefaultCombatDelay, mainHandDelay);
 				}
 				else
 				{
@@ -1002,7 +1006,7 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				m_attackTimer.Start(AttackAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
 			}
 		}
 
@@ -1040,9 +1044,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected internal virtual void OnDamageAction(IDamageAction action)
 		{
-			if (action is AttackAction && action.Attacker != null)
+			if (action is DamageAction && action.Attacker != null)
 			{
-				var aaction = (AttackAction)action;
+				var aaction = (DamageAction)action;
 
 				// Get the flags now, so they won't be changed by anything that happens afterwards
 				var attackerProcTriggerFlags = action.AttackerProcTriggerFlags;

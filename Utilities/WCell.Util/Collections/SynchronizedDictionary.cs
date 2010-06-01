@@ -1,11 +1,11 @@
 /*************************************************************************
  *
- *   file		: SynchronizedList.cs
+ *   file		: SynchronizedDictionary.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2009-04-05 02:29:47 +0200 (sø, 05 apr 2009) $
+ *   last changed	: $LastChangedDate: 2008-08-17 02:08:03 +0200 (sø, 17 aug 2008) $
  *   last author	: $LastChangedBy: dominikseifert $
- *   revision		: $Rev: 864 $
+ *   revision		: $Rev: 598 $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,52 +16,58 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
-	public class SynchronizedList<T> : List<T>
+	public class SynchronizedDictionary<TKey, TValue> : Dictionary<TKey, TValue>
 	{
 		private readonly object _syncLock = new object();
 
-		public SynchronizedList() : base() { }
-		public SynchronizedList(int capacity) : base(capacity) { }
-		public SynchronizedList(IEnumerable<T> collection) : base(collection) { }
+		public SynchronizedDictionary() { }
+		public SynchronizedDictionary(IEqualityComparer<TKey> comparer) : base(comparer) { }
+		public SynchronizedDictionary(int capacity) : base(capacity) { }
+		public SynchronizedDictionary(IDictionary<TKey, TValue> dictionary) : base(dictionary) { }
 
-		public new T this[int index]
+		public object SyncLock
+		{
+			get { return _syncLock; }
+		}
+
+		public virtual new TValue this[TKey key]
 		{
 			get
 			{
-				if (index > Count)
-					throw new ArgumentOutOfRangeException("index");
-
-				T result;
-
 				Monitor.Enter(_syncLock);
 
 				try
 				{
-					result = base[index];
+					if (!base.ContainsKey(key))
+					{
+						throw new KeyNotFoundException();
+					}
+
+					return base[key];
 				}
 				finally
 				{
 					Monitor.Exit(_syncLock);
 				}
-
-				return result;
 			}
 			set
 			{
-				if (index > Count)
-					throw new ArgumentOutOfRangeException("index");
-
 				Monitor.Enter(_syncLock);
 
 				try
 				{
-					base[index] = value;
+					if (base.ContainsKey(key))
+					{
+						base[key] = value;
+					}
+					else
+					{
+						base.Add(key, value);
+					}
 				}
 				finally
 				{
@@ -70,13 +76,13 @@ namespace Cell.Core.Collections
 			}
 		}
 
-		public new void Add(T value)
+		public virtual new void Add(TKey key, TValue value)
 		{
 			Monitor.Enter(_syncLock);
 
 			try
 			{
-				base.Add(value);
+				base.Add(key, value);
 			}
 			finally
 			{
@@ -84,43 +90,7 @@ namespace Cell.Core.Collections
 			}
 		}
 
-		public new bool Remove(T value)
-		{
-			Monitor.Enter(_syncLock);
-
-			try
-			{
-				return base.Remove(value);
-			}
-			finally
-			{
-				Monitor.Exit(_syncLock);
-			}
-		}
-
-		public new void RemoveAt(int index)
-		{
-			if (index > Count)
-				throw new ArgumentOutOfRangeException("index");
-
-			Monitor.Enter(_syncLock);
-
-			try
-			{
-				base.RemoveAt(index);
-			}
-			finally
-			{
-				Monitor.Exit(_syncLock);
-			}
-		}
-
-		protected void RemoveUnlocked(int index)
-		{
-			base.RemoveAt(index);
-		}
-
-		public new void Clear()
+		public virtual new void Clear()
 		{
 			Monitor.Enter(_syncLock);
 
@@ -134,13 +104,13 @@ namespace Cell.Core.Collections
 			}
 		}
 
-		public new bool Contains(T item)
+		public new bool ContainsKey(TKey key)
 		{
 			Monitor.Enter(_syncLock);
 
 			try
 			{
-				return base.Contains(item);
+				return base.ContainsKey(key);
 			}
 			finally
 			{
@@ -148,12 +118,33 @@ namespace Cell.Core.Collections
 			}
 		}
 
-		public void EnterLock()
+		public virtual new bool Remove(TKey key)
+		{
+			Monitor.Enter(_syncLock);
+
+			try
+			{
+				if (!base.ContainsKey(key))
+				{
+					return false;
+				}
+
+				base.Remove(key);
+			}
+			finally
+			{
+				Monitor.Exit(_syncLock);
+			}
+
+			return true;
+		}
+
+		public void Lock()
 		{
 			Monitor.Enter(_syncLock);
 		}
 
-		public void ExitLock()
+		public void Unlock()
 		{
 			Monitor.Exit(_syncLock);
 		}

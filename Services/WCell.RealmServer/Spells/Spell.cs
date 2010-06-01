@@ -1155,44 +1155,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Procs
-		public bool CanProcBeTriggeredBy(IUnitAction action, bool active)
-		{
-			if (active)
-			{
-				if (CasterProcSpells != null)
-				{
-					return action.Spell != null && CasterProcSpells.Contains(action.Spell);
-				}
-			}
-			else if (TargetProcSpells != null)
-			{
-				return action.Spell != null && TargetProcSpells.Contains(action.Spell);
-			}
-			
-			if (RequiredItemClass != ItemClass.None)
-			{
-				// check for weapon
-				if (!(action is AttackAction))
-				{
-					return false;
-				}
-
-				var aAction = (AttackAction)action;
-				if (aAction.Weapon == null || !(aAction.Weapon is Item))
-				{
-					return false;
-				}
-
-				var weapon = ((Item)aAction.Weapon).Template;
-
-			    return weapon.Class == RequiredItemClass &&
-					   (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(RequiredItemSubClassMask));
-			}
-			return true;
-		}
-		#endregion
-
 		#region Verbose / Debug
 
 		/// <summary>

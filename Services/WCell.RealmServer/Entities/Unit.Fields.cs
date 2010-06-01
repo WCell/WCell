@@ -54,6 +54,7 @@ namespace WCell.RealmServer.Entities
 		protected Vector3 m_transportPosition;
 		protected float m_transportOrientation;
 		protected uint m_transportTime;
+		protected float m_lastHealthUpdate, m_lastPowerUpdate;
 
 		#region Objects
 		public Unit Charm
@@ -1174,7 +1175,7 @@ namespace WCell.RealmServer.Entities
 				var entry = SpellHandler.ShapeshiftEntries.Get((uint)value);
 				if (entry != null)
 				{
-					var model = FactionGroup == FactionGroup.Horde && entry.ModelIdHorde != 0 ? entry.ModelHorde : entry.ModelAlliance; 
+					var model = FactionGroup == FactionGroup.Horde && entry.ModelIdHorde != 0 ? entry.ModelHorde : entry.ModelAlliance;
 					if (model != null)
 					{
 						Model = model;
@@ -1244,7 +1245,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// If this is an Honorless Target
+		/// If this is not an Honorless Target
 		/// </summary>
 		public bool YieldsXpOrHonor
 		{
@@ -1271,6 +1272,9 @@ namespace WCell.RealmServer.Entities
 			{
 				var oldHealth = Health;
 				var maxHealth = MaxHealth;
+
+				m_lastHealthUpdate = Region.CurrentTime;
+
 				if (value >= maxHealth)
 				{
 					value = maxHealth;
@@ -1442,11 +1446,17 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return GetInt32(UnitFields.POWER1 + (int)PowerType);
+				return Math.Max(0, GetInt32(UnitFields.POWER1 + (int)PowerType) +
+					(m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0));
 			}
 			set
 			{
 				value = MathUtil.ClampMinMax(value, 0, MaxPower);
+
+				if (m_region != null)
+				{
+					m_lastPowerUpdate = Region.CurrentTime;
+				}
 
 				if (value != Power)
 				{
@@ -1458,6 +1468,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// The max amount of the Unit's default Power (Mana, Energy, Rage, Happiness etc)
+		/// NOTE: This is not related to Homer Simpson nor to any brand of hair blowers
 		/// </summary>
 		public virtual int MaxPower
 		{

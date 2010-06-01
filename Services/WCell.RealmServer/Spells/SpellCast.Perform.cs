@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells
 			if (spell.Mechanic != SpellMechanic.None &&
 						hostile == spell.Mechanic.IsNegative() &&
 						((spell.Mechanic == SpellMechanic.Invulnerable_2 || spell.Mechanic == SpellMechanic.Invulnerable) &&
-                        !spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
+						!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) &&
 						(target.IsImmune(SpellMechanic.Invulnerable_2) || target.IsImmune(SpellMechanic.Invulnerable))) ||
 						(target.IsImmune(spell.Mechanic) || target.IsImmune(spell.DispelType)))
 			{
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Spells
 		protected SpellFailedReason PrePerform()
 		{
 			// Make sure that there is an Item for Spells that require an Item target
-            if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
+			if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
 			{
 				if (UsedItem == null || !UsedItem.IsInWorld || UsedItem.Owner != Caster)
 				{
@@ -256,13 +256,13 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// break stealth
-            if (Caster is Unit && !m_spell.AttributesEx.HasFlag(SpellAttributesEx.RemainStealthed))
+			if (Caster is Unit && !m_spell.AttributesEx.HasFlag(SpellAttributesEx.RemainStealthed))
 			{
 				((Unit)Caster).Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Stealth);
 			}
 
 			// toggle autoshot
-            if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
+			if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
 			{
 				if (CasterUnit.Target == null)
 				{
@@ -289,7 +289,7 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.DontReport;
 			}
 
-            if (m_spell.Attributes.HasFlag(SpellAttributes.StopsAutoAttack))
+			if (m_spell.Attributes.HasFlag(SpellAttributes.StopsAutoAttack))
 			{
 				// deactivate
 				CasterUnit.AutorepeatSpell = null;
@@ -563,7 +563,7 @@ namespace WCell.RealmServer.Spells
 						CasterUnit.m_pendingCombatAbility = this;
 						CasterUnit.Strike(GetWeapon());
 					}
-					
+
 					if (!IsChanneling)
 					{
 						OnCasted();
@@ -683,7 +683,7 @@ namespace WCell.RealmServer.Spells
 			if (!GodMode)
 			{
 				// add cooldown (if not autoshot)
-                if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
+				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
 				{
 					caster.Spells.AddCooldown(m_spell, CasterItem);
 				}
@@ -702,8 +702,8 @@ namespace WCell.RealmServer.Spells
 													  Selected is Unit
 														? ((Unit)Selected).GetLeastResistant(m_spell)
 														: m_spell.Schools[0],
-														m_spell,
-														m_spell.PowerType);
+													  m_spell,
+													  m_spell.PowerType);
 				if (m_spell.PowerType != PowerType.Health)
 				{
 					caster.Power -= powerCost;
@@ -713,7 +713,7 @@ namespace WCell.RealmServer.Spells
 					caster.Health -= powerCost;
 					if (!m_casting)
 					{
-						return;		// should not happen (but might)
+						return; // should not happen (but might)
 					}
 				}
 			}
@@ -728,7 +728,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// trigger fixed post-cast spells, such as Forbearance etc
+			// trigger spells after casting spells (used for Forbearance etc)
 			if (m_spell.TargetTriggerSpells != null)
 			{
 				for (var i = 0; i < m_spell.TargetTriggerSpells.Length; i++)
@@ -737,7 +737,7 @@ namespace WCell.RealmServer.Spells
 					Trigger(trigSpell, m_targets.ToArray());
 					if (!m_casting)
 					{
-						return;		// should not happen (but might)
+						return; // should not happen (but might)
 					}
 				}
 			}
@@ -749,12 +749,12 @@ namespace WCell.RealmServer.Spells
 					Trigger(trigSpell, m_targets.ToArray());
 					if (!m_casting)
 					{
-						return;		// should not happen (but might)
+						return; // should not happen (but might)
 					}
 				}
 			}
 
-			// Custom procs to be added to caster or targets
+			// custom prochandlers to be applied when spell is casted
 			if (m_spell.TargetProcHandlers != null)
 			{
 				for (var i = 0; i < m_spell.TargetProcHandlers.Count; i++)
@@ -764,27 +764,27 @@ namespace WCell.RealmServer.Spells
 					{
 						if (target is Unit)
 						{
-							((Unit)target).AddProcHandler(new ProcHandler((Unit)target, proc));
+							((Unit)target).AddProcHandler(new ProcHandler(caster, (Unit)target, proc));
 						}
 					}
 				}
 			}
-			if (m_spell.CasterProcHandlers != null && Caster is Unit)
+			if (m_spell.CasterProcHandlers != null)
 			{
 				for (var i = 0; i < m_spell.CasterProcHandlers.Count; i++)
 				{
 					var proc = m_spell.CasterProcHandlers[i];
-					((Unit)Caster).AddProcHandler(new ProcHandler((Unit)Caster, proc));
+					caster.AddProcHandler(new ProcHandler(caster, caster, proc));
 				}
 			}
 
 			// trigger dynamic post-cast spells, eg Shadow Weave etc, and consumes spell modifiers (if required)
-			if (Caster is Character)
+			if (caster is Character)
 			{
-				((Character)Caster).PlayerSpells.OnCasted(this);
+				((Character)caster).PlayerSpells.OnCasted(this);
 				if (!m_casting)
 				{
-					return;		// should not happen (but might)
+					return; // should not happen (but might)
 				}
 			}
 
@@ -800,6 +800,7 @@ namespace WCell.RealmServer.Spells
 			//    CasterChar.SendSystemMessage("SpellCast (Casted): {0} ms", sw1.ElapsedTicks / 10000d);
 			//}
 		}
+
 		#endregion
 	}
 }

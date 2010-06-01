@@ -221,11 +221,17 @@ namespace WCell.RealmServer.Spells
 					// no proc-specific effects -> all effects are triggered on proc
 					ProcTriggerEffects = null;
 				}
+				else if (ProcTriggerEffects.Length > 1)
+				{
+					log.Warn("Spell {0} had more than one ProcTriggerEffect");
+				}
+
 				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.SpellCast))
 				{
 					// we don't want any SpellCast to trigger on that
 					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackSelf;
 				}
+
 				IsProc = ProcTriggerEffects != null;
 			}
 

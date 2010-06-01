@@ -15,7 +15,7 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -181,9 +181,9 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Set / Get / Call
-		public class SetCommand : SubCommand
+		public class GoSetCommand : SubCommand
 		{
-			protected SetCommand() { }
+			protected GoSetCommand() { }
 
 			protected override void Initialize()
 			{
@@ -206,9 +206,9 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class GetCommand : SubCommand
+		public class GoGetCommand : SubCommand
 		{
-			protected GetCommand() { }
+			protected GoGetCommand() { }
 
 			protected override void Initialize()
 			{
@@ -240,9 +240,9 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class CallCommand : SubCommand
+		public class GoCallCommand : SubCommand
 		{
-			protected CallCommand() { }
+			protected GoCallCommand() { }
 
 			protected override void Initialize()
 			{

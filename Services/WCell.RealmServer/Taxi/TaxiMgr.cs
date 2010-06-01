@@ -151,7 +151,12 @@ namespace WCell.RealmServer.Taxi
 
 			foreach (var nodeList in nodeLists)
 			{
-				var path = taxiPathReader.Entries[(int)nodeList.Key];
+				TaxiPath path;
+				if (!taxiPathReader.Entries.TryGetValue((int)nodeList.Key, out path))
+				{
+					continue;
+				}
+
 				LinkedListNode<PathVertex> current = null;
 				float totalLength = 0;
 

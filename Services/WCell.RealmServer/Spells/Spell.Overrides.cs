@@ -46,12 +46,14 @@ namespace WCell.RealmServer.Spells
 		public HashSet<Spell> TargetProcSpells;
 
 		/// <summary>
-		/// ProcHandlers to be added to the caster of this Spell
+		/// ProcHandlers to be added to the caster of this Spell.
+		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
 		/// </summary>
 		public List<ProcHandlerTemplate> CasterProcHandlers;
 
 		/// <summary>
-		/// ProcHandlers to be added to the targets of this Spell
+		/// ProcHandlers to be added to the targets of this Spell.
+		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
 		/// </summary>
 		public List<ProcHandlerTemplate> TargetProcHandlers;
 

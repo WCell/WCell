@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Network;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.PacketAnalysis.Updates;
 using WCell.RealmServer.Tests.Misc;
 using WCell.Constants;

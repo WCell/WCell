@@ -45,5 +45,13 @@
     <Item Key="UnableToSetUserLocale">
       <Value>Could not change the current user's locale.</Value>
     </Item>
+
+    <Item Key="CmdSpellGetDescription">
+      <Value>Retrieves information about the given Spell.</Value>
+    </Item>
+
+    <Item Key="CmdSpellGetParamInfo">
+      <Value>&lt;spellid or lineid&gt;</Value>
+    </Item>
   </Items>
 </Translation>

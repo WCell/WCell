@@ -2,7 +2,7 @@ using System.Linq;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Global;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.RealmServer.Misc;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Groups;

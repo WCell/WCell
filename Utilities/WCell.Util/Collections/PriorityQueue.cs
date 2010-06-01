@@ -20,7 +20,7 @@ using System.Security.Permissions;
 using System.Runtime.Serialization;
 using System.Collections.Generic;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
 	[Serializable]
 	public struct HeapEntry<T>

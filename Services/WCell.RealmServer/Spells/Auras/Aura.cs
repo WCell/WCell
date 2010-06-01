@@ -272,6 +272,11 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_casterInfo.Caster; }
 		}
 
+		public Unit Owner
+		{
+			get { return m_auras.Owner; }
+		}
+
 		/// <summary>
 		///  The amplitude between aura-ticks (only for non-passive auras which are not channeled)
 		/// </summary>
@@ -452,8 +457,9 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			m_controller = controller;
 
-			if (m_spell.IsProc)
+			if (m_spell.IsProc && m_spell.TargetProcHandlers == null && m_spell.CasterProcHandlers == null)
 			{
+				// only add proc if there is not a custom handler for it
 				m_auras.Owner.AddProcHandler(this);
 			}
 
@@ -823,9 +829,12 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spell.ProcTriggerFlags; }
 		}
 
+		/// <summary>
+		/// Spell to be triggered (if any)
+		/// </summary>
 		public Spell ProcSpell
 		{
-			get { return m_spell; }
+			get { return m_spell.ProcTriggerEffects != null ? m_spell.ProcTriggerEffects[0].TriggerSpell : null; }
 		}
 
 		/// <summary>
@@ -849,7 +858,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool CanBeTriggeredBy(Unit target, IUnitAction action, bool active)
 		{
-			if (m_spell.CanProcBeTriggeredBy(action, active))
+			if (m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active))
 			{
 				return true;
 			}

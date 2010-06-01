@@ -101,7 +101,7 @@ namespace WCell.Util.Commands
 		/// <summary>
 		/// A human-readable list of expected parameters
 		/// </summary>
-		[Obsolete("Use a localized version of this")]
+		//[Obsolete("Use a localized version of this")]
 		public string EnglishParamInfo
 		{
 			get { return m_englishParamInfo; }
@@ -111,7 +111,7 @@ namespace WCell.Util.Commands
 		/// <summary>
 		/// Describes the command itself.
 		/// </summary>
-		[Obsolete("Use a localized version of this")]
+		//[Obsolete("Use a localized version of this")]
 		public string EnglishDescription
 		{
 			get { return m_EnglishDescription; }

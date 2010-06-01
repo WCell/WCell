@@ -7,7 +7,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Guilds
 {

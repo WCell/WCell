@@ -20,7 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
@@ -1022,6 +1022,11 @@ namespace WCell.RealmServer.Global
 		public float LastUpdateDT
 		{
 			get { return m_lastUpdateDT; }
+		}
+
+		public float CurrentTime
+		{
+			get { return m_regionTime.ElapsedMilliseconds / 1000f; }
 		}
 
 		/// <summary>
