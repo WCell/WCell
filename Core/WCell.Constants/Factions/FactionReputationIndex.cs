@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Factions
@@ -25,7 +25,7 @@ namespace WCell.Constants.Factions
 		DarkspearTrolls = 15,
 		ThunderBluff = 16,
 		Undercity = 17,
-		GnomereganExiles = 18,
+		Gnomeregan = 18,
 		Stormwind = 19,
 		Ironforge = 20,
 		Darnassus = 21,
@@ -86,6 +86,11 @@ namespace WCell.Constants.Factions
 		TheSonsOfHodir = 97,
 		TheSunreavers = 98,
 		TheAshenVerdict = 104,
+		BilgewaterCartel = 105,
+		Gilneas = 106,
+		TestFaction4 = 108,
+		EarthenRingCataclysm = 110,
+		GuardiansOfHyjal = 113,
 		End
 	}
 

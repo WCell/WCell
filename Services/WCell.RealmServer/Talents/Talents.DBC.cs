@@ -35,15 +35,18 @@ namespace WCell.RealmServer.Talents
 			public override TalentTree ConvertTo(byte[] rawData, ref int id)
 			{
 				var tree = new TalentTree();
+                int currentIndex = 0;
 
-				id = (int)(tree.Id = (TalentTreeId)GetUInt32(rawData, 0));
-				tree.Name = GetString(rawData, 1);
+				id = (int)(tree.Id = (TalentTreeId)GetUInt32(rawData, currentIndex++));
+                tree.Name = GetString(rawData, ref currentIndex);
 
-				var classMask = (ClassMask)GetUInt32(rawData, 20);
+                uint spellicon = GetUInt32(rawData, currentIndex++);
+                var classMask = (ClassMask)GetUInt32(rawData, currentIndex++);
 				tree.Class = WCellDef.ClassTypesByMask[classMask];
 
-				tree.TabIndex2 = GetUInt32(rawData, 21);
-				tree.TabIndex = GetUInt32(rawData, 22);
+                tree.TabIndex2 = GetUInt32(rawData, currentIndex++);
+                tree.TabIndex = GetUInt32(rawData, currentIndex++);
+                //string InternalName = GetString(rawData, ref currentIndex);
 
 
 				return tree;
@@ -75,7 +78,7 @@ namespace WCell.RealmServer.Talents
 				var abilities = new List<Spell>(5);
 				uint spellId;
 
-				for (int i = 0; i < 9; i++)
+				for (int i = 0; i < 5; i++)
 				{
 					spellId = GetUInt32(rawData, i + 4);
 

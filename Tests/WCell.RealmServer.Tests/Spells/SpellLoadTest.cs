@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Tests.Spells
 		[TestMethod]
 		public void TestLoadSpells()
 		{
-			var spell = SpellHandler.Get(SpellId.ClassSkillPowerWordFortitudeRank1);
+			var spell = SpellHandler.Get(SpellId.ClassSkillPowerWordFortitude);
 			Assert.IsTrue(spell.IsAura, "Power Word: Fortitude is not an Aura");
 		}
 	}

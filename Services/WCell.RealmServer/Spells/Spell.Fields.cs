@@ -62,6 +62,16 @@ namespace WCell.RealmServer.Spells
         public float Unk_322_4_2;
         public float Unk_322_4_3;
 
+        //4.0.0 unk
+        public uint Unk_400_1;
+        public uint Unk_400_2;
+        public uint Unk_400_3;
+        public uint Unk_400_4_1;
+        public uint Unk_400_4_2;
+        public uint Unk_400_4_3;
+        public uint SpellDifficultyId;
+        public uint SpellScalingId;
+
         /// <summary>
         /// 3.2.2 related to description?
         /// </summary>

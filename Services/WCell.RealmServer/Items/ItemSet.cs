@@ -38,16 +38,16 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// End of items in the DBC file
 		/// </summary>
-		const int ItemsEnd = 34;
+		const int ItemsEnd = 18;
 
 		/// <summary>
-		/// Offset of Set-Boni in the DBC file
+		/// Offset of Set-Bonuses in the DBC file
 		/// </summary>
-		const int BoniOffset = 35;
+		const int BonusesOffset = 19;
 		/// <summary>
 		/// Offset of the item-order in the DBC file
 		/// </summary>
-		const int BoniOrderOffset = 43;
+		const int ItemBonusOrderOffset = 27;
 
 		public uint Id;
 
@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Items
 				//}
 
 				var boni = new Spell[MaxBonusCount];
-				for (uint i = BoniOffset; i < BoniOffset + MaxBonusCount; i++)
+				for (uint i = BonusesOffset; i < BonusesOffset + MaxBonusCount; i++)
 				{
 					var spellId = rawData.GetUInt32(i);
 					if (spellId != 0)
@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Items
 						Spell spell;
 						if ((spell = SpellHandler.Get(spellId)) != null)
 						{
-							var index = i - BoniOffset;
+							var index = i - BonusesOffset;
 							boni[index] = spell;
 						}
 					}
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Items
 
 				var orderedBoni = new List<Spell>[MaxBonusCount];
 				uint highestIndex = 0;
-				for (uint i = BoniOrderOffset; i < BoniOrderOffset + MaxBonusCount; i++)
+				for (uint i = ItemBonusOrderOffset; i < ItemBonusOrderOffset + MaxBonusCount; i++)
 				{
 					var amount = rawData.GetUInt32(i);
 					if (amount > 0)
@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Items
 							orderedBoni[orderedIndex] = spells = new List<Spell>(3);
 						}
 
-						var bonusSlot = i - BoniOrderOffset;
+						var bonusSlot = i - ItemBonusOrderOffset;
 						var spell = boni[bonusSlot];
 						if (spell != null)
 						{

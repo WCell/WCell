@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Tests.Spells
 		//[TestMethod]
 		public void TestSimpleBuff()
 		{
-			var spell = SpellHandler.Get(SpellId.ClassSkillPowerWordFortitudeRank1);
+			var spell = SpellHandler.Get(SpellId.ClassSkillPowerWordFortitude);
 
 			ApplyAura(chr, spell);
 		}
@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Tests.Spells
 		[TestMethod]
 		public void TestInstantDamageSpell()
 		{
-			var spell = SpellHandler.Get(SpellId.ClassSkillFireBlastRank1);
+			var spell = SpellHandler.Get(SpellId.ClassSkillFireBlast);
 
 			Assert.AreEqual(0, spell.ProjectileSpeed); // not delayed
 
@@ -185,7 +185,7 @@ namespace WCell.RealmServer.Tests.Spells
 
 			npc.EnsureInWorldAndLiving();
 
-			var spell = SpellHandler.Get(SpellId.ClassSkillPrayerOfHealingRank1);
+			var spell = SpellHandler.Get(SpellId.ClassSkillPrayerOfHealing);
 			Assert.IsNotNull(spell);
 			Asser.GreaterThan(spell.CastDelay, 0u);
 

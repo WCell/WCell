@@ -18,9 +18,9 @@ namespace WCell.RealmServer.Global
 			entry.MapId = (MapId)GetUInt32(rawData, 1);
 			entry.Index = GetUInt32(rawData, 2);
 			entry.RequirementString = GetString(rawData, 3);
-			//info.TextFlags = GetUInt32(rawData, 19);
-			entry.ResetTime = GetInt32(rawData, 20);
-			entry.MaxPlayerCount = GetInt32(rawData, 21);
+			//info.TextFlags = GetUInt32(rawData, 4);
+			entry.ResetTime = GetInt32(rawData, 4);
+			entry.MaxPlayerCount = GetInt32(rawData, 5);
 
 			var map = World.GetRegionInfo(entry.MapId);
 			if (map != null)
@@ -53,38 +53,32 @@ namespace WCell.RealmServer.Global
 		{
 			var rgn = new RegionInfo();
 
-			rgn.Id = (MapId)GetUInt32(rawData, 0);
+            int i = 0;
+			rgn.Id = (MapId)GetUInt32(rawData, i++);
 
-			int i = 2;
-			//rgn.InternalName = GetString(rawData, 1);
+
+            i++; //rgn.InternalName = GetString(rawData, 1);
 			rgn.Type = (MapType)GetUInt32(rawData, i++);
-			i++;
+			i++; //mapFlags
 
-			rgn.HasTwoSides = GetUInt32(rawData, i++) != 0;
+			rgn.HasTwoSides = GetUInt32(rawData, i++) != 0; //isPVP
 
 
 			rgn.Name = GetString(rawData, i++);
-			i += 16;
 
-			i++;
-			//rgn.MinLevel = GetInt32(rawData, 21);
-			//rgn.MaxLevel = GetInt32(rawData, 22);
-			//rgn.MaxPlayerCount = GetInt32(rawData, 23);
-
-			rgn.AreaTableId = GetUInt32(rawData, i++);		// 22
-			//rgn.LoadScreen = GetUInt32(rawData, 56);
-
-			//rgn.HordeText = GetString(rawData, 22);
-			//rgn.AllianceText = GetString(rawData, 39);
-
-			rgn.ParentMapId = (MapId)GetUInt32(rawData, 59);
-
+            rgn.AreaTableId = GetUInt32(rawData, i++);	//linked Zone
+            i++; //rgn.HordeText = GetString(rawData, i++);
+            i++; //rgn.AllianceText = GetString(rawData, i++);
+            rgn.ParentMapId = (MapId)GetUInt32(rawData, i++); //multi map id
 			rgn.RepopRegionId = rgn.ParentMapId;
-			rgn.RepopPosition = new Vector3(GetFloat(rawData, 60), GetFloat(rawData, 61), 500);
-
-			rgn.RequiredClientId = (ClientId)GetUInt32(rawData, 63);
-			rgn.DefaultResetTime = GetInt32(rawData, 64);
-			rgn.MaxPlayerCount = GetInt32(rawData, 65);
+            i++; //battlefield map icon scale
+            i++; //Repop map id
+            rgn.RepopPosition = new Vector3(GetFloat(rawData, i++), GetFloat(rawData, i++), 500);
+            i++; //time of day override
+            rgn.RequiredClientId = (ClientId)GetUInt32(rawData, i++);
+            rgn.DefaultResetTime = GetInt32(rawData, i++);
+            rgn.MaxPlayerCount = GetInt32(rawData, i++);
+            i++; //unk 4.0.0
 
 			//rgn.HeroicResetTime = GetUInt32(rawData, 113);
 			//rgn.RaidResetTime = GetUInt32(rawData, 112);

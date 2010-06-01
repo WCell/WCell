@@ -162,13 +162,13 @@ namespace WCell.RealmServer.Misc
 			{
 				var entry = new LockEntry((uint)(id = rawData.GetInt32(0)));
 
-				var methods = new List<LockOpeningMethod>(5);
-				var keys = new List<LockKeyEntry>(5);
+				var methods = new List<LockOpeningMethod>(8);
+				var keys = new List<LockKeyEntry>(8);
 
 				uint typeIndex = 1;
 				uint methodIndex = 9;
 				uint skillIndex = 17;
-				for (uint i = 0; i < 5; i++)
+				for (uint i = 0; i < 8; i++)
 				{
 					var type = (LockInteractionGroup)rawData.GetUInt32(typeIndex++);
 					if (type == LockInteractionGroup.Key)
@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Misc
 						}
 						else
 						{
-							var skill = InteractionSkills[(uint)method];
+							var skill = InteractionSkills.Get((uint)method);
 							if (skill != SkillId.None)
 							{
 								var methodEntry = new LockOpeningMethod(i);

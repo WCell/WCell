@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Commands
 			{
 				var unkBool = trigger.Text.NextBool();
 				var flags = trigger.Text.NextEnum(SpellLogFlags.SpellLogFlag_0x1);
-				var spell = trigger.Text.NextEnum(SpellId.ClassSkillFireballRank1);
+				var spell = trigger.Text.NextEnum(SpellId.ClassSkillFireball);
 				var damage = trigger.Text.NextUInt(10);
 				var overkill = trigger.Text.NextUInt(0);
 				var schools = trigger.Text.NextEnum(DamageSchoolMask.Fire);

@@ -174,8 +174,8 @@ namespace WCell.RealmServer.Taxi
 					}
 					else
 					{
-                        var isTeleport = current.Value.HasMapChange = current.Previous != null && (current.Value.MapId != current.Previous.Value.MapId ||
-                            current.Value.Flags.HasFlag(TaxiPathNodeFlags.IsTeleport));
+						var isTeleport = current.Value.HasMapChange = current.Previous != null && (current.Value.MapId != current.Previous.Value.MapId ||
+							current.Value.Flags.HasFlag(TaxiPathNodeFlags.IsTeleport));
 
 						if (isTeleport)
 						{

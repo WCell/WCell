@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Skills
@@ -36,7 +36,7 @@ namespace WCell.Constants.Skills
 		OrcRacial = 125,
 		NightElfRacial = 126,
 		FirstAid = 129,
-		FeralCombat = 134,
+		Feral = 134,
 		Staves = 136,
 		LanguageThalassian = 137,
 		LanguageDraconic = 138,
@@ -79,7 +79,7 @@ namespace WCell.Constants.Skills
 		PetCrocolisk = 212,
 		PetCarrionBird = 213,
 		PetCrab = 214,
-		PetGorilla = 215,
+		PetPrimate = 215,
 		PetRaptor = 217,
 		PetTallstrider = 218,
 		RacialUndead = 220,
@@ -159,6 +159,21 @@ namespace WCell.Constants.Skills
 		PetExoticRhino = 786,
 		PetExoticCoreHound = 787,
 		PetExoticSpiritBeast = 788,
+		RacialWorgen = 789,
+		RacialGoblin = 790,
+		LanguageWorgen = 791,
+		LanguageGoblin = 792,
+		Archaeology = 794,
+		HunterGeneral = 795,
+		DeathKnightGeneral = 796,
+		RogueGeneral = 797,
+		DruidGeneral = 798,
+		MageGeneral = 799,
+		PaladinGeneral = 800,
+		ShamanGeneral = 801,
+		WarlockGeneral = 802,
+		WarriorGeneral = 803,
+		PriestGeneral = 804,
 		End
 	}
 

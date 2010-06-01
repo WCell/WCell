@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Factions
@@ -56,7 +56,7 @@ namespace WCell.Constants.Factions
 		GnollMosshide = 51,
 		OrcDragonmaw = 52,
 		GnomeLeper = 53,
-		GnomereganExiles = 54,
+		Gnomeregan = 54,
 		Leopard = 55,
 		ScarletCrusade = 56,
 		GnollRothide = 57,
@@ -338,10 +338,26 @@ namespace WCell.Constants.Factions
 		MonsterReferee = 1123,
 		TheSunreavers = 1124,
 		Hyldsmeet = 1125,
+		TwilightsHammer = 1128,
+		FurbolgBlackwood = 1129,
+		StagDarkshore = 1130,
+		BearDarkshore = 1131,
+		MoonstalkerDarkshore = 1132,
+		BilgewaterCartel = 1133,
+		Gilneas = 1134,
+		EarthenRingCataclysm = 1135,
+		MagramRemnant = 1142,
+		SonsOfGelkis = 1143,
+		REUSE_2 = 1144,
 		HatesEverything = 1145,
+		PLAYERGoblin = 1152,
+		PLAYERWorgen = 1153,
 		TheAshenVerdict = 1156,
+		Pygmy = 1157,
+		GuardiansOfHyjal = 1158,
 		CTFFlagAlliance2 = 1159,
 		CTFFlagHorde2 = 1160,
+		Grimtotem = 1161,
 		End
 	}
 

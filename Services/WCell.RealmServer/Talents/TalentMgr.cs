@@ -91,8 +91,8 @@ namespace WCell.RealmServer.Talents
 			}
 
 
-			var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
-				RealmServerConfiguration.GetDBCFile("Talent.dbc"));
+            var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
+                RealmServerConfiguration.GetDBCFile("Talent.dbc"));
 
 			foreach (var talent in talentReader.EntryList)
 			{

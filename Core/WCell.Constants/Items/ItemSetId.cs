@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Items
@@ -648,7 +648,6 @@ namespace WCell.Constants.Items
 		/// <summary>
 		/// Eskhandar's Left Claw (Id: 18202 (WeaponOffHand))
 		/// Eskhandar's Right Claw (Id: 18203 (WeaponMainHand))
-		/// Eskhandar's Collar (Id: 18205 (Neck))
 		///  
 		/// Boni:
 		/// 2 Items: Call of Eskhandar (Id: 22648)
@@ -1101,8 +1100,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Critical Spell (Id: 41676)
-		///  
-		/// Requires: 300 Tailoring (197, Profession, Tier: 0)
 		/// </summary>
 		BloodvineGarb = 421,
 		/// <summary>
@@ -1112,8 +1109,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Minor Movement Speed (Id: 24090)
-		///  
-		/// Requires: 300 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		PrimalBatskin = 441,
 		/// <summary>
@@ -1122,8 +1117,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Critical 14 (Id: 41670), Increased Hit (Id: 41650)
-		///  
-		/// Requires: 300 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		BloodTigerHarness = 442,
 		/// <summary>
@@ -1142,8 +1135,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Defense (Id: 41847)
-		///  
-		/// Requires: 300 Blacksmithing (164, Profession, Tier: 0)
 		/// </summary>
 		TheDarksoul = 444,
 		/// <summary>
@@ -2336,8 +2327,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Lesser Spell Blasting (Id: 32106)
-		///  
-		/// Requires: 350 Tailoring (197, Profession, Tier: 0)
 		/// </summary>
 		SpellstrikeInfusion = 559,
 		/// <summary>
@@ -2399,8 +2388,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increase Healing 55 (Id: 41783)
-		///  
-		/// Requires: 350 Blacksmithing (164, Profession, Tier: 0)
 		/// </summary>
 		KhoriumWard = 565,
 		/// <summary>
@@ -2411,8 +2398,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Hit Rating 20 (Id: 41678)
-		///  
-		/// Requires: 350 Blacksmithing (164, Profession, Tier: 0)
 		/// </summary>
 		BurningRage = 566,
 		/// <summary>
@@ -2476,8 +2461,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Strength 25 (Id: 41743)
-		///  
-		/// Requires: 350 Blacksmithing (164, Profession, Tier: 0)
 		/// </summary>
 		FaithInFelsteel = 569,
 		/// <summary>
@@ -2494,8 +2477,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Increased Healing - Intellect (Id: 32200)
-		///  
-		/// Requires: 350 Tailoring (197, Profession, Tier: 0)
 		/// </summary>
 		WhitemendWisdom = 571,
 		/// <summary>
@@ -2504,8 +2485,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 2 Items: Resist Interrupt/Pushback (Id: 41660)
-		///  
-		/// Requires: 375 Tailoring (197, Profession, Tier: 0)
 		/// </summary>
 		BattlecastGarb = 572,
 		/// <summary>
@@ -2515,8 +2494,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Dodge 20 (Id: 41746)
-		///  
-		/// Requires: 350 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		FelSkin = 573,
 		/// <summary>
@@ -2526,8 +2503,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Strength 20 (Id: 41846)
-		///  
-		/// Requires: 350 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		StrengthOfTheClefthoof = 574,
 		/// <summary>
@@ -2537,8 +2512,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Hit Rating 20 (Id: 41749)
-		///  
-		/// Requires: 350 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		FelstalkerArmor = 575,
 		/// <summary>
@@ -2548,8 +2521,6 @@ namespace WCell.Constants.Items
 		///  
 		/// Boni:
 		/// 3 Items: Increased Intellect 20 (Id: 41771)
-		///  
-		/// Requires: 350 Leatherworking (165, Profession, Tier: 0)
 		/// </summary>
 		FuryOfTheNether = 576,
 		/// <summary>
@@ -3860,7 +3831,7 @@ namespace WCell.Constants.Items
 		/// Onslaught Treads (Id: 34569 (Feet))
 		///  
 		/// Boni:
-		/// 2 Items: Reduced Execute Cost (Id: 38398)
+		/// 2 Items: Increased Execute Damage (Id: 38398)
 		/// 4 Items: Improved Mortal Strike and Bloodthirst (Id: 38399)
 		/// </summary>
 		OnslaughtBattlegear = 672,
@@ -4929,6 +4900,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Plate Shoulders (Id: 40862 (Shoulder))
 		/// Furious Gladiator's Plate Shoulders (Id: 40866 (Shoulder))
 		/// Relentless Gladiator's Plate Shoulders (Id: 40870 (Shoulder))
+		/// Wrathful Gladiator's Plate Chestpiece (Id: 51541 (Chest))
+		/// Wrathful Gladiator's Plate Gauntlets (Id: 51542 (Hand))
+		/// Wrathful Gladiator's Plate Helm (Id: 51543 (Head))
+		/// Wrathful Gladiator's Plate Legguards (Id: 51544 (Legs))
+		/// Wrathful Gladiator's Plate Shoulders (Id: 51545 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -4961,6 +4937,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Scaled Shoulders (Id: 40864 (Shoulder))
 		/// Furious Gladiator's Scaled Shoulders (Id: 40869 (Shoulder))
 		/// Relentless Gladiator's Scaled Shoulders (Id: 40872 (Shoulder))
+		/// Wrathful Gladiator's Scaled Chestpiece (Id: 51474 (Chest))
+		/// Wrathful Gladiator's Scaled Gauntlets (Id: 51475 (Hand))
+		/// Wrathful Gladiator's Scaled Helm (Id: 51476 (Head))
+		/// Wrathful Gladiator's Scaled Legguards (Id: 51477 (Legs))
+		/// Wrathful Gladiator's Scaled Shoulders (Id: 51479 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -4993,6 +4974,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Ornamented Spaulders (Id: 40962 (Shoulder))
 		/// Furious Gladiator's Ornamented Spaulders (Id: 40963 (Shoulder))
 		/// Relentless Gladiator's Ornamented Spaulders (Id: 40964 (Shoulder))
+		/// Wrathful Gladiator's Ornamented Chestguard (Id: 51468 (Chest))
+		/// Wrathful Gladiator's Ornamented Gloves (Id: 51469 (Hand))
+		/// Wrathful Gladiator's Ornamented Headcover (Id: 51470 (Head))
+		/// Wrathful Gladiator's Ornamented Legplates (Id: 51471 (Legs))
+		/// Wrathful Gladiator's Ornamented Spaulders (Id: 51473 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56450), Increase Spell Power (Id: 71851)
@@ -5025,6 +5011,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Dreadplate Shoulders (Id: 40863 (Shoulder))
 		/// Furious Gladiator's Dreadplate Shoulders (Id: 40868 (Shoulder))
 		/// Relentless Gladiator's Dreadplate Shoulders (Id: 40871 (Shoulder))
+		/// Wrathful Gladiator's Dreadplate Chestpiece (Id: 51413 (Chest))
+		/// Wrathful Gladiator's Dreadplate Gauntlets (Id: 51414 (Hand))
+		/// Wrathful Gladiator's Dreadplate Helm (Id: 51415 (Head))
+		/// Wrathful Gladiator's Dreadplate Legguards (Id: 51416 (Legs))
+		/// Wrathful Gladiator's Dreadplate Shoulders (Id: 51418 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5057,6 +5048,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Mail Spaulders (Id: 41043 (Shoulder))
 		/// Furious Gladiator's Mail Spaulders (Id: 41044 (Shoulder))
 		/// Relentless Gladiator's Mail Spaulders (Id: 41045 (Shoulder))
+		/// Wrathful Gladiator's Mail Armor (Id: 51509 (Robe))
+		/// Wrathful Gladiator's Mail Gauntlets (Id: 51510 (Hand))
+		/// Wrathful Gladiator's Mail Helm (Id: 51511 (Head))
+		/// Wrathful Gladiator's Mail Leggings (Id: 51512 (Legs))
+		/// Wrathful Gladiator's Mail Spaulders (Id: 51514 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
@@ -5089,6 +5085,10 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Linked Spaulders (Id: 41210 (Shoulder))
 		/// Furious Gladiator's Linked Spaulders (Id: 41211 (Shoulder))
 		/// Relentless Gladiator's Linked Spaulders (Id: 41212 (Shoulder))
+		/// Wrathful Gladiator's Linked Armor (Id: 51503 (Robe))
+		/// Wrathful Gladiator's Linked Gauntlets (Id: 51504 (Hand))
+		/// Wrathful Gladiator's Linked Leggings (Id: 51506 (Legs))
+		/// Wrathful Gladiator's Linked Spaulders (Id: 51508 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5121,6 +5121,9 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Ringmail Spaulders (Id: 41037 (Shoulder))
 		/// Furious Gladiator's Ringmail Spaulders (Id: 41038 (Shoulder))
 		/// Relentless Gladiator's Ringmail Spaulders (Id: 41039 (Shoulder))
+		/// Wrathful Gladiator's Ringmail Gauntlets (Id: 51498 (Hand))
+		/// Wrathful Gladiator's Ringmail Leggings (Id: 51500 (Legs))
+		/// Wrathful Gladiator's Ringmail Spaulders (Id: 51502 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56450), Increase Spell Power (Id: 71851)
@@ -5153,6 +5156,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Chain Spaulders (Id: 41216 (Shoulder))
 		/// Furious Gladiator's Chain Spaulders (Id: 41217 (Shoulder))
 		/// Relentless Gladiator's Chain Spaulders (Id: 41218 (Shoulder))
+		/// Wrathful Gladiator's Chain Armor (Id: 51458 (Chest))
+		/// Wrathful Gladiator's Chain Gauntlets (Id: 51459 (Hand))
+		/// Wrathful Gladiator's Chain Helm (Id: 51460 (Head))
+		/// Wrathful Gladiator's Chain Leggings (Id: 51461 (Legs))
+		/// Wrathful Gladiator's Chain Spaulders (Id: 51462 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5185,6 +5193,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Kodohide Helm (Id: 41320 (Head))
 		/// Furious Gladiator's Kodohide Helm (Id: 41321 (Head))
 		/// Relentless Gladiator's Kodohide Helm (Id: 41322 (Head))
+		/// Wrathful Gladiator's Kodohide Robes (Id: 51419 (Robe))
+		/// Wrathful Gladiator's Kodohide Gloves (Id: 51420 (Hand))
+		/// Wrathful Gladiator's Kodohide Helm (Id: 51421 (Head))
+		/// Wrathful Gladiator's Kodohide Legguards (Id: 51422 (Legs))
+		/// Wrathful Gladiator's Kodohide Spaulders (Id: 51424 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56450), Increase Spell Power (Id: 71851)
@@ -5217,6 +5230,8 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Wyrmhide Helm (Id: 41326 (Head))
 		/// Furious Gladiator's Wyrmhide Helm (Id: 41327 (Head))
 		/// Relentless Gladiator's Wyrmhide Helm (Id: 41328 (Head))
+		/// Wrathful Gladiator's Wyrmhide Gloves (Id: 51434 (Hand))
+		/// Wrathful Gladiator's Wyrmhide Legguards (Id: 51436 (Legs))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
@@ -5249,6 +5264,9 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Dragonhide Gloves (Id: 41772 (Hand))
 		/// Furious Gladiator's Dragonhide Gloves (Id: 41773 (Hand))
 		/// Relentless Gladiator's Dragonhide Gloves (Id: 41774 (Hand))
+		/// Wrathful Gladiator's Dragonhide Robes (Id: 51425 (Robe))
+		/// Wrathful Gladiator's Dragonhide Gloves (Id: 51426 (Hand))
+		/// Wrathful Gladiator's Dragonhide Legguards (Id: 51428 (Legs))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5281,6 +5299,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Leather Gloves (Id: 41766 (Hand))
 		/// Furious Gladiator's Leather Gloves (Id: 41767 (Hand))
 		/// Relentless Gladiator's Leather Gloves (Id: 41768 (Hand))
+		/// Wrathful Gladiator's Leather Tunic (Id: 51492 (Chest))
+		/// Wrathful Gladiator's Leather Gloves (Id: 51493 (Hand))
+		/// Wrathful Gladiator's Leather Helm (Id: 51494 (Head))
+		/// Wrathful Gladiator's Leather Legguards (Id: 51495 (Legs))
+		/// Wrathful Gladiator's Leather Spaulders (Id: 51496 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56449), Attack Power 50 (Id: 71850)
@@ -5313,6 +5336,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Mooncloth Gloves (Id: 41873 (Hand))
 		/// Furious Gladiator's Mooncloth Gloves (Id: 41874 (Hand))
 		/// Relentless Gladiator's Mooncloth Gloves (Id: 41875 (Hand))
+		/// Wrathful Gladiator's Mooncloth Robe (Id: 51482 (Robe))
+		/// Wrathful Gladiator's Mooncloth Gloves (Id: 51483 (Hand))
+		/// Wrathful Gladiator's Mooncloth Hood (Id: 51484 (Head))
+		/// Wrathful Gladiator's Mooncloth Leggings (Id: 51485 (Legs))
+		/// Wrathful Gladiator's Mooncloth Mantle (Id: 51486 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56450), Increase Spell Power (Id: 71851)
@@ -5345,6 +5373,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Satin Gloves (Id: 41939 (Hand))
 		/// Furious Gladiator's Satin Gloves (Id: 41940 (Hand))
 		/// Relentless Gladiator's Satin Gloves (Id: 41941 (Hand))
+		/// Wrathful Gladiator's Satin Robe (Id: 51487 (Robe))
+		/// Wrathful Gladiator's Satin Gloves (Id: 51488 (Hand))
+		/// Wrathful Gladiator's Satin Hood (Id: 51489 (Head))
+		/// Wrathful Gladiator's Satin Leggings (Id: 51490 (Legs))
+		/// Wrathful Gladiator's Satin Mantle (Id: 51491 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
@@ -5377,6 +5410,10 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Silk Handguards (Id: 41970 (Hand))
 		/// Furious Gladiator's Silk Handguards (Id: 41971 (Hand))
 		/// Relentless Gladiator's Silk Handguards (Id: 41972 (Hand))
+		/// Wrathful Gladiator's Silk Raiment (Id: 51463 (Robe))
+		/// Wrathful Gladiator's Silk Handguards (Id: 51464 (Hand))
+		/// Wrathful Gladiator's Silk Trousers (Id: 51466 (Legs))
+		/// Wrathful Gladiator's Silk Amice (Id: 51467 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
@@ -5409,6 +5446,11 @@ namespace WCell.Constants.Items
 		/// Deadly Gladiator's Felweave Handguards (Id: 42016 (Hand))
 		/// Furious Gladiator's Felweave Handguards (Id: 42017 (Hand))
 		/// Relentless Gladiator's Felweave Handguards (Id: 42018 (Hand))
+		/// Wrathful Gladiator's Felweave Raiment (Id: 51536 (Robe))
+		/// Wrathful Gladiator's Felweave Handguards (Id: 51537 (Hand))
+		/// Wrathful Gladiator's Felweave Cowl (Id: 51538 (Head))
+		/// Wrathful Gladiator's Felweave Trousers (Id: 51539 (Legs))
+		/// Wrathful Gladiator's Felweave Amice (Id: 51540 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Increased Resilience 100 (Id: 56509), Increase Spell Power (Id: 71852)
@@ -6231,6 +6273,12 @@ namespace WCell.Constants.Items
 		/// 4 Items: Item - Hunter T8 4P Bonus (Id: 64860)
 		/// </summary>
 		ScourgestalkerBattlegear = 838,
+		/// <summary>
+		///  
+		/// Boni:
+		/// 3 Items: Awesome Party Ensemble (Id: 66908)
+		/// </summary>
+		AwesomePartyEnsemble = 842,
 		/// <summary>
 		/// Khadgar's Hood of Conquest (Id: 47748 (Head))
 		/// Khadgar's Robe of Conquest (Id: 47749 (Robe))
@@ -7095,6 +7143,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Bloodmage Leggings (Id: 51157 (Legs))
 		/// Sanctified Bloodmage Hood (Id: 51158 (Head))
 		/// Sanctified Bloodmage Gloves (Id: 51159 (Hand))
+		/// Sanctified Bloodmage Gloves (Id: 51280 (Hand))
+		/// Sanctified Bloodmage Hood (Id: 51281 (Head))
+		/// Sanctified Bloodmage Leggings (Id: 51282 (Legs))
+		/// Sanctified Bloodmage Robe (Id: 51283 (Robe))
+		/// Sanctified Bloodmage Shoulderpads (Id: 51284 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Mage T10 2P Bonus (Id: 70752)
@@ -7134,6 +7187,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Crimson Acolyte Leggings (Id: 51177 (Legs))
 		/// Sanctified Crimson Acolyte Hood (Id: 51178 (Head))
 		/// Sanctified Crimson Acolyte Gloves (Id: 51179 (Hand))
+		/// Sanctified Crimson Acolyte Gloves (Id: 51260 (Hand))
+		/// Sanctified Crimson Acolyte Hood (Id: 51261 (Head))
+		/// Sanctified Crimson Acolyte Leggings (Id: 51262 (Legs))
+		/// Sanctified Crimson Acolyte Robe (Id: 51263 (Robe))
+		/// Sanctified Crimson Acolyte Shoulderpads (Id: 51264 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Priest T10 Healer 2P Bonus (Id: 70770)
@@ -7147,9 +7205,11 @@ namespace WCell.Constants.Items
 		/// Crimson Acolyte Raiments (Id: 50394 (Robe))
 		/// Crimson Acolyte Mantle (Id: 50396 (Shoulder))
 		/// Sanctified Crimson Acolyte Raiments (Id: 51180 (Robe))
+		/// Sanctified Crimson Acolyte Pants (Id: 51181 (Legs))
 		/// Sanctified Crimson Acolyte Mantle (Id: 51182 (Shoulder))
 		/// Sanctified Crimson Acolyte Handwraps (Id: 51183 (Hand))
 		/// Sanctified Crimson Acolyte Cowl (Id: 51184 (Head))
+		/// Sanctified Crimson Acolyte Raiments (Id: 51259 (Robe))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Priest T10 Shadow 2P Bonus (Id: 70800)
@@ -7167,6 +7227,7 @@ namespace WCell.Constants.Items
 		/// Sanctified Lasherweave Helmet (Id: 51137 (Head))
 		/// Sanctified Lasherweave Gauntlets (Id: 51138 (Hand))
 		/// Sanctified Lasherweave Robes (Id: 51139 (Robe))
+		/// Sanctified Lasherweave Legplates (Id: 51303 (Legs))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Druid T10 Restoration 2P Bonus (Id: 70658)
@@ -7201,6 +7262,8 @@ namespace WCell.Constants.Items
 		/// Sanctified Lasherweave Legguards (Id: 51142 (Legs))
 		/// Sanctified Lasherweave Headguard (Id: 51143 (Head))
 		/// Sanctified Lasherweave Handgrips (Id: 51144 (Hand))
+		/// Sanctified Lasherweave Headguard (Id: 51296 (Head))
+		/// Sanctified Lasherweave Legguards (Id: 51297 (Legs))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Druid T10 Feral 2P Bonus (Id: 70724)
@@ -7257,6 +7320,7 @@ namespace WCell.Constants.Items
 		/// Sanctified Frost Witch's Headpiece (Id: 51192 (Head))
 		/// Sanctified Frost Witch's Legguards (Id: 51193 (Legs))
 		/// Sanctified Frost Witch's Spaulders (Id: 51194 (Shoulder))
+		/// Sanctified Frost Witch's Tunic (Id: 51249 (Chest))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Shaman T10 Restoration 2P Bonus Rank 3 (Id: 70807)
@@ -7274,6 +7338,12 @@ namespace WCell.Constants.Items
 		/// Sanctified Frost Witch's Helm (Id: 51202 (Head))
 		/// Sanctified Frost Witch's Kilt (Id: 51203 (Legs))
 		/// Sanctified Frost Witch's Shoulderpads (Id: 51204 (Shoulder))
+		/// Sanctified Frost Witch's Shoulderpads (Id: 51235 (Shoulder))
+		/// Sanctified Frost Witch's Kilt (Id: 51236 (Legs))
+		/// Sanctified Frost Witch's Helm (Id: 51237 (Head))
+		/// Sanctified Frost Witch's Gloves (Id: 51238 (Hand))
+		/// Sanctified Frost Witch's Hauberk (Id: 51239 (Chest))
+		/// Frost Witch's Shoulderpads (Id: 51761 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Shaman T10 Elemental 2P Bonus Rank 3 (Id: 70811)
@@ -7352,6 +7422,11 @@ namespace WCell.Constants.Items
 		/// Sanctified Scourgelord Helmet (Id: 51127 (Head))
 		/// Sanctified Scourgelord Gauntlets (Id: 51128 (Hand))
 		/// Sanctified Scourgelord Battleplate (Id: 51129 (Chest))
+		/// Sanctified Scourgelord Battleplate (Id: 51310 (Chest))
+		/// Sanctified Scourgelord Gauntlets (Id: 51311 (Hand))
+		/// Sanctified Scourgelord Helmet (Id: 51312 (Head))
+		/// Sanctified Scourgelord Legplates (Id: 51313 (Legs))
+		/// Sanctified Scourgelord Shoulderplates (Id: 51314 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Death Knight T10 Melee 2P Bonus (Id: 70655)
@@ -7368,6 +7443,12 @@ namespace WCell.Constants.Items
 		/// Sanctified Scourgelord Legguards (Id: 51131 (Legs))
 		/// Sanctified Scourgelord Handguards (Id: 51132 (Hand))
 		/// Sanctified Scourgelord Faceguard (Id: 51133 (Head))
+		/// Sanctified Scourgelord Chestguard (Id: 51134 (Chest))
+		/// Sanctified Scourgelord Chestguard (Id: 51305 (Chest))
+		/// Sanctified Scourgelord Faceguard (Id: 51306 (Head))
+		/// Sanctified Scourgelord Handguards (Id: 51307 (Hand))
+		/// Sanctified Scourgelord Legguards (Id: 51308 (Legs))
+		/// Sanctified Scourgelord Pauldrons (Id: 51309 (Shoulder))
 		///  
 		/// Boni:
 		/// 2 Items: Item - Death Knight T10 Tank 2P Bonus (Id: 70650)

@@ -217,12 +217,13 @@ namespace WCell.RealmServer.Spells
                     spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
                     spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
                     spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.ShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);             // 11
                     spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
-                    spell.ExcludeShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);      // 13
+                    spell.Unk_400_1 = GetUInt32(rawData, currentIndex++);                                  // 12
+                    spell.ShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);             // 11
                     spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
-                    spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
+                    spell.ExcludeShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);      // 13
                     spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
+                    spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
                     spell.TargetCreatureTypes = (TargetCreatureMask)GetUInt32(rawData, currentIndex++);    // 17
 					spell.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, currentIndex++);              // 18
 					spell.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, currentIndex++);               // 19
@@ -248,7 +249,9 @@ namespace WCell.RealmServer.Spells
 					spell.categoryCooldownTime = GetInt32(rawData, currentIndex++);                                 // 30
 					spell.InterruptFlags = (InterruptFlags)GetUInt32(rawData, currentIndex++);                      // 31
 					spell.AuraInterruptFlags = (AuraInterruptFlags)GetUInt32(rawData, currentIndex++);              // 32
+                    spell.Unk_400_2 = GetUInt32(rawData, currentIndex++);
 					spell.ChannelInterruptFlags = (ChannelInterruptFlags)GetUInt32(rawData, currentIndex++);        // 33
+                    spell.Unk_400_3 = GetUInt32(rawData, currentIndex++);
 					spell.ProcTriggerFlags = (ProcTriggerFlags)GetUInt32(rawData, currentIndex++);                  // 34
 					spell.ProcChance = GetUInt32(rawData, currentIndex++);                                          // 35
 					spell.ProcCharges = GetInt32(rawData, currentIndex++);                                          // 36
@@ -269,7 +272,7 @@ namespace WCell.RealmServer.Spells
 					spell.PowerCost = GetInt32(rawData, currentIndex++);                    // 42
 					spell.PowerCostPerlevel = GetInt32(rawData, currentIndex++);            // 43
 					spell.PowerPerSecond = GetInt32(rawData, currentIndex++);               // 44
-					spell.PowerPerSecondPerLevel = GetInt32(rawData, currentIndex++);       // 45
+					//spell.PowerPerSecondPerLevel = GetInt32(rawData, currentIndex++);       // 45
 
 					var rangeIndex = GetInt32(rawData, currentIndex++);                     // 46
 					if (rangeIndex > 0)
@@ -339,7 +342,7 @@ namespace WCell.RealmServer.Spells
 					spell.Visual2 = GetUInt32(rawData, currentIndex++);             // 129
 					spell.SpellbookIconId = GetUInt32(rawData, currentIndex++);     // 130
 					spell.BuffIconId = GetUInt32(rawData, currentIndex++);          // 131
-					spell.Priority = GetUInt32(rawData, currentIndex++);            // 132
+					//spell.Priority = GetUInt32(rawData, currentIndex++);            // 132
 
 				    spell.Name = GetString(rawData, ref currentIndex);              // 133
 				    spell.RankDesc = GetString(rawData, ref currentIndex);          // 124
@@ -347,8 +350,9 @@ namespace WCell.RealmServer.Spells
                     spell.BuffDescription = GetString(rawData, ref currentIndex);   // 126
 
 					spell.PowerCostPercentage = GetInt32(rawData, currentIndex++);  // 127
+                    spell.StartRecoveryCategory = GetInt32(rawData, currentIndex++);    // 129
                     spell.StartRecoveryTime = GetInt32(rawData, currentIndex++);    // 128
-					spell.StartRecoveryCategory = GetInt32(rawData, currentIndex++);    // 129
+					
 					spell.MaxTargetLevel = GetUInt32(rawData, currentIndex++);          // 130
 					spell.SpellClassSet = (SpellClassSet)GetUInt32(rawData, currentIndex++);    // 131
 
@@ -386,12 +390,22 @@ namespace WCell.RealmServer.Spells
 				    spell.PowerDisplayId = GetInt32(rawData, currentIndex++);       // 151
 
                     // 3.2.2 unk float (array?)
-                    spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);         // 152
-                    spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);         // 153
-                    spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);         // 154
+                    spell.Unk_322_4_1 = GetFloat(rawData, currentIndex++);         // 152
+                    spell.Unk_322_4_2 = GetFloat(rawData, currentIndex++);         // 153
+                    spell.Unk_322_4_3 = GetFloat(rawData, currentIndex++);         // 154
 
                     // 3.2.2
                     spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);
+
+                    spell.SpellDifficultyId = GetUInt32(rawData, currentIndex++);
+                    spell.SpellScalingId = GetUInt32(rawData, currentIndex++);
+                    
+                    // 4.0.0 unk uint (array?)
+                    spell.Unk_400_4_1 = GetUInt32(rawData, currentIndex++);         // 152
+                    spell.Unk_400_4_2 = GetUInt32(rawData, currentIndex++);         // 153
+                    spell.Unk_400_4_3 = GetUInt32(rawData, currentIndex++);         // 154
+
+
 				}
 				catch (Exception e)
 				{
@@ -460,6 +474,9 @@ namespace WCell.RealmServer.Spells
 				{
 					mappeddbcRadiusReader.Entries.TryGetValue(radiusIndex, out effect.Radius);
 				}
+                currentIndex += 3;
+
+                int radiusMaxIndex = GetInt32(rawData, currentIndex);
 				//if (effect.Radius < 1) {
 				//    effect.Radius = 5;
 				//}

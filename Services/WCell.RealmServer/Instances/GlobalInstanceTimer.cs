@@ -43,21 +43,25 @@ namespace WCell.RealmServer.Instances
 						continue;
 					}
 
-					for (var d = 0; d < rgn.Difficulties.Length; d++)
-					{
-						var diff = rgn.Difficulties[d];
-						if (diff != null)
-						{
-							if (timer == null && diff.ResetTime > 0)
-							{
-								// missing Timer
-								timers[i] = timer = new GlobalInstanceTimer(rgn.Id);
+                    if (rgn.Difficulties != null)
+                    {
 
-								timer.LastResets[d] = DateTime.Now;
-								timer.Save();
-							}
-						}
-					}
+                        for (var d = 0; d < rgn.Difficulties.Length; d++)
+                        {
+                            var diff = rgn.Difficulties[d];
+                            if (diff != null)
+                            {
+                                if (timer == null && diff.ResetTime > 0)
+                                {
+                                    // missing Timer
+                                    timers[i] = timer = new GlobalInstanceTimer(rgn.Id);
+
+                                    timer.LastResets[d] = DateTime.Now;
+                                    timer.Save();
+                                }
+                            }
+                        }
+                    }
 				}
 				else if (timer != null)
 				{

@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Items
@@ -41,6 +41,7 @@ namespace WCell.Constants.Items
 		FlintAndTinder = 169,
 		RunedCobaltRodDONOTUSE = 189,
 		RunedTitaniumRod = 190,
+		RunedElementiumRod = 209,
 		End
 	}
 

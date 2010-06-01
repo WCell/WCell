@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Items
 			int currentIndex = 0;
 			suffix.Id = id = GetInt32(rawData, currentIndex++);//0
 
-			currentIndex += 18;
+			currentIndex++; //string nameSuffix
 
 			suffix.Enchants = new ItemEnchantmentEntry[maxCount];
 			suffix.Values = new int[maxCount];
@@ -96,12 +96,13 @@ namespace WCell.RealmServer.Items
 		{
 			var enchant = new ItemEnchantmentEntry();
 
-			enchant.Id = (uint)(id = GetInt32(rawData, 0));
-		    enchant.Charges = GetUInt32(rawData, 1);			
-            enchant.Description = GetString(rawData, 14);
-			enchant.Effects = new ItemEnchantmentEffect[3];
+            var currentIndex = 0;
+            var effectsCount = 3;
+            enchant.Id = (uint)(id = GetInt32(rawData, currentIndex++));
+            enchant.Charges = GetUInt32(rawData, currentIndex++);
+            enchant.Effects = new ItemEnchantmentEffect[effectsCount];
 
-			for (var i = 0; i < 3; i++)
+            for (var i = 0; i < effectsCount; i++)
 			{
 				var type = (ItemEnchantmentType)GetUInt32(rawData, 2 + i);
 				if (type != ItemEnchantmentType.None)
@@ -115,8 +116,9 @@ namespace WCell.RealmServer.Items
 				}
 			}
 			ArrayUtil.Prune(ref enchant.Effects);
+            currentIndex = (4 * effectsCount) + 1; //we just read 4 fields of arrays, so increment our current position to reflect that
 
-			var currentIndex = 31;
+            enchant.Description = GetString(rawData, currentIndex++);
 
 			enchant.Visual = GetUInt32(rawData, currentIndex++);
 			enchant.Flags = GetUInt32(rawData, currentIndex++);

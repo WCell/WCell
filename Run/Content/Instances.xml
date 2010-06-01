@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Instances xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Instances xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Setting>
     <Name>CashTest</Name>
     <Type> </Type>
@@ -285,11 +285,31 @@
     <Type> </Type>
   </Setting>
   <Setting>
+    <Name>Unused</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
     <Name>IcecrownCitadel</Name>
     <Type> </Type>
   </Setting>
   <Setting>
     <Name>TheForgeOfSouls</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>AbyssalMawExterior</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>ThroneOfTheTides</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>HallsOfOrigination</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>BlackrockCaverns</Name>
     <Type> </Type>
   </Setting>
   <Setting>
@@ -301,6 +321,10 @@
     <Type> </Type>
   </Setting>
   <Setting>
+    <Name>SkywallDungeon</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
     <Name>PitOfSaron</Name>
     <Type> </Type>
   </Setting>
@@ -309,7 +333,43 @@
     <Type> </Type>
   </Setting>
   <Setting>
+    <Name>BlackwingDescent</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>GrimBatol</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>GrimBatolRaid</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>Firelands</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>FirelandsTerrain2</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
     <Name>TheRubySanctum</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>DeepholmeDungeon</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>STVDiamondMineBG</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>TolBarad</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
+    <Name>AhnQirajTerrace</Name>
     <Type> </Type>
   </Setting>
 </Instances>

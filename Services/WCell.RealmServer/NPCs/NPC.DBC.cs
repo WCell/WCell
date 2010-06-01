@@ -181,16 +181,18 @@ namespace WCell.RealmServer.NPCs
 	{
 		public override BarberShopStyleEntry ConvertTo(byte[] rawData, ref int id)
 		{
-			var v = new BarberShopStyleEntry
-			{
-				Id = GetInt32(rawData, 0),
-				Type = GetInt32(rawData, 1),
-				Race = (RaceId)GetUInt32(rawData, 37),
-				Gender = (GenderType)GetUInt32(rawData, 38),
-				HairId = GetInt32(rawData, 39)
-			};
+            var barberShopStyleEntry = new BarberShopStyleEntry();
 
-			return v;
+			barberShopStyleEntry.Id = GetInt32(rawData, 0);
+			barberShopStyleEntry.Type = GetInt32(rawData, 1);
+            //string name 2
+            //uint UnkName 3
+            //float cost multiplier 4
+			barberShopStyleEntry.Race = (RaceId)GetUInt32(rawData, 5);
+			barberShopStyleEntry.Gender = (GenderType)GetUInt32(rawData, 6);
+			barberShopStyleEntry.HairId = GetInt32(rawData, 7);
+
+			return barberShopStyleEntry;
 		}
 	}
 

@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.Spells
@@ -57,7 +57,7 @@ namespace WCell.Constants.Spells
 		CatapultRange = 70,
 		FourteenYards = 14,
 		ThirteenYards = 13,
-		SuperLongMinRange = 150,
+		MinRange70150 = 150,
 		MediumLongRange38 = 38,
 		ThreeYards = 3,
 		FiftyFiveYards = 55,
@@ -67,11 +67,15 @@ namespace WCell.Constants.Spells
 		ULTRA = 1000,
 		SeventyYards = 70,
 		Donut2070 = 70,
+		FortyTo80 = 80,
 		MinRange515 = 15,
 		TournamentRanged = 25,
 		TwoHundredYardRange = 200,
+		FiftyTo100 = 100,
 		MinRange525 = 25,
+		NineYards = 9,
 		ThreeHundredYards = 300,
+		MinRange560 = 60,
 		End
 	}
 

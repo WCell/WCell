@@ -96,7 +96,7 @@ namespace WCell.Core.DBC
 		public string GetString(byte[] data, ref int offset)
 		{
 			var ret = GetString(data, offset);
-			offset += 17;
+			offset += 1;
 			return ret;
 		}
 

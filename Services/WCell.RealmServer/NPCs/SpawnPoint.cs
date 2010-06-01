@@ -23,7 +23,7 @@ namespace WCell.RealmServer.NPCs
 	/// </summary>
 	public class SpawnPoint : IWorldLocation
 	{
-		public static SpellId ConnectingSpell = SpellId.ClassSkillDrainLifeRank1;
+		public static SpellId ConnectingSpell = SpellId.ClassSkillDrainLife;
 			//SpellId.ClassSkillDrainMana;
 
 		protected SpawnEntry m_spawnEntry;

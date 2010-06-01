@@ -116,7 +116,8 @@ namespace WCell.Core.DBC
             {
                 using (var binReader = new BinaryReader(fileStream))
                 {
-                    if (binReader.ReadUInt32() != DBCHeader)
+                    var header = binReader.ReadUInt32();
+                    if (header != DBCHeader)
                         throw new InvalidDataException("Not a (W)DBC file.");
 
                     m_recordCount = binReader.ReadInt32();

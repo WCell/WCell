@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 01/06/2010
 ///
 
 namespace WCell.Constants.NPCs
@@ -17,7 +17,7 @@ namespace WCell.Constants.NPCs
 		Crocolisk = 6,
 		CarrionBird = 7,
 		Crab = 8,
-		Gorilla = 9,
+		Primate = 9,
 		Raptor = 11,
 		Tallstrider = 12,
 		Felhunter = 15,
