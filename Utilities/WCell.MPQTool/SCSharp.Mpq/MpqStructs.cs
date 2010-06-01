@@ -30,7 +30,9 @@ namespace MpqReader
 		Encrypted = 0x10000,
 		FixSeed = 0x20000,
 		SingleUnit = 0x1000000,
-        Unknown_02000000 = 0x02000000,  // The file is only 1 byte long and its name is a hash
+        //Unknown_02000000 = 0x02000000,  // The file is only 1 byte long and its name is a hash
+        DeleteMarker = 0x02000000,  // The file is only 1 byte long and its name is a hash, marks a file as deleted
+                                    // in the lower mpq files in the chain
 
 	    //Unknown_04000000 = 0x04000000, // Appears in WoW 1.10 or newer, dunno what does it mean
         FileHasMetadata = 0x04000000, // Indicates the file has associted metadata.
@@ -49,33 +51,60 @@ namespace MpqReader
         TwoChannelWav = 0x80
     }
 
+    public enum MpqFormatVersion : ushort
+    {
+        Original = 0,
+        BurningCrusadeAndAbove = 1
+    }
+
 	struct MpqHeader
 	{
+        public uint HeaderSize;
+        public uint ArchiveSize;
+
 		public uint ID; // Signature.  Should be 0x1a51504d
-		public uint DataOffset; // Offset of the first file
-		public uint ArchiveSize;
-		public ushort Offs0C; // Unknown
-		public ushort BlockSize; // Size of file block is 0x200 << BlockSize
+		//public uint DataOffset; // Offset of the first file
+		//public uint ArchiveSize;
+		public ushort MpqVersion; // 1 == Burning Crusade or newer, 0 == old format!
+		public ushort BlockSize; // Size of file block is 0x200 << BlockSize (This is SectorSizeShift)
 		public uint HashTablePos;
 		public uint BlockTablePos;
 		public uint HashTableSize;
 		public uint BlockTableSize;
+
+        public long ExtendedBlockTableOffset;
+        public ushort HashTableOffsetHigh;
+        public ushort BlockTableOffsetHigh;
 		
 		public static readonly uint MpqId = 0x1a51504d;
-		public static readonly uint Size = 32;
+		public static readonly uint Size = 44;
 		
 		public MpqHeader(BinaryReader br)
 		{
-			ID = br.ReadUInt32();
-			DataOffset = br.ReadUInt32();
-			ArchiveSize = br.ReadUInt32();
-			Offs0C = br.ReadUInt16();
-			BlockSize = br.ReadUInt16();
-			HashTablePos = br.ReadUInt32();
-			BlockTablePos = br.ReadUInt32();
-			HashTableSize = br.ReadUInt32();
-			BlockTableSize = br.ReadUInt32();
-		}
+            ID = br.ReadUInt32();
+            HeaderSize = br.ReadUInt32();
+            ArchiveSize = br.ReadUInt32();
+            MpqVersion = br.ReadUInt16();
+            Console.WriteLine("MpqFormatVersion {0}", MpqVersion);
+            BlockSize = br.ReadUInt16();
+            HashTablePos = br.ReadUInt32();
+            BlockTablePos = br.ReadUInt32();
+            HashTableSize = br.ReadUInt32();
+            BlockTableSize = br.ReadUInt32();
+            if (MpqVersion == (ushort)MpqFormatVersion.BurningCrusadeAndAbove)
+            {
+                ExtendedBlockTableOffset = br.ReadInt64();
+                HashTableOffsetHigh = br.ReadUInt16();
+                BlockTableOffsetHigh = br.ReadUInt16();
+            }
+            else
+            {
+                ExtendedBlockTableOffset = 0;
+                HashTableOffsetHigh = 0;
+                BlockTableOffsetHigh = 0;
+            }
+
+        }
 	}
 	
 	struct MpqHash

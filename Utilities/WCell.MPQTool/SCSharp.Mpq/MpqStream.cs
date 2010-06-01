@@ -53,7 +53,16 @@ namespace MpqReader
         // Compressed files start with an array of offsets to make seeking possible
         private void LoadBlockPositions()
         {
-            int blockposcount = (int) ((mBlock.FileSize + mBlockSize - 1) / mBlockSize) + 1;
+            int blockposcount = (int)((mBlock.FileSize + mBlockSize - 1) / mBlockSize) + 1;
+
+            // If the file is stored as single unit, just set number of sectors to 1
+            if ((mBlock.Flags & MpqFileFlags.SingleUnit) != 0)
+            {
+                blockposcount = 1;
+                mBlockPositions = new uint[blockposcount];
+                mBlockPositions[0] = 1;
+                return;
+            }
 
             mBlockPositions = new uint[blockposcount];
 
@@ -75,11 +84,13 @@ namespace MpqReader
             // there's one additional entry in the block table. If this flag
             // is present, we skip this test to keep the file readable.
 
+            /*
             if((mBlock.Flags & MpqFileFlags.FileHasMetadata) == 0)
-            {
-                if(mBlockPositions[0] != blockpossize)
-                    mBlock.Flags |= MpqFileFlags.Encrypted;
-            }
+                        {
+                            if(mBlockPositions[0] != blockpossize)
+                                mBlock.Flags |= MpqFileFlags.Encrypted;
+                        }*/
+            
 
             if(mBlock.IsEncrypted)
             {
@@ -87,7 +98,7 @@ namespace MpqReader
                 {
                     mSeed1 = MpqArchive.DetectFileSeed(mBlockPositions, blockpossize);
                     if (mSeed1 == 0)
-                        throw new MpqParserException("Unable to determine encyption seed");
+                        throw new MpqParserException("Unable to determine encryption seed");
                 }
                 
                 MpqArchive.DecryptBlock(mBlockPositions, mSeed1);
@@ -102,12 +113,52 @@ namespace MpqReader
                 {
                     mSeed1 = MpqArchive.DetectFileSeed(mBlockPositions, blockpossize);
                     if (mSeed1 == 0)
-                        throw new Exception("Unable to determine encyption seed");
+                        throw new Exception("Unable to determine encryption seed");
                 }
                 MpqArchive.DecryptBlock(mBlockPositions, mSeed1);
                 mSeed1++; // Add 1 because the first block is the offset list
             }
             */
+        }
+
+        private byte[] LoadSingleUnit(int BlockIndex, int ExpectedLength)
+        {
+            uint offset = (uint)(BlockIndex * mBlockSize) + mBlock.FilePos;
+            int toread = ExpectedLength;
+            byte[] data = new byte[toread];
+            lock (mStream)
+            {
+                mStream.Seek(offset, SeekOrigin.Begin);
+                mStream.Read(data, 0, toread);
+            }
+            if (mBlock.IsEncrypted && mBlock.FileSize > 3)
+            {
+                if (mSeed1 == 0)
+                {
+                    uint value0 = BitConverter.ToUInt32(data, 0);
+                    uint value1 = BitConverter.ToUInt32(data, 4);
+                    mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x2fbfbbef, 0x3d3d3d2f); // .J unicode magic
+                    if (mSeed1 == 0)
+                    {
+                        mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x3d3d2f2f, 0x3d3d3d3d); // .J ascii
+                        if (mSeed1 == 0)
+                        {
+                            mSeed1 = MpqArchive.DetectFileSeed(value0, value1, 0x46464952, mBlock.FileSize - 8); // RIFF
+                            if (mSeed1 == 0) throw new MpqParserException("Unable to determine encryption key");
+                        }
+                    }
+                }
+                MpqArchive.DecryptBlock(data, (uint)(mSeed1 + BlockIndex));
+            }
+
+            if (mBlock.IsCompressed && data.Length != ExpectedLength)
+            {
+                if ((mBlock.Flags & MpqFileFlags.CompressedMulti) != 0)
+                    data = DecompressMulti(data, ExpectedLength);
+                else
+                    data = PKDecompress(new MemoryStream(data), ExpectedLength);
+            }
+            return data;
         }
 
         private byte[] LoadBlock(int BlockIndex, int ExpectedLength)
@@ -281,7 +332,10 @@ namespace MpqReader
             if (requiredblock != mCurrentBlockIndex)
             {
                 int expectedlength = (int)Math.Min(Length - (requiredblock * mBlockSize), mBlockSize);
-                mCurrentData = LoadBlock(requiredblock, expectedlength);
+                if ((mBlock.Flags & MpqFileFlags.SingleUnit) != 0)
+                    mCurrentData = LoadSingleUnit(requiredblock, expectedlength);
+                else
+                    mCurrentData = LoadBlock(requiredblock, expectedlength);
                 mCurrentBlockIndex = requiredblock;
             }
         }

@@ -33,6 +33,7 @@ namespace WCell.MPQTool
 		public static readonly string DefaultDBCOutputDir = DBCDir + WCellInfo.RequiredVersion.BasicString + "/";
 		public static string DBCOutputDir = DefaultDBCOutputDir;
 		public static DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
+		public static List<string> InstallFolders = new List<string>();
 
 		static string m_wowDir;
 
@@ -57,9 +58,9 @@ namespace WCell.MPQTool
 			var lstFinalMPQs = new List<string>();
 
 			var varFinalMPQs = from a in lstAllMPQs
-			                   where a.Contains("locale-") || a.Contains("patch-")
-			                   orderby a descending
-			                   select a;
+							   where a.Contains("locale-") || a.Contains("patch-")
+							   orderby a descending
+							   select a;
 
 			foreach (var strFile in varFinalMPQs)
 			{
@@ -92,8 +93,8 @@ namespace WCell.MPQTool
 				using (var oArchive = new MpqArchive(lstAllMPQFiles[i]))
 				{
 					var dbcsFiles = from a in oArchive.Files
-					                                    where a.Name.EndsWith(".dbc")
-					                                    select a.Name;
+									where a.Name.EndsWith(".dbc")
+									select a.Name;
 
 					foreach (var strFileName in dbcsFiles)
 					{
@@ -218,7 +219,49 @@ namespace WCell.MPQTool
 
 				m_wowDir = FindWowDir(wowDir);
 
-				Console.WriteLine("Found WoW in: " + m_wowDir);
+
+				if (wowDir == null)
+				{
+					if (InstallFolders.Count > 1)
+					{
+						string installResponse;
+						int i = 1;
+						Console.WriteLine();
+						Console.WriteLine("WoW found in the following folders");
+						Console.ForegroundColor = ConsoleColor.Green;
+						foreach (string dir in InstallFolders)
+						{
+							Console.WriteLine("{0}: {1}", i++, dir);
+						}
+						Console.ResetColor();
+
+						Console.WriteLine("Which installation do you wish to use?");
+						Console.WriteLine("Please enter the number of the installation.");
+						Console.WriteLine("Or to quit press q.");
+						installResponse = Console.ReadLine();
+						Console.WriteLine();
+
+						if (installResponse == null || installResponse.StartsWith("q"))
+						{
+							// program shutdown
+							return;
+						}
+						int num = int.Parse(installResponse);
+						num -= 1;
+						if (num >= InstallFolders.Count)
+						{
+							// program shutdown
+							return;
+						}
+						m_wowDir = InstallFolders[num];
+
+					}
+					else
+						m_wowDir = InstallFolders[0];
+				}
+
+				Console.WriteLine("Found and using WoW in: " + m_wowDir);
+				Console.WriteLine();
 
 				string response;
 				var curDir = new FileInfo(".");
@@ -229,6 +272,7 @@ namespace WCell.MPQTool
 					Console.WriteLine("Do you want to export to that directory?");
 					Console.WriteLine("Press y to confirm or n to re-enter destination.");
 					response = Console.ReadLine();
+					Console.WriteLine();
 					if (response == null)
 					{
 						// program shutdown
@@ -241,6 +285,7 @@ namespace WCell.MPQTool
 						Console.WriteLine(curDir.FullName);
 						Console.WriteLine("Please enter the Output Directory - You can also use a relative path.");
 						DBCOutputDir = Console.ReadLine();
+						Console.WriteLine();
 					}
 				}
 				while (!response.StartsWith("y"));
@@ -252,7 +297,7 @@ namespace WCell.MPQTool
 				if (clear && Directory.Exists(DBCOutputDir))
 				{
 					Console.WriteLine();
-					Console.Write("Clearing Ouput directory... ");
+					Console.Write("Clearing Output directory... ");
 					Directory.Delete(DBCOutputDir, true);
 					Console.WriteLine("Done.");
 				}
@@ -334,13 +379,14 @@ namespace WCell.MPQTool
 
 			if (configInfo.Exists)
 			{
+				InstallFolders.Add(m_wowDir);
 				//DBCOutputDir = m_wowDir + "/DBC";
 				return true;
 			}
 
-		    Console.ForegroundColor = ConsoleColor.Yellow;
-		    Console.WriteLine("Local folder is not WoW folder.");
-		    return false;
+			Console.ForegroundColor = ConsoleColor.Yellow;
+			Console.WriteLine("Local folder is not WoW folder.");
+			return false;
 		}
 
 		private static bool LookInRegistry()
@@ -378,12 +424,21 @@ namespace WCell.MPQTool
 				// So, did it exist?
 				if (oWoWKey != null)
 				{
+					List<string> subKeys = oWoWKey.GetSubKeyNames().ToList();
+					foreach (string subKeyStr in subKeys)
+					{
+						if (oWoWKey.OpenSubKey(subKeyStr).GetValue("InstallPath") != null)
+							InstallFolders.Add(oWoWKey.OpenSubKey(subKeyStr).GetValue("InstallPath").ToString());
+					}
+
 					//Let's get the install folder...
+					if (oWoWKey.GetValue("InstallPath") != null)
+						InstallFolders.Add(oWoWKey.GetValue("InstallPath").ToString());
 					m_wowDir = oWoWKey.GetValue("InstallPath").ToString();
 					return true;
 				}
 
-			    throw new Exception("Could not find any WoW installation.");
+				throw new Exception("Could not find any WoW installation.");
 			}
 			return false;
 		}
