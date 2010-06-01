@@ -1,3 +1,4 @@
+using WCell.Constants;
 using WCell.Constants.Spells;
 
 ///
@@ -240,7 +241,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PathOfFrost, 
 					SpellHandler.Get(SpellId.ClassSkillPathOfFrost))};
 
-			AddSpellLines(lines);
+			AddSpellLines((ClassId)0, lines);
 			#endregion
 
 			#region Warrior (125)
@@ -736,7 +737,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.WarriorSpellReflection, 
 					SpellHandler.Get(SpellId.ClassSkillSpellReflection))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Warrior , lines);
 			#endregion
 
 			#region Paladin (133)
@@ -1268,7 +1269,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PaladinWarhorseSummon, 
 					SpellHandler.Get(SpellId.ClassSkillWarhorseSummon))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Paladin , lines);
 			#endregion
 
 			#region Hunter (137)
@@ -1815,7 +1816,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.HunterAspectOfTheViper, 
 					SpellHandler.Get(SpellId.ClassSkillAspectOfTheViper))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Hunter , lines);
 			#endregion
 
 			#region Rogue (119)
@@ -2291,7 +2292,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.RogueShiv, 
 					SpellHandler.Get(SpellId.ClassSkillShiv))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Rogue , lines);
 			#endregion
 
 			#region Priest (124)
@@ -2883,7 +2884,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PriestShadowfiend, 
 					SpellHandler.Get(SpellId.ClassSkillShadowfiend))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Priest , lines);
 			#endregion
 
 			#region DeathKnight (145)
@@ -3368,7 +3369,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.DeathKnightRuneOfTheStoneskinGargoyle, 
 					SpellHandler.Get(SpellId.ClassSkillRuneOfTheStoneskinGargoyle))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.DeathKnight , lines);
 			#endregion
 
 			#region Shaman (134)
@@ -4007,7 +4008,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.ShamanHeroism, 
 					SpellHandler.Get(SpellId.ClassSkillHeroism))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Shaman , lines);
 			#endregion
 
 			#region Mage (150)
@@ -4677,7 +4678,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.MagePortalDalaran, 
 					SpellHandler.Get(SpellId.ClassSkillPortalDalaran))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Mage, lines);
 			#endregion
 
 			#region Warlock (133)
@@ -5266,7 +5267,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.WarlockRitualOfSummoning, 
 					SpellHandler.Get(SpellId.ClassSkillRitualOfSummoning))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Warlock, lines);
 			#endregion
 
 			#region Druid (144)
@@ -5945,7 +5946,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.DruidFlightFormShapeshift, 
 					SpellHandler.Get(SpellId.ClassSkillFlightFormShapeshift))};
 
-			AddSpellLines(lines);
+			AddSpellLines(ClassId.Druid, lines);
 			#endregion
 
 		}

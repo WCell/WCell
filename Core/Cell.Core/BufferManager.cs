@@ -17,8 +17,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cell.Core.Collections;
 using NLog;
+using WCell.Util.Collections;
 
 namespace Cell.Core
 {

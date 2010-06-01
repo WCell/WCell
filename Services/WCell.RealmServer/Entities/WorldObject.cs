@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
@@ -1026,14 +1026,29 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, message);
 		}
 
+		public void Say(string message, params object[] args)
+		{
+			Say(string.Format(message, args));
+		}
+
 		public virtual void Yell(string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, message);
 		}
 
+		public void Yell(string message, params object[] args)
+		{
+			Yell(string.Format(message, args));
+		}
+
 		public virtual void Emote(string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, ChatLanguage.Universal, message);
+		}
+
+		public void Emote(string message, params object[] args)
+		{
+			Emote(string.Format(message, args));
 		}
 		#endregion
 

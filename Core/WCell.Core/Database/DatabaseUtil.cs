@@ -7,7 +7,7 @@ using System.Threading;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Framework;
 using Castle.ActiveRecord.Framework.Config;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Engine;

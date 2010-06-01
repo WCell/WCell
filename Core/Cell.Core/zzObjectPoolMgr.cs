@@ -15,7 +15,7 @@
  *************************************************************************/
 
 using System;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 
 namespace Cell.Core
 {

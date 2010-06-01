@@ -355,7 +355,7 @@ namespace WCell.MPQTool
 				return false;
 			}
 
-			if (!AppUtil.IsRunningOn64Bit)
+			if (!Environment.Is64BitOperatingSystem)
 			{
 				key = key.OpenSubKey("Blizzard Entertainment");
 			}

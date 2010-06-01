@@ -21,6 +21,7 @@ using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.Core;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Stats;
 using WCell.Util;
@@ -43,7 +44,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Set", "S");
-            ParamInfo = "<prop.subprop.otherprop.etc> <value>";
+            EnglishParamInfo = "<prop.subprop.otherprop.etc> <value>";
             EnglishDescription = "Sets the value of the given prop";
         }
 
@@ -80,7 +81,7 @@ namespace WCell.RealmServer.Commands
             else if (trigger.Text.HasNext)
             {
                 object propHolder;
-                var prop = PrivilegeMgr.Instance.GetProp(trigger.Args.User, target, trigger.Text.NextWord(),
+                var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, trigger.Text.NextWord(),
                     target.GetType(), out propHolder);
 
                 SetProp(propHolder, prop, trigger);
@@ -88,14 +89,14 @@ namespace WCell.RealmServer.Commands
             else
             {
                 trigger.Reply("Invalid arguments.");
-                trigger.Reply(trigger.Command.CreateInfo());
+                trigger.Reply(trigger.Command.CreateInfo(trigger));
             }
             return true;
         }
 
         public static void SetProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
         {
-            if (prop != null && PrivilegeMgr.Instance.CanWrite(prop, trigger.Args.User))
+            if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
             {
                 var expr = trigger.Text.Remainder.Trim();
                 if (expr.Length == 0)
@@ -168,7 +169,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Get", "G");
-            ParamInfo = "<prop.subprop.otherprop.etc>";
+            EnglishParamInfo = "<prop.subprop.otherprop.etc>";
             EnglishDescription = "Gets the value of the given prop";
         }
 
@@ -194,7 +195,7 @@ namespace WCell.RealmServer.Commands
                 var propName = trigger.Text.NextWord();
                 object val;
 
-                if (PrivilegeMgr.Instance.GetPropValue(trigger.Args.User, target, ref propName, out val))
+				if (ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val))
                 {
                     trigger.Reply("{0} is: {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
                 }
@@ -207,7 +208,7 @@ namespace WCell.RealmServer.Commands
             else
             {
                 trigger.Reply("Invalid arguments:");
-                trigger.Reply(trigger.Command.CreateInfo());
+                trigger.Reply(trigger.Command.CreateInfo(trigger));
             }
         }
 
@@ -216,7 +217,7 @@ namespace WCell.RealmServer.Commands
             var propName = trigger.Text.NextWord();
             object val;
 
-            PrivilegeMgr.Instance.GetPropValue(trigger.Args.User, target, ref propName, out val);
+            ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val);
             return val;
         }
     }
@@ -238,7 +239,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Mod", "M");
-            ParamInfo = "<prop> <op> <value> [<op> <value> [<op> <value>...]]";
+            EnglishParamInfo = "<prop> <op> <value> [<op> <value> [<op> <value>...]]";
             EnglishDescription = "Modifies the given prop by applying it with an evaluated expression";
         }
 
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Commands
         {
             var accessName = trigger.Text.NextWord();
             object propHolder;
-            var prop = PrivilegeMgr.Instance.GetProp(trigger.Args.User, target, accessName,
+			var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, accessName,
                                                      target.GetType(), out propHolder);
 
             ModProp(propHolder, prop, trigger);
@@ -266,7 +267,7 @@ namespace WCell.RealmServer.Commands
 
         public static void ModProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
         {
-            if (prop != null && PrivilegeMgr.Instance.CanWrite(prop, trigger.Args.User))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
             {
                 var exprType = prop.GetVariableType();
                 if (!exprType.IsInteger())
@@ -353,7 +354,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Call", "C");
-            ParamInfo = "<some.Method> [param1, [param2 [...]]]";
+            EnglishParamInfo = "<some.Method> [param1, [param2 [...]]]";
             EnglishDescription = "Calls the given method with the given params";
         }
 
@@ -380,7 +381,7 @@ namespace WCell.RealmServer.Commands
                 try
                 {
                     object result;
-                    if (PrivilegeMgr.Instance.CallMethod(trigger.Args.Character, obj,
+					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
                         ref accessName, args, out result))
                     {
                         trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
@@ -409,7 +410,7 @@ namespace WCell.RealmServer.Commands
                 try
                 {
                     object result;
-                    if (PrivilegeMgr.Instance.CallMethod(trigger.Args.Character, obj,
+					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
                         ref accessName, args, out result))
                     {
                         return result;
@@ -465,7 +466,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("ClearArea");
-            ParamInfo = "[<radius>]";
+            EnglishParamInfo = "[<radius>]";
             EnglishDescription = "Clears all Objects, Corpses and NPCs around yourself in the given or default radius (" + DefaultRadius + "), up to a max of 100 yards.";
         }
 
@@ -569,7 +570,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("Channel");
-            ParamInfo = "<spellid>";
+            EnglishParamInfo = "<spellid>";
             EnglishDescription = "Channels the given Spell on the current Target.";
         }
 
@@ -679,7 +680,7 @@ namespace WCell.RealmServer.Commands
         protected override void Initialize()
         {
             Init("ListPlayers");
-            ParamInfo = "[-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
+            EnglishParamInfo = "[-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
             EnglishDescription = "Lists all currently logged in Players.";
         }
 

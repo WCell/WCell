@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Stats;

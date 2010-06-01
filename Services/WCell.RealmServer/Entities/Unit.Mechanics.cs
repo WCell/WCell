@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Entities
 			if (val == 0)
 			{
 				// new immunity: Gets rid of all Auras that use this school
-			    Auras.RemoveWhere(aura => aura.Spell.SchoolMask.HasFlag((DamageSchoolMask) (1 << (int) school)));
+				Auras.RemoveWhere(aura => aura.Spell.SchoolMask.HasAnyFlag((DamageSchoolMask)(1 << (int)school)));
 			}
 
 			m_dmgImmunities[(int)school]++;
@@ -780,9 +780,9 @@ namespace WCell.RealmServer.Entities
 			{
 				return 0;
 			}
-			if (m_AttackAction != null)
+			if (m_DamageAction != null)
 			{
-                if (m_AttackAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+                if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
 					return 0;
 			}
 			var absorb = 0;
@@ -791,7 +791,7 @@ namespace WCell.RealmServer.Entities
 			for (var i = m_absorbers.Count - 1; i >= 0; i--)
 			{
 				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.HasFlag(school))
+				if (absorber.AbsorbSchool.HasAnyFlag(school))
 				{
 					var abs = Math.Min(amount, absorber.AbsorbValue);
 					absorb += abs;
@@ -1341,13 +1341,13 @@ namespace WCell.RealmServer.Entities
 					if (m_stealthed > 0 && value <= 0)
 					{
 						// deactivated stealth
-						ShapeShiftForm = ShapeShiftForm.Normal;
+						ShapeshiftForm = ShapeshiftForm.Normal;
 						StateFlags &= ~StateFlag.Sneaking;
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
 						// activated stealth
-						ShapeShiftForm = ShapeShiftForm.Stealth;
+						ShapeshiftForm = ShapeshiftForm.Stealth;
 						StateFlags |= StateFlag.Sneaking;
 
 						// some auras don't live through Stealth

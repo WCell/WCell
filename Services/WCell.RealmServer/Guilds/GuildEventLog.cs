@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Constants;
 using WCell.Constants.Guilds;
 using WCell.RealmServer.Database;

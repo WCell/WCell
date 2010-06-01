@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Health");
-			ParamInfo = "<amount>";
+			EnglishParamInfo = "<amount>";
 			EnglishDescription = "Sets Basehealth to the given value and fills up Health.";
 		}
 
@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Race", "SetRace");
-			ParamInfo = "<race>";
+			EnglishParamInfo = "<race>";
 			EnglishDescription = "Sets the Unit's race. Also adds the Race's language.";
 		}
 
@@ -161,7 +161,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Invul");
-			ParamInfo = "[0|1]";
+			EnglishParamInfo = "[0|1]";
 			EnglishDescription = "Toggles Invulnerability";
 		}
 
@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Say");
-			ParamInfo = "<text>";
+			EnglishParamInfo = "<text>";
 			EnglishDescription = "Say something";
 		}
 
@@ -218,7 +218,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Yell");
-			ParamInfo = "<text>";
+			EnglishParamInfo = "<text>";
 			EnglishDescription = "Yell something";
 		}
 

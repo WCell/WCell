@@ -28,7 +28,7 @@ namespace WCell.AuthServer.Privileges
 	/// Provides storage/loading of role groups from an XML configuration file.
 	/// </summary>
 	[Serializable]
-	public class RoleGroupConfig : XmlConfig<RoleGroupConfig>
+	public class RoleGroupConfig : XmlFile<RoleGroupConfig>
 	{
 		public static readonly string[] EmptyNameArr = new string[0];
 		static List<string> EmptyNameList = EmptyNameArr.ToList();

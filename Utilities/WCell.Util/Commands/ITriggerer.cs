@@ -15,10 +15,10 @@ namespace WCell.Util.Commands
 
         void Reply(string text);
 
-        void Reply(Object format, params Object[] args);
+        void Reply(string format, params Object[] args);
 
         void ReplyFormat(string text);
 
-        void ReplyFormat(Object format, params Object[] args);
+		void ReplyFormat(string format, params Object[] args);
     }
 }

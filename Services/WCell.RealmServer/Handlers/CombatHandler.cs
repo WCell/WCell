@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Handlers
             }
         }
 
-        public static void SendAttackerStateUpdate(AttackAction action)
+        public static void SendAttackerStateUpdate(DamageAction action)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ATTACKERSTATEUPDATE, 100))
             {

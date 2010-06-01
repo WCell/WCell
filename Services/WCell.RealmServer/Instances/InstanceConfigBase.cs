@@ -15,8 +15,8 @@ namespace WCell.RealmServer.Instances
 		void Setup();
 	}
 
-	public abstract class InstanceConfigBase<T, E> : XmlConfig<T>, IInstanceConfig
-		where T : XmlConfigBase, IInstanceConfig, new()
+	public abstract class InstanceConfigBase<T, E> : XmlFile<T>, IInstanceConfig
+		where T : XmlFileBase, IInstanceConfig, new()
 		where E : IComparable
 	{
 		private static string filename;

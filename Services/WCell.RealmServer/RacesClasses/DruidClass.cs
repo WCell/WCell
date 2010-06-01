@@ -49,22 +49,5 @@ namespace WCell.RealmServer.RacesClasses
         {
             return (intellect / 80f) + /*(Spell Critical Strike Rating/22.08)*/ +1.85f;
         }
-
-        /// <summary>
-        /// Calculates the amount of power regeneration for the class at a specific level and Spirit.
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <param name="spirit">the player's Spirit</param>
-        /// <returns>the total power regeneration amount</returns>
-        public override float CalculatePowerRegen(int level, int spirit, int intellect)
-        {
-            //return (15f + (spirit / 5f));
-            return base.CalculatePowerRegen(level, spirit, intellect);
-        }
-
-		public override int CalculateHealthRegen(int level, int spirit)
-		{
-			return (int)((spirit * 0.09f) + 6.5f);
-		}
     }
 }

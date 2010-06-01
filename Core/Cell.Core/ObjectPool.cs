@@ -16,8 +16,8 @@
 
 using System;
 using System.Collections.Generic;
-using Cell.Core.Collections;
 using System.Threading;
+using WCell.Util.Collections;
 
 #pragma warning disable 0420
 

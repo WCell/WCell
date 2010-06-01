@@ -60,14 +60,14 @@ namespace WCell.Intercommunication
 		/// <summary>
 		/// Registers a realm server with the authentication server
 		/// </summary>
-		/// <param name="serverName">the name of the server</param>
+		/// <param name="realmName">the name of the server</param>
 		/// <param name="serverType">the type of the server</param>
 		/// <param name="flags">the up/down status of the serer (green/red)</param>
 		/// <param name="serverCategory">the timezone the server is in</param>
 		/// <param name="serverStatus">the status of the server (locked or not)</param>
 		[OperationContract(Action = "http://www.wcell.org/IServerIPC/RegisterRealmServer",
 			ReplyAction = "http://www.wcell.org/IServerIPC/RegisterRealmServerResponse")]
-		void RegisterRealmServer(string serverName, string addr, int port, int chrCount, int capacity, RealmServerType serverType,
+		void RegisterRealmServer(string realmName, string addr, int port, int chrCount, int capacity, RealmServerType serverType,
 		                         RealmFlags flags, RealmCategory serverCategory, RealmStatus serverStatus, ClientVersion version);
 
 		/// <summary>

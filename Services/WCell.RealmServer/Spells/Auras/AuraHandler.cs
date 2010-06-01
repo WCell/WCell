@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Auras.Effects;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Mod;
@@ -163,17 +164,19 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModSilenceDurationPercent] = () => new ModSilenceDurationPercentHandler();
 			EffectHandlers[(int)AuraType.ModMechanicDurationPercent] = () => new ModMechanicDurationPercentHandler();
 			EffectHandlers[(int)AuraType.NoPvPCredit] = () => new NoPvPCreditHandler();
-			EffectHandlers[(int)AuraType.Aura_145] = () => new ModPetTalentPointsHandler();
-			EffectHandlers[(int)AuraType.Aura_146] = () => new ControlExoticPetsHandler();
+			EffectHandlers[(int)AuraType.ModTalentPoints] = () => new ModPetTalentPointsHandler();
+			EffectHandlers[(int)AuraType.ControlExoticPet] = () => new ControlExoticPetsHandler();
 			EffectHandlers[(int)AuraType.ForceReaction] = () => new ForceReactionHandler();
 			EffectHandlers[(int)AuraType.Vehicle] = () => new VehicleAuraHandler();
 			EffectHandlers[(int)AuraType.Phase] = () => new PhaseAuraHandler();
-            EffectHandlers[(int)AuraType.FeatherFall] = () => new FeatherFallHandler();
+			EffectHandlers[(int)AuraType.FeatherFall] = () => new FeatherFallHandler();
 			EffectHandlers[(int)AuraType.Charm] = () => new CharmAuraHandler();
 			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();
 			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
 			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifyHandler();
 			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfSpirit] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
+			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
@@ -190,13 +193,13 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static List<AuraEffectHandler> CreateEffectHandlers(Spell spell,
 			CasterInfo caster,
-			Unit target, 
+			Unit target,
 			bool beneficial)
 		{
 			return CreateEffectHandlers(spell.AuraEffects, caster, target, beneficial);
 		}
 
-		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, CasterInfo caster, 
+		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, CasterInfo caster,
 			Unit target, bool beneficial)
 		{
 			if (effects == null)
@@ -275,25 +278,33 @@ namespace WCell.RealmServer.Spells.Auras
 
 		internal static void RegisterAuraUIDEvaluators()
 		{
-			AddEvaluator(IsTransform);
-			AddEvaluator(IsStealth);
+			AddAuraGroupEvaluator(IsTransform);
+			AddAuraGroupEvaluator(IsStealth);
 		}
 
-		public static bool IsTransform(Spell spell)
+		/// <summary>
+		/// All transform and visually supported shapeshift spells are in one group
+		/// </summary>
+		/// <param name="spell"></param>
+		/// <returns></returns>
+		static bool IsTransform(Spell spell)
 		{
-			return spell.HasEffectWith(effect =>
-									   effect.AuraType == AuraType.Transform ||
-									   effect.AuraType == AuraType.ModShapeshift);
+			return spell.IsShapeshift;
 		}
 
-		public static bool IsStealth(Spell spell)
+		static bool IsStealth(Spell spell)
 		{
 			return spell.HasEffectWith(effect =>
 									   effect.AuraType == AuraType.ModStealth);
 		}
 
-		public static void AddEvaluator(AuraIdEvaluator eval)
+		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)
 		{
+			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0 )
+			{
+				throw new InvalidOperationException("Cannot set an Aura Group Evaluator at runtime because Aura Group IDs cannot be re-evaluated at this time. " +
+					"Please register the evaluator during startup.");
+			}
 			AuraIdEvaluators.Add(eval);
 		}
 
@@ -447,7 +458,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public static AuraCasterGroup AddAuraCasterGroup(params SpellLineId[] ids)
 		{
-			var group = new AuraCasterGroup {ids};
+			var group = new AuraCasterGroup { ids };
 			foreach (var spell in group)
 			{
 				spell.AuraCasterGroup = group;

@@ -31,7 +31,10 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < spells.Length; i++)
 				{
 					var spell = spells[i];
-					AddSpell(spell);
+					if (spell != null)
+					{
+						AddSpell(spell);
+					}
 				}
 			}
 		}

@@ -9,6 +9,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;
@@ -40,12 +41,12 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Flat modifiers of spells
 		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>();
+		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
 		/// Percent modifiers of spells
 		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>();
+		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
 		/// Additional effects to be triggered when casting certain Spells
@@ -193,6 +194,10 @@ namespace WCell.RealmServer.Spells
 				OwnerChar.Skills.Remove(spell.SkillId);
 			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
+			if (spell.IsPassive)
+			{
+				Owner.Auras.Cancel(spell);
+			}
 		}
 
 		/// <summary>
@@ -232,7 +237,9 @@ namespace WCell.RealmServer.Spells
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive && !spell.HasHarmfulEffects)
+				if (spell.IsPassive 
+					&& !spell.HasHarmfulEffects
+					)
 				{
 					chr.SpellCast.Start(spell, true, Owner);
 				}
@@ -245,7 +252,7 @@ namespace WCell.RealmServer.Spells
 			m_sendPackets = true;
 		}
 
-		public override void AddDefaults()
+		public override void AddDefaultSpells()
 		{
 			// add the default Spells for the race/class
 			for (var i = 0; i < OwnerChar.Archetype.Spells.Count; i++)
@@ -343,13 +350,14 @@ namespace WCell.RealmServer.Spells
 				var effect = triggerHandler.SpellEffect;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
 					spell.MatchesMask(effect.AffectMask) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) ||
-					Utility.Random(0, 101) <= val))
+					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
+					spell != effect.TriggerSpell)	// prevent inf loops
 				{
 					var caster = triggerHandler.Aura.Caster;
 					if (caster != null)
 					{
-						cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+						cast.Trigger(effect.TriggerSpell);
 					}
 				}
 			}
@@ -469,7 +477,6 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
-
 
 		#region Cooldowns
 		/// <summary>

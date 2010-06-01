@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Util;
+using WCell.Util.Collections;
 using WCell.Util.Data;
 using WCell.Constants.Items;
 using WCell.RealmServer.Misc;

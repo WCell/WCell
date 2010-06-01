@@ -19,7 +19,7 @@ using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using Cell.Core;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Firewall;
 using WCell.AuthServer.IPC;
@@ -196,6 +196,22 @@ namespace WCell.AuthServer
 			RealmEntry entry;
 			m_realmsById.TryGetValue(id, out entry);
 			return entry;
+		}
+
+		/// <summary>
+		/// Returns the no'th Realm
+		/// </summary>
+		public static RealmEntry GetRealmByNumber(int no)
+		{
+			int i = 1;
+			foreach (var realm in Realms.Values)
+			{
+				if (i++ == no)
+				{
+					return realm;
+				}
+			}
+			return null;
 		}
 
 		/// <summary>

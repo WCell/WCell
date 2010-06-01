@@ -147,6 +147,7 @@
     </Compile>
     <Compile Include="Client\AuthenticationClientAdapter.cs" />
     <Compile Include="Client\IAuthenticationClientChannel.cs" />
+    <Compile Include="DataTypes\IRoleGroup.cs" />
     <Compile Include="DataTypes\UpdateRealmResponse.cs" />
     <Compile Include="IWCellIntercomService.cs" />
     <Compile Include="DataTypes\AccountInfo.cs" />
@@ -158,12 +159,12 @@
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>
-	  <Private>False</Private>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

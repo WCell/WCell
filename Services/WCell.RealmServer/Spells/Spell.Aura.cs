@@ -2,6 +2,7 @@
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -76,14 +77,19 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsPureDebuff;
 
+		/// <summary>
+		/// whether this Spell applies the death effect
+		/// </summary>
+		public bool IsGhost;
+
 		public bool IsProc;
 
 		public bool IsVehicle;
 
 		/// <summary>
-		/// whether this Spell applies the death effect
+		/// Spell lets one shapeshift into another creature
 		/// </summary>
-		public bool IsGhost;
+		public bool IsShapeshift;
 
 		/// <summary>
 		/// whether this spell applies makes the targets fly
@@ -140,8 +146,7 @@ namespace WCell.RealmServer.Spells
 				});
 			}
 
-			IsModalAura =
-                AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+			IsModalAura = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
 			if (IsAura)
 			{
@@ -173,17 +178,26 @@ namespace WCell.RealmServer.Spells
 
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
 
+			IsShapeshift = HasEffectWith(effect =>
+			{
+				if (effect.AuraType == AuraType.ModShapeshift)
+				{
+					var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
+					return info.CreatureType > 0;
+				}
+				return effect.AuraType == AuraType.Transform;
+			});
+
+			CanStack = MaxStackCount > 0;
 			// procs and stacking:
 			if (ProcCharges > 0)
 			{
 				// applications will be used up by procs
-				CanStack = MaxStackCount < ProcCharges;
 				StackCount = ProcCharges;
 			}
 			else
 			{
 				// applications can be added by re-applying
-				CanStack = MaxStackCount > 0;
 				StackCount = 1;
 			}
 
@@ -207,11 +221,17 @@ namespace WCell.RealmServer.Spells
 					// no proc-specific effects -> all effects are triggered on proc
 					ProcTriggerEffects = null;
 				}
+				else if (ProcTriggerEffects.Length > 1)
+				{
+					log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
+				}
+
 				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.SpellCast))
 				{
 					// we don't want any SpellCast to trigger on that
 					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackSelf;
 				}
+
 				IsProc = ProcTriggerEffects != null;
 			}
 

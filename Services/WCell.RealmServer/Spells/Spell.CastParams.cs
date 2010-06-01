@@ -7,6 +7,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.Constants.Items;
+using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Spells
 {
@@ -36,7 +37,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Stealth Required			
-            if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+            if (Attributes.HasAnyFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 		    {
 		        return SpellFailedReason.OnlyStealthed;
 			}
@@ -52,6 +53,7 @@ namespace WCell.RealmServer.Spells
 		        return SpellFailedReason.Silenced;
 		    }
 
+			// Check if castable while stunned
             if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 		    {
 		        return SpellFailedReason.CantDoThatRightNow;
@@ -70,7 +72,7 @@ namespace WCell.RealmServer.Spells
 
 			// shapeshift
             if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
-				caster.ShapeShiftForm != ShapeShiftForm.Normal)
+				caster.ShapeshiftForm != ShapeshiftForm.Normal)
 			{
 				//return SpellFailedReason.NotShapeshift;
 			}
@@ -121,8 +123,8 @@ namespace WCell.RealmServer.Spells
 			{
 				// check AuraStates
 				var state = caster.AuraState;
-                if ((RequiredCasterAuraState != 0 && !state.HasFlag(RequiredCasterAuraState)) ||
-                    (ExcludeCasterAuraState != 0 && state.HasFlag(ExcludeCasterAuraState)))
+                if ((RequiredCasterAuraState != 0 && !state.HasAnyFlag(RequiredCasterAuraState)) ||
+					(ExcludeCasterAuraState != 0 && state.HasAnyFlag(ExcludeCasterAuraState)))
 				{
 					return SpellFailedReason.CasterAurastate;
 				}
@@ -181,7 +183,7 @@ namespace WCell.RealmServer.Spells
 					}
 
 					if (RequiredItemSubClassMask > 0 &&
-						!usedItem.Template.SubClassMask.HasFlag(RequiredItemSubClassMask))
+						!usedItem.Template.SubClassMask.HasAnyFlag(RequiredItemSubClassMask))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
@@ -250,8 +252,8 @@ namespace WCell.RealmServer.Spells
 				if (RequiredTargetAuraState != 0 || ExcludeTargetAuraState != 0)
 				{
 					var state = ((Unit)target).AuraState;
-                    if ((RequiredTargetAuraState != 0 && !state.HasFlag(RequiredTargetAuraState)) ||
-                        (ExcludeTargetAuraState != 0 && state.HasFlag(ExcludeTargetAuraState)))
+                    if ((RequiredTargetAuraState != 0 && !state.HasAnyFlag(RequiredTargetAuraState)) ||
+                        (ExcludeTargetAuraState != 0 && state.HasAnyFlag(ExcludeTargetAuraState)))
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
@@ -266,7 +268,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-            if (TargetFlags.HasFlag(SpellTargetFlags.UnkUnit_0x100) &&
+            if (TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
@@ -287,10 +289,10 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (ReqDeadTarget)
 			{
-                if (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+                if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-                        (TargetFlags.HasFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+                        (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -337,6 +339,52 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+
+		#region Check Proc
+		public bool CanProcBeTriggeredBy(Unit caster, IUnitAction action, bool active)
+		{
+			if (CheckCasterConstraints(caster) != SpellFailedReason.Ok)
+			{
+				return false;
+			}
+
+			if (active)
+			{
+				if (CasterProcSpells != null)
+				{
+					return action.Spell != null && CasterProcSpells.Contains(action.Spell);
+				}
+			}
+			else if (TargetProcSpells != null)
+			{
+				return action.Spell != null && TargetProcSpells.Contains(action.Spell);
+			}
+
+			if (RequiredItemClass != ItemClass.None)
+			{
+				// check for weapon
+				if (!(action is DamageAction))
+				{
+					return false;
+				}
+
+				var aAction = (DamageAction)action;
+				if (aAction.Weapon == null || !(aAction.Weapon is Item))
+				{
+					return false;
+				}
+
+				var weapon = ((Item)aAction.Weapon).Template;
+
+				return weapon.Class == RequiredItemClass &&
+					   (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(RequiredItemSubClassMask));
+			}
+			return true;
+		}
+		#endregion
+
+
+		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
             var cd = CooldownTime;
@@ -366,5 +414,6 @@ namespace WCell.RealmServer.Spells
             //return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;
 		}
+		#endregion
 	}
 }

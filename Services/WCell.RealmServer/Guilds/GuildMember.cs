@@ -252,7 +252,7 @@ namespace WCell.RealmServer.Guilds
             if (Rank == null || Rank.BankTabRights[tabId] == null)
                 return false;
 
-            return Rank.BankTabRights[tabId].Privileges.HasFlag(privilege);
+            return Rank.BankTabRights[tabId].Privileges.HasAnyFlag(privilege);
         }
 
 
@@ -263,7 +263,7 @@ namespace WCell.RealmServer.Guilds
 
         public bool HasRight(GuildPrivileges privilege)
         {
-			return IsLeader || Rank.Privileges.HasFlag(privilege);
+			return IsLeader || Rank.Privileges.HasAnyFlag(privilege);
         }
 
         public void SaveLater()

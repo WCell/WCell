@@ -19,7 +19,7 @@ namespace WCell.AuthServer.Commands
 		protected override void Initialize()
 		{
 			Init("Shutdown");
-			ParamInfo = "[<delay before shutdown in seconds>]";
+			EnglishParamInfo = "[<delay before shutdown in seconds>]";
 			EnglishDescription = "Shuts down the server after the given delay (default = 10s).";
 		}
 
@@ -37,7 +37,7 @@ namespace WCell.AuthServer.Commands
 		protected override void Initialize()
 		{
 			Init("DB", "Database");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Offers commands to manage/manipulate DB-Settings.";
 		}
 
@@ -46,7 +46,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Drop", "Purge");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "WARNING: This drops and re-creates the entire internal WCell Database Schema.";
 			}
 
@@ -64,7 +64,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Info", "?");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Shows some info about the DB currently being used.";
 			}
 
@@ -124,7 +124,7 @@ namespace WCell.AuthServer.Commands
 		protected override void Initialize()
 		{
 			Init("Resync", "ResyncAccounts");
-			ParamInfo = "[-f]";
+			EnglishParamInfo = "[-f]";
 			EnglishDescription = "Updates all changes to accounts from the DB. Don't use this if caching is not activated. " +
 				"-f switch enforces a complete resync (purge cache and cache everything again) instead of only updating changes.";
 		}
@@ -159,7 +159,7 @@ namespace WCell.AuthServer.Commands
 		protected override void Initialize()
 		{
 			Init("ToggleCached", "SetCached");
-			ParamInfo = "[0/1]";
+			EnglishParamInfo = "[0/1]";
 			EnglishDescription = "Toggles caching of Accounts";
 		}
 
@@ -199,7 +199,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				ParamInfo = "<globalVar> <value>";
+				EnglishParamInfo = "<globalVar> <value>";
 				EnglishDescription = "Sets the value of the given global variable.";
 			}
 
@@ -223,7 +223,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Get", "G");
-				ParamInfo = "<globalVar>";
+				EnglishParamInfo = "<globalVar>";
 				EnglishDescription = "Gets the value of the given global variable.";
 			}
 
@@ -247,7 +247,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("List", "L");
-				ParamInfo = "[<name Part>]";
+				EnglishParamInfo = "[<name Part>]";
 				EnglishDescription = "Lists all global variables. If specified only shows variables that contain the given name Part.";
 			}
 
@@ -271,7 +271,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Save");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Saves the current configuration.";
 			}
 
@@ -296,7 +296,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Load");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Loads the configuration again.";
 			}
 
@@ -327,7 +327,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("List", "L");
-				ParamInfo = "[<mask>]";
+				EnglishParamInfo = "[<mask>]";
 				EnglishDescription = "Lists all BanEntries or only those that match the given mask.";
 			}
 
@@ -361,7 +361,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "A");
-				ParamInfo = "<mask> [-[smhdw] [<seconds>] [<minutes>] [<hours>] [<days>] [<weeks>]] [<reason>]";
+				EnglishParamInfo = "<mask> [-[smhdw] [<seconds>] [<minutes>] [<hours>] [<days>] [<weeks>]] [<reason>]";
 				EnglishDescription = "Adds a new Ban on the given mask and optionally a time until the Ban will be lifted and a reason.";
 			}
 
@@ -388,7 +388,7 @@ namespace WCell.AuthServer.Commands
 			protected override void Initialize()
 			{
 				Init("Lift", "Remove", "Delete", "Del");
-				ParamInfo = "<mask>";
+				EnglishParamInfo = "<mask>";
 				EnglishDescription = "Removes all bans that match the given mask.";
 			}
 

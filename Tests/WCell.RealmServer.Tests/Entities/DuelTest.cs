@@ -71,18 +71,17 @@ namespace WCell.RealmServer.Tests.Entities
 			Setup.EnsureBasicSetup();
 
 			var chr1 = Setup.AllianceCharacterPool.Create();
-			var chr2 = Setup.AllianceCharacterPool.Create();
-
 			chr1.EnsureAloneInWorldAndLiving();
-			chr2.EnsureLiving();
+
+			var chr2 = Setup.AllianceCharacterPool.Create();
+			chr2.EnsureInWorldAndLiving();
 			chr2.EnsureXDistance(chr1, 2, true);
 
 			Assert.IsNotNull(chr1.Region);
 			Assert.AreEqual(chr1.Region, chr2.Region);
-			Assert.AreEqual(2, chr1.Region.Characters.Count());
+			Assert.AreEqual(2, chr1.Region.CharacterCount);
 
-			chr1.Region.ForceUpdateCharacters(false);
-			chr1.Region.WaitOneTick();
+			chr1.Region.ForceUpdateCharacters();
 
 			Assert.IsTrue(chr1.KnowsOf(chr2));
 			Assert.IsFalse(chr1.CanHarm(chr2));

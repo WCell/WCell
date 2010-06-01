@@ -20,7 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
 	public class SynchronizedQueue<T> : Queue<T>
 	{

@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
-    <DocumentationFile>..\..\Run\Debug\WCell.Util.xml</DocumentationFile>
+    <DocumentationFile>..\..\Run\Debug\WCell.Util.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -137,6 +137,16 @@
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
     <Compile Include="ArrayExtensions.cs" />
+    <Compile Include="Collections\BaseImmutableDictionary.cs" />
+    <Compile Include="Collections\ImmutableDictionary.cs" />
+    <Compile Include="Collections\ImmutableList.cs" />
+    <Compile Include="Collections\LockfreeQueue.cs" />
+    <Compile Include="Collections\LockfreeStack.cs" />
+    <Compile Include="Collections\PriorityQueue.cs" />
+    <Compile Include="Collections\SingleLinkNode.cs" />
+    <Compile Include="Collections\SynchronizedDictionary.cs" />
+    <Compile Include="Collections\SynchronizedList.cs" />
+    <Compile Include="Collections\SynchronizedQueue.cs" />
     <Compile Include="Commands\BaseCommand.cs" />
     <Compile Include="Commands\CmdArgs.cs" />
     <Compile Include="Commands\CmdTrigger.cs" />
@@ -195,6 +205,10 @@
     <Compile Include="DynamicAccess\DontCopyAttribute.cs" />
     <Compile Include="DynamicAccess\IExecutable.cs" />
     <Compile Include="DynamicAccess\IGenericPropertyAccessor.cs" />
+    <Compile Include="Collections\IdQueue.cs" />
+    <Compile Include="ReflectionUtil\MemberAccessor.cs" />
+    <Compile Include="ReflectionUtil\ReflectionMember.cs" />
+    <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
     <Compile Include="EmailSyntaxValidator.cs" />
     <Compile Include="EnumUtil.cs" />
     <Compile Include="Graphics\2DConstants.cs" />
@@ -224,6 +238,11 @@
     <Compile Include="DotNetDocs\DocEntry.cs" />
     <Compile Include="DotNetDocs\DotNetDocumentation.cs" />
     <Compile Include="IStreamTarget.cs" />
+    <Compile Include="Lang\ILocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="Lang\TranslatedItem.cs" />
+    <Compile Include="Lang\Translation.cs" />
+    <Compile Include="Lang\Localizer.cs" />
     <Compile Include="MathUtil.cs" />
     <Compile Include="NLog\LogUtil.cs" />
     <Compile Include="NLog\StreamLogger.cs" />
@@ -264,18 +283,12 @@
     <Compile Include="Variables\TypeVariableDefinition.cs" />
     <Compile Include="SerializablePairCollection.cs" />
     <Compile Include="Variables\VariableException.cs" />
-    <Compile Include="XmlConfig.cs" />
+    <Compile Include="WeakReference.cs" />
+    <Compile Include="XmlFile.cs" />
     <Compile Include="Xml\XmlUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="WCell.Utils.Sign.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
-      <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
-      <Name>Cell.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -9,6 +9,11 @@ namespace WCell.Constants.Updates
 			return (flags & otherFlags) != 0;
 		}
 
+		public static bool HasAnyFlag(this ObjectTypeCustom flags, ObjectTypeCustom otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
 		public static bool HasAnyFlag(this UpdateFieldFlags flags, UpdateFieldFlags otherFlags)
 		{
 			return (flags & otherFlags) != 0;

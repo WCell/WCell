@@ -115,12 +115,12 @@ namespace WCell.Intercommunication.Client
 		}
 		#endregion
 
-		public void RegisterRealmServer(string serverName, string addr, int port, int chrCount, int capacity, RealmServerType serverType,
+		public void RegisterRealmServer(string realmName, string addr, int port, int chrCount, int capacity, RealmServerType serverType,
 									  RealmFlags flags, RealmCategory serverCategory, RealmStatus serverStatus, ClientVersion version)
 		{
 			try
 			{
-				Channel.RegisterRealmServer(serverName, addr, port, chrCount, capacity, serverType, flags, serverCategory,
+				Channel.RegisterRealmServer(realmName, addr, port, chrCount, capacity, serverType, flags, serverCategory,
 											serverStatus, version);
 			}
 			catch (Exception e)

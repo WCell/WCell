@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "A", "Create");
-				ParamInfo = "[-[i][d <dest>]] <entry> [<amount>]";
+				EnglishParamInfo = "[-[i][d <dest>]] <entry> [<amount>]";
 				EnglishDescription = "Creates one or more NPCs with the given entry id. NPCs are set to active by default." +
 					" Use -i to spawn an idle NPC." +
 					" Use -d <dest> to spawn an NPC at a given location.";
@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("AddSpawn", "Spawn");
-				ParamInfo = "[-c]|[<spawnid> [<amount>]]";
+				EnglishParamInfo = "[-c]|[<spawnid> [<amount>]]";
 				EnglishDescription = "Creates the NPC-spawnpoint with the given id. -c switch simply creates the spawnpoint that is closest to you";
 			}
 
@@ -198,7 +198,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Goto");
-				ParamInfo = "(-s spawnindex)|(<id>[ <spawn index>])";
+				EnglishParamInfo = "(-s spawnindex)|(<id>[ <spawn index>])";
 				EnglishDescription = "Teleports the target to the first (or given spawn-index of) NPC of the given type.";
 			}
 
@@ -295,7 +295,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Select", "Sel");
-				ParamInfo = "[-[n][d] [<name>][[<destination>]]]";
+				EnglishParamInfo = "[-[n][d] [<name>][[<destination>]]]";
 				EnglishDescription = "Selects the NPC whose name matches the given name and is closest to the given location. " +
 					"All arguments are optional. If no arguments are supplied, the first available NPC will be selected. " +
 					"If the destination is not given, it will search, starting at the current Target or oneself.";
@@ -382,7 +382,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Respawn");
-			ParamInfo = "[<radius>]";
+			EnglishParamInfo = "[<radius>]";
 			EnglishDescription = "Respawns all NPCs in the area. Radius by default = 50";
 		}
 
@@ -529,7 +529,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Control", "Enslave");
-			ParamInfo = "[-p]";
+			EnglishParamInfo = "[-p]";
 			EnglishDescription = "Makes the current Target your minion. -p makes it your current Pet or companion if possible.";
 		}
 

@@ -36,22 +36,22 @@ namespace WCell.RealmServer.Tests
 {
 	public static class Setup
 	{
-		public static string RunDir = "../../Run/";
-		public static string RealmServerDir { get { return RunDir + "Debug/"; } }
+		public static string RunDir = "../../../Run/";
+		
+		//public static string RealmServerDir { get { return RunDir + "Debug/"; } }
 
-		public static string RealmServerDebugDir = RunDir + "Debug/";
+		public static string RealmServerDebugDir { get { return RunDir + "Debug/"; } }
 
 		/// <summary>
 		/// The location of WCell's executable in the Debug/ folder
 		/// </summary>
 		public static string WCellRealmServerConsoleExe { get { return RealmServerDebugDir + "WCell.RealmServerConsole.exe"; } }
 
-		public static string ContentDir { get { return RealmServerDir + "../Content/"; } }
-		public static string RealmAddonDir { get { return RealmServerDir + "/Lib/"; } }
+		public static string ContentDir { get { return RunDir + "Content/"; } }
+		public static string RealmAddonDir { get { return RealmServerDebugDir + "/RealmServerAddons/"; } }
 
-		public static string TestResultsDir { get { return RunDir + "../TestResults/"; } }
-		public static string DumpDir { get { return TestResultsDir + "Dumps/"; } }
-		public static string LogFile { get { return TestResultsDir + "LastTestOutput.txt"; } }
+		public static string DumpDir { get { return "Dumps/"; } }
+		public static string LogFile { get { return "LastTestOutput.txt"; } }
 
 		static TextWriter m_output;
 
@@ -218,6 +218,25 @@ namespace WCell.RealmServer.Tests
 			{
 				initialized = true;
 
+				if (!Directory.Exists(RunDir))
+				{
+					// Maybe the CWD randomly moved to Run/Debug/TestResults/TestRunName123424239453285894983435/Out/
+					// Use Directory.SetCurrentDirectory(...); to change it
+					RunDir = "../../../../";
+					if (!Directory.Exists(RunDir))
+					{
+						throw new DirectoryNotFoundException(string.Format("RunDir was not found at {0} (CWD = {1})",
+						                                                   new DirectoryInfo(RunDir).FullName,
+						                                                   new DirectoryInfo(Directory.GetCurrentDirectory()).FullName));
+					}
+				}
+
+				if (!File.Exists(WCellRealmServerConsoleExe))
+				{
+					throw new DirectoryNotFoundException(string.Format("WCellRealmServerConsole.exe was not found at {0} (CWD = {1})",
+						new FileInfo(WCellRealmServerConsoleExe).FullName, new DirectoryInfo(Directory.GetCurrentDirectory()).FullName));
+				}
+
 				// since console will not show, lets echo console output to a file:
 				Console.SetOut(m_output = new IndentTextWriter(LogFile) {
 					AutoFlush = true
@@ -232,7 +251,7 @@ namespace WCell.RealmServer.Tests
 				RealmServer.ConsoleActive = false;
 				RealmServerConfiguration.ContentDirName = Path.GetFullPath(ContentDir);
 				RealmServerConfiguration.Initialize();
-				RealmAddonMgr.AddonFolder = RealmAddonDir;
+				RealmAddonMgr.AddonDir = RealmAddonDir;
 
 				DebugUtil.DumpDirName = DumpDir;
 				DebugUtil.Init();
@@ -346,7 +365,7 @@ namespace WCell.RealmServer.Tests
 				Kalimdor.AddObjectNow(obj, ref m_defaultPos);
 				if (obj is Character)
 				{
-					Kalimdor.ForceUpdateCharacters(true);
+					Kalimdor.ForceUpdateCharacters();
 				}
 			}));
 

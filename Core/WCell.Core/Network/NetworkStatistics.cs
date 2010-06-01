@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Core.Timers;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 
 namespace WCell.Core.Network
 {

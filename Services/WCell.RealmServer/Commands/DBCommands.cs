@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("DB", "Database");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Offers commands to manipulate or interact with the DB.";
 		}
 
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Drop", "Purge");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "WARNING: This drops and re-creates the entire internal WCell Database Schema.";
 			}
 
@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Info", "?");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Shows some info about the DB currently being used.";
 			}
 

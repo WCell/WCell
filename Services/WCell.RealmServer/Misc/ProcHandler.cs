@@ -3,19 +3,36 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.Constants;
+using WCell.Util;
+
+using WeakRef = WCell.Util.WeakReference<WCell.RealmServer.Entities.Unit>;
 
 namespace WCell.RealmServer.Misc
 {
 	public delegate bool ProcValidator(Unit triggerer, IUnitAction action);
-	public delegate bool ProcCallback(Unit triggerer, IUnitAction action);
+	public delegate bool ProcCallback(Unit owner, Unit triggerer, IUnitAction action);
 
+	/// <summary>
+	/// Customizable ProcHandler
+	/// </summary>
 	public interface IProcHandler : IDisposable
 	{
+		/// <summary>
+		/// The one who the proc handler is applied to
+		/// </summary>
+		Unit Owner
+		{
+			get;
+		}
+
 		ProcTriggerFlags ProcTriggerFlags
 		{
 			get;
 		}
 
+		/// <summary>
+		/// Probability to proc in percent (0-100)
+		/// </summary>
 		uint ProcChance { get; }
 
 		/// <summary>
@@ -24,6 +41,20 @@ namespace WCell.RealmServer.Misc
 		Spell ProcSpell { get; }
 
 		int StackCount { get; }
+
+		int MinProcDelay
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Time when this proc may be triggered again (or small value, if always)
+		/// </summary>
+		DateTime NextProcTime
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Whether this handler can trigger the given Proc
@@ -41,27 +72,35 @@ namespace WCell.RealmServer.Misc
 	/// </summary>
 	public class ProcHandler : IProcHandler
 	{
-		public static ProcValidator DodgeBlockOrParryValidator = (Unit target, IUnitAction action) =>
+		public static ProcValidator DodgeBlockOrParryValidator = (target, action) =>
 		{
-			var aaction = action as AttackAction;
+			var aaction = action as DamageAction;
 			if (aaction == null)
 			{
 				return false;
 			}
+
 			return aaction.VictimState == VictimState.Dodge ||
 				aaction.VictimState == VictimState.Parry ||
 				aaction.Blocked > 0;
 		};
 
-		public readonly Unit Owner;
+		public readonly WeakRef CreatorRef;
 		public readonly ProcHandlerTemplate Template;
 		private int m_stackCount;
 
-		public ProcHandler(Unit owner, ProcHandlerTemplate template)
+		public ProcHandler(Unit creator, Unit owner, ProcHandlerTemplate template)
 		{
+			CreatorRef = new WeakRef(creator);
 			Owner = owner;
 			Template = template;
 			m_stackCount = template.StackCount;
+		}
+
+		public Unit Owner
+		{
+			get;
+			private set;
 		}
 
 		/// <summary>
@@ -91,15 +130,32 @@ namespace WCell.RealmServer.Misc
 			get { return Template.ProcChance; }
 		}
 
+		public int MinProcDelay
+		{
+			get { return Template.MinProcDelay; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
+		}
+
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return Template.IsAttackerTriggerer == active && Template.Validator(triggerer, action);
+			return Template.IsAttackerTriggerer == (triggerer == action.Attacker) && Template.Validator(triggerer, action);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
-			var proced = Template.ProcAction(triggerer, action);
+			if (!CreatorRef.IsAlive)
+			{
+				Dispose();
+				return;
+			}
+
+			var proced = Template.ProcAction(CreatorRef, triggerer, action);
 
 			// consume a charge
 			if (proced && m_stackCount > 0)
@@ -182,53 +238,53 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// In Milliseconds
+		/// </summary>
+		public int MinProcDelay
+		{
+			get;
+			set;
+		}
 	}
 
-	public class SpellProcHandler : ProcHandlerTemplate
+	/// <summary>
+	/// Triggers a spell on proc
+	/// </summary>
+	public class TriggerSpellProcHandler : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
 
-		public SpellProcHandler(ProcValidator validator, Spell spell)
+		public TriggerSpellProcHandler(ProcValidator validator, Spell spell)
 		{
 			Validator = validator;
 			ProcAction = ProcSpell;
 			Spell = spell;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
 			this(validator, spell)
 		{
 			ProcTriggerFlags = triggerFlags;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
 			: this(triggerFlags, validator, spell)
 		{
 			ProcChance = procChance;
 		}
 
-		public SpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
+		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
 			: this(triggerFlags, validator, spell, procChance)
 		{
 			StackCount = stackCount;
 		}
 
-		public bool ProcSpell(Unit triggerer, IUnitAction action)
+		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
 		{
-			WorldObject caster;
-			if (IsAttackerTriggerer)
-			{
-				caster = action.Attacker;
-			}
-			else
-			{
-				caster = action.Victim;
-			}
-
-			if (caster != null)
-			{
-				caster.SpellCast.Trigger(Spell);
-			}
+			//if (triggerer != null)
+			creator.SpellCast.ValidateAndTrigger(Spell, triggerer);
 			return false;
 		}
 	}

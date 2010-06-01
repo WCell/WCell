@@ -207,14 +207,14 @@ namespace WCell.Constants.Spells
 		/// formerly Charisma
 		/// Possibly now "Add 4 Talent points to all pets"
 		/// </summary>
-		Aura_145 = 145,
+		ModTalentPoints = 145,
 		/// <summary>
 		/// No longer unused as of 3.0.2
 		/// Function may have changed though
 		/// formerly Persuaded
 		/// Possibly now "Can control Exotic pets"
 		/// </summary>
-		Aura_146 = 146,
+		ControlExoticPet = 146,
 		AddCreatureImmunity = 147,
 		RetainComboPoints = 148,
 		ModResistSpellInterruptionPercent = 149,                      //    Resist Pushback
@@ -465,7 +465,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Uses AffectMask for spells that are influenced
 		/// </summary>
-		DamageTakenFromCasterPct = 271,
+		DamagePctAmplifier = 271,
 		Aura_272 = 272,
 		Aura_273 = 273,
 		Aura_274 = 274,
@@ -474,7 +474,7 @@ namespace WCell.Constants.Spells
 		Aura_277 = 277,
 		Aura_278 = 278,
 		Aura_279 = 279,
-		MaceSpecialization = 280,
+		ModArmorPenetration = 280,
 		Aura_281 = 281,
 		Aura_282 = 282,
 		Aura_283 = 283, // Highest in 3.0.2.9056

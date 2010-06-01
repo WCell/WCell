@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Active");
-				ParamInfo = "<1/0>";
+				EnglishParamInfo = "<1/0>";
 				EnglishDescription = "Activates/Deactivates AI of target.";
 			}
 

@@ -7,7 +7,7 @@ using WCell.RealmServer.Spells;
 namespace WCell.RealmServer.Items
 {
 	/// <summary>
-	/// Handles Item OnHit-procs
+	/// Handles Item OnHit-procs which are applied to the wearer of the Item
 	/// </summary>
 	public class ItemHitProcHandler : IProcHandler
 	{
@@ -18,6 +18,11 @@ namespace WCell.RealmServer.Items
 		{
 			m_Item = item;
 			m_Spell = spell;
+		}
+
+		public Unit Owner
+		{
+			get { return m_Item.Owner; }
 		}
 
 		/// <summary>
@@ -55,14 +60,25 @@ namespace WCell.RealmServer.Items
 			set { throw new NotImplementedException("Items do not have proc charges."); }
 		}
 
+		public int MinProcDelay
+		{
+			get { return 0; }
+		}
+
+		public DateTime NextProcTime
+		{
+			get;
+			set;
+		}
+
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return m_Spell.CanProcBeTriggeredBy(action, active);
+			return m_Spell.CanProcBeTriggeredBy(m_Item.Owner, action, active);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
-			m_Item.Owner.SpellCast.ValidateAndTrigger(m_Spell, triggerer);
+			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, triggerer);
 		}
 
 		public void Dispose()

@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Region", "Rgn");
-			ParamInfo = "";
+			EnglishParamInfo = "";
 			EnglishDescription = "Provides Commands to manipulate Regions and their content.";
 		}
 
@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Spawn", "S");
-				ParamInfo = "[-a|<name>]";
+				EnglishParamInfo = "[-a|<name>]";
 				EnglishDescription = "Spawns GOs and NPCs in the current (or specified) region. " +
 					"-a switch spawns all active Regions." +
 					"(Only used for development purposes where the regions arent spawned automatically.)";
@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Clear");
-				ParamInfo = "[<name>]";
+				EnglishParamInfo = "[<name>]";
 				EnglishDescription = "Removes all objects from the current or given Region.";
 			}
 
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Updates", "Upd");
-				ParamInfo = "0|1";
+				EnglishParamInfo = "0|1";
 				EnglishDescription = "Toggles region updates in all Regions on or off";
 			}
 
@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("List", "L");
-				ParamInfo = "";
+				EnglishParamInfo = "";
 				EnglishDescription = "Lists active regions";
 			}
 
@@ -228,7 +228,7 @@ namespace WCell.RealmServer.Commands
 					{
 						if (rgn.IsRunning)
 						{
-							trigger.Reply(rgn);
+							trigger.Reply(rgn.ToString());
 						}
 					}
 				}
@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SpawnZone");
-			ParamInfo = "[<name>]";
+			EnglishParamInfo = "[<name>]";
 			EnglishDescription = "Spawns GOs and NPCs in the current (or specified) Zone. -" +
 				" Only used for development purposes where the regions arent spawned automatically.";
 		}

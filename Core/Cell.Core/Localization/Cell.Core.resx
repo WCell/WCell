@@ -138,6 +138,9 @@
   <data name="ListeningTCPSocket" xml:space="preserve">
     <value>Listening to TCP socket on {0}</value>
   </data>
+  <data name="ListeningTCPSocketStopped" xml:space="preserve">
+    <value>TCP Listen socket for port {0} closed</value>
+  </data>
   <data name="ListeningUDPSocket" xml:space="preserve">
     <value>Listening to UDP socket on {0}</value>
   </data>
