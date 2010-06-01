@@ -300,7 +300,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)
 		{
-			if (RealmServer.Instance.IsRunning)
+			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0 )
 			{
 				throw new InvalidOperationException("Cannot set an Aura Group Evaluator at runtime because Aura Group IDs cannot be re-evaluated at this time. " +
 					"Please register the evaluator during startup.");

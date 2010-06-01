@@ -354,7 +354,7 @@ namespace WCell.RealmServer.Entities
 				{
 					// single target
 					if (!action.DoAttack() &&
-                        ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
+						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
 					{
 						// missed and is not attacking with both weapons -> don't trigger spell
 						CancelPendingAbility();
@@ -408,8 +408,8 @@ namespace WCell.RealmServer.Entities
 					{
 						ap = TotalMeleeAP;
 					}
-					
-					dmg += (ap+7)/14;	// round
+
+					dmg += (ap + 7) / 14;	// round
 				}
 			}
 			else
@@ -449,6 +449,7 @@ namespace WCell.RealmServer.Entities
 				action.IsDot = false;
 			}
 
+			action.Damage = dmg;
 			action.ResistPct = GetResistChancePct(this, action.UsedSchool);
 
 			action.Victim = this;
@@ -457,7 +458,7 @@ namespace WCell.RealmServer.Entities
 			{
 				attacker.AddDamageMods(action);
 
-                if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
+				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
 					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
@@ -1129,7 +1130,7 @@ namespace WCell.RealmServer.Entities
 						// Pushback SpellCast
 						if (IsUsingSpell)
 						{
-                            if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
+							if (SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 							{
 								SpellCast.Cancel();
 							}
