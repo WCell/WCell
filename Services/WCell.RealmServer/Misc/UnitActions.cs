@@ -13,7 +13,149 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Misc
 {
-	public class AttackAction : IDamageAction
+	#region Action Interfaces
+	/// <summary>
+	/// Any kind of Action a Unit can perform
+	/// </summary>
+	public interface IUnitAction
+	{
+		/// <summary>
+		/// The Attacker or Caster
+		/// </summary>
+		Unit Attacker { get; }
+
+		/// <summary>
+		/// Victim or Target or Receiver
+		/// </summary>
+		Unit Victim { get; }
+
+		Spell Spell
+		{
+			get;
+		}
+	}
+
+	public interface IDamageAction : IUnitAction
+	{
+		SpellEffect SpellEffect
+		{
+			get;
+		}
+
+		int ActualDamage
+		{
+			get;
+		}
+
+		int Damage
+		{
+			get;
+			set;
+		}
+
+		bool IsDot
+		{
+			get;
+		}
+
+		bool IsCritical
+		{
+			get;
+		}
+
+		DamageSchool UsedSchool
+		{
+			get;
+		}
+
+		ProcTriggerFlags TargetProcTriggerFlags
+		{
+			get;
+		}
+
+		ProcTriggerFlags AttackerProcTriggerFlags
+		{
+			get;
+		}
+
+		IWeapon Weapon
+		{
+			get;
+		}
+	}
+	#endregion
+
+	#region SimpleDamageAction
+	public class SimpleDamageAction : IDamageAction
+	{
+		public Unit Attacker
+		{
+			get { return null; }
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public SpellEffect SpellEffect
+		{
+			get { return null; }
+		}
+
+		public int Damage
+		{
+			get;
+			set;
+		}
+
+		public int ActualDamage
+		{
+			get { return Damage; }
+		}
+
+		public bool IsDot
+		{
+			get { return false; }
+		}
+
+		public bool IsCritical
+		{
+			get { return false; }
+		}
+
+		public DamageSchool UsedSchool
+		{
+			get { return DamageSchool.Physical; }
+		}
+
+		public ProcTriggerFlags TargetProcTriggerFlags
+		{
+			get { return ProcTriggerFlags.None; }
+		}
+
+		public ProcTriggerFlags AttackerProcTriggerFlags
+		{
+			get { return ProcTriggerFlags.None; }
+		}
+
+		public IWeapon Weapon
+		{
+			get { return null; }
+		}
+
+		public Spell Spell
+		{
+			get { return null; }
+		}
+	}
+	#endregion
+
+	/// <summary>
+	/// Contains all information related to any direct attack that deals positive damage
+	/// </summary>
+	public class DamageAction : IDamageAction
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
@@ -22,7 +164,7 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		public static int DefaultCombatDelay = 600;
 
-		public AttackAction(Unit attacker)
+		public DamageAction(Unit attacker)
 		{
 			Attacker = attacker;
 		}
@@ -899,6 +1041,7 @@ namespace WCell.RealmServer.Misc
             {
                 weaponSkill = (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
             }
+
             var chance = Victim.CalcDodgeChance(Attacker);
             chance += (int)((defSkill - weaponSkill) * 0.04);
             return chance;
@@ -931,147 +1074,8 @@ namespace WCell.RealmServer.Misc
 		}
 	}
 
-	#region SimpleDamageAction
-	public class SimpleDamageAction : IDamageAction
-	{
-		public Unit Attacker
-		{
-			get { return null; }
-		}
-
-		public Unit Victim
-		{
-			get;
-			set;
-		}
-
-		public SpellEffect SpellEffect
-		{
-			get { return null; }
-		}
-
-		public int Damage
-		{
-			get;
-			set;
-		}
-
-		public int ActualDamage
-		{
-			get { return Damage; }
-		}
-
-		public bool IsDot
-		{
-			get { return false; }
-		}
-
-		public bool IsCritical
-		{
-			get { return false; }
-		}
-
-		public DamageSchool UsedSchool
-		{
-			get { return DamageSchool.Physical; }
-		}
-
-		public ProcTriggerFlags TargetProcTriggerFlags
-		{
-			get { return ProcTriggerFlags.None; }
-		}
-
-		public ProcTriggerFlags AttackerProcTriggerFlags
-		{
-			get { return ProcTriggerFlags.None; }
-		}
-
-		public IWeapon Weapon
-		{
-			get { return null; }
-		}
-
-		public Spell Spell
-		{
-			get { return null; }
-		}
-	}
-	#endregion
-
-	#region Action Interface
-	/// <summary>
-	/// Any kind of Action a Unit can perform
-	/// </summary>
-	public interface IUnitAction
-	{
-		/// <summary>
-		/// The Attacker or Caster
-		/// </summary>
-		Unit Attacker { get; }
-
-		/// <summary>
-		/// Victim or Target or Receiver
-		/// </summary>
-		Unit Victim { get; }
-
-		Spell Spell
-		{
-			get;
-		}
-	}
-
-	public interface IDamageAction : IUnitAction
-	{
-		SpellEffect SpellEffect
-		{
-			get;
-		}
-
-		int ActualDamage
-		{
-			get;
-		}
-
-		int Damage
-		{
-			get;
-			set;
-		}
-
-		bool IsDot
-		{
-			get;
-		}
-
-		bool IsCritical
-		{
-			get;
-		}
-
-		DamageSchool UsedSchool
-		{
-			get;
-		}
-
-		ProcTriggerFlags TargetProcTriggerFlags
-		{
-			get;
-		}
-
-		ProcTriggerFlags AttackerProcTriggerFlags
-		{
-			get;
-		}
-
-		IWeapon Weapon
-		{
-			get;
-		}
-	}
-	#endregion
-
 	public interface IAttackModifier
 	{
-		void ModAttack(AttackAction action);
+		void ModAttack(DamageAction action);
 	}
 }

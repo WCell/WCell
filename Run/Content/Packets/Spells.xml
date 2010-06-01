@@ -787,11 +787,11 @@
 
   <RealmPacket OpCode="SMSG_SPELLENERGIZELOG">
     <Simple>
-      <Name>Caster</Name>
+      <Name>Target</Name>
       <Type>PackedGuid</Type>
     </Simple>
     <Simple>
-      <Name>Guid2</Name>
+      <Name>Caster</Name>
       <Type>PackedGuid</Type>
     </Simple>
     <Simple>

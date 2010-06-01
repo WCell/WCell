@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NLog;
 using System.Threading;
 using System.Diagnostics;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Util.Threading;
 using WCell.Util.Threading.TaskParallel;
 

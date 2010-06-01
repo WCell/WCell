@@ -57,27 +57,6 @@ namespace WCell.RealmServer.Spells.Auras
 			m_aura = aura;
 		}
 
-		/// <summary>		
-		/// /// Check whether this handler can be applied to the given target
-		///  </summary>
-		protected internal virtual void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
-		{
-		}
-
-		/// <summary>
-		/// Applies this EffectHandler's effect to its holder
-		/// </summary>
-		protected internal virtual void Apply()
-		{
-		}
-
-		/// <summary>
-		/// Is called by Aura to remove the effect from its holder
-		/// </summary>
-		protected internal virtual void Remove(bool cancelled)
-		{
-		}
-
 		/// <summary>
 		/// whether this is a positive effect (by default: If they have a positive value)
 		/// </summary>
@@ -107,31 +86,25 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_spellEffect; }
 		}
 
-		/// <summary>
-		/// Indicates whether this aura is a stronger version of the given Aura 
-		/// (not very accurate, can only be consistent for comparison of 2 Auras of the same type).
-		/// </summary>
-		public virtual bool IsStrongerThan(AuraEffectHandler otherHandler)
+		/// <summary>		
+		/// /// Check whether this handler can be applied to the given target
+		///  </summary>
+		protected internal virtual void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
 		{
-			return m_spellEffect.BasePoints > otherHandler.m_spellEffect.BasePoints;
 		}
 
 		/// <summary>
-		/// Returns whether the 2 Auras are equally strong. 
-		/// If stronger or equally strong, reapplying non-stackable Auras will result into duration resets.
+		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
-		public virtual bool IsEquallyStrong(AuraEffectHandler otherHandler)
+		protected internal virtual void Apply()
 		{
-			return m_spellEffect.BasePoints == otherHandler.m_spellEffect.BasePoints;
 		}
 
 		/// <summary>
-		/// Indicates whether this aura is a stronger version of the given Aura 
-		/// (not very accurate, can only be consistent for comparison of 2 Auras of the same type).
+		/// Is called by Aura to remove the effect from its holder
 		/// </summary>
-		public virtual bool IsStrongerOrEqual(AuraEffectHandler otherHandler)
+		protected internal virtual void Remove(bool cancelled)
 		{
-			return IsEquallyStrong(otherHandler) || IsStrongerThan(otherHandler);
 		}
 
 		/// <summary>

@@ -52,7 +52,7 @@ using WCell.RealmServer.Taxi;
 using WCell.Util;
 using WCell.Util.Commands;
 using WCell.RealmServer.Battlegrounds;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
 using WCell.RealmServer.Spells.Auras;
@@ -898,7 +898,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool IsSwimming
 		{
-            get { return MovementFlags.HasFlag(MovementFlags.Swimming); }
+			get { return MovementFlags.HasFlag(MovementFlags.Swimming); }
 		}
 
 		public bool IsUnderwater
@@ -1307,7 +1307,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds all damage boni and mali
 		/// </summary>
-		public override void AddDamageMods(AttackAction action)
+		public override void AddDamageMods(DamageAction action)
 		{
 			base.AddDamageMods(action);
 			var dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool) / 100f, action.Damage);
@@ -1466,7 +1466,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-			    return (m_region.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
+				return (m_region.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
 			}
 		}
 

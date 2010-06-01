@@ -18,6 +18,6 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			Owner.AttackModifiers.Remove(this);
 		}
 
-		public abstract void ModAttack(AttackAction action);
+		public abstract void ModAttack(DamageAction action);
 	}
 }

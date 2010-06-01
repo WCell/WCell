@@ -129,16 +129,6 @@
     <Compile Include="BufferSegment.cs" />
     <Compile Include="CellDef.cs" />
     <Compile Include="ClientBase.cs" />
-    <Compile Include="Collections\BaseImmutableDictionary.cs" />
-    <Compile Include="Collections\ImmutableDictionary.cs" />
-    <Compile Include="Collections\ImmutableList.cs" />
-    <Compile Include="Collections\LockfreeQueue.cs" />
-    <Compile Include="Collections\LockfreeStack.cs" />
-    <Compile Include="Collections\PriorityQueue.cs" />
-    <Compile Include="Collections\SingleLinkNode.cs" />
-    <Compile Include="Collections\SynchronizedDictionary.cs" />
-    <Compile Include="Collections\SynchronizedList.cs" />
-    <Compile Include="Collections\SynchronizedQueue.cs" />
     <Compile Include="Exceptions\InvalidEndpointException.cs" />
     <Compile Include="Exceptions\NoAvailableInterfacesException.cs" />
     <Compile Include="Extensions.cs" />
@@ -169,7 +159,12 @@
       <LastGenOutput>Cell.Core.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

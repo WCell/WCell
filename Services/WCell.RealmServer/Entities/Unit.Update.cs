@@ -191,11 +191,12 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Actual Updating
+		#region Update()
 
 		public override void Update(float dt)
 		{
 			base.Update(dt);
+
 			if (m_brain != null)
 			{
 				m_brain.Update(dt);

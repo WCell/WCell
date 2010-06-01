@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 
@@ -49,6 +50,17 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Improved Hamstring can only be proc'ed by Hamstring
 			SpellLineId.WarriorArmsImprovedHamstring.Apply(spell =>
 				spell.AddCasterProcSpells(SpellLineId.WarriorHamstring));
+
+			// Shield Spec is proc'ed when owner dodges, blocks or parries
+			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
+			{
+				spell.AddCasterProcHandler(new TriggerSpellProcHandler(
+					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack, 
+					ProcHandler.DodgeBlockOrParryValidator,
+					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
+					spell.ProcChance
+					));
+			});
 		}
 	}
 }

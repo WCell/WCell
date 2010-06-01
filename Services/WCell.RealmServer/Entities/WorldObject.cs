@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;

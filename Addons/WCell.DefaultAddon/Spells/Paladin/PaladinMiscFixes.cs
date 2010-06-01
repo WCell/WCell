@@ -47,7 +47,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				SpellLineId.PaladinGreaterBlessingOfWisdom,
 				SpellLineId.PaladinGreaterBlessingOfSanctuary);
 
-			// Sanctuary needs a proc: "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
+			// Sanctuary is a bit more complicated
 			SpellHandler.Apply(spell =>
 			{
 				// first effect should mod damage taken
@@ -58,8 +58,10 @@ namespace WCell.Addons.Default.Spells.Paladin
 					firstEffect.AuraType = AuraType.ModDamageTakenPercent;
 				}
 
-				// add custom proc
-				spell.AddTargetProcHandler(new TriggerSpellProcHandler(ProcTriggerFlags.MeleeAttack, 
+				// Custom proc (target = the one who is blessed): 
+				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
+				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
+					ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.RangedAttackSelf, 
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.BlessingOfSanctuary)
 					));

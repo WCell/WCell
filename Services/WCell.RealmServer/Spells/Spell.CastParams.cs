@@ -7,6 +7,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.Constants.Items;
+using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Spells
 {
@@ -338,6 +339,52 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+
+		#region Check Proc
+		public bool CanProcBeTriggeredBy(Unit caster, IUnitAction action, bool active)
+		{
+			if (CheckCasterConstraints(caster) != SpellFailedReason.Ok)
+			{
+				return false;
+			}
+
+			if (active)
+			{
+				if (CasterProcSpells != null)
+				{
+					return action.Spell != null && CasterProcSpells.Contains(action.Spell);
+				}
+			}
+			else if (TargetProcSpells != null)
+			{
+				return action.Spell != null && TargetProcSpells.Contains(action.Spell);
+			}
+
+			if (RequiredItemClass != ItemClass.None)
+			{
+				// check for weapon
+				if (!(action is DamageAction))
+				{
+					return false;
+				}
+
+				var aAction = (DamageAction)action;
+				if (aAction.Weapon == null || !(aAction.Weapon is Item))
+				{
+					return false;
+				}
+
+				var weapon = ((Item)aAction.Weapon).Template;
+
+				return weapon.Class == RequiredItemClass &&
+					   (RequiredItemSubClassMask == 0 || weapon.SubClassMask.HasAnyFlag(RequiredItemSubClassMask));
+			}
+			return true;
+		}
+		#endregion
+
+
+		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
             var cd = CooldownTime;
@@ -367,5 +414,6 @@ namespace WCell.RealmServer.Spells
             //return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;
 		}
+		#endregion
 	}
 }

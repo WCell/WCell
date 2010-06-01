@@ -628,7 +628,6 @@
     <Compile Include="Looting\LootRollEntry.cs" />
     <Compile Include="Looting\LootRollProgress.cs" />
     <Compile Include="Misc\CfgCategories.cs" />
-    <Compile Include="Misc\IdQueue.cs" />
     <Compile Include="Instances\InstanceBinding.cs" />
     <Compile Include="Instances\RaidInstance.cs" />
     <Compile Include="Interaction\IBaseRelation.cs" />
@@ -839,7 +838,6 @@
     <Compile Include="NPCs\Trainers\TrainerEntry.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellEntry.cs" />
     <Compile Include="NPCs\Vendors\VendorItemEntry.cs" />
-    <Compile Include="Privileges\PrivilegeMgr.Access.cs" />
     <Compile Include="Privileges\RoleGroup.cs" />
     <Compile Include="Privileges\PrivilegeMgr.cs" />
     <Compile Include="Entities\Character.Update.cs" />

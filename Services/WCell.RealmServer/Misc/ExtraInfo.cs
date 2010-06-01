@@ -10,6 +10,7 @@ namespace WCell.RealmServer.Misc
 	/// <summary>
 	/// Addition to every Character that is a StaffMember to append staff-only related information without wasting extra memory
 	/// on non-staff members.
+	/// TODO: Get rid off this
 	/// </summary>
 	public class ExtraInfo : IDisposable
 	{

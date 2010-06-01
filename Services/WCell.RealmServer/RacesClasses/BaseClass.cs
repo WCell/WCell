@@ -237,10 +237,16 @@ namespace WCell.RealmServer.RacesClasses
         /// <param name="level">the player's level</param>
         /// <param name="spirit">the player's Spirit</param>
         /// <returns>The total power regeneration amount per RegenTick. Scales with RegenTickDelay (mana/5s will stay the same even if you change TickDelay).</returns>
-        public virtual float CalculatePowerRegen(int level, int spirit, int intellect)
+        public virtual int CalculatePowerRegen(Character chr)
         {
+			// default mana generation
             //return (10f + (spirit / 7f));
-            return (float)(0.001 + Math.Pow(intellect, 0.5) * spirit * GameTables.BaseRegen[level]) * Unit.RegenTickDelay;
+			var regen = (0.001 + Math.Pow(chr.Intellect, 0.5) * chr.Spirit * GameTables.BaseRegen[chr.Level]) * Unit.RegenTickSeconds;
+			if (chr.IsInCombat)
+			{
+				regen = (regen * chr.ManaRegenPerTickInterruptedPct) / 100;
+			}
+			return (int)regen;
         }
 
         /// <summary>

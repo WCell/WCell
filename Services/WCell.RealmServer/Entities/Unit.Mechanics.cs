@@ -780,9 +780,9 @@ namespace WCell.RealmServer.Entities
 			{
 				return 0;
 			}
-			if (m_AttackAction != null)
+			if (m_DamageAction != null)
 			{
-                if (m_AttackAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+                if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
 					return 0;
 			}
 			var absorb = 0;

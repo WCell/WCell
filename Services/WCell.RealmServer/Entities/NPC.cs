@@ -34,6 +34,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
@@ -179,10 +180,12 @@ namespace WCell.RealmServer.Entities
 
 			PowerCostMultiplier = 1f;
 
-			PowerRegenPerTick = BasePower / 5;
-			ManaRegenPerTickInterruptedPct = 20;
+			if (PowerType == PowerType.Mana)
+			{
+				ManaRegenPerTickInterruptedPct = 20;
+			}
+
 			HealthRegenPerTickNoCombat = BaseHealth / 5;
-			InitializeRegeneration();
 
 			UpdateUnitState();
 
@@ -1144,7 +1147,8 @@ namespace WCell.RealmServer.Entities
 			{
 				FirstAttacker = action.Attacker;
 			}
-			if (YieldsXpOrHonor && action.Attacker is Character)
+
+			if (!action.Victim.IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor)
 			{
 				action.Attacker.Proc(ProcTriggerFlags.GainExperience, this, action, true);
 			}

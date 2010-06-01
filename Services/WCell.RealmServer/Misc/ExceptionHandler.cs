@@ -1,5 +1,5 @@
 ﻿using System;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Global;

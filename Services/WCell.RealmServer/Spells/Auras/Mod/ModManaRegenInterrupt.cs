@@ -26,12 +26,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.ManaRegenPerTickInterruptedPct = EffectValue; 
+			Owner.ManaRegenPerTickInterruptedPct = EffectValue; 
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ManaRegenPerTickInterruptedPct = Unit.PowerRegenInterruptedPct;
+			Owner.ManaRegenPerTickInterruptedPct = Unit.PowerRegenInterruptedPct;
 		}
 	}
 };

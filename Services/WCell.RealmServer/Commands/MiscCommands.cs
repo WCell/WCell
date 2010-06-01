@@ -21,6 +21,7 @@ using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.Core;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Stats;
 using WCell.Util;
@@ -80,7 +81,7 @@ namespace WCell.RealmServer.Commands
             else if (trigger.Text.HasNext)
             {
                 object propHolder;
-                var prop = PrivilegeMgr.Instance.GetProp(trigger.Args.User, target, trigger.Text.NextWord(),
+                var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, trigger.Text.NextWord(),
                     target.GetType(), out propHolder);
 
                 SetProp(propHolder, prop, trigger);
@@ -95,7 +96,7 @@ namespace WCell.RealmServer.Commands
 
         public static void SetProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
         {
-            if (prop != null && PrivilegeMgr.Instance.CanWrite(prop, trigger.Args.User))
+            if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
             {
                 var expr = trigger.Text.Remainder.Trim();
                 if (expr.Length == 0)
@@ -194,7 +195,7 @@ namespace WCell.RealmServer.Commands
                 var propName = trigger.Text.NextWord();
                 object val;
 
-                if (PrivilegeMgr.Instance.GetPropValue(trigger.Args.User, target, ref propName, out val))
+				if (ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val))
                 {
                     trigger.Reply("{0} is: {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
                 }
@@ -216,7 +217,7 @@ namespace WCell.RealmServer.Commands
             var propName = trigger.Text.NextWord();
             object val;
 
-            PrivilegeMgr.Instance.GetPropValue(trigger.Args.User, target, ref propName, out val);
+            ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val);
             return val;
         }
     }
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Commands
         {
             var accessName = trigger.Text.NextWord();
             object propHolder;
-            var prop = PrivilegeMgr.Instance.GetProp(trigger.Args.User, target, accessName,
+			var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, accessName,
                                                      target.GetType(), out propHolder);
 
             ModProp(propHolder, prop, trigger);
@@ -266,7 +267,7 @@ namespace WCell.RealmServer.Commands
 
         public static void ModProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
         {
-            if (prop != null && PrivilegeMgr.Instance.CanWrite(prop, trigger.Args.User))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
             {
                 var exprType = prop.GetVariableType();
                 if (!exprType.IsInteger())
@@ -380,7 +381,7 @@ namespace WCell.RealmServer.Commands
                 try
                 {
                     object result;
-                    if (PrivilegeMgr.Instance.CallMethod(trigger.Args.Character, obj,
+					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
                         ref accessName, args, out result))
                     {
                         trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
@@ -409,7 +410,7 @@ namespace WCell.RealmServer.Commands
                 try
                 {
                     object result;
-                    if (PrivilegeMgr.Instance.CallMethod(trigger.Args.Character, obj,
+					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
                         ref accessName, args, out result))
                     {
                         return result;

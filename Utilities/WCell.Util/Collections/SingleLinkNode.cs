@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
 	internal class SingleLinkNode<T>
 	{

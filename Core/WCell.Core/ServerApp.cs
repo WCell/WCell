@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Cell.Core;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using NLog;
 using WCell.Core.Database;
 using WCell.Core.Initialization;

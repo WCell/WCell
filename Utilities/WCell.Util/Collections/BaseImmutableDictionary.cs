@@ -17,7 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 
-namespace Cell.Core.Collections
+namespace WCell.Util.Collections
 {
 	public sealed class BaseImmutableDictionary<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IEnumerable
 	{

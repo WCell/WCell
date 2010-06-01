@@ -1399,6 +1399,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
+		/// Creates a new SpellCast object to trigger the given spell.
 		/// Validates whether the given target is the correct target
 		/// or if we have to look for the actual targets ourselves.
 		/// Revalidate targets, if it is:
@@ -1408,12 +1409,17 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="spell"></param>
 		/// <param name="target"></param>
-		public void ValidateAndTrigger(Spell spell, WorldObject target)
+		public void ValidateAndTriggerNew(Spell spell, WorldObject target)
 		{
 			var passiveCast = InheritSpellCast();
 
+			passiveCast.ValidateAndTrigger(spell, target);
+		}
+
+		public void ValidateAndTrigger(Spell spell, WorldObject target)
+		{
 			WorldObject[] targets;
-			// TODO: Consider triggering effect
+
 			if (spell.IsAreaSpell || (Caster.MayAttack(target) != spell.HasHarmfulEffects))
 			{
 				targets = null;
@@ -1423,8 +1429,8 @@ namespace WCell.RealmServer.Spells
 				targets = new[] { target };
 			}
 
-			passiveCast.Start(spell, true, targets);
-			passiveCast.Dispose();
+			Start(spell, true, targets);
+			Dispose();
 		}
 
 		#endregion

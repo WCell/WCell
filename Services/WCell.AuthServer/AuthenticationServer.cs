@@ -19,7 +19,7 @@ using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using Cell.Core;
-using Cell.Core.Collections;
+using WCell.Util.Collections;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Firewall;
 using WCell.AuthServer.IPC;
