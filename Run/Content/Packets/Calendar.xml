@@ -783,7 +783,7 @@
       <Type>ULong</Type>
     </Simple>
   </RealmPacket>
-  <RealmPacket OpCode="SMSG_CALENDAR_UNKNOWN_1211">
+  <RealmPacket OpCode="SMSG_CALENDAR_ACTION_PENDING ">
     <!--EMPTY, something like SIGNUP_ACK-->
   </RealmPacket>
   <RealmPacket OpCode="SMSG_CALENDAR_COMMAND_RESULT">
