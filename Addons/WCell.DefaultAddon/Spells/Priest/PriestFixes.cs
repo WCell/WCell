@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.Addons.Default.Spells.Priest
 {
@@ -50,6 +53,41 @@ namespace WCell.Addons.Default.Spells.Priest
 				var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
 				effect.Amplitude = 1000;
 			});
+
+
+			SpellLineId.PriestShadowVampiricEmbrace.Apply(spell =>
+			{
+				// change Dummy to proc effect
+				var effect = spell.Effects[0];
+				effect.IsProc = true;
+				effect.AuraEffectHandlerCreator = () => new AuraVampiricEmbracerHandler();
+
+				// Set correct flags and set of spells to trigger the proc
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.AddCasterProcSpells(
+					SpellLineId.PriestShadowMindFlay,
+					SpellLineId.PriestShadowWordPain,
+					SpellLineId.PriestShadowWordDeath,
+					SpellLineId.PriestMindBlast,
+					SpellLineId.PriestManaBurn,
+					SpellLineId.PriestDevouringPlague,
+					SpellLineId.PriestShadowVampiricTouch,
+					SpellLineId.PriestMindSear);
+			});
+		}
+	}
+
+	public class AuraVampiricEmbracerHandler : AuraEffectHandler
+	{
+		public override void OnProc(Unit target, IUnitAction action)
+		{
+			if (action is IDamageAction)
+			{
+				var dmgAction = ((IDamageAction)action);
+				var healSelfAmount = (dmgAction.Damage * EffectValue) / 100;
+				var healPartyAmount = healSelfAmount / 5f;
+				Owner.Heal(Owner, healSelfAmount, SpellEffect);
+			}
 		}
 	}
 }

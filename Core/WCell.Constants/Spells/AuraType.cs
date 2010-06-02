@@ -378,7 +378,10 @@ namespace WCell.Constants.Spells
 		/// Your critical strike damage is increased by $s1% when the target has less health than you (as a percentage of total health).
 		/// </summary>
 		Aura_226 = 226,
-		Aura_227 = 227,
+		/// <summary>
+		/// Also triggers a spell
+		/// </summary>
+		PeriodicTriggerSpell2 = 227,
 		/// <summary>
 		/// Stealth Detection:
 		/// Shadow Sight (Id: 34709)

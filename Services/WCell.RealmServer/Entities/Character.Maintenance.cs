@@ -142,6 +142,7 @@ namespace WCell.RealmServer.Entities
 
 			// Talents
 			m_record.SpecProfile = SpecProfile.NewSpecProfile(this);
+			FreeTalentPoints = m_record.FreeTalentPoints;
 
 			// tutorial flags
 			TutorialFlags = new TutorialFlags(m_record.TutorialFlags);

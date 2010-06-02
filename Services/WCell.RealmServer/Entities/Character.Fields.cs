@@ -1905,7 +1905,7 @@ namespace WCell.RealmServer.Entities
 				if (value < 0)
 					value = 0;
 
-				m_record.FreeTalentPoints = value;
+				//m_record.FreeTalentPoints = value;
 				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
 				TalentHandler.SendTalentGroupList(this);
 			}

@@ -381,7 +381,7 @@ namespace WCell.RealmServer.Spells
 				HasTarget(ImplicitTargetType.TotemFire) ||
 				HasTarget(ImplicitTargetType.TotemWater);
 
-			IsProc = (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) || AuraType == AuraType.ProcTriggerDamage;
+			IsProc = IsProc || (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) || AuraType == AuraType.ProcTriggerDamage;
 
 			IsHealEffect = EffectType == SpellEffectType.Heal ||
 				EffectType == SpellEffectType.HealMaxHealth ||

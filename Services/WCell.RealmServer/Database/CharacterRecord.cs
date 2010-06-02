@@ -997,7 +997,7 @@ namespace WCell.RealmServer.Database
 
 		# region Talents
 
-		[Property("FreeTalentPoints", NotNull = true)]
+		[Property("FreeTalentPoints")]
 		public int FreeTalentPoints
 		{
 			get;
