@@ -229,11 +229,11 @@ namespace WCell.RealmServer.Spells
 			{
 				m_auras.RemoveAll(aura =>
 				{
-					if (aura.IsActive)
+					if (aura.IsAdded)
 					{
 						aura.Apply();
 						// remove if Aura went inactive
-						return !aura.IsActive;
+						return !aura.IsAdded;
 					}
 					return true;
 				});

@@ -455,7 +455,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Adds a new Aura with the given information to the Owner. 
 		/// Does not initialize the new Aura.
-		/// If you use this method, make sure to call <c>Initialize(ITickTimer)</c> on the newly created Aura.
+		/// If you use this method, make sure to call <c>Start()</c> on the newly created Aura.
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
@@ -477,7 +477,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Adds an already created Aura (eg for SpellSteal)
+		/// Adds an already created Aura
 		/// </summary>
 		public void AddAura(Aura aura)
 		{
@@ -485,9 +485,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Adds an already created Aura (eg for SpellSteal)
+		/// Adds an already created Aura
 		/// </summary>
-		public void AddAura(Aura aura, bool update)
+		public virtual void AddAura(Aura aura, bool update)
 		{
 			var id = aura.Id;
 			m_auras.Add(id, aura);
@@ -498,7 +498,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			InvalidateAurasCopy();
 
-			aura.IsActive = true;
+			aura.IsAdded = true;
 
 			if (update)
 			{
@@ -679,7 +679,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Removes the given Aura without cancelling it.
 		/// Automatically called by <see cref="Aura.Remove"/>.
 		/// </summary>
-		public void Cancel(Aura aura)
+		internal protected virtual void Cancel(Aura aura)
 		{
 			m_auras.Remove(aura.Id);
 			if (aura.Spell.IsProc)

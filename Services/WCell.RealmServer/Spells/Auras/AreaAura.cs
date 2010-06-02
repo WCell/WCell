@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Aura is active if its still applied to a <c>Holder</c>
 		/// </summary>
-		public bool IsActive
+		public bool IsAdded
 		{
 			get { return m_holder != null; }
 		}
@@ -267,7 +267,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				var target = (Unit)newTargets[i];
 
-				if (!IsActive)
+				if (!IsAdded)
 				{
 					// got cancelled
 					return;
@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			    foreach (var target in toRemove)
 				{
-					if (target.Value.IsActive)
+					if (target.Value.IsAdded)
 					{
 						var auras = target.Key.Auras;
 						if (auras != null)

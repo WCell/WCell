@@ -52,8 +52,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="record">The name of the character to load</param>
 		/// <param name="client">The client to associate with this character</param>
 		internal protected void Create(RealmAccount acc, CharacterRecord record, IRealmClient client)
-		{
-			client.ActiveCharacter = this;
+		{			client.ActiveCharacter = this;
 			acc.ActiveCharacter = this;
 
 			Type |= ObjectTypes.Player;
@@ -108,6 +107,9 @@ namespace WCell.RealmServer.Entities
 				SetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
+
+			// Auras
+			m_auras = new PlayerAuraCollection(this);
 
 			// spells
 			PlayerSpellCollection spells;

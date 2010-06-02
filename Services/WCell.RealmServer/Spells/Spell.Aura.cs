@@ -84,6 +84,14 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsProc;
 
+		/// <summary>
+		/// Whether this is a proc and whether its own effects handle procs (or false, if customary proc handlers have been added)
+		/// </summary>
+		public bool IsPureProc
+		{
+			get { return IsProc && TargetProcHandlers == null && CasterProcHandlers == null; }
+		}
+
 		public bool IsVehicle;
 
 		/// <summary>

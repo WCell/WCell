@@ -161,6 +161,19 @@ namespace WCell.RealmServer.Spells
 													 Range.MaxDist > 0 ? (Range.MaxDist + caster.CombatReach) : 5f, caster.Phase) != null;
 		}
 
+		/// <summary>
+		/// Whether this spell has certain requirements on items
+		/// </summary>
+		public bool HasItemRequirements
+		{
+			get { return RequiredItemClass != 0 ||
+					RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
+					RequiredTools != null ||
+					RequiredTotemCategories.Length > 0 ||
+					EquipmentSlot != EquipmentSlot.End;
+			}
+		}
+
 		public SpellFailedReason CheckItemRestrictions(Item usedItem, PlayerInventory inv)
 		{
 			if (RequiredItemClass != ItemClass.None)
@@ -212,7 +225,10 @@ namespace WCell.RealmServer.Spells
 			if (RequiredTotemCategories.Length > 0)
 			{
 				// Required totem category refers to tools that are required during the spell
-				inv.CheckTotemCategories(RequiredTotemCategories);
+				if (!inv.CheckTotemCategories(RequiredTotemCategories))
+				{
+					return SpellFailedReason.TotemCategory;
+				}
 			}
 
 			// check for whether items must be equipped

@@ -93,9 +93,9 @@ namespace WCell.RealmServer.Entities
 		protected IBrain m_brain;
 		protected Faction m_faction;
 		protected SpellCollection m_spells;
+		protected AuraCollection m_auras;
 		protected int m_comboPoints;
 		protected Unit m_comboTarget;
-		protected AuraCollection m_auras;
 		protected ulong m_auraUpdateMask;
 
 		/// <summary>
@@ -134,9 +134,6 @@ namespace WCell.RealmServer.Entities
 		protected Unit()
 		{
 			Type |= ObjectTypes.Unit;
-
-			// auras
-			m_auras = new AuraCollection(this);
 
 			// combat
 			m_isInCombat = false;

@@ -54,7 +54,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				effect.Amplitude = 1000;
 			});
 
-
+			// Vampiric Embrace can be proc'ed by a certain set of spells, and has a custom healing AuraEffectHandler
 			SpellLineId.PriestShadowVampiricEmbrace.Apply(spell =>
 			{
 				// change Dummy to proc effect
@@ -83,10 +83,26 @@ namespace WCell.Addons.Default.Spells.Priest
 		{
 			if (action is IDamageAction)
 			{
+				var owner = Owner;
 				var dmgAction = ((IDamageAction)action);
-				var healSelfAmount = (dmgAction.Damage * EffectValue) / 100;
-				var healPartyAmount = healSelfAmount / 5f;
-				Owner.Heal(Owner, healSelfAmount, SpellEffect);
+
+				var healSelfAmount = ((dmgAction.Damage * EffectValue) + 50) / 100;	// don't forget rounding
+				var healPartyAmount = (healSelfAmount + 3) / 5; // don't forget rounding
+
+				owner.Heal(owner, healSelfAmount, SpellEffect);
+				if (owner is Character)
+				{
+					var chr = (Character)owner;
+					var group = chr.Group;
+					if (group != null)
+					{
+						// heal all group members in same context (ie same Region in current implementation)
+						group.CallOnAllInSameContext(chr.ContextHandler, (member) =>
+						{
+							member.Heal(owner, healPartyAmount, SpellEffect);
+						});
+					}
+				}
 			}
 		}
 	}

@@ -50,7 +50,9 @@ namespace WCell.Constants.Misc
 		WeaponSkillMainhand = 21,
 		WeaponSkillOffhand = 22,
 		WeaponSkillRanged = 23,
-		Expertise = 24
+
+		Expertise = 24,
+		ArmorPenetration = 25
 	}
 
 	/// <summary>
@@ -62,27 +64,34 @@ namespace WCell.Constants.Misc
 		/// <summary>
 		/// Different kinds of weapons - The actual weapon has to be figured out (but, depending on what?)
 		/// </summary>
-		Weapon = 0x00000001,
-		Defence = 0x00000002,
+		Weapon =				0x00000001,
+		Defence =				0x00000002,
 		/// <summary>
 		/// Modifies Dodge rating
 		/// Most Rejuvenation Spells also have this one (but with EffectValue = 0)
 		/// </summary>
-		Dodge = 0x00000004,
-		Parry = 0x00000008,
-		Block = 0x00000010,
-		MeleeHitChance = 0x00000020,
-		RangedHitChance = 0x00000040,
-		SpellHitChance = 0x00000080,
-		MeleeCritical = 0x00000100,
-		RangedCritical = 0x00000200,
-		SpellCritical = 0x00000400,
-		MeleeResilience = 0x00004000,
-		RangedResilience = 0x00008000,
-		SpellResilience = 0x00010000,
-		MeleeHaste = 0x00020000,
-		RangedHaste = 0x00040000,
-		SpellHaste = 0x00080000,
-		Resilience = 0x1C000
+		Dodge =					0x00000004,
+		Parry =					0x00000008,
+		Block =					0x00000010,
+		MeleeHitChance =		0x00000020,
+		RangedHitChance =		0x00000040,
+		SpellHitChance =		0x00000080,
+		MeleeCritical =			0x00000100,
+		RangedCritical =		0x00000200,
+		SpellCritical =			0x00000400,
+		MeleeResilience =		0x00004000,
+		RangedResilience =		0x00008000,
+		SpellResilience =		0x00010000,
+
+		MeleeHaste =			0x00020000,
+		RangedHaste =			0x00040000,
+		SpellHaste =			0x00080000,
+
+		WeaponSkillMainhand =	0x00100000,
+		WeaponSkillOffhand =	0x00200000,
+		WeaponSkillRanged =		0x00400000,
+
+		Expertise =				0x00800000,
+		ArmorPenetration =		0x01000000
 	}
 }
