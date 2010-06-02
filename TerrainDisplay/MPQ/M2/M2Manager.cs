@@ -1,0 +1,137 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using MPQNav.Collision;
+using MPQNav.Collision._3D;
+using MPQNav.MPQ.ADT.Components;
+
+namespace MPQNav.MPQ.M2
+{
+    public class M2Manager
+    {
+        #region variables
+
+        /// <summary>
+        /// 1 degree = 0.0174532925 radians
+        /// </summary>
+        private const float RadiansPerDegree = 0.0174532925f;
+
+        /// <summary>
+        /// List of filenames managed by this M2Manager
+        /// </summary>
+        private readonly List<String> _names = new List<String>();
+
+        /// <summary>
+        /// List of WMOs managed by this WMOManager
+        /// </summary>
+        public List<M2> M2s = new List<M2>();
+
+        #endregion
+
+        private readonly string _baseDirectory;
+
+        public M2Manager(string baseDirectory)
+        {
+            _baseDirectory = baseDirectory;
+        }
+
+        /// <summary>
+        /// Add a M2 to this manager.
+        /// </summary>
+        /// <param name="doodadDefinition">MDDF (placement information) for this M2</param>
+        public void Add(MapDoodadDefinition doodadDefinition)
+        {
+            string filePath = Path.Combine(_baseDirectory, doodadDefinition.FilePath);
+
+            if (Path.GetExtension(filePath).Equals(".mdx") || 
+                Path.GetExtension(filePath).Equals(".mdl"))
+            {
+                filePath = Path.ChangeExtension(filePath, ".m2");
+                //filePath = filePath.Substring(0, filePath.LastIndexOf('.')) + ".m2";
+                //filePath = Path.GetFileNameWithoutExtension(filePath) + ".m2";
+            }
+
+            _names.Add(filePath);
+            Process(doodadDefinition);
+        }
+
+        private void Process(MapDoodadDefinition doodadDefinition)
+        {
+            var model = M2ModelParser.Process(_baseDirectory, doodadDefinition.FilePath);
+
+            var tempVertices = new List<Vector3>(model.BoundingVertices);
+            
+            var tempIndices = new List<int>();
+            for (var i = 0; i < model.BoundingTriangles.Length; i++)
+            {
+                var tri = model.BoundingTriangles[i];
+                
+                tempIndices.Add(tri[2]);
+                tempIndices.Add(tri[1]);
+                tempIndices.Add(tri[0]);
+            }
+
+            var currentM2 = Transform(tempVertices, tempIndices, doodadDefinition);
+           
+            M2s.Add(currentM2);
+        }
+
+        private static M2 Transform(IList<Vector3> vertices, IEnumerable<int> indicies, MapDoodadDefinition mddf)
+        {
+            var currentM2 = new M2();
+
+            currentM2.Vertices.Clear();
+            currentM2.Indices.Clear();
+
+            var posX = (mddf.Position.X - TerrainConstants.CenterPoint)*-1;
+            var posY = (mddf.Position.Y - TerrainConstants.CenterPoint)*-1;
+            var origin = new Vector3(posX, posY, mddf.Position.Z);
+            
+            // Create the scale matrix used in the following loop.
+            Matrix scaleMatrix;
+            Matrix.CreateScale(mddf.Scale, out scaleMatrix);
+
+            // Creation the rotations
+            var rotateZ = Matrix.CreateRotationZ(MathHelper.ToRadians(mddf.OrientationB + 180));
+            var rotateY = Matrix.CreateRotationY(MathHelper.ToRadians(mddf.OrientationA));
+            var rotateX = Matrix.CreateRotationX(MathHelper.ToRadians(mddf.OrientationC));
+
+            var worldMatrix = Matrix.Multiply(scaleMatrix, rotateZ);
+            worldMatrix = Matrix.Multiply(worldMatrix, rotateX);
+            worldMatrix = Matrix.Multiply(worldMatrix, rotateY);
+
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                // Scale and transform
+                var vertex = vertices[i];
+                
+                // Scale
+                //Vector3 scaledVector;
+                //Vector3.Transform(ref vertex, ref scaleMatrix, out scaledVector);
+
+                // Rotate
+                Vector3 rotatedVector;
+                //Vector3.Transform(ref scaledVector, ref rotateZ, out rotatedVector);
+                //Vector3.Transform(ref rotatedVector, ref rotateX, out rotatedVector);
+                //Vector3.Transform(ref rotatedVector, ref rotateY, out rotatedVector);
+
+                Vector3.Transform(ref vertex, ref worldMatrix, out rotatedVector);
+
+                // Translate
+                Vector3 finalVector;
+                Vector3.Add(ref rotatedVector, ref origin, out finalVector);
+
+                currentM2.Vertices.Add(new VertexPositionNormalColored(finalVector, Color.Red, Vector3.Up));
+            }
+
+            currentM2.AABB = new AABB(currentM2.Vertices);
+            currentM2.OBB = new OBB(currentM2.AABB.Bounds.Center(), currentM2.AABB.Bounds.Extents(),
+                                     Matrix.CreateRotationY(mddf.OrientationB - 90));
+
+            currentM2.Indices.AddRange(indicies);
+            return currentM2;
+        }
+    }
+}
