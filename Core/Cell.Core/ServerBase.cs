@@ -235,7 +235,7 @@ namespace Cell.Core
 		/// <summary>
 		/// Gets the number of clients currently connected to the server.
 		/// </summary>
-		public int NumberOfClients
+		public int ClientCount
 		{
 			get { return _clients.Count; }
 		}

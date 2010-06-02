@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Spells
 				}
 				else if (ProcTriggerEffects.Length > 1)
 				{
-					log.Warn("Spell {0} had more than one ProcTriggerEffect");
+					log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
 				}
 
 				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.SpellCast))

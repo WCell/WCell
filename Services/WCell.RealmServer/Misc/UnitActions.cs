@@ -273,7 +273,7 @@ namespace WCell.RealmServer.Misc
 			get
 			{
 				return Weapon != null && SpellEffect != null &&
-                    SpellEffect.Spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+					SpellEffect.Spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 			}
 		}
 
@@ -285,22 +285,22 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
-	    public bool CanDodge
-	    {
-            get { return SpellEffect == null || !SpellEffect.Spell.Attributes.HasFlag(SpellAttributes.CannotDodgeBlockParry); }
-	    }
+		public bool CanDodge
+		{
+			get { return SpellEffect == null || !SpellEffect.Spell.Attributes.HasFlag(SpellAttributes.CannotDodgeBlockParry); }
+		}
 
-	    public bool CanBlockParry
-	    {
-	        get
-	        {
-	            return CanDodge && !Victim.IsStunned && Attacker.IsInFrontOf(Victim);
-	        }
-	    }
+		public bool CanBlockParry
+		{
+			get
+			{
+				return CanDodge && !Victim.IsStunned && Attacker.IsInFrontOf(Victim);
+			}
+		}
 
 		public bool CanCrit
 		{
-            get { return (SpellEffect == null || !Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit)); }
+			get { return (SpellEffect == null || !Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit)); }
 		}
 
 		public int ActualDamage
@@ -467,7 +467,7 @@ namespace WCell.RealmServer.Misc
 				else
 				{
 					var crushingblow = CalcCrushingBlowChance();
-				    var critChance = CalcCritChance();
+					var critChance = CalcCritChance();
 
 					critChance -= (int)(Victim.GetResiliencePct() * 100); //resilience
 					int critical;
@@ -478,7 +478,7 @@ namespace WCell.RealmServer.Misc
 					}
 					else
 					{
-					    critical = critChance;
+						critical = critChance;
 					}
 					if (random > (hitChance - dodgeParry - glancingblow - crushingblow))
 					{
@@ -494,8 +494,8 @@ namespace WCell.RealmServer.Misc
 					}
 					else
 					{
-					    var blockchance = CalcBlockChance();
-						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow -blockchance))
+						var blockchance = CalcBlockChance();
+						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - blockchance))
 						{
 							// block
 							Block();
@@ -584,7 +584,7 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeGlancing()
 		{
-		    Damage = (int)(Damage * CalcGlancingBlowDamageFactor());
+			Damage = (int)(Damage * CalcGlancingBlowDamageFactor());
 			VictimState = VictimState.Wound;
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Glancing;
 			Blocked = 0;
@@ -612,42 +612,42 @@ namespace WCell.RealmServer.Misc
 				var res = Victim.GetResistance(UsedSchool) - Attacker.GetTargetResistanceMod(UsedSchool);
 
 
-                if (res > 0)
-                {
-                    // This formula only applies for armor
-                    if (UsedSchool == DamageSchool.Physical)
-                    {
-                        if (level < 60)
-                        {
-                            ResistPct = (res/(res + 400f + 85f*level))*100f;
-                        }
-                        else
-                        {
-                            ResistPct = (res/(res - 22167.5f + 467.5f*level))*100f;
-                        }
+				if (res > 0)
+				{
+					// This formula only applies for armor
+					if (UsedSchool == DamageSchool.Physical)
+					{
+						if (level < 60)
+						{
+							ResistPct = (res / (res + 400f + 85f * level)) * 100f;
+						}
+						else
+						{
+							ResistPct = (res / (res - 22167.5f + 467.5f * level)) * 100f;
+						}
 
-                    }
-                    else
-                    {
-                        // Magical damageschool
-                        ResistPct = Victim.GetResistChancePct(Attacker, UsedSchool);
-                    }
-                }
-                else
-                {
-                    ResistPct = 0;
-                }
+					}
+					else
+					{
+						// Magical damageschool
+						ResistPct = Victim.GetResistChancePct(Attacker, UsedSchool);
+					}
+				}
+				else
+				{
+					ResistPct = 0;
+				}
 
-			    if (ResistPct > 75)
-			    {
-			        ResistPct = 75;
-			    }
-			    if (ResistPct < 0)
-			    {
-			        ResistPct = 0;
-			    }
+				if (ResistPct > 75)
+				{
+					ResistPct = 75;
+				}
+				if (ResistPct < 0)
+				{
+					ResistPct = 0;
+				}
 
-			    Attacker.AddDamageMods(this);
+				Attacker.AddDamageMods(this);
 
 				Resisted = (ResistPct * Damage / 100f).RoundInt();
 				Absorbed = Victim.Absorb(UsedSchool, Damage);
@@ -687,96 +687,96 @@ namespace WCell.RealmServer.Misc
 
 		#region Chances
 		/// <summary>
-        /// Calculated in UnitUpdates.UpdateBlockChance
+		/// Calculated in UnitUpdates.UpdateBlockChance
 		/// </summary>
 		public int CalcBlockDamage()
 		{
-            // Mobs should be able to block as well, right?
-            if (!(Victim is Character))
-            {
-                // mobs can't block
-                return 0;
-            }
+			// Mobs should be able to block as well, right?
+			if (!(Victim is Character))
+			{
+				// mobs can't block
+				return 0;
+			}
 
 			var target = (Character)Victim;
-		    return (int) target.BlockValue;
+			return (int)target.BlockValue;
 		}
 
-        /// <summary>
-        /// Calculates the damage reduced by a glancing blow.
-        /// Reusable in the case glancing blows also happen against players
-        /// Currently they don't.
-        /// </summary>
-        /// <returns>The random damage reduction factor between 0.01 and 0.99 depending on weapon skill/defense</returns>
-        public double CalcGlancingBlowDamageFactor()
-        {
-            // The value will be capped to Level * 5 
-            // otherwise items which increase skill could push glancing blows/dmg off the attacktable
-            var attackerSkill = Victim is Character ? ((Character)Attacker).Skills.GetValue(Weapon.Skill) : (uint)Victim.Level * 5;
-            if(attackerSkill > Attacker.Level * 5)
-            {
-                attackerSkill = (uint)Attacker.Level*5;
-            }
+		/// <summary>
+		/// Calculates the damage reduced by a glancing blow.
+		/// Reusable in the case glancing blows also happen against players
+		/// Currently they don't.
+		/// </summary>
+		/// <returns>The random damage reduction factor between 0.01 and 0.99 depending on weapon skill/defense</returns>
+		public double CalcGlancingBlowDamageFactor()
+		{
+			// The value will be capped to Level * 5 
+			// otherwise items which increase skill could push glancing blows/dmg off the attacktable
+			var attackerSkill = Victim is Character ? ((Character)Attacker).Skills.GetValue(Weapon.Skill) : (uint)Victim.Level * 5;
+			if (attackerSkill > Attacker.Level * 5)
+			{
+				attackerSkill = (uint)Attacker.Level * 5;
+			}
 
-            var defenseSkill = Victim is Character ? ((Character)Victim).Skills.GetValue(SkillId.Defense) : (uint)Victim.Level * 5;
-            var diff = defenseSkill - attackerSkill;
-            var lowValue = 1.3 - 0.05*(diff);
-            var highValue = 1.2 - 0.03*(diff);
-            if(SpellEffect != null)
-            {
-                lowValue -= 0.7;
-                lowValue = Math.Min(0.6, lowValue);
-                highValue -= 0.3;
-            }
-            else
-            {
-                lowValue = Math.Min(0.91, lowValue);
-            }
-            if(lowValue < 0.01)
-            {
-                lowValue = 0.01;
-            }
-            if(highValue < 0.2)
-            {
-                highValue = 0.2;
-            }
-            if(highValue > 0.99)
-            {
-                highValue = 0.99;
-            }
+			var defenseSkill = Victim is Character ? ((Character)Victim).Skills.GetValue(SkillId.Defense) : (uint)Victim.Level * 5;
+			var diff = defenseSkill - attackerSkill;
+			var lowValue = 1.3 - 0.05 * (diff);
+			var highValue = 1.2 - 0.03 * (diff);
+			if (SpellEffect != null)
+			{
+				lowValue -= 0.7;
+				lowValue = Math.Min(0.6, lowValue);
+				highValue -= 0.3;
+			}
+			else
+			{
+				lowValue = Math.Min(0.91, lowValue);
+			}
+			if (lowValue < 0.01)
+			{
+				lowValue = 0.01;
+			}
+			if (highValue < 0.2)
+			{
+				highValue = 0.2;
+			}
+			if (highValue > 0.99)
+			{
+				highValue = 0.99;
+			}
 
-            return Utility.Random(lowValue, highValue);
-        }
+			return Utility.Random(lowValue, highValue);
+		}
 
-        /// <summary>
-        /// Calculates the percentage of damage reduction from armor.
-        /// Between 1-7500 (capped at 75%)
-        /// </summary>
-        /// <returns></returns>
-        public double CalcArmorReductionPrct()
-        {
-            //return (int) (100/((467.5*Attacker.Level - 22167.5)/Victim.Armor + 1));
-            double levelMod = Attacker.Level;
-            if(levelMod > 59)
-            {
-                levelMod = (levelMod + (4.5*(levelMod - 59)));
-            }
-            var reduction = 0.1 * Victim.Armor / (8.5 * levelMod + 40);
-            reduction = reduction/(1 + reduction);
+		/// <summary>
+		/// Calculates the percentage of damage reduction from armor.
+		/// Between 1-7500 (capped at 75%)
+		/// </summary>
+		/// <returns></returns>
+		public double CalcArmorReductionPrct()
+		{
+			//return (int) (100/((467.5*Attacker.Level - 22167.5)/Victim.Armor + 1));
+			double levelMod = Attacker.Level;
+			if (levelMod > 59)
+			{
+				levelMod = (levelMod + (4.5 * (levelMod - 59)));
+			}
+			var reduction = 0.1 * Victim.Armor / (8.5 * levelMod + 40);
+			reduction = reduction / (1 + reduction);
 
-            // Damage reduction cap
-            if(reduction > 0.75)
-            {
-                return 75;
-            }
+			// Damage reduction cap
+			if (reduction > 0.75)
+			{
+				return 75;
+			}
 
-            // No reduction?!
-            if(reduction < 0)
-            {
-                return 0;
-            }
-            return reduction*100;
-        }
+			// No reduction?!
+			if (reduction < 0)
+			{
+				return 0;
+			}
+			return reduction * 100;
+		}
 
 		/// <summary>
 		/// Gives the chance to hit between 0-10000
@@ -789,15 +789,15 @@ namespace WCell.RealmServer.Misc
 			if (Attacker is Character)
 			{
 				var atk = Attacker as Character;
-			    var hitrating = atk.GetCombatRatingMod(CombatRating.MeleeHitChance);
+				var hitrating = atk.GetCombatRatingMod(CombatRating.MeleeHitChance);
 
 				if (!IsRangedAttack)
 				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.MeleeHitChance)[Attacker.Level -1]));
+					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.MeleeHitChance)[Attacker.Level - 1]));
 				}
 				else
 				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.RangedHitChance)[Attacker.Level-1]));
+					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.RangedHitChance)[Attacker.Level - 1]));
 				}
 			}
 			//uhm gotta set the variables for skills
@@ -850,106 +850,106 @@ namespace WCell.RealmServer.Misc
 				return hitchance;
 		}
 
-        /// <summary>
-        /// 2.1 calculation (3.30 is ~10% lower (24%))
-        /// Should be between 1 - 10000, 
-        /// </summary>
-        /// <returns></returns>
+		/// <summary>
+		/// 2.1 calculation (3.30 is ~10% lower (24%))
+		/// Should be between 1 - 10000, 
+		/// </summary>
+		/// <returns></returns>
 		public int CalcGlancingBlowChance()
 		{
 			if (Attacker is Character)
 			{
-			    var weaponSkill = ((Character) Attacker).Skills.GetValue(Weapon.Skill);
-                if(weaponSkill > Attacker.Level*5)
-                {
-                    weaponSkill = (uint)Attacker.Level*5;
-                }
-				var chance = (10 + (int)(Victim.Level * 5 - weaponSkill))*100;
-                if (chance > 10000)
-                    return 10000;
+				var weaponSkill = ((Character)Attacker).Skills.GetValue(Weapon.Skill);
+				if (weaponSkill > Attacker.Level * 5)
+				{
+					weaponSkill = (uint)Attacker.Level * 5;
+				}
+				var chance = (10 + (int)(Victim.Level * 5 - weaponSkill)) * 100;
+				if (chance > 10000)
+					return 10000;
 
-			    return chance;
+				return chance;
 			}
 			return 0;
 		}
 
-        /// <summary>
-        /// Calculates the chance of a crushing blow.
-        /// </summary>
-        /// <returns>The chance multiplied by 100, 54% = 5400, 100% = 10000</returns>
+		/// <summary>
+		/// Calculates the chance of a crushing blow.
+		/// </summary>
+		/// <returns>The chance multiplied by 100, 54% = 5400, 100% = 10000</returns>
 		public int CalcCrushingBlowChance()
 		{
-            //var chance = 0;
+			//var chance = 0;
 
-            //if (Attacker is NPC && Victim is Character)
-            //{
-            //    var def = (Character)Victim;
+			//if (Attacker is NPC && Victim is Character)
+			//{
+			//    var def = (Character)Victim;
 
-            //    var weaponskill = ((Character)Attacker).Skills.GetValue(Weapon.Skill);
-            //    var defense = def.GetCombatRatingMod(CombatRating.DefenseSkill);
-            //    defense = Math.Max(defense, Victim.Level * 5);
+			//    var weaponskill = ((Character)Attacker).Skills.GetValue(Weapon.Skill);
+			//    var defense = def.GetCombatRatingMod(CombatRating.DefenseSkill);
+			//    defense = Math.Max(defense, Victim.Level * 5);
 
-            //    chance = (int) ((weaponskill - defense) * 2 - 15);
+			//    chance = (int) ((weaponskill - defense) * 2 - 15);
 
-            //    if (chance > 0)
-            //        chance *= 100;
-            //    else chance = 0;
-            //}
-            //return chance;
+			//    if (chance > 0)
+			//        chance *= 100;
+			//    else chance = 0;
+			//}
+			//return chance;
 
-		    var chance = 0;
+			var chance = 0;
 
-            if(Attacker is NPC && Victim is Character)
-            {
-                var chr = Victim as Character;
-                var playerDefense = chr.Skills.GetValue(SkillId.Defense);
-                var npcWeaponSkill = Attacker.Level*5;
+			if (Attacker is NPC && Victim is Character)
+			{
+				var chr = Victim as Character;
+				var playerDefense = chr.Skills.GetValue(SkillId.Defense);
+				var npcWeaponSkill = Attacker.Level * 5;
 
-                // Crushing blow can only happen if the player's defense skill is 20 points smaller than the mob's weapon skill.
-                if ((npcWeaponSkill - playerDefense) >= 20)
-                {
-                    return (int)((npcWeaponSkill - playerDefense) * 200 - 1500);
-                }
-            }
+				// Crushing blow can only happen if the player's defense skill is 20 points smaller than the mob's weapon skill.
+				if ((npcWeaponSkill - playerDefense) >= 20)
+				{
+					return (int)((npcWeaponSkill - playerDefense) * 200 - 1500);
+				}
+			}
 
-		    return chance;
+			return chance;
 		}
 
-        /// <summary>
-        /// Calculates the crit chance between 1-10000
-        /// </summary>
-        /// <returns>The crit chance after taking into account the defense/weapon skill</returns>
-        public int CalcCritChance()
-        {
-            var chance = Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon);
+		/// <summary>
+		/// Calculates the crit chance between 1-10000
+		/// </summary>
+		/// <returns>The crit chance after taking into account the defense/weapon skill</returns>
+		public int CalcCritChance()
+		{
+			var chance = Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon);
 
-            if(Attacker is NPC && Victim is Character)
-            {
-                var weaponSkill = Attacker.Level*5;
-                var chr = Victim as Character;
-                var defSkill = chr.Skills.GetValue(SkillId.Defense);
+			if (Attacker is NPC && Victim is Character)
+			{
+				var weaponSkill = Attacker.Level * 5;
+				var chr = Victim as Character;
+				var defSkill = chr.Skills.GetValue(SkillId.Defense);
 
-                chance += 0.04f*(weaponSkill - defSkill);
-            }
+				chance += 0.04f * (weaponSkill - defSkill);
+			}
 
-            if(Attacker is Character && Victim is NPC)
-            {
-                var chr = Attacker as Character;
-                var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
-                var defSkill = Victim.Level*5;
+			if (Attacker is Character && Victim is NPC)
+			{
+				var chr = Attacker as Character;
+				var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
+				var defSkill = Victim.Level * 5;
 
-                if(defSkill > weaponSkill)
-                {
-                    chance -= 0.2f*(defSkill - weaponSkill);
-                }
-                // else: no change (mobs def is smaller than player's weapon skill)
-            }
-            if(chance > 10000)
-            {
-                return 10000;
-            }
-            return (int)chance * 100;
-        }
+				if (defSkill > weaponSkill)
+				{
+					chance -= 0.2f * (defSkill - weaponSkill);
+				}
+				// else: no change (mobs def is smaller than player's weapon skill)
+			}
+			if (chance > 10000)
+			{
+				return 10000;
+			}
+			return (int)chance * 100;
+		}
 
 		/// <summary>
 		/// See: http://www.wowwiki.com/Formulas:Block
@@ -987,65 +987,65 @@ namespace WCell.RealmServer.Misc
 
 			blockChance *= 100;
 
-            if (blockChance > 10000)
-            {
-                return 10000;
-            }
+			if (blockChance > 10000)
+			{
+				return 10000;
+			}
 			return (int)blockChance;
 		}
 
-        /// <summary>
-        /// Calculates the parry chance taking into account the difference between 
-        /// the weapon skill of the attacker and the defense skill of the victim.
-        /// Also see <see cref="Unit.CalcParryChance"/>
-        /// TODO: Merge with Unit.CalcParryChance
-        /// </summary>
-        /// <returns>The chance between 1-10000</returns>
-        public int CalcParryChance()
-        {
-            var defSkill = Victim.Level*5;
-            var weaponSkill = Attacker.Level*5;
+		/// <summary>
+		/// Calculates the parry chance taking into account the difference between 
+		/// the weapon skill of the attacker and the defense skill of the victim.
+		/// Also see <see cref="Unit.CalcParryChance"/>
+		/// TODO: Merge with Unit.CalcParryChance
+		/// </summary>
+		/// <returns>The chance between 1-10000</returns>
+		public int CalcParryChance()
+		{
+			var defSkill = Victim.Level * 5;
+			var weaponSkill = Attacker.Level * 5;
 
-            if(Victim is Character)
-            {
-                defSkill = (int)((Character) Victim).Skills.GetValue(SkillId.Defense);
-            }
+			if (Victim is Character)
+			{
+				defSkill = (int)((Character)Victim).Skills.GetValue(SkillId.Defense);
+			}
 
-            if(Attacker is Character)
-            {
-                weaponSkill = (int)((Character) Attacker).Skills.GetValue(Weapon.Skill);
-            }
-            var chance = Victim.CalcParryChance(Attacker);
-            chance += (int)((defSkill - weaponSkill)*0.04);
-            return chance;
-        }
+			if (Attacker is Character)
+			{
+				weaponSkill = (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
+			}
+			var chance = Victim.CalcParryChance(Attacker);
+			chance += (int)((defSkill - weaponSkill) * 0.04);
+			return chance;
+		}
 
-        /// <summary>
-        /// Calculates the dodge chance taking into account the difference between 
-        /// the weapon skill of the attacker and the defense skill of the victim.
-        /// Also see <see cref="Unit.CalcDodgeChance"/>
-        /// TODO: Merge with Unit.CalcDodgeChance
-        /// </summary>
-        /// <returns>The chance between 1-10000</returns>
-        public int CalcDodgeChance()
-        {
-            var defSkill = Victim.Level * 5;
-            var weaponSkill = Attacker.Level * 5;
+		/// <summary>
+		/// Calculates the dodge chance taking into account the difference between 
+		/// the weapon skill of the attacker and the defense skill of the victim.
+		/// Also see <see cref="Unit.CalcDodgeChance"/>
+		/// TODO: Merge with Unit.CalcDodgeChance
+		/// </summary>
+		/// <returns>The chance between 1-10000</returns>
+		public int CalcDodgeChance()
+		{
+			var defSkill = Victim.Level * 5;
+			var weaponSkill = Attacker.Level * 5;
 
-            if (Victim is Character)
-            {
-                defSkill = (int)((Character)Victim).Skills.GetValue(SkillId.Defense);
-            }
+			if (Victim is Character)
+			{
+				defSkill = (int)((Character)Victim).Skills.GetValue(SkillId.Defense);
+			}
 
-            if (Attacker is Character)
-            {
-                weaponSkill = (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
-            }
+			if (Attacker is Character)
+			{
+				weaponSkill = (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
+			}
 
-            var chance = Victim.CalcDodgeChance(Attacker);
-            chance += (int)((defSkill - weaponSkill) * 0.04);
-            return chance;
-        }
+			var chance = Victim.CalcDodgeChance(Attacker);
+			chance += (int)((defSkill - weaponSkill) * 0.04);
+			return chance;
+		}
 
 		#endregion
 
