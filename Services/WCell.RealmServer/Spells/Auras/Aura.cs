@@ -497,6 +497,16 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 		#endregion
 
+		#region Stop
+		/// <summary>
+		/// Disables the Aura without removing it's effects
+		/// </summary>
+		public void Stop()
+		{
+			
+		}
+		#endregion
+
 		#region Apply & Stack
 		/// <summary>
 		/// Applies this Aura's effect to its holder
