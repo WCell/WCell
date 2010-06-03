@@ -178,6 +178,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
 			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
 			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();
+			EffectHandlers[(int)AuraType.ModMeleeCritDamageBonus] = () => new ModMeleeCritDamageBonusHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
