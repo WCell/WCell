@@ -8,6 +8,14 @@ namespace WCell.Constants.Items
 		{
 			return (flags & otherFlags) != 0;
 		}
+		public static bool HasAnyFlag(this InventorySlotTypeMask flags, InventorySlotTypeMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+		public static bool HasAnyFlag(this InventorySlotTypeMask flags, InventorySlotType type)
+		{
+			return (flags & (InventorySlotTypeMask)(1 << (int)type)) != 0;
+		}
 		public static bool HasAnyFlag(this SocketColor flags, SocketColor otherFlags)
 		{
 			return (flags & otherFlags) != 0;

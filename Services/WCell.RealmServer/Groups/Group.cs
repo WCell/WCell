@@ -34,6 +34,7 @@ using WCell.Util.NLog;
 using WCell.RealmServer.Looting;
 using WCell.Constants.Factions;
 using WCell.Constants.Looting;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Groups
 {
@@ -143,7 +144,7 @@ namespace WCell.RealmServer.Groups
 					{
 						foreach (var member in GetCharacters())
 						{
-                            if (Flags.HasFlag(GroupFlags.Raid))
+							if (Flags.HasFlag(GroupFlags.Raid))
 							{
 								InstanceHandler.SendDungeonDifficulty(member);
 							}
@@ -303,6 +304,43 @@ namespace WCell.RealmServer.Groups
 			foreach (var chr in GetCharacters())
 			{
 				callback(chr);
+			}
+		}
+
+		/// <summary>
+		/// Executes the given callback for every online group member.
+		/// Callback is called immediately on everyone who is in the current context and delayed for everyone who is not.
+		/// Callback will only execute if character is still in group at the time of execution.
+		/// Execution is not guaranteed!
+		/// </summary>
+		public void CallOnAllInContext(Action<Character> callback)
+		{
+			foreach (var chr in GetCharacters())
+			{
+				var c = chr;
+				chr.ExecuteInContext(() =>
+				{
+					if (c.Group == this)
+					{
+						callback(c);
+					}
+				});
+			}
+		}
+
+		/// <summary>
+		/// Executes the given callback immediately for every online group member in the given context.
+		/// IMPORTANT: Must be called from within context.
+		/// </summary>
+		public void CallOnAllInSameContext(IContextHandler context, Action<Character> callback)
+		{
+			context.EnsureContext();
+			foreach (var chr in GetCharacters())
+			{
+				if (chr.ContextHandler == context)
+				{
+					callback(chr);
+				}
 			}
 		}
 
@@ -586,17 +624,21 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		protected void OnMemberRemoved(GroupMember member)
 		{
-			var handler = MemberRemoved;
-			if (handler != null)
-			{
-				handler(member);
-			}
-			m_Count--;
-
 			var chr = member.Character;
-			if (chr != null)
+			if (chr != null && chr.IsInWorld)
 			{
-				chr.EnsureContext();
+				if (!chr.IsInContext)
+				{
+					chr.ExecuteInContext(() => OnMemberRemoved(member));
+					return;
+				}
+
+				var handler = MemberRemoved;
+				if (handler != null)
+				{
+					handler(member);
+				}
+				m_Count--;
 
 				//Send an empty party list to the member
 				SendEmptyUpdate(chr);
@@ -629,6 +671,13 @@ namespace WCell.RealmServer.Groups
 			}
 			else
 			{
+				var handler = MemberRemoved;
+				if (handler != null)
+				{
+					handler(member);
+				}
+				m_Count--;
+
 				GroupMgr.Instance.OfflineChars.Remove(member.Id);
 				member.m_subGroup = null;
 			}
@@ -666,11 +715,11 @@ namespace WCell.RealmServer.Groups
 						var chr = member.Character;
 						if (chr != null)
 						{
+							var m = member;
 							//Send member left group result //TODO: Check the GroupType cuz this is different
 							// SendResult(chr.Client, GroupResult.NoError);
 							SendGroupDestroyed(chr);
 						}
-
 						OnMemberRemoved(member);
 					}
 				}
@@ -913,7 +962,7 @@ namespace WCell.RealmServer.Groups
 
 									packet.Write(memberSubGroup.Id);
 									packet.Write((byte)groupMember.Flags);
-								    packet.Write((byte)0); // 3.3
+									packet.Write((byte)0); // 3.3
 								}
 							}
 
@@ -933,7 +982,7 @@ namespace WCell.RealmServer.Groups
 							//packet.Write((byte)DungeonDifficulty); // normal
 							packet.Write((byte)0);    // replace with ^
 							packet.Write((byte)0);    // since 3.3: Raid difficulty
-						    packet.Write((byte)0);    // 3.3, dynamic difficulty?
+							packet.Write((byte)0);    // 3.3, dynamic difficulty?
 
 							chr.Client.Send(packet);
 						}
@@ -1020,7 +1069,7 @@ namespace WCell.RealmServer.Groups
 				packet.Write(resultType);
 				packet.WriteCString(name);
 				packet.Write((uint)resultCode);
-			    packet.Write((uint)0); // 3.3.3, lfg cooldown?
+				packet.Write((uint)0); // 3.3.3, lfg cooldown?
 
 				client.Send(packet);
 			}
@@ -1139,7 +1188,7 @@ namespace WCell.RealmServer.Groups
 				packet.WriteByte(0); // flag, meaning that it's single target icon change
 				// (i.e. don't need to reset client-side list before applying it)?
 
-                packet.Write(whoId);        // 3.3.x
+				packet.Write(whoId);        // 3.3.x
 				packet.WriteByte(iconId);
 				packet.Write(targetId.Full);
 

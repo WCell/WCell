@@ -84,6 +84,14 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsProc;
 
+		/// <summary>
+		/// Whether this is a proc and whether its own effects handle procs (or false, if customary proc handlers have been added)
+		/// </summary>
+		public bool DoesAuraHandleProc
+		{
+			get { return IsProc && TargetProcHandlers == null && CasterProcHandlers == null; }
+		}
+
 		public bool IsVehicle;
 
 		/// <summary>
@@ -117,7 +125,7 @@ namespace WCell.RealmServer.Spells
 		public AuraCasterGroup AuraCasterGroup;
 		#endregion
 
-
+		#region InitAura
 		private void InitAura()
 		{
 			IsAura = HasEffectWith(effect =>
@@ -129,29 +137,31 @@ namespace WCell.RealmServer.Spells
 				return false;
 			});
 
-			if (SpellId == SpellId.TameAdultPlainstrider)
+			if (!IsAura)
 			{
-				ToString();
+				//if (TargetProcHandlers != null)
+				//{
+				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has TargetProcHandlers: {0}", this);
+				//}
+				//if (CasterProcHandlers != null)
+				//{
+				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has CasterProcHandlers: {0}", this);
+				//}
+				return;
 			}
 
-			if (IsAura)
+			ForeachEffect(effect =>
 			{
-				ForeachEffect(effect =>
+				if (effect.IsAuraEffect)
 				{
-					if (effect.IsAuraEffect)
-					{
-						HasNonPeriodicAuraEffects = HasNonPeriodicAuraEffects || !effect.IsPeriodic;
-						HasPeriodicAuraEffects = HasPeriodicAuraEffects || effect.IsPeriodic;
-					}
-				});
-			}
+					HasNonPeriodicAuraEffects = HasNonPeriodicAuraEffects || !effect.IsPeriodic;
+					HasPeriodicAuraEffects = HasPeriodicAuraEffects || effect.IsPeriodic;
+				}
+			});
 
 			IsModalAura = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
-			if (IsAura)
-			{
-				HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
-			}
+			HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
 
 			var auraEffects = GetEffectsWith(effect => effect.AuraEffectHandlerCreator != null);
 			if (auraEffects != null)
@@ -169,8 +179,9 @@ namespace WCell.RealmServer.Spells
 			IsAreaAura = AreaAuraEffects != null;
 
 			IsPureAura = !IsDamageSpell && !HasEffectWith(effect => effect.EffectType != SpellEffectType.ApplyAura ||
-				effect.EffectType != SpellEffectType.ApplyAuraToMaster || effect.EffectType != SpellEffectType.ApplyStatAura ||
-				effect.EffectType != SpellEffectType.ApplyStatAuraPercent);
+																	effect.EffectType != SpellEffectType.ApplyAuraToMaster ||
+																	effect.EffectType != SpellEffectType.ApplyStatAura ||
+																	effect.EffectType != SpellEffectType.ApplyStatAuraPercent);
 
 			IsPureBuff = IsPureAura && HasBeneficialEffects && !HasHarmfulEffects;
 
@@ -210,7 +221,7 @@ namespace WCell.RealmServer.Spells
 							HasEffectWith(effect => effect.AuraType == AuraType.ModSpeedMountedFlight);
 
 			CanApplyMultipleTimes = Attributes == (SpellAttributes.NoVisibleAura | SpellAttributes.Passive) &&
-				Skill == null && Talent == null;
+									Skill == null && Talent == null;
 
 			// procs
 			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
@@ -240,6 +251,7 @@ namespace WCell.RealmServer.Spells
 				CreateAuraUID();
 			}
 		}
+		#endregion
 
 		#region AuraUID Evaluation
 		private void CreateAuraUID()
@@ -269,6 +281,101 @@ namespace WCell.RealmServer.Spells
 					AuraUID = AuraHandler.GetNextAuraUID();
 				}
 			}
+		}
+		#endregion
+
+		#region Proc Spells
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params SpellId[] spellIds)
+		{
+			var spells = new Spell[spellIds.Length];
+			for (var i = 0; i < spellIds.Length; i++)
+			{
+				var id = spellIds[i];
+				var spell = SpellHandler.Get(id);
+				if (spell == null)
+				{
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
+				}
+				spells[i] = spell;
+			}
+			AddCasterProcSpells(spells);
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
+		{
+			var list = new List<Spell>(spellSetIds.Length * 6);
+			foreach (var id in spellSetIds)
+			{
+				var line = SpellLines.GetLine(id);
+				list.AddRange(line);
+			}
+			AddCasterProcSpells(list.ToArray());
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params Spell[] spells)
+		{
+			if (CasterProcSpells == null)
+			{
+				CasterProcSpells = new HashSet<Spell>();
+			}
+			CasterProcSpells.AddRange(spells);
+			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+		}
+
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params SpellId[] spellIds)
+		{
+			var spells = new Spell[spellIds.Length];
+			for (var i = 0; i < spellIds.Length; i++)
+			{
+				var id = spellIds[i];
+				var spell = SpellHandler.Get(id);
+				if (spell == null)
+				{
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
+				}
+				spells[i] = spell;
+			}
+			AddTargetProcSpells(spells);
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
+		{
+			var list = new List<Spell>(spellSetIds.Length * 6);
+			foreach (var id in spellSetIds)
+			{
+				var line = SpellLines.GetLine(id);
+				list.AddRange(line);
+			}
+			AddTargetProcSpells(list.ToArray());
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params Spell[] spells)
+		{
+			if (TargetProcSpells == null)
+			{
+				TargetProcSpells = new HashSet<Spell>();
+			}
+			TargetProcSpells.AddRange(spells);
+			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
 		}
 		#endregion
 

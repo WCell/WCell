@@ -7,6 +7,7 @@ using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Warrior
@@ -55,12 +56,30 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
 			{
 				spell.AddCasterProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack, 
+					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
 					spell.ProcChance
 					));
 			});
+
+			// Gag Order needs a custom proc trigger and the correct auratype
+			SpellLineId.WarriorProtectionGagOrder.Apply(spell =>
+			{
+				spell.AddCasterProcSpells(SpellLineId.WarriorShieldBash, SpellLineId.WarriorHeroicThrow);
+				var effect = spell.GetAuraEffect(AuraType.Dummy);
+				if (effect != null)
+				{
+					effect.AuraType = AuraType.ProcTriggerSpell;
+				}
+			});
+
+			// Enrage and Wrecking Crew proc effects don't stack
+			AuraHandler.AddAuraGroup(
+				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2, 
+				SpellId.EffectEnrageRank4_2, SpellId.EffectEnrageRank5_2,
+				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3, 
+				SpellId.EffectEnrageRank4, SpellId.EffectEnrageRank5);
 		}
 	}
 }

@@ -77,10 +77,10 @@ namespace WCell.AuthServer.Commands
 		public static bool Execute(Account acc, string text)
 		{
 			var args = new AuthServerCmdArgs(acc);
-			return Instance.Trigger(new ConsoleCmdTrigger(new StringStream(text), args));
+			return Instance.Execute(new ConsoleCmdTrigger(new StringStream(text), args));
 		}
 
-		public override bool Trigger(CmdTrigger<AuthServerCmdArgs> trigger)
+		public override bool Execute(CmdTrigger<AuthServerCmdArgs> trigger)
 		{
 			return Execute(trigger, true);
 		}
@@ -95,7 +95,7 @@ namespace WCell.AuthServer.Commands
 			//{
 			//    return base.Execute(trigger);
 			//}
-			return base.Trigger(trigger);
+			return base.Execute(trigger);
 		}
 
 		/// <summary>
@@ -104,7 +104,7 @@ namespace WCell.AuthServer.Commands
 		public static BufferedCommandResponse ExecuteBufferedCommand(string cmd)
 		{
 			var trigger = new BufferedCommandTrigger(new StringStream(cmd), new AuthServerCmdArgs(null));
-			Instance.Trigger(trigger);
+			Instance.Execute(trigger);
 			return trigger.Response;
 		}
 

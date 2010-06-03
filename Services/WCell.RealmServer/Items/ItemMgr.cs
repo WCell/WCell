@@ -27,16 +27,16 @@ namespace WCell.RealmServer.Items
 
 		public const uint MaxId = 2500000;
 
-		[NotVariable]
 		/// <summary>
 		/// All defined <see cref="ItemTemplate">ItemTemplates</see>.
 		/// </summary>
+		[NotVariable]
 		public static ItemTemplate[] Templates = new ItemTemplate[100000];
 
-		[NotVariable]
 		/// <summary>
 		/// All ItemSet definitions
 		/// </summary>
+		[NotVariable]
 		public static ItemSet[] Sets = new ItemSet[1000];
 
 		//[NotVariable]
@@ -108,19 +108,28 @@ namespace WCell.RealmServer.Items
 			return Sets[id];
 		}
 
-		#region Equipment Mapping
+		#region Slot Mapping
+
+		public static readonly EquipmentSlot[] AllBagSlots = new[] { EquipmentSlot.Bag1, EquipmentSlot.Bag2, EquipmentSlot.Bag3, EquipmentSlot.Bag4 };
+
+		public static EquipmentSlot[] GetEquipmentSlots(InventorySlotType invSlot)
+		{
+			return EquipmentSlotsByInvSlot[(int)invSlot];
+		}
 
 		/// <summary>
-		/// Maps a set of available InventorySlots to their corresponding InventorySlotTypes
+		/// Maps a set of available InventorySlots by their corresponding InventorySlotType
 		/// </summary>
-		public static readonly EquipmentSlot[][] EquipmentSlotMap = GetEqSlots();
+		public static readonly EquipmentSlot[][] EquipmentSlotsByInvSlot = GetEqByInv();
 
-		static EquipmentSlot[][] GetEqSlots()
+		public static readonly InventorySlot[][] EquippableInvSlotsByClass = GetEqByCl();
+
+		static EquipmentSlot[][] GetEqByInv()
 		{
 			var slots = new EquipmentSlot[1 + (int)Utility.GetMaxEnum<InventorySlotType>()][];
-			var bagSlots = new[] { EquipmentSlot.Bag1, EquipmentSlot.Bag2, EquipmentSlot.Bag3, EquipmentSlot.Bag4 };
 
-			slots[(int)InventorySlotType.Bag] = bagSlots; slots[(int)InventorySlotType.Body] = new[] { EquipmentSlot.Shirt };
+			slots[(int)InventorySlotType.Bag] = AllBagSlots;
+			slots[(int)InventorySlotType.Body] = new[] { EquipmentSlot.Shirt };
 			slots[(int)InventorySlotType.Chest] = new[] { EquipmentSlot.Chest };
 			slots[(int)InventorySlotType.Cloak] = new[] { EquipmentSlot.Back };
 			slots[(int)InventorySlotType.Feet] = new[] { EquipmentSlot.Boots };
@@ -130,7 +139,7 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Holdable] = new[] { EquipmentSlot.OffHand };
 			slots[(int)InventorySlotType.Legs] = new[] { EquipmentSlot.Pants };
 			slots[(int)InventorySlotType.Neck] = new[] { EquipmentSlot.Neck };
-			slots[(int)InventorySlotType.Quiver] = bagSlots;
+			slots[(int)InventorySlotType.Quiver] = AllBagSlots;
 			slots[(int)InventorySlotType.Ranged] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.RangedRight] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.Relic] = new[] { EquipmentSlot.ExtraWeapon };
@@ -149,6 +158,15 @@ namespace WCell.RealmServer.Items
 
 			// special treatment
 			slots[(int)InventorySlotType.Ammo] = null;
+			return slots;
+		}
+
+		private static InventorySlot[][] GetEqByCl()
+		{
+			var slots = new InventorySlot[(int)ItemClass.End][];
+			slots[(int)ItemClass.Weapon] = new[] { InventorySlot.MainHand, InventorySlot.OffHand, InventorySlot.ExtraWeapon };
+			slots[(int)ItemClass.Armor] = new[] { InventorySlot.Chest, InventorySlot.Boots, InventorySlot.Gloves, InventorySlot.Head,
+				InventorySlot.Pants, InventorySlot.Chest, InventorySlot.Shoulders, InventorySlot.Wrist, InventorySlot.Belt };
 			return slots;
 		}
 		#endregion

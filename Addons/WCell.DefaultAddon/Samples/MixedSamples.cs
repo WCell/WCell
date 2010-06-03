@@ -22,7 +22,7 @@ namespace WCell.Addons.Default.Samples
 		/// <summary>
 		/// Choose a random id
 		/// </summary>
-		private const uint BearId = 41421422;
+		private const uint BearId = 414256;
 
 		private const uint ItemMinId = 2121232;
 
@@ -79,7 +79,9 @@ namespace WCell.Addons.Default.Samples
 			});
 			GrizzlyBear.DefaultGossip = CreateSampleGossipMenu();
 
-			NPCMgr.AddEntry(BearId, GrizzlyBear);
+			GrizzlyBear.FinalizeDataHolder();
+
+			//NPCMgr.AddEntry(BearId, GrizzlyBear);
 		}
 
 		/*

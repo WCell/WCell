@@ -491,7 +491,7 @@ namespace WCell.Core
 					Stop();
 					return;
 				}
-				GC.Collect(2, GCCollectionMode.Optimized);
+				//GC.Collect(2, GCCollectionMode.Optimized);
 				SetTitle(ToString());
 			}
 			else

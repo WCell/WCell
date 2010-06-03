@@ -351,6 +351,7 @@ namespace WCell.RealmServer.Items
 			return m_partialInventories[(int)ItemMgr.PartialInventoryTypes[slot]] as IItemSlotHandler;
 		}
 
+		#region Containers
 		/// <summary>
 		/// Returns the inventory of the corresponding cont (or null).
 		/// Only works for bags in the equipment's or bank's cont slots (only these bags may contain items).
@@ -390,7 +391,7 @@ namespace WCell.RealmServer.Items
 				var bag = conts[i];
 				if (bag.EntityId == containerId)
 				{
-					return ((Container) bag).BaseInventory;
+					return ((Container)bag).BaseInventory;
 				}
 			}
 
@@ -401,7 +402,7 @@ namespace WCell.RealmServer.Items
 					var bag = BankBags[i];
 					if (bag.EntityId == containerId)
 					{
-						return ((Container) bag).BaseInventory;
+						return ((Container)bag).BaseInventory;
 					}
 				}
 			}
@@ -429,6 +430,7 @@ namespace WCell.RealmServer.Items
 			}
 			return null;
 		}
+		#endregion
 
 		/// <summary>
 		/// Checks some basic parameters for whether the character may interact with (Equip or Use) items and
@@ -539,7 +541,7 @@ namespace WCell.RealmServer.Items
 				for (var i = 0; i < templ.EquipmentSlots.Length; i++)
 				{
 					var slot = templ.EquipmentSlots[i];
-					var item = m_Items[(int) slot];
+					var item = m_Items[(int)slot];
 					if (item != null && item.Template.Id == templ.Id)
 					{
 						// done
@@ -652,10 +654,10 @@ namespace WCell.RealmServer.Items
 
 		#region Searching
 
-	    /// <summary>
-	    /// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
-	    /// </summary>
-	    public override int FindFreeSlot()
+		/// <summary>
+		/// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
+		/// </summary>
+		public override int FindFreeSlot()
 		{
 			var slot = BackPack.FindFreeSlot();
 			return slot;
@@ -835,7 +837,7 @@ namespace WCell.RealmServer.Items
 
 			for (var i1 = 0; i1 < ItemMgr.BankBagSlots.Length; i1++)
 			{
-				var avlblSlot = (int) ItemMgr.BankBagSlots[i1];
+				var avlblSlot = (int)ItemMgr.BankBagSlots[i1];
 				var container = m_Items[avlblSlot] as Container;
 				if (container != null)
 				{
@@ -874,7 +876,7 @@ namespace WCell.RealmServer.Items
 
 			for (var i1 = 0; i1 < slots.Length; i1++)
 			{
-				var avlblSlot = (int) slots[i1];
+				var avlblSlot = (int)slots[i1];
 				if (contLookup[avlblSlot])
 				{
 					var container = m_Items[avlblSlot] as Container;
@@ -886,7 +888,7 @@ namespace WCell.RealmServer.Items
 						{
 							if (contItems[i] == null)
 							{
-								var slotId = new SimpleSlotId {Container = contInv, Slot = i};
+								var slotId = new SimpleSlotId { Container = contInv, Slot = i };
 								slotList.Add(slotId);
 								if (slotList.Count == max)
 									return slotList;
@@ -896,7 +898,7 @@ namespace WCell.RealmServer.Items
 				}
 				else if (m_Items[avlblSlot] == null)
 				{
-					var slotId = new SimpleSlotId {Container = this, Slot = avlblSlot};
+					var slotId = new SimpleSlotId { Container = this, Slot = avlblSlot };
 					slotList.Add(slotId);
 					if (slotList.Count == max)
 					{
@@ -1323,8 +1325,8 @@ namespace WCell.RealmServer.Items
 				{
 					err = InventoryError.CANT_DO_RIGHT_NOW;
 				}
-				else if (srcItem.IsEquippedContainer && 
-					!((Container)srcItem).BaseInventory.IsEmpty && 
+				else if (srcItem.IsEquippedContainer &&
+					!((Container)srcItem).BaseInventory.IsEmpty &&
 					!ItemMgr.IsContainerEquipmentSlot(destSlot) &&
 					!Owner.GodMode)
 				{
@@ -1957,6 +1959,7 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
+		#region Remove
 		/// <summary>
 		/// Removes Items from the Backpack, Bags and (if indicated) from the Bank and BankBags.
 		/// </summary>
@@ -1993,8 +1996,32 @@ namespace WCell.RealmServer.Items
 
 			return (amount <= 0);
 		}
+		#endregion
 
 		#region Equipment
+		/// <summary>
+		/// </summary>
+		/// <returns>Whether a match was found</returns>
+		public bool Iterate(InventorySlotTypeMask slots, Func<Item, bool> callback)
+		{
+			for (var sType = InventorySlotType.Head; sType < InventorySlotType.End; sType++)
+			{
+				if (!slots.HasAnyFlag(sType))
+				{
+					continue;
+				}
+				foreach (var slot in ItemMgr.GetEquipmentSlots(sType))
+				{
+					var item = this[slot];
+					if (item != null && !callback(item))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
 		/// <summary>
 		/// Checks if the given slot is occupied and -if so- puts the item from that slot into a free
 		/// storage slot (within the backpack or any equipped bags).

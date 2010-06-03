@@ -43,6 +43,7 @@ using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Talents;
 using WCell.RealmServer.Taxi;
 using WCell.Util;
@@ -79,6 +80,9 @@ namespace WCell.RealmServer.Entities
 
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
+			// auras
+			m_auras = new NPCAuraCollection(this);
+
 			var mainWeapon = entry.CreateMainHandWeapon();
 
 			SpawnEntry spawnEntry;

@@ -10,7 +10,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get;
 		}
 
-		bool IsActive
+		bool IsAdded
 		{
 			get;
 		}

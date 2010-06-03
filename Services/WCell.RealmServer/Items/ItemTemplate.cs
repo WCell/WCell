@@ -456,7 +456,7 @@ namespace WCell.RealmServer.Items
 			RequiredFaction = FactionMgr.Get(RequiredFactionId);
 			RequiredProfession = SpellHandler.Get(RequiredProfessionId);
 			SubClassMask = (ItemSubClassMask)(1 << (int)SubClass);
-			EquipmentSlots = ItemMgr.EquipmentSlotMap.Get((uint)InventorySlotType);
+			EquipmentSlots = ItemMgr.EquipmentSlotsByInvSlot.Get((uint)InventorySlotType);
 			InventorySlotMask = (InventorySlotTypeMask)(1 << (int)InventorySlotType);
 			IsAmmo = InventorySlotType == InventorySlotType.Ammo;
 			IsKey = Class == ItemClass.Key;

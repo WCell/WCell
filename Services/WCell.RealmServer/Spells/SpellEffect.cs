@@ -508,19 +508,22 @@ namespace WCell.RealmServer.Spells
 			if (caster is Character)
 			{
 				SpellModifierType type;
-				switch (EffectIndex)
+				if (EffectIndex <= 2)
 				{
-					case 0:
-						type = SpellModifierType.EffectValue1;
-						break;
-					case 1:
-						type = SpellModifierType.EffectValue2;
-						break;
-					default:
-						type = SpellModifierType.EffectValue3;
-						break;
+					switch (EffectIndex)
+					{
+						case 0:
+							type = SpellModifierType.EffectValue1;
+							break;
+						case 1:
+							type = SpellModifierType.EffectValue2;
+							break;
+						default:
+							type = SpellModifierType.EffectValue3;
+							break;
+					}
+					value = ((Character) caster).PlayerSpells.GetModifiedInt(type, Spell, value);
 				}
-				value = ((Character)caster).PlayerSpells.GetModifiedInt(type, Spell, value);
 				value = ((Character)caster).PlayerSpells.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
 			}
 			if (caster != null)
@@ -801,6 +804,7 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.DamagePctAmplifier, typeof(DamageSchoolMask));
+			SetAuraEffectMiscValueType(AuraType.ModSilenceDurationPercent, typeof(SpellMechanic));
 
 			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(StatType));
 			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(StatType));

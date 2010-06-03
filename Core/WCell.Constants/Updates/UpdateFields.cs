@@ -4140,7 +4140,7 @@ namespace WCell.Constants.Updates
 					Name = "MOD_DAMAGE_DONE_PCT",
 					Offset = 1185,
 					Size = 7,
-					Type = UpdateFieldType.UInt32
+					Type = UpdateFieldType.Float
 				},
 				null,
 				null,

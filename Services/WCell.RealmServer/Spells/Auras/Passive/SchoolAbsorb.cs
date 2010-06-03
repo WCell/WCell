@@ -40,15 +40,17 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class SchoolAbsorbHandler : AuraEffectHandler, IDamageAbsorber
 	{
+		private int remainingValue;
+
 		public int AbsorbValue
 		{
-			get { return EffectValue; }
+			get { return remainingValue; }
 			set
 			{
-				BaseEffectValue = value;
-				if (EffectValue == 0)
+				remainingValue = value;
+				if (remainingValue == 0)
 				{
-					if (m_aura.IsActive)
+					if (m_aura.IsAdded)
 					{
 						m_aura.Remove(false);
 					}
@@ -63,6 +65,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected internal override void Apply()
 		{
+			remainingValue = EffectValue;
 			m_aura.Auras.Owner.AddDmgAbsorption(this);
 		}
 

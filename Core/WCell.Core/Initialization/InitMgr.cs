@@ -288,7 +288,7 @@ namespace WCell.Core.Initialization
                 }
             }
 
-            if (m_newSteps)
+            while (m_newSteps)
             {
                 // step added further steps -> Retroactively init all steps of previous passes that have been added
                 m_newSteps = false;

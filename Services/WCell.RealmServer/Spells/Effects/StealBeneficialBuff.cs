@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var cast = m_cast;
-			if (toSteal.IsActive)
+			if (toSteal.IsAdded)
 			{
 				// remove from owner
 				toSteal.Remove(true);

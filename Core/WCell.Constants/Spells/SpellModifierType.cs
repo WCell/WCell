@@ -48,9 +48,9 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		AllEffectValues = 8,
 		/// <summary>
-		/// Modifies chance to be pushed back while casting in %
+		/// Reduces the pushback time when interrupted while casting
 		/// </summary>
-		Pushback = 9,
+		PushbackReduction = 9,
 		/// <summary>
 		/// Spell cast time in ms
 		/// </summary>

@@ -279,13 +279,23 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as int)
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
 		/// </summary>
 		public int GetModifiedInt(SpellModifierType type, Spell spell, int value)
 		{
 			var flatMod = GetModifierFlat(type, spell);
 			var percentMod = GetModifierPercent(type, spell);
-			return ((value + flatMod) * (100 + percentMod)) / 100;
+			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
+		}
+
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
 		}
 
 		/// <summary>
@@ -459,8 +469,9 @@ namespace WCell.RealmServer.Spells
 			// add spellfocus object (if not present)
 			if (spell.RequiredSpellFocus != 0)
 			{
+				var range = Owner.GetSpellMaxRange(spell);
 				var go = chr.Region.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
-					spell.Range.MaxDist > 0 ? (spell.Range.MaxDist) : 5f, chr.Phase);
+					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)
 				{
