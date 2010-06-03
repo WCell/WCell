@@ -67,11 +67,11 @@ namespace WCell.RealmServer.Global
 	{
 		#region Global Variables
 
-		[Variable("AutoSpawnRegions")]
 		/// <summary>
 		/// Whether to spawn NPCs and GOs immediately, whenever a new Region gets activated the first time.
 		/// For developing you might want to toggle this off and use the "Region Spawn" command ingame to spawn the region, if necessary.
 		/// </summary>
+		[Variable("AutoSpawnRegions")]
 		public static bool AutoSpawn = true;
 
 		/// <summary>
@@ -667,7 +667,7 @@ namespace WCell.RealmServer.Global
 							// must ensure that IsRunning does not change during World Pause
 							throw new InvalidOperationException("Tried to start Region while World is paused.");
 						}
-						
+
 						m_running = true;
 					}
 
@@ -676,7 +676,7 @@ namespace WCell.RealmServer.Global
 					m_regionTime.Start();
 
 					// start updating
-				    Task.Factory.StartNewDelayed(m_updateDelay, RegionUpdateCallback, this);
+					Task.Factory.StartNewDelayed(m_updateDelay, RegionUpdateCallback, this);
 
 					if (AutoSpawn)
 					{
@@ -1246,7 +1246,7 @@ namespace WCell.RealmServer.Global
 						{
 							if (ticks > 1)
 							{
-								obj.Update(objUpdateDelta + (((ticks - 1)*m_updateDelay)/1000f));
+								obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
 							}
 							else
 							{
@@ -1308,7 +1308,7 @@ namespace WCell.RealmServer.Global
 						callbackTimeout = 0;
 					}
 
-				    Task.Factory.StartNewDelayed((int)callbackTimeout, RegionUpdateCallback, this);
+					Task.Factory.StartNewDelayed((int)callbackTimeout, RegionUpdateCallback, this);
 				}
 				else
 				{

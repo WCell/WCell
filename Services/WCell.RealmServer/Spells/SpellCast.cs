@@ -1248,10 +1248,10 @@ namespace WCell.RealmServer.Spells
 				time -= (pct * time) / 100; // reduce by protection %
 				if (Caster is Character)
 				{
-					time = ((Character)Caster).PlayerSpells.GetModifiedInt(SpellModifierType.Pushback, m_spell, time);
+					time = ((Character)Caster).PlayerSpells.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
 				}
 			}
-			return time;
+			return Math.Max(0, time);
 		}
 		#endregion
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras
@@ -39,7 +40,15 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in ItemRestrictedAuras)
 			{
-				
+				aura.EvalActive(item, true);
+			}
+		}
+
+		internal void OnUnEquip(Item item)
+		{
+			foreach (var aura in ItemRestrictedAuras)
+			{
+				aura.EvalActive(item, false);
 			}
 		}
 	}

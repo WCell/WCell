@@ -37,9 +37,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Stealth Required			
-            if (Attributes.HasAnyFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
-		    {
-		        return SpellFailedReason.OnlyStealthed;
+			if (Attributes.HasAnyFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+			{
+				return SpellFailedReason.OnlyStealthed;
 			}
 
 			if (!caster.CanDoHarm && HasHarmfulEffects)
@@ -47,44 +47,44 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.Pacified;
 			}
 
-		    // Not while silenced			
-            if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
-		    {
-		        return SpellFailedReason.Silenced;
-		    }
+			// Not while silenced			
+			if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) && caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+			{
+				return SpellFailedReason.Silenced;
+			}
 
 			// Check if castable while stunned
-            if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
-		    {
-		        return SpellFailedReason.CantDoThatRightNow;
-		    }
-		    // Combo points			
-		    if (IsFinishingMove && caster.ComboPoints == 0)
-		    {
-		        return SpellFailedReason.NoComboPoints;
-		    }
+			if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
+			{
+				return SpellFailedReason.CantDoThatRightNow;
+			}
+			// Combo points			
+			if (IsFinishingMove && caster.ComboPoints == 0)
+			{
+				return SpellFailedReason.NoComboPoints;
+			}
 
-		    // spell focus
+			// spell focus
 			if (!CheckSpellFocus(caster))
 			{
 				return SpellFailedReason.RequiresSpellFocus;
 			}
 
 			// shapeshift
-            if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
+			if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
 				caster.ShapeshiftForm != ShapeshiftForm.Normal)
 			{
 				//return SpellFailedReason.NotShapeshift;
 			}
 
 			// Stealth Required			
-            else if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+			else if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 			{
 				return SpellFailedReason.OnlyStealthed;
 			}
 
 			// Not while silenced		
-            else if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
+			else if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
 					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
 			{
 				return SpellFailedReason.Silenced;
@@ -93,7 +93,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return SpellFailedReason.Pacified;
 			}
-            else if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
+			else if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 			{
 				return SpellFailedReason.Stunned;
 			}
@@ -123,7 +123,7 @@ namespace WCell.RealmServer.Spells
 			{
 				// check AuraStates
 				var state = caster.AuraState;
-                if ((RequiredCasterAuraState != 0 && !state.HasAnyFlag(RequiredCasterAuraState)) ||
+				if ((RequiredCasterAuraState != 0 && !state.HasAnyFlag(RequiredCasterAuraState)) ||
 					(ExcludeCasterAuraState != 0 && state.HasAnyFlag(ExcludeCasterAuraState)))
 				{
 					return SpellFailedReason.CasterAurastate;
@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Spells
 		private bool CheckSpellFocus(Unit caster)
 		{
 			return RequiredSpellFocus == SpellFocus.None ||
-			       caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus,
+				   caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus,
 													 Range.MaxDist > 0 ? (Range.MaxDist + caster.CombatReach) : 5f, caster.Phase) != null;
 		}
 
@@ -166,11 +166,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool HasItemRequirements
 		{
-			get { return RequiredItemClass != 0 ||
-					RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
-					RequiredTools != null ||
-					RequiredTotemCategories.Length > 0 ||
-					EquipmentSlot != EquipmentSlot.End;
+			get
+			{
+				return (RequiredItemClass != 0 && RequiredItemClass != ItemClass.None) ||
+				  RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
+				  RequiredTools != null ||
+				  RequiredTotemCategories.Length > 0 ||
+				  EquipmentSlot != EquipmentSlot.End;
 			}
 		}
 
@@ -204,12 +206,76 @@ namespace WCell.RealmServer.Spells
 			}
 			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
 			{
-				if (usedItem != null && (usedItem.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0)	// don't use Enum.HasFlag!
+				if (usedItem != null && (usedItem.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0)
+				// don't use Enum.HasFlag!
 				{
 					return SpellFailedReason.EquippedItemClass;
 				}
 			}
 
+			return CheckGeneralItemRestrictions(inv);
+		}
+
+		/// <summary>
+		/// Checks whether the given inventory satisfies this Spell's item restrictions
+		/// </summary>
+		public SpellFailedReason CheckItemRestrictionsWithout(Item exclude, PlayerInventory inv)
+		{
+			if (RequiredItemClass == ItemClass.Armor || RequiredItemClass == ItemClass.Weapon)
+			{
+				Item item;
+				if (EquipmentSlot != EquipmentSlot.End)
+				{
+					item = inv[EquipmentSlot];
+
+					if (item == null || item == exclude)
+					{
+						return SpellFailedReason.EquippedItem;
+					}
+
+					if (!CheckItemRestriction(item))
+					{
+						return SpellFailedReason.EquippedItemClass;
+					}
+				}
+				else
+				{
+					if (inv.Iterate(ItemMgr.EquippableInvSlotsByClass[(int) RequiredItemClass], i => i == exclude || !CheckItemRestriction(i)))
+					{
+						return SpellFailedReason.EquippedItemClass;
+					}
+				}
+			}
+
+			if (RequiredItemInventorySlotMask != InventorySlotTypeMask.None)
+			{
+				if (inv.Iterate(RequiredItemInventorySlotMask, item => item == exclude || (item.Template.InventorySlotMask & RequiredItemInventorySlotMask) == 0
+				))
+				{
+					// iterated over all matching items and did not find the right one
+					return SpellFailedReason.EquippedItemClass;
+				}
+			}
+
+			return CheckGeneralItemRestrictions(inv);
+		}
+
+		bool CheckItemRestriction(Item item)
+		{
+			if (item.Template.Class != RequiredItemClass)
+			{
+				return false;
+			}
+
+			if (RequiredItemSubClassMask > 0 && !item.Template.SubClassMask.HasAnyFlag(RequiredItemSubClassMask))
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public SpellFailedReason CheckGeneralItemRestrictions(PlayerInventory inv)
+		{
 			// check for special tools
 			if (RequiredTools != null)
 			{
@@ -239,12 +305,12 @@ namespace WCell.RealmServer.Spells
 				{
 					return SpellFailedReason.EquippedItem;
 				}
-                if (AttributesExC.HasFlag(SpellAttributesExC.RequiresWand) &&
+				if (AttributesExC.HasFlag(SpellAttributesExC.RequiresWand) &&
 					item.Template.SubClass != ItemSubClass.WeaponWand)
 				{
 					return SpellFailedReason.EquippedItem;
 				}
-                if (AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
+				if (AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
 					!item.Template.IsRangedWeapon)
 				{
 					return SpellFailedReason.EquippedItem;
@@ -268,8 +334,8 @@ namespace WCell.RealmServer.Spells
 				if (RequiredTargetAuraState != 0 || ExcludeTargetAuraState != 0)
 				{
 					var state = ((Unit)target).AuraState;
-                    if ((RequiredTargetAuraState != 0 && !state.HasAnyFlag(RequiredTargetAuraState)) ||
-                        (ExcludeTargetAuraState != 0 && state.HasAnyFlag(ExcludeTargetAuraState)))
+					if ((RequiredTargetAuraState != 0 && !state.HasAnyFlag(RequiredTargetAuraState)) ||
+						(ExcludeTargetAuraState != 0 && state.HasAnyFlag(ExcludeTargetAuraState)))
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
@@ -284,7 +350,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Make sure that we have a GameObject if the Spell requires one
-            if (TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
+			if (TargetFlags.HasAnyFlag(SpellTargetFlags.UnkUnit_0x100) &&
 				(!(target is GameObject) || !target.IsInWorld))
 			{
 				return SpellFailedReason.BadTargets;
@@ -305,10 +371,10 @@ namespace WCell.RealmServer.Spells
 			// Corpse target
 			if (ReqDeadTarget)
 			{
-                if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
+				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-                        (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -328,7 +394,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Rogues do it from behind
-            if (AttributesExB.HasFlag(SpellAttributesExB.RequiresBehindTarget))
+			if (AttributesExB.HasFlag(SpellAttributesExB.RequiresBehindTarget))
 			{
 				if (!caster.IsBehind(target))
 				{
@@ -336,7 +402,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
+			if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
 			{
 				if (target is Unit && ((Unit)target).IsInCombat)
 				{
@@ -403,8 +469,8 @@ namespace WCell.RealmServer.Spells
 		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
-            var cd = CooldownTime;
-            if (cd == 0)
+			var cd = CooldownTime;
+			if (cd == 0)
 			{
 				if (HasIndividualCooldown)
 				{
@@ -427,7 +493,7 @@ namespace WCell.RealmServer.Spells
 			{
 				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
-            //return Math.Max(cd - unit.Region.UpdateDelay, 0);
+			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;
 		}
 		#endregion

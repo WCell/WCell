@@ -104,7 +104,7 @@ namespace WCell.RealmServer.Entities
 
 			foreach (var school in WCellDef.AllDamageSchools)
 			{
-				SetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
+				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
 

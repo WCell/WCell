@@ -46,7 +46,7 @@ namespace WCell.Tools.Commands
 			if (text.Length > 0)
 			{
 				var args = new ToolCmdArgs();
-				return Instance.Trigger(new ConsoleCmdTrigger(new StringStream(text), args));
+				return Instance.Execute(new ConsoleCmdTrigger(new StringStream(text), args));
 			}
 			return false;
 		}

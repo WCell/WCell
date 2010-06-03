@@ -1624,6 +1624,11 @@ namespace WCell.RealmServer.Entities
 			var now = DateTime.Now;
 			for (var i = m_procHandlers.Count - 1; i >= 0; i--)	// need to reverse iteration because procs can be removed in the process
 			{
+				if (i >= m_procHandlers.Count)
+				{
+					// In case that the list was changed during iteration
+					continue;
+				}
 				var proc = m_procHandlers[i];
 				if (proc.NextProcTime <= now &&
 					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
@@ -1638,6 +1643,7 @@ namespace WCell.RealmServer.Entities
 						if (charges > 0 && proc.StackCount == 0)
 						{
 							proc.Dispose();
+							//proc.NextProcTime = DateTime.MaxValue;	// won't be proc'ed again
 						}
 					}
 				}
@@ -1698,7 +1704,10 @@ namespace WCell.RealmServer.Entities
 				m_target = null;
 			}
 
-			m_regenTimer.Dispose();
+			if (m_regenTimer != null)
+			{
+				m_regenTimer.Dispose();
+			}
 
 			if (m_brain != null)
 			{

@@ -1060,6 +1060,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			m_owningCharacter.PlayerAuras.OnEquip(this);
+
 			m_template.NotifyEquip(this);
 		}
 
@@ -1171,6 +1173,8 @@ namespace WCell.RealmServer.Entities
 				m_owningCharacter.RemoveProcHandler(m_hitProc);
 				m_hitProc = null;
 			}
+
+			m_owningCharacter.PlayerAuras.OnUnEquip(this);
 
 			m_template.NotifyUnequip(this);
 		}

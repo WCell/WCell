@@ -88,7 +88,7 @@ namespace WCell.Util.Commands
 		/// If the processing of the command raises an Exception, the fail events are triggered.
 		/// </summary>
 		/// <returns>True if at least one Command was triggered, otherwise false.</returns>
-		public virtual bool Trigger(CmdTrigger<C> trigger)
+		public virtual bool Execute(CmdTrigger<C> trigger)
 		{
 			var cmd = GetCommand(trigger);
 			if (cmd != null)
@@ -172,7 +172,7 @@ namespace WCell.Util.Commands
 
 		public bool Trigger(CmdTrigger<C> trigger, BaseCommand<C> cmd)
 		{
-			return Trigger(trigger, cmd, false);
+			return Execute(trigger, cmd, false);
 		}
 
 		/// <summary>
@@ -182,7 +182,7 @@ namespace WCell.Util.Commands
 		/// <param name="cmd"></param>
 		/// <param name="silentFail">Will not reply if it failed due to target restrictions or privileges etc</param>
 		/// <returns></returns>
-		public virtual bool Trigger(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool silentFail)
+		public virtual bool Execute(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool silentFail)
 		{
 			if (cmd.Enabled)
 			{
@@ -654,7 +654,7 @@ namespace WCell.Util.Commands
 							continue;
 						}
 
-						if (!Trigger(trigger))
+						if (!Execute(trigger))
 						{
 							trigger.Reply("Could not execute Command from file \"{0}\" (line {1}): \"{2}\"", filename, line,
 										  cmd);

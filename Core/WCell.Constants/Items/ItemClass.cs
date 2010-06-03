@@ -25,5 +25,6 @@ namespace WCell.Constants.Items
 		Permanent = 14,
 		Miscellaneous = 15,
         Glyph = 16,
+		End
 	}
 }

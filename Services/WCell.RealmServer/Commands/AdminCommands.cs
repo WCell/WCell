@@ -337,7 +337,7 @@ namespace WCell.RealmServer.Commands
 						(inclSelf || chr != trigger.Args.User))
 					{
 						chrTrigger.Args.Target = chr;
-						RealmCommandHandler.Instance.Trigger(chrTrigger, cmd, true);
+						RealmCommandHandler.Instance.Execute(chrTrigger, cmd, true);
 						chrCount++;
 					}
 				}

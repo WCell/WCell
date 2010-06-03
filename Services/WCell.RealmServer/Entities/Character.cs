@@ -1310,7 +1310,7 @@ namespace WCell.RealmServer.Entities
 		public override void AddDamageMods(DamageAction action)
 		{
 			base.AddDamageMods(action);
-			var dmg = UnitUpdates.GetMultiMod(GetInt32(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool) / 100f, action.Damage);
+			var dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool), action.Damage);
 			if (action.Spell != null)
 			{
 				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, action.Spell, dmg);

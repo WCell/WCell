@@ -348,7 +348,7 @@ namespace WCell.RealmServer.Spells
 				var spell = SpellHandler.Get(id);
 				if (spell == null)
 				{
-					throw new ArgumentException("Invalid SpellId: " + id);
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
 				}
 				spells[i] = spell;
 			}
@@ -384,7 +384,7 @@ namespace WCell.RealmServer.Spells
 				var spell = SpellHandler.Get(id);
 				if (spell == null)
 				{
-					throw new ArgumentException("Invalid SpellId: " + id);
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
 				}
 				spells[i] = spell;
 			}
@@ -422,7 +422,7 @@ namespace WCell.RealmServer.Spells
 				var spell = SpellHandler.Get(id);
 				if (spell == null)
 				{
-					throw new ArgumentException("Invalid SpellId: " + id);
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
 				}
 				spells[i] = spell;
 			}
@@ -469,7 +469,7 @@ namespace WCell.RealmServer.Spells
 				var spell = SpellHandler.Get(id);
 				if (spell == null)
 				{
-					throw new ArgumentException("Invalid SpellId: " + id);
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
 				}
 				spells[i] = spell;
 			}

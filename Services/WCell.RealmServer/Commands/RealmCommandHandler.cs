@@ -148,7 +148,7 @@ namespace WCell.RealmServer.Commands
 			return CommandPrefixes.Contains(c);
 		}
 
-		public override bool Trigger(CmdTrigger<RealmServerCmdArgs> trigger)
+		public override bool Execute(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			return Execute(trigger, true);
 		}
@@ -161,7 +161,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else
 			{
-				return base.Trigger(trigger);
+				return base.Execute(trigger);
 			}
 		}
 
@@ -172,6 +172,14 @@ namespace WCell.RealmServer.Commands
 				return WCell.RealmServer.Commands.CallCommand.Instance;
 			}
 			return base.GetCommand(trigger);
+		}
+
+		/// <summary>
+		/// Executes the trigger in Context
+		/// </summary>
+		public void ExecuteInContext(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			ExecuteInContext(trigger, true, null, null);
 		}
 
 		/// <summary>
@@ -206,24 +214,24 @@ namespace WCell.RealmServer.Commands
 				else
 				{
 					trigger.Args.Context.ExecuteInContext(() =>
-						Trigger(trigger, cmd, doneCallback, failCalback));
+						Execute(trigger, cmd, doneCallback, failCalback));
 					return;
 				}
 			}
 			else
 			{
-				Trigger(trigger, cmd, doneCallback, failCalback);
+				Execute(trigger, cmd, doneCallback, failCalback);
 				return;
 			}
 		}
 
-		void Trigger(CmdTrigger<RealmServerCmdArgs> trigger,
+		void Execute(CmdTrigger<RealmServerCmdArgs> trigger,
 			BaseCommand<RealmServerCmdArgs> cmd,
 			Action<CmdTrigger<RealmServerCmdArgs>> doneCallback,
 			Action<CmdTrigger<RealmServerCmdArgs>> failCalback
 			)
 		{
-			if (Trigger(trigger, cmd, false))
+			if (Execute(trigger, cmd, false))
 			{
 				doneCallback(trigger);
 			}
@@ -245,7 +253,7 @@ namespace WCell.RealmServer.Commands
 			{
 				return true;
 			}
-			return Instance.Trigger(trigger);
+			return Instance.Execute(trigger);
 		}
 
 		/// <summary>
@@ -260,10 +268,10 @@ namespace WCell.RealmServer.Commands
 			{
 				return true;
 			}
-			return Instance.Trigger(trigger);
+			return Instance.Execute(trigger);
 		}
 
-		public override bool Trigger(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
+		public override bool Execute(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
 		{
 			// verify context
 			if (trigger.Args.Context != null &&
@@ -274,7 +282,7 @@ namespace WCell.RealmServer.Commands
 				trigger.Args.Context.EnsureContext();
 			}
 
-			return base.Trigger(trigger, cmd, silentFail);
+			return base.Execute(trigger, cmd, silentFail);
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)

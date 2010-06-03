@@ -214,7 +214,7 @@ namespace WCell.Tools
 					return;
 				}
 			}
-			ToolCommandHandler.Instance.Trigger(trigger);
+			ToolCommandHandler.Instance.Execute(trigger);
 		}
 
 #if TESTS

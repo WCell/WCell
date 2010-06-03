@@ -1059,7 +1059,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 			var field = PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school;
-			SetInt32(field, GetInt32(field) + delta);
+			SetFloat(field, GetFloat(field) + delta / 100f);
 		}
 
 		/// <summary>
@@ -1917,6 +1917,14 @@ namespace WCell.RealmServer.Entities
 		public void UpdateFreeTalentPointsSilently(int delta)
 		{
 			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
+		}
+
+		/// <summary>
+		/// All spells known to this chr
+		/// </summary>
+		public PlayerAuraCollection PlayerAuras
+		{
+			get { return (PlayerAuraCollection)m_auras; }
 		}
 
 		/// <summary>

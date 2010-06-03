@@ -40,6 +40,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		Quiver = 27,
 		Relic = 28,
+		End
 	}
 
 	[Flags]
