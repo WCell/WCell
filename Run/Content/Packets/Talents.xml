@@ -50,7 +50,7 @@
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="SMSG_TALENT_GROUP_LIST" Sender="Server">
+  <RealmPacket OpCode="SMSG_TALENTS_INFO" Sender="Server">
     <Simple>
       <Name>IsPet</Name>
       <Type>Byte</Type>
@@ -126,7 +126,7 @@
     </Switch>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_LEARN_PREVIEWED_TALENTS" Sender="Client">
+  <RealmPacket OpCode="CMSG_LEARN_PREVIEW_TALENTS" Sender="Client">
     <List>
       <Name>Talents</Name>
       <Type>Int</Type>
@@ -143,7 +143,7 @@
     </List>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_PET_LEARN_PREVIEWED_TALENTS" Sender="Client">
+  <RealmPacket OpCode="CMSG_LEARN_PREVIEW_TALENTS_PET" Sender="Client">
     <Simple>
       <Name>Pet</Name>
       <Type>Guid</Type>
