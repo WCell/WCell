@@ -163,14 +163,14 @@
     </Switch>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_DELETE_EQUIPMENT_SET">
+  <RealmPacket OpCode="CMSG_EQUIPMENT_SET_DELETE">
     <Simple>
       <Name>Set Guid</Name>
       <Type>PackedGuid</Type>
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_SET_EQUIPMENT_SET">
+  <RealmPacket OpCode="CMSG_EQUIPMENT_SET_SAVE">
     <Simple>
       <Name>Set Guid</Name>
       <Type>PackedGuid</Type>
@@ -226,7 +226,7 @@
     </List>
   </RealmPacket>
 
-  <RealmPacket OpCode="CMSG_USE_EQUIPMENT_SET">
+  <RealmPacket OpCode="CMSG_EQUIPMENT_SET_USE">
     <StaticList Length="19">
       <Name>Equipment Set</Name>
       <Simple>
@@ -256,7 +256,7 @@
     </StaticList>
   </RealmPacket>
 
-  <RealmPacket OpCode="SMSG_USE_EQUIPMENT_SET_RESULT">
+  <RealmPacket OpCode="SMSG_EQUIPMENT_SET_USE_RESULT">
     <Simple>
       <Name>Result</Name>
       <Type>Byte</Type>
