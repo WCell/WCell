@@ -156,8 +156,8 @@ namespace WCell.MPQTool
 				//Get this folders info
 				var dirInfo = new DirectoryInfo(arrFoundFolders[intFolder]);
 
-				//4 Characters long, could be enGB for example
-				if (dirInfo.Name.Length == 4 && dirInfo.GetFiles().Length > 0)
+				//4 Characters long, could be enGB for example and contains mpq files
+				if (dirInfo.Name.Length == 4 && dirInfo.GetFiles("*.mpq").Length > 0)
 				{
 					//Let's just use this one.
 					strLocale = dirInfo.Name;
