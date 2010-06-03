@@ -156,9 +156,9 @@ namespace WCell.RealmServer.Spells
 
 		private bool CheckSpellFocus(Unit caster)
 		{
+			var range = caster.GetSpellMaxRange(this);
 			return RequiredSpellFocus == SpellFocus.None ||
-				   caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus,
-													 Range.MaxDist > 0 ? (Range.MaxDist + caster.CombatReach) : 5f, caster.Phase) != null;
+				   caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
 		}
 
 		/// <summary>
@@ -240,7 +240,7 @@ namespace WCell.RealmServer.Spells
 				}
 				else
 				{
-					if (inv.Iterate(ItemMgr.EquippableInvSlotsByClass[(int) RequiredItemClass], i => i == exclude || !CheckItemRestriction(i)))
+					if (inv.Iterate(ItemMgr.EquippableInvSlotsByClass[(int)RequiredItemClass], i => i == exclude || !CheckItemRestriction(i)))
 					{
 						return SpellFailedReason.EquippedItemClass;
 					}
@@ -423,23 +423,26 @@ namespace WCell.RealmServer.Spells
 
 
 		#region Check Proc
-		public bool CanProcBeTriggeredBy(Unit caster, IUnitAction action, bool active)
+		public bool CanProcBeTriggeredBy(Unit owner, IUnitAction action, bool active)
 		{
-			if (CheckCasterConstraints(caster) != SpellFailedReason.Ok)
+			if (CheckCasterConstraints(owner) != SpellFailedReason.Ok)
 			{
 				return false;
 			}
 
-			if (active)
+			if (action.Spell != null)
 			{
-				if (CasterProcSpells != null)
+				if (active)	// owner == attacker
 				{
-					return action.Spell != null && CasterProcSpells.Contains(action.Spell);
+					if (CasterProcSpells != null)
+					{
+						return CasterProcSpells.Contains(action.Spell);
+					}
 				}
-			}
-			else if (TargetProcSpells != null)
-			{
-				return action.Spell != null && TargetProcSpells.Contains(action.Spell);
+				else if (TargetProcSpells != null)	// owner == victim
+				{
+					return TargetProcSpells.Contains(action.Spell);
+				}
 			}
 
 			if (RequiredItemClass != ItemClass.None)
@@ -491,7 +494,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else if (unit is Character)
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = ((Character)unit).PlayerSpells.GetModifiedIntNegative(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

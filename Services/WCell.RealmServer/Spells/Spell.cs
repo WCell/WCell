@@ -409,101 +409,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Proc Spells
-		/// <summary>
-		/// Add Spells which, when used, can proc this Spell  on the caster
-		/// </summary>
-		public void AddCasterProcSpells(params SpellId[] spellIds)
-		{
-			var spells = new Spell[spellIds.Length];
-			for (var i = 0; i < spellIds.Length; i++)
-			{
-				var id = spellIds[i];
-				var spell = SpellHandler.Get(id);
-				if (spell == null)
-				{
-					throw new InvalidSpellDataException("Invalid SpellId: " + id);
-				}
-				spells[i] = spell;
-			}
-			AddCasterProcSpells(spells);
-		}
-
-		/// <summary>
-		/// Add Spells which, when used, can proc this Spell on the caster 
-		/// </summary>
-		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
-		{
-			var list = new List<Spell>(spellSetIds.Length * 6);
-			foreach (var id in spellSetIds)
-			{
-				var line = SpellLines.GetLine(id);
-				list.AddRange(line);
-			}
-			AddCasterProcSpells(list.ToArray());
-		}
-
-		/// <summary>
-		/// Add Spells which, when used, can proc this Spell on the caster
-		/// </summary>
-		public void AddCasterProcSpells(params Spell[] spells)
-		{
-			if (CasterProcSpells == null)
-			{
-				CasterProcSpells = new HashSet<Spell>();
-			}
-			CasterProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
-		}
-
-
-		/// <summary>
-		/// Add Spells which can proc this Spell on their Target
-		/// </summary>
-		public void AddTargetProcSpells(params SpellId[] spellIds)
-		{
-			var spells = new Spell[spellIds.Length];
-			for (var i = 0; i < spellIds.Length; i++)
-			{
-				var id = spellIds[i];
-				var spell = SpellHandler.Get(id);
-				if (spell == null)
-				{
-					throw new InvalidSpellDataException("Invalid SpellId: " + id);
-				}
-				spells[i] = spell;
-			}
-			AddTargetProcSpells(spells);
-		}
-
-		/// <summary>
-		/// Add Spells which can proc this Spell on their Target
-		/// </summary>
-		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
-		{
-			var list = new List<Spell>(spellSetIds.Length * 6);
-			foreach (var id in spellSetIds)
-			{
-				var line = SpellLines.GetLine(id);
-				list.AddRange(line);
-			}
-			AddTargetProcSpells(list.ToArray());
-		}
-
-		/// <summary>
-		/// Add Spells which can proc this Spell on their Target
-		/// </summary>
-		public void AddTargetProcSpells(params Spell[] spells)
-		{
-			if (TargetProcSpells == null)
-			{
-				TargetProcSpells = new HashSet<Spell>();
-			}
-			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
-		}
-		#endregion
-
 		#region Custom Proc Handlers
 		/// <summary>
 		/// Add Handler which, when used, can proc this Spell 
@@ -1373,7 +1278,7 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "ProcTriggerFlags: " + ProcTriggerFlags);
 			}
-			if ((int)ProcChance != 0 && ProcChance < 100)
+			if ((int)ProcChance != 0)
 			{
 				writer.WriteLine(indent + "ProcChance: " + ProcChance);
 			}

@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		protected internal override void Apply()
 		{
 			value = EffectValue / 100f;
-            m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, value);
+			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, value);
 		}
 
 		protected internal override void Remove(bool cancelled)

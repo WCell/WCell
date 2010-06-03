@@ -125,7 +125,7 @@ namespace WCell.RealmServer.Spells
 		public AuraCasterGroup AuraCasterGroup;
 		#endregion
 
-
+		#region InitAura
 		private void InitAura()
 		{
 			IsAura = HasEffectWith(effect =>
@@ -251,6 +251,7 @@ namespace WCell.RealmServer.Spells
 				CreateAuraUID();
 			}
 		}
+		#endregion
 
 		#region AuraUID Evaluation
 		private void CreateAuraUID()
@@ -280,6 +281,101 @@ namespace WCell.RealmServer.Spells
 					AuraUID = AuraHandler.GetNextAuraUID();
 				}
 			}
+		}
+		#endregion
+
+		#region Proc Spells
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params SpellId[] spellIds)
+		{
+			var spells = new Spell[spellIds.Length];
+			for (var i = 0; i < spellIds.Length; i++)
+			{
+				var id = spellIds[i];
+				var spell = SpellHandler.Get(id);
+				if (spell == null)
+				{
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
+				}
+				spells[i] = spell;
+			}
+			AddCasterProcSpells(spells);
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
+		{
+			var list = new List<Spell>(spellSetIds.Length * 6);
+			foreach (var id in spellSetIds)
+			{
+				var line = SpellLines.GetLine(id);
+				list.AddRange(line);
+			}
+			AddCasterProcSpells(list.ToArray());
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddCasterProcSpells(params Spell[] spells)
+		{
+			if (CasterProcSpells == null)
+			{
+				CasterProcSpells = new HashSet<Spell>();
+			}
+			CasterProcSpells.AddRange(spells);
+			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+		}
+
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params SpellId[] spellIds)
+		{
+			var spells = new Spell[spellIds.Length];
+			for (var i = 0; i < spellIds.Length; i++)
+			{
+				var id = spellIds[i];
+				var spell = SpellHandler.Get(id);
+				if (spell == null)
+				{
+					throw new InvalidSpellDataException("Invalid SpellId: " + id);
+				}
+				spells[i] = spell;
+			}
+			AddTargetProcSpells(spells);
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
+		{
+			var list = new List<Spell>(spellSetIds.Length * 6);
+			foreach (var id in spellSetIds)
+			{
+				var line = SpellLines.GetLine(id);
+				list.AddRange(line);
+			}
+			AddTargetProcSpells(list.ToArray());
+		}
+
+		/// <summary>
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// </summary>
+		public void AddTargetProcSpells(params Spell[] spells)
+		{
+			if (TargetProcSpells == null)
+			{
+				TargetProcSpells = new HashSet<Spell>();
+			}
+			TargetProcSpells.AddRange(spells);
+			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
 		}
 		#endregion
 

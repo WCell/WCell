@@ -222,6 +222,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public float GetSpellMaxRange(Spell spell)
+		{
+			return GetSpellMaxRange(spell, null);
+		}
+
 		public float GetSpellMaxRange(Spell spell, WorldObject target)
 		{
 			var range = spell.Range.MaxDist;

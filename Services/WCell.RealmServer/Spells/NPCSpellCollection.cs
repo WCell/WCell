@@ -99,7 +99,7 @@ namespace WCell.RealmServer.Spells
 		{
 			if (!spell.IsAreaSpell && !spell.IsAura && spell.HasHarmfulEffects)
 			{
-				MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, spell.Range.MaxDist);
+				MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, Owner.GetSpellMaxRange(spell, null));
 			}
 		}
 
@@ -126,14 +126,14 @@ namespace WCell.RealmServer.Spells
 			m_readySpells.Remove(spell);
 			base.Remove(spell);
 
-			if (spell.Range.MaxDist == MaxCombatSpellRange)
+			if (Owner.GetSpellMaxRange(spell, null) >= MaxCombatSpellRange)
 			{
 				MaxCombatSpellRange = 0f;
 				foreach (var sp in m_byId.Values)
 				{
 					if (sp.Range.MaxDist > MaxCombatSpellRange)
 					{
-						MaxCombatSpellRange = sp.Range.MaxDist;
+						MaxCombatSpellRange = Owner.GetSpellMaxRange(sp, null);
 					}
 				}
 			}

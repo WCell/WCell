@@ -469,8 +469,9 @@ namespace WCell.RealmServer.Spells
 			// add spellfocus object (if not present)
 			if (spell.RequiredSpellFocus != 0)
 			{
+				var range = Owner.GetSpellMaxRange(spell);
 				var go = chr.Region.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
-					spell.Range.MaxDist > 0 ? (spell.Range.MaxDist) : 5f, chr.Phase);
+					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)
 				{
