@@ -819,7 +819,7 @@ namespace WCell.RealmServer.Spells
 					m_castDelay = (CasterUnit.CastSpeedFactor * m_castDelay).RoundInt();
 					if (CasterChar != null)
 					{
-						m_castDelay = CasterChar.PlayerSpells.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
+						m_castDelay = CasterChar.PlayerSpells.GetModifiedIntNegative(SpellModifierType.CastTime, m_spell, m_castDelay);
 					}
 				}
 			}
