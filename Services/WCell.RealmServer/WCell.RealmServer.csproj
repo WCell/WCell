@@ -236,6 +236,7 @@
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />

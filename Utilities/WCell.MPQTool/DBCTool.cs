@@ -57,9 +57,9 @@ namespace WCell.MPQTool
 			var lstFinalMPQs = new List<string>();
 
 			var varFinalMPQs = from a in lstAllMPQs
-			                   where a.Contains("locale-") || a.Contains("patch-")
-			                   orderby a descending
-			                   select a;
+							   where a.Contains("locale-") || a.Contains("patch-")
+							   orderby a descending
+							   select a;
 
 			foreach (var strFile in varFinalMPQs)
 			{
@@ -92,8 +92,8 @@ namespace WCell.MPQTool
 				using (var oArchive = new MpqArchive(lstAllMPQFiles[i]))
 				{
 					var dbcsFiles = from a in oArchive.Files
-					                                    where a.Name.EndsWith(".dbc")
-					                                    select a.Name;
+									where a.Name.EndsWith(".dbc")
+									select a.Name;
 
 					foreach (var strFileName in dbcsFiles)
 					{
@@ -157,7 +157,7 @@ namespace WCell.MPQTool
 				var dirInfo = new DirectoryInfo(arrFoundFolders[intFolder]);
 
 				//4 Characters long, could be enGB for example
-				if (dirInfo.Name.Length == 4)
+				if (dirInfo.Name.Length == 4 && dirInfo.GetFiles().Length > 0)
 				{
 					//Let's just use this one.
 					strLocale = dirInfo.Name;
@@ -338,9 +338,9 @@ namespace WCell.MPQTool
 				return true;
 			}
 
-		    Console.ForegroundColor = ConsoleColor.Yellow;
-		    Console.WriteLine("Local folder is not WoW folder.");
-		    return false;
+			Console.ForegroundColor = ConsoleColor.Yellow;
+			Console.WriteLine("Local folder is not WoW folder.");
+			return false;
 		}
 
 		private static bool LookInRegistry()
@@ -383,7 +383,7 @@ namespace WCell.MPQTool
 					return true;
 				}
 
-			    throw new Exception("Could not find any WoW installation.");
+				throw new Exception("Could not find any WoW installation.");
 			}
 			return false;
 		}

@@ -486,7 +486,9 @@ namespace WCell.Constants
 
 		RangedAttackPowerByPercentOfIntellect,
 
-		DodgeChance
+		DodgeChance,
+
+		CritDamageBonusPct
 	}
 
 	public enum AreaTriggerType : uint

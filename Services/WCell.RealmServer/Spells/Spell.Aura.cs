@@ -306,7 +306,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -320,7 +320,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Spells
 
 
 		/// <summary>
-		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
 		public void AddTargetProcSpells(params SpellId[] spellIds)
 		{
@@ -353,7 +353,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
 		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by others on the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
 		public void AddTargetProcSpells(params Spell[] spells)
 		{
