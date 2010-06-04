@@ -70,28 +70,35 @@ namespace MPQNav.MPQ.WMO
 
             // Parse in the WMO's M2s
             var curDoodadSet = currentMODF.DoodadSet;
-            var doodadSetOffset = wmoRoot.DoodadSets[curDoodadSet].FirstInstanceIndex;
-            var doodadSetCount = wmoRoot.DoodadSets[curDoodadSet].InstanceCount;
-            wmoRoot.WMOM2s = new List<M2.M2>((int)doodadSetCount);
-            for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
+            
+            var setIndices = new List<int> { 0 };
+            if (curDoodadSet > 0) setIndices.Add(curDoodadSet);
+
+            foreach (var index in setIndices)
             {
-                var curDoodadDef = wmoRoot.DoodadDefinitions[i];
-                var curM2 = M2.M2ModelParser.Process(_baseDirectory, curDoodadDef.FilePath);
-
-                var tempVertices = new List<Vector3>(curM2.BoundingVertices);
-
-                var tempIndices = new List<int>();
-                for (var j = 0; j < curM2.BoundingTriangles.Length; j++)
+                var doodadSetOffset = wmoRoot.DoodadSets[index].FirstInstanceIndex;
+                var doodadSetCount = wmoRoot.DoodadSets[index].InstanceCount;
+                wmoRoot.WMOM2s = new List<M2.M2>((int) doodadSetCount);
+                for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
                 {
-                    var tri = curM2.BoundingTriangles[j];
+                    var curDoodadDef = wmoRoot.DoodadDefinitions[i];
+                    var curM2 = M2.M2ModelParser.Process(_baseDirectory, curDoodadDef.FilePath);
 
-                    tempIndices.Add(tri[2]);
-                    tempIndices.Add(tri[1]);
-                    tempIndices.Add(tri[0]);
+                    var tempVertices = new List<Vector3>(curM2.BoundingVertices);
+
+                    var tempIndices = new List<int>();
+                    for (var j = 0; j < curM2.BoundingTriangles.Length; j++)
+                    {
+                        var tri = curM2.BoundingTriangles[j];
+
+                        tempIndices.Add(tri[2]);
+                        tempIndices.Add(tri[1]);
+                        tempIndices.Add(tri[0]);
+                    }
+
+                    var rotatedM2 = TransformWMOM2(tempVertices, tempIndices, curDoodadDef);
+                    wmoRoot.WMOM2s.Add(rotatedM2);
                 }
-
-                var rotatedM2 = TransformWMOM2(tempVertices, tempIndices, curDoodadDef);
-                wmoRoot.WMOM2s.Add(rotatedM2);
             }
 
             TransformWMO(currentMODF, wmoRoot);
