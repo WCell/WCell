@@ -368,7 +368,7 @@ namespace WCell.AuthServer
 				client.Authenticator.SRP.Credentials.GetBytes(20),
 				null,
 				role,
-				ClientId.Cataclysm
+				ClientId.Wotlk
 				);
 		}
 

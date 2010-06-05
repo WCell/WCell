@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Spells
 		}
 
         public static void SendUnitCastStart(IRealmClient client, SpellCast cast, WorldObject target)
-        {
+		{
             // TODO: research and implement this.
             // maybe sent for all targets in SpellCast object?
 
@@ -152,6 +152,8 @@ namespace WCell.RealmServer.Spells
 
 		public static void SendCastStart(SpellCast cast)
 		{
+			if (!cast.Caster.IsAreaActive) return;
+
 			// TODO: can len be dynamic?
 			int len = 150;
 
@@ -346,6 +348,8 @@ namespace WCell.RealmServer.Spells
 		public static void SendSpellGo(ObjectBase caster2, SpellCast cast,
 			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets)
 		{
+			if (!cast.Caster.IsAreaActive) return;
+
 			// TODO: Dynamic packet length?
 			if (!cast.IsCasting)
 			{

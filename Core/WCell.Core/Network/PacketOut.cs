@@ -15,8 +15,10 @@
  *************************************************************************/
 
 using System.IO;
-using Cell.Core;
+using System.Text;
 using NLog;
+using System;
+using Cell.Core;
 
 namespace WCell.Core.Network
 {
@@ -53,6 +55,12 @@ namespace WCell.Core.Network
         {
             m_id = id;
         }
+		
+		//public PacketOut(PacketId id, BufferSegment segment)
+		//    : base(new SegmentStream(segment))
+		//{
+		//    m_id = id;
+		//}
 
         #endregion
 
@@ -106,6 +114,31 @@ namespace WCell.Core.Network
 				BaseStream.SetLength(value + HeaderSize);
 			}
     	}
+
+		//public BufferSegment Segment
+		//{
+		//    get { return ((SegmentStream) BaseStream).Segment; }
+		//}
+
+		/// <summary>
+		/// The buffer is already internally resized
+		/// </summary>
+		/// <returns></returns>
+		//public byte[] GetPacketContent()
+		//{
+		//    var length = (int)BaseStream.Length - HeaderSize;
+		//    byte[] data = new byte[length];
+
+		//    //var buf = (BaseStream as MemoryStream).ToArray();
+		//    //System.Buffer.BlockCopy(buf, HeaderSize, data, 0, length);
+
+		//    var pos = Position;
+		//    Position = HeaderSize;
+		//    BaseStream.Read(data, 0, length);
+		//    Position = pos;
+
+		//    return data;
+		//}
 
 		public void Fill(byte val, int num)
 		{

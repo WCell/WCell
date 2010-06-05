@@ -26,6 +26,12 @@ namespace WCell.Core.Network
 			get { return _segment; }
 		}
 
+		//public override void Dispose()
+		//{
+		//    base.Dispose();
+		//    _segment.Free();
+		//}
+
 		public static DisposableRealmPacketIn CreateFromOutPacket(RealmPacketOut packet)
 		{
 			var oldBuf = packet.GetFinalizedPacket();

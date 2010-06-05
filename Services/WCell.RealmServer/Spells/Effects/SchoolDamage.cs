@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
+			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue());
 		}
 
 		public override ObjectTypes CasterType

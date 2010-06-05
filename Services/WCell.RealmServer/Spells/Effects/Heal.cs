@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 			else
 			{
-				effectValue = CalcEffectValue();
+				effectValue = CalcDamageValue();
 			}
 			((Unit)target).Heal(m_cast.Caster, effectValue, Effect);
 		}

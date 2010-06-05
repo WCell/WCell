@@ -68,7 +68,7 @@ namespace WCell.AuthServerConsole
 				OnShutdown();
 			}
 #endif
-			Thread.CurrentThread.IsBackground = true;
+			//Thread.CurrentThread.IsBackground = true;
 			AuthServerConsole.Run();
 		}
 

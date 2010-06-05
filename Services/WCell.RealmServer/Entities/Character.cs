@@ -1263,6 +1263,11 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
+			if (!(opponent is Character) && opponent is WorldObject)
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+
 			if (opponent is Character)
 			{
 				if (IsInBattleground)
@@ -1278,6 +1283,36 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			return false;
+		}
+
+		public override bool IsInSameDivision(IFactionMember opponent)
+		{
+			if (opponent == this ||
+				(opponent is Unit && ((Unit)opponent).Master == this))
+			{
+				return true;
+			}
+
+			if (!(opponent is Character) && opponent is WorldObject)
+			{
+				opponent = ((WorldObject)opponent).Master;
+			}
+
+			if (opponent is Character)
+			{
+				if (IsInBattleground)
+				{
+					return Battlegrounds.Team == ((Character)opponent).Battlegrounds.Team;
+				}
+
+				var group = SubGroup;
+				if (group != null && ((Character)opponent).SubGroup == group)
+				{
+					// cannot ally with duelists
+					return DuelOpponent == null && ((Character)opponent).DuelOpponent == null;
+				}
+			}
 			return false;
 		}
 

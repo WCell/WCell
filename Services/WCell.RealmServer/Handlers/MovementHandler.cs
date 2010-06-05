@@ -93,7 +93,7 @@ namespace WCell.RealmServer.Handlers
 			var newPosition = packet.ReadVector3();
 			var orientation = packet.ReadFloat();
 
-            if (moveFlags.HasFlag(MovementFlags.OnTransport))
+			if (moveFlags.HasFlag(MovementFlags.OnTransport))
 			{
 				var transportId = packet.ReadPackedEntityId();
 				var transportPosition = packet.ReadVector3();
@@ -138,10 +138,10 @@ namespace WCell.RealmServer.Handlers
 				chr.Transport.RemovePassenger(chr);
 			}
 
-            if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
-                moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
+			if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
+				moveFlags2.HasFlag(MovementFlags2.AlwaysAllowPitching))
 			{
-                if (moveFlags.HasFlag(MovementFlags.Flying) && !chr.CanFly)
+				if (moveFlags.HasFlag(MovementFlags.Flying) && !chr.CanFly)
 				{
 					return;
 				}
@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Handlers
 
 			var airTime = packet.ReadUInt32();
 
-            if (moveFlags.HasFlag(MovementFlags.Falling))
+			if (moveFlags.HasFlag(MovementFlags.Falling))
 			{
 				// constant, but different when jumping in water and on land?                
 				var jumpFloat1 = packet.ReadFloat();
@@ -168,12 +168,12 @@ namespace WCell.RealmServer.Handlers
 				//chr.OnFalling(airTime, jumpXYSpeed);
 			}
 
-			if (packet.PacketId.RawId == (uint) RealmServerOpCode.MSG_MOVE_FALL_LAND)
+			if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND)
 			{
 				chr.OnFalling();
 			}
 
-            if (moveFlags.HasFlag(MovementFlags.Swimming))
+			if (moveFlags.HasFlag(MovementFlags.Swimming))
 			{
 				chr.OnSwim();
 			}
@@ -182,7 +182,7 @@ namespace WCell.RealmServer.Handlers
 				chr.OnStopSwimming();
 			}
 
-            if (moveFlags.HasFlag(MovementFlags.Spline))
+			if (moveFlags.HasFlag(MovementFlags.Spline))
 			{
 				var spline = packet.ReadFloat();
 			}
@@ -352,8 +352,8 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendEnterTransport(Unit unit)
 		{
-				var transport = unit.TransportInfo;
-				SendMonsterMoveTransport(unit, transport.Position - unit.Position, unit.TransportPosition);
+			var transport = unit.TransportInfo;
+			SendMonsterMoveTransport(unit, transport.Position - unit.Position, unit.TransportPosition);
 		}
 
 		public static void SendLeaveTransport(Unit unit)
@@ -369,6 +369,10 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="unit"></param>
 		public static void SendMonsterMoveTransport(Unit unit, Vector3 from, Vector3 to)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MONSTER_MOVE_TRANSPORT))
 			{
 				var transport = unit.TransportInfo;
@@ -414,6 +418,10 @@ namespace WCell.RealmServer.Handlers
 		#region SEND
 		public static void SendMoveToPacket(Unit movingUnit, ref Vector3 pos, float orientation, uint moveTime, MonsterMoveFlags moveFlags)
 		{
+			if (!movingUnit.IsAreaActive)
+			{
+				return;
+			}
 			//log.Debug("Monster Move: O={0}, Time={1}, Flags={2}, Pos={3}", orientation, moveTime, moveFlags, pos);
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MONSTER_MOVE, 53))
 			{
@@ -442,18 +450,22 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendFacingPacket(Unit movingUnit, float orientation, uint moveTimeMillis)
 		{
+			if (!movingUnit.IsAreaActive)
+			{
+				return;
+			}
 			//log.Debug("Monster Move: O={0}, Time={1}, Flags={2}, Pos={3}", orientation, moveTime, moveFlags, pos);
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MONSTER_MOVE, 53))
 			{
 				movingUnit.EntityId.WritePacked(packet); // 8
-				packet.Write((byte) 0);
+				packet.Write((byte)0);
 				packet.Write(movingUnit.Position); // + 12 = 20
 				packet.Write(Utility.GetSystemTime()); // + 4 = 24
 
-				packet.Write((byte) MonsterMoveType.FinalFacingAngle); // + 1 = 25
+				packet.Write((byte)MonsterMoveType.FinalFacingAngle); // + 1 = 25
 				packet.Write(orientation); // + 4 = 29
 
-				packet.Write((uint) MonsterMoveFlags.None); // + 4 = 33
+				packet.Write((uint)MonsterMoveFlags.None); // + 4 = 33
 				packet.Write(moveTimeMillis); // + 4 = 37
 				packet.Write(1);								// + 4 = 41
 				packet.Write(movingUnit.Position);
@@ -466,6 +478,10 @@ namespace WCell.RealmServer.Handlers
 											   MonsterMoveFlags moveFlags, IEnumerable<T> waypoints)
 			where T : IPathVertex
 		{
+			if (!movingUnit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = ConstructMultiWaypointMovePacket(movingUnit, moveTime, moveFlags, waypoints))
 			{
 				movingUnit.SendPacketToArea(packet, true);
@@ -476,6 +492,10 @@ namespace WCell.RealmServer.Handlers
 											   MonsterMoveFlags moveFlags, LinkedListNode<T> firstNode)
 			where T : IPathVertex
 		{
+			if (!movingUnit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = ConstructMultiWaypointMovePacket(movingUnit, speed, moveFlags, firstNode))
 			{
 				movingUnit.SendPacketToArea(packet, true);
@@ -519,31 +539,31 @@ namespace WCell.RealmServer.Handlers
 			{
 				case MonsterMoveType.Normal:
 					break;
-                // TODO: implement other cases
-                //case MonsterMoveType.Stop:
-                //    {
-                //        return packet;
-                //    }
-                //case MonsterMoveType.FinalFacingPoint:
-                //    {
-                //        // OnMonsterMove_final_facingSpot
-                //        packet.Write(0.0f);
-                //        packet.Write(0.0f);
-                //        packet.Write(0.0f);
-                //    }
-                //case MonsterMoveType.FinalFacingGuid:
-                //    {
-                //        packet.Write(0ul);
-                //    }
-                //case MonsterMoveType.FinalFacingAngle:
-                //    {
-                //        // OnMonsterMove_final_facingAngle
-                //        packet.Write(movingUnit.Orientation);
-                //    }
+				// TODO: implement other cases
+				//case MonsterMoveType.Stop:
+				//    {
+				//        return packet;
+				//    }
+				//case MonsterMoveType.FinalFacingPoint:
+				//    {
+				//        // OnMonsterMove_final_facingSpot
+				//        packet.Write(0.0f);
+				//        packet.Write(0.0f);
+				//        packet.Write(0.0f);
+				//    }
+				//case MonsterMoveType.FinalFacingGuid:
+				//    {
+				//        packet.Write(0ul);
+				//    }
+				//case MonsterMoveType.FinalFacingAngle:
+				//    {
+				//        // OnMonsterMove_final_facingAngle
+				//        packet.Write(movingUnit.Orientation);
+				//    }
 			}
 
 			packet.Write((uint)moveFlags);
-            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
+			if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
 			{
 				// TODO: what does this flag mean?
 				packet.Write((byte)0);
@@ -552,7 +572,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(moveTime);
 
-            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
+			if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
 			{
 				// TODO: what does this flag mean?
 				packet.Write(0.0f);
@@ -561,7 +581,7 @@ namespace WCell.RealmServer.Handlers
 
 			packet.Write(numWaypoints);
 
-            if (moveFlags.HasAnyFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
+			if (moveFlags.HasAnyFlag(MonsterMoveFlags.Flag_0x2000_FullPoints_1 | MonsterMoveFlags.Flag_0x40000_FullPoints_2))
 			{
 				foreach (IPathVertex waypoint in waypoints)
 				{
@@ -608,7 +628,7 @@ namespace WCell.RealmServer.Handlers
 			packet.Write((byte)MonsterMoveType.Normal);
 			packet.Write((uint)moveFlags);
 
-            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
+			if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x200000))
 			{
 				packet.Write((byte)0);
 				packet.Write(0);
@@ -617,7 +637,7 @@ namespace WCell.RealmServer.Handlers
 			var timePos = packet.Position;
 			packet.Position += 4;
 
-            if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
+			if (moveFlags.HasFlag(MonsterMoveFlags.Flag_0x800))
 			{
 				packet.Write(0.0f);
 				packet.Write(0);
@@ -654,6 +674,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendStopMovementPacket(Unit movingUnit)
 		{
+			if (!movingUnit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MONSTER_MOVE, 25))
 			{
 				movingUnit.EntityId.WritePacked(packet);
@@ -754,15 +778,15 @@ namespace WCell.RealmServer.Handlers
 			{
 				packet.WriteUInt((uint)map);
 
-			    var chr = client.ActiveCharacter;
-			    var trans = chr.Transport;
-                if (trans != null)
-                {
-                    packet.Write((uint)trans.Entry.Id);
-                    packet.Write((uint)chr.RegionId);
-                }
+				var chr = client.ActiveCharacter;
+				var trans = chr.Transport;
+				if (trans != null)
+				{
+					packet.Write((uint)trans.Entry.Id);
+					packet.Write((uint)chr.RegionId);
+				}
 
-			    client.Send(packet);
+				client.Send(packet);
 			}
 
 			// sends new world info
@@ -857,31 +881,31 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-        public static void SendTransferFailure(IPacketReceiver client, MapId mapId, MapTransferError reason)
-        {
-            SendTransferFailure(client, mapId, reason, 0);
-        }
+		public static void SendTransferFailure(IPacketReceiver client, MapId mapId, MapTransferError reason)
+		{
+			SendTransferFailure(client, mapId, reason, 0);
+		}
 
-	    public static void SendTransferFailure(IPacketReceiver client, MapId mapId, MapTransferError reason, byte arg)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRANSFER_ABORTED, 8))
-            {
-                packet.Write((uint)mapId);
-                packet.Write((byte)reason);
+		public static void SendTransferFailure(IPacketReceiver client, MapId mapId, MapTransferError reason, byte arg)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TRANSFER_ABORTED, 8))
+			{
+				packet.Write((uint)mapId);
+				packet.Write((byte)reason);
 
-                switch (reason)
-                {
-                    case MapTransferError.TRANSFER_ABORT_INSUF_EXPAN_LVL:
-                    case MapTransferError.TRANSFER_ABORT_DIFFICULTY:
-                    case MapTransferError.TRANSFER_ABORT_UNIQUE_MESSAGE:
-                        // only for these 3 cases!
-                        packet.Write((byte)arg);
-                        break;
-                }
+				switch (reason)
+				{
+					case MapTransferError.TRANSFER_ABORT_INSUF_EXPAN_LVL:
+					case MapTransferError.TRANSFER_ABORT_DIFFICULTY:
+					case MapTransferError.TRANSFER_ABORT_UNIQUE_MESSAGE:
+						// only for these 3 cases!
+						packet.Write((byte)arg);
+						break;
+				}
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
 		#endregion
 
@@ -889,6 +913,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetWalkSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_WALK_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -901,6 +929,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetRunSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_RUN_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -913,6 +945,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetRunBackSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_RUN_BACK_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -925,6 +961,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetSwimSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_SWIM_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -937,6 +977,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetSwimBackSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_SWIM_BACK_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -949,6 +993,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetFlightSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_FLIGHT_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -961,6 +1009,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetFlightBackSpeed(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_FLIGHT_BACK_SPEED, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -973,6 +1025,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetTurnRate(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_TURN_RATE, 43))
 			{
 				unit.EntityId.WritePacked(packet);
@@ -985,6 +1041,10 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendSetPitchRate(Unit unit)
 		{
+			if (!unit.IsAreaActive)
+			{
+				return;
+			}
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_MOVE_SET_PITCH_RATE, 43))
 			{
 				unit.EntityId.WritePacked(packet);

@@ -418,7 +418,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_master != null && m_master != this; }
 		}
-#endregion
+		#endregion
 
 		#region Nearby objects/clients
 		/// <summary>
@@ -1360,7 +1360,9 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (opponent == this ||
+				(opponent is Unit && ((Unit)opponent).Master == this) ||
+				Master == opponent)
 			{
 				return true;
 			}
@@ -1379,6 +1381,15 @@ namespace WCell.RealmServer.Entities
 			if (faction != null && opponent.Faction != null)
 				return faction.Friends.Contains(opFaction);
 			return false;
+		}
+
+		public virtual bool IsInSameDivision(IFactionMember opponent)
+		{
+			if (opponent is Character)
+			{
+				return ((Character)opponent).IsInSameDivision(this);
+			}
+			return IsAlliedWith(opponent);
 		}
 
 		/// <summary>

@@ -130,13 +130,6 @@ namespace WCell.Constants
 		Naga = 13,
 		Broken = 14,
 		Skeleton = 15,
-        Vrykul = 16,
-        Tuskarr = 17,
-        ForestTroll = 18,
-        Taunka = 19,
-        NorthrendSkeleton = 20,
-        IceTroll = 21,
-        Worgen = 22,
 		End
 	}
 
@@ -215,8 +208,6 @@ namespace WCell.Constants
 		Happiness = 4,
 		Runes = 5,
 		RunicPower = 6,
-        SoulShards = 7,
-        Eclipse = 8,
 		Count
 	}
 

@@ -14,12 +14,14 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -43,6 +45,7 @@ namespace WCell.RealmServer.Spells
 		public readonly SpellEffect Effect;
 		protected SpellCast m_cast;
 		internal protected SpellTargetCollection Targets;
+		private int CurrentTargetNo;
 
 		protected SpellEffectHandler(SpellCast cast, SpellEffect effect)
 		{
@@ -105,8 +108,9 @@ namespace WCell.RealmServer.Spells
 		{
 			if (Targets != null)
 			{
-				foreach (var target in Targets)
+				for (CurrentTargetNo = 0; CurrentTargetNo < Targets.Count; CurrentTargetNo++)
 				{
+					var target = Targets[CurrentTargetNo];
 					if (!target.IsInWorld)
 					{
 						continue;
@@ -171,6 +175,16 @@ namespace WCell.RealmServer.Spells
 				failReason = SpellFailedReason.Error;
 				log.Warn("Invalid caster type in EffectHandler: " + this);
 			}
+		}
+
+		public int CalcDamageValue()
+		{
+			int val = CalcEffectValue();
+			if (CurrentTargetNo > 0)
+			{
+				return val = ((float)(Math.Pow(m_cast.Spell.DamageMultipliers[0], CurrentTargetNo) * val)).RoundInt();
+			}
+			return val;
 		}
 
 		public int CalcEffectValue()
