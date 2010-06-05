@@ -18,6 +18,7 @@ using System;
 using System.Threading;
 using WCell.AuthServer;
 using WCell.AuthServer.Commands;
+using WCell.Core;
 using WCell.Core.Database;
 
 namespace WCell.AuthServerConsole
@@ -43,7 +44,7 @@ namespace WCell.AuthServerConsole
 					if (!AuthenticationServer.Instance.IsRunning)
 					{
 						break;
-					}
+					}	
 					line = Console.ReadLine();
 				}
 				catch

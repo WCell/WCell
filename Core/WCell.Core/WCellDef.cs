@@ -82,7 +82,7 @@ namespace WCell.Core
 
 		public const string DBC_EMOTESTEXT = "EmotesText.dbc";
 
-		public const long SERVER_UPDATE_INTERVAL = 50;
+		public const int SERVER_UPDATE_INTERVAL = 50;
 
 		public const long MAX_NETWORK_SEND_DELTA = 50;
 

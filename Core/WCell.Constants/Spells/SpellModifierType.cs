@@ -89,6 +89,12 @@ namespace WCell.Constants.Spells
 		/// Lets the totems be activated faster
 		/// </summary>
 		ActivationTime = 19,
+
+		/// <summary>
+		/// Modifies the factor applied to successive targets of chain hits (only with AddModifierPercent)
+		/// </summary>
+		ChainValueFactor = 20,
+
 		/// <summary>
 		/// Modifies the EffectValue (positive) for periodic aura effects
 		/// </summary>

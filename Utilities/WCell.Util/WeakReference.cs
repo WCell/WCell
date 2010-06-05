@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
+using System.Text;
 
 namespace WCell.Util
 {
 	/// <summary>
 	/// Represents a weak reference, which references an object while still allowing   
-	/// that object to be reclaimed by garbage collection.
-    /// 
-    /// http://ondevelopment.blogspot.com/2008/01/generic-weak-reference.html
-	/// </summary>
-	/// <typeparam name="T">The type of the object that is referenced.</typeparam>
+	/// that object to be reclaimed by garbage collection.    
+	/// </summary>    
+	/// <seealso cref="http://ondevelopment.blogspot.com/2008/01/generic-weak-reference.html"/>
+	/// <typeparam name="T">The type of the object that is referenced.</typeparam>    
 	[Serializable]
 	public class WeakReference<T> : WeakReference where T : class
 	{

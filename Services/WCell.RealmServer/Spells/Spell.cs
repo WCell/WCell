@@ -179,12 +179,6 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// ChainTargets are stored per effect in DBCs, but actually apply to all effects with the same
-		/// ImplicitTargetTypes within the Spell
-		/// </summary>
-		public int ChainTargets;
-
-		/// <summary>
 		/// Indicates whether this Spell has at least one harmful effect
 		/// </summary>
 		public bool HasHarmfulEffects;
@@ -611,15 +605,6 @@ namespace WCell.RealmServer.Spells
 
 			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
 
-			HasEffectWith(effect =>
-			{
-				if (effect.ChainTargets > 0)
-				{
-					ChainTargets = effect.ChainTargets;
-				}
-				return false;
-			});
-
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
@@ -666,6 +651,11 @@ namespace WCell.RealmServer.Spells
 					effect.EffectType == SpellEffectType.InstantKill ||
 					effect.EffectType == SpellEffectType.SchoolDamage ||
 					effect.IsStrikeEffect);
+
+			if (DamageMultipliers[0] <= 0)
+			{
+				DamageMultipliers[0] = 1;
+			}
 
 			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
 

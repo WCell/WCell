@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Handlers
 +    data.put<uint32>(0, count);
 +    SendPacket(&data);
 +}*/
-		[ClientPacketHandler(RealmServerOpCode.CMSG_QUERY_QUESTS_COMPLETED)]
+		[ClientPacketHandler(RealmServerOpCode.SMSG_QUERY_QUESTS_COMPLETED)]
 		public static void HandleQuestCompletedQuery(IRealmClient client, RealmPacketIn packet)
 		{
 			SendQuestCompletedQueryResponse(client.ActiveCharacter);
@@ -439,20 +439,7 @@ namespace WCell.RealmServer.Handlers
 						pckt.Write("");
 					}
 				}
-
-                for (var k = 0; k < 4; k++)
-                {
-                    pckt.Write((uint)0);
-                    pckt.Write((uint)0);
-                }
-
-                for (var k = 0; k < 4; k++)
-                {
-                    pckt.Write((uint)0);
-                    pckt.Write((uint)0);
-                }
-
-			    chr.Client.Send(pckt);
+				chr.Client.Send(pckt);
 			}
 		}
 

@@ -14,8 +14,8 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
 using WCell.Core.Network;
+using WCell.Constants;
 
 namespace WCell.AuthServer
 {
@@ -44,6 +44,18 @@ namespace WCell.AuthServer
         {
             get { return (AuthServerOpCode)PacketId.RawId; }
         }
+
+        ///// <summary>
+        ///// Constructor for authentication error packets.
+        ///// </summary>
+        ///// <param name="packetOpcode">the opcode of the packet</param>
+        ///// <param name="error">the error of the packet</param>
+        //public AuthPacketOut(AuthServerOpCode packetOpcode, AccountStatus error)
+        //    : base(new PacketId(packetOpcode))
+        //{
+        //    base.WriteByte((byte)packetOpcode);
+        //    base.WriteByte((byte)error);
+        //}
 
         /// <summary>
         /// Default constructor.

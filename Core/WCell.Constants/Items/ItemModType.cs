@@ -95,16 +95,6 @@
 		SpellPenetration = 47,
 		BlockValue = 48,
 
-        // 4.0.0
-        MasteryRating = 49,
-        ExtraArmor = 50,
-        FireResistance = 51,
-        FrostResistance = 52,
-        HolyResistance = 53,
-        ShadowResistance = 54,
-        NatureResistence = 55,
-        ArcaneResistance = 56,
-
-		End
+		End = 100
 	}
 }

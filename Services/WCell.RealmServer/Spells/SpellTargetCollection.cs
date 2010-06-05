@@ -179,7 +179,8 @@ namespace WCell.RealmServer.Spells
 			}
 
 			Cast.Caster.Region.IterateObjects(ref pos, radius > 0 ? radius : 5,
-				obj => {
+				obj =>
+				{
 					if (ValidateTarget(obj, targetFilter) == SpellFailedReason.Ok)
 					{
 						Add(obj);
@@ -192,20 +193,17 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Adds all chained units around the selected unit to the list
 		/// </summary>
-		public void FindChain(Unit first, TargetFilter filter, bool harmful)
+		public void FindChain(Unit first, TargetFilter filter, bool harmful, int limit)
 		{
 			var handler = FirstHandler;
 			var caster = handler.Cast.Caster;
-			var limit = handler.Effect.Spell.ChainTargets - 1;
-			if (limit < 1)
-			{
-				limit = int.MaxValue;
-			}
 
-			first.IterateEnvironment(handler.GetRadius(), target => {
+			first.IterateEnvironment(handler.GetRadius(), target =>
+			{
 				if (target != caster &&
 					target != first &&
-					harmful == caster.MayAttack(target) &&
+					((harmful && caster.MayAttack(target)) ||
+					(!harmful && caster.IsInSameDivision(target))) &&
 					ValidateTarget(target, filter) == SpellFailedReason.Ok)
 				{
 					Add(target);
@@ -500,7 +498,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return;
 			}
-			
+
 			m_initialized = false;
 
 			m_handlers.Clear();
@@ -626,7 +624,8 @@ namespace WCell.RealmServer.Spells.Extensions
 					}
 				}
 
-				var spell = targets.FirstHandler.Effect.Spell;
+				var effect = targets.FirstHandler.Effect;
+				var spell = effect.Spell;
 				if (selected != caster)
 				{
 					if (!caster.IsInMaxRange(spell, selected))
@@ -648,9 +647,14 @@ namespace WCell.RealmServer.Spells.Extensions
 					{
 						// add target and look for more if we have a chain effect
 						targets.Add(selected);
-						if (spell.ChainTargets > 0 && selected is Unit)
+						var chainCount = effect.ChainTargets;
+						if (caster is Character)
 						{
-							targets.FindChain((Unit)selected, filter, true);
+							chainCount = ((Character) caster).PlayerSpells.GetModifiedInt(SpellModifierType.ChainTargets, spell, chainCount);
+						}
+						if (chainCount > 1 && selected is Unit)
+						{
+							targets.FindChain((Unit)selected, filter, true, chainCount);
 						}
 					}
 				}
@@ -830,7 +834,7 @@ namespace WCell.RealmServer.Spells.Extensions
 
 		public static void IsSameClass(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			if (targets.Cast.Caster is Unit && target is Unit)
+			if (targets.Cast.CasterUnit != null && target is Unit)
 			{
 				if (targets.Cast.CasterUnit.Class == ((Unit)target).Class)
 				{

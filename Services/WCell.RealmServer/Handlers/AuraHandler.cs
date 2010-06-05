@@ -33,6 +33,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void SendAuraUpdate(Unit owner, Aura aura)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AURA_UPDATE))
 			{
 				owner.EntityId.WritePacked(packet);
@@ -45,6 +46,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void SendAllAuras(IPacketReceiver rcv, Unit owner)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = CreateAllAuraPacket(owner))
 			{
 				rcv.Send(packet);
@@ -53,6 +55,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void SendAllAuras(Unit owner)
 		{
+			if (!owner.IsAreaActive) return;
 			using (var packet = CreateAllAuraPacket(owner))
 			{
 				owner.SendPacketToArea(packet);

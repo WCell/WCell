@@ -63,9 +63,6 @@ namespace WCell.Constants.Updates
 		/// It is 3 values packed together, but of unknown use.
 		/// </summary>
 		HasRotation = 0x200,
-
-        Flag_0x400 = 0x400,
-        UnknownCataclysm = 0x800,
 	}
 
 	/// <summary>

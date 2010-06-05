@@ -485,8 +485,8 @@ namespace WCell.RealmServer.Spells.Auras
 				handler.Init(this);
 			}
 
-			// send to client
-			SendToClient();
+
+
 
 			CheckActivation();
 
