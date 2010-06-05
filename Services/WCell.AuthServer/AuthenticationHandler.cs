@@ -21,8 +21,8 @@ using System.Threading;
 using NLog;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Database;
-using WCell.AuthServer.Localization;
 using WCell.AuthServer.Network;
+using WCell.AuthServer.Res;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
@@ -179,7 +179,7 @@ namespace WCell.AuthServer
 			// Account-names are always sent upper-case by the client (make sure, the tradition is kept alive)
 			var accName = packet.ReadPascalString().ToUpper();
 
-			s_log.Debug(Resources.AccountChallenge, accName);
+			s_log.Debug(resources.AccountChallenge, accName);
 
 			client.AccountName = accName;
 			AuthenticationServer.Instance.AddMessage(new Message1<IAuthClient>(client, AuthChallengeRequestCallback));
@@ -301,7 +301,7 @@ namespace WCell.AuthServer
                 }
                 else
                 {
-                    s_log.Debug(Resources.InvalidClientProof, client.AccountName);
+                    s_log.Debug(resources.InvalidClientProof, client.AccountName);
 
                     OnLoginError(client, AccountStatus.InvalidInformation);
                 }
@@ -320,7 +320,7 @@ namespace WCell.AuthServer
 			{
 				// Pass and username are identical so an Account can be auto-created
 				// the corresponding check happened before
-				s_log.Debug(Resources.AutocreatingAccount, client.AccountName);
+				s_log.Debug(resources.AutocreatingAccount, client.AccountName);
 
 				if (AccountMgr.DoesAccountExist(client.AccountName))
 				{

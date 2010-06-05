@@ -176,8 +176,8 @@
     <Compile Include="Firewall\IPRange.cs" />
     <Compile Include="IPC\IPCServiceAdapter.cs" />
     <Compile Include="IPC\IPCServiceHost.cs" />
-    <Compile Include="Localization\Resources.cs" />
-    <Compile Include="Localization\WCell.AuthServer.Designer.cs">
+    <Compile Include="Res\Resources.cs" />
+    <Compile Include="Res\WCell.AuthServer.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>WCell.AuthServer.resx</DependentUpon>
@@ -233,7 +233,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Localization\WCell.AuthServer.resx">
+    <EmbeddedResource Include="Res\WCell.AuthServer.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>WCell.AuthServer.Designer.cs</LastGenOutput>

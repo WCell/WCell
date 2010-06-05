@@ -899,6 +899,7 @@ namespace WCell.RealmServer.Entities
 			UnitFlags &= ~UnitFlags.SelectableNotAttackable;
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 
+			m_brain.IsRunning = true;
 			m_brain.EnterDefaultState();
 			m_brain.OnActivate();
 

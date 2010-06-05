@@ -177,12 +177,20 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+		/// <summary>
+		/// Used for one-shot damage and healing effects
+		/// </summary>
 		public int CalcDamageValue()
 		{
 			int val = CalcEffectValue();
 			if (CurrentTargetNo > 0)
 			{
-				return val = ((float)(Math.Pow(m_cast.Spell.DamageMultipliers[0], CurrentTargetNo) * val)).RoundInt();
+				var dmgMod = m_cast.Spell.DamageMultipliers[0];
+				if (m_cast.Caster is Character)
+				{
+					dmgMod = ((Character) m_cast.Caster).PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Effect.Spell, dmgMod);
+				}
+				return val = ((float)(Math.Pow(dmgMod, CurrentTargetNo) * val)).RoundInt();
 			}
 			return val;
 		}

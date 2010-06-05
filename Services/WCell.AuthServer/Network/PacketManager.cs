@@ -17,7 +17,7 @@
 using System;
 using System.Reflection;
 using NLog;
-using WCell.AuthServer.Localization;
+using WCell.AuthServer.Res;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
@@ -84,7 +84,7 @@ namespace WCell.AuthServer.Network
 			}
 			catch (Exception e)
 			{
-				LogUtil.ErrorException(e, Resources.PacketHandleException, packet.PacketId);
+				LogUtil.ErrorException(e, resources.PacketHandleException, packet.PacketId);
 				return false;
 			}
 			finally
@@ -103,7 +103,7 @@ namespace WCell.AuthServer.Network
 		{
 			Instance.RegisterAll(Assembly.GetExecutingAssembly());
 
-			s_log.Debug(Resources.RegisteredAllHandlers);
+			s_log.Debug(resources.RegisteredAllHandlers);
 		}
 	}
 }

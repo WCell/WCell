@@ -25,7 +25,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Interaction

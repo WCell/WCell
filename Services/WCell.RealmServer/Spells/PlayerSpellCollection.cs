@@ -193,6 +193,10 @@ namespace WCell.RealmServer.Spells
 			{
 				OwnerChar.Skills.Remove(spell.SkillId);
 			}
+			if (spell.Talent != null)
+			{
+				OwnerChar.Talents.Remove(spell.Talent.Id);
+			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
 			if (spell.IsPassive)
 			{

@@ -5,7 +5,14 @@ using System.Reflection;
 namespace WCell.Util.Lang
 {
 	/// <summary>
-	/// 
+	/// Localizer class that converts the elements of the Locale and Key enums to array indices to look up strings with minimal
+	/// overhead. Values defined in supplied Enum types must all be positive and not too big.
+	/// Class is not thread-safe.
+	/// <typeparam name="Locale">
+	/// int-Enum that contains a set of usable Locales. For every Locale, one XML file is created in the supplied folder to contain
+	/// all pairs of keys their string-representations.
+	/// </typeparam>
+	/// <typeparam name="Key">int-Enum that contains language keys which are mapped to string values in an XML file</typeparam>
 	/// </summary>
 	public class Localizer<Locale, Key> : ILocalizer<Locale>
 		where Locale : IConvertible

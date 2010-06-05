@@ -688,7 +688,6 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_isInCombat == value) return;
 
-				this.UpdatePowerRegen();
 				if (m_isInCombat = value)
 				{
 					UnitFlags |= UnitFlags.Combat;
@@ -731,6 +730,8 @@ namespace WCell.RealmServer.Entities
 
 					OnLeaveCombat();
 				}
+
+				this.UpdatePowerRegen();
 			}
 		}
 

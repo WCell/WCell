@@ -227,8 +227,8 @@
     <Compile Include="Privileges\ClientConsoleCommands.cs" />
     <Compile Include="Chat\LangHandler.cs" />
     <Compile Include="Chat\ChatMgr.cs" />
-    <Compile Include="Localization\Resources.cs" />
-    <Compile Include="Localization\WCell.RealmServer.Designer.cs">
+    <Compile Include="Res\Resources.cs" />
+    <Compile Include="Res\WCell.RealmServer.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>WCell.RealmServer.resx</DependentUpon>
@@ -301,7 +301,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Localization\WCell.RealmServer.resx">
+    <EmbeddedResource Include="Res\WCell.RealmServer.resx">
       <SubType>Designer</SubType>
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>WCell.RealmServer.Designer.cs</LastGenOutput>

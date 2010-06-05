@@ -76,10 +76,27 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// Enrage and Wrecking Crew proc effects don't stack
 			AuraHandler.AddAuraGroup(
-				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2, 
+				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2,
 				SpellId.EffectEnrageRank4_2, SpellId.EffectEnrageRank5_2,
-				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3, 
+				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3,
 				SpellId.EffectEnrageRank4, SpellId.EffectEnrageRank5);
+
+
+			// Concussion Blow deals AP based school damage
+			SpellLineId.WarriorProtectionConcussionBlow.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				if (effect != null)
+				{
+					effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPEffectHandler(cast, eff);
+				}
+				effect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				if (effect != null)
+				{
+					// dont need this one
+					effect.IsUsed = false;
+				}
+			});
 		}
 	}
 }

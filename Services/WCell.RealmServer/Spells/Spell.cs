@@ -477,7 +477,7 @@ namespace WCell.RealmServer.Spells
 						{
 							IsTeachSpell = GetEffect(SpellEffectType.LearnSpell) != null;
 						}
-						Effects[i].IsInvalid = true;
+						Effects[i].IsUsed = true;
 					}
 				}
 			}

@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue());
+			((Unit)target).DoSpellDamage((Unit)m_cast.Caster, Effect, CalcDamageValue());
 		}
 
 		public override ObjectTypes CasterType
@@ -39,6 +39,25 @@ namespace WCell.RealmServer.Spells.Effects
 		public override ObjectTypes TargetType
 		{
 			get { return ObjectTypes.Unit; }
+		}
+	}
+
+	/// <summary>
+	/// Deals EffectValue in % of Melee AP
+	/// </summary>
+	public class SchoolDamageByAPEffectHandler : SchoolDamageEffectHandler
+	{
+		public SchoolDamageByAPEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var caster = (Unit)m_cast.Caster;
+			var value = ((caster.TotalMeleeAP * CalcEffectValue()) + 50) / 100;
+
+			((Unit)target).DoSpellDamage((Unit)m_cast.Caster, Effect, value);
 		}
 	}
 }

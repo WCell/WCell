@@ -78,13 +78,12 @@ namespace WCell.RealmServer.Talents
 				else if (value > m_rank)
 				{
 					// add Ranks
-					if (value > Entry.MaxRank)
+					if (value > Entry.MaxRank-1)
 					{
-						value = Entry.MaxRank;
+						value = Entry.MaxRank-1;
 					}
 					diff = value - m_rank;
 
-					// take points
 					if (m_rank >= 0)
 					{
 						Talents.Owner.Spells.Replace(Entry.Spells[m_rank], Entry.Spells[value]);
@@ -94,6 +93,7 @@ namespace WCell.RealmServer.Talents
 						Talents.Owner.Spells.AddSpell(Entry.Spells[value]);
 					}
 
+					// take points
 					Talents.Owner.UpdateFreeTalentPointsSilently(-diff);
 				}
 				else

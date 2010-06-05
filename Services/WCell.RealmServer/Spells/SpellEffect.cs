@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public float APPerComboPointValueFactor;
 
-		public bool IsInvalid;
+		public bool IsUsed;
 
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
@@ -404,7 +404,7 @@ namespace WCell.RealmServer.Spells
 				AffectMaskBitSet = Utility.GetSetIndices(AffectMask);
 			}
 
-			if (SpellEffectHandlerCreator == null && !IsInvalid)
+			if (SpellEffectHandlerCreator == null && !IsUsed)
 			{
 				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int)EffectType];
 			}
@@ -531,7 +531,7 @@ namespace WCell.RealmServer.Spells
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 				{
 					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.MeleeAttackPower * ap);
+					value += (int)(caster.TotalMeleeAP * ap);
 				}
 			}
 			return value;

@@ -5,7 +5,7 @@ using WCell.Constants;
 namespace WCell.RealmServer.Lang
 {
 	/// <summary>
-	/// 
+	/// Extension class that gives tools to select array elements, based on ClientLocale
 	/// </summary>
 	public static class ArrayLocalizer
 	{

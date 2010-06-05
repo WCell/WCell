@@ -248,6 +248,16 @@ namespace WCell.RealmServer.Talents
 		/// <summary>
 		/// Returns the current rank that this player has of this talent
 		/// </summary>
+		public Talent GetTalent(TalentId id)
+		{
+			Talent talent;
+			ById.TryGetValue(id, out talent);
+			return talent;
+		}
+
+		/// <summary>
+		/// Returns the current rank that this player has of this talent
+		/// </summary>
 		public int GetRank(TalentId id)
 		{
 			Talent talent;
@@ -257,6 +267,15 @@ namespace WCell.RealmServer.Talents
 			}
 
 			return -1;
+		}
+
+		public void Remove(TalentId id)
+		{
+			var talent = GetTalent(id);
+			if (talent != null)
+			{
+				talent.Remove();
+			}
 		}
 
 		/// <summary>
