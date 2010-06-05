@@ -15,7 +15,7 @@
  *
  *************************************************************************/
 
-namespace WCell.RealmServer.Localization
+namespace WCell.RealmServer.Res
 {
     /// <summary>
     /// Wrapper for auto-generated resource class. This allows the the strongly-typed

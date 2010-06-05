@@ -22,7 +22,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using NLog;
 using WCell.AuthServer;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core.Cryptography;

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WCell.RealmServer.Localization {
+namespace WCell.RealmServer.Res {
     using System;
     
     

@@ -5,7 +5,7 @@ using System.Threading;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;

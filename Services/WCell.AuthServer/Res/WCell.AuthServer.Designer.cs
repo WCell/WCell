@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WCell.AuthServer.Localization {
+namespace WCell.AuthServer.Res {
     using System;
     
     

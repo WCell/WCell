@@ -22,7 +22,7 @@ using NLog;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Database;
 using WCell.AuthServer.Network;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;

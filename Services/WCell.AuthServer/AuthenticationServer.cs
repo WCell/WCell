@@ -19,7 +19,7 @@ using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using Cell.Core;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Util.Collections;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Firewall;

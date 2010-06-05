@@ -19,7 +19,7 @@ using System.Net.Security;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using NLog;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Core;
 using WCell.Constants;
 using WCell.Core.Initialization;

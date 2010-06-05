@@ -15,7 +15,7 @@
  *
  *************************************************************************/
 
-namespace WCell.AuthServer.Localization
+namespace WCell.AuthServer.Res
 {
     /// <summary>
     /// Wrapper for auto-generated resource class. This allows the the strongly-typed

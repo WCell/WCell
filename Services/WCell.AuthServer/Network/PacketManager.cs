@@ -17,7 +17,7 @@
 using System;
 using System.Reflection;
 using NLog;
-using WCell.AuthServer.Res;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
