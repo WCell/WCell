@@ -45,9 +45,9 @@ namespace WCell.RealmServer.Spells.Effects
 	/// <summary>
 	/// Deals EffectValue in % of Melee AP
 	/// </summary>
-	public class SchoolDamageByAPEffectHandler : SchoolDamageEffectHandler
+	public class SchoolDamageByAPPctEffectHandler : SchoolDamageEffectHandler
 	{
-		public SchoolDamageByAPEffectHandler(SpellCast cast, SpellEffect effect)
+		public SchoolDamageByAPPctEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
 		}

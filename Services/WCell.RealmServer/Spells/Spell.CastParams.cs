@@ -494,7 +494,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else if (unit is Character)
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedIntNegative(SpellModifierType.CooldownTime, this, cd);
+				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

@@ -294,7 +294,7 @@ namespace WCell.RealmServer.Modifiers
 			{
 				if (unit is Character)
 				{
-					regen = ((Character) unit).Archetype.Class.CalculatePowerRegen((Character) unit);
+					regen = ((Character)unit).Archetype.Class.CalculatePowerRegen((Character)unit);
 				}
 				else if (unit.IsMinion && unit.PowerType == PowerType.Focus)
 				{
@@ -303,11 +303,11 @@ namespace WCell.RealmServer.Modifiers
 				else
 				{
 					// TODO: NPC regen
-					regen = unit.BasePower/20;
+					regen = unit.BasePower / 20;
 				}
 
-				regen += unit.StatModsInt[(int) StatModifierInt.PowerRegen];
-				regen = GetMultiMod((int) unit.MultiplierMods[(int) StatModifierFloat.PowerRegen], regen);
+				regen += unit.StatModsInt[(int)StatModifierInt.PowerRegen];
+				regen = GetMultiMod((int)unit.MultiplierMods[(int)StatModifierFloat.PowerRegen], regen);
 			}
 
 			unit.PowerRegenPerTick = regen;
@@ -476,11 +476,19 @@ namespace WCell.RealmServer.Modifiers
 		/// </summary>
 		internal static void UpdateOffHandDamage(this Unit unit)
 		{
-			var apBonus = (unit.TotalMeleeAP * unit.MainHandAttackTime) / 14000;
 			if (unit.OffHandWeapon != null)
 			{
-				unit.MinOffHandDamage = (unit.OffHandWeapon.Damages.TotalMin() + apBonus) / 2;
-				unit.MaxOffHandDamage = (unit.OffHandWeapon.Damages.TotalMax() + apBonus) / 2;
+				var apBonus = (unit.TotalMeleeAP * unit.OffHandAttackTime) / 14000;
+				var min = (unit.OffHandWeapon.Damages.TotalMin() + apBonus) / 2;
+				var max = (unit.OffHandWeapon.Damages.TotalMax() + apBonus) / 2;
+				if (unit is Character)
+				{
+					var bonus = ((Character)unit).OffhandDmgPctMod;
+					min = ((min * bonus) + 50) / 100; // rounded
+					max = ((max * bonus) + 50) / 100; // rounded
+				}
+				unit.MinOffHandDamage = min;
+				unit.MaxOffHandDamage = max;
 			}
 			else
 			{

@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
         protected internal override void Remove(bool cancelled)
         {
-            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.ParryChance, EffectValue);
+            m_aura.Auras.Owner.ChangeModifier(StatModifierInt.ParryChance, -EffectValue);
         }
     }
 };

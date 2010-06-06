@@ -1358,7 +1358,7 @@ namespace WCell.RealmServer.Entities
 		public int HealthPct
 		{
 			get { return (100 * Health) / MaxHealth; }
-			set { Health = (value * MaxHealth) / 100; }
+			set { Health = ((value * MaxHealth) + 50) / 100; }
 		}
 
 		/// <summary>

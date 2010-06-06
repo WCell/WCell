@@ -23,12 +23,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.ModTargetResistanceMod(EffectValue, m_spellEffect.MiscBitSet);
+			Owner.ModTargetResistanceMod(EffectValue, m_spellEffect.MiscBitSet);
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ModTargetResistanceMod(-EffectValue, m_spellEffect.MiscBitSet);
+			Owner.ModTargetResistanceMod(-EffectValue, m_spellEffect.MiscBitSet);
 		}
 	}
 };

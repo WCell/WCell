@@ -20,12 +20,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Spell.Mechanic, EffectValue);
+			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Mechanic, EffectValue);
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Spell.Mechanic, -EffectValue);
+			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Mechanic, -EffectValue);
 		}
 	}
 };
