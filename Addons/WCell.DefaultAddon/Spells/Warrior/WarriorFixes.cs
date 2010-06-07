@@ -158,6 +158,39 @@ namespace WCell.Addons.Default.Spells.Warrior
 				effect.EffectType = SpellEffectType.RestoreHealthPercent;
 				effect.BasePoints = 0;	// only 1%
 			}, SpellId.EffectClassSkillBloodthirst);
+
+			// Your next 5 melee attacks strike an additional nearby opponent.
+			SpellLineId.WarriorArmsSweepingStrikes.Apply(spell =>
+			{
+				var effect = spell.GetAuraEffect(AuraType.Dummy);
+				if (effect != null)
+				{
+					effect.AuraEffectHandlerCreator = () => new ProcStrikeAdditionalTargetHandler();
+					effect.IsProc = true;
+				}
+			});
+		}
+
+		// TODO: substract consumed proc charges
+		// TODO: make DoRawDamage aggro NPCs
+		public class ProcStrikeAdditionalTargetHandler : AuraEffectHandler
+		{
+			public override void OnProc(RealmServer.Entities.Unit target, IUnitAction action)
+			{
+				var dmgAction = action as DamageAction;
+				if (dmgAction == null) return;
+				dmgAction.MarkInUse();
+				Owner.AddMessage(() =>
+				{
+					var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != target);
+					if (nextTarget != null)
+					{
+						dmgAction.Victim = nextTarget;
+						dmgAction.SpellEffect = m_spellEffect;
+						target.DoRawDamage(dmgAction);
+					}
+				});
+			}
 		}
 
 		public class AddMaxHealthPctToHealthHandler : AuraEffectHandler
