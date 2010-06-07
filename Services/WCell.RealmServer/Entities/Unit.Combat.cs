@@ -1154,9 +1154,12 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
-					// proc
-					action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
-					Proc(targetProcTriggerFlags, action.Attacker, action, false);
+					if (action.Weapon != OffHandWeapon)
+					{
+						// proc (if not offhand)
+						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
+						Proc(targetProcTriggerFlags, action.Attacker, action, false);	
+					}
 				}
 			}
 		}
