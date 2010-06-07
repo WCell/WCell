@@ -77,8 +77,13 @@
     <Compile Include="Console\MpqConsole.cs" />
     <Compile Include="Console\XnaConsole.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Extracted\ExtractedADTManager.cs" />
+    <Compile Include="Extracted\ExtractedM2Manager.cs" />
+    <Compile Include="Extracted\ExtractedTerrain.cs" />
+    <Compile Include="Extracted\ExtractedWMOManager.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="MPQ\ADT\ADT.cs" />
+    <Compile Include="MPQ\ADT\ADTBase.cs" />
     <Compile Include="MPQ\ADT\ADTChunkParser.cs" />
     <Compile Include="MPQ\ADT\ADTManager.cs" />
     <Compile Include="MPQ\ADT\ADTParser.cs" />
@@ -91,7 +96,11 @@
     <Compile Include="MPQ\ADT\Components\MapObjectDefinition.cs" />
     <Compile Include="MPQ\ADT\Components\MapVertices.cs" />
     <Compile Include="MPQ\ADT\Components\MH2O.cs" />
+    <Compile Include="MPQ\ADT\IADTManager.cs" />
+    <Compile Include="MPQ\M2\IM2Manager.cs" />
+    <Compile Include="MPQ\WDT\ContinentType.cs" />
     <Compile Include="MPQ\Color4.cs" />
+    <Compile Include="MPQ\ITerrainManager.cs" />
     <Compile Include="MPQ\M2\Components\ModelHeader.cs" />
     <Compile Include="MPQ\M2\Components\ModelVertices.cs" />
     <Compile Include="MPQ\M2\M2.cs" />
@@ -103,7 +112,7 @@
     <Compile Include="MPQ\PositionUtil.cs" />
     <Compile Include="MPQ\Signatures.cs" />
     <Compile Include="MPQ\TerrainConstants.cs" />
-    <Compile Include="MPQ\TerrainManager.cs" />
+    <Compile Include="MPQ\MpqTerrainManager.cs" />
     <Compile Include="MPQ\VertexSpan.cs" />
     <Compile Include="MPQ\WDT\WDTFile.cs" />
     <Compile Include="MPQ\WDT\WDTParser.cs" />
@@ -123,6 +132,7 @@
     <Compile Include="MPQ\WMO\Components\RenderBatch.cs" />
     <Compile Include="MPQ\WMO\Components\RootHeader.cs" />
     <Compile Include="MPQ\WMO\Components\WMOGroupFlags.cs" />
+    <Compile Include="MPQ\WMO\IWMOManager.cs" />
     <Compile Include="MPQ\WMO\WMO.cs" />
     <Compile Include="MPQ\WMO\WMOGroup.cs" />
     <Compile Include="MPQ\WMO\WMOGroupParser.cs" />
@@ -133,6 +143,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="VertexPositionNormalColored.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

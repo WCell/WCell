@@ -6,23 +6,9 @@ using System.Windows.Forms;
 namespace MPQNav.MPQ.ADT
 {
     /// <summary>
-    /// Enumeration of the different continents available.
-    /// </summary>
-    public enum ContinentType
-    {
-        Azeroth,
-        Kalimdor,
-        /// <summary>
-        /// Outland, but this is the name the client uses for the files
-        /// </summary>
-        Expansion01,
-        Northrend,
-    }
-
-    /// <summary>
     /// The ADTManager is responsible for handling all the different ADTs that we are going to be loading up.
     /// </summary>
-    public class ADTManager
+    public class ADTManager : IADTManager
     {
         #region variables
         /// <summary>
@@ -33,9 +19,9 @@ namespace MPQNav.MPQ.ADT
         /// <summary>
         /// List of all ADTs managed by this ADT manager
         /// </summary>
-        private readonly List<ADT> _ADTs = new List<ADT>();
+        private readonly List<ADTBase> _ADTs = new List<ADTBase>();
 
-        public IList<ADT> MapTiles
+        public IList<ADTBase> MapTiles
         {
             get { return _ADTs; }
         }
@@ -57,7 +43,7 @@ namespace MPQNav.MPQ.ADT
 
         #endregion
 
-        private readonly TerrainManager _terrainManager;
+        private readonly MpqTerrainManager _mpqTerrainManager;
 
         #region constructors
 
@@ -66,16 +52,16 @@ namespace MPQNav.MPQ.ADT
         /// </summary>
         /// <param name="c">Continent of the ADT</param>
         /// <param name="dataDirectory">Base directory for all MPQ data WITH TRAILING SLASHES</param>
-        /// <param name="terrainManager">Handles organization of all terrain elements</param>
+        /// <param name="mpqTerrainManager">Handles organization of all terrain elements</param>
         /// <example>ADTManager myADTManager = new ADTManager(continent.Azeroth, "C:\\mpq\\");</example>
-        public ADTManager(string dataDirectory, ContinentType c, TerrainManager terrainManager)
+        public ADTManager(string dataDirectory, ContinentType c, MpqTerrainManager mpqTerrainManager)
         {
             if (Directory.Exists(dataDirectory))
             {
                 _loaded = true;
                 _basePath = Path.Combine(dataDirectory, _adtPath);
                 _continent = c;
-                _terrainManager = terrainManager;
+                _mpqTerrainManager = mpqTerrainManager;
             }
             else
             {
@@ -115,17 +101,17 @@ namespace MPQNav.MPQ.ADT
                 throw new Exception("ADT Doesn't exist: " + filePath);
             }
             
-            var currentADT = ADTParser.Process(filePath, _terrainManager);
+            var currentADT = ADTParser.Process(filePath, _mpqTerrainManager);
 
             foreach (var objectDef in currentADT.ObjectDefinitions)
             {
                 //if (objectDef.UniqueId != 15377) continue;
-                _terrainManager.WMOManager.AddWMO(objectDef);
+                _mpqTerrainManager.WMOManager.AddWMO(objectDef);
             }
 
             foreach (var doodadDef in currentADT.DoodadDefinitions)
             {
-                _terrainManager.M2Manager.Add(doodadDef);
+                _mpqTerrainManager.M2Manager.Add(doodadDef);
             }
 
             currentADT.GenerateHeightVertexAndIndices();

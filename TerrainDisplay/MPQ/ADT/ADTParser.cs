@@ -8,9 +8,9 @@ namespace MPQNav.MPQ.ADT
 {
     public static class ADTParser
     {
-        public static ADT Process(string filePath, TerrainManager terrainManager)
+        public static ADT Process(string filePath, MpqTerrainManager mpqTerrainManager)
         {
-            var adt = new ADT(filePath, terrainManager);
+            var adt = new ADT(filePath, mpqTerrainManager);
 
             var fileReader = new BinaryReader(File.OpenRead(filePath));
 

@@ -6,7 +6,7 @@ namespace MPQNav.MPQ.M2
 {
     public class M2Renderer : DrawableGameComponent
     {
-        private readonly M2Manager _manager;
+        private readonly IM2Manager _manager;
 
         /// <summary>
         /// Boolean variable representing if all the rendering data has been cached.
@@ -19,7 +19,7 @@ namespace MPQNav.MPQ.M2
         private VertexDeclaration _vertexDeclaration;
 
 
-        public M2Renderer(Game game, M2Manager manager) : base(game)
+        public M2Renderer(Game game, IM2Manager manager) : base(game)
         {
             _manager = manager;
             
@@ -78,23 +78,9 @@ namespace MPQNav.MPQ.M2
         private void BuildVerticiesAndIndicies()
         {
             // Cycle through each M2
-            var tempVertices = new List<VertexPositionNormalColored>();
-            var tempIndicies = new List<int>();
-            var offset = 0;
-            foreach (var m2 in _manager.M2s)
-            {
-                // Handle the M2s
-                for (var v = 0; v < m2.Vertices.Count; v++)
-                {
-                    tempVertices.Add(m2.Vertices[v]);
-                }
-                for (var i = 0; i < m2.Indices.Count; i++)
-                {
-                    tempIndicies.Add(m2.Indices[i] + offset);
-                }
-                offset = tempVertices.Count;
-            }
-
+            var tempVertices = _manager.RenderVertices;
+            var tempIndicies = _manager.RenderIndices;
+            
             _cachedIndices = tempIndicies.ToArray();
             _cachedVertices = tempVertices.ToArray();
 

@@ -6,7 +6,7 @@ namespace MPQNav.MPQ.ADT
 {
     class ADTRenderer : DrawableGameComponent
     {
-        private readonly ADTManager _manager;
+        private readonly IADTManager _manager;
 
         /// <summary>
         /// Boolean variable representing if all the rendering data has been cached.
@@ -19,7 +19,7 @@ namespace MPQNav.MPQ.ADT
         private VertexDeclaration _vertexDeclaration;
 
 
-        public ADTRenderer(Game game, ADTManager manager) : base(game)
+        public ADTRenderer(Game game, IADTManager manager) : base(game)
         {
             _manager = manager;
             

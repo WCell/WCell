@@ -9,7 +9,7 @@ using MPQNav.MPQ.ADT.Components;
 
 namespace MPQNav.MPQ.M2
 {
-    public class M2Manager
+    public class M2Manager : IM2Manager
     {
         #region variables
 
@@ -35,6 +35,62 @@ namespace MPQNav.MPQ.M2
         public M2Manager(string baseDirectory)
         {
             _baseDirectory = baseDirectory;
+        }
+
+        private List<VertexPositionNormalColored> _renderVertices;
+        private List<int> _renderIndices;
+
+        public List<VertexPositionNormalColored> RenderVertices
+        {
+            get
+            {
+                if (_renderVertices == null)
+                {
+                    GenerateRenderVerticesAndIndices();
+                }
+                return _renderVertices;
+            }
+            set
+            {
+                _renderVertices = value;
+            }
+        }
+
+        public List<int> RenderIndices
+        {
+            get
+            {
+                if (_renderIndices == null)
+                {
+                    GenerateRenderVerticesAndIndices();
+                }
+                return _renderIndices;
+            }
+            set
+            {
+                _renderIndices = value;
+            }
+        }
+
+        private void GenerateRenderVerticesAndIndices()
+        {
+            _renderVertices = new List<VertexPositionNormalColored>();
+            _renderIndices = new List<int>();
+
+            var offset = 0;
+            foreach (var m2 in M2s)
+            {
+                // Handle the M2s
+                for (var v = 0; v < m2.Vertices.Count; v++)
+                {
+                    _renderVertices.Add(m2.Vertices[v]);
+                }
+                for (var i = 0; i < m2.Indices.Count; i++)
+                {
+                    _renderIndices.Add(m2.Indices[i] + offset);
+                }
+                offset = _renderVertices.Count;
+            }
         }
 
         /// <summary>

@@ -11,50 +11,6 @@ using TerrainDisplay;
 namespace MPQNav
 {
     /// <summary>
-    /// Struct outlining our custom vertex
-    /// </summary>
-    public struct VertexPositionNormalColored
-    {
-        /// <summary>
-        /// Vector3 Position for this vertex
-        /// </summary>
-        public Vector3 Position;
-        /// <summary>
-        /// Color of this vertex
-        /// </summary>
-        public Color Color;
-        /// <summary>
-        /// Normal vector for this Vertex
-        /// </summary>
-        public Vector3 Normal;
-
-        /// <summary>
-        /// Constructor for a VertexPositionNormalColored
-        /// </summary>
-        /// <param name="position">Vector3 Position of the vertex</param>
-        /// <param name="color">Color of the vertex</param>
-        /// <param name="normal">Normal vector of the vertex</param>
-        public VertexPositionNormalColored(Vector3 position, Color color, Vector3 normal)
-        {
-            Position = position;
-            Color = color;
-            Normal = normal;
-        }
-        /// <summary>
-        /// Memory size for a VertexPositionNormalColored
-        /// </summary>
-        public static int SizeInBytes = 7 * 4;
-        /// <summary>
-        /// VertexElement array (used for rendering)
-        /// </summary>
-        public static readonly VertexElement[] VertexElements = new[] {
-            new VertexElement( 0, 0, VertexElementFormat.Vector3, VertexElementMethod.Default, VertexElementUsage.Position, 0 ),
-            new VertexElement( 0, sizeof(float) * 3, VertexElementFormat.Color, VertexElementMethod.Default, VertexElementUsage.Color, 0 ),
-            new VertexElement( 0, sizeof(float) * 4, VertexElementFormat.Vector3, VertexElementMethod.Default, VertexElementUsage.Normal, 0 ),
-        };
-    }
-
-    /// <summary>
     /// This is the class that controls the entire game.
     /// </summary>
     public class Game1 : Game
@@ -76,7 +32,7 @@ namespace MPQNav
         BasicEffect _basicEffect;
         
         //private readonly ADTManager _manager;
-        private readonly TerrainManager _terrainManager;
+        private readonly MpqTerrainManager _mpqTerrainManager;
         /// <summary>
         /// Console used to execute commands while the game is running.
         /// </summary>
@@ -103,15 +59,15 @@ namespace MPQNav
             var settingsReader = new System.Configuration.AppSettingsReader();
 
             var mpqPath = (string)settingsReader.GetValue("mpqPath", typeof(string));
-            //String mpqFile = "c:\\Program Files\\World of Warcraft\\Data\\common.MPQ";
             var defaultContinent = (string)settingsReader.GetValue("defaultContinent", typeof(string));
             var defaultMapX = (int)settingsReader.GetValue("defaultMapX", typeof(int));
             var defaultMapY = (int)settingsReader.GetValue("defaultMapY", typeof(int));
             var continent = (ContinentType) Enum.Parse(typeof (ContinentType), defaultContinent, true);
 
 
-            _terrainManager = new TerrainManager(mpqPath, continent, 0);
-            _terrainManager.ADTManager.LoadTile(defaultMapX, defaultMapY);
+            _mpqTerrainManager = new MpqTerrainManager(mpqPath, continent, 0);
+            _mpqTerrainManager.ADTManager.LoadTile(defaultMapX, defaultMapY);
+            
             //_terrainManager.ADTManager.LoadTile(defaultMapX - 1, defaultMapY);
 
             //var tree = new OctTree(_manager.GetRenderingVerticies(), _manager.GetRenderingIndices(), defaultMapX, defaultMapY);
@@ -171,9 +127,9 @@ namespace MPQNav
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
-            Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
-            Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
+            Components.Add(new ADTRenderer(this, _mpqTerrainManager.ADTManager));
+            Components.Add(new M2Renderer(this, _mpqTerrainManager.M2Manager));
+            Components.Add(new WMORenderer(this, _mpqTerrainManager.WMOManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;

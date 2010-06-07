@@ -13,10 +13,10 @@ namespace MPQNav.MPQ.WMO
 
         private VertexPositionNormalColored[] _cachedVertices;
         private int[] _cachedIndices;
-        private readonly WMOManager _manager;
+        private readonly IWMOManager _manager;
 
 
-        public WMORenderer(Game game, WMOManager manager)
+        public WMORenderer(Game game, IWMOManager manager)
             : base(game)
         {
             _manager = manager;
@@ -64,23 +64,9 @@ namespace MPQNav.MPQ.WMO
 
         private void BuildVerticiesAndIndicies()
         {
-            var vertices = new List<VertexPositionNormalColored>();
-            var indices = new List<int>();
-            var offset = 0;
-            foreach (var wmo in _manager.WMOs)
-            {
-                for (var v = 0; v < wmo.Vertices.Count; v++)
-                {
-                    vertices.Add(wmo.Vertices[v]);
-                }
-                
-                for (var i = 0; i < wmo.Indices.Count; i++)
-                {
-                    indices.Add(wmo.Indices[i] + offset);
-                }
-                offset = vertices.Count;
-            }
-
+            var vertices = _manager.RenderVertices;
+            var indices = _manager.RenderIndices;
+            
             _cachedIndices = indices.ToArray();
             _cachedVertices = vertices.ToArray();
 

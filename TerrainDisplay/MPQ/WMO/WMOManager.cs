@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MPQNav.MPQ.WMO
 {
-    public class WMOManager
+    public class WMOManager : IWMOManager
     {
         /// <summary>
         /// List of filenames managed by this WMOManager
@@ -27,10 +27,65 @@ namespace MPQNav.MPQ.WMO
 
         private readonly string _baseDirectory;
 
-
         public List<string> FileNames
         {
             get { return _fileNames; }
+        }
+
+        private List<VertexPositionNormalColored> _renderVertices;
+        private List<int> _renderIndices;
+
+        public List<VertexPositionNormalColored> RenderVertices
+        {
+            get
+            {
+                if (_renderVertices == null)
+                {
+                    GenerateRenderVerticesAndIndices();
+                }
+                return _renderVertices;
+            }
+            set
+            {
+                _renderVertices = value;
+            }
+        }
+
+        public List<int> RenderIndices
+        {
+            get
+            {
+                if (_renderIndices == null)
+                {
+                    GenerateRenderVerticesAndIndices();
+                }
+                return _renderIndices;
+            }
+            set
+            {
+                _renderIndices = value;
+            }
+        }
+
+        private void GenerateRenderVerticesAndIndices()
+        {
+            _renderVertices = new List<VertexPositionNormalColored>();
+            _renderIndices = new List<int>();
+            
+            var offset = 0;
+            foreach (var wmo in WMOs)
+            {
+                for (var v = 0; v < wmo.Vertices.Count; v++)
+                {
+                    _renderVertices.Add(wmo.Vertices[v]);
+                }
+
+                for (var i = 0; i < wmo.Indices.Count; i++)
+                {
+                    _renderIndices.Add(wmo.Indices[i] + offset);
+                }
+                offset = _renderVertices.Count;
+            }
         }
 
         public WMOManager(string baseDirectory)
