@@ -142,7 +142,7 @@ namespace WCell.Core
 
 		public virtual void GetStats(ICollection<string> statLines)
 		{
-			GC.Collect(2, GCCollectionMode.Optimized);
+			//GC.Collect(2, GCCollectionMode.Optimized);
 			var thisProcess = Process.GetCurrentProcess();
 
 			var processUptime = DateTime.Now - thisProcess.StartTime;

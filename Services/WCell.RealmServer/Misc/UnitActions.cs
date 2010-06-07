@@ -387,7 +387,7 @@ namespace WCell.RealmServer.Misc
 		}
 		#endregion
 
-		#region Attack and Damage
+		#region Attack
 		/// <summary>
 		/// Does a melee/ranged/wand physical attack. (Not spells)
 		/// Calculates resistances/attributes (resilience, hit chance) and takes them into account.
@@ -516,7 +516,9 @@ namespace WCell.RealmServer.Misc
 				}
 			}
 		}
+		#endregion
 
+		#region Miss & Strike
 		public void MissImmune()
 		{
 			Damage = 0;
@@ -1052,6 +1054,15 @@ namespace WCell.RealmServer.Misc
 		}
 
 		#endregion
+
+		public void MarkInUse()
+		{
+			// make sure, Attacker won't re-use this
+			if (Attacker.DamageAction == this)
+			{
+				Attacker.DamageAction = null;
+			}
+		}
 
 		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
 		{
