@@ -175,7 +175,7 @@ namespace WCell.Core
 			                            WCellUtil.FormatBytes(totalBytesRcvd), WCellUtil.FormatBytes(averageThroughputDown),
 			                            WCellUtil.FormatBytes(currentDownloadSpeed)));
 
-			var gcCounts = new int[GC.MaxGeneration];
+			var gcCounts = new int[GC.MaxGeneration+1];
 			for (var i = 0; i <= GC.MaxGeneration; i++)
 			{
 				gcCounts[i] = GC.CollectionCount(i);
