@@ -613,7 +613,7 @@ namespace MPQNav.MPQ.WMO
                 for (int j = 0; j < n.nFaces; j++)
                 {
                     var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
-                    n.TriIndices[j] = triIndex;
+                    n.TriIndices.Add(triIndex);
                 }
             }
 

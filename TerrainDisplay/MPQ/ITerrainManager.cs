@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using MPQNav.MPQ.M2;
 using MPQNav.MPQ.ADT;
 using MPQNav.MPQ.WDT;
@@ -11,5 +12,9 @@ namespace MPQNav.MPQ
         IWMOManager WMOManager { get; }
         IM2Manager M2Manager { get; }
         WDTFile WDT { get; }
+
+        void LoadTile(int tileX, int tileY);
+
+        Vector3[] GetRecastTriangleMesh();
     }
 }

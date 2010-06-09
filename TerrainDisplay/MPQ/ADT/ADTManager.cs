@@ -79,12 +79,12 @@ namespace MPQNav.MPQ.ADT
         /// (The x-axis points into the screen and represents rows in the grid.)</param>
         /// <param name="tileY">Y coordinate of the ADT in the 64 x 64 grid 
         /// (The y-axis points left and also represents columns in the grid.)</param>
-        public void LoadTile(int tileX, int tileY)
+        public bool LoadTile(int tileX, int tileY)
         {
             if (_loaded == false)
             {
                 MessageBox.Show("ADT Manager not loaded, aborting loading ADT file.", "ADT Manager not loaded.");
-                return;
+                return false;
             }
             var continentPath = Path.Combine(_basePath, _continent.ToString());
 
@@ -118,6 +118,8 @@ namespace MPQNav.MPQ.ADT
             currentADT.GenerateLiquidVertexAndIndices();
 
             _ADTs.Add(currentADT);
+
+            return false;
         }
     }
 }

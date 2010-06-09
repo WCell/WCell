@@ -8,6 +8,7 @@ using MPQNav.MPQ.M2;
 using MPQNav.MPQ.WMO;
 using TerrainDisplay;
 using TerrainDisplay.Extracted;
+using TerrainDisplay.Recast;
 
 namespace MPQNav
 {
@@ -78,21 +79,9 @@ namespace MPQNav
                 _terrainManager = new MpqTerrainManager(mpqPath, continent, mapId);
             }
             
-            _terrainManager.ADTManager.LoadTile(defaultMapX, defaultMapY);
+            _terrainManager.LoadTile(defaultMapX, defaultMapY);
             
             //_terrainManager.ADTManager.LoadTile(defaultMapX - 1, defaultMapY);
-
-            //var tree = new OctTree(_manager.GetRenderingVerticies(), _manager.GetRenderingIndices(), defaultMapX, defaultMapY);
-            //tree = new KDTree<IShape>(defaultMapX, defaultMapY, 500);
-            //for (var i = 0; i < _renderIndices.Length; i++)
-            //{
-            //    var triangle = new Triangle(_renderVertices[_renderIndices[i++]].Position, 
-            //                                _renderVertices[_renderIndices[i++]].Position,
-            //                                _renderVertices[_renderIndices[i]].Position);
-            //    var min = triangle.Min;
-            //    var max = triangle.Max;
-            //    tree.Put(min, max, triangle);
-            //}
 
             //_avatarPosition = _terrainManager.ADTManager.MapTiles[0].Vertices[0].Position;
             _avatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultMapX + 1) * TerrainConstants.TileSize, TerrainConstants.CenterPoint - (defaultMapY + 1)* TerrainConstants.TileSize, 100.0f);
@@ -139,9 +128,10 @@ namespace MPQNav
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
-            Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
-            Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
+            //Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
+            //Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
+            //Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
+            Components.Add(new RecastRenderer(this, _terrainManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;

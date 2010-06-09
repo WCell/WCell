@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
+using MPQNav;
 using MPQNav.MPQ;
 using MPQNav.MPQ.ADT;
 using MPQNav.MPQ.M2;
@@ -40,6 +42,16 @@ namespace TerrainDisplay.Extracted
             get { return _wdt; }
         }
 
+        public void LoadTile(int tileX, int tileY)
+        {
+            var loaded = _adtManager.LoadTile(tileX, tileY);
+            if (!loaded)
+            {
+                // Do something drastic
+
+            }
+        }
+
         public ExtractedTerrain(string dataPath, int mapId)
         {
             _mapId = mapId;
@@ -49,6 +61,52 @@ namespace TerrainDisplay.Extracted
             _m2Manager = new ExtractedM2Manager(_baseDirectory, _mapId);
             _wmoManager = new ExtractedWMOManager(_baseDirectory, _mapId);
             
+        }
+
+        public Vector3[] GetRecastTriangleMesh()
+        {
+            var vecList = new List<Vector3>();
+            List<VertexPositionNormalColored> vertices;
+
+            // Get the ADT triangles
+            foreach (var tile in _adtManager.MapTiles)
+            {
+                vertices = tile.Vertices;
+                foreach (var index in tile.Indices)
+                {
+                    var vec = vertices[index].Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+
+                vertices = tile.LiquidVertices;
+                foreach (var index in tile.LiquidIndices)
+                {
+                    var vec = vertices[index].Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+            }
+
+            // Get the WMO triangles
+            vertices = _wmoManager.RenderVertices;
+            foreach (var index in _wmoManager.RenderIndices)
+            {
+                var vec = vertices[index].Position;
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                vecList.Add(vec);
+            }
+
+            // Get the M2 triangles
+            vertices = _m2Manager.RenderVertices;
+            foreach (var index in _m2Manager.RenderIndices)
+            {
+                var vec = vertices[index].Position;
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                vecList.Add(vec);
+            }
+
+            return vecList.ToArray();
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using Microsoft.Xna.Framework;
 using MPQNav.MPQ.M2;
 using MPQNav.MPQ.ADT;
 using MPQNav.MPQ.WDT;
@@ -63,6 +64,58 @@ namespace MPQNav.MPQ
             _adtManager = new ADTManager(baseFileDirectory, internalMapName, this);
             _wmoManager = new WMOManager(baseFileDirectory);
             _m2Manager = new M2Manager(baseFileDirectory);
+        }
+
+        public void LoadTile(int tileX, int tileY)
+        {
+            var loaded = _adtManager.LoadTile(tileX, tileY);
+            _loaded = loaded;
+        }
+
+        public Vector3[] GetRecastTriangleMesh()
+        {
+            var vecList = new List<Vector3>();
+            List<VertexPositionNormalColored> vertices;
+
+            // Get the ADT triangles
+            foreach (var tile in _adtManager.MapTiles)
+            {
+                vertices = tile.Vertices;
+                foreach (var index in tile.Indices)
+                {
+                    var vec = vertices[index].Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+
+                vertices = tile.LiquidVertices;
+                foreach (var index in tile.LiquidIndices)
+                {
+                    var vec = vertices[index].Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+            }
+
+            // Get the WMO triangles
+            vertices = _wmoManager.RenderVertices;
+            foreach (var index in _wmoManager.RenderIndices)
+            {
+                var vec = vertices[index].Position;
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                vecList.Add(vec);
+            }
+
+            // Get the M2 triangles
+            vertices = _m2Manager.RenderVertices;
+            foreach (var index in _m2Manager.RenderIndices)
+            {
+                var vec = vertices[index].Position;
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                vecList.Add(vec);
+            }
+
+            return vecList.ToArray();
         }
 
         //public void LoadZone(int zoneId)

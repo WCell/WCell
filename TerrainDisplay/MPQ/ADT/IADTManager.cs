@@ -13,6 +13,6 @@ namespace MPQNav.MPQ.ADT
         /// (The x-axis points into the screen and represents rows in the grid.)</param>
         /// <param name="tileY">Y coordinate of the ADT in the 64 x 64 grid 
         /// (The y-axis points left and also represents columns in the grid.)</param>
-        void LoadTile(int tileX, int tileY);
+        bool LoadTile(int tileX, int tileY);
     }
 }

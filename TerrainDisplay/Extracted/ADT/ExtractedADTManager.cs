@@ -20,7 +20,7 @@ namespace TerrainDisplay.Extracted
             get { return _mapTiles; }
         }
 
-        public void LoadTile(int tileX, int tileY)
+        public bool LoadTile(int tileX, int tileY)
         {
             if (!Directory.Exists(_basePath))
             {
@@ -52,6 +52,8 @@ namespace TerrainDisplay.Extracted
             currentADT.GenerateLiquidVertexAndIndices();
 
             _mapTiles.Add(currentADT);
+
+            return true;
         }
 
         public ExtractedADTManager(ExtractedTerrain terrain, string basePath, int mapId)

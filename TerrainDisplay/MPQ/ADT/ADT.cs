@@ -207,9 +207,9 @@ namespace MPQNav.MPQ.ADT
             if (!mh2O.Header.Used) return;
 
             var renderMap = mh2O.GetRenderBitMapMatrix();
-            for (int r = mh2O.Header.XOffset; r < mh2O.Header.XOffset + mh2O.Header.Height; r++)
+            for (int r = mh2O.Header.XOffset; r < (mh2O.Header.XOffset + mh2O.Header.Height); r++)
             {
-                for (int c = mh2O.Header.YOffset; c < mh2O.Header.YOffset + mh2O.Header.Width; c++)
+                for (int c = mh2O.Header.YOffset; c < (mh2O.Header.YOffset + mh2O.Header.Width); c++)
                 {
                     var row = r - mh2O.Header.XOffset;
                     var col = c - mh2O.Header.YOffset;
