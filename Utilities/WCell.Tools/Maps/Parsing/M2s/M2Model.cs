@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using WCell.Tools.Maps.Parsing.M2s.Components;
+using WCell.Tools.Maps.Parsing.WMO.Components;
+using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.M2s
 {
     public class M2Model
     {
@@ -25,9 +25,34 @@ namespace WCell.Tools.Maps
         /// </summary>
         public ModelVertices[] Vertices;
 
-
         public Vector3[] BoundingVertices;
-        public ushort[][] BoundingTriangles;
+        public Index3[] BoundingTriangles;
         public Vector3[] BoundingNormals;
+
+        public string FilePath;
+
+        internal BoundingBox CreateWorldBounds(DoodadDefinition dDef, out Matrix modelToWorld)
+        {
+            modelToWorld = Matrix.Identity;
+            if (BoundingVertices == null) return BoundingBox.INVALID;
+            if (BoundingVertices.Length == 0) return BoundingBox.INVALID;
+
+            Matrix scaleMatrix;
+            Matrix.CreateScale(dDef.Scale, out scaleMatrix);
+
+            Matrix rotMatrix;
+            Matrix.CreateFromQuaternion(ref dDef.Rotation, out rotMatrix);
+
+            Matrix.Multiply(ref scaleMatrix, ref rotMatrix, out modelToWorld);
+
+            var tempVertices = new List<Vector3>(BoundingVertices.Length);
+            foreach (var vertex in BoundingVertices)
+            {
+                var tempVertex = Vector3.Transform(vertex, modelToWorld);
+                tempVertices.Add(tempVertex + dDef.Position);
+            }
+
+            return new BoundingBox(tempVertices.ToArray());
+        }
     }
 }

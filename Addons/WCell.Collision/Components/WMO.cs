@@ -7,7 +7,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Collision
 {
-    internal class Building : IBounded
+    public class WMO : IBounded
     {
         // World Coords (west, north, up)
         public BoundingBox Bounds
@@ -20,7 +20,7 @@ namespace WCell.Collision
         // Transforms a vector into Building space given that the vector is in Model coords first
         // (west, up, north)
         public Matrix InverseRotation;
-        public BuildingGroup[] BuildingGroups;
+        public WMOGroup[] WmoGroups;
 
         /// <summary>
         /// Returns the earliest time at which a ray intersects the polys in this Building.
@@ -34,16 +34,16 @@ namespace WCell.Collision
             if (result == null) return null;
 
             // Does this building have any building groups to check against?
-            if (BuildingGroups == null) return null;
+            if (WmoGroups == null) return null;
 
             // Transform the ray from world position/direction to model-space position/direction
             var localRay = GetLocalRay(ref ray);
 
             // Get the first time this ray intersects any of the building groups
             result = tMax;
-            for (var i = 0; i < BuildingGroups.Length; i++)
+            for (var i = 0; i < WmoGroups.Length; i++)
             {
-                var group = BuildingGroups[i];
+                var group = WmoGroups[i];
                 var newResult = group.IntersectsWith(ref localRay, ref tMax);
                 if (newResult == null) continue;
 
@@ -70,7 +70,7 @@ namespace WCell.Collision
             {
                 return null;
             }
-            if (BuildingGroups == null)
+            if (WmoGroups == null)
             {
                 return null;
             }
@@ -78,9 +78,9 @@ namespace WCell.Collision
             var localRay = GetLocalRay(ref ray);
 
             result = tMax;
-            for (var i = 0; i < BuildingGroups.Length; i++)
+            for (var i = 0; i < WmoGroups.Length; i++)
             {
-                var newResult = BuildingGroups[i].IntersectsWith(ref localRay, ref tMax, out intersection);
+                var newResult = WmoGroups[i].IntersectsWith(ref localRay, ref tMax, out intersection);
                 if (newResult == null) continue;
 
                 result = Math.Min(result.Value, newResult.Value);
@@ -123,64 +123,6 @@ namespace WCell.Collision
             var newZ = vec.X;
 
             return new Vector3(newX, newY, newZ);
-        }
-    }
-
-    internal class BuildingGroup
-    {
-        // Model Coords (west, up, north)
-        public BoundingBox Bounds;
-        public Vector3[] Vertices;
-        public BSPTree Tree;
-
-        /// <summary>
-        /// Returns the earliest time this BuildingGroup Intersects the given ray.
-        /// Notice that the Ray <i>must</i> be transformed to model space prior to calling this function.
-        /// </summary>
-        public float? IntersectsWith(ref Ray ray, ref float tMax)
-        {
-            // Does the ray intersect the bounds of the this group?
-            var result = Bounds.Intersects(ray);
-            if (result == null) return null;
-            if (result > tMax) return null;
-
-            // Is there a BSP-Tree containing poly info for this node?
-            if (Tree == null) return null;
-
-            // Get the first intersection with the Polys in this BSP-Tree
-            result = Tree.IntersectsWith(ref ray, ref tMax, Vertices);
-            if (result == null) return null;
-            
-            return (result < tMax) ? result : null;
-        }
-
-        public float? IntersectsWith(ref Ray ray, ref float tMax, out Vector3 intersection)
-        {
-            // Does the ray pass through the Group's Bounds?
-            var result = Bounds.Intersects(ray);
-            if (result == null)
-            {
-                intersection = Vector3.Zero;
-                return null;
-            }
-            if (result > tMax)
-            {
-                intersection = Vector3.Zero;
-                return null;
-            }
-
-            // Does this Group have any triangles in it?
-            if (Tree == null)
-            {
-                intersection = Vector3.Zero;
-                return null;
-            }
-
-            // Get the first point of intersection from the BSP-Tree containing the poly information
-            result = Tree.FirstPointOfIntersection(ref ray, ref tMax, Vertices, out intersection);
-            if (result == null) return null;
-
-            return result < tMax ? result : null;
         }
     }
 

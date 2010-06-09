@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.WMO.Components
 {
     /// <summary>
     /// Triangle Material Information

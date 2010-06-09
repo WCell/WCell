@@ -139,11 +139,15 @@
     <Compile Include="Addon\FullTerrainProvider.cs" />
     <Compile Include="Addon\CollisionAddon.cs" />
     <Compile Include="BSPTree.cs" />
-    <Compile Include="Building.cs" />
+    <Compile Include="Components\M2Reference.cs" />
+    <Compile Include="Components\ReferenceBase.cs" />
+    <Compile Include="Components\WMO.cs" />
+    <Compile Include="Components\WMOGroup.cs" />
     <Compile Include="CollisionHelper.cs" />
+    <Compile Include="Components\WMOReference.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="LocationHelper.cs" />
-    <Compile Include="Model.cs" />
+    <Compile Include="Components\M2.cs" />
     <Compile Include="QuadTree.cs" />
     <Compile Include="TileReference.cs" />
     <Compile Include="TreeReference.cs" />

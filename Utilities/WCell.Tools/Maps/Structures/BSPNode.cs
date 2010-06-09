@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Structures
 {
     public class BSPTree
     {

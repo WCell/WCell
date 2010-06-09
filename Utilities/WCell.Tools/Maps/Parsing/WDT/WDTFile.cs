@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants;
 using WCell.MPQTool;
-using WCell.Tools.Maps.Parsing;
+using WCell.Tools.Maps.Parsing.ADT.Components;
+using WCell.Tools.Maps.Structures;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.WDT
 {
     [Flags]
     public enum WDTFlags
@@ -35,19 +33,21 @@ namespace WCell.Tools.Maps
 
     public class WDTFile
     {
-    	public MpqManager Manager;
-    	public DBCMapEntry Entry;
+        public MpqManager Manager;
+        public DBCMapEntry Entry;
 
         public int Version;
         public string Name;
         public string Path;
         public readonly WDTHeader Header = new WDTHeader();
 
+        public bool IsWMOOnly;
         ///<summary>
         /// A profile of the tiles in this map
+        /// Contains true if Tile [y, x] exists
         ///</summary>
-		public readonly bool[,] TileProfile = new bool[TerrainConstants.TilesPerMapSide, TerrainConstants.TilesPerMapSide];
-        public readonly List<string> ObjectFiles = new List<string>();
-        public readonly List<MapObjectDefinition> ObjectDefinitions = new List<MapObjectDefinition>();
+        public readonly bool[,] TileProfile = new bool[64,64];
+        public readonly List<string> WmoFiles = new List<string>();
+        public readonly List<MapObjectDefinition> WmoDefinitions = new List<MapObjectDefinition>();
     }
 }

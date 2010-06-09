@@ -225,7 +225,7 @@ namespace WCell.Collision
 			var dir = Path.Combine(HeightMapFolder, ((int)mapId).ToString());
 			if (!Directory.Exists(dir)) return null;
 
-			var fileName = TerrainConstants.GetHeightMapFile(tileCoord.TileX, tileCoord.TileY);
+			var fileName = TerrainConstants.GetMapFilename(tileCoord.TileX, tileCoord.TileY);
 			var fullPath = Path.Combine(dir, fileName);
 
 			return (File.Exists(fullPath)) ? new WorldMapTile(fullPath) : null;

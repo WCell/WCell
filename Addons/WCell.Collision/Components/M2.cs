@@ -6,7 +6,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.Collision
 {
-    internal class Model : IBounded
+    public class M2 : IBounded
     {
         public BoundingBox Bounds
         {

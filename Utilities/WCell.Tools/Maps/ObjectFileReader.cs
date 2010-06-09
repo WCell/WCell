@@ -3,6 +3,8 @@ using System.IO;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.World;
+using WCell.Tools.Maps.Structures;
+using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 using WCell.Util.Toolshed;
 
@@ -16,9 +18,8 @@ namespace WCell.Tools.Maps
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		private const string fileType = "wmo";
-		private const float RadiansPerDegree = 0.0174532925f;
 
-		#region Read
+	    #region Read
 		[Tool]
 		public static void ViewRegionBuildings()
 		{
@@ -48,7 +49,7 @@ namespace WCell.Tools.Maps
 			if (highestWMO != null)
 			{
 				var center = (highestWMO.Bounds.Min + highestWMO.Bounds.Max) / 2.0f;
-				newVec = Vector3.Transform(highestVec, Matrix.CreateRotationY((highestWMO.RotationModelY - 90) * RadiansPerDegree));
+				newVec = Vector3.Transform(highestVec, Matrix.CreateRotationY(MathHelper.ToRadians(highestWMO.RotationModelY - 90)));
 
 				// shift newVec to world space
 				worldVec = new Vector3(newVec.Z, newVec.X, newVec.Y);

@@ -383,6 +383,13 @@ namespace WCell.Util.Graphics
         {
             return (((vector1.X * vector2.X) + (vector1.Y * vector2.Y)) + (vector1.Z * vector2.Z));
 		}
+
+        public static void Add(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = value1.X + value2.X;
+            result.Y = value1.Y + value2.Y;
+            result.Z = value1.Z + value2.Z;
+        }
 		#endregion
 
 		public static bool operator ==(Vector3 a, Vector3 b)
@@ -448,6 +455,18 @@ namespace WCell.Util.Graphics
             vector.Z = num13;
             return vector;
 		}
+
+        public static void Transform(ref Vector3 position, ref Matrix matrix, out Vector3 result)
+        {
+            float num3 = (((position.X * matrix.M11) + (position.Y * matrix.M21)) + (position.Z * matrix.M31)) + matrix.M41;
+            float num2 = (((position.X * matrix.M12) + (position.Y * matrix.M22)) + (position.Z * matrix.M32)) + matrix.M42;
+            float num = (((position.X * matrix.M13) + (position.Y * matrix.M23)) + (position.Z * matrix.M33)) + matrix.M43;
+            result.X = num3;
+            result.Y = num2;
+            result.Z = num;
+        }
+
+
 		#endregion
 
 		#region Min/Max

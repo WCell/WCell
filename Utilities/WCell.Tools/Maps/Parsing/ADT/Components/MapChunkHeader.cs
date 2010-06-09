@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.ADT.Components
 {
+    /// <summary>
+    /// Class for the MCNK chunk (vertex information for the ADT)
+    /// </summary>
     public class MCNK
     {
         public int Flags;
@@ -38,7 +38,7 @@ namespace WCell.Tools.Maps
         /// </summary>
         public uint ofsShadow;
         public uint sizeShadow;
-        public uint AreaId;
+        public int AreaId;
         public uint nMapObjRefs;
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace WCell.Tools.Maps
 
         public ushort[] predTex;
         public byte[] nEffectDoodad;
-
+        
         /// <summary>
         /// Offset to the MCSE chunk
         /// </summary>
@@ -78,9 +78,19 @@ namespace WCell.Tools.Maps
         public int props;
         public int effectId;
 
+        public bool[,] GetHolesMap()
+        {
+            var lret = new bool[4,4];
+            for (var i = 0; i < 16; i++)
+            {
+                lret[i%4, i/4] = (((Holes >> (i)) & 1) == 1);
+            }
+            return lret;
+        }
+
         public MCNK()
         {
-
+            
         }
 
         /// <summary>
@@ -90,7 +100,7 @@ namespace WCell.Tools.Maps
         /// <param name="y">Y position of the MCNK</param>
         /// <param name="z">Z position of the MCNK</param>
         /// <param name="holes">Holes in this MCNK</param>
-        public MCNK(float x, float y, float z, UInt16 holes)
+        public MCNK(float x, float y, float z,UInt16 holes)
         {
             X = x;
             Y = y;
@@ -98,5 +108,6 @@ namespace WCell.Tools.Maps
             Holes = holes;
         }
 
+            
     }
 }

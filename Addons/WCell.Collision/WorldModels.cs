@@ -14,8 +14,8 @@ namespace WCell.Collision
         private static readonly Dictionary<string, bool> tileLoaded = new Dictionary<string, bool>();
         private static readonly Dictionary<string, bool> noTileExists = new Dictionary<string, bool>();
         private static readonly Dictionary<MapId, bool> mapExists = new Dictionary<MapId, bool>();
-        private static readonly Dictionary<MapId, TreeReference<Model>> worldModels =
-            new Dictionary<MapId, TreeReference<Model>>();
+        private static readonly Dictionary<MapId, TreeReference<M2>> worldModels =
+            new Dictionary<MapId, TreeReference<M2>>();
 
 
         internal static float? GetModelHeight(MapId map, Vector3 pos)
@@ -54,7 +54,7 @@ namespace WCell.Collision
             return CollidesWithRay(models, tMax, ray);
         }
 
-        private static bool CollidesWithRay(IList<Model> models, float tMax, Ray ray)
+        private static bool CollidesWithRay(IList<M2> models, float tMax, Ray ray)
         {
             for (var i = 0; i < models.Count; i++)
             {
@@ -79,7 +79,7 @@ namespace WCell.Collision
             return ShortestDistanceTo(models, tMax, ray);
         }
 
-        private static float? ShortestDistanceTo(IList<Model> models, float tMax, Ray ray)
+        private static float? ShortestDistanceTo(IList<M2> models, float tMax, Ray ray)
         {
             float? result = tMax;
             for (var i = 0; i < models.Count; i++)
@@ -94,12 +94,12 @@ namespace WCell.Collision
         }
 
         #region Load Data
-        internal static QuadTree<Model> GetBuildingTree(MapId map, TileCoord tileCoord)
+        internal static QuadTree<M2> GetBuildingTree(MapId map, TileCoord tileCoord)
         {
             if (!HasMap(map))
                 return null;
 
-            TreeReference<Model> tree;
+            TreeReference<M2> tree;
 
             lock (worldModels)
             {
@@ -113,7 +113,7 @@ namespace WCell.Collision
                 {
                     // Create map tree
                     var box = RegionBoundaries.GetRegionBoundaries()[(int)map];
-                    worldModels[map] = tree = new TreeReference<Model>(new QuadTree<Model>(box));
+                    worldModels[map] = tree = new TreeReference<M2>(new QuadTree<M2>(box));
                 }
             }
 
@@ -124,7 +124,7 @@ namespace WCell.Collision
             }
         }
 
-        private static List<Model> GetPotentialColliders(MapId map, ref Vector3 startPos, ref Vector3 endPos)
+        private static List<M2> GetPotentialColliders(MapId map, ref Vector3 startPos, ref Vector3 endPos)
         {
             var startCoord = LocationHelper.GetTileXYForPos(startPos);
             var endCoord = LocationHelper.GetTileXYForPos(endPos);
@@ -139,7 +139,7 @@ namespace WCell.Collision
             return tree.Query(footPrint);
         }
 
-        private static bool EnsureGroupLoaded(TreeReference<Model> tree, MapId map, TileCoord tileCoord)
+        private static bool EnsureGroupLoaded(TreeReference<M2> tree, MapId map, TileCoord tileCoord)
         {
             var result = true;
 
@@ -166,7 +166,7 @@ namespace WCell.Collision
             return result;
         }
 
-        private static bool EnsureTileLoaded(MapId map, TileCoord tile, TreeReference<Model> tree)
+        private static bool EnsureTileLoaded(MapId map, TileCoord tile, TreeReference<M2> tree)
         {
             if (IsTileLoaded(map, tile) || noTileExists.ContainsKey(GenerateKey(map, tile))) return true;
 
@@ -178,7 +178,7 @@ namespace WCell.Collision
             return true;
         }
 
-        private static bool LoadTile(TreeReference<Model> tree, MapId mapId, TileCoord tileCoord)
+        private static bool LoadTile(TreeReference<M2> tree, MapId mapId, TileCoord tileCoord)
         {
 			var dir = Path.Combine(WorldMap.HeightMapFolder, ((int)mapId).ToString());
             if (!Directory.Exists(dir)) return false;
@@ -230,7 +230,7 @@ namespace WCell.Collision
             return new BoundingBox(newMin, newMax);
         }
 
-        private static bool LoadTileModels(TreeReference<Model> tree, string filePath)
+        private static bool LoadTileModels(TreeReference<M2> tree, string filePath)
         {
             using (var file = File.OpenRead(filePath))
             using (var br = new BinaryReader(file))
@@ -250,7 +250,7 @@ namespace WCell.Collision
             return true;
         }
 
-        private static void ReadModels(BinaryReader br, TreeReference<Model> tree)
+        private static void ReadModels(BinaryReader br, TreeReference<M2> tree)
         {
             var numModels = br.ReadInt32();
             for (var i = 0; i < numModels; i++)
@@ -287,7 +287,7 @@ namespace WCell.Collision
                     indices = null;
                 }
 
-                var model = new Model
+                var model = new M2
                 {
                     Bounds = bounds,
                     Vertices = vertices,

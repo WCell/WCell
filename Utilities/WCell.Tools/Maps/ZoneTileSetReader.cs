@@ -3,6 +3,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Tools.Maps.Parsing.ADT;
+using WCell.Tools.Maps.Parsing.WDT;
 
 namespace WCell.Tools.Maps
 {
@@ -40,8 +41,7 @@ namespace WCell.Tools.Maps
 					{
 						if (!wdt.TileProfile[x, y]) continue;
 						++count;
-						var adtName = TerrainConstants.GetADTFile(wdt.Name, x, y);
-						var adt = ADTParser.Process(WDTParser.MpqManager, wdt.Path, adtName);
+						var adt = ADTParser.Process(WDTParser.MpqManager, wdt.Entry, x, y);
 						if (adt == null) continue;
 
 						tileSet.ZoneGrids[x, y] = grid = new ZoneGrid(new uint[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide]);
@@ -50,10 +50,10 @@ namespace WCell.Tools.Maps
 						{
 							for (var i = 0; i < 16; i++)
 							{
-								var areaId = adt.MapChunks[i, j].AreaId;
+								var areaId = adt.MapChunks[i, j].Header.AreaId;
 								if (Enum.IsDefined(typeof(ZoneId), areaId))
 								{
-									grid.ZoneIds[i, j] = areaId;
+									grid.ZoneIds[i, j] = (uint)areaId;
 								}
 								else
 								{
@@ -70,10 +70,5 @@ namespace WCell.Tools.Maps
 				log.Info("Could not read Zones from WMO: " + (MapId)wdt.Entry.Id);
 			}
 		}
-
-
-
-
-
 	}
 }

@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using WCell.Constants;
+using WCell.Tools.Maps.Parsing.M2s;
+using WCell.Tools.Maps.Parsing.WMO.Components;
+using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;
 
-namespace WCell.Tools.Maps
+namespace WCell.Tools.Maps.Parsing.WMO
 {
     public class WMORoot
     {
@@ -16,12 +17,10 @@ namespace WCell.Tools.Maps
         /// MVER
         /// </summary>
         public int Version;
-
         /// <summary>
         /// MOHD
         /// </summary>
         public readonly RootHeader Header = new RootHeader();
-
         /// <summary>
         /// MOGI
         /// </summary>
@@ -41,7 +40,7 @@ namespace WCell.Tools.Maps
         /// <summary>
         /// MODN
         /// </summary>
-        public Dictionary<int, string> DoodadFiles;
+        public Dictionary<int,string> DoodadFiles;
         /// <summary>
         /// MODS
         /// </summary>
@@ -53,7 +52,7 @@ namespace WCell.Tools.Maps
         /// <summary>
         /// MOTX
         /// </summary>
-        public Dictionary<int, string> Textures;
+        public Dictionary<int,string> Textures;
         /// <summary>
         /// MOGN
         /// </summary>
@@ -61,7 +60,7 @@ namespace WCell.Tools.Maps
         /// <summary>
         /// MCVP
         /// </summary>
-        public Plane[] ConvexVolumePlanes;
+        public Plane[] ComplexVolumePlanes;
         /// <summary>
         /// MOVV
         /// </summary>
@@ -70,102 +69,29 @@ namespace WCell.Tools.Maps
         /// MOVB
         /// </summary>
         public VertexSpan[] VisibleBlocks;
+        /// <summary>
+        /// MOLT
+        /// </summary>
+        public LightInformation[] LightInfo;
+        /// <summary>
+        /// MOMT
+        /// </summary>
+        public Material[] Materials;
+        /// <summary>
+        /// MFOG
+        /// </summary>
+        public Fog[] Fogs;
 
         /// <summary>
         /// The Orientated Bounding Box for this WMO
         /// </summary>
-        //public OBB OrientatedBoundingBox;
+        public OBB OrientatedBoundingBox;
 
         public BoundingBox AABB;
 
-        
         public WMORoot(string filePath)
         {
             FilePath = filePath;
         }
-
-        public void ClearCollisionData()
-        {
-            //OrientatedBoundingBox = new OBB();
-        }
-
-        public void CreateAABB()
-        {
-            AABB = new BoundingBox(Header.BoundingBox.Min, Header.BoundingBox.Max);
-        }
-    }
-
-    public class GroupInformation
-    {
-        /// <summary>
-        /// Seems to be a limited version of the full group flags
-        /// </summary>
-        public WMOGroupFlags Flags;
-        public BoundingBox BoundingBox;
-        // -1 for no name?
-        public int NameIndex;
-    }
-
-    public class RootHeader
-    {
-        /// <summary>
-        /// MOHD +0x0
-        /// </summary>
-        public uint TextureCount;
-        /// <summary>
-        /// MOHD +0x4
-        /// </summary>
-        public uint GroupCount;
-        /// <summary>
-        /// MOHD +0x8
-        /// </summary>
-        public uint PortalCount;
-        /// <summary>
-        /// MOHD +0xC
-        /// </summary>
-        public uint LightCount;
-        /// <summary>
-        /// MOHD +0x10
-        /// number of M2 models imported
-        /// </summary>
-        public uint ModelCount;
-        /// <summary>
-        /// MOHD +0x14
-        /// </summary>
-        public uint DoodadCount;
-        /// <summary>
-        /// MOHD +0x18
-        /// </summary>
-        public uint DoodadSetCount;
-        /// <summary>
-        /// MOHD +0x1C
-        /// </summary>
-        public uint AmbientColor;
-        /// <summary>
-        /// MOHD +0x20
-        /// </summary>
-        public uint WMOId;
-        /// <summary>
-        /// MOHD +0x24
-        /// </summary>
-        public BoundingBox BoundingBox;
-
-        public WMORootHeaderFlags Flags;
-    }
-
-    [Flags]
-    public enum WMORootHeaderFlags
-    {
-        Flag_0x1,
-        /// <summary>
-        /// If this is set, it adds the AmbientColor RGB components to MOCV1
-        /// </summary>
-        Flag_0x2,
-        /// <summary>
-        /// LiquidType related
-        /// If this is set, it will take the variable in MOGP's var_0x34. If not, it checks var_0x34 for 15 (green lava). 
-        /// If that is set, it will take 0, else it will take var_0x34 + 1. 
-        /// </summary>
-        Flag_0x4,
     }
 }

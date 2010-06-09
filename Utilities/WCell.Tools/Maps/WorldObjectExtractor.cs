@@ -1,10 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using NLog;
 using WCell.Constants;
 using WCell.MPQTool;
 using WCell.Tools.Maps.Parsing;
 using WCell.Tools.Maps.Parsing.ADT;
+using WCell.Tools.Maps.Parsing.ADT.Components;
+using WCell.Tools.Maps.Parsing.M2s;
+using WCell.Tools.Maps.Parsing.WDT;
+using WCell.Tools.Maps.Parsing.WMO;
+using WCell.Tools.Maps.Parsing.WMO.Components;
+using WCell.Tools.Maps.Structures;
+using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 using WCell.Util.Toolshed;
 
@@ -12,680 +20,375 @@ namespace WCell.Tools.Maps
 {
 	public static class WorldObjectExtractor
 	{
-		private const string fileType = "m2x";
-		private static readonly HashSet<uint> LoadedM2Ids = new HashSet<uint>(), LoadedWMOIds = new HashSet<uint>();
-		private const float RadiansPerDegree = 0.0174532925f;
+		private const string m2FileType = "m2x";
+        private const string wmoFileType = "wmo";
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+        public static Dictionary<string, M2Model> LoadedM2Models = new Dictionary<string, M2Model>();
+        public static Dictionary<string, WMORoot> LoadedWMORoots = new Dictionary<string, WMORoot>();
+        
 
 		public static void PrepareExtractor()
 		{
-			WDTParser.Parsed += ExtractM2s;
-			WDTParser.Parsed += ExtractWMOs;
+            WDTParser.Parsed += ExtractMapObjects;
 		}
 
-		private static void ExtractM2s(WDTFile wdt)
+        private static void ExtractMapObjects(WDTFile wdt)
+        {
+            if (wdt == null) return;
+            if (wdt.Header.Header1.HasFlag(WDTFlags.GlobalWMO))
+            {
+                // No terrain, load the global WMO
+                if (wdt.WmoDefinitions == null) return;
+                ExtractWMOs(wdt.WmoDefinitions);
+            }
+            else
+            {
+                for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
+                {
+                    for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
+                    {
+                        if (!wdt.TileProfile[tileY, tileX]) continue;
+
+                        ADT adt = null;
+                        if (MapTileExtractor.TerrainInfo != null)
+                        {
+                            adt = MapTileExtractor.TerrainInfo[tileY, tileX];
+                        }
+
+                        if (adt == null)
+                        {
+                            adt = ADTParser.Process(wdt.Manager, wdt.Entry, tileY, tileX);
+                        }
+                        if (adt == null) continue;
+
+                        ExtractTileWMOs(adt);
+                        ExtractTileM2s(adt);
+                    }
+                }
+            }
+
+            PrepareMapWMOs();
+            PrepareMapM2s();
+
+            WriteMapM2s(wdt.Entry);
+            WriteMapWMOs(wdt.Entry);
+        }
+		
+        #region M2 Extract
+        private static void ExtractWMOM2s(WMORoot root)
 		{
-			var regionM2s = ExtractObjects<M2Object>(wdt, ExtractWDTM2s, ExtractTileM2s);
-			LoadedM2Ids.Clear();
-
-			var mapEntry = wdt.Entry;
-
-			var max = regionM2s.HasTiles ? TerrainConstants.TilesPerMapSide : 1;
-			for (var tileY = 0; tileY < max; tileY++)
-			{
-				for (var tileX = 0; tileX < max; tileX++)
-				{
-					//if (tileX != 36) continue;
-					//if (tileY != 49) continue;
-
-					if (regionM2s.ObjectsByTile[tileX, tileY] == null) continue;
-
-					// Don't bother writing tiles with no models.
-					var tileModels = regionM2s.ObjectsByTile[tileX, tileY];
-					if (tileModels.Count == 0) continue;
-
-					var path = Path.Combine(ToolConfig.M2Dir, mapEntry.Id.ToString());
-					if (!Directory.Exists(path))
-					{
-						Directory.CreateDirectory(path);
-					}
-
-					var file = File.Create(Path.Combine(path, TerrainConstants.GetM2File(tileX, tileY)));
-
-					WriteTileM2s(file, tileModels);
-					file.Close();
-				}
-			}
+		    foreach (var def in root.DoodadDefinitions)
+		    {
+		        ExtractM2Model(def.FilePath);
+		    }
 		}
 
-		private static RegionObjects<O> ExtractObjects<O>(WDTFile wdt,
-			Func<List<MapObjectDefinition>, TileObjects<O>> globalExtractor,
-			Func<int, int, ADTFile, TileObjects<O>> tileExtractor)
-			where O : class, new()
+	    private static void ExtractTileM2s(ADT adt)
 		{
-			var objs = new RegionObjects<O>();
-
-			if (wdt == null) return null;
-			if (wdt.Header.Header1.HasFlag(WDTFlags.GlobalWMO))
+			foreach (var def in adt.DoodadDefinitions)
 			{
-				objs.HasTiles = false;
-				// No terrain, load the global WMO
-				if (wdt.ObjectDefinitions == null) return null;
-
-				objs.ObjectsByTile = new TileObjects<O>[1, 1];
-
-				objs.ObjectsByTile[0, 0] = globalExtractor(wdt.ObjectDefinitions);
-			}
-			else
-			{
-				objs.HasTiles = true;
-				objs.ObjectsByTile = new TileObjects<O>[TerrainConstants.TilesPerMapSide, TerrainConstants.TilesPerMapSide];
-				for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
-				{
-					for (var tileX = 0; tileX < TerrainConstants.TilesPerMapSide; tileX++)
-					{
-						if (!wdt.TileProfile[tileX, tileY]) continue;
-						var adtName = TerrainConstants.GetADTFile(wdt.Name, tileX, tileY);
-						var adt = ADTParser.Process(wdt.Manager, wdt.Path, adtName);
-						if (adt == null) continue;
-
-						objs.ObjectsByTile[tileX, tileY] = tileExtractor(tileX, tileY, adt);
-					}
-				}
-			}
-
-			return objs;
-		}
-
-		#region M2 Extract
-		private static TileObjects<M2Object> ExtractWDTM2s(List<MapObjectDefinition> wmos)
-		{
-			var tileModels = new TileObjects<M2Object>();
-
-			for (var i = 0; i < wmos.Count; i++)
-			{
-				var wmo = wmos[i];
-				if (LoadedWMOIds.Contains(wmo.UniqueId)) continue;
-
-				var filePath = wmo.FileName;
-				var root = WMORootParser.Process(WDTParser.MpqManager, filePath);
-				if (root == null)
-				{
-					Console.WriteLine("Invalid WMORoot returned.");
-					return null;
-				}
-
-				LoadedWMOIds.Add(wmo.UniqueId);
-				if (root.DoodadDefinitions == null)
-				{
-					Console.WriteLine("No models defined in Root.");
-					return null;
-				}
-
-				ExtractM2s(wmo, root, tileModels);
-			}
-
-			return tileModels;
-		}
-
-		private static void ExtractM2s(MapObjectDefinition wmo, WMORoot root, TileObjects<M2Object> tileObjects)
-		{
-			var setIndices = new List<int> { 0 };
-			if (wmo.DoodadSet != 0) setIndices.Add(wmo.DoodadSet);
-
-			foreach (var index in setIndices)
-			{
-				var set = root.DoodadSets[index];
-				for (var k = 0; k < set.InstanceCount; k++)
-				{
-					var dd = root.DoodadDefinitions[(int)set.FirstInstanceIndex + k];
-					if (string.IsNullOrEmpty(dd.FilePath)) continue;
-
-					var model = ExtractM2Object(wmo, dd);
-
-					if (model.Vertices.Length < 1) continue;
-					tileObjects.Add(model);
-				}
+                ExtractM2Model(def.FilePath);
 			}
 		}
 
-		private static TileObjects<M2Object> ExtractTileM2s(int tileX, int tileY, ADTFile adt)
-		{
-			var list = adt.DoodadDefinitions;
+        private static void ExtractM2Model(string filePath)
+        {
+            if (string.IsNullOrEmpty(filePath)) return;
+            if (MapTileExtractor.ModelsToIgnore.Contains(filePath)) return;
+            if (LoadedM2Models.ContainsKey(filePath)) return;
 
-			var objs = new TileObjects<M2Object>();
+            var m2Model = M2ModelParser.Process(WDTParser.MpqManager, filePath);
+            if (m2Model == null) return;
 
-			foreach (var definition in list)
-			{
-				if (LoadedM2Ids.Contains(definition.UniqueId)) continue;
-				if (string.IsNullOrEmpty(definition.FilePath)) continue;
+            if (m2Model.BoundingVertices.IsNullOrEmpty())
+            {
+                MapTileExtractor.ModelsToIgnore.Add(filePath);
+                return;
+            }
 
-				var obj = ExtractM2Object(definition);
-
-				if (obj.Vertices.Length < 1) continue;
-				objs.Add(obj);
-
-				LoadedM2Ids.Add(definition.UniqueId);
-			}
-
-			var wmoList = adt.ObjectDefinitions;
-			foreach (var wmo in wmoList)
-			{
-				if (LoadedWMOIds.Contains(wmo.UniqueId)) continue;
-
-				var worldPos = new Vector3(TerrainConstants.CenterPoint - wmo.Position.X,
-										   wmo.Position.Y,
-										   TerrainConstants.CenterPoint - wmo.Position.Z);
-				worldPos = CorrectWMOOrigin(worldPos);
-
-				// If this WMO belongs to another tile, skip it.
-				var wmoTileX = (int)((TerrainConstants.CenterPoint - worldPos.Y) / TerrainConstants.TileSize);
-				var wmoTileY = (int)((TerrainConstants.CenterPoint - worldPos.X) / TerrainConstants.TileSize);
-				if (wmoTileX != tileX || wmoTileY != tileY) continue;
-
-				var root = WMORootParser.Process(WDTParser.MpqManager, wmo.FileName);
-
-				ExtractM2s(wmo, root, objs);
-				LoadedWMOIds.Add(wmo.UniqueId);
-			}
-
-			return objs;
-		}
-
-		private static M2Object ExtractM2Object(MapDoodadDefinition definition)
-		{
-			var filePath = definition.FilePath;
-			var m2model = ExtractM2Model(filePath);
-
-			return TransformM2Model(definition, m2model);
-		}
-
-		private static M2Object ExtractM2Object(MapObjectDefinition wmo, DoodadDefinition definition)
-		{
-			var filePath = definition.FilePath;
-			var m2model = ExtractM2Model(filePath);
-
-			return TransformM2Model(wmo, definition, m2model);
-		}
-
-		private static M2Model ExtractM2Model(string filePath)
-		{
-			if (Path.GetExtension(filePath).ToLower().Equals(".mdx") ||
-				Path.GetExtension(filePath).ToLower().Equals(".mdl"))
-			{
-				filePath = filePath.Substring(0, filePath.LastIndexOf('.')) + ".m2";
-			}
-
-			var m2model = M2ModelParser.Process(WDTParser.MpqManager, filePath);
-			if (m2model == null)
-			{
-				Console.WriteLine("Invalid M2Model returned.");
-				return null;
-			}
-			return m2model;
-		}
-
-        /// <summary>
-        /// Transforms an M2s vertices into World Coordinates
-        /// This function is for M2s present on the world map
-        /// </summary>
-        private static M2Object TransformM2Model(MapDoodadDefinition definition, M2Model m2Model)
-		{
-			var model = new M2Object
-			{
-				Vertices = new Vector3[m2Model.BoundingVertices.Length]
-			};
-
-			// Rotate
-			var origin = new Vector3(
-				(TerrainConstants.CenterPoint - definition.Position.X),
-				definition.Position.Y,
-				(TerrainConstants.CenterPoint - definition.Position.Z)
-			);
-
-			for (var i = 0; i < model.Vertices.Length; i++)
-			{
-				// Reverse the previos coord transform for the rotation.
-				var vector = TransformToIntermediateCoords(m2Model.BoundingVertices[i]);
-
-				// Create the rotation matrices
-				var rotateX = Matrix.CreateRotationX(definition.OrientationC * RadiansPerDegree);
-				var rotateY = Matrix.CreateRotationY((definition.OrientationB - 90) * RadiansPerDegree);
-				var rotateZ = Matrix.CreateRotationZ(-definition.OrientationA * RadiansPerDegree);
-
-				// Rotate the vector
-				var rotatedVector = Vector3.Transform(vector, rotateY);
-				rotatedVector = Vector3.Transform(rotatedVector, rotateZ);
-				rotatedVector = Vector3.Transform(rotatedVector, rotateX);
-
-
-				var finalVector = rotatedVector + origin;
-
-				model.Vertices[i] = finalVector;
-			}
-
-
-			// Add the triangle indices to the model
-			model.Triangles = new Index3[m2Model.BoundingTriangles.Length];
-			for (var i = 0; i < m2Model.BoundingTriangles.Length; i++)
-			{
-				var tri = m2Model.BoundingTriangles[i];
-				model.Triangles[i] = new Index3
-				{
-					Index0 = (short)tri[2],
-					Index1 = (short)tri[1],
-					Index2 = (short)tri[0]
-				};
-			}
-
-			// Calculate the boundingbox
-			model.Bounds = new BoundingBox(model.Vertices);
-
-			return model;
-		}
-
-        /// <summary>
-        /// Transforms an M2s vertices into Building Coordinates
-        /// This function is for M2s which decorate buildings
-        /// </summary>
-        private static M2Object TransformM2Model(MapObjectDefinition wmo, DoodadDefinition definition, M2Model m2Model)
-		{
-			var model = new M2Object
-			{
-				Vertices = new Vector3[m2Model.BoundingVertices.Length]
-			};
-
-			var origin = new Vector3(-definition.Position.X, definition.Position.Z, definition.Position.Y);
-			var wmoOrigin = CorrectWMOOrigin(wmo.Position);
-			var rotation = definition.Rotation;
-			var rotateY = Matrix.CreateRotationY((wmo.OrientationB - 90) * RadiansPerDegree);
-			for (var i = 0; i < m2Model.BoundingVertices.Length; i++)
-			{
-				var vector = m2Model.BoundingVertices[i];
-				var rotatedVector = Vector3.Transform(vector, rotation);
-				rotatedVector = TransformToIntermediateCoords(rotatedVector);
-				var finalModelVector = rotatedVector + origin;
-
-				var rotatedWMOVector = Vector3.Transform(finalModelVector, rotateY);
-				var finalWMOVector = rotatedWMOVector + wmoOrigin;
-
-				model.Vertices[i] = finalWMOVector;
-			}
-
-			// Add the triangle indices to the model
-			model.Triangles = new Index3[m2Model.BoundingTriangles.Length];
-			for (var i = 0; i < m2Model.BoundingTriangles.Length; i++)
-			{
-				var tri = m2Model.BoundingTriangles[i];
-				model.Triangles[i] = new Index3
-				{
-					Index0 = (short)tri[2],
-					Index1 = (short)tri[1],
-					Index2 = (short)tri[0]
-				};
-			}
-
-			// Calculate the boundingbox
-			model.Bounds = new BoundingBox(model.Vertices);
-
-			return model;
-		}
-
-		private static Vector3 CorrectWMOOrigin(Vector3 origin)
-		{
-			var posX = TerrainConstants.CenterPoint - origin.X;
-			var posZ = TerrainConstants.CenterPoint - origin.Z;
-
-			return new Vector3(posX, origin.Y, posZ);
-		}
-
-		private static Vector3 TransformToIntermediateCoords(Vector3 vector)
-		{
-			var newX = -vector.X;
-			var newZ = vector.Y;
-			var newY = vector.Z;
-
-			return new Vector3(newX, newY, newZ);
-		}
-		#endregion
+            LoadedM2Models.Add(filePath, m2Model);
+        }
+        #endregion
 
 		#region M2 Write
-		private static void WriteTileM2s(Stream file, ICollection<M2Object> models)
+		private static void WriteMapM2s(DBCMapEntry mapEntry)
 		{
-			if (models == null)
-			{
-				Console.WriteLine("Cannot write null TileModels to file.");
-				return;
-			}
+            var path = Path.Combine(ToolConfig.M2Dir, mapEntry.Id.ToString());
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
-			var writer = new BinaryWriter(file);
-			writer.Write(fileType);
-
-			writer.Write(models.Count);
-			foreach (var model in models)
-			{
-				WriteModel(writer, model);
-			}
+		    foreach (var m2ModelPair in LoadedM2Models)
+		    {
+		        var filePath = Path.Combine(path, m2ModelPair.Key);
+		        var dirPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+                var fullFilePath = Path.ChangeExtension(filePath, TerrainConstants.M2FileExtension);
+                
+		        var file = File.Create(fullFilePath);
+                var writer = new BinaryWriter(file);
+                
+                WriteModel(writer, m2ModelPair.Value);
+                file.Close();
+		    }
 		}
 
-		private static void WriteModel(BinaryWriter writer, M2Object m2Object)
+		private static void WriteModel(BinaryWriter writer, M2Model m2Model)
 		{
-			if (m2Object == null)
+			if (m2Model == null)
 			{
-				Console.WriteLine("Cannot write null Building to file.");
+				Console.WriteLine("Cannot write null Model to file.");
 				return;
 			}
 
-			writer.Write(m2Object.Bounds);
-
-			writer.Write(m2Object.Vertices.Length);
-			for (var i = 0; i < m2Object.Vertices.Length; i++)
-			{
-				writer.Write(m2Object.Vertices[i]);
-			}
-
-			writer.Write(m2Object.Triangles.Length);
-			for (var i = 0; i < m2Object.Triangles.Length; i++)
-			{
-				writer.Write(m2Object.Triangles[i]);
-			}
+            writer.Write(m2FileType);
+			writer.Write(m2Model.Header.BoundingBox);
+            writer.Write(m2Model.BoundingVertices);
+			writer.Write(m2Model.BoundingTriangles);
 		}
 		#endregion
 
 		#region WMO Read
+        public static void ExtractTileWMOs(ADT adt)
+        {
+            var list = adt.ObjectDefinitions;
+            ExtractWMOs(list);
+        }
 
-		public static TileObjects<WMO> ExtractWDTWMOs(List<MapObjectDefinition> wmos)
+		public static void ExtractWMOs(List<MapObjectDefinition> list)
 		{
-			var buildings = new TileObjects<WMO>(wmos.Count);
+            foreach (var def in list)
+            {
+                if (string.IsNullOrEmpty(def.FilePath)) continue;
 
-			for (var i = 0; i < wmos.Count; i++)
-			{
-				var wmo = wmos[i];
-				if (LoadedWMOIds.Contains(wmo.UniqueId)) continue;
+                WMORoot root;
+                if (!LoadedWMORoots.TryGetValue(def.FilePath, out root))
+                {
+                    root = WMORootParser.Process(WDTParser.MpqManager, def.FilePath);
+                    LoadedWMORoots.Add(def.FilePath, root);
+                }
 
-				var filePath = wmo.FileName;
-				var building = ExtractWMO(filePath);
-
-				// Correct the World Positioning
-				var calcExtents = GetWMOBounds(wmo, building.BuildingGroups);
-				var worldExtents = ToWorldCoords(calcExtents);
-
-				building.Bounds = worldExtents;
-				building.RotationModelY = wmo.OrientationB;
-				var worldPos = new Vector3(TerrainConstants.CenterPoint - wmo.Position.X,
-										   wmo.Position.Y,
-										   TerrainConstants.CenterPoint - wmo.Position.Z);
-				building.WorldPos = ToWorldCoords(ref worldPos);
-
-				buildings.Add(building);
-
-				LoadedWMOIds.Add(wmo.UniqueId);
-			}
-
-			return buildings;
+                ExtractWMOGroups(def.FilePath, root);
+                ExtractWMOM2s(root);
+            }
 		}
 
-		public static TileObjects<WMO> ExtractTileWMOs(int tileX, int tileY, ADTFile adt)
-		{
-			var wmos = adt.ObjectDefinitions;
-			var buildings = new TileObjects<WMO>(wmos.Count);
+        private static void ExtractWMOGroups(string filePath, WMORoot root)
+        {
+            for (var wmoGroup = 0; wmoGroup < root.Header.GroupCount; wmoGroup++)
+            {
+                var newFile = filePath.Substring(0, filePath.LastIndexOf('.'));
+                var newFilePath = String.Format("{0}_{1:000}.wmo", newFile, wmoGroup);
 
-			for (var i = 0; i < wmos.Count; i++)
-			{
-				var wmo = wmos[i];
-				if (LoadedWMOIds.Contains(wmo.UniqueId)) continue;
-				var worldPos = new Vector3(TerrainConstants.CenterPoint - wmo.Position.X,
-										   wmo.Position.Y,
-										   TerrainConstants.CenterPoint - wmo.Position.Z);
-				worldPos = ToWorldCoords(ref worldPos);
+                var group = WMOGroupParser.Process(WDTParser.MpqManager, newFilePath, root, wmoGroup);
+                if (group == null) continue;
 
-				// If this WMO belongs to another tile, skip it.
-				var wmoTileX = (int)((TerrainConstants.CenterPoint - worldPos.Y) / TerrainConstants.TileSize);
-				var wmoTileY = (int)((TerrainConstants.CenterPoint - worldPos.X) / TerrainConstants.TileSize);
-				if (wmoTileX != tileX || wmoTileY != tileY) continue;
-
-				var filePath = wmo.FileName;
-				var building = ExtractWMO(filePath);
-
-				// Correct the World Positioning
-				var calcExtents = GetWMOBounds(wmo, building.BuildingGroups);
-				var worldExtents = ToWorldCoords(calcExtents);
-
-				building.Bounds = worldExtents;
-				building.RotationModelY = wmo.OrientationB;
-				building.WorldPos = worldPos;
-
-				buildings.Add(building);
-
-				LoadedWMOIds.Add(wmo.UniqueId);
-			}
-
-			return buildings;
-		}
-
-		public static WMO ExtractWMO(string path)
-		{
-			var root = WMORootParser.Process(WDTParser.MpqManager, path);
-
-			if (root == null)
-			{
-				Console.WriteLine("Invalid WMORoot returned.");
-				return null;
-			}
-
-			var building = new WMO
-			{
-				BuildingGroups = new WMOSubGroup[root.Header.GroupCount]
-			};
-
-			building.BuildingGroups = ExtractGroups(path, root.Header.GroupCount, root);
-
-
-			return building;
-		}
-
-		public static WMOSubGroup[] ExtractGroups(string path, uint count, WMORoot root)
-		{
-			var groups = new WMOSubGroup[count];
-			for (var wmoGroup = 0; wmoGroup < count; wmoGroup++)
-			{
-				var newFile = path.Substring(0, path.LastIndexOf('.'));
-				var filePath = String.Format("{0}_{1:000}.wmo", newFile, wmoGroup);
-
-				var group = WMOGroupParser.Process(WDTParser.MpqManager, filePath, root, wmoGroup);
-
-				var bounds = GetGroupBounds(group.Verticies);
-
-				var newGroup = new WMOSubGroup
-				{
-					Bounds = bounds,
-					Vertices = group.Verticies.ToArray(),
-					Tree = new BSPTree(group.BSPNodes)
-				};
-
-				groups[wmoGroup] = newGroup;
-			}
-			return groups;
-		}
-
-		private static BoundingBox ToWorldCoords(BoundingBox boundingBox)
-		{
-			var newMin = ToWorldCoords(ref boundingBox.Min);
-			var newMax = ToWorldCoords(ref boundingBox.Max);
-			return new BoundingBox(Vector3.Min(newMin, newMax), Vector3.Max(newMin, newMax));
-		}
-
-		private static Vector3 ToWorldCoords(ref Vector3 vec)
-		{
-			var newX = vec.Z;
-			var newY = vec.X;
-			var newZ = vec.Y;
-
-			return new Vector3(newX, newY, newZ);
-		}
-
-		private static BoundingBox GetWMOBounds(MapObjectDefinition wmoDef, IEnumerable<WMOSubGroup> groups)
-		{
-			if (groups == null) return BoundingBox.INVALID;
-
-			var boxen = new List<BoundingBox>();
-			foreach (var buildingGroup in groups)
-			{
-				boxen.Add(buildingGroup.Bounds);
-			}
-			var newBox = GetOuterBounds(boxen.ToArray());
-
-			// Translate the world position
-			var worldCenter = new Vector3(TerrainConstants.CenterPoint - wmoDef.Position.X,
-									 wmoDef.Position.Y,
-									 TerrainConstants.CenterPoint - wmoDef.Position.Z);
-
-			// Rotate to the model's final position
-			var rotateY = Matrix.CreateRotationY((wmoDef.OrientationB - 90) * RadiansPerDegree);
-			var rotMin = Vector3.Transform(newBox.Min, rotateY) + worldCenter;
-			var rotMax = Vector3.Transform(newBox.Max, rotateY) + worldCenter;
-
-			// Make a new axis-aligned bounding box
-			var newMin = Vector3.Min(rotMin, rotMax);
-			var newMax = Vector3.Max(rotMin, rotMax);
-
-			return new BoundingBox(newMin, newMax);
-		}
-
-		private static BoundingBox GetOuterBounds(BoundingBox[] boxen)
-		{
-			if (boxen == null)
-				return BoundingBox.INVALID;
-			if (boxen.Length < 1)
-				return BoundingBox.INVALID;
-			if (boxen.Length < 2)
-				return boxen[0];
-
-			var newBox = BoundingBox.Join(ref boxen[0], ref boxen[1]);
-			for (var i = 2; i < boxen.Length; i++)
-			{
-				newBox = BoundingBox.Join(ref newBox, ref boxen[i]);
-			}
-			return newBox;
-		}
-
-		private static BoundingBox GetGroupBounds(IList<Vector3> vertices)
-		{
-			var min = new Vector3(float.MaxValue);
-			var max = new Vector3(float.MinValue);
-
-			for (var i = 0; i < vertices.Count; i++)
-			{
-				var vertex = vertices[i];
-				min = Vector3.Min(vertex, min);
-				max = Vector3.Max(vertex, max);
-			}
-
-			return new BoundingBox(min, max);
-		}
+                root.Groups[wmoGroup] = group;
+            }
+        }
 		#endregion
 
+        #region WMO & M2 Prepare
+        private static void PrepareMapWMOs()
+        {
+            // Reposition the m2s contained within the wmos
+            foreach (var root in LoadedWMORoots.Values)
+            {
+                foreach (var wmoGroup in root.Groups)
+                {
+                    if (wmoGroup.DoodadReferences.IsNullOrEmpty()) continue;
+                    foreach (var dRefId in wmoGroup.DoodadReferences)
+                    {
+                        var def = root.DoodadDefinitions[dRefId];
+                        if (def == null) continue;
+                        if (string.IsNullOrEmpty(def.FilePath)) continue;
+                        if (MapTileExtractor.ModelsToIgnore.Contains(def.FilePath)) continue;
+
+                        // Calculate and store the models' transform matrices
+                        Matrix scaleMatrix;
+                        Matrix.CreateScale(def.Scale, out scaleMatrix);
+
+                        Matrix rotMatrix;
+                        Matrix.CreateFromQuaternion(ref def.Rotation, out rotMatrix);
+
+                        Matrix modelToWMO;
+                        Matrix.Multiply(ref scaleMatrix, ref rotMatrix, out modelToWMO);
+
+                        Matrix wmoToModel;
+                        Matrix.Invert(ref modelToWMO, out wmoToModel);
+                        def.ModelToWMO = modelToWMO;
+                        def.WMOToModel = wmoToModel;
 
 
-		#region WMO Write
-		public static void ExtractWMOs(WDTFile wdt)
+                        M2Model model;
+                        if (!LoadedM2Models.TryGetValue(def.FilePath, out model))
+                        {
+                            log.Error(String.Format("M2Model file: {0} missing from the Dictionary!", def.FilePath));
+                            continue;
+                        }
+
+                        // Calculate the wmoSpace bounding box for this model
+                        CalculateModelsWMOSpaceBounds(def, model);
+                    }
+                }
+            }
+        }
+
+	    private static void CalculateModelsWMOSpaceBounds(DoodadDefinition def, M2Model model)
+	    {
+	        var wmoSpaceVecs = new List<Vector3>(model.BoundingVertices.Length);
+	        for (var j = 0; j < model.BoundingVertices.Length; j++)
+	        {
+	            Vector3 rotated;
+	            Vector3.Transform(ref model.BoundingVertices[j], ref def.ModelToWMO, out rotated);
+
+	            Vector3 final;
+	            Vector3.Add(ref rotated, ref def.Position, out final);
+	            wmoSpaceVecs.Add(final);
+	        }
+	        def.Extents = new BoundingBox(wmoSpaceVecs.ToArray());
+	    }
+
+        private static void PrepareMapM2s()
+        {
+            
+        }
+        #endregion
+
+        #region WMO Write
+        public static void WriteMapWMOs(DBCMapEntry entry)
 		{
-			var wmos = ExtractObjects<WMO>(wdt, ExtractWDTWMOs, ExtractTileWMOs);
-			LoadedWMOIds.Clear();
+            var path = Path.Combine(ToolConfig.M2Dir, entry.Id.ToString());
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
 
-			var max = wmos.HasTiles ? TerrainConstants.TilesPerMapSide : 1;
-			for (var tileY = 0; tileY < max; tileY++)
-			{
-				for (var tileX = 0; tileX < max; tileX++)
-				{
-					//if (tileX != 39) continue;
-					//if (tileY != 27) continue;
+		    foreach (var wmoPair in LoadedWMORoots)
+		    {
+		        var filePath = Path.Combine(path, wmoPair.Key);
+		        var dirPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(dirPath))
+                {
+                    Directory.CreateDirectory(dirPath);
+                }
+                var fullFilePath = Path.ChangeExtension(filePath, TerrainConstants.WMOFileExtension);
+                
+                var file = File.Create(fullFilePath);
+                var writer = new BinaryWriter(file);
 
-					if (wmos.ObjectsByTile[tileX, tileY] == null) continue;
-
-					// Don't bother writing tiles with no buildings.
-					var tileBuildings = wmos.ObjectsByTile[tileX, tileY];
-					if (tileBuildings.Count == 0) continue;
-
-					var path = Path.Combine(ToolConfig.WMODir, wdt.Entry.Id.ToString());
-					if (!Directory.Exists(path))
-						Directory.CreateDirectory(path);
-					var fileName = TerrainConstants.GetWMOFile(tileX, tileY);
-					var file = File.Create(Path.Combine(path, fileName));
-
-					WriteTileBuildings(file, tileBuildings);
-
-					file.Close();
-				}
-			}
+                WriteWMO(writer, wmoPair.Value);
+                file.Close();
+            }
 		}
 
-		private static void WriteTileBuildings(Stream file, TileObjects<WMO> tileBuildings)
+		private static void WriteWMO(BinaryWriter writer, WMORoot root)
 		{
-			if (tileBuildings == null)
+			if (root == null)
 			{
-				Console.WriteLine("Cannot write null TileBuildings to file.");
+				Console.WriteLine("Cannot write null WMORoot to file.");
 				return;
 			}
 
-			// The magic fileType
-			var writer = new BinaryWriter(file);
-			writer.Write(fileType);
+            // Magic fileType
+            writer.Write(wmoFileType);
 
-			// Number of Buildings we're storing
-			writer.Write(tileBuildings.Count);
-			foreach (var building in tileBuildings)
-			{
-				WriteBuilding(writer, building);
-			}
+			writer.Write(root.Header.BoundingBox);
+            writer.Write(root.Header.WMOId);
+
+		    WriteDoodadDefinitions(writer, root);
+		    
+		    WriteGroups(writer, root);
 		}
+        
+        private static void WriteDoodadDefinitions(BinaryWriter writer, WMORoot root)
+        {
+            var doodadSets = new List<List<int>>();
+            foreach(var set in root.DoodadSets)
+            {
+                var list = new List<int>((int)set.InstanceCount);
+                for (var i = 0; i < set.InstanceCount; i++)
+                {
+                    var idx = set.FirstInstanceIndex + i;
+                    var def = root.DoodadDefinitions[idx];
+                    if (def == null) continue;
+                    if (MapTileExtractor.ModelsToIgnore.Contains(def.FilePath)) continue;
 
-		private static void WriteBuilding(BinaryWriter writer, WMO wmo)
+                    list.Add((int)idx);
+                }
+
+                doodadSets.Add(list);
+            }
+
+            writer.Write(doodadSets.Count);
+            foreach (var doodadSet in doodadSets)
+            {
+                writer.Write(doodadSet.Count);
+                foreach (var defId in doodadSet)
+                {
+                    var def = root.DoodadDefinitions[defId];
+
+                    writer.Write(defId);
+                    writer.Write(def.FilePath);
+                    writer.Write(def.Position);
+                    writer.Write(def.Extents);
+                    writer.Write(def.WMOToModel);
+                    writer.Write(def.ModelToWMO);
+                }
+            }
+        }
+
+        private static void WriteGroups(BinaryWriter writer, WMORoot root)
+        {
+            if (root.GroupInformation == null) return;
+            if (root.Groups == null) return;
+
+            writer.Write(root.GroupInformation.Length);
+            for (var i = 0; i < root.GroupInformation.Length; i++)
+            {
+                var info = root.GroupInformation[i];
+                var group = root.Groups[i];
+
+                writer.Write((uint)info.Flags);
+                writer.Write(info.BoundingBox);
+                writer.Write(group.Header.WMOGroupId);
+
+                WriteGroupDoodadRefs(writer, root, group);
+
+                writer.Write(group.Vertices);
+                WriteBSPTree(writer, group);
+            }
+        }
+
+        private static void WriteGroupDoodadRefs(BinaryWriter writer, WMORoot root, WMOGroup group)
+        {
+            if (group.DoodadReferences.IsNullOrEmpty())
+            {
+                writer.Write(0);
+                return;
+            }
+
+            var list = new List<int>();
+            foreach (var defId in group.DoodadReferences)
+            {
+                var def = root.DoodadDefinitions[defId];
+                if (def == null) continue;
+                if (MapTileExtractor.ModelsToIgnore.Contains(def.FilePath)) continue;
+
+                list.Add(defId);
+            }
+
+            writer.Write(list);
+        }
+
+		private static void WriteBSPTree(BinaryWriter writer, WMOGroup group)
 		{
-			if (wmo == null)
-			{
-				Console.WriteLine("Cannot write null Building to file.");
-				return;
-			}
-
-			//BoundingBox, store it
-			writer.Write(wmo.Bounds);
-
-			// Rotation Degrees, store them
-			writer.Write(wmo.RotationModelY);
-
-			// WorldPos, store it
-			writer.Write(wmo.WorldPos);
-
-			// Write the number of Groups
-			writer.Write(wmo.BuildingGroups.Length);
-			for (var i = 0; i < wmo.BuildingGroups.Length; i++)
-			{
-				WriteBuildingGroup(writer, wmo.BuildingGroups[i]);
-			}
-		}
-
-		private static void WriteBuildingGroup(BinaryWriter writer, WMOSubGroup buildingGroup)
-		{
-			if (buildingGroup == null)
-			{
-				Console.WriteLine("Cannot write null BuildingGroup to file.");
-				return;
-			}
-
-			// Store the Group's Bounds
-			writer.Write(buildingGroup.Bounds);
-
-			writer.Write(buildingGroup.Vertices.Length);
-			for (var i = 0; i < buildingGroup.Vertices.Length; i++)
-			{
-				writer.Write(buildingGroup.Vertices[i]);
-			}
-
-			WriteBSPTree(writer, buildingGroup.Tree);
-		}
-
-		private static void WriteBSPTree(BinaryWriter writer, BSPTree tree)
-		{
+		    var tree = new BSPTree(group.BSPNodes);
+            
 			writer.Write(tree.rootId);
 
 			writer.Write(tree.nodes.Length);
@@ -704,15 +407,10 @@ namespace WCell.Tools.Maps
 
 			if (node.TriIndices != null)
 			{
-				writer.Write(node.TriIndices.Length);
-				for (var i = 0; i < node.TriIndices.Length; i++)
-				{
-					writer.Write(node.TriIndices[i]);
-				}
+                writer.Write(node.TriIndices);
 			}
 			else
 			{
-				// Consider a null TriIndex array to have 0 length.
 				writer.Write(0);
 			}
 		}

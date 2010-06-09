@@ -1,5 +1,6 @@
 ﻿using System;
 using WCell.Constants.World;
+using WCell.Tools.Maps.Parsing.WDT;
 using WCell.Util.Graphics;
 using WCell.Constants;
 
@@ -27,8 +28,8 @@ namespace WCell.Tools.Maps
 				const float maxDim = TerrainConstants.TileSize * (32.0f);
 
 				// No terrain, get the boundaries from the MODF
-				min = wdt.ObjectDefinitions[0].Extents.Min;
-				max = wdt.ObjectDefinitions[0].Extents.Max;
+				min = wdt.WmoDefinitions[0].Extents.Min;
+				max = wdt.WmoDefinitions[0].Extents.Max;
 
 				var diff = Math.Max(max.X - min.X, max.Y - min.Y);
 				if ((min.X + diff) > maxDim)

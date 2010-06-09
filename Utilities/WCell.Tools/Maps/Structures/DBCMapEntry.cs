@@ -5,7 +5,7 @@ using NLog;
 using WCell.Core.DBC;
 using WCell.RealmServer;
 
-namespace WCell.Tools.Maps.Parsing
+namespace WCell.Tools.Maps.Structures
 {
 	public static class DBCMapReader
 	{
