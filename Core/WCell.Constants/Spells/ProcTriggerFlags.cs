@@ -89,9 +89,9 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		SpellHit = 0x20000,
 		/// <summary>
-		/// Also spellcast-specific
+		/// Usually crit hit by spell
 		/// </summary>
-		SpellCastSpecific2 = 0x40000,
+		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,
 
 		AnyDamage = 0x100000,

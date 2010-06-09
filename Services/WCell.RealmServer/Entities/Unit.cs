@@ -1613,7 +1613,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			if (flags == ProcTriggerFlags.None)
+			if (flags == ProcTriggerFlags.None) // || !action.CanProc)
 			{
 				return;
 			}

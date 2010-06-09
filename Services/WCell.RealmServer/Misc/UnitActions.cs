@@ -317,12 +317,24 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				if (SpellEffect != null && SpellEffect.IsProc)
+				var flags = ProcTriggerFlags.AnyHostileAction;
+				if (SpellEffect != null)
 				{
-					return ProcTriggerFlags.None;
+					if (SpellEffect.IsProc)
+					{	
+						// procs can't trigger procs
+						return ProcTriggerFlags.None;
+					}
+				}
+				else
+				{
+					flags |= ProcTriggerFlags.SpellHit;
+					if (IsCritical)
+					{
+						flags |= ProcTriggerFlags.SpellHitCritical;
+					}
 				}
 
-				var flags = ProcTriggerFlags.AnyHostileAction;
 				if (IsRangedAttack)
 				{
 					flags |= ProcTriggerFlags.RangedAttack | ProcTriggerFlags.PhysicalAttack;
@@ -339,15 +351,6 @@ namespace WCell.RealmServer.Misc
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
 					}
 				}
-
-				if (SpellEffect != null)
-				{
-					flags |= ProcTriggerFlags.SpellHit;
-					if (IsCritical)
-					{
-						flags |= ProcTriggerFlags.SpellCastSpecific2;
-					}
-				}
 				return flags;
 			}
 		}
@@ -356,12 +359,20 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				if (SpellEffect != null && SpellEffect.IsProc)
+				var flags = ProcTriggerFlags.ActionSelf;
+				if (SpellEffect != null)
 				{
-					return ProcTriggerFlags.None;
+					if (SpellEffect.IsProc)
+					{
+						// procs can't trigger procs
+						return ProcTriggerFlags.None;
+					}
+				}
+				else
+				{
+					flags |= ProcTriggerFlags.SpellCast;
 				}
 
-				var flags = ProcTriggerFlags.ActionSelf;
 				if (IsRangedAttack)
 				{
 					flags |= ProcTriggerFlags.RangedAttackSelf;
@@ -377,10 +388,6 @@ namespace WCell.RealmServer.Misc
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHitSelf;
 					}
-				}
-				if (SpellEffect != null)
-				{
-					flags |= ProcTriggerFlags.SpellCast;
 				}
 				return flags;
 			}

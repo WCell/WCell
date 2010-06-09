@@ -2057,16 +2057,16 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Returns the specified GameObject that is closest to the given point.
+		/// Returns the specified NPC that is closest to the given point.
 		/// </summary>
 		/// <remarks>Requires region context.</remarks>
-		/// <returns>the closest GameObject to the given point, or null if none found.</returns>
+		/// <returns>the closest NPC to the given point, or null if none found.</returns>
 		public NPC GetNearestNPC(ref Vector3 pos, NPCId id)
 		{
 			EnsureContext();
 
 			NPC closest = null;
-			float distanceSq = int.MaxValue, currentDistanceSq;
+			float distanceSq = int.MaxValue;
 
 			foreach (var obj in m_objects.Values)
 			{
@@ -2075,7 +2075,7 @@ namespace WCell.RealmServer.Global
 					continue;
 				}
 
-				currentDistanceSq = obj.GetDistanceSq(ref pos);
+				var currentDistanceSq = obj.GetDistanceSq(ref pos);
 
 				if (currentDistanceSq < distanceSq)
 				{
