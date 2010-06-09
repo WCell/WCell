@@ -246,8 +246,17 @@ namespace WCell.RealmServer.Entities
 				target = m_target;
 			}
 
-			target.IsInCombat = true;
 			Strike(weapon, action, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given weapon on the given target.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
+		public void Strike(IWeapon weapon, Unit target)
+		{
+			Strike(weapon, GetUnusedAction(), target);
 		}
 
 		/// <summary>
@@ -285,6 +294,8 @@ namespace WCell.RealmServer.Entities
 					action.Damage = Utility.Random((int)MinDamage, (int)MaxDamage + 1);
 				}
 			}
+
+			target.IsInCombat = true;
 
 			action.Victim = target;
 			action.Attacker = this;
@@ -451,6 +462,7 @@ namespace WCell.RealmServer.Entities
 
 			action.Damage = dmg;
 			action.ResistPct = GetResistChancePct(this, action.UsedSchool);
+			action.Absorbed = 0;
 
 			action.Victim = this;
 
@@ -471,7 +483,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 
-			action.Absorbed = Absorb(action.UsedSchool, action.Damage);
+			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
 			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
 			action.Blocked = 0; // TODO: Deflect
 			action.SpellEffect = effect;
@@ -688,7 +700,6 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_isInCombat == value) return;
 
-				this.UpdatePowerRegen();
 				if (m_isInCombat = value)
 				{
 					UnitFlags |= UnitFlags.Combat;
@@ -731,6 +742,8 @@ namespace WCell.RealmServer.Entities
 
 					OnLeaveCombat();
 				}
+
+				this.UpdatePowerRegen();
 			}
 		}
 
@@ -794,7 +807,7 @@ namespace WCell.RealmServer.Entities
 			// if currently casting a spell, skip this
 			if (IsUsingSpell)
 			{
-				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatTickDelay);
 				return;
 			}
 
@@ -803,14 +816,14 @@ namespace WCell.RealmServer.Entities
 				if (m_isInCombat)
 				{
 					// if still in combat - check soon again
-					m_attackTimer.Start(DamageAction.DefaultCombatDelay);
+					m_attackTimer.Start(DamageAction.DefaultCombatTickDelay);
 				}
 				return;
 			}
 
 			if (!CanDoHarm || !CanMelee)
 			{
-				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatTickDelay);
 				return;
 			}
 
@@ -911,12 +924,12 @@ namespace WCell.RealmServer.Entities
 				if (offHandReady || !usesOffHand)
 				{
 					// mainhand is ready and offhand is either also ready or not present
-					delay = DamageAction.DefaultCombatDelay;
+					delay = DamageAction.DefaultCombatTickDelay;
 				}
 				else
 				{
 					// mainhand is ready and offhand is still waiting
-					delay = Math.Min(DamageAction.DefaultCombatDelay, offhandDelay);
+					delay = Math.Min(DamageAction.DefaultCombatTickDelay, offhandDelay);
 				}
 			}
 			else
@@ -925,7 +938,7 @@ namespace WCell.RealmServer.Entities
 				if (offHandReady)
 				{
 					// mainhand is not ready but offhand is ready
-					delay = Math.Min(DamageAction.DefaultCombatDelay, mainHandDelay);
+					delay = Math.Min(DamageAction.DefaultCombatTickDelay, mainHandDelay);
 				}
 				else
 				{
@@ -1007,7 +1020,7 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				m_attackTimer.Start(DamageAction.DefaultCombatDelay);
+				m_attackTimer.Start(DamageAction.DefaultCombatTickDelay);
 			}
 		}
 
@@ -1141,9 +1154,12 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
-					// proc
-					action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
-					Proc(targetProcTriggerFlags, action.Attacker, action, false);
+					if (action.Weapon != OffHandWeapon)
+					{
+						// proc (if not offhand)
+						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
+						Proc(targetProcTriggerFlags, action.Attacker, action, false);	
+					}
 				}
 			}
 		}

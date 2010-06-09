@@ -819,6 +819,39 @@ namespace WCell.RealmServer.Entities
 			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
 					GetInt32(PlayerFields.MOD_DAMAGE_DONE_NEG + (int)school);
 		}
+
+		///// <summary>
+		///// Reduces/increases the target chance to dodge the attack
+		///// </summary>
+		//public int TargetDodgeChanceMod
+		//{
+		//    get;
+		//    set;
+		//}
+
+		private int m_OffhandDmgPctMod;
+
+		/// <summary>
+		/// Percent added to offhand damage
+		/// </summary>
+		public int OffhandDmgPctMod
+		{
+			get { return m_OffhandDmgPctMod; }
+			set
+			{
+				m_OffhandDmgPctMod = value;
+				this.UpdateOffHandDamage();
+			}
+		}
+
+		/// <summary>
+		/// Modifies the chance to hit
+		/// </summary>
+		public int HitChanceMod
+		{
+			get;
+			set;
+		}
 		#endregion
 
 		#region Quests

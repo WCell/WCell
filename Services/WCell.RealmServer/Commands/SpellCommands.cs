@@ -15,12 +15,16 @@
  *************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Spells;
+using WCell.Constants.Talents;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Talents;
+using WCell.Util;
 using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
@@ -82,26 +86,47 @@ namespace WCell.RealmServer.Commands
 	#region GetSpell
 	public class SpellGetCommand : RealmServerCommand
 	{
-		public static Spell RetrieveSpell(CmdTrigger<RealmServerCmdArgs> trigger)
+		public static Spell[] RetrieveSpells(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			var pos = trigger.Text.Position;
-			var id = trigger.Text.NextEnum(SpellId.None);
-			Spell spell = SpellHandler.Get(id);
-
-			if (spell == null)
+			var ids = trigger.Text.Remainder.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
+			var spells = new List<Spell>(ids.Length);
+			foreach (var id in ids)
 			{
-				trigger.Text.Position = pos;
-				var lineid = trigger.Text.NextEnum(SpellLineId.None);
-				if (lineid != 0)
+				// try SpellId
+				SpellId sid;
+				Spell spell = null;
+				if (EnumUtil.TryParse(id, out sid))
 				{
-					var line = SpellLines.GetLine(lineid);
-					if (line != null)
+					spell = SpellHandler.Get(sid);
+				}
+
+				if (spell == null)
+				{
+					// try SpellLine name
+					SpellLineId lineid;
+					if (EnumUtil.TryParse(id, out lineid))
 					{
-						spell = line.HighestRank;
+						var line = SpellLines.GetLine(lineid);
+						if (line != null)
+						{
+							spell = line.HighestRank;
+						}
+					}
+
+					if (spell == null)
+					{
+						// try talent name
+						var talentId = trigger.Text.NextEnum(TalentId.None);
+						var talent = TalentMgr.GetEntry(talentId);
+						if (talent != null && talent.Spells != null && talent.Spells.Length > 0)
+						{
+							spell = talent.Spells[talent.Spells.Length - 1]; // add highest rank
+						}
 					}
 				}
+				spells.Add(spell);
 			}
-			return spell;
+			return spells.ToArray();
 		}
 
 		protected override void Initialize()
@@ -113,12 +138,17 @@ namespace WCell.RealmServer.Commands
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			return RetrieveSpell(trigger);
+			var spells = RetrieveSpells(trigger);
+			if (spells.Length == 0)
+			{
+				return null;
+			}
+			return spells.Length > 1 ? (object)spells : spells[0];
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			var spell = RetrieveSpell(trigger);
+			var spell = RetrieveSpells(trigger);
 			trigger.Reply(spell.ToString());
 		}
 
@@ -153,7 +183,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "A");
-				EnglishParamInfo = "[-[r][c [<class>]]] [<spell> [<cooldown for AI>]]";
+				EnglishParamInfo = "[-[r][c [<class>]]] [list of <spell|line|talent>]";
 				EnglishDescription = "Adds the given spell. " +
 									 "-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills). " +
 									 "-c [<class>] adds all spells of the Character's or a given class." +
@@ -165,77 +195,97 @@ namespace WCell.RealmServer.Commands
 				var mod = trigger.Text.NextModifiers();
 				var target = trigger.Args.Target;
 
-				if (mod.Contains("c"))
+				if (mod.Length > 0)
 				{
-					ClassId clss;
-					if (trigger.Text.HasNext)
+					if (mod.Contains("c"))
 					{
-						clss = trigger.Text.NextEnum(ClassId.End);
-						if (clss == ClassId.End)
+						// add all class abilities
+						ClassId clss;
+						if (trigger.Text.HasNext)
 						{
-							trigger.Reply("Invalid Class.");
-							return;
+							clss = trigger.Text.NextEnum(ClassId.End);
+							if (clss == ClassId.End)
+							{
+								trigger.Reply("Invalid Class.");
+								return;
+							}
 						}
-					}
-					else
-					{
-						clss = target.Class;
+						else
+						{
+							clss = target.Class;
+						}
+
+						var count = target.Spells.Count;
+						var lines = SpellLines.GetLines(clss);
+						foreach (var line in lines)
+						{
+							AddSpell(target, line.HighestRank, mod.Contains("r"));
+						}
+						if (count > 0)
+						{
+							trigger.Reply("Added {0} spells.", count);
+						}
 					}
 
-					var count = target.Spells.Count;
-					var lines = SpellLines.GetLines(clss);
-					foreach (var line in lines)
+					if (mod.Contains("t"))
 					{
-						if (mod.Contains("r"))
+						// add all talents
+						int count = 0;
+						var lines = SpellLines.GetLines(target.Class);
+						foreach (var line in lines)
 						{
-							((Character)target).PlayerSpells.SatisfyConstraintsFor(line.HighestRank);
+							if (line.HighestRank.Talent != null)
+							{
+								AddSpell(target, line.HighestRank, mod.Contains("r"));
+								count++;
+							}
 						}
-						if (line.HighestRank.Talent == null)
-						{
-							target.Spells.AddSpell(line.HighestRank);
-						}
-					}
-					if (count > 0)
-					{
-						trigger.Reply("Added {0} spells.", count);
+						trigger.Reply("Added {0} talents", count);
 					}
 				}
 				else
 				{
-					var spell = SpellGetCommand.RetrieveSpell(trigger);
-
-					if (spell != null)
-					{
-						target.EnsureSpells().AddSpell(spell);
-						if (mod.Contains("r") && target is Character)
-						{
-							((Character)target).PlayerSpells.SatisfyConstraintsFor(spell);
-						}
-						trigger.Reply("Spell added: " + spell);
-					}
-					else
+					// add list of spells
+					var spells = SpellGetCommand.RetrieveSpells(trigger);
+					if (spells.Length == 0)
 					{
 						trigger.Reply("Spell doesn't exist.");
 					}
-				}
-
-				if (mod.Contains("t"))
-				{
-					int count = 0;
-					var lines = SpellLines.GetLines(target.Class);
-					foreach (var line in lines)
-					{
-						if (mod.Contains("r"))
+					else {
+						foreach (var spell in spells)
 						{
-							((Character)target).PlayerSpells.SatisfyConstraintsFor(line.HighestRank);
-						}
-						if (line.HighestRank.Talent != null)
-						{
-							target.Spells.AddSpell(line.HighestRank);
-							count++;
+							AddSpell(target, spell, mod.Contains("r"));
+							trigger.Reply("Spell added: " + spell);
 						}
 					}
-					trigger.Reply("Added {0} talents", count);
+				}
+			}
+
+			private static void AddSpell(Unit target, Spell spell, bool addRequired)
+			{
+				var chr = target as Character;
+				if (addRequired && chr != null)
+				{
+					chr.PlayerSpells.SatisfyConstraintsFor(spell);
+				}
+				else
+				{
+					// Profession
+					if (spell.Skill != null && chr != null)
+					{
+						chr.Skills.TryLearn(spell.SkillId);
+					}
+				}
+
+				if (spell.Talent != null && chr != null)
+				{
+					// talent
+					chr.Talents.Set(spell.Talent, spell.Rank-1);
+				}
+				else
+				{
+					// normal spell
+					target.EnsureSpells().AddSpell(spell);
 				}
 			}
 		}

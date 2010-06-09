@@ -1258,10 +1258,11 @@
     <Compile Include="Waypoints\WaypointGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Res\WCell.RealmServer.resx" />
-  </ItemGroup>
-  <ItemGroup>
+<<<<<<< HEAD
     <None Include="ClassDiagram1.cd" />
+=======
+    <EmbeddedResource Include="Res\WCell.RealmServer.resx" />
+>>>>>>> 37c6addf058bb56405fc13f6a10e10edd6cb8c0b
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

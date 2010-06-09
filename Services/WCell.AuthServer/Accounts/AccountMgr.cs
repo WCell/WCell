@@ -5,7 +5,7 @@ using System.Threading;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
-using WCell.AuthServer.Localization;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
@@ -130,7 +130,7 @@ namespace WCell.AuthServer.Accounts
 		#region Caching/Purging
 		private void Cache()
 		{
-			log.Info(Resources.CachingAccounts);
+			log.Info(resources.CachingAccounts);
 			m_lock = new ReaderWriterLockSlim();
 			m_lastResyncTime = default(DateTime);
 
@@ -242,7 +242,7 @@ namespace WCell.AuthServer.Accounts
 				m_lock.ExitWriteLock();
 			}
 
-			log.Info(Resources.AccountsCached, accounts != null ? accounts.Count() : 0);
+			log.Info(resources.AccountsCached, accounts != null ? accounts.Count() : 0);
 
 			var evt = AccountsResync;
 			if (evt != null)
@@ -315,12 +315,12 @@ namespace WCell.AuthServer.Accounts
 					}
 				}
 
-				s_log.Info(Resources.AccountCreated, username, usr.RoleGroupName);
+				s_log.Info(resources.AccountCreated, username, usr.RoleGroupName);
 				return usr;
 			}
 			catch (Exception ex)
 			{
-				LogUtil.ErrorException(ex, Resources.AccountCreationFailed, username);
+				LogUtil.ErrorException(ex, resources.AccountCreationFailed, username);
 			}
 			return null;
 		}

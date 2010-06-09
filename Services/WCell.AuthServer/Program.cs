@@ -15,7 +15,6 @@
  *************************************************************************/
 
 using NLog;
-using WCell.AuthServer.Localization;
 using System;
 using WCell.Core.Database;
 

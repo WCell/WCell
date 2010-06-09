@@ -341,9 +341,9 @@ namespace WCell.RealmServer.AI.Brains
 			{
 				// execute only on world enter (not on resurrect)
 				m_actions.Init(m_owner);
-				m_SourcePoint = m_owner.Position;
-				CurrentAction = m_actions[m_state];
 			}
+			m_SourcePoint = m_owner.Position;
+			CurrentAction = m_actions[m_state];
 		}
 
 		public virtual void OnCombatTargetOutOfRange()

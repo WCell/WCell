@@ -680,6 +680,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
+			if (m_spell.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
+			{
+				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
+			}
+
 			if (!GodMode)
 			{
 				// add cooldown (if not autoshot)

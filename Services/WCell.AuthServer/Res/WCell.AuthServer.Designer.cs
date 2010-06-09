@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WCell.AuthServer.Localization {
+namespace WCell.AuthServer.Res {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WCell.AuthServer.Localization {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WCell.AuthServer.Localization.WCell.AuthServer", typeof(WCell_AuthServer).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WCell.AuthServer.Res.WCell.AuthServer", typeof(WCell_AuthServer).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

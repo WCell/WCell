@@ -1371,6 +1371,9 @@ namespace WCell.RealmServer.Entities
 			get { return m_spells; }
 		}
 
+		/// <summary>
+		/// Ensures that the SpellCollection exists (not all NPCs have Spells)
+		/// </summary>
 		public SpellCollection EnsureSpells()
 		{
 			if (!HasSpells && this is NPC)
@@ -1634,7 +1637,13 @@ namespace WCell.RealmServer.Entities
 					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
-					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= proc.ProcChance)
+					var chance = (int)proc.ProcChance;
+					if (chance > 0 && this is Character && action.Spell != null)
+					{
+						chance = ((Character)this).PlayerSpells.GetModifiedInt(SpellModifierType.ProcChance, action.Spell, chance);
+					}
+
+					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= chance)
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);

@@ -162,7 +162,7 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// During Combat: The default delay in milliseconds between CombatTicks
 		/// </summary>
-		public static int DefaultCombatDelay = 600;
+		public static int DefaultCombatTickDelay = 600;
 
 		public DamageAction(Unit attacker)
 		{
@@ -387,7 +387,7 @@ namespace WCell.RealmServer.Misc
 		}
 		#endregion
 
-		#region Attack and Damage
+		#region Attack
 		/// <summary>
 		/// Does a melee/ranged/wand physical attack. (Not spells)
 		/// Calculates resistances/attributes (resilience, hit chance) and takes them into account.
@@ -411,6 +411,11 @@ namespace WCell.RealmServer.Misc
 				MissImmune();
 				return false;
 			}
+
+			//foreach (var mod in Attacker.AttackModifiers)
+			//{
+			//    mod.ModPreAttack(this);
+			//}
 
 			if (CanCrit && Victim.StandState != StandState.Stand)
 			{
@@ -511,7 +516,9 @@ namespace WCell.RealmServer.Misc
 				}
 			}
 		}
+		#endregion
 
+		#region Miss & Strike
 		public void MissImmune()
 		{
 			Damage = 0;
@@ -786,20 +793,6 @@ namespace WCell.RealmServer.Misc
 			var hitchance = 0;
 			int skillBonus;
 
-			if (Attacker is Character)
-			{
-				var atk = Attacker as Character;
-				var hitrating = atk.GetCombatRatingMod(CombatRating.MeleeHitChance);
-
-				if (!IsRangedAttack)
-				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.MeleeHitChance)[Attacker.Level - 1]));
-				}
-				else
-				{
-					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.RangedHitChance)[Attacker.Level - 1]));
-				}
-			}
 			//uhm gotta set the variables for skills
 			if (Victim is Character)
 			{
@@ -812,7 +805,20 @@ namespace WCell.RealmServer.Misc
 
 			if (Attacker is Character)
 			{
-				skillBonus -= (int)((Character)Attacker).Skills.GetValue(Weapon.Skill);
+				var atk = Attacker as Character;
+
+				var hitrating = atk.GetCombatRatingMod(CombatRating.MeleeHitChance);
+
+				if (!IsRangedAttack)
+				{
+					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.MeleeHitChance)[Attacker.Level - 1]));
+				}
+				else
+				{
+					hitchance = (int)(100 * (hitrating / GameTables.GetCRTable(CombatRating.RangedHitChance)[Attacker.Level - 1]));
+				}
+				skillBonus -= (int)atk.Skills.GetValue(Weapon.Skill);
+				hitchance += atk.HitChanceMod;
 			}
 			else
 			{
@@ -1049,6 +1055,15 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
+		public void MarkInUse()
+		{
+			// make sure, Attacker won't re-use this
+			if (Attacker.DamageAction == this)
+			{
+				Attacker.DamageAction = null;
+			}
+		}
+
 		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
 		{
 			Attacker = attacker;
@@ -1076,6 +1091,16 @@ namespace WCell.RealmServer.Misc
 
 	public interface IAttackModifier
 	{
+		/// <summary>
+		/// Called before hit chance, damage etc is determined.
+		/// This is not used for Spell attacks, since those only have a single "stage".
+		/// NOT CURRENTLY IMPLEMENTED
+		/// </summary>
+		void ModPreAttack(DamageAction action);
+
+		/// <summary>
+		/// Called when the strike only depends on whether it can be resisted
+		/// </summary>
 		void ModAttack(DamageAction action);
 	}
 }

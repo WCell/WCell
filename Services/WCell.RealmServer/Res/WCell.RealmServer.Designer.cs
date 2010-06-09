@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace WCell.RealmServer.Localization {
+namespace WCell.RealmServer.Res {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Localization {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WCell.RealmServer.Localization.WCell.RealmServer", typeof(WCell_RealmServer).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("WCell.RealmServer.Res.WCell.RealmServer", typeof(WCell_RealmServer).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

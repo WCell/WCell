@@ -19,7 +19,7 @@ using System.Net.Security;
 using System.ServiceModel;
 using System.ServiceModel.Description;
 using NLog;
-using WCell.AuthServer.Localization;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Core;
 using WCell.Constants;
 using WCell.Core.Initialization;
@@ -65,7 +65,7 @@ namespace WCell.AuthServer.IPC
 					host.Open();
 
 					var addr = host.Description.Endpoints[0].ListenUri.AbsoluteUri;
-					log.Info(Resources.IPCServiceStarted, addr);
+					log.Info(resources.IPCServiceStarted, addr);
 				}
 			}
 		}
@@ -87,7 +87,7 @@ namespace WCell.AuthServer.IPC
 					{
 						// do nada
 					}
-					log.Info(Resources.IPCServiceShutdown);
+					log.Info(resources.IPCServiceShutdown);
 				}
 
 				host = null;

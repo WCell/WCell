@@ -8,7 +8,7 @@ using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 using WCell.Util.Threading;

@@ -176,12 +176,6 @@
     <Compile Include="Firewall\IPRange.cs" />
     <Compile Include="IPC\IPCServiceAdapter.cs" />
     <Compile Include="IPC\IPCServiceHost.cs" />
-    <Compile Include="Localization\Resources.cs" />
-    <Compile Include="Localization\WCell.AuthServer.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>WCell.AuthServer.resx</DependentUpon>
-    </Compile>
     <Compile Include="Network\AuthClient.cs" />
     <Compile Include="AuthenticationServer.cs" />
     <Compile Include="Network\AuthPacketMessage.cs" />
@@ -193,6 +187,8 @@
     <Compile Include="Privileges\RoleGroupConfig.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="RealmEntry.cs" />
+    <Compile Include="Res\Resources.cs" />
+    <Compile Include="Res\WCell.AuthServer.Designer.cs" />
     <Compile Include="Stats\AuthStats.cs" />
     <Compile Include="LoginFailInfo.cs" />
   </ItemGroup>
@@ -233,11 +229,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Localization\WCell.AuthServer.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>WCell.AuthServer.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Res\WCell.AuthServer.resx" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

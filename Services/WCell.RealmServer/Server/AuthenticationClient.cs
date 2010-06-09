@@ -20,7 +20,7 @@ using System.Threading;
 using NLog;
 using WCell.Core.Timers;
 using WCell.Intercommunication.Client;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;

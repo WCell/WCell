@@ -718,7 +718,7 @@ namespace WCell.RealmServer.Entities
 
 		public Unit GetRandomHostileUnit(float radius)
 		{
-			return GetRandomUnit(radius, IsHostileWith);
+			return GetRandomUnit(radius, MayAttack);
 		}
 		#endregion
 

@@ -76,10 +76,137 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// Enrage and Wrecking Crew proc effects don't stack
 			AuraHandler.AddAuraGroup(
-				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2, 
+				SpellId.EffectEnrageRank1_3, SpellId.EffectEnrageRank2_3, SpellId.EffectEnrageRank3_2,
 				SpellId.EffectEnrageRank4_2, SpellId.EffectEnrageRank5_2,
-				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3, 
+				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3,
 				SpellId.EffectEnrageRank4, SpellId.EffectEnrageRank5);
+
+
+			// Concussion Blow deals AP based school damage
+			SpellLineId.WarriorProtectionConcussionBlow.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				if (effect != null)
+				{
+					effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
+				}
+				effect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				if (effect != null)
+				{
+					// dont need this one
+					effect.IsUsed = false;
+				}
+			});
+
+			// Last Stand has a Dummy instead of applying an Aura
+			SpellEffect lastStandEffect = null;
+			SpellLineId.WarriorProtectionLastStand.Apply(spell =>
+			{
+				lastStandEffect = spell.GetEffect(SpellEffectType.Dummy);
+				if (lastStandEffect != null)
+				{
+					lastStandEffect.EffectType = SpellEffectType.TriggerSpell;
+					lastStandEffect.TriggerSpellId = SpellId.ClassSkillLastStand;
+				}
+			});
+			SpellHandler.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.ModIncreaseHealth);
+				if (effect != null && lastStandEffect != null)
+				{
+					effect.AuraEffectHandlerCreator = () => new AddMaxHealthPctToHealthHandler();
+					effect.BasePoints = lastStandEffect.BasePoints;
+					effect.DiceSides = lastStandEffect.DiceSides;
+				}
+			}, SpellId.ClassSkillLastStand);
+
+			// Blood craze should only trigger on crit hit
+			SpellLineId.WarriorFuryBloodCraze.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
+			});
+
+			// Improved Berserker Range can only be proc'ed by Berserker Rage
+			SpellLineId.WarriorFuryImprovedBerserkerRage.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.AddCasterProcSpells(SpellLineId.WarriorBerserkerRage);
+			});
+
+			// Weapon Mastery reduces Disarm effects
+			SpellLineId.WarriorArmsWeaponMastery.Apply(spell => {
+				var effect = spell.GetEffect(AuraType.ModMechanicDurationPercent);
+				if (effect != null)
+				{
+					effect.Mechanic = SpellMechanic.Disarmed;
+				}
+			});
+
+			// Blood Thirst deals damage in % of AP and triggers a proc aura
+			// It's proc'ed heal spell heals in % and not a flat value
+			SpellLineId.WarriorFuryBloodthirst.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
+
+				var triggerEffect = spell.GetEffect(SpellEffectType.Dummy);
+				triggerEffect.EffectType = SpellEffectType.TriggerSpell;
+				triggerEffect.TriggerSpellId = SpellId.ClassSkillBloodthirst;
+			});
+			SpellHandler.Apply(spell => {
+				var effect = spell.GetEffect(SpellEffectType.Heal);
+				effect.EffectType = SpellEffectType.RestoreHealthPercent;
+				effect.BasePoints = 0;	// only 1%
+			}, SpellId.EffectClassSkillBloodthirst);
+
+			// Your next 5 melee attacks strike an additional nearby opponent.
+			SpellLineId.WarriorArmsSweepingStrikes.Apply(spell =>
+			{
+				var effect = spell.GetAuraEffect(AuraType.Dummy);
+				if (effect != null)
+				{
+					effect.AuraEffectHandlerCreator = () => new ProcStrikeAdditionalTargetHandler();
+					effect.IsProc = true;
+				}
+			});
+		}
+
+		// TODO: substract consumed proc charges
+		// TODO: make DoRawDamage aggro NPCs
+		public class ProcStrikeAdditionalTargetHandler : AuraEffectHandler
+		{
+			public override void OnProc(RealmServer.Entities.Unit target, IUnitAction action)
+			{
+				var dmgAction = action as DamageAction;
+				if (dmgAction == null) return;
+				dmgAction.MarkInUse();
+				Owner.AddMessage(() =>
+				{
+					var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != target);
+					if (nextTarget != null)
+					{
+						dmgAction.Victim = nextTarget;
+						dmgAction.SpellEffect = m_spellEffect;
+						target.DoRawDamage(dmgAction);
+					}
+				});
+			}
+		}
+
+		public class AddMaxHealthPctToHealthHandler : AuraEffectHandler
+		{
+			private int health;
+
+			protected override void Apply()
+			{
+				health = ((Owner.MaxHealth * EffectValue) + 50) / 100;	//rounded
+				Owner.Health += health;
+			}
+
+			protected override void Remove(bool cancelled)
+			{
+				Owner.Health -= health;
+			}
 		}
 	}
 }

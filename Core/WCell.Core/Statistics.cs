@@ -142,7 +142,7 @@ namespace WCell.Core
 
 		public virtual void GetStats(ICollection<string> statLines)
 		{
-			GC.Collect(2, GCCollectionMode.Optimized);
+			//GC.Collect(2, GCCollectionMode.Optimized);
 			var thisProcess = Process.GetCurrentProcess();
 
 			var processUptime = DateTime.Now - thisProcess.StartTime;
@@ -175,8 +175,8 @@ namespace WCell.Core
 			                            WCellUtil.FormatBytes(totalBytesRcvd), WCellUtil.FormatBytes(averageThroughputDown),
 			                            WCellUtil.FormatBytes(currentDownloadSpeed)));
 
-			var gcCounts = new int[GC.MaxGeneration];
-			for (var i = 0; i < GC.MaxGeneration; i++)
+			var gcCounts = new int[GC.MaxGeneration+1];
+			for (var i = 0; i <= GC.MaxGeneration; i++)
 			{
 				gcCounts[i] = GC.CollectionCount(i);
 			}

@@ -27,8 +27,8 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive)
 				return;
-			
-			owner.Health += (int)((EffectValue * m_aura.Auras.Owner.MaxHealth) / 100f);
+
+			owner.HealthPct += EffectValue;
 		}
 
 	}

@@ -19,5 +19,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		}
 
 		public abstract void ModAttack(DamageAction action);
+
+		public abstract void ModPreAttack(DamageAction action);
 	}
 }

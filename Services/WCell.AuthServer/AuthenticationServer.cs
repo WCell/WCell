@@ -19,11 +19,11 @@ using System.Linq;
 using System.Net;
 using System.ServiceModel;
 using Cell.Core;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Util.Collections;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Firewall;
 using WCell.AuthServer.IPC;
-using WCell.AuthServer.Localization;
 using WCell.AuthServer.Network;
 using WCell.Core;
 using WCell.Intercommunication.DataTypes;
@@ -274,7 +274,7 @@ namespace WCell.AuthServer
 				}
 				catch (AddressAlreadyInUseException)
 				{
-					s_log.Fatal(Resources.AuthServiceAlreadyListening);
+					s_log.Fatal(resources.AuthServiceAlreadyListening);
 					Stop();
 				}
 			}

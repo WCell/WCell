@@ -22,7 +22,7 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using NLog;
 using WCell.AuthServer;
-using WCell.AuthServer.Localization;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core.Cryptography;
@@ -84,7 +84,7 @@ namespace WCell.AuthServer.IPC
 				{
 					msg = "<Unknown>";
 				}
-				log.Warn(Resources.RealmDisconnected, msg);
+				log.Warn(resources.RealmDisconnected, msg);
             };
         }
 
@@ -146,7 +146,7 @@ namespace WCell.AuthServer.IPC
 
             if (authInfo == null)
             {
-                s_authServer.Error(null, Resources.CannotRetrieveAuthenticationInfo, accountName);
+                s_authServer.Error(null, resources.CannotRetrieveAuthenticationInfo, accountName);
             }
 
             return authInfo;
@@ -165,7 +165,7 @@ namespace WCell.AuthServer.IPC
             if (acc == null)
             //|| (requestAddr != 0 && acc.LastIP != requestAddr))
             {
-                log.Warn(string.Format(Resources.AttemptedRequestForUnknownAccount,
+                log.Warn(string.Format(resources.AttemptedRequestForUnknownAccount,
                     accountName,
                     requestAddr,
                     acc != null ? acc.LastIPStr : "()"));
@@ -190,7 +190,7 @@ namespace WCell.AuthServer.IPC
             var acc = AccountMgr.GetAccount(accountName);
             if (acc == null)
             {
-                log.Error(string.Format(Resources.AttemptedRequestForUnknownAccount, accountName));
+                log.Error(string.Format(resources.AttemptedRequestForUnknownAccount, accountName));
                 return null;
             }
 
@@ -402,7 +402,7 @@ namespace WCell.AuthServer.IPC
                     AuthenticationServer.Realms.Add(id, realm);
                 }
             }
-			log.Info(Resources.RealmRegistered, realm); //realm.ChannelAddress);
+			log.Info(resources.RealmRegistered, realm); //realm.ChannelAddress);
         }
 
         /// <summary>
@@ -445,7 +445,7 @@ namespace WCell.AuthServer.IPC
 			if (realm != null)
 			{
 				realm.SetOffline(true);
-				log.Info(Resources.RealmUnregistered, realm);
+				log.Info(resources.RealmUnregistered, realm);
 			}
         }
         #endregion

@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using WCell.AuthServer.Localization;
+using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
@@ -105,7 +105,7 @@ namespace WCell.AuthServer.Privileges
 			if ((e.ChangeType == WatcherChangeTypes.Changed) &&
 				e.Name == RoleGroupFile)
 			{
-				s_log.Info(Resources.PrivilegeConfigChanged);
+				s_log.Info(resources.PrivilegeConfigChanged);
 
 				try
 				{

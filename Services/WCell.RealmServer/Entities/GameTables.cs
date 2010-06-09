@@ -11,7 +11,7 @@ using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Core;
 using WCell.Core.DBC;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Entities

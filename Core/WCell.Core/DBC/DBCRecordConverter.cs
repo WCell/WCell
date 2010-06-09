@@ -109,7 +109,7 @@ namespace WCell.Core.DBC
 			{
 			}
 
-			return WCellDef.DefaultEncoding.GetString(m_stringTable, startOffset, len-1);
+			return WCellDef.DefaultEncoding.GetString(m_stringTable, startOffset, len-1) ?? "";
 		}
 
         public void Dispose()

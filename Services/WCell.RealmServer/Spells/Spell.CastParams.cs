@@ -432,16 +432,23 @@ namespace WCell.RealmServer.Spells
 
 			if (action.Spell != null)
 			{
-				if (active)	// owner == attacker
+				if (active)	
 				{
+					// owner == attacker
 					if (CasterProcSpells != null)
 					{
 						return CasterProcSpells.Contains(action.Spell);
 					}
 				}
-				else if (TargetProcSpells != null)	// owner == victim
+				else if (TargetProcSpells != null)	
 				{
+					// owner == victim
 					return TargetProcSpells.Contains(action.Spell);
+				}
+				if (action.Spell == this)
+				{
+					// Proc spell can't trigger itself
+					return false;
 				}
 			}
 
@@ -494,7 +501,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else if (unit is Character)
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedIntNegative(SpellModifierType.CooldownTime, this, cd);
+				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

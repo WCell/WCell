@@ -179,6 +179,12 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
 			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();
 			EffectHandlers[(int)AuraType.ModMeleeCritDamageBonus] = () => new ModMeleeCritDamageBonusHandler();
+			EffectHandlers[(int)AuraType.ModChanceTargetDodgesAttackPercent] = () => new ModChanceTargetDodgesAttackPercentHandler();
+			EffectHandlers[(int)AuraType.ModOffhandDamagePercent] = () => new ModOffhandDamagePercentHandler();
+			EffectHandlers[(int)AuraType.Expertise] = () => new ModExpertiseHandler();
+			EffectHandlers[(int)AuraType.ModHitChance] = () => new ModHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();
+			
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

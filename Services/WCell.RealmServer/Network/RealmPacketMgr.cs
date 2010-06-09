@@ -25,7 +25,7 @@ using WCell.Core.Network;
 using WCell.PacketAnalysis;
 using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.Localization;
+using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
