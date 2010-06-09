@@ -32,9 +32,9 @@
         /// </summary>
         public const float MapLength = ((TilesPerMapSide*ChunksPerTileSide)*((150.0f/36.0f)*UnitsPerChunkSide));
 
-        private const int TilesPerMapSide = 64;
-        private const int ChunksPerTileSide = 16;
-        private const int UnitsPerChunkSide = 8;
+        public const int TilesPerMapSide = 64;
+        public const int ChunksPerTileSide = 16;
+        public const int UnitsPerChunkSide = 8;
 
         public const float TerrainSimplificationConst = 0.005f;
         public const float H2OSimplificationConst = 0.005f;

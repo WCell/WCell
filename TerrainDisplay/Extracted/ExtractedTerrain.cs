@@ -45,9 +45,10 @@ namespace TerrainDisplay.Extracted
             _mapId = mapId;
             _baseDirectory = dataPath;
 
-            _adtManager = new ExtractedADTManager();
-            _wmoManager = new ExtractedWMOManager();
-            _m2Manager = new ExtractedM2Manager();
+            _adtManager = new ExtractedADTManager(this, _baseDirectory, _mapId);
+            _m2Manager = new ExtractedM2Manager(_baseDirectory, _mapId);
+            _wmoManager = new ExtractedWMOManager(_baseDirectory, _mapId);
+            
         }
     }
 }

@@ -10,7 +10,7 @@ namespace MPQNav.MPQ.ADT.Components
         /// <summary>
         /// Filename of the WMO
         /// </summary>
-        public string FileName;
+        public string FilePath;
         /// <summary>
         /// Unique ID of the WMO in this ADT
         /// </summary>
@@ -34,7 +34,7 @@ namespace MPQNav.MPQ.ADT.Components
 
         public BoundingBox Extents;
         public ushort Flags;
-        public ushort DoodadSet;
+        public ushort DoodadSetId;
         public ushort NameSet;
     }
 }

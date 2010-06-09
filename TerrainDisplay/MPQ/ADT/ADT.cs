@@ -215,12 +215,12 @@ namespace MPQNav.MPQ.ADT
                     var col = c - mh2O.Header.YOffset;
 
                     if (!renderMap[col, row] && ((mh2O.Header.Height != 8) || (mh2O.Header.Width != 8))) continue;
-                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col + 1));
-                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col + 1));
-                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col + 1));
                 }
             }
         }

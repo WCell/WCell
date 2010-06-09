@@ -8,59 +8,77 @@ namespace MPQNav.MPQ.WMO.Components
 {
     public class BSPTree
     {
-        public BSPNode root;
+        public short rootId;
+        public List<BSPNode> nodes;
         private BoundingBox bounds;
 
-        public BSPTree(IList<BSPNode> nodes)
+        public BSPTree(List<BSPNode> nodes)
         {
-            root = FindRootNode(nodes);
-            if (root == null)
+            var id = FindRootNodeId(nodes);
+            if (id == short.MinValue)
             {
                 throw new InvalidDataException("No root node found for this BSP tree.");
             }
+            rootId = id;
+            this.nodes = nodes;
 
-            root.HookUpChildren(nodes);
-            Min = root.GetTreeMin(new Vector3(float.MaxValue));
-            Max = root.GetTreeMax(new Vector3(float.MinValue));
-            bounds = new BoundingBox(Min, Max);
+            //root.HookUpChildren(nodes);
+            //Min = root.GetTreeMin(new Vector3(float.MaxValue));
+            //Max = root.GetTreeMax(new Vector3(float.MinValue));
+            //bounds = new BoundingBox(Min, Max);
         }
 
-        public List<Vector3> Vertices
+        public BSPTree(List<BSPNode> nodes, short rootId)
         {
-            get
-            {
-                var newList = new List<Vector3>();
-                root.GetVertices(newList);
-                return newList;
-            }
+            this.rootId = rootId;
+            this.nodes = nodes;
         }
+
+        //public List<Vector3> Vertices
+        //{
+        //    get
+        //    {
+        //        var newList = new List<Vector3>();
+        //        root.GetVertices(newList);
+        //        return newList;
+        //    }
+        //}
 
         public List<int> Indices
         {
             get
             {
                 var newList = new List<int>();
-                root.GetIndices(newList, 0);
+                foreach (var node in nodes)
+                {
+                    if (node.TriIndices == null) continue;
+                    foreach (var index3 in node.TriIndices)
+                    {
+                        newList.Add(index3.Index0);
+                        newList.Add(index3.Index1);
+                        newList.Add(index3.Index2);
+                    }
+                }
                 return newList;
             }
         }
 
-        public Vector3 UnitNormal
-        {
-            get { return Vector3.Up; }
-        }
+        //public Vector3 UnitNormal
+        //{
+        //    get { return Vector3.Up; }
+        //}
 
-        public Vector3 Min
-        {
-            get;
-            private set;
-        }
+        //public Vector3 Min
+        //{
+        //    get;
+        //    private set;
+        //}
 
-        public Vector3 Max
-        {
-            get;
-            private set;
-        }
+        //public Vector3 Max
+        //{
+        //    get;
+        //    private set;
+        //}
 
         //public float? IntersectsWith(Ray ray)
         //{
@@ -79,7 +97,7 @@ namespace MPQNav.MPQ.WMO.Components
         //    return minDist;
         //}
 
-        private static BSPNode FindRootNode(IList<BSPNode> nodes)
+        private static short FindRootNodeId(IList<BSPNode> nodes)
         {
             for(var i = 0; i < nodes.Count; i++)
             {
@@ -99,9 +117,9 @@ namespace MPQNav.MPQ.WMO.Components
                     found = true;
                     break;
                 }
-                if (!found) return node;
+                if (!found) return (short)i;
             }
-            return null;
+            return short.MinValue;
         }
 
         private static void VisitNodes(BSPNode node, Ray ray, float tMax, Action<BSPNode> callback)
@@ -183,112 +201,110 @@ namespace MPQNav.MPQ.WMO.Components
 
         public BSPNode Positive;
         public BSPNode Negative;
-        public Triangle[] PolygonSet;
+        public List<Index3> TriIndices;
 
 
-        public void Dump(StreamWriter file)
-        {
-            file.WriteLine("Flags: " + flags);
-            file.WriteLine("negChild: " + negChild);
-            file.WriteLine("posChild: " + posChild);
-            file.WriteLine("nFaces: " + nFaces);
-            file.WriteLine("faceStart: " + faceStart);
-            file.WriteLine("planeDist: " + planeDist);
+        //public void Dump(StreamWriter file)
+        //{
+        //    file.WriteLine("Flags: " + flags);
+        //    file.WriteLine("negChild: " + negChild);
+        //    file.WriteLine("posChild: " + posChild);
+        //    file.WriteLine("nFaces: " + nFaces);
+        //    file.WriteLine("faceStart: " + faceStart);
+        //    file.WriteLine("planeDist: " + planeDist);
 
-            if (PolygonSet != null)
-            {
-                file.WriteLine("PolygonSet");
-                for (var i = 0; i < PolygonSet.Length; i++)
-                {
-                    file.WriteLine("\tVertex[{0}]:", i);
-                    file.WriteLine("\t\tPoint1: {0}", PolygonSet[i].Point1);
-                    file.WriteLine("\t\tPoint2: {0}", PolygonSet[i].Point2);
-                    file.WriteLine("\t\tPoint3: {0}", PolygonSet[i].Point3);
-                }
-            }
+        //    if (PolygonSet != null)
+        //    {
+        //        file.WriteLine("PolygonSet");
+        //        for (var i = 0; i < PolygonSet.Length; i++)
+        //        {
+        //            file.WriteLine("\tVertex[{0}]:", i);
+        //            file.WriteLine("\t\tPoint1: {0}", PolygonSet[i].Point1);
+        //            file.WriteLine("\t\tPoint2: {0}", PolygonSet[i].Point2);
+        //            file.WriteLine("\t\tPoint3: {0}", PolygonSet[i].Point3);
+        //        }
+        //    }
 
-            file.WriteLine();
-        }
+        //    file.WriteLine();
+        //}
 
-        internal void HookUpChildren(IList<BSPNode> nodes)
-        {
-            if ((flags & BSPNodeFlags.Flag_Leaf) != 0 ||
-                (flags & BSPNodeFlags.Flag_NoChild) != 0) return;
+        //internal void HookUpChildren(IList<BSPNode> nodes)
+        //{
+        //    if ((flags & BSPNodeFlags.Flag_Leaf) != 0 ||
+        //        (flags & BSPNodeFlags.Flag_NoChild) != 0) return;
 
-            var positiveChild = nodes[posChild];
-            var negativeChild = nodes[negChild];
-            if (positiveChild == null || negativeChild == null) return;
+        //    var positiveChild = nodes[posChild];
+        //    var negativeChild = nodes[negChild];
+        //    if (positiveChild == null || negativeChild == null) return;
 
-            Positive = positiveChild;
-            Negative = negativeChild;
+        //    Positive = positiveChild;
+        //    Negative = negativeChild;
 
-            Positive.HookUpChildren(nodes);
-            Negative.HookUpChildren(nodes);
-        }
+        //    Positive.HookUpChildren(nodes);
+        //    Negative.HookUpChildren(nodes);
+        //}
         
-        internal void GetVertices(List<Vector3> vertices)
+        //internal void GetVertices(List<Vector3> vertices)
+        //{
+        //    if (TriIndices != null)
+        //    {
+        //        foreach (var index in TriIndices)
+        //        {
+        //            vertices.Add(triangle.Point1);
+        //            vertices.Add(triangle.Point2);
+        //            vertices.Add(triangle.Point3);
+        //        }
+        //    }
+
+        //    if (Positive != null) Positive.GetVertices(vertices);
+        //    if (Negative != null) Negative.GetVertices(vertices);
+        //}
+
+        internal void GetIndices(List<int> indices)
         {
-            if (PolygonSet != null)
+            if (TriIndices != null)
             {
-                foreach (var triangle in PolygonSet)
+                foreach (var triangle in TriIndices)
                 {
-                    vertices.Add(triangle.Point1);
-                    vertices.Add(triangle.Point2);
-                    vertices.Add(triangle.Point3);
+                    indices.Add(triangle.Index0);
+                    indices.Add(triangle.Index1);
+                    indices.Add(triangle.Index2);
                 }
             }
 
-            if (Positive != null) Positive.GetVertices(vertices);
-            if (Negative != null) Negative.GetVertices(vertices);
+            if (Positive != null) Positive.GetIndices(indices);
+            if (Negative != null) Negative.GetIndices(indices);
         }
 
-        internal void GetIndices(List<int> indices, int offset)
-        {
-            if (PolygonSet != null)
-            {
-                foreach (var triangle in PolygonSet)
-                {
-                    var indexes = triangle.Indices;
-                    indices.Add(indexes[0] + offset);
-                    indices.Add(indexes[1] + offset);
-                    indices.Add(indexes[2] + offset);
-                    offset += 3;
-                }
-            }
+        //internal Vector3 GetTreeMin(Vector3 min)
+        //{
+        //    if (TriIndices != null)
+        //    {
+        //        foreach (var triangle in TriIndices)
+        //        {
+        //            min = Vector3.Min(min, triangle.Min);
+        //        }
+        //    }
 
-            if (Positive != null) Positive.GetIndices(indices, offset);
-            if (Negative != null) Negative.GetIndices(indices, offset);
-        }
+        //    if (Positive != null) min = Vector3.Min(Positive.GetTreeMin(min), min);
+        //    if (Negative != null) min = Vector3.Min(Negative.GetTreeMin(min), min);
+        //    return min;
+        //}
 
-        internal Vector3 GetTreeMin(Vector3 min)
-        {
-            if (PolygonSet != null)
-            {
-                foreach (var triangle in PolygonSet)
-                {
-                    min = Vector3.Min(min, triangle.Min);
-                }
-            }
+        //internal Vector3 GetTreeMax(Vector3 max)
+        //{
+        //    if (TriIndices != null)
+        //    {
+        //        foreach (var triangle in TriIndices)
+        //        {
+        //            max = Vector3.Max(max, triangle.Max);
+        //        }
+        //    }
 
-            if (Positive != null) min = Vector3.Min(Positive.GetTreeMin(min), min);
-            if (Negative != null) min = Vector3.Min(Negative.GetTreeMin(min), min);
-            return min;
-        }
-
-        internal Vector3 GetTreeMax(Vector3 max)
-        {
-            if (PolygonSet != null)
-            {
-                foreach (var triangle in PolygonSet)
-                {
-                    max = Vector3.Max(max, triangle.Max);
-                }
-            }
-
-            if (Positive != null) max = Vector3.Max(Positive.GetTreeMin(max), max);
-            if (Negative != null) max = Vector3.Max(Negative.GetTreeMin(max), max);
-            return max;
-        }
+        //    if (Positive != null) max = Vector3.Max(Positive.GetTreeMin(max), max);
+        //    if (Negative != null) max = Vector3.Max(Negative.GetTreeMin(max), max);
+        //    return max;
+        //}
     }
 
     

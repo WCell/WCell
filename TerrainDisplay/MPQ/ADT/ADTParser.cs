@@ -238,7 +238,7 @@ namespace MPQNav.MPQ.ADT
             {
                 var objectDef = new MapObjectDefinition();
                 int nameIndex = fileReader.ReadInt32(); // 4 bytes
-                objectDef.FileName = adt.ObjectFiles[nameIndex];
+                objectDef.FilePath = adt.ObjectFiles[nameIndex];
                 objectDef.UniqueId = fileReader.ReadUInt32(); // 4 bytes
                 // This Position appears to be in the wrong order.
                 // To get WoW coords, read it as: {Y, Z, X}
@@ -261,7 +261,7 @@ namespace MPQNav.MPQ.ADT
                 max.X = fileReader.ReadSingle();
                 objectDef.Extents = new BoundingBox(min, max); // 12*2 bytes
                 objectDef.Flags = fileReader.ReadUInt16(); // 2 bytes
-                objectDef.DoodadSet = fileReader.ReadUInt16(); // 2 bytes
+                objectDef.DoodadSetId = fileReader.ReadUInt16(); // 2 bytes
                 objectDef.NameSet = fileReader.ReadUInt16(); // 2 bytes
                 fileReader.ReadUInt16(); // padding
 

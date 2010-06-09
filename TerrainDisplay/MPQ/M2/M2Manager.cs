@@ -80,7 +80,6 @@ namespace MPQNav.MPQ.M2
             var offset = 0;
             foreach (var m2 in M2s)
             {
-                // Handle the M2s
                 for (var v = 0; v < m2.Vertices.Count; v++)
                 {
                     _renderVertices.Add(m2.Vertices[v]);

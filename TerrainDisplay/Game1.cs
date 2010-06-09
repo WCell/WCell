@@ -7,6 +7,7 @@ using MPQNav.MPQ.ADT;
 using MPQNav.MPQ.M2;
 using MPQNav.MPQ.WMO;
 using TerrainDisplay;
+using TerrainDisplay.Extracted;
 
 namespace MPQNav
 {
@@ -32,7 +33,7 @@ namespace MPQNav
         BasicEffect _basicEffect;
         
         //private readonly ADTManager _manager;
-        private readonly MpqTerrainManager _mpqTerrainManager;
+        private readonly ITerrainManager _terrainManager;
         /// <summary>
         /// Console used to execute commands while the game is running.
         /// </summary>
@@ -58,15 +59,26 @@ namespace MPQNav
 
             var settingsReader = new System.Configuration.AppSettingsReader();
 
-            var mpqPath = (string)settingsReader.GetValue("mpqPath", typeof(string));
             var defaultContinent = (string)settingsReader.GetValue("defaultContinent", typeof(string));
+            var mapId = (int) settingsReader.GetValue("mapId", typeof (int));
             var defaultMapX = (int)settingsReader.GetValue("defaultMapX", typeof(int));
             var defaultMapY = (int)settingsReader.GetValue("defaultMapY", typeof(int));
             var continent = (ContinentType) Enum.Parse(typeof (ContinentType), defaultContinent, true);
-
-
-            _mpqTerrainManager = new MpqTerrainManager(mpqPath, continent, 0);
-            _mpqTerrainManager.ADTManager.LoadTile(defaultMapX, defaultMapY);
+            var useExtractedData = (bool) settingsReader.GetValue("useExtractedData", typeof (bool));
+            
+            string mpqPath;
+            if (useExtractedData)
+            {
+                mpqPath = (string) settingsReader.GetValue("extractedDataPath", typeof (string));
+                _terrainManager = new ExtractedTerrain(mpqPath, mapId);
+            }
+            else
+            {
+                mpqPath = (string)settingsReader.GetValue("mpqPath", typeof(string));
+                _terrainManager = new MpqTerrainManager(mpqPath, continent, mapId);
+            }
+            
+            _terrainManager.ADTManager.LoadTile(defaultMapX, defaultMapY);
             
             //_terrainManager.ADTManager.LoadTile(defaultMapX - 1, defaultMapY);
 
@@ -127,9 +139,9 @@ namespace MPQNav
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            Components.Add(new ADTRenderer(this, _mpqTerrainManager.ADTManager));
-            Components.Add(new M2Renderer(this, _mpqTerrainManager.M2Manager));
-            Components.Add(new WMORenderer(this, _mpqTerrainManager.WMOManager));
+            Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
+            Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
+            Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;

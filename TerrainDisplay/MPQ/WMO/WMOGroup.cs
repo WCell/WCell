@@ -108,7 +108,7 @@ namespace MPQNav.MPQ.WMO
                 {
                     var node = BSPNodes[i];
                     f.WriteLine("Node: " + i);
-                    node.Dump(f);
+                    //node.Dump(f);
                 }
             }
         }

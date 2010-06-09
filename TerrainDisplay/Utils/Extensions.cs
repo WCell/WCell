@@ -1,7 +1,9 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Microsoft.Xna.Framework;
 using MPQNav.MPQ;
+using MPQNav.MPQ.WMO;
 
 namespace MPQNav.Util
 {
@@ -43,6 +45,15 @@ namespace MPQNav.Util
             return new Vector3(X, Y, Z);
         }
 
+        public static Index3 ReadIndex3(this BinaryReader br)
+        {
+            return new Index3 {
+                                  Index0 = br.ReadInt16(),
+                                  Index1 = br.ReadInt16(),
+                                  Index2 = br.ReadInt16()
+                              };
+        }
+
         public static Quaternion ReadQuaternion(this BinaryReader br)
         {
             return new Quaternion(br.ReadVector3(), br.ReadSingle());
@@ -67,6 +78,61 @@ namespace MPQNav.Util
                            R = br.ReadByte(),
                            A = br.ReadByte()
                        };
+        }
+
+        public static Matrix ReadMatrix(this BinaryReader br)
+        {
+            return new Matrix(
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle(),
+                br.ReadSingle()
+                );
+        }
+
+        public static List<int> ReadInt32List(this BinaryReader br)
+        {
+            var count = br.ReadInt32();
+            var list = new List<int>(count);
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(br.ReadInt32());
+            }
+            return list;
+        }
+
+        public static List<Vector3> ReadVector3List(this BinaryReader br)
+        {
+            var count = br.ReadInt32();
+            var list = new List<Vector3>(count);
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(br.ReadVector3());
+            }
+            return list;
+        }
+
+        public static List<Index3> ReadIndex3List(this BinaryReader br)
+        {
+            var count = br.ReadInt32();
+            var list = new List<Index3>(count);
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(br.ReadIndex3());
+            }
+            return list;
         }
 
         /// <summary>

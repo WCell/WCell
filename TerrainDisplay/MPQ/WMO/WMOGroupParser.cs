@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using MPQNav.MPQ.WMO.Components;
@@ -608,18 +609,15 @@ namespace MPQNav.MPQ.WMO
                 }
 
                 //var faces = new ushort[n.nFaces];
-                n.PolygonSet = new Triangle[n.nFaces];
+                n.TriIndices = new List<Index3>(n.nFaces);
                 for (int j = 0; j < n.nFaces; j++)
                 {
                     var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
-                    var tri0 = group.Vertices[triIndex.Index0];
-                    var tri1 = group.Vertices[triIndex.Index1];
-                    var tri2 = group.Vertices[triIndex.Index2];
-                    n.PolygonSet[j] = new Triangle(tri0, tri1, tri2);
+                    n.TriIndices[j] = triIndex;
                 }
             }
 
-            group.DumpBSPNodes();
+            //group.DumpBSPNodes();
         }
 
 

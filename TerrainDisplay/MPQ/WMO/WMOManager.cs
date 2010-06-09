@@ -99,14 +99,14 @@ namespace MPQNav.MPQ.WMO
         /// <param name="currentMODF">MODF (placement information for this WMO)</param>
         public void AddWMO(MapObjectDefinition currentMODF)
         {
-            var fullFilePath = Path.Combine(_baseDirectory, currentMODF.FileName);
+            var fullFilePath = Path.Combine(_baseDirectory, currentMODF.FilePath);
 
             if (!File.Exists(fullFilePath))
             {
                 throw new Exception("File does not exist: " + fullFilePath);
             }
 
-            _fileNames.Add(currentMODF.FileName);
+            _fileNames.Add(currentMODF.FilePath);
 
             // Parse the WMORoot
             var wmoRoot = WMORootParser.Process(fullFilePath);
@@ -124,7 +124,7 @@ namespace MPQNav.MPQ.WMO
             }
 
             // Parse in the WMO's M2s
-            var curDoodadSet = currentMODF.DoodadSet;
+            var curDoodadSet = currentMODF.DoodadSetId;
             
             var setIndices = new List<int> { 0 };
             if (curDoodadSet > 0) setIndices.Add(curDoodadSet);
