@@ -665,8 +665,9 @@ namespace MPQNav.MPQ.WMO
             {
                 for (var x = 0; x < group.LiquidInfo.XVertexCount; x++)
                 {
-                    group.LiquidInfo.HeightMapMax[x, y] = file.ReadSingle();
+                    // The first value is never used ...
                     group.LiquidInfo.HeightMapMin[x, y] = file.ReadSingle();
+                    group.LiquidInfo.HeightMapMax[x, y] = file.ReadSingle();
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MPQNav.Collision._3D;
@@ -135,6 +136,29 @@ namespace MPQNav.MPQ.WMO
         public void AddIndex(int index)
         {
             Indices.Add(index);
+        }
+
+        internal void DumpLiqChunks()
+        {
+            var name = Path.GetFileName(FilePath);
+            name = Path.ChangeExtension(name, ".liquid.txt");
+            var f = new StreamWriter(name);
+            
+            f.WriteLine("Dumping WMOGroup Liquid Information...");
+            
+            for (var i = 0; i < Groups.Length; i++)
+            {
+                var group = Groups[i];
+                if (group == null) continue;
+                if (group.LiquidInfo == null) continue;
+
+                f.WriteLine(string.Format("Group: {0:00}", i));
+                group.LiquidInfo.Dump(f);
+                f.WriteLine();
+                f.WriteLine();
+            }
+
+            f.Close();
         }
     }
 }

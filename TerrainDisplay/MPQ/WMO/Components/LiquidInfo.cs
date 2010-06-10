@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.IO;
+using Microsoft.Xna.Framework;
 
 namespace MPQNav.MPQ.WMO.Components
 {
@@ -52,5 +54,21 @@ namespace MPQNav.MPQ.WMO.Components
         /// They seem to determine the liquid type?
         /// </summary>
         public byte[,] LiquidTileFlags;
+
+        internal void Dump(StreamWriter file)
+        {
+            for (var y = 0; y < YTileCount; y++)
+            {
+                for (var x = 0; x < XTileCount; x++)
+                {
+                    if ((LiquidTileFlags[x, y] & 0x0F) == 0x0F) continue;
+                    file.WriteLine(
+                        String.Format("{0:00.00e00} | {1:00.00} | {2:00.00e00}", 
+                                    HeightMapMin[x, y],
+                                    BaseCoordinates.Z,
+                                    HeightMapMax[x, y]));
+                }
+            }
+        }
     }
 }

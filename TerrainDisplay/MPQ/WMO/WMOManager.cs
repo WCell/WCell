@@ -123,6 +123,8 @@ namespace MPQNav.MPQ.WMO
                 wmoRoot.Groups[wmoGroup] = group;
             }
 
+            //wmoRoot.DumpLiqChunks();
+
             // Parse in the WMO's M2s
             var curDoodadSet = currentMODF.DoodadSetId;
             
@@ -175,14 +177,15 @@ namespace MPQNav.MPQ.WMO
 
             //var rotateZ = Matrix.CreateRotationZ(0*RadiansPerDegree);
             var rotateZ = Matrix.CreateRotationZ((currentMODF.OrientationB + 180)*RadiansPerDegree);
-            var rotateX = Matrix.CreateRotationX(currentMODF.OrientationC * RadiansPerDegree);
-            var rotateY = Matrix.CreateRotationY(currentMODF.OrientationA * RadiansPerDegree);
+            //var rotateX = Matrix.CreateRotationX(currentMODF.OrientationC * RadiansPerDegree);
+            //var rotateY = Matrix.CreateRotationY(currentMODF.OrientationA * RadiansPerDegree);
 
             int offset;
             
-            foreach (var currentGroup in currentWMO.Groups)//for (var i = 0; i < currentWMO.Header.GroupCount; i++)
+            foreach (var currentGroup in currentWMO.Groups)
             {
                 if (currentGroup == null) continue;
+                //if (!currentGroup.Header.HasMLIQ) continue;
 
                 offset = currentWMO.Vertices.Count;
                 foreach (var baseVector in currentGroup.Vertices)
@@ -205,40 +208,62 @@ namespace MPQNav.MPQ.WMO
                 {
                     var liqInfo = currentGroup.LiquidInfo;
                     var liqOrigin = liqInfo.BaseCoordinates;
-                    
+
                     offset = currentWMO.Vertices.Count;
+                    var tempListTop = new List<Vector3>();
                     for (var xStep = 0; xStep < liqInfo.XVertexCount; xStep++)
                     {
                         for (var yStep = 0; yStep < liqInfo.YVertexCount; yStep++)
                         {
-                            var xPos = liqOrigin.X + xStep*TerrainConstants.UnitSize;
-                            var yPos = liqOrigin.Y + yStep*TerrainConstants.UnitSize;
-                            var zPos = liqOrigin.Z + liqInfo.HeightMapMax[xStep, yStep];
-                            var liqVec = new Vector3(xPos, yPos, zPos);
+                            var xPos = liqOrigin.X + xStep * TerrainConstants.UnitSize;
+                            var yPos = liqOrigin.Y + yStep * TerrainConstants.UnitSize;
+                            var zPosTop = liqInfo.HeightMapMax[xStep, yStep];
                             
-                            var rotatedMin = Vector3.Transform(liqVec, rotateZ);
-                            var vec = rotatedMin + origin;
+                            var liqVecTop = new Vector3(xPos, yPos, zPosTop);
+                            
+                            var rotatedTop = Vector3.Transform(liqVecTop, rotateZ);
+                            var vecTop = rotatedTop + origin;
 
-                            currentWMO.Vertices.Add(new VertexPositionNormalColored(vec, Color.Blue, Vector3.Up));
-                            //DrawBoundingBox(min, max, Color.Blue, currentWMO);
-                            
+                            currentWMO.Vertices.Add(new VertexPositionNormalColored(vecTop, Color.Blue, Vector3.Up));
+                            tempListTop.Add(vecTop);
                         }
                     }
 
+                    var boundsList = new List<Vector3>();
                     for (var row = 0; row < liqInfo.XTileCount; row++)
                     {
                         for (var col = 0; col < liqInfo.YTileCount; col++)
                         {
-                            if (liqInfo.LiquidTileFlags[row, col] == 0x0F) continue;
-                            currentWMO.Indices.Add(offset + ((row + 1)*(liqInfo.YVertexCount) + col));
-                            currentWMO.Indices.Add(offset + (row*(liqInfo.YVertexCount) + col));
-                            currentWMO.Indices.Add(offset + (row*(liqInfo.YVertexCount) + col + 1));
+                            if ((liqInfo.LiquidTileFlags[row, col] & 0x0F) == 0x0F) continue;
 
-                            currentWMO.Indices.Add(offset + ((row + 1)*(liqInfo.YVertexCount) + col + 1));
-                            currentWMO.Indices.Add(offset + ((row + 1)*(liqInfo.YVertexCount) + col));
-                            currentWMO.Indices.Add(offset + (row*(liqInfo.YVertexCount) + col + 1));
+                            var index = ((row + 1)*(liqInfo.YVertexCount) + col);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
+
+                            index = (row*(liqInfo.YVertexCount) + col);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
+
+                            index = (row*(liqInfo.YVertexCount) + col + 1);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
+
+                            index = ((row + 1)*(liqInfo.YVertexCount) + col + 1);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
+
+                            index = ((row + 1)*(liqInfo.YVertexCount) + col);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
+
+                            index = (row*(liqInfo.YVertexCount) + col + 1);
+                            boundsList.Add(tempListTop[index]);
+                            currentWMO.Indices.Add(offset + index);
                         }
                     }
+
+                    //var bounds = BoundingBox.CreateFromPoints(boundsList.ToArray());
+                    //DrawBoundingBox(bounds, Color.Blue, currentWMO);
                 }
             }
 
@@ -264,18 +289,13 @@ namespace MPQNav.MPQ.WMO
             }
 
             // Generate the OBB
-            currentWMO.OrientatedBoundingBox = new OBB(currentWMO.AABB.Bounds.Center(), currentWMO.AABB.Bounds.Extents(), rotateZ);
+            //currentWMO.OrientatedBoundingBox = new OBB(currentWMO.AABB.Bounds.Center(), currentWMO.AABB.Bounds.Extents(), rotateZ);
         }
 
         private static void DrawBoundingBox(BoundingBox boundingBox, Color color, WMORoot currentWMO)
         {
             var min = boundingBox.Min;
-            min.X = (min.X - TerrainConstants.CenterPoint) * -1;
-            min.Y = (min.Y - TerrainConstants.CenterPoint) * -1;
             var max = boundingBox.Max;
-            max.X = (max.X - TerrainConstants.CenterPoint) * -1;
-            max.Y = (max.Y - TerrainConstants.CenterPoint) * -1;
-
             DrawBoundingBox(min, max, color, currentWMO);
         }
 

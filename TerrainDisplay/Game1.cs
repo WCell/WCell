@@ -128,10 +128,10 @@ namespace MPQNav
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            //Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
-            //Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
-            //Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
-            Components.Add(new RecastRenderer(this, _terrainManager));
+            Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
+            Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
+            Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
+            //Components.Add(new RecastRenderer(this, _terrainManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;
