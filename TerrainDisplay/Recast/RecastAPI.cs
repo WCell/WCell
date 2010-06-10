@@ -55,23 +55,24 @@ namespace TerrainDisplay.Recast
 			[MarshalAs(UnmanagedType.FunctionPtr)] Action cb
 		);
 
-		public static void GenerateMesh(IntPtr geom, Vector3[] vertices, int[] triangles, string name)
+		public static void GenerateMesh(IntPtr geom, Vector3[] vertices, int[] _triangles, string name)
 		{
+			int max = 1024;
+
 			var verts = new float[vertices.Length * 3];
+			var triangles = _triangles;
+			//var triangles = _triangles.Reverse().ToArray();
 			int idx = 0;
-			foreach (var vector in vertices)
+			for (var i = 0; i < vertices.Length; i++)
 			{
+				var vector = vertices[i];
 				verts[idx++] = vector.X;
 				verts[idx++] = vector.Y;
 				verts[idx++] = vector.Z;
 			}
-			GenerateMesh(geom, verts, triangles, name);
-		}
 
-		public static void GenerateMesh(IntPtr geom, float[] vertices, int[] triangles, string name)
-		{
-			GenerateMesh(geom, vertices, 90000, triangles, 80000, name);
-			//GenerateMesh(geom, vertices, vertices.Length, triangles, triangles.Length, name);
+			//GenerateMesh(geom, verts, 2*max, triangles, max, name);
+			GenerateMesh(geom, verts, vertices.Length, triangles.Reverse().ToArray(), triangles.Length / 3, name);
 		}
 
 		[DllImport(RecastDllName, EntryPoint = "genMesh", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]

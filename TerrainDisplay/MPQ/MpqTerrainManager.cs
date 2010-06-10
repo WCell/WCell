@@ -74,46 +74,47 @@ namespace MPQNav.MPQ
 
         public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)
         {
-            var vecList = new List<Vector3>();
-            var indexList = new List<int>();
+            var vecList = new List<Vector3>(1 << 16);		// 64k
+            var indexList = new List<int>(1 << 16);
             List<VertexPositionNormalColored> renderVertices;
 
             int offset;
             // Get the ADT triangles
-            foreach (var tile in _adtManager.MapTiles)
-            {
-                offset = vecList.Count;
-                renderVertices = tile.Vertices;
-                if (renderVertices != null)
-                {
-                    foreach (var vertex in renderVertices)
-                    {
-                        var vec = vertex.Position;
-                        PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                        vecList.Add(vec);
-                    }
-                    foreach (var index in tile.Indices)
-                    {
-                        indexList.Add(index + offset);
-                    }
-                }
+        	for (var t = 0; t < _adtManager.MapTiles.Count; t++)
+        	{
+        		var tile = _adtManager.MapTiles[t];
+        		offset = vecList.Count;
+        		renderVertices = tile.Vertices;
+        		if (renderVertices != null)
+        		{
+        			foreach (var vertex in renderVertices)
+        			{
+        				var vec = vertex.Position;
+        				PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+        				vecList.Add(vec);
+        			}
+        			foreach (var index in tile.Indices)
+        			{
+        				indexList.Add(index + offset);
+        			}
+        		}
 
-                offset = vecList.Count;
-                renderVertices = tile.Vertices;
-                if (renderVertices == null) continue;
-                foreach (var vertex in renderVertices)
-                {
-                    var vec = vertex.Position;
-                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                    vecList.Add(vec);
-                }
-                foreach (var index in tile.Indices)
-                {
-                    indexList.Add(index + offset);
-                }
-            }
+        		offset = vecList.Count;
+        		renderVertices = tile.Vertices;
+        		if (renderVertices == null) continue;
+        		foreach (var vertex in renderVertices)
+        		{
+        			var vec = vertex.Position;
+        			PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+        			vecList.Add(vec);
+        		}
+        		foreach (var index in tile.Indices)
+        		{
+        			indexList.Add(index + offset);
+        		}
+        	}
 
-            // Get the WMO triangles
+        	// Get the WMO triangles
             offset = vecList.Count;
             renderVertices = _wmoManager.RenderVertices;
             var renderIndices = _wmoManager.RenderIndices;
