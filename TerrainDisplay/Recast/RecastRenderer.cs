@@ -44,11 +44,9 @@ namespace TerrainDisplay.Recast
             var indices = GetRenderingIndices();
 
             GraphicsDevice.VertexDeclaration = _vertexDeclaration;
-            GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList,
-                                                _cachedVertices, // array of vertices
-                                                0, // start vertex
-                                                _cachedVertices.Length/3 // number of triangles to draw
-                                                );
+            GraphicsDevice.DrawUserIndexedPrimitives(PrimitiveType.TriangleList, vertices, 0, vertices.Length, indices,
+                                                     0,
+                                                     indices.Length/3);
             base.Draw(gameTime);
         }
 
@@ -77,12 +75,14 @@ namespace TerrainDisplay.Recast
 
         private void BuildVerticiesAndIndicies()
         {
-            var vecArray = _manager.GetRecastTriangleMesh();
-            _cachedVertices = new VertexPositionNormalColored[vecArray.Length];
-
-            for (var i = 0; i < vecArray.Length; i++)
+            Vector3[] vectors;
+            int[] indices;
+            _manager.GetRecastTriangleMesh(out vectors, out indices);
+            _cachedVertices = new VertexPositionNormalColored[vectors.Length];
+            _cachedIndices = indices;
+            for (var i = 0; i < vectors.Length; i++)
             {
-                _cachedVertices[i] = new VertexPositionNormalColored(vecArray[i], Color.White, Vector3.Up);
+                _cachedVertices[i] = new VertexPositionNormalColored(vectors[i], Color.White, Vector3.Up);
             }
 
             _renderCached = true;
