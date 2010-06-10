@@ -22,8 +22,10 @@ namespace MPQNav.MPQ.WDT
             }
             else
             {
-                MessageBox.Show("Invalid data directory entered. Please exit and update your app.CONFIG file",
+				var msg = "Invalid data directory entered. Please exit and update your app.CONFIG file";
+                MessageBox.Show(msg,
                                 "Invalid Data Directory");
+            	throw new Exception(msg);
             }
 
             var wdt = new WDTFile();

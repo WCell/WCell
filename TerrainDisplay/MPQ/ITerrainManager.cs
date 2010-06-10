@@ -16,6 +16,11 @@ namespace MPQNav.MPQ
 
         void LoadTile(int tileX, int tileY);
 
+		/// <summary>
+		/// Gets the vertice and index lists in a way that is interpretable by Recast
+		/// </summary>
+		/// <param name="vertices"></param>
+		/// <param name="indices"></param>
         void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices);
     }
 }

@@ -2,17 +2,54 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainDisplay", "TerrainDisplay\TerrainDisplay.csproj", "{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730} = {CEF242C5-E9A3-403B-BAFF-99397BDA5730}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Recast", "..\Recast\RecastDemo\Build\VC9\Recast.vcxproj", "{CEF242C5-E9A3-403B-BAFF-99397BDA5730}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Recast.Exec", "..\Recast\RecastDemo\Build\Executable\Executable.vcxproj", "{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
 		Debug|x86 = Debug|x86
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Debug|Win32.ActiveCfg = Debug|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Debug|x86.ActiveCfg = Debug|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Debug|x86.Build.0 = Debug|x86
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|Mixed Platforms.Build.0 = Release|x86
+		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|Win32.ActiveCfg = Release|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|x86.ActiveCfg = Release|x86
 		{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}.Release|x86.Build.0 = Release|x86
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|Win32.Build.0 = Debug|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Debug|x86.ActiveCfg = Debug|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Win32.ActiveCfg = Release|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|Win32.Build.0 = Release|Win32
+		{CEF242C5-E9A3-403B-BAFF-99397BDA5730}.Release|x86.ActiveCfg = Release|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Win32.ActiveCfg = Debug|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|Win32.Build.0 = Debug|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Debug|x86.ActiveCfg = Debug|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Win32.ActiveCfg = Release|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|Win32.Build.0 = Release|Win32
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

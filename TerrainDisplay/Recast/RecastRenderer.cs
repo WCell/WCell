@@ -10,6 +10,9 @@ using MPQNav.MPQ.ADT;
 
 namespace TerrainDisplay.Recast
 {
+	/// <summary>
+	/// Render recast content in XNA
+	/// </summary>
     public class RecastRenderer : DrawableGameComponent
     {
         private readonly ITerrainManager _manager;
@@ -78,6 +81,9 @@ namespace TerrainDisplay.Recast
             Vector3[] vectors;
             int[] indices;
             _manager.GetRecastTriangleMesh(out vectors, out indices);
+
+
+
             _cachedVertices = new VertexPositionNormalColored[vectors.Length];
             _cachedIndices = indices;
             for (var i = 0; i < vectors.Length; i++)

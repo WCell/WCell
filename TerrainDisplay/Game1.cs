@@ -34,59 +34,31 @@ namespace MPQNav
         BasicEffect _basicEffect;
         
         //private readonly ADTManager _manager;
-        private readonly ITerrainManager _terrainManager;
         /// <summary>
         /// Console used to execute commands while the game is running.
         /// </summary>
         public MpqConsole Console;
 
         // Camera Stuff
-        Vector3 _avatarPosition = new Vector3(-100, 100, -100);
         Vector3 avatarHeadOffset = new Vector3(0, 10, 0);
         float _avatarYaw;
         Vector3 cameraReference = new Vector3(0, 0, 10);
         Vector3 _thirdPersonReference = new Vector3(0, 20, -20);
-        
+
+		public static Vector3 _avatarPosition = new Vector3(-100, 100, -100);
+
         SpriteBatch _spriteBatch;
         SpriteFont _spriteFont;
 
         /// <summary>
         /// Constructor for the game.
         /// </summary>
-        public Game1()
+		public Game1(Vector3 avatarPosition)
         {
+        	_avatarPosition = avatarPosition;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            var settingsReader = new System.Configuration.AppSettingsReader();
-
-            var defaultContinent = (string)settingsReader.GetValue("defaultContinent", typeof(string));
-            var mapId = (int) settingsReader.GetValue("mapId", typeof (int));
-            var defaultMapX = (int)settingsReader.GetValue("defaultMapX", typeof(int));
-            var defaultMapY = (int)settingsReader.GetValue("defaultMapY", typeof(int));
-            var continent = (ContinentType) Enum.Parse(typeof (ContinentType), defaultContinent, true);
-            var useExtractedData = (bool) settingsReader.GetValue("useExtractedData", typeof (bool));
-            
-            string mpqPath;
-            if (useExtractedData)
-            {
-                mpqPath = (string) settingsReader.GetValue("extractedDataPath", typeof (string));
-                _terrainManager = new ExtractedTerrain(mpqPath, mapId);
-            }
-            else
-            {
-                mpqPath = (string)settingsReader.GetValue("mpqPath", typeof(string));
-                _terrainManager = new MpqTerrainManager(mpqPath, continent, mapId);
-            }
-            
-            _terrainManager.LoadTile(defaultMapX, defaultMapY);
-            
-            //_terrainManager.ADTManager.LoadTile(defaultMapX - 1, defaultMapY);
-
-            //_avatarPosition = _terrainManager.ADTManager.MapTiles[0].Vertices[0].Position;
-            _avatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultMapX + 1) * TerrainConstants.TileSize, TerrainConstants.CenterPoint - (defaultMapY + 1)* TerrainConstants.TileSize, 100.0f);
-            //_avatarPosition = new Vector3(0.0f);
-            PositionUtil.TransformWoWCoordsToXNACoords(ref _avatarPosition);
             _avatarYaw = 90;
         }
 
@@ -128,9 +100,9 @@ namespace MPQNav
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            Components.Add(new ADTRenderer(this, _terrainManager.ADTManager));
-            Components.Add(new M2Renderer(this, _terrainManager.M2Manager));
-            Components.Add(new WMORenderer(this, _terrainManager.WMOManager));
+            Components.Add(new ADTRenderer(this, TerrainProgram._terrainManager.ADTManager));
+			Components.Add(new M2Renderer(this, TerrainProgram._terrainManager.M2Manager));
+			Components.Add(new WMORenderer(this, TerrainProgram._terrainManager.WMOManager));
             //Components.Add(new RecastRenderer(this, _terrainManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
