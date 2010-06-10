@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using MPQNav.MPQ.M2;
 using MPQNav.MPQ.ADT;
@@ -15,6 +16,6 @@ namespace MPQNav.MPQ
 
         void LoadTile(int tileX, int tileY);
 
-        Vector3[] GetRecastTriangleMesh();
+        void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices);
     }
 }

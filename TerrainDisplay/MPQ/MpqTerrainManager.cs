@@ -72,50 +72,92 @@ namespace MPQNav.MPQ
             _loaded = loaded;
         }
 
-        public Vector3[] GetRecastTriangleMesh()
+        public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)
         {
             var vecList = new List<Vector3>();
-            List<VertexPositionNormalColored> vertices;
+            var indexList = new List<int>();
+            List<VertexPositionNormalColored> renderVertices;
 
+            int offset;
             // Get the ADT triangles
             foreach (var tile in _adtManager.MapTiles)
             {
-                vertices = tile.Vertices;
-                foreach (var index in tile.Indices)
+                offset = vecList.Count;
+                renderVertices = tile.Vertices;
+                if (renderVertices != null)
                 {
-                    var vec = vertices[index].Position;
+                    foreach (var vertex in renderVertices)
+                    {
+                        var vec = vertex.Position;
+                        PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                        vecList.Add(vec);
+                    }
+                    foreach (var index in tile.Indices)
+                    {
+                        indexList.Add(index + offset);
+                    }
+                }
+
+                offset = vecList.Count;
+                renderVertices = tile.Vertices;
+                if (renderVertices == null) continue;
+                foreach (var vertex in renderVertices)
+                {
+                    var vec = vertex.Position;
                     PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
                     vecList.Add(vec);
                 }
-
-                vertices = tile.LiquidVertices;
-                foreach (var index in tile.LiquidIndices)
+                foreach (var index in tile.Indices)
                 {
-                    var vec = vertices[index].Position;
-                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                    vecList.Add(vec);
+                    indexList.Add(index + offset);
                 }
             }
 
             // Get the WMO triangles
-            vertices = _wmoManager.RenderVertices;
-            foreach (var index in _wmoManager.RenderIndices)
+            offset = vecList.Count;
+            renderVertices = _wmoManager.RenderVertices;
+            var renderIndices = _wmoManager.RenderIndices;
+            
+            if (renderVertices != null)
             {
-                var vec = vertices[index].Position;
-                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                vecList.Add(vec);
+                foreach (var vertex in renderVertices)
+                {
+                    var vec = vertex.Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+            }
+            if (renderIndices != null)
+            {
+                foreach (var index in renderIndices)
+                {
+                    indexList.Add(index + offset);
+                }
             }
 
             // Get the M2 triangles
-            vertices = _m2Manager.RenderVertices;
-            foreach (var index in _m2Manager.RenderIndices)
+            offset = vecList.Count;
+            renderVertices = _m2Manager.RenderVertices;
+            renderIndices = _m2Manager.RenderIndices;
+            if (renderVertices != null)
             {
-                var vec = vertices[index].Position;
-                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                vecList.Add(vec);
+                foreach (var vertex in renderVertices)
+                {
+                    var vec = vertex.Position;
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                    vecList.Add(vec);
+                }
+            }
+            if (renderIndices != null)
+            {
+                foreach (var index in renderIndices)
+                {
+                    indexList.Add(index + offset);
+                }
             }
 
-            return vecList.ToArray();
+            vertices = vecList.ToArray();
+            indices = indexList.ToArray();
         }
 
         //public void LoadZone(int zoneId)
