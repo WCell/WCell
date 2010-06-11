@@ -36,34 +36,26 @@ namespace TerrainDisplay.Recast
 	/// </summary>
 	public class NavMeshTile
 	{
-		public NavMeshPoly[] Polys;
+		/// <summary>
+		/// The vertices of which this tile consists
+		/// </summary>
 		public Vector3[] Vertices;
 
 		/// <summary>
-		/// Not sure what these are
+		/// Visible polygons, spanned between sets of vertices
 		/// </summary>
-		public OffMeshConnection[] OffMeshConnections;
+		public NavMeshPoly[] Polygons;
 
 		/// <summary>
-		/// The tree is needed for fast execution of the query* functions in big tiles, which find polygons without a local context.
-		/// Those functions are needed for different things (eg findNearestPoly), but not for pathfinding.
+		/// These are also known as "portals": They allow agents to jump between disconnected tiles.
+		/// See: http://digestingduck.blogspot.com/2010/01/off-mesh-connection-progress-pt-3.html
 		/// </summary>
-		//public BVTreeNode TreeNode;
+		public OffMeshConnection[] OffMeshConnections;
 
 		/// <summary>
 		/// Not sure what these are
 		/// </summary>
 		public PolyLink[] Links;
-
-		/// <summary>
-		/// No idea what these are
-		/// </summary>
-		public Vector3[] DetailedVertices;
-
-		/// <summary>
-		/// Not sure what these are
-		/// </summary>
-		public byte[] DetailedTriangles;
 
 		/// <summary>
 		/// Tile flags, see dtTileFlags
@@ -74,5 +66,21 @@ namespace TerrainDisplay.Recast
 		/// The entire tile in byte form (used for serialization/deserialization)
 		/// </summary>
 		public byte[] Data;
+
+		///// <summary>
+		///// The tree is needed for fast execution of the query* functions in big tiles, which find polygons without a local context.
+		///// Those functions are needed for different things (eg findNearestPoly), but not for pathfinding.
+		///// </summary>
+		//public BVTreeNode TreeNode;
+
+		///// <summary>
+		///// Eye candy
+		///// </summary>
+		//public Vector3[] DetailedVertices;
+
+		///// <summary>
+		///// Eye candy (colored version of the original polygons?)
+		///// </summary>
+		//public byte[] DetailedTriangles;
 	}
 }

@@ -52,19 +52,19 @@ namespace TerrainDisplay.Recast
 			//Console.WriteLine("GenMesh");
 
 			_manager.GetRecastTriangleMesh(out vectors, out indices);
-			RecastAPI.GenerateMesh(geom, vectors, indices, "WoW");
+			RecastAPI.GenerateMesh(geom, vectors, indices, "Default");
 			return true;
 		}
 
 		public void Start()
 		{
-			Environment.CurrentDirectory = RecastAPI.RecastFolder;
 			//RecastAPI.RemoveMeshGenerator("xxx");
+			RecastAPI.InitAPI();
 
-			RecastAPI.AddMeshGenerator("[Test]", GenerateMeshCallback);
+			RecastAPI.AddMeshGenerator("[Default]", GenerateMeshCallback);
 
 			RecastAPI.SetNavSpeed(100);
-			RecastAPI.StartRecast();
+			RecastAPI.RunRecast();
 		}
 	}
 }

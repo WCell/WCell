@@ -19,12 +19,15 @@ namespace TerrainDisplay.Recast
 		public static readonly string[] Dlls = new[] { RecastDllName, "SDL.dll" };
 
 		public static void InitAPI()
-		{	
+		{
+			// must do this, so it finds the dlls and other files (since those paths arent configurable)
+			Environment.CurrentDirectory = RecastFolder;
+
 			// copy over necessary dll files
-			foreach (var dll in Dlls)
-			{
-				EnsureDll(dll);
-			}
+			//foreach (var dll in Dlls)
+			//{
+			//    EnsureDll(dll);
+			//}
 		}
 
 		private static void EnsureDll(string dllName)
@@ -38,13 +41,21 @@ namespace TerrainDisplay.Recast
 		}
 
 		[DllImport(RecastDllName, EntryPoint = "startrecast", CallingConvention = CallingConvention.Cdecl)]
-		public static extern void StartRecast();
+		public static extern void RunRecast();
 
+
+		/// <summary>
+		/// Add callback with the given name into the Mesh selection list within the GUI
+		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "meshGenAdd", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void AddMeshGenerator(
 			[MarshalAs(UnmanagedType.LPStr)] string name,
 			[MarshalAs(UnmanagedType.FunctionPtr)] PtrBoolCallback callback);
 
+		/// <summary>
+		/// Remove the callback with the given name from the Mesh selection list within the GUI
+		/// </summary>
+		/// <param name="name"></param>
 		[DllImport(RecastDllName, EntryPoint = "meshGenRemove", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void RemoveMeshGenerator(
 			[MarshalAs(UnmanagedType.LPStr)] string name
@@ -75,12 +86,15 @@ namespace TerrainDisplay.Recast
 			GenerateMesh(geom, verts, vertices.Length, triangles.Reverse().ToArray(), triangles.Length / 3, name);
 		}
 
+		/// <summary>
+		/// Generate a mesh using the input mesh parameters, within the given InputGeometry object "geom"
+		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "genMesh", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void GenerateMesh(IntPtr geom, float[] vertices, int vcount, int[] triangles, int tcount,
 		                                       [MarshalAs(UnmanagedType.LPStr)] string name);
 
 		/// <summary>
-		/// Set navigation speed
+		/// Set navigation speed for the GUI
 		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "navSetSpeed", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SetNavSpeed(float speed);
