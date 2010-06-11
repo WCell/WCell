@@ -79,6 +79,9 @@ namespace TerrainDisplay.Recast
 		public static extern void GenerateMesh(IntPtr geom, float[] vertices, int vcount, int[] triangles, int tcount,
 		                                       [MarshalAs(UnmanagedType.LPStr)] string name);
 
+		/// <summary>
+		/// Set navigation speed
+		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "navSetSpeed", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		public static extern void SetNavSpeed(float speed);
 

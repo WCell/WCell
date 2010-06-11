@@ -19,7 +19,7 @@ namespace TerrainDisplay.Recast
 		private readonly ITerrainManager _manager;
 		Vector3[] vectors;
 		int[] indices;
-		private PtrBoolCallback GenerateMeshCallback;
+		private readonly PtrBoolCallback GenerateMeshCallback;
 
 		private VertexPositionNormalColored[] _cachedVertices;
 

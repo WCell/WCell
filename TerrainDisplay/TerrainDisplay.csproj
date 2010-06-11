@@ -151,10 +151,12 @@
     <Compile Include="MPQ\WMO\WMORenderer.cs" />
     <Compile Include="MPQ\WMO\WMORoot.cs" />
     <Compile Include="MPQ\WMO\WMORootParser.cs" />
+    <Compile Include="Recast\NavMeshPoly.cs" />
+    <Compile Include="Recast\NavMeshTile.cs" />
     <Compile Include="TerrainProgram.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
-    <Compile Include="Recast\PolyMesh.cs" />
+    <Compile Include="Recast\NavMesh.cs" />
     <Compile Include="Recast\RecastRenderer.cs" />
     <Compile Include="Recast\RecastRunner.cs" />
     <Compile Include="Utils\Extensions.cs" />
