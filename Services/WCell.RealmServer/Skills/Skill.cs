@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Skills
 			CurrentValue = (ushort)value;
 			MaxValue = (ushort)max;
 
-			m_record.CreateAndFlush();
+			m_record.CreateLater();
 		}
 
 		/// <summary>

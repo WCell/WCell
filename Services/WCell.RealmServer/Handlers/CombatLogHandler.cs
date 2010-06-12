@@ -266,9 +266,9 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(spellId);
 				packet.Write(value);
 				packet.Write((uint)0);		// overheal
+				packet.Write(0);			// absorb
 				packet.Write((byte)(critical ? 1 : 0));
 				packet.Write((byte)0);		// unused
-				packet.Write(0);			// unknown wotlk
 
 				target.SendPacketToArea(packet, true);
 			}
