@@ -11,44 +11,139 @@ namespace TerrainDisplay.Recast
 	public delegate void PtrVoidCallback(IntPtr ptr);
 	public delegate bool PtrBoolCallback(IntPtr ptr);
 
+	public delegate void NavMeshGeneratedHandler(NavMesh mesh);
+	public delegate void NavMeshTileGeneratedHandler(NavMeshTile tile);
+
 	public static class RecastAPI
 	{
+		#region Native Delegates
+
+		delegate void _NavMeshGeneratedHandler(
+			long navMeshId, int w, int h,
+			[MarshalAs(UnmanagedType.LPArray, SizeConst = 3)]float[] origin,
+			float tileW, float tileH, int maxTiles
+			);
+
+		delegate void _NavMeshTileDoneHandler(long navMeshId);
+
+		delegate void _NavMeshTileGeneratedHandler(
+			long navMeshId, int x, int y, int nextX, int nextY, uint flags,
+			int vertCount, [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 6)]float[] vertices,		// vertices
+			int pCount, int pVCount,																	// polygons
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)]int[] pFlinks,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)]ushort[] pVerts,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 9)]ushort[] pNeighbors,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)]ushort[] pFlags,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)]ushort[] pvCounts,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)]byte[] pAreas,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 8)]byte[] pTypes,
+
+			int lCount,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]uint[] lRefs,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]uint[] lNextLinks,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lEdges,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lSides,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lBMins,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lBMaxs,
+
+			int omCount,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]float[] omPos,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]float[] omRads,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]ushort[] omPolys,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]byte[] omFlags,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]byte[] omSides
+			);
+
+		#endregion
+
+		#region Misc & Init
 		public const string RecastDllName = "Recast.dll";
 		public const string RecastFolder = "../../../../Recast/Bin/";
 
 		public static readonly string[] Dlls = new[] { RecastDllName, "SDL.dll" };
 
-		public static void InitAPI()
-		{
-			// must do this, so it finds the dlls and other files (since those paths arent configurable)
-			Environment.CurrentDirectory = RecastFolder;
+		public const int MaxVertsPerPolygon = 6;
 
-			// copy over necessary dll files
-			//foreach (var dll in Dlls)
-			//{
-			//    EnsureDll(dll);
-			//}
-		}
+		private static bool _addHooks = true;
 
-		private static void EnsureDll(string dllName)
+		/// <summary>
+		/// Whether to register hooks to recast, to be notified upon new meshes and tiles
+		/// </summary>
+		public static bool AddHooks
 		{
-			var targetFile = new FileInfo(Path.Combine(Environment.CurrentDirectory, dllName));
-			if (!targetFile.Exists)
+			get { return _addHooks; }
+			set
 			{
-				var file = new FileInfo(Path.Combine(RecastFolder, dllName));
-				file.CopyTo(targetFile.FullName);
+				_addHooks = value;
+				if (inited)
+				{
+					if (value)
+					{
+						DoAddHooks();
+					}
+					else
+					{
+						SetNavMeshGeneratedCallback(null);
+						SetNavMeshTileAddedCallback(null);
+					}
+				}
 			}
 		}
 
+		static void DoAddHooks()
+		{
+			SetNavMeshGeneratedCallback(_NavMeshGeneratedCallback);
+			SetNavMeshTileAddedCallback(_NavMeshTileGeneratedCallback);
+		}
+
+		private static bool inited;
+
+		public static void InitAPI()
+		{
+			if (inited)
+			{
+				throw new InvalidOperationException("Tried to initialize API twice.");
+			}
+			inited = true;
+			// must do this, so it finds the dlls and other files (since those paths arent configurable)
+			Environment.CurrentDirectory = RecastFolder;
+
+			// ensure data correctness
+			if (MaxVertsPerPolygon != GetMaxVertsPerPolygon())
+			{
+				throw new Exception("MaxVertsPerPolygon does not match with the settings of the underlying " + RecastDllName);
+			}
+
+			if (AddHooks)
+			{
+				DoAddHooks();
+			}
+		}
+
+		private static readonly _NavMeshGeneratedHandler _NavMeshGeneratedCallback = OnNavMeshGenerated;
+		private static readonly _NavMeshTileGeneratedHandler _NavMeshTileGeneratedCallback = OnNavMeshTileGenerated;
+		private static readonly _NavMeshTileDoneHandler _NavMeshTileDoneCallback = OnNavMeshDone;
+
+		#endregion
+
+		/// <summary>
+		/// Runs the Recast GUI
+		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "startrecast", CallingConvention = CallingConvention.Cdecl)]
 		public static extern void RunRecast();
 
+		/// <summary>
+		/// Set navigation speed for the GUI
+		/// </summary>
+		[DllImport(RecastDllName, EntryPoint = "navSetSpeed", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+		public static extern void SetNavSpeed(float speed);
 
+		#region Input Mesh
 		/// <summary>
 		/// Add callback with the given name into the Mesh selection list within the GUI
 		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "meshGenAdd", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void AddMeshGenerator(
+		public static extern void AddInputMeshGenerator(
 			[MarshalAs(UnmanagedType.LPStr)] string name,
 			[MarshalAs(UnmanagedType.FunctionPtr)] PtrBoolCallback callback);
 
@@ -62,14 +157,15 @@ namespace TerrainDisplay.Recast
 		);
 
 		[DllImport(RecastDllName, EntryPoint = "meshtest", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void Test(
+		static extern void Test(
 			[MarshalAs(UnmanagedType.FunctionPtr)] Action cb
 		);
 
-		public static void GenerateMesh(IntPtr geom, Vector3[] vertices, int[] _triangles, string name)
+		/// <summary>
+		/// Generate a mesh using the input mesh parameters, within the given InputGeometry object "geom"
+		/// </summary>
+		public static void GenerateInputMesh(IntPtr geom, Vector3[] vertices, int[] _triangles, string name)
 		{
-			int max = 1024;
-
 			var verts = new float[vertices.Length * 3];
 			var triangles = _triangles;
 			//var triangles = _triangles.Reverse().ToArray();
@@ -83,22 +179,207 @@ namespace TerrainDisplay.Recast
 			}
 
 			//GenerateMesh(geom, verts, 2*max, triangles, max, name);
-			GenerateMesh(geom, verts, vertices.Length, triangles.Reverse().ToArray(), triangles.Length / 3, name);
+			GenerateInputMesh(geom, verts, vertices.Length, triangles.Reverse().ToArray(), triangles.Length / 3, name);
 		}
 
 		/// <summary>
 		/// Generate a mesh using the input mesh parameters, within the given InputGeometry object "geom"
 		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "genMesh", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void GenerateMesh(IntPtr geom, float[] vertices, int vcount, int[] triangles, int tcount,
-		                                       [MarshalAs(UnmanagedType.LPStr)] string name);
+		static extern void GenerateInputMesh(IntPtr geom, float[] vertices, int vcount, int[] triangles, int tcount,
+											   [MarshalAs(UnmanagedType.LPStr)] string name);
+		#endregion
+
+		#region NavMesh
+		/// <summary>
+		/// Invoked when a new NavMesh has been generated
+		/// </summary>
+		public static event NavMeshGeneratedHandler NavMeshGenerated;
 
 		/// <summary>
-		/// Set navigation speed for the GUI
+		/// Invoked when a new Tile within a NavMesh has been generated
 		/// </summary>
-		[DllImport(RecastDllName, EntryPoint = "navSetSpeed", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void SetNavSpeed(float speed);
+		public static event NavMeshTileGeneratedHandler NavMeshTileAdded;
 
-											   
+		/// <summary>
+		/// Gets the max verts per polygon constant
+		/// </summary>
+		[DllImport(RecastDllName, EntryPoint = "navmeshGetMaxVertsPerPolygon", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+		static extern int GetMaxVertsPerPolygon();
+
+		/// <summary>
+		/// Set a callback to be called for every generated Nav mesh
+		/// </summary>
+		[DllImport(RecastDllName, EntryPoint = "navmeshSetNavMeshCreatedCallback", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+		static extern void SetNavMeshGeneratedCallback(_NavMeshGeneratedHandler cb);
+
+		/// <summary>
+		/// Set a callback to be called for every tile of a generated Nav mesh
+		/// </summary>
+		[DllImport(RecastDllName, EntryPoint = "navmeshSetTileCreatedCallback", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+		static extern void SetNavMeshTileAddedCallback(_NavMeshTileGeneratedHandler cb);
+
+		/// <summary>
+		/// Set a callback to be called for every tile of a generated Nav mesh
+		/// </summary>
+		[DllImport(RecastDllName, EntryPoint = "navmeshSetNavMeshDoneCallback", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
+		static extern void SetNavMeshDoneCallback(_NavMeshTileGeneratedHandler cb);
+
+
+		/// <summary>
+		/// TODO: Use self-generated Id, so we can use an array for lookup
+		/// </summary>
+		private static readonly Dictionary<long, NavMesh> UnfinishedNavMeshes = new Dictionary<long,NavMesh>();
+		static void OnNavMeshGenerated(long navMeshId, int w, int h, float[] origin, float tileW, float tileH, int maxTiles)
+		{
+			var mesh = new NavMesh(navMeshId, w, h, new Vector3(origin[0], origin[1], origin[2]), tileW, tileH, maxTiles);
+			UnfinishedNavMeshes.Add(navMeshId, mesh);
+		}
+
+		private static int tn;
+		static void OnNavMeshTileGenerated(
+			long navMeshId, int x, int y, int nextX, int nextY, uint flags,
+
+			int vertCount, float[] vertices,
+
+			int pCount, int pVCount,																	// polygons
+				int[] pFlinks,
+				ushort[] pVerts,
+				ushort[] pNeighbors,
+				ushort[] pFlags,
+				ushort[] pvCounts,
+				byte[] pAreas,
+				byte[] pTypes,
+
+			int lCount,																						// links
+				uint[] lRefs,
+				uint[] lNextLinks,
+				byte[] lEdges,
+				byte[] lSides,
+				byte[] lBMins,
+				byte[] lBMaxs,
+
+			int omCount,																					// off mesh connections
+				float[] omPos,
+				float[] omRads,
+				ushort[] omPolys,
+				byte[] omFlags,
+				byte[] omSides
+				)
+		{
+			NavMesh mesh;
+			if (!UnfinishedNavMeshes.TryGetValue(navMeshId, out mesh))
+			{
+				throw new Exception("Tile sent for non-existing mesh: " + navMeshId);
+			}
+
+			// vertices
+			var realVertCount = vertCount / 3;
+			var realVerts = new Vector3[realVertCount];
+			var idx = 0;
+			for (var i = 0; i < realVertCount; i++)
+			{
+				realVerts[i] = new Vector3(vertices[idx++], vertices[idx++], vertices[idx++]);
+			}
+
+			// polygons
+			var polys = new NavMeshPolygon[pCount];
+			var vidx = 0;
+			for (var i = 0; i < pCount; i++)
+			{
+				var verts = new ushort[MaxVertsPerPolygon];
+				var neighbors = new ushort[MaxVertsPerPolygon];
+				Array.Copy(pVerts, vidx, verts, 0, MaxVertsPerPolygon);
+				Array.Copy(pNeighbors, vidx, neighbors, 0, MaxVertsPerPolygon);
+				polys[i] = new NavMeshPolygon
+				{
+					FirstLink = pFlinks[i],
+					Flags = pFlags[i],
+					Neighbors = neighbors,
+					Vertices = verts,
+					Area = pAreas[i],
+					Type = pTypes[i]
+				};
+
+				vidx += MaxVertsPerPolygon;
+			}
+
+			// links
+			var links = new NavMeshPolyLink[lCount];
+			for (var i = 0; i < lCount; i++)
+			{
+				links[i] = new NavMeshPolyLink
+				{
+					Bmax = lBMaxs[i],
+					Bmin = lBMins[i],
+					Edge = lEdges[i],
+					Next = lNextLinks[i],
+					Reference = lRefs[i],
+					Side = lSides[i]
+				};
+			}
+
+			// Off-mesh connections
+			var omCons = new NavOffMeshConnection[omCount];
+			var pidx = 0;
+			for (var i = 0; i < omCount; i++)
+			{
+				var pos = new[]{
+			        new Vector3(omPos[pidx++], omPos[pidx++], omPos[pidx++]),
+			        new Vector3(omPos[pidx++], omPos[pidx++], omPos[pidx++])
+			    };
+
+				omCons[i] = new NavOffMeshConnection
+				{
+					Flags = omFlags[i],
+					Polygon = omPolys[i],
+					Positions = pos,
+					Radius = omRads[i],
+					Side = omSides[i]
+				};
+			}
+
+			var tile = new NavMeshTile
+			{
+				X = x,
+				Y = y,
+				NextX = nextX,
+				NextY = nextY,
+				Flags = flags,
+				Vertices = realVerts,
+				Polygons = polys,
+				Links = links,
+				OffMeshConnections = omCons
+			};
+
+			mesh.Tiles[x, y] = tile;
+
+			if (mesh.Initialized)
+			{
+				var evt = NavMeshTileAdded;
+				if (evt != null)
+				{
+					evt(tile);
+				}
+			}
+		}
+
+		private static void OnNavMeshDone(long navMeshId)
+		{
+			NavMesh mesh;
+			if (!UnfinishedNavMeshes.TryGetValue(navMeshId, out mesh))
+			{
+				throw new Exception("Non-existing mesh received done signal: " + navMeshId);
+			}
+
+			mesh.Initialized = true;
+
+			var evt = NavMeshGenerated;
+			if (evt != null)
+			{
+				evt(mesh);
+			}
+		}
+		#endregion
 	}
 }

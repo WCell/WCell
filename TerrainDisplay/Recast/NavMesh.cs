@@ -2,30 +2,39 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 
 namespace TerrainDisplay.Recast
 {
     public class NavMesh
     {
+    	public readonly long Id;
+		public readonly Vector3 Origin;
+    	public readonly float TileWidth, TileHeight;
+    	public readonly int MaxTileCount;
+
+    	public readonly int Width, Height;
 		public readonly NavMeshTile[,] Tiles;
 
-		public NavMesh(int w, int h)
+		public NavMesh(long id, int w, int h, Vector3 origin, float tilew, float tileh, int maxTiles)
 		{
-			Tiles = new NavMeshTile[w, h];
+			Id = id;
+			Tiles = new NavMeshTile[Width = w, Height = h];
+			Origin = origin;
+			TileWidth = tilew;
+			TileHeight = tileh;
+			MaxTileCount = maxTiles;
 		}
 
-    	//public ushort[] verts;	// Vertices of the mesh, 3 elements per vertex.
-		//public ushort[] polys;	// Polygons of the mesh, nvp*2 elements per polygon.
-		//public ushort[] regs;	// Region ID of the polygons.
-		//public ushort[] flags;	// Per polygon flags.
-		//public byte[] areas;	// Area ID of polygons.
-		//public int nverts;				// Number of vertices.
-		//public int npolys;				// Number of polygons.
-		//public int maxpolys;			// Number of allocated polygons.
-		//public int nvp;				// Max number of vertices per polygon.
-		//public float[] bmin;
-		//public float[] bmax;	// Bounding box of the mesh.
-		//public float cs;
-		//public float ch;			// Cell size and height.
+    	public bool Initialized
+    	{
+    		get;
+			internal set;
+    	}
+
+		public override string ToString()
+		{
+			return string.Format("NavMesh #{0} ({1} x {2})", Id, Width, Height);
+		}
     }
 }
