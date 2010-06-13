@@ -1,7 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using StormLibWrapper;
+using WCell.MPQTool.StormLibWrapper;
 
 //using MpqReader;
 

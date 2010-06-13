@@ -287,5 +287,94 @@ namespace WCell.Util
 			       type == typeof (byte) || type == typeof (sbyte) || type == typeof (long) || type == typeof (ulong);
 		}
 		#endregion
+
+        #region ByteArray Helpers
+
+        public static unsafe ushort GetUInt16(this byte[] data, uint field)
+        {
+            uint startIndex = field * 4;
+            if (startIndex + 2 > data.Length)
+                return ushort.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(ushort*)pData;
+            }
+        }
+
+        public static unsafe ushort GetUInt16AtByte(this byte[] data, uint startIndex)
+        {
+            if (startIndex + 1 >= data.Length)
+                return ushort.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(ushort*)pData;
+            }
+        }
+
+        public static unsafe uint GetUInt32(this byte[] data, uint field)
+        {
+            uint startIndex = field * 4;
+            if (startIndex + 4 > data.Length)
+                return uint.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(uint*)pData;
+            }
+        }
+
+        public static unsafe int GetInt32(this byte[] data, uint field)
+        {
+            uint startIndex = field * 4;
+            if (startIndex + 4 > data.Length)
+                return int.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(int*)pData;
+            }
+        }
+
+        public static unsafe float GetFloat(this byte[] data, uint field)
+        {
+            uint startIndex = field * 4;
+            if (startIndex + 4 > data.Length)
+                return float.NaN;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(float*)pData;
+            }
+        }
+
+        public static unsafe ulong GetUInt64(this byte[] data, uint startingField)
+        {
+            uint startIndex = startingField * 4;
+            if (startIndex + 8 > data.Length)
+                return ulong.MaxValue;
+
+            fixed (byte* pData = &data[startIndex])
+            {
+                return *(ulong*)pData;
+            }
+        }
+
+        public static byte[] GetBytes(this byte[] data, uint startingField, int amount)
+        {
+            byte[] bytes = new byte[amount];
+
+            uint startIndex = startingField * 4;
+            if (startIndex + amount > data.Length)
+                return bytes;
+
+            for (int i = 0; i < amount; i++)
+            {
+                bytes[i] = data[startIndex + i];
+            }
+            return bytes;
+        }
+        #endregion
 	}
 }

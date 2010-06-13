@@ -187,27 +187,14 @@
     <Compile Include="StormLibWrapper\NativeMethods.cs" />
     <Compile Include="StormLibWrapper\OpenEnumFlags.cs" />
     <Compile Include="StormLibWrapper\OpenFileFlags.cs" />
+    <Compile Include="StormLibWrapper\FileFindData.cs" />
     <Compile Include="StormLibWrapper\StormLibException.cs" />
+    <Compile Include="MPQToolConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Cell.Core\Cell.Core.csproj">
-      <Project>{71AB07AD-4D94-4693-8560-47862E5B6E61}</Project>
-      <Name>Cell.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
-      <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
-      <Name>WCell.Constants</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\WCell.Core\WCell.Core.csproj">
-      <Project>{EEA9DEB6-8EA6-46F1-B1B7-AB38D8BBCA6C}</Project>
-      <Name>WCell.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>

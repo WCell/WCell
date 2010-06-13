@@ -5,60 +5,18 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace StormLibWrapper
+namespace WCell.MPQTool.StormLibWrapper
 {
-    /*
-    // Storm file function prototypes
-    BOOL  WINAPI SFILE(OpenArchive)(LPCSTR lpFileName, DWORD dwPriority, DWORD dwFlags, HANDLE *hMPQ);
-    BOOL  WINAPI SFILE(CloseArchive)(HANDLE hMPQ);
-    BOOL  WINAPI SFILE(GetArchiveName)(HANDLE hMPQ, LPCSTR lpBuffer, DWORD dwBufferLength);
-    BOOL  WINAPI SFILE(OpenFile)(LPCSTR lpFileName, HANDLE *hFile);
-    BOOL  WINAPI SFILE(OpenFileEx)(HANDLE hMPQ, LPCSTR lpFileName, DWORD dwSearchScope, HANDLE *hFile);
-    BOOL  WINAPI SFILE(CloseFile)(HANDLE hFile);
-    DWORD WINAPI SFILE(GetFileSize)(HANDLE hFile, LPDWORD lpFileSizeHigh);
-    BOOL  WINAPI SFILE(GetFileArchive)(HANDLE hFile, HANDLE *hMPQ);
-    BOOL  WINAPI SFILE(GetFileName)(HANDLE hFile, LPCSTR lpBuffer, DWORD dwBufferLength);
-    DWORD WINAPI SFILE(SetFilePointer)(HANDLE hFile, long lDistanceToMove, PLONG lplDistanceToMoveHigh, DWORD dwMoveMethod);
-    BOOL  WINAPI SFILE(ReadFile)(HANDLE hFile,LPVOID lpBuffer,DWORD nNumberOfBytesToRead,LPDWORD lpNumberOfBytesRead,LPOVERLAPPED lpOverlapped);
-    LCID  WINAPI SFILE(SetLocale)(LCID nNewLocale);
-    BOOL  WINAPI SFILE(GetBasePath)(LPCSTR lpBuffer, DWORD dwBufferLength);
-    BOOL  WINAPI SFILE(SetBasePath)(LPCSTR lpNewBasePath);
-
-    // Storm (de)compression functions
-    BOOL  WINAPI SCOMP(Compress)  (char * pbOutBuffer, int * pdwOutLength, char * pbInBuffer, int dwInLength, int uCmp, int uCmpType, int nCmpLevel);
-    BOOL  WINAPI SCOMP(Decompress)(char * pbOutBuffer, int * pdwOutLength, char * pbInBuffer, int dwInLength);
-*/
-
     /// <summary>
     /// Contains the native StormLib methods used by the MPQ classes.
     /// </summary>
     public static class NativeMethods
     {
+        public const int MAX_PATH = 260;
         public const string StormLibDllName = "StormLib.dll";
         public const string StormLibFolder = "../../../../StormLib/Bin/";
 
-        public static void InitAPI()
-        {
-            // must do this, so it finds the dlls and other files (since those paths arent configurable)
-            //Environment.CurrentDirectory = StormLibFolder;
-
-            // copy over necessary dll files
-            //foreach (var dll in Dlls)
-            //{
-            //    EnsureDll(dll);
-            //}
-        }
-
-        private static void EnsureDll(string dllName)
-        {
-            var targetFile = new FileInfo(Path.Combine(Environment.CurrentDirectory, dllName));
-            if (!targetFile.Exists)
-            {
-                var file = new FileInfo(Path.Combine(StormLibFolder, dllName));
-                file.CopyTo(targetFile.FullName);
-            }
-        }
-
+        
         /// Return Type: BOOL->int
         ///lpFileName: LPCSTR->CHAR*
         ///dwPriority: DWORD->unsigned int
@@ -94,6 +52,37 @@ namespace StormLibWrapper
         public static extern bool OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
 
 
+        [DllImport(StormLibDllName, EntryPoint = "SFileHasFile")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
+
+        /// <summary>
+        /// Returns data about the first file in the ListFile that matches the given search mask
+        /// </summary>
+        /// <param name="archiveHandle">Handle of the open archive.</param>
+        /// <param name="fileName">Name of the listfile that will be used for searching. 
+        /// If this parameter is NULL, the function searches the MPQ internal listfile (if any).</param>
+        /// <param name="searchMask">Name of the search mask. "*" will return all files.</param>
+        /// <param name="fileData">A FileFindData structure with the search result.</param>
+        /// <returns>A handle for the Search object for use with ListFileFindNext.</returns>
+        [DllImport(StormLibDllName, EntryPoint = "SListFileFindFirstFile")]
+        public static extern IntPtr ListFileFindFirst(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, [In] [MarshalAs(UnmanagedType.LPStr)] string searchMask, out FileFindData fileData);
+
+        /// <summary>
+        /// Finds the next file in the list file with the attributes defined in ListFileFindFirst.
+        /// </summary>
+        /// <param name="searchHandle">Handle to the search object created with ListFileFindFirst</param>
+        /// <param name="fileData">A FileFindData structure with the search result.</param>
+        /// <returns>A handle for the updated Search object</returns>
+        [DllImport(StormLibDllName, EntryPoint = "SListFileFindNextFile")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
+
+
+        [DllImport(StormLibDllName, EntryPoint = "SListFileFindClose")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool CloseSearch(IntPtr searchHandle);
+
         /// Return Type: BOOL->int
         ///hFile: HANDLE->void*
         [DllImport(StormLibDllName, EntryPoint = "SFileCloseFile")]
@@ -108,14 +97,11 @@ namespace StormLibWrapper
         public static extern uint GetFileSize(IntPtr fileHandle, out uint fileSize);
 
 
-        /// Return Type: BOOL->int
-        ///hFile: HANDLE->void*
-        ///hMPQ: HANDLE*
         [DllImport(StormLibDllName, EntryPoint = "SFileGetFileArchive")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetFileArchive(IntPtr fileHandle, out IntPtr archiveHandle);
 
-
+        
         /// Return Type: BOOL->int
         ///hFile: HANDLE->void*
         ///lpBuffer: LPCSTR->CHAR*

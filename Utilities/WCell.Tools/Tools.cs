@@ -63,8 +63,7 @@ namespace WCell.Tools
 		/// <summary>
 		/// Little trick to get Constants initialized right away
 		/// </summary>
-
-		public static PATool PATool
+        public static PATool PATool
 		{
 			get { return ToolConfig.Instance.PATool; }
 		}

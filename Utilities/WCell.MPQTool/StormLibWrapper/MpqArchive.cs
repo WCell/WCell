@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace StormLibWrapper
+namespace WCell.MPQTool.StormLibWrapper
 {
     /// <summary>
     /// Represents an MPQ archive.
@@ -47,17 +47,16 @@ namespace StormLibWrapper
             if (filePath == null)
                 throw new ArgumentNullException("filePath");
 
-            IntPtr fileHandle;
-            NativeMethods.OpenFileEx(handle, filePath, OpenFileFlags.FromMPQ, out fileHandle);
+            return NativeMethods.HasFile(handle, filePath);
             
-            // Try to open the file
-            if (fileHandle == IntPtr.Zero)
-                return false;
+            //// Try to open the file
+            //if (fileHandle == IntPtr.Zero)
+            //    return false;
 
-            // File could be opened, immediately close it
-            NativeMethods.CloseFile(fileHandle);
+            //// File could be opened, immediately close it
+            //NativeMethods.CloseFile(fileHandle);
 
-            return true;
+            //return true;
         }
 
         /// <summary>
@@ -126,6 +125,51 @@ namespace StormLibWrapper
             NativeMethods.CloseArchive(handle);
 
             return true;
+        }
+
+        public List<string> FindAllFiles(string searchMask)
+        {
+            var pathList = new List<string>();
+
+            string filePath;
+            var searchHandle = FindFirstFile(searchMask, out filePath);
+            if (searchHandle == IntPtr.Zero) return pathList;
+
+            pathList.Add(filePath);
+
+            while (FindNextFile(searchHandle, out filePath))
+            {
+                pathList.Add(filePath);
+            }
+
+            CloseSearch(searchHandle);
+            return pathList;
+        }
+
+        private IntPtr FindFirstFile(string searchMask, out string filePath)
+        {
+            FileFindData data;
+            var searchHandle = NativeMethods.ListFileFindFirst(handle, null, searchMask, out data);
+            filePath = data.FilePath;
+
+            return searchHandle;
+        }
+
+        private static bool FindNextFile(IntPtr searchHandle, out string filePath)
+        {
+            filePath = null;
+            if (searchHandle == IntPtr.Zero) return false;
+
+            FileFindData data;
+            var success = NativeMethods.ListFileFindNext(searchHandle, out data);
+
+            filePath = data.FilePath;
+            return success;
+        }
+
+        private static bool CloseSearch(IntPtr searchHandle)
+        {
+            return NativeMethods.CloseSearch(searchHandle);
         }
     }
 }

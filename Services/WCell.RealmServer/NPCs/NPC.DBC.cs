@@ -1,13 +1,12 @@
 using System.Collections.Generic;
-using Cell.Core;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Core.DBC;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.Constants;
-using WCell.Util;
 using System;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.NPCs
