@@ -24,7 +24,7 @@ namespace TerrainDisplay.Recast
 			float tileW, float tileH, int maxTiles
 			);
 
-		delegate void _NavMeshTileDoneHandler(long navMeshId);
+		delegate void _NavMeshDoneHandler(long navMeshId);
 
 		delegate void _NavMeshTileGeneratedHandler(
 			long navMeshId, int x, int y, int nextX, int nextY, uint flags,
@@ -85,6 +85,7 @@ namespace TerrainDisplay.Recast
 					{
 						SetNavMeshGeneratedCallback(null);
 						SetNavMeshTileAddedCallback(null);
+						SetNavMeshDoneCallback(null);
 					}
 				}
 			}
@@ -94,6 +95,7 @@ namespace TerrainDisplay.Recast
 		{
 			SetNavMeshGeneratedCallback(_NavMeshGeneratedCallback);
 			SetNavMeshTileAddedCallback(_NavMeshTileGeneratedCallback);
+			SetNavMeshDoneCallback(_NavMeshDoneDoneCallback);
 		}
 
 		private static bool inited;
@@ -122,7 +124,7 @@ namespace TerrainDisplay.Recast
 
 		private static readonly _NavMeshGeneratedHandler _NavMeshGeneratedCallback = OnNavMeshGenerated;
 		private static readonly _NavMeshTileGeneratedHandler _NavMeshTileGeneratedCallback = OnNavMeshTileGenerated;
-		private static readonly _NavMeshTileDoneHandler _NavMeshTileDoneCallback = OnNavMeshDone;
+		private static readonly _NavMeshDoneHandler _NavMeshDoneDoneCallback = OnNavMeshDone;
 
 		#endregion
 
@@ -223,7 +225,7 @@ namespace TerrainDisplay.Recast
 		/// Set a callback to be called for every tile of a generated Nav mesh
 		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "navmeshSetNavMeshDoneCallback", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.StdCall)]
-		static extern void SetNavMeshDoneCallback(_NavMeshTileGeneratedHandler cb);
+		static extern void SetNavMeshDoneCallback(_NavMeshDoneHandler cb);
 
 
 		/// <summary>
@@ -236,7 +238,6 @@ namespace TerrainDisplay.Recast
 			UnfinishedNavMeshes.Add(navMeshId, mesh);
 		}
 
-		private static int tn;
 		static void OnNavMeshTileGenerated(
 			long navMeshId, int x, int y, int nextX, int nextY, uint flags,
 
