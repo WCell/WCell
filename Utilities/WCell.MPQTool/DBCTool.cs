@@ -22,7 +22,6 @@ using Microsoft.Win32;
 using MpqReader;
 using WCell.Constants;
 using WCell.MPQTool.DBC.Compare;
-using WCell.Util;
 
 namespace WCell.MPQTool
 {

@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using MpqReader;
+using StormLibWrapper;
+
+//using MpqReader;
+
 
 namespace WCell.MPQTool
 {
@@ -35,7 +38,10 @@ namespace WCell.MPQTool
                 {
                     MPQArchives.Add(new MpqArchive(Path.Combine(mpqPath, mpqName)));
                 }
-                catch (Exception) { }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Exception thrown in MpqManager constructor." + e);
+                }
             }
         }
 
@@ -45,7 +51,7 @@ namespace WCell.MPQTool
             {
                 if (archive.FileExists(fileName))
                 {
-                    return archive.OpenFile(fileName);
+                    return archive.OpenFile(fileName).GetStream();
                 }
             }
             throw new Exception(String.Format("Unable to load file {0}", fileName));
