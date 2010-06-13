@@ -621,7 +621,7 @@ namespace WCell.Tools.Maps.Parsing.WMO
                 for (var j = 0; j < n.nFaces; j++)
                 {
                     var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
-                    n.TriIndices[j] = triIndex;
+                    n.TriIndices[j] = (triIndex);
                 }
             }
 
@@ -653,33 +653,33 @@ namespace WCell.Tools.Maps.Parsing.WMO
 
         static void ReadMLIQ(BinaryReader file, WMOGroup group)
         {
-            group.LiquidInfo = new LiquidInfo
-                                   {
-                                       XVertexCount = file.ReadInt32(),
-                                       YVertexCount = file.ReadInt32(),
-                                       XTileCount = file.ReadInt32(),
-                                       YTileCount = file.ReadInt32(),
-                                       BaseCoordinates = file.ReadVector3(),
-                                       MaterialId = file.ReadUInt16()
-                                   };
+            group.LiquidInfo = new LiquidInfo {
+                                                  XVertexCount = file.ReadInt32(),
+                                                  YVertexCount = file.ReadInt32(),
+                                                  XTileCount = file.ReadInt32(),
+                                                  YTileCount = file.ReadInt32(),
+                                                  BaseCoordinates = file.ReadVector3(),
+                                                  MaterialId = file.ReadUInt16()
+                                              };
 
             // The following is untested, but is what the client appears to be doing
             // These are probably similar to the 2 floats in the old adt water chunk
-            group.LiquidInfo.HeightMapMax = new float[group.LiquidInfo.XVertexCount, group.LiquidInfo.YVertexCount];
             group.LiquidInfo.HeightMapMin = new float[group.LiquidInfo.XVertexCount, group.LiquidInfo.YVertexCount];
-            
+            group.LiquidInfo.HeightMapMax = new float[group.LiquidInfo.XVertexCount, group.LiquidInfo.YVertexCount];
+
             // This is different from the other ADT files, these are stored as [row, col] instead of [col, row]
-            for (var y = 0; y < group.LiquidInfo.YVertexCount; y++) 
+            for (var y = 0; y < group.LiquidInfo.YVertexCount; y++)
             {
                 for (var x = 0; x < group.LiquidInfo.XVertexCount; x++)
                 {
-                    group.LiquidInfo.HeightMapMax[x, y] = file.ReadSingle();
+                    // The min is never used
                     group.LiquidInfo.HeightMapMin[x, y] = file.ReadSingle();
+                    group.LiquidInfo.HeightMapMax[x, y] = file.ReadSingle();
                 }
             }
 
             group.LiquidInfo.LiquidTileFlags = new byte[group.LiquidInfo.XTileCount, group.LiquidInfo.YTileCount];
-            for (var y = 0; y < group.LiquidInfo.YTileCount; y++) 
+            for (var y = 0; y < group.LiquidInfo.YTileCount; y++)
             {
                 for (var x = 0; x < group.LiquidInfo.XTileCount; x++)
                 {

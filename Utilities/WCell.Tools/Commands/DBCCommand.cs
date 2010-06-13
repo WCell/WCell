@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Util.Commands;
 using WCell.MPQTool;
 using WCell.RealmServer;
@@ -26,8 +22,7 @@ namespace WCell.Tools.Commands
 
 			public override void Process(CmdTrigger<ToolCmdArgs> trigger)
 			{
-				DBCTool.DBCOutputDir = RealmServerConfiguration.Instance.DBCFolder;
-				DBCTool.Dump();
+				DBCTool.DumpToDir(RealmServerConfiguration.Instance.DBCFolder);
 			}
 		}
 	}

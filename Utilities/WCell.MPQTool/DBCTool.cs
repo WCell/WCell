@@ -19,24 +19,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-using MpqReader;
-using WCell.Constants;
+//using MpqReader;
+using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
-using WCell.Util;
 
 namespace WCell.MPQTool
 {
 	public class DBCTool
 	{
 		//static string DBCOutputDir = string.Format(@"{0}\Content\dbc", Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-		public static readonly string DBCDir = new DirectoryInfo(string.Format(@"../Content/dbc")).FullName;
-		public static readonly string DefaultDBCOutputDir = DBCDir + WCellInfo.RequiredVersion.BasicString + "/";
-		public static string DBCOutputDir = DefaultDBCOutputDir;
-		public static DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
+	    public string DBCDir;
+	    public string DefaultDBCOutputDir;
+		public string DBCOutputDir;
+		public DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
 
 		static string m_wowDir;
 
-		public static string WowDir
+		public string WowDir
 		{
 			get
 			{
@@ -50,7 +49,7 @@ namespace WCell.MPQTool
 		/// </summary>
 		/// <param name="strDataFolder">The Folder in which the locale is</param>
 		/// <returns>List of ALL MPQ Files that will have DBC Files in</returns>
-		public static List<string> GetMPQFiles(string strDataFolder)
+		public List<string> GetMPQFiles(string strDataFolder)
 		{
 			//Get all the MPQ Files inside the Locale Folder
 			List<string> lstAllMPQs = GetFiles(string.Format(@"{0}\", strDataFolder));
@@ -74,14 +73,14 @@ namespace WCell.MPQTool
 		/// </summary>
 		/// <param name="strParentFolder">The folder to search inside</param>
 		/// <returns>List of files inside this folder</returns>
-		public static List<string> GetFiles(string strParentFolder)
+		public List<string> GetFiles(string strParentFolder)
 		{
 			string[] arrFiles = Directory.GetFiles(strParentFolder, "*.MPQ");
 
 			return new List<string>(arrFiles);
 		}
 
-		public static void ProcessMPQ(List<string> lstAllMPQFiles)
+		public void ProcessMPQ(List<string> lstAllMPQFiles)
 		{
 			// Create a folder to dump all this into
 			Directory.CreateDirectory(DBCOutputDir);
@@ -91,11 +90,12 @@ namespace WCell.MPQTool
 			{
 				using (var oArchive = new MpqArchive(lstAllMPQFiles[i]))
 				{
-					var dbcsFiles = from a in oArchive.Files
-									where a.Name.EndsWith(".dbc")
-									select a.Name;
+				    var dbcFiles = oArchive.FindAllFiles("*.dbc");
+                    //var dbcsFiles = from a in oArchive.Files
+                    //                where a.Name.EndsWith(".dbc")
+                    //                select a.Name;
 
-					foreach (var strFileName in dbcsFiles)
+					foreach (var strFileName in dbcFiles)
 					{
 						var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
 
@@ -104,7 +104,7 @@ namespace WCell.MPQTool
 						{
 							using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
 							{
-								using (Stream stmInput = oArchive.OpenFile(strFileName))
+								using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
 								{
 									// Writing...
 									Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
@@ -143,7 +143,7 @@ namespace WCell.MPQTool
 		/// </summary>
 		/// <param name="strDataFolder">The Wow data folder.</param>
 		/// <returns></returns>
-		private static string GetLocale(string strDataFolder)
+		private string GetLocale(string strDataFolder)
 		{
 			string strLocale = "";
 
@@ -193,10 +193,16 @@ namespace WCell.MPQTool
 			throw new Exception("Could not find WoW directory.");
 		}
 
-		public static void Dump()
+		public void Dump()
 		{
 			Dump(null, true, true);
 		}
+
+        public static void DumpToDir(string dumpDir)
+        {
+            var tool = new DBCTool {DBCOutputDir = dumpDir};
+            tool.Dump();
+        }
 
 		/// <summary>
 		/// Looks up the wow dir (if not specified) and dumps the DBC files from there)
@@ -204,14 +210,14 @@ namespace WCell.MPQTool
 		/// <param name="wowDir"></param>
 		/// <param name="clear">Whether to clear the DBC-dir</param>
 		/// <param name="checkClient"></param>
-		public static void Dump(string wowDir, bool clear, bool checkClient)
+		public void Dump(string wowDir, bool clear, bool checkClient)
 		{
 			try
 			{
 				if (checkClient)
 				{
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine("Required Client Version: " + WCellInfo.RequiredVersion);
+					Console.WriteLine("Required Client Version: " + Config.RequiredClientVersion);
 					Console.ResetColor();
 				}
 				Console.WriteLine();
@@ -267,7 +273,7 @@ namespace WCell.MPQTool
 					{
 						Console.ForegroundColor = ConsoleColor.Red;
 						Console.WriteLine();
-						Console.WriteLine("Please make sure that you were exporting from Client v" + WCellInfo.RequiredVersion);
+						Console.WriteLine("Please make sure that you were exporting from Client v" + Config.RequiredClientVersion);
 					}
 					Console.ResetColor();
 				}
@@ -282,7 +288,7 @@ namespace WCell.MPQTool
 			}
 		}
 
-		private static bool Export()
+		private bool Export()
 		{
 			var dir = m_wowDir + @"\Data";
 
@@ -390,7 +396,7 @@ namespace WCell.MPQTool
 
 		/// <param name="minColChangePct">The percentage of changed rows for a column to assume that it moved</param>
 		/// <param name="minColMatchPct">The percentage of matching rows between 2 columns to assume that they are identical (col might have moved to that one)</param>
-		public static void Compare(float minColChangePct, float minColMatchPct)
+		public void Compare(float minColChangePct, float minColMatchPct)
 		{
 			DBCFileComparer.MinColumnChangePct = minColChangePct;
 			DBCFileComparer.MinColumnMatchPct = minColMatchPct;
@@ -399,23 +405,39 @@ namespace WCell.MPQTool
 			Console.WriteLine("Writing Comparison Dump file to: \n" + outputFile);
 			using (var writer = new StreamWriter(outputFile, false))
 			{
-				var oldDir = Path.Combine(new DirectoryInfo(DefaultDBCOutputDir).Parent.FullName, "dbc 2.3");
+			    var dirInfo = new DirectoryInfo(DefaultDBCOutputDir).Parent;
+                if (dirInfo == null) throw new DirectoryNotFoundException();
+
+				var oldDir = Path.Combine(dirInfo.FullName, "dbc 2.3");
 				var newDir = DefaultDBCOutputDir;
 				var comparer = new DBCDirComparer(newDir, oldDir);
 				comparer.Compare(writer);
 			}
 		}
 
-		static void Main(string[] args)
-		{
-			Dump();
-			// Compare(40f, 90f);
-			//Dump(@"F:\games\wow\");
-			Console.ResetColor();
-			Console.WriteLine();
-			Console.WriteLine("Press ANY key to continue...");
-			Console.ReadKey();
-		}
+        public DBCTool()
+        {
+            var config = Config.Instance;
 
+            DBCDir = Config.DBCDir;
+            DefaultDBCOutputDir = Config.DefaultDBCOutputDir;
+            DBCOutputDir = DefaultDBCOutputDir;
+        }
 	}
+
+    public class DBCToolRunner
+    {
+        static void Main(string[] args)
+        {
+            var config = Config.Instance;
+            new DBCTool().Dump();
+            
+            // Compare(40f, 90f);
+            //Dump(@"F:\games\wow\");
+            Console.ResetColor();
+            Console.WriteLine();
+            Console.WriteLine("Press ANY key to continue...");
+            Console.ReadKey();
+        }
+    }
 }

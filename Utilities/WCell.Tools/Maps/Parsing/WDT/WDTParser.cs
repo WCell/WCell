@@ -181,16 +181,16 @@ namespace WCell.Tools.Maps.Parsing.WDT
                 // Columns are along the y-axis
                 for (var y = 0; y < TerrainConstants.MapTileCount; y++)
                 {
-                    if (x == 49 && y == 36)
-                    {
-                        wdt.TileProfile[y, x] = true;
-                    }
-                    else
-                    {
-                        wdt.TileProfile[y, x] = false;
-                    }
+                    //if (x == 48 && y == 30)
+                    //{
+                    //    wdt.TileProfile[y, x] = true;
+                    //}
+                    //else
+                    //{
+                    //    wdt.TileProfile[y, x] = false;
+                    //}
                     // Stored as [col, row], that's weird.
-                    //wdt.TileProfile[y, x] = (fileReader.ReadInt64() != 0);
+                    wdt.TileProfile[y, x] = (fileReader.ReadInt64() != 0);
                 }
             }
         }

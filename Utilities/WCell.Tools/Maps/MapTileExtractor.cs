@@ -499,9 +499,9 @@ namespace WCell.Tools.Maps
 
 	    private static void WriteWaterHeights(BinaryWriter writer, float[,] heights)
         {
-            for (var x = 0; x <= TerrainConstants.UnitsPerChunkSide + 1; x++)
+            for (var x = 0; x < TerrainConstants.UnitsPerChunkSide + 1; x++)
             {
-                for (var y = 0; y <= TerrainConstants.UnitsPerChunkSide + 1; y++)
+                for (var y = 0; y < TerrainConstants.UnitsPerChunkSide + 1; y++)
                 {
                     writer.Write(heights[y, x]);
                 }

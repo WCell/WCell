@@ -52,5 +52,13 @@ namespace WCell.Tools.Maps.Parsing.WMO.Components
         /// They seem to determine the liquid type?
         /// </summary>
         public byte[,] LiquidTileFlags;
+
+        public BoundingBox Bounds;
+
+        /// <summary>
+        /// The calculated LiquidType (for the DBC lookup) for the whole WMO
+        /// Not parsed initially
+        /// </summary>
+        public uint LiquidType;
     }
 }

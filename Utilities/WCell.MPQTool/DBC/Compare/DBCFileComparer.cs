@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Cell.Core;
 using WCell.Util;
 
 namespace WCell.MPQTool.DBC.Compare

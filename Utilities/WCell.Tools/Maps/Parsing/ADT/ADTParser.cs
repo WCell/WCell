@@ -398,7 +398,7 @@ namespace WCell.Tools.Maps.Parsing.ADT
             water.Heights = new float[heightMapLen];
 
             // If flags is 2, the chunk is for an ocean, and there is no heightmap
-            if (ofsWaterHeightMap != 0 && (!water.Header.Flags.HasFlag(MH2OFlags.Ocean)))
+            if (ofsWaterHeightMap != 0 && (water.Header.Flags & MH2OFlags.Ocean) == 0)
             {
                 fileReader.BaseStream.Position = waterSegmentBase + ofsWaterHeightMap;
                 for (var i = 0; i < heightMapLen; i++)

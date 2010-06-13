@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-
-using Cell.Core;
-using WCell.Constants;
 using WCell.Util;
 
 namespace WCell.MPQTool.DBC

@@ -201,42 +201,91 @@ namespace WCell.Tools.Maps
                 foreach (var wmoGroup in root.Groups)
                 {
                     if (wmoGroup.DoodadReferences.IsNullOrEmpty()) continue;
-                    foreach (var dRefId in wmoGroup.DoodadReferences)
+                    PrepareWMOGroupDoodadReferences(root, wmoGroup);
+
+                    // Determine the liquid type for any liquid chunks
+                    if (!wmoGroup.Header.HasMLIQ) continue;
+                    uint interimLiquidType;
+                    if ((root.Header.Flags & WMORootHeaderFlags.Flag_0x4) != 0)
                     {
-                        var def = root.DoodadDefinitions[dRefId];
-                        if (def == null) continue;
-                        if (string.IsNullOrEmpty(def.FilePath)) continue;
-                        if (MapTileExtractor.ModelsToIgnore.Contains(def.FilePath)) continue;
-
-                        // Calculate and store the models' transform matrices
-                        Matrix scaleMatrix;
-                        Matrix.CreateScale(def.Scale, out scaleMatrix);
-
-                        Matrix rotMatrix;
-                        Matrix.CreateFromQuaternion(ref def.Rotation, out rotMatrix);
-
-                        Matrix modelToWMO;
-                        Matrix.Multiply(ref scaleMatrix, ref rotMatrix, out modelToWMO);
-
-                        Matrix wmoToModel;
-                        Matrix.Invert(ref modelToWMO, out wmoToModel);
-                        def.ModelToWMO = modelToWMO;
-                        def.WMOToModel = wmoToModel;
-
-
-                        M2Model model;
-                        if (!LoadedM2Models.TryGetValue(def.FilePath, out model))
-                        {
-                            log.Error(String.Format("M2Model file: {0} missing from the Dictionary!", def.FilePath));
-                            continue;
-                        }
-
-                        // Calculate the wmoSpace bounding box for this model
-                        CalculateModelsWMOSpaceBounds(def, model);
+                        interimLiquidType = wmoGroup.Header.LiquidType;
                     }
+                    else
+                    {
+                        if (wmoGroup.Header.LiquidType == 15) // Green Lava
+                            interimLiquidType = 0u; // :( no green lava
+                        else
+                            interimLiquidType = wmoGroup.Header.LiquidType + 1; // eh?
+                    }
+                    var liquidType = interimLiquidType;
+                    if (interimLiquidType < 21) // Less than Naxxramas - Slime. After 20 they start being special types
+                    {
+                        if (interimLiquidType > 0)
+                        {
+                            switch ((interimLiquidType - 1) & 3)
+                            {
+                                case 0u:
+                                    var flags = wmoGroup.Header.Flags; // same as the MOGP header flags
+                                    liquidType = ((flags & WMOGroupFlags.Flag_0x80000) != 0) ? 14u : 13u;
+                                        // WMO Water normally, but with the 0x80000 flag it's WMO Ocean
+                                    break;
+                                case 1u:
+                                    liquidType = 14u; // WMO Ocean
+                                    break;
+                                case 2u:
+                                    liquidType = 19u; // WMO Magma
+                                    break;
+                                case 3u:
+                                    liquidType = 20u; // WMO Slime
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                    }
+
+                    wmoGroup.LiquidInfo.LiquidType = liquidType;
                 }
             }
         }
+
+	    private static void PrepareWMOGroupDoodadReferences(WMORoot root, WMOGroup wmoGroup)
+	    {
+	        foreach (var dRefId in wmoGroup.DoodadReferences)
+	        {
+	            var def = root.DoodadDefinitions[dRefId];
+	            if (def == null) continue;
+	            if (string.IsNullOrEmpty(def.FilePath)) continue;
+	            if (MapTileExtractor.ModelsToIgnore.Contains(def.FilePath)) continue;
+
+	            // Calculate and store the models' transform matrices
+	            Matrix scaleMatrix;
+	            Matrix.CreateScale(def.Scale, out scaleMatrix);
+
+	            Matrix rotMatrix;
+	            Matrix.CreateFromQuaternion(ref def.Rotation, out rotMatrix);
+
+	            Matrix modelToWMO;
+	            Matrix.Multiply(ref scaleMatrix, ref rotMatrix, out modelToWMO);
+
+	            Matrix wmoToModel;
+	            Matrix.Invert(ref modelToWMO, out wmoToModel);
+	            def.ModelToWMO = modelToWMO;
+	            def.WMOToModel = wmoToModel;
+
+
+	            M2Model model;
+	            if (!LoadedM2Models.TryGetValue(def.FilePath, out model))
+	            {
+	                log.Error(String.Format("M2Model file: {0} missing from the Dictionary!", def.FilePath));
+	                continue;
+	            }
+
+	            // Calculate the wmoSpace bounding box for this model
+	            CalculateModelsWMOSpaceBounds(def, model);
+	        }
+	    }
+
 
 	    private static void CalculateModelsWMOSpaceBounds(DoodadDefinition def, M2Model model)
 	    {
@@ -359,6 +408,12 @@ namespace WCell.Tools.Maps
 
                 WriteGroupDoodadRefs(writer, root, group);
 
+                writer.Write(group.Header.HasMLIQ);
+                if (group.Header.HasMLIQ)
+                {
+                    WriteGroupLiquidInfo(writer, group);
+                }
+
                 writer.Write(group.Vertices);
                 WriteBSPTree(writer, group);
             }
@@ -383,6 +438,33 @@ namespace WCell.Tools.Maps
             }
 
             writer.Write(list);
+        }
+
+        private static void WriteGroupLiquidInfo(BinaryWriter writer, WMOGroup group)
+        {
+            // The zero point on the map
+            writer.Write(group.LiquidInfo.BaseCoordinates);
+
+            // Dimensions of the Map
+            writer.Write(group.LiquidInfo.XTileCount);
+            writer.Write(group.LiquidInfo.YTileCount);
+
+            // Write the LiquidTile Map
+            for (var y = 0; y < group.LiquidInfo.YTileCount; y++)
+            {
+                for (var x = 0; x < group.LiquidInfo.XTileCount; x++)
+                {
+                    writer.Write((group.LiquidInfo.LiquidTileFlags[x, y] & 0x0F) != 0x0F);
+                }
+            }
+
+            for (var y = 0; y < group.LiquidInfo.YVertexCount; y++)
+            {
+                for (var x = 0; x < group.LiquidInfo.XVertexCount; x++)
+                {
+                    writer.Write(group.LiquidInfo.HeightMapMax[x, y]);
+                }
+            }
         }
 
 		private static void WriteBSPTree(BinaryWriter writer, WMOGroup group)
