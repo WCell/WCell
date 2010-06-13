@@ -373,6 +373,7 @@ namespace TerrainDisplay.Recast
 				throw new Exception("Non-existing mesh received done signal: " + navMeshId);
 			}
 
+			UnfinishedNavMeshes.Remove(navMeshId);
 			mesh.Initialized = true;
 
 			var evt = NavMeshGenerated;
