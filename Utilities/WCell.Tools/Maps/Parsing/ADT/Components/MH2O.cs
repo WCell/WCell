@@ -33,7 +33,7 @@ namespace WCell.Tools.Maps.Parsing.ADT.Components
                 {
                     heights[c, r] = Heights[c + r * c];
                 }
-                for (var c = Header.Width + 1; c <= TerrainConstants.UnitsPerChunkSide; c++)
+                for (var c = Header.Width + 1; c < TerrainConstants.UnitsPerChunkSide + 1; c++)
                 {
                     heights[c, r] = float.MinValue;
                 }
@@ -63,12 +63,14 @@ namespace WCell.Tools.Maps.Parsing.ADT.Components
                 }
                 return enabled;
             }
-            
+
+            var xOffset = Header.XOffset;
+            var yOffset = Header.YOffset;
             for (var r = 0; r < Header.Height; r++)
             {
-                for (var c = TerrainConstants.UnitsPerChunkSide - 1; c >= 0; c--)
+                for (var c = Header.Width - 1; c >= 0; c--)
                 {
-                    enabled[c, r] = (((RenderBitMap[r] >> c) & 1) == 1);
+                    enabled[c + yOffset, r + xOffset] = (((RenderBitMap[r] >> c) & 1) == 1);
                 }
             }
             return enabled;
