@@ -79,6 +79,28 @@ namespace WCell.Util.Graphics
 			return (x * x) + (y * y);
 		}
 
+        public float Length()
+        {
+            return (float)Math.Sqrt(X*X + Y*Y);
+        }
+
+        public float LengthSquared()
+        {
+            return (X*X + Y*Y);
+        }
+
+        /// <summary>
+        /// Subtracts vector b from vector a.
+        /// </summary>
+        /// <param name="a">The vector to subtract from.</param>
+        /// <param name="b">The subtracting vector.</param>
+        /// <param name="result">A Vector2 filled with the result of (a - b).</param>
+        public static void Subtract(ref Vector2 a, ref Vector2 b, out Vector2 result)
+        {
+            result.X = a.X - b.X;
+            result.Y = a.Y - b.Y;
+        }
+
 		/// <summary>
 		/// Turns the current vector into a unit vector.
 		/// </summary>

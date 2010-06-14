@@ -290,7 +290,7 @@ namespace WCell.MPQTool
 
 		private bool Export()
 		{
-			var dir = m_wowDir + @"\Data";
+			var dir = Path.Combine(m_wowDir, "Data");
 
 			// Is there even a Data folder?
 			if (Directory.Exists(dir))
@@ -300,7 +300,7 @@ namespace WCell.MPQTool
 				// Did we find a locale?
 				if (strLocale != string.Empty)
 				{
-					dir = string.Format(@"{0}\{1}", dir, strLocale);
+					dir = Path.Combine(dir, strLocale);
 				}
 				else
 				{

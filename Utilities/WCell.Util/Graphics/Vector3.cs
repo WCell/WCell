@@ -137,6 +137,17 @@ namespace WCell.Util.Graphics
 
 			return ((x * x) + (y * y)) + (z * z);
 		}
+
+        public float LengthSquared()
+        {
+            return (X*X + Y*Y + Z*Z);
+        }
+
+        public float Length()
+        {
+            var sqrd = (X*X + Y*Y + Z*Z);
+            return (float)Math.Sqrt(sqrd);
+        }
 		#endregion
 
 		#region Angles
@@ -389,6 +400,13 @@ namespace WCell.Util.Graphics
             result.X = value1.X + value2.X;
             result.Y = value1.Y + value2.Y;
             result.Z = value1.Z + value2.Z;
+        }
+
+        public static void Subtract(ref Vector3 value1, ref Vector3 value2, out Vector3 result)
+        {
+            result.X = value1.X - value2.X;
+            result.Y = value1.Y - value2.Y;
+            result.Z = value1.Z - value2.Z;
         }
 		#endregion
 
