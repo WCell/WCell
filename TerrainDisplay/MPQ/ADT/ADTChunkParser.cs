@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     public class ADTChunk
     {

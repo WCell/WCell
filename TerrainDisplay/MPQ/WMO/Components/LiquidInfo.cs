@@ -2,7 +2,7 @@
 using System.IO;
 using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ.WMO.Components
+namespace TerrainDisplay.MPQ.WMO.Components
 {
     /// <summary>
     /// MLIQ Info

@@ -2,10 +2,10 @@
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav.Collision._3D;
-using MPQNav.MPQ.WMO.Components;
+using TerrainDisplay.Collision._3D;
+using TerrainDisplay.MPQ.WMO.Components;
 
-namespace MPQNav.MPQ.WMO
+namespace TerrainDisplay.MPQ.WMO
 {
     public class WMORoot
     {

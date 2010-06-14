@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using TerrainDisplay.Collision._3D;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public class M2
     {

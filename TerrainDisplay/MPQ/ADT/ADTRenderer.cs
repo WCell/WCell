@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     class ADTRenderer : DrawableGameComponent
     {

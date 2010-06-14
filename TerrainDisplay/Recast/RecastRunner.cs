@@ -6,8 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav;
-using MPQNav.MPQ;
+using TerrainDisplay;
+using TerrainDisplay.MPQ;
 
 namespace TerrainDisplay.Recast
 {
@@ -63,7 +63,7 @@ namespace TerrainDisplay.Recast
 
 			RecastAPI.AddMeshGenerator("[Default]", GenerateMeshCallback);
 
-			RecastAPI.SetNavSpeed(100);
+			RecastAPI.SetNavSpeed(100.0f);
 			RecastAPI.RunRecast();
 		}
 	}

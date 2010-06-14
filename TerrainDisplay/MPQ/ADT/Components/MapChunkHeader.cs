@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPQNav.MPQ.ADT.Components
+namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// Class for the MCNK chunk (vertex information for the ADT)

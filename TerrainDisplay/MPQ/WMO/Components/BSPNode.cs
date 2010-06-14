@@ -4,7 +4,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using TerrainDisplay.Collision._3D;
 
-namespace MPQNav.MPQ.WMO.Components
+namespace TerrainDisplay.MPQ.WMO.Components
 {
     public class BSPTree
     {

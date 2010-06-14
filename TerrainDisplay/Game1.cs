@@ -2,15 +2,15 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MPQNav.MPQ;
-using MPQNav.MPQ.ADT;
-using MPQNav.MPQ.M2;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay.MPQ;
 using TerrainDisplay;
 using TerrainDisplay.Extracted;
+using TerrainDisplay.MPQ.ADT;
+using TerrainDisplay.MPQ.M2;
+using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Recast;
 
-namespace MPQNav
+namespace TerrainDisplay
 {
     /// <summary>
     /// This is the class that controls the entire game.

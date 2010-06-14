@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav;
-using MPQNav.MPQ;
-using MPQNav.MPQ.ADT;
+using TerrainDisplay;
+using TerrainDisplay.MPQ;
+using TerrainDisplay.MPQ.ADT;
 
 namespace TerrainDisplay.Recast
 {

@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.ADT.Components
+﻿namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// Contains offsets (relative to Base) for some other chunks that appear in the file. Since the file follows a well-defined structure, this is redundant information.

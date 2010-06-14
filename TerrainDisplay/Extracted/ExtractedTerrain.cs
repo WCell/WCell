@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MPQNav;
-using MPQNav.MPQ;
-using MPQNav.MPQ.ADT;
-using MPQNav.MPQ.M2;
-using MPQNav.MPQ.WDT;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay;
+using TerrainDisplay.MPQ;
+using TerrainDisplay.MPQ.ADT;
+using TerrainDisplay.MPQ.M2;
+using TerrainDisplay.MPQ.WDT;
+using TerrainDisplay.MPQ.WMO;
 
 namespace TerrainDisplay.Extracted
 {
@@ -42,8 +42,10 @@ namespace TerrainDisplay.Extracted
             get { return _wdt; }
         }
 
-        public void LoadTile(int tileX, int tileY)
+        public void LoadTile(TileIdentifier tileId)
         {
+            var tileX = tileId.TileX;
+            var tileY = tileId.TileY;
             var loaded = _adtManager.LoadTile(tileX, tileY);
             if (!loaded)
             {
@@ -52,9 +54,9 @@ namespace TerrainDisplay.Extracted
             }
         }
 
-        public ExtractedTerrain(string dataPath, int mapId)
+        public ExtractedTerrain(string dataPath, TileIdentifier tileId)
         {
-            _mapId = mapId;
+            _mapId = tileId.MapId;
             _baseDirectory = dataPath;
 
             _adtManager = new ExtractedADTManager(this, _baseDirectory, _mapId);

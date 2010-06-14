@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using MPQNav.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.WMO
+namespace TerrainDisplay.MPQ.WMO
 {
     public interface IWMOManager
     {

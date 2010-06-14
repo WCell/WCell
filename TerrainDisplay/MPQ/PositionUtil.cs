@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ
+namespace TerrainDisplay
 {
     public static class PositionUtil
     {
@@ -25,6 +25,14 @@ namespace MPQNav.MPQ
             vertex.X = vertex.Y * -1;
             vertex.Y = vertex.Z;
             vertex.Z = temp * -1;
+        }
+
+        public static void TransformWoWCoordsToRecastCoords(ref Vector3 vertex)
+        {
+            var temp = vertex.X;
+            vertex.X = vertex.Y * -1;
+            vertex.Y = vertex.Z;
+            vertex.Z = temp;
         }
     }
 }

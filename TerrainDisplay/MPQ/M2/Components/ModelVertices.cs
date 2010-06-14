@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ.M2.Components
+namespace TerrainDisplay.MPQ.M2.Components
 {
     public class ModelVertices
     {

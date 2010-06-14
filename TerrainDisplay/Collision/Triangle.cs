@@ -11,7 +11,7 @@ namespace TerrainDisplay.Collision._3D
         public Vector3 Point1;
         public Vector3 Point2;
         public Vector3 Point3;
-        
+
         public Triangle(Vector3 point1, Vector3 point2, Vector3 point3)
         {
             Point1 = point1;

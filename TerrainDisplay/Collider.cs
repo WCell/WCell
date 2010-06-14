@@ -1,4 +1,4 @@
-﻿namespace MPQNav.Collision
+﻿namespace TerrainDisplay.Collision
 {
     //class Collider
     //{

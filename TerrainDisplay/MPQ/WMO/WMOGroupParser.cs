@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.WMO.Components;
-using MPQNav.Util;
+using TerrainDisplay.Util;
 using TerrainDisplay.Collision._3D;
+using TerrainDisplay.MPQ.WMO.Components;
 
-namespace MPQNav.MPQ.WMO
+namespace TerrainDisplay.MPQ.WMO
 {
     public static class WMOGroupParser
     {

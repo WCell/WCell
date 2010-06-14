@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPQNav.MPQ.WMO.Components
+namespace TerrainDisplay.MPQ.WMO.Components
 {
     // Not sure what this is for yet
     enum MaterialEnum1

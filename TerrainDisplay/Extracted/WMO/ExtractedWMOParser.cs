@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MPQNav.MPQ.WMO.Components;
-using MPQNav.Util;
+using TerrainDisplay.MPQ.WMO.Components;
+using TerrainDisplay.Util;
 
 namespace TerrainDisplay.Extracted.WMO
 {
@@ -81,6 +81,12 @@ namespace TerrainDisplay.Extracted.WMO
                 group.Bounds = br.ReadBoundingBox();
                 group.GroupId = br.ReadUInt32();
                 group.ModelRefs = br.ReadInt32List();
+
+                group.HasLiquid = br.ReadBoolean();
+                if (group.HasLiquid)
+                {
+                    ReadWMOGroupLiquidInfo(br, group);
+                }
                 group.Vertices = br.ReadVector3List();
 
                 ReadBSPTree(br, group);
@@ -88,6 +94,31 @@ namespace TerrainDisplay.Extracted.WMO
                 groupList.Add(group);
             }
             wmo.Groups = groupList;
+        }
+
+        private static void ReadWMOGroupLiquidInfo(BinaryReader br, ExtractedWMOGroup group)
+        {
+            group.LiquidBaseCoords = br.ReadVector3();
+            group.LiqTileCountX = br.ReadInt32();
+            group.LiqTileCountY = br.ReadInt32();
+
+            group.LiquidTileMap = new bool[group.LiqTileCountX, group.LiqTileCountY];
+            for (var y = 0; y < group.LiqTileCountY; y++)
+            {
+                for (var x = 0; x < group.LiqTileCountX; x++)
+                {
+                    group.LiquidTileMap[x, y] = br.ReadBoolean();
+                }
+            }
+
+            group.LiquidHeights = new float[group.LiqTileCountX + 1, group.LiqTileCountY + 1];
+            for (var y = 0; y < group.LiqTileCountY + 1; y++)
+            {
+                for (var x = 0; x < group.LiqTileCountX + 1; x++)
+                {
+                    group.LiquidHeights[x, y] = br.ReadSingle();
+                }
+            }
         }
 
         private static void ReadBSPTree(BinaryReader br, ExtractedWMOGroup group)

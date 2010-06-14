@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     public interface IADTManager
     {

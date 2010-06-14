@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ.ADT.Components
+namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// MODF Class - WMO Placement Information

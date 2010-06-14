@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav.Collision;
-using MPQNav.Collision._3D;
-using MPQNav.MPQ.ADT.Components;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Collision._3D;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public class M2Manager : IM2Manager
     {

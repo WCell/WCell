@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
-using MPQNav.MPQ.M2.Components;
+using TerrainDisplay.MPQ.M2.Components;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public class M2Model
     {

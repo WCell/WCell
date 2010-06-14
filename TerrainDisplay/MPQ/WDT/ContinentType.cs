@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.ADT
+﻿namespace TerrainDisplay.MPQ.ADT
 {
     /// <summary>
     /// Enumeration of the different continents available.

@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
-using MPQNav.Collision;
-using MPQNav.Collision._3D;
-using MPQNav.MPQ.ADT.Components;
-using MPQNav.MPQ.WMO.Components;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Collision._3D;
 using Microsoft.Xna.Framework.Graphics;
+using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.WMO.Components;
 
-namespace MPQNav.MPQ.WMO
+namespace TerrainDisplay.MPQ.WMO
 {
     public class WMOManager : IWMOManager
     {

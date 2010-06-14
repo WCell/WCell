@@ -11,7 +11,8 @@
     <RootNamespace>TerrainDisplay</RootNamespace>
     <AssemblyName>TerrainDisplay</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -51,11 +52,14 @@
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>XNA.Framework\Microsoft.Xna.Framework.dll</HintPath>
+      <HintPath>..\Lib\Microsoft.Xna.Framework.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Xna.Framework.Game, Version=3.1.0.0, Culture=neutral, PublicKeyToken=6d5c3888ef60e27d, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>XNA.Framework\Microsoft.Xna.Framework.Game.dll</HintPath>
+      <HintPath>..\Lib\Microsoft.Xna.Framework.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog">
+      <HintPath>..\Lib\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,6 +69,10 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="WCell.Util, Version=0.5.3816.28646, Culture=neutral, PublicKeyToken=c1553d4f6290a00f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Lib\WCell.Util.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AxisRenderer.cs" />
@@ -73,6 +81,8 @@
     <Compile Include="Collision\IShape.cs" />
     <Compile Include="Collision\Triangle.cs" />
     <Compile Include="Collision\OBB.cs" />
+    <Compile Include="Config\TileIdentifier.cs" />
+    <Compile Include="Config\TerrainDisplayConfig.cs" />
     <Compile Include="Console\KeyBindings.cs" />
     <Compile Include="Console\MpqConsole.cs" />
     <Compile Include="Console\XnaConsole.cs" />
@@ -172,8 +182,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
-    <Content Include="XNA.Framework\Microsoft.Xna.Framework.dll" />
-    <Content Include="XNA.Framework\Microsoft.Xna.Framework.Game.dll" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="MPQ\WDL\" />

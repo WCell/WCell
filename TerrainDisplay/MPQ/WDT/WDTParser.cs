@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Windows.Forms;
-using MPQNav.MPQ.ADT;
-using MPQNav.Util;
+using TerrainDisplay.Util;
+using TerrainDisplay.MPQ.ADT;
 
-namespace MPQNav.MPQ.WDT
+namespace TerrainDisplay.MPQ.WDT
 {
     
     public class WDTParser
     {
         private const string _wdtPath = "WORLD\\MAPS\\";
         private static string _basePath;
-        private static ContinentType _continent;
+        private static string _continent;
 
-        public static WDTFile Process(string dataDirectory, ContinentType internalMapName )
+        public static WDTFile Process(string dataDirectory, string internalMapName )
         {
             if (Directory.Exists(dataDirectory))
             {
@@ -30,7 +30,7 @@ namespace MPQNav.MPQ.WDT
 
             var wdt = new WDTFile();
 
-            var continentPath = Path.Combine(_basePath, _continent.ToString());
+            var continentPath = Path.Combine(_basePath, _continent);
             if (!Directory.Exists(continentPath))
             {
                 throw new Exception(String.Format("Continent data missing for {0}", _continent));

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav.MPQ.ADT.Components;
 using TerrainDisplay.Collision._3D;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     public class ADT : ADTBase
     {

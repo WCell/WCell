@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPQNav.MPQ.WDT
+namespace TerrainDisplay.MPQ.WDT
 {
     [Flags]
     public enum WDTFlags

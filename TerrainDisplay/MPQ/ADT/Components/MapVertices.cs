@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.ADT.Components
+﻿namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// MCVT Chunk - Height information for the MCNK

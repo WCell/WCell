@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.M2.Components;
-using MPQNav.Util;
+using TerrainDisplay.Util;
+using TerrainDisplay.MPQ.M2.Components;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public class M2ModelParser
     {

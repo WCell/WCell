@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.WDT
+﻿namespace TerrainDisplay.MPQ.WDT
 {
     public class WDTRenderer
     {

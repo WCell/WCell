@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav.Collision._3D;
 using TerrainDisplay.Collision._3D;
 
-namespace MPQNav.MPQ.WMO
+namespace TerrainDisplay.MPQ.WMO
 {
     /// <summary>
     /// Class for the WMO Group File

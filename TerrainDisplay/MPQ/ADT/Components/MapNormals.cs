@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ.ADT.Components
+namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// MCNR Chunk - Normal information for the MCNK

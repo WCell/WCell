@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MPQNav.Collision._3D
+namespace TerrainDisplay.Collision._3D
 {
     ///<summary>
     /// Describes a Shape contained in an AABB

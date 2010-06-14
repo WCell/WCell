@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     /// <summary>
     /// The ADTManager is responsible for handling all the different ADTs that we are going to be loading up.
@@ -34,7 +34,7 @@ namespace MPQNav.MPQ.ADT
         /// <summary>
         /// Continent of the ADT Manager
         /// </summary>
-        private readonly ContinentType _continent;
+        private readonly string _continent;
 
         /// <summary>
         /// Boolean result stating if this manager is loaded or not.
@@ -50,17 +50,17 @@ namespace MPQNav.MPQ.ADT
         /// <summary>
         /// Creates a new instance of the ADT manager.
         /// </summary>
-        /// <param name="c">Continent of the ADT</param>
+        /// <param name="continent">Continent of the ADT</param>
         /// <param name="dataDirectory">Base directory for all MPQ data WITH TRAILING SLASHES</param>
         /// <param name="mpqTerrainManager">Handles organization of all terrain elements</param>
         /// <example>ADTManager myADTManager = new ADTManager(continent.Azeroth, "C:\\mpq\\");</example>
-        public ADTManager(string dataDirectory, ContinentType c, MpqTerrainManager mpqTerrainManager)
+        public ADTManager(string dataDirectory, string continent, MpqTerrainManager mpqTerrainManager)
         {
             if (Directory.Exists(dataDirectory))
             {
                 _loaded = true;
                 _basePath = Path.Combine(dataDirectory, _adtPath);
-                _continent = c;
+                _continent = continent;
                 _mpqTerrainManager = mpqTerrainManager;
             }
             else
@@ -86,7 +86,7 @@ namespace MPQNav.MPQ.ADT
                 MessageBox.Show("ADT Manager not loaded, aborting loading ADT file.", "ADT Manager not loaded.");
                 return false;
             }
-            var continentPath = Path.Combine(_basePath, _continent.ToString());
+            var continentPath = Path.Combine(_basePath, _continent);
 
             if (!Directory.Exists(continentPath))
             {

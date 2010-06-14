@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.WMO.Components
+﻿namespace TerrainDisplay.MPQ.WMO.Components
 {
     /// <summary>
     /// MOBA 24 bytes

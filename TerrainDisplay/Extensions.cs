@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
-namespace MPQNav.Collision
+namespace TerrainDisplay.Collision
 {
     ///<summary>
     /// Adds functonality to the BoundingBox class

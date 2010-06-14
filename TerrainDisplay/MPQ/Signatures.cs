@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace MPQNav.MPQ
+namespace TerrainDisplay.MPQ
 {
 
 

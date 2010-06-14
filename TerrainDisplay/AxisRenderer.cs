@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav;
-using MPQNav.MPQ;
+using TerrainDisplay;
+using TerrainDisplay.MPQ;
 
 namespace TerrainDisplay
 {
@@ -71,15 +71,13 @@ namespace TerrainDisplay
 
         private void BuildVerticiesAndIndicies()
         {
-            var settingsReader = new System.Configuration.AppSettingsReader();
-            var defaultMapX = (int)settingsReader.GetValue("defaultMapX", typeof(int));
-            var defaultMapY = (int)settingsReader.GetValue("defaultMapY", typeof(int));
+            var tileId = Config.DefaultTileIdentifier;
             var tempVertices = new List<VertexPositionNormalColored>();
             var tempIndices = new List<int>();
             var offset = 0;
 
-            var baseXPos = TerrainConstants.CenterPoint - (defaultMapX + 1)*TerrainConstants.TileSize;
-            var baseYPos = TerrainConstants.CenterPoint - (defaultMapY + 1)*TerrainConstants.TileSize;
+            var baseXPos = TerrainConstants.CenterPoint - (tileId.TileX + 1)*TerrainConstants.TileSize;
+            var baseYPos = TerrainConstants.CenterPoint - (tileId.TileY + 1)*TerrainConstants.TileSize;
             var baseZPos = -100.0f;
 
             // The Bottom-Righthand corner of a Tile in WoW coords

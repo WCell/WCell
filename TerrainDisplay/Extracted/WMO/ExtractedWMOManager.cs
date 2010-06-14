@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav;
-using MPQNav.MPQ.ADT.Components;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay;
+using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Extracted.M2;
 using TerrainDisplay.Extracted.WMO;
 

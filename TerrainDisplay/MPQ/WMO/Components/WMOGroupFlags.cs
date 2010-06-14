@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPQNav.MPQ.WMO.Components
+namespace TerrainDisplay.MPQ.WMO.Components
 {
     [Flags]
     public enum WMOGroupFlags

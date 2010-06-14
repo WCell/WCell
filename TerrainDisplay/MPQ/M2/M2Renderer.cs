@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public class M2Renderer : DrawableGameComponent
     {

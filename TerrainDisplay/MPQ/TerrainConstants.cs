@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ
+﻿namespace TerrainDisplay
 {
     public static class TerrainConstants
     {

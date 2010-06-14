@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using MPQNav.MPQ;
-using MPQNav.MPQ.ADT;
+using TerrainDisplay.MPQ;
+using TerrainDisplay.MPQ.ADT;
 
 namespace TerrainDisplay.Extracted
 {

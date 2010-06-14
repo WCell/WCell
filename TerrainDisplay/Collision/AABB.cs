@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Xna.Framework;
 
-namespace MPQNav.Collision._3D
+namespace TerrainDisplay.Collision._3D
 {
     /// <summary>
     /// Axis-Aligned Bounding Box

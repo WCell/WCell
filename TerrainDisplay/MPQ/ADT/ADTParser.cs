@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.ADT.Components;
-using MPQNav.Util;
+using TerrainDisplay.Util;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.ADT
+namespace TerrainDisplay.MPQ.ADT
 {
     public static class ADTParser
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MPQNav.MPQ.WMO.Components
+namespace TerrainDisplay.MPQ.WMO.Components
 {
     public enum FogFlags
     {

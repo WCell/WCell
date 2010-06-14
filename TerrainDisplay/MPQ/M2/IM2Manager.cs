@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using MPQNav.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.ADT.Components;
 
-namespace MPQNav.MPQ.M2
+namespace TerrainDisplay.MPQ.M2
 {
     public interface IM2Manager
     {

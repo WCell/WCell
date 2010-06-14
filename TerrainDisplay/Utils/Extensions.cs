@@ -2,10 +2,10 @@
 using System.IO;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay.MPQ;
+using TerrainDisplay.MPQ.WMO;
 
-namespace MPQNav.Util
+namespace TerrainDisplay.Util
 {
     public static class Extensions
     {

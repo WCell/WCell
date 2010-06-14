@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MPQNav;
-using MPQNav.MPQ;
-using MPQNav.MPQ.ADT.Components;
-using MPQNav.MPQ.M2;
+using TerrainDisplay;
+using TerrainDisplay.MPQ;
+using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.Extracted.M2;
 
 namespace TerrainDisplay.Extracted

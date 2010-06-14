@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 /// </summary>
 public delegate void CommandDelegate();   // delegate declaration
 
-namespace MPQNav
+namespace TerrainDisplay
 {
     /// <summary>
     /// Console used to execute commands in game.

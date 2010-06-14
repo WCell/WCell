@@ -97,8 +97,6 @@ namespace TerrainDisplay.Recast
 		/// Set navigation speed for the GUI
 		/// </summary>
 		[DllImport(RecastDllName, EntryPoint = "navSetSpeed", CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-		public static extern void SetNavSpeed(float speed);
-
-											   
+		public static extern void SetNavSpeed(float speed);								   
 	}
 }

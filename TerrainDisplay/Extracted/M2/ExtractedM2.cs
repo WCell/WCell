@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay.MPQ.WMO;
 
 namespace TerrainDisplay.Extracted.M2
 {

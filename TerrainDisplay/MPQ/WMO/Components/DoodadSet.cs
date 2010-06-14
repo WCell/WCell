@@ -1,4 +1,4 @@
-﻿namespace MPQNav.MPQ.WMO.Components
+﻿namespace TerrainDisplay.MPQ.WMO.Components
 {
     /// <summary>
     /// Represents the MODS chunk from WMO Groups

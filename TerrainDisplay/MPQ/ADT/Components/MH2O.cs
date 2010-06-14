@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPQNav.MPQ.ADT.Components
+namespace TerrainDisplay.MPQ.ADT.Components
 {
     /// <summary>
     /// MH20 Chunk - Fluid information for the MCNK

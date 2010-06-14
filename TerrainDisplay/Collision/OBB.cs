@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace MPQNav.Collision._3D
+namespace TerrainDisplay.Collision._3D
 {
     /// <summary>
     /// Orientated Bounding Box

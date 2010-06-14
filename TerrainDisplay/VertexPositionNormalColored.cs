@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MPQNav
+namespace TerrainDisplay
 {
     /// <summary>
     /// Struct outlining our custom vertex

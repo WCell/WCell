@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using MPQNav.MPQ.M2;
-using MPQNav.MPQ.ADT;
-using MPQNav.MPQ.WDT;
-using MPQNav.MPQ.WMO;
+using TerrainDisplay.MPQ.ADT;
+using TerrainDisplay.MPQ.M2;
+using TerrainDisplay.MPQ.WDT;
+using TerrainDisplay.MPQ.WMO;
 
-namespace MPQNav.MPQ
+namespace TerrainDisplay.MPQ
 {
     public interface ITerrainManager
     {
@@ -14,7 +14,7 @@ namespace MPQNav.MPQ
         IM2Manager M2Manager { get; }
         WDTFile WDT { get; }
 
-        void LoadTile(int tileX, int tileY);
+        void LoadTile(TileIdentifier tileId);
 
 		/// <summary>
 		/// Gets the vertice and index lists in a way that is interpretable by Recast
