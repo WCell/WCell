@@ -152,8 +152,13 @@ namespace WCell.Util.Variables
 				return false;
 			}
 
-			Value = TryParse(strValue, VariableType);
-			return Value != null;
+			var val = TryParse(strValue, VariableType);
+			if (val != null)
+			{
+				Value = val;
+				return true;
+			}
+			return false;
 		}
 
 		static object TryParse(string strValue, Type type)
