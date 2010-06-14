@@ -219,6 +219,12 @@
   <ItemGroup>
     <Content Include="StormLib\StormLib.dll" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WCell.Util\WCell.Util.csproj">
+      <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
+      <Name>WCell.Util</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy $(ProjectDir)\StormLib\StormLib.dll $(OutDir)</PostBuildEvent>
