@@ -16,18 +16,20 @@ namespace TerrainDisplay.Recast
 	/// </summary>
 	public class RecastRunner
 	{
+		private PtrBoolCallback InputMeshGenerator;
+
 		private readonly ITerrainManager _manager;
 		Vector3[] vectors;
 		int[] indices;
-		private readonly PtrBoolCallback GenerateMeshCallback;
 
 		private VertexPositionNormalColored[] _cachedVertices;
+
 
 
 		public RecastRunner(ITerrainManager manager)
 		{
 			_manager = manager;
-			GenerateMeshCallback = GenerateMesh;
+			InputMeshGenerator = GenerateInputMesh;
 		}
 
 		private void BuildVerticiesAndIndicies()
@@ -47,24 +49,37 @@ namespace TerrainDisplay.Recast
 
 		}
 
-		public bool GenerateMesh(IntPtr geom)
+		/// <summary>
+		/// TODO: Add Identifier for mesh to be generated
+		/// </summary>
+		/// <param name="geom"></param>
+		/// <returns></returns>
+		bool GenerateInputMesh(IntPtr geom)
 		{
 			//Console.WriteLine("GenMesh");
-
 			_manager.GetRecastTriangleMesh(out vectors, out indices);
-			RecastAPI.GenerateMesh(geom, vectors, indices, "Default");
+			RecastAPI.GenerateInputMesh(geom, vectors, indices, "Default");
 			return true;
 		}
 
+		// TODO: Make RecastRenderer work, too
 		public void Start()
 		{
 			//RecastAPI.RemoveMeshGenerator("xxx");
 			RecastAPI.InitAPI();
 
-			RecastAPI.AddMeshGenerator("[Default]", GenerateMeshCallback);
+			RecastAPI.AddInputMeshGenerator("[Default]", InputMeshGenerator);		// Input
+
+			RecastAPI.NavMeshGenerated += OnNewNavMesh; // Ouptut
 
 			RecastAPI.SetNavSpeed(100.0f);
+
 			RecastAPI.RunRecast();
+		}
+
+		private void OnNewNavMesh(NavMesh mesh)
+		{
+			// toy around with mesh
 		}
 	}
 }

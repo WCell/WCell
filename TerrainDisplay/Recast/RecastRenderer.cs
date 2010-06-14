@@ -11,7 +11,8 @@ using TerrainDisplay.MPQ.ADT;
 namespace TerrainDisplay.Recast
 {
 	/// <summary>
-	/// Render recast content in XNA
+	/// Render Recast NavMesh in XNA
+	/// TODO: API will only need one more method to setup parameters and start parsing to support this class
 	/// </summary>
     public class RecastRenderer : DrawableGameComponent
     {

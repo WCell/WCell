@@ -3,6 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainDisplay", "TerrainDisplay\TerrainDisplay.csproj", "{B59C21AA-8AB5-439B-AABA-FEB03EFF251A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{50901DA0-6AAE-402B-9BD1-0FF9BA36546C} = {50901DA0-6AAE-402B-9BD1-0FF9BA36546C}
 		{CEF242C5-E9A3-403B-BAFF-99397BDA5730} = {CEF242C5-E9A3-403B-BAFF-99397BDA5730}
 	EndProjectSection
 EndProject

@@ -10,8 +10,8 @@ namespace TerrainDisplay
 {
     public static class TerrainProgram
 	{
-		public static Vector3 _avatarPosition = new Vector3(-100, 100, -100);
-		public static ITerrainManager _terrainManager;
+		public static Vector3 AvatarPosition = new Vector3(-100, 100, -100);
+		public static ITerrainManager TerrainManager;
 
         /// <summary>
         /// The main entry point for the application.
@@ -24,25 +24,25 @@ namespace TerrainDisplay
 			string mpqPath;
 			if (useExtractedData)
 			{
-				_terrainManager = new ExtractedTerrain(Config.ExtractedDataPath, defaultTileId);
+				TerrainManager = new ExtractedTerrain(Config.ExtractedDataPath, defaultTileId);
 			}
 			else
 			{
-				_terrainManager = new MpqTerrainManager(Config.MpqPath, defaultTileId);
+				TerrainManager = new MpqTerrainManager(Config.MpqPath, defaultTileId);
 			}
 
-			_terrainManager.LoadTile(defaultTileId);
+			TerrainManager.LoadTile(defaultTileId);
 
-			_avatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.TileX + 1)*TerrainConstants.TileSize,
+			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.TileX + 1)*TerrainConstants.TileSize,
                                           TerrainConstants.CenterPoint - (defaultTileId.TileY + 1)*TerrainConstants.TileSize,
                                           100.0f);
 			
-			PositionUtil.TransformWoWCoordsToXNACoords(ref _avatarPosition);
+			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
             //using (var game = new Game1(_avatarPosition))
             //{
             //    game.Run();
             //}
-            new RecastRunner(_terrainManager).Start();
+            new RecastRunner(TerrainManager).Start();
         }
     }
 }
