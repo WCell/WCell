@@ -170,12 +170,12 @@ namespace WCell.RealmServer.Items
 					if (m_ammo != null)
 					{
 						m_ammo.OnUnEquip(InventorySlot.Invalid);
-						m_owner.SetUInt32(PlayerFields.AMMO_ID, 0);
+						//m_owner.SetUInt32(PlayerFields.AMMO_ID, 0);
 					}
 
 					if (value != null)
 					{
-						m_owner.SetUInt32(PlayerFields.AMMO_ID, value.Template.Id);
+						//m_owner.SetUInt32(PlayerFields.AMMO_ID, value.Template.Id);
 						value.OnEquip();
 					}
 					m_ammo = value;
@@ -190,7 +190,8 @@ namespace WCell.RealmServer.Items
 		{
 			get
 			{
-				return m_owner.GetUInt32(PlayerFields.AMMO_ID);
+				return (uint)0;
+				//return m_owner.GetUInt32(PlayerFields.AMMO_ID);
 			}
 		}
 

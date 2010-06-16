@@ -2,7 +2,7 @@ using System;
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 15/06/2010
 ///
 
 namespace WCell.Constants.Updates
@@ -779,12 +779,30 @@ namespace WCell.Constants.Updates
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
+				// UnitFields.POWER8
+				new UpdateField {
+					Flags = UpdateFieldFlags.Public,
+					Group = ObjectTypeId.Unit,
+					Name = "POWER8",
+					Offset = 32,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
+				},
+				// UnitFields.POWER9
+				new UpdateField {
+					Flags = UpdateFieldFlags.Public,
+					Group = ObjectTypeId.Unit,
+					Name = "POWER9",
+					Offset = 33,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
+				},
 				// UnitFields.MAXHEALTH
 				new UpdateField {
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXHEALTH",
-					Offset = 32,
+					Offset = 34,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -793,7 +811,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER1",
-					Offset = 33,
+					Offset = 35,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -802,7 +820,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER2",
-					Offset = 34,
+					Offset = 36,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -811,7 +829,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER3",
-					Offset = 35,
+					Offset = 37,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -820,7 +838,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER4",
-					Offset = 36,
+					Offset = 38,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -829,7 +847,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER5",
-					Offset = 37,
+					Offset = 39,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -838,7 +856,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER6",
-					Offset = 38,
+					Offset = 40,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -847,7 +865,25 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXPOWER7",
-					Offset = 39,
+					Offset = 41,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
+				},
+				// UnitFields.MAXPOWER8
+				new UpdateField {
+					Flags = UpdateFieldFlags.Public,
+					Group = ObjectTypeId.Unit,
+					Name = "MAXPOWER8",
+					Offset = 42,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
+				},
+				// UnitFields.MAXPOWER9
+				new UpdateField {
+					Flags = UpdateFieldFlags.Public,
+					Group = ObjectTypeId.Unit,
+					Name = "MAXPOWER9",
+					Offset = 43,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -856,10 +892,12 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POWER_REGEN_FLAT_MODIFIER",
-					Offset = 40,
-					Size = 7,
+					Offset = 44,
+					Size = 9,
 					Type = UpdateFieldType.Float
 				},
+				null,
+				null,
 				null,
 				null,
 				null,
@@ -871,10 +909,12 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POWER_REGEN_INTERRUPTED_FLAT_MODIFIER",
-					Offset = 47,
-					Size = 7,
+					Offset = 53,
+					Size = 9,
 					Type = UpdateFieldType.Float
 				},
+				null,
+				null,
 				null,
 				null,
 				null,
@@ -886,7 +926,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "LEVEL",
-					Offset = 54,
+					Offset = 62,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -895,7 +935,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "FACTIONTEMPLATE",
-					Offset = 55,
+					Offset = 63,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -904,7 +944,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "VIRTUAL_ITEM_SLOT_ID",
-					Offset = 56,
+					Offset = 64,
 					Size = 3,
 					Type = UpdateFieldType.UInt32
 				},
@@ -915,7 +955,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "FLAGS",
-					Offset = 59,
+					Offset = 67,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -924,7 +964,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "FLAGS_2",
-					Offset = 60,
+					Offset = 68,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -933,7 +973,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "AURASTATE",
-					Offset = 61,
+					Offset = 69,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -942,7 +982,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "BASEATTACKTIME",
-					Offset = 62,
+					Offset = 70,
 					Size = 2,
 					Type = UpdateFieldType.UInt32
 				},
@@ -952,7 +992,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Unit,
 					Name = "RANGEDATTACKTIME",
-					Offset = 64,
+					Offset = 72,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -961,7 +1001,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "BOUNDINGRADIUS",
-					Offset = 65,
+					Offset = 73,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -970,7 +1010,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "COMBATREACH",
-					Offset = 66,
+					Offset = 74,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -979,7 +1019,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "DISPLAYID",
-					Offset = 67,
+					Offset = 75,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -988,7 +1028,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "NATIVEDISPLAYID",
-					Offset = 68,
+					Offset = 76,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -997,7 +1037,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MOUNTDISPLAYID",
-					Offset = 69,
+					Offset = 77,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1006,7 +1046,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.BeastLore,
 					Group = ObjectTypeId.Unit,
 					Name = "MINDAMAGE",
-					Offset = 70,
+					Offset = 78,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1015,7 +1055,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.BeastLore,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXDAMAGE",
-					Offset = 71,
+					Offset = 79,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1024,7 +1064,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.BeastLore,
 					Group = ObjectTypeId.Unit,
 					Name = "MINOFFHANDDAMAGE",
-					Offset = 72,
+					Offset = 80,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1033,7 +1073,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.BeastLore,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXOFFHANDDAMAGE",
-					Offset = 73,
+					Offset = 81,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1042,7 +1082,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "BYTES_1",
-					Offset = 74,
+					Offset = 82,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -1051,7 +1091,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "PETNUMBER",
-					Offset = 75,
+					Offset = 83,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1060,7 +1100,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "PET_NAME_TIMESTAMP",
-					Offset = 76,
+					Offset = 84,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1069,7 +1109,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "PETEXPERIENCE",
-					Offset = 77,
+					Offset = 85,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1078,7 +1118,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "PETNEXTLEVELEXP",
-					Offset = 78,
+					Offset = 86,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1087,7 +1127,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "DYNAMIC_FLAGS",
-					Offset = 79,
+					Offset = 87,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1096,7 +1136,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "MOD_CAST_SPEED",
-					Offset = 80,
+					Offset = 88,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1105,7 +1145,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "CREATED_BY_SPELL",
-					Offset = 81,
+					Offset = 89,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1114,7 +1154,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.Unit,
 					Name = "NPC_FLAGS",
-					Offset = 82,
+					Offset = 90,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1123,7 +1163,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "NPC_EMOTESTATE",
-					Offset = 83,
+					Offset = 91,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1132,7 +1172,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "STAT0",
-					Offset = 84,
+					Offset = 92,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1141,7 +1181,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "STAT1",
-					Offset = 85,
+					Offset = 93,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1150,7 +1190,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "STAT2",
-					Offset = 86,
+					Offset = 94,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1159,7 +1199,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "STAT3",
-					Offset = 87,
+					Offset = 95,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1168,7 +1208,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "STAT4",
-					Offset = 88,
+					Offset = 96,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1177,7 +1217,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POSSTAT0",
-					Offset = 89,
+					Offset = 97,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1186,7 +1226,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POSSTAT1",
-					Offset = 90,
+					Offset = 98,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1195,7 +1235,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POSSTAT2",
-					Offset = 91,
+					Offset = 99,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1204,7 +1244,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POSSTAT3",
-					Offset = 92,
+					Offset = 100,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1213,7 +1253,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POSSTAT4",
-					Offset = 93,
+					Offset = 101,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1222,7 +1262,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "NEGSTAT0",
-					Offset = 94,
+					Offset = 102,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1231,7 +1271,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "NEGSTAT1",
-					Offset = 95,
+					Offset = 103,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1240,7 +1280,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "NEGSTAT2",
-					Offset = 96,
+					Offset = 104,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1249,7 +1289,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "NEGSTAT3",
-					Offset = 97,
+					Offset = 105,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1258,7 +1298,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "NEGSTAT4",
-					Offset = 98,
+					Offset = 106,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1267,7 +1307,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.BeastLore,
 					Group = ObjectTypeId.Unit,
 					Name = "RESISTANCES",
-					Offset = 99,
+					Offset = 107,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1282,7 +1322,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "RESISTANCEBUFFMODSPOSITIVE",
-					Offset = 106,
+					Offset = 114,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1297,7 +1337,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "RESISTANCEBUFFMODSNEGATIVE",
-					Offset = 113,
+					Offset = 121,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1312,7 +1352,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "BASE_MANA",
-					Offset = 120,
+					Offset = 128,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1321,7 +1361,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "BASE_HEALTH",
-					Offset = 121,
+					Offset = 129,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1330,7 +1370,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "BYTES_2",
-					Offset = 122,
+					Offset = 130,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -1339,7 +1379,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "ATTACK_POWER",
-					Offset = 123,
+					Offset = 131,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1348,7 +1388,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "ATTACK_POWER_MODS",
-					Offset = 124,
+					Offset = 132,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1357,7 +1397,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "ATTACK_POWER_MULTIPLIER",
-					Offset = 125,
+					Offset = 133,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1366,7 +1406,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "RANGED_ATTACK_POWER",
-					Offset = 126,
+					Offset = 134,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1375,7 +1415,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "RANGED_ATTACK_POWER_MODS",
-					Offset = 127,
+					Offset = 135,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1384,7 +1424,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "RANGED_ATTACK_POWER_MULTIPLIER",
-					Offset = 128,
+					Offset = 136,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1393,7 +1433,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "MINRANGEDDAMAGE",
-					Offset = 129,
+					Offset = 137,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1402,7 +1442,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXRANGEDDAMAGE",
-					Offset = 130,
+					Offset = 138,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1411,7 +1451,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POWER_COST_MODIFIER",
-					Offset = 131,
+					Offset = 139,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1426,7 +1466,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "POWER_COST_MULTIPLIER",
-					Offset = 138,
+					Offset = 146,
 					Size = 7,
 					Type = UpdateFieldType.Float
 				},
@@ -1441,7 +1481,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly,
 					Group = ObjectTypeId.Unit,
 					Name = "MAXHEALTHMODIFIER",
-					Offset = 145,
+					Offset = 153,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -1450,16 +1490,16 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
 					Name = "HOVERHEIGHT",
-					Offset = 146,
+					Offset = 154,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
-				// UnitFields.PADDING
+				// UnitFields.MAXITEMLEVEL
 				new UpdateField {
-					Flags = UpdateFieldFlags.None,
+					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Unit,
-					Name = "PADDING",
-					Offset = 147,
+					Name = "MAXITEMLEVEL",
+					Offset = 155,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1616,12 +1656,20 @@ namespace WCell.Constants.Updates
 				null,
 				null,
 				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				// PlayerFields.DUEL_ARBITER
 				new UpdateField {
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "DUEL_ARBITER",
-					Offset = 148,
+					Offset = 156,
 					Size = 2,
 					Type = UpdateFieldType.Guid
 				},
@@ -1631,7 +1679,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "FLAGS",
-					Offset = 150,
+					Offset = 158,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1640,7 +1688,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "GUILDID",
-					Offset = 151,
+					Offset = 159,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1649,7 +1697,16 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "GUILDRANK",
-					Offset = 152,
+					Offset = 160,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
+				},
+				// PlayerFields.GUILDLEVEL
+				new UpdateField {
+					Flags = UpdateFieldFlags.Public,
+					Group = ObjectTypeId.Player,
+					Name = "GUILDLEVEL",
+					Offset = 161,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1658,7 +1715,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "BYTES",
-					Offset = 153,
+					Offset = 162,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -1667,7 +1724,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "BYTES_2",
-					Offset = 154,
+					Offset = 163,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -1676,7 +1733,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "BYTES_3",
-					Offset = 155,
+					Offset = 164,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -1685,7 +1742,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "DUEL_TEAM",
-					Offset = 156,
+					Offset = 165,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1694,7 +1751,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "GUILD_TIMESTAMP",
-					Offset = 157,
+					Offset = 166,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1703,7 +1760,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_1_1",
-					Offset = 158,
+					Offset = 167,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1712,7 +1769,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_1_2",
-					Offset = 159,
+					Offset = 168,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1721,7 +1778,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_1_3",
-					Offset = 160,
+					Offset = 169,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1731,7 +1788,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_1_4",
-					Offset = 162,
+					Offset = 171,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1740,7 +1797,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_2_1",
-					Offset = 163,
+					Offset = 172,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1749,7 +1806,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_2_2",
-					Offset = 164,
+					Offset = 173,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1758,7 +1815,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_2_3",
-					Offset = 165,
+					Offset = 174,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1768,7 +1825,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_2_5",
-					Offset = 167,
+					Offset = 176,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1777,7 +1834,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_3_1",
-					Offset = 168,
+					Offset = 177,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1786,7 +1843,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_3_2",
-					Offset = 169,
+					Offset = 178,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1795,7 +1852,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_3_3",
-					Offset = 170,
+					Offset = 179,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1805,7 +1862,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_3_5",
-					Offset = 172,
+					Offset = 181,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1814,7 +1871,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_4_1",
-					Offset = 173,
+					Offset = 182,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1823,7 +1880,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_4_2",
-					Offset = 174,
+					Offset = 183,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1832,7 +1889,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_4_3",
-					Offset = 175,
+					Offset = 184,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1842,7 +1899,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_4_5",
-					Offset = 177,
+					Offset = 186,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1851,7 +1908,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_5_1",
-					Offset = 178,
+					Offset = 187,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1860,7 +1917,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_5_2",
-					Offset = 179,
+					Offset = 188,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1869,7 +1926,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_5_3",
-					Offset = 180,
+					Offset = 189,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1879,7 +1936,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_5_5",
-					Offset = 182,
+					Offset = 191,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1888,7 +1945,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_6_1",
-					Offset = 183,
+					Offset = 192,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1897,7 +1954,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_6_2",
-					Offset = 184,
+					Offset = 193,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1906,7 +1963,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_6_3",
-					Offset = 185,
+					Offset = 194,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1916,7 +1973,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_6_5",
-					Offset = 187,
+					Offset = 196,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1925,7 +1982,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_7_1",
-					Offset = 188,
+					Offset = 197,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1934,7 +1991,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_7_2",
-					Offset = 189,
+					Offset = 198,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1943,7 +2000,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_7_3",
-					Offset = 190,
+					Offset = 199,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1953,7 +2010,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_7_5",
-					Offset = 192,
+					Offset = 201,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1962,7 +2019,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_8_1",
-					Offset = 193,
+					Offset = 202,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1971,7 +2028,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_8_2",
-					Offset = 194,
+					Offset = 203,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1980,7 +2037,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_8_3",
-					Offset = 195,
+					Offset = 204,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -1990,7 +2047,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_8_5",
-					Offset = 197,
+					Offset = 206,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -1999,7 +2056,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_9_1",
-					Offset = 198,
+					Offset = 207,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2008,7 +2065,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_9_2",
-					Offset = 199,
+					Offset = 208,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2017,7 +2074,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_9_3",
-					Offset = 200,
+					Offset = 209,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2027,7 +2084,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_9_5",
-					Offset = 202,
+					Offset = 211,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2036,7 +2093,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_10_1",
-					Offset = 203,
+					Offset = 212,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2045,7 +2102,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_10_2",
-					Offset = 204,
+					Offset = 213,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2054,7 +2111,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_10_3",
-					Offset = 205,
+					Offset = 214,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2064,7 +2121,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_10_5",
-					Offset = 207,
+					Offset = 216,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2073,7 +2130,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_11_1",
-					Offset = 208,
+					Offset = 217,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2082,7 +2139,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_11_2",
-					Offset = 209,
+					Offset = 218,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2091,7 +2148,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_11_3",
-					Offset = 210,
+					Offset = 219,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2101,7 +2158,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_11_5",
-					Offset = 212,
+					Offset = 221,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2110,7 +2167,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_12_1",
-					Offset = 213,
+					Offset = 222,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2119,7 +2176,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_12_2",
-					Offset = 214,
+					Offset = 223,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2128,7 +2185,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_12_3",
-					Offset = 215,
+					Offset = 224,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2138,7 +2195,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_12_5",
-					Offset = 217,
+					Offset = 226,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2147,7 +2204,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_13_1",
-					Offset = 218,
+					Offset = 227,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2156,7 +2213,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_13_2",
-					Offset = 219,
+					Offset = 228,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2165,7 +2222,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_13_3",
-					Offset = 220,
+					Offset = 229,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2175,7 +2232,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_13_5",
-					Offset = 222,
+					Offset = 231,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2184,7 +2241,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_14_1",
-					Offset = 223,
+					Offset = 232,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2193,7 +2250,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_14_2",
-					Offset = 224,
+					Offset = 233,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2202,7 +2259,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_14_3",
-					Offset = 225,
+					Offset = 234,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2212,7 +2269,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_14_5",
-					Offset = 227,
+					Offset = 236,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2221,7 +2278,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_15_1",
-					Offset = 228,
+					Offset = 237,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2230,7 +2287,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_15_2",
-					Offset = 229,
+					Offset = 238,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2239,7 +2296,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_15_3",
-					Offset = 230,
+					Offset = 239,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2249,7 +2306,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_15_5",
-					Offset = 232,
+					Offset = 241,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2258,7 +2315,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_16_1",
-					Offset = 233,
+					Offset = 242,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2267,7 +2324,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_16_2",
-					Offset = 234,
+					Offset = 243,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2276,7 +2333,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_16_3",
-					Offset = 235,
+					Offset = 244,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2286,7 +2343,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_16_5",
-					Offset = 237,
+					Offset = 246,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2295,7 +2352,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_17_1",
-					Offset = 238,
+					Offset = 247,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2304,7 +2361,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_17_2",
-					Offset = 239,
+					Offset = 248,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2313,7 +2370,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_17_3",
-					Offset = 240,
+					Offset = 249,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2323,7 +2380,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_17_5",
-					Offset = 242,
+					Offset = 251,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2332,7 +2389,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_18_1",
-					Offset = 243,
+					Offset = 252,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2341,7 +2398,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_18_2",
-					Offset = 244,
+					Offset = 253,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2350,7 +2407,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_18_3",
-					Offset = 245,
+					Offset = 254,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2360,7 +2417,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_18_5",
-					Offset = 247,
+					Offset = 256,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2369,7 +2426,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_19_1",
-					Offset = 248,
+					Offset = 257,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2378,7 +2435,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_19_2",
-					Offset = 249,
+					Offset = 258,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2387,7 +2444,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_19_3",
-					Offset = 250,
+					Offset = 259,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2397,7 +2454,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_19_5",
-					Offset = 252,
+					Offset = 261,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2406,7 +2463,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_20_1",
-					Offset = 253,
+					Offset = 262,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2415,7 +2472,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_20_2",
-					Offset = 254,
+					Offset = 263,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2424,7 +2481,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_20_3",
-					Offset = 255,
+					Offset = 264,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2434,7 +2491,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_20_5",
-					Offset = 257,
+					Offset = 266,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2443,7 +2500,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_21_1",
-					Offset = 258,
+					Offset = 267,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2452,7 +2509,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_21_2",
-					Offset = 259,
+					Offset = 268,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2461,7 +2518,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_21_3",
-					Offset = 260,
+					Offset = 269,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2471,7 +2528,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_21_5",
-					Offset = 262,
+					Offset = 271,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2480,7 +2537,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_22_1",
-					Offset = 263,
+					Offset = 272,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2489,7 +2546,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_22_2",
-					Offset = 264,
+					Offset = 273,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2498,7 +2555,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_22_3",
-					Offset = 265,
+					Offset = 274,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2508,7 +2565,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_22_5",
-					Offset = 267,
+					Offset = 276,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2517,7 +2574,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_23_1",
-					Offset = 268,
+					Offset = 277,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2526,7 +2583,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_23_2",
-					Offset = 269,
+					Offset = 278,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2535,7 +2592,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_23_3",
-					Offset = 270,
+					Offset = 279,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2545,7 +2602,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_23_5",
-					Offset = 272,
+					Offset = 281,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2554,7 +2611,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_24_1",
-					Offset = 273,
+					Offset = 282,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2563,7 +2620,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_24_2",
-					Offset = 274,
+					Offset = 283,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2572,7 +2629,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_24_3",
-					Offset = 275,
+					Offset = 284,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2582,7 +2639,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_24_5",
-					Offset = 277,
+					Offset = 286,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2591,7 +2648,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.GroupOnly,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_25_1",
-					Offset = 278,
+					Offset = 287,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2600,7 +2657,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_25_2",
-					Offset = 279,
+					Offset = 288,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2609,7 +2666,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_25_3",
-					Offset = 280,
+					Offset = 289,
 					Size = 2,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2619,7 +2676,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "QUEST_LOG_25_5",
-					Offset = 282,
+					Offset = 291,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2628,7 +2685,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_1_ENTRYID",
-					Offset = 283,
+					Offset = 292,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2637,7 +2694,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_1_ENCHANTMENT",
-					Offset = 284,
+					Offset = 293,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2646,7 +2703,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_2_ENTRYID",
-					Offset = 285,
+					Offset = 294,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2655,7 +2712,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_2_ENCHANTMENT",
-					Offset = 286,
+					Offset = 295,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2664,7 +2721,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_3_ENTRYID",
-					Offset = 287,
+					Offset = 296,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2673,7 +2730,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_3_ENCHANTMENT",
-					Offset = 288,
+					Offset = 297,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2682,7 +2739,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_4_ENTRYID",
-					Offset = 289,
+					Offset = 298,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2691,7 +2748,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_4_ENCHANTMENT",
-					Offset = 290,
+					Offset = 299,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2700,7 +2757,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_5_ENTRYID",
-					Offset = 291,
+					Offset = 300,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2709,7 +2766,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_5_ENCHANTMENT",
-					Offset = 292,
+					Offset = 301,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2718,7 +2775,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_6_ENTRYID",
-					Offset = 293,
+					Offset = 302,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2727,7 +2784,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_6_ENCHANTMENT",
-					Offset = 294,
+					Offset = 303,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2736,7 +2793,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_7_ENTRYID",
-					Offset = 295,
+					Offset = 304,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2745,7 +2802,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_7_ENCHANTMENT",
-					Offset = 296,
+					Offset = 305,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2754,7 +2811,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_8_ENTRYID",
-					Offset = 297,
+					Offset = 306,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2763,7 +2820,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_8_ENCHANTMENT",
-					Offset = 298,
+					Offset = 307,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2772,7 +2829,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_9_ENTRYID",
-					Offset = 299,
+					Offset = 308,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2781,7 +2838,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_9_ENCHANTMENT",
-					Offset = 300,
+					Offset = 309,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2790,7 +2847,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_10_ENTRYID",
-					Offset = 301,
+					Offset = 310,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2799,7 +2856,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_10_ENCHANTMENT",
-					Offset = 302,
+					Offset = 311,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2808,7 +2865,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_11_ENTRYID",
-					Offset = 303,
+					Offset = 312,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2817,7 +2874,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_11_ENCHANTMENT",
-					Offset = 304,
+					Offset = 313,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2826,7 +2883,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_12_ENTRYID",
-					Offset = 305,
+					Offset = 314,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2835,7 +2892,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_12_ENCHANTMENT",
-					Offset = 306,
+					Offset = 315,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2844,7 +2901,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_13_ENTRYID",
-					Offset = 307,
+					Offset = 316,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2853,7 +2910,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_13_ENCHANTMENT",
-					Offset = 308,
+					Offset = 317,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2862,7 +2919,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_14_ENTRYID",
-					Offset = 309,
+					Offset = 318,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2871,7 +2928,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_14_ENCHANTMENT",
-					Offset = 310,
+					Offset = 319,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2880,7 +2937,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_15_ENTRYID",
-					Offset = 311,
+					Offset = 320,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2889,7 +2946,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_15_ENCHANTMENT",
-					Offset = 312,
+					Offset = 321,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2898,7 +2955,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_16_ENTRYID",
-					Offset = 313,
+					Offset = 322,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2907,7 +2964,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_16_ENCHANTMENT",
-					Offset = 314,
+					Offset = 323,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2916,7 +2973,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_17_ENTRYID",
-					Offset = 315,
+					Offset = 324,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2925,7 +2982,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_17_ENCHANTMENT",
-					Offset = 316,
+					Offset = 325,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2934,7 +2991,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_18_ENTRYID",
-					Offset = 317,
+					Offset = 326,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2943,7 +3000,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_18_ENCHANTMENT",
-					Offset = 318,
+					Offset = 327,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2952,7 +3009,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_19_ENTRYID",
-					Offset = 319,
+					Offset = 328,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2961,7 +3018,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "VISIBLE_ITEM_19_ENCHANTMENT",
-					Offset = 320,
+					Offset = 329,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -2970,7 +3027,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "CHOSEN_TITLE",
-					Offset = 321,
+					Offset = 330,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2979,16 +3036,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Public,
 					Group = ObjectTypeId.Player,
 					Name = "FAKE_INEBRIATION",
-					Offset = 322,
-					Size = 1,
-					Type = UpdateFieldType.UInt32
-				},
-				// PlayerFields.PAD_0
-				new UpdateField {
-					Flags = UpdateFieldFlags.None,
-					Group = ObjectTypeId.Player,
-					Name = "PAD_0",
-					Offset = 323,
+					Offset = 331,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -2997,7 +3045,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "INV_SLOT_HEAD",
-					Offset = 324,
+					Offset = 332,
 					Size = 46,
 					Type = UpdateFieldType.Guid
 				},
@@ -3051,7 +3099,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PACK_SLOT_1",
-					Offset = 370,
+					Offset = 378,
 					Size = 32,
 					Type = UpdateFieldType.Guid
 				},
@@ -3091,7 +3139,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "BANK_SLOT_1",
-					Offset = 402,
+					Offset = 410,
 					Size = 56,
 					Type = UpdateFieldType.Guid
 				},
@@ -3155,7 +3203,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "BANKBAG_SLOT_1",
-					Offset = 458,
+					Offset = 466,
 					Size = 14,
 					Type = UpdateFieldType.Guid
 				},
@@ -3177,7 +3225,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "VENDORBUYBACK_SLOT_1",
-					Offset = 472,
+					Offset = 480,
 					Size = 24,
 					Type = UpdateFieldType.Guid
 				},
@@ -3209,79 +3257,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "KEYRING_SLOT_1",
-					Offset = 496,
-					Size = 64,
-					Type = UpdateFieldType.Guid
-				},
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				null,
-				// PlayerFields.CURRENCYTOKEN_SLOT_1
-				new UpdateField {
-					Flags = UpdateFieldFlags.Private,
-					Group = ObjectTypeId.Player,
-					Name = "CURRENCYTOKEN_SLOT_1",
-					Offset = 560,
+					Offset = 504,
 					Size = 64,
 					Type = UpdateFieldType.Guid
 				},
@@ -3353,7 +3329,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "FARSIGHT",
-					Offset = 624,
+					Offset = 568,
 					Size = 2,
 					Type = UpdateFieldType.Guid
 				},
@@ -3363,7 +3339,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "_FIELD_KNOWN_TITLES",
-					Offset = 626,
+					Offset = 570,
 					Size = 2,
 					Type = UpdateFieldType.Guid
 				},
@@ -3373,7 +3349,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "_FIELD_KNOWN_TITLES1",
-					Offset = 628,
+					Offset = 572,
 					Size = 2,
 					Type = UpdateFieldType.Guid
 				},
@@ -3383,17 +3359,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "_FIELD_KNOWN_TITLES2",
-					Offset = 630,
-					Size = 2,
-					Type = UpdateFieldType.Guid
-				},
-				null,
-				// PlayerFields.KNOWN_CURRENCIES
-				new UpdateField {
-					Flags = UpdateFieldFlags.Private,
-					Group = ObjectTypeId.Player,
-					Name = "KNOWN_CURRENCIES",
-					Offset = 632,
+					Offset = 574,
 					Size = 2,
 					Type = UpdateFieldType.Guid
 				},
@@ -3403,7 +3369,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "XP",
-					Offset = 634,
+					Offset = 576,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3412,7 +3378,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "NEXT_LEVEL_XP",
-					Offset = 635,
+					Offset = 577,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3421,7 +3387,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "SKILL_INFO_1_1",
-					Offset = 636,
+					Offset = 578,
 					Size = 384,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -3813,7 +3779,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "CHARACTER_POINTS1",
-					Offset = 1020,
+					Offset = 962,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3822,7 +3788,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "CHARACTER_POINTS2",
-					Offset = 1021,
+					Offset = 963,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3831,7 +3797,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "TRACK_CREATURES",
-					Offset = 1022,
+					Offset = 964,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3840,7 +3806,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "TRACK_RESOURCES",
-					Offset = 1023,
+					Offset = 965,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3849,7 +3815,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "BLOCK_PERCENTAGE",
-					Offset = 1024,
+					Offset = 966,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3858,7 +3824,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "DODGE_PERCENTAGE",
-					Offset = 1025,
+					Offset = 967,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3867,7 +3833,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PARRY_PERCENTAGE",
-					Offset = 1026,
+					Offset = 968,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3876,7 +3842,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "EXPERTISE",
-					Offset = 1027,
+					Offset = 969,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3885,7 +3851,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "OFFHAND_EXPERTISE",
-					Offset = 1028,
+					Offset = 970,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3894,7 +3860,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "CRIT_PERCENTAGE",
-					Offset = 1029,
+					Offset = 971,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3903,7 +3869,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "RANGED_CRIT_PERCENTAGE",
-					Offset = 1030,
+					Offset = 972,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3912,7 +3878,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "OFFHAND_CRIT_PERCENTAGE",
-					Offset = 1031,
+					Offset = 973,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -3921,7 +3887,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "SPELL_CRIT_PERCENTAGE1",
-					Offset = 1032,
+					Offset = 974,
 					Size = 7,
 					Type = UpdateFieldType.Float
 				},
@@ -3936,7 +3902,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "SHIELD_BLOCK",
-					Offset = 1039,
+					Offset = 981,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -3945,16 +3911,25 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "SHIELD_BLOCK_CRIT_PERCENTAGE",
-					Offset = 1040,
+					Offset = 982,
 					Size = 1,
 					Type = UpdateFieldType.Float
+				},
+				// PlayerFields.MASTERY
+				new UpdateField {
+					Flags = UpdateFieldFlags.Private,
+					Group = ObjectTypeId.Player,
+					Name = "MASTERY",
+					Offset = 983,
+					Size = 1,
+					Type = UpdateFieldType.UInt32
 				},
 				// PlayerFields.EXPLORED_ZONES_1
 				new UpdateField {
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "EXPLORED_ZONES_1",
-					Offset = 1041,
+					Offset = 984,
 					Size = 128,
 					Type = UpdateFieldType.ByteArray
 				},
@@ -4090,7 +4065,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "REST_STATE_EXPERIENCE",
-					Offset = 1169,
+					Offset = 1112,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4099,7 +4074,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "COINAGE",
-					Offset = 1170,
+					Offset = 1113,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4108,7 +4083,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_DAMAGE_DONE_POS",
-					Offset = 1171,
+					Offset = 1114,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4123,7 +4098,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_DAMAGE_DONE_NEG",
-					Offset = 1178,
+					Offset = 1121,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4138,7 +4113,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_DAMAGE_DONE_PCT",
-					Offset = 1185,
+					Offset = 1128,
 					Size = 7,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4153,7 +4128,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_HEALING_DONE_POS",
-					Offset = 1192,
+					Offset = 1135,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4162,7 +4137,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_HEALING_PCT",
-					Offset = 1193,
+					Offset = 1136,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -4171,7 +4146,16 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_HEALING_DONE_PCT",
-					Offset = 1194,
+					Offset = 1137,
+					Size = 1,
+					Type = UpdateFieldType.Float
+				},
+				// PlayerFields.MOD_SPELL_POWER_PCT
+				new UpdateField {
+					Flags = UpdateFieldFlags.Private,
+					Group = ObjectTypeId.Player,
+					Name = "MOD_SPELL_POWER_PCT",
+					Offset = 1138,
 					Size = 1,
 					Type = UpdateFieldType.Float
 				},
@@ -4180,7 +4164,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_TARGET_RESISTANCE",
-					Offset = 1195,
+					Offset = 1139,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4189,7 +4173,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MOD_TARGET_PHYSICAL_RESISTANCE",
-					Offset = 1196,
+					Offset = 1140,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4198,25 +4182,16 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PLAYER_FIELD_BYTES",
-					Offset = 1197,
+					Offset = 1141,
 					Size = 1,
 					Type = UpdateFieldType.ByteArray
-				},
-				// PlayerFields.AMMO_ID
-				new UpdateField {
-					Flags = UpdateFieldFlags.Private,
-					Group = ObjectTypeId.Player,
-					Name = "AMMO_ID",
-					Offset = 1198,
-					Size = 1,
-					Type = UpdateFieldType.UInt32
 				},
 				// PlayerFields.SELF_RES_SPELL
 				new UpdateField {
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "SELF_RES_SPELL",
-					Offset = 1199,
+					Offset = 1142,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4225,7 +4200,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PVP_MEDALS",
-					Offset = 1200,
+					Offset = 1143,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4234,7 +4209,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "BUYBACK_PRICE_1",
-					Offset = 1201,
+					Offset = 1144,
 					Size = 12,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4254,7 +4229,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "BUYBACK_TIMESTAMP_1",
-					Offset = 1213,
+					Offset = 1156,
 					Size = 12,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4274,7 +4249,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "KILLS",
-					Offset = 1225,
+					Offset = 1168,
 					Size = 1,
 					Type = UpdateFieldType.TwoInt16
 				},
@@ -4283,7 +4258,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "TODAY_CONTRIBUTION",
-					Offset = 1226,
+					Offset = 1169,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4292,7 +4267,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "YESTERDAY_CONTRIBUTION",
-					Offset = 1227,
+					Offset = 1170,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4301,7 +4276,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "LIFETIME_HONORBALE_KILLS",
-					Offset = 1228,
+					Offset = 1171,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4310,7 +4285,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PLAYER_FIELD_BYTES2",
-					Offset = 1229,
+					Offset = 1172,
 					Size = 1,
 					Type = UpdateFieldType.Unk322
 				},
@@ -4319,7 +4294,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "WATCHED_FACTION_INDEX",
-					Offset = 1230,
+					Offset = 1173,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4328,10 +4303,11 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "COMBAT_RATING_1",
-					Offset = 1231,
-					Size = 25,
+					Offset = 1174,
+					Size = 26,
 					Type = UpdateFieldType.UInt32
 				},
+				null,
 				null,
 				null,
 				null,
@@ -4361,7 +4337,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "ARENA_TEAM_INFO_1_1",
-					Offset = 1256,
+					Offset = 1200,
 					Size = 21,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4390,7 +4366,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "HONOR_CURRENCY",
-					Offset = 1277,
+					Offset = 1221,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4399,7 +4375,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "ARENA_CURRENCY",
-					Offset = 1278,
+					Offset = 1222,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4408,7 +4384,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "MAX_LEVEL",
-					Offset = 1279,
+					Offset = 1223,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4417,7 +4393,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "DAILY_QUESTS_1",
-					Offset = 1280,
+					Offset = 1224,
 					Size = 25,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4450,7 +4426,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "RUNE_REGEN_1",
-					Offset = 1305,
+					Offset = 1249,
 					Size = 4,
 					Type = UpdateFieldType.Float
 				},
@@ -4462,7 +4438,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "NO_REAGENT_COST_1",
-					Offset = 1309,
+					Offset = 1253,
 					Size = 3,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4473,7 +4449,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "GLYPH_SLOTS_1",
-					Offset = 1312,
+					Offset = 1256,
 					Size = 6,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4487,7 +4463,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "GLYPHS_1",
-					Offset = 1318,
+					Offset = 1262,
 					Size = 6,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4501,7 +4477,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "GLYPHS_ENABLED",
-					Offset = 1324,
+					Offset = 1268,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
@@ -4510,7 +4486,7 @@ namespace WCell.Constants.Updates
 					Flags = UpdateFieldFlags.Private,
 					Group = ObjectTypeId.Player,
 					Name = "PET_SPELL_POWER",
-					Offset = 1325,
+					Offset = 1269,
 					Size = 1,
 					Type = UpdateFieldType.UInt32
 				},
