@@ -16,7 +16,7 @@ namespace TerrainDisplay.Recast
 	/// </summary>
     public class RecastRenderer : DrawableGameComponent
     {
-        private readonly ITerrainManager _manager;
+        private readonly NavMeshManager _manager;
 
         /// <summary>
         /// Boolean variable representing if all the rendering data has been cached.
@@ -29,7 +29,7 @@ namespace TerrainDisplay.Recast
         private VertexDeclaration _vertexDeclaration;
 
 
-        public RecastRenderer(Game game, ITerrainManager manager)
+        public RecastRenderer(Game game, NavMeshManager manager)
             : base(game)
         {
             _manager = manager;
@@ -79,17 +79,10 @@ namespace TerrainDisplay.Recast
 
         private void BuildVerticiesAndIndicies()
         {
-            Vector3[] vectors;
-            int[] indices;
-            _manager.GetRecastTriangleMesh(out vectors, out indices);
-
-
-
-            _cachedVertices = new VertexPositionNormalColored[vectors.Length];
-            _cachedIndices = indices;
-            for (var i = 0; i < vectors.Length; i++)
+            _manager.GetMeshVerticesAndIndices(out _cachedVertices, out _cachedIndices);
+            for (var i = 0; i < _cachedVertices.Length; i++)
             {
-                _cachedVertices[i] = new VertexPositionNormalColored(vectors[i], Color.White, Vector3.Up);
+                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i].Position);
             }
 
             _renderCached = true;

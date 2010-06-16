@@ -19,7 +19,7 @@ namespace TerrainDisplay.Recast
 		private PtrBoolCallback InputMeshGenerator;
 
 		private readonly ITerrainManager _manager;
-		Vector3[] vectors;
+	    Vector3[] vectors;
 		int[] indices;
 
 		private VertexPositionNormalColored[] _cachedVertices;
@@ -29,14 +29,13 @@ namespace TerrainDisplay.Recast
 		public RecastRunner(ITerrainManager manager)
 		{
 			_manager = manager;
-			InputMeshGenerator = GenerateInputMesh;
+            InputMeshGenerator = GenerateInputMesh;
 		}
 
 		private void BuildVerticiesAndIndicies()
 		{
-			Vector3[] vectors;
-			int[] indices;
-			_manager.GetRecastTriangleMesh(out vectors, out indices);
+			Vector3[] vertices;
+			_manager.GetRecastTriangleMesh(out vertices, out indices);
 
 
 
@@ -80,6 +79,7 @@ namespace TerrainDisplay.Recast
 		private void OnNewNavMesh(NavMesh mesh)
 		{
 			// toy around with mesh
+		    _manager.MeshManager.SetNavMesh(mesh);
 		}
 	}
 }

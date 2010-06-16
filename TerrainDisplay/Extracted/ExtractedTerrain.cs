@@ -9,6 +9,7 @@ using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WDT;
 using TerrainDisplay.MPQ.WMO;
+using TerrainDisplay.Recast;
 
 namespace TerrainDisplay.Extracted
 {
@@ -16,25 +17,31 @@ namespace TerrainDisplay.Extracted
     {
         private int _mapId;
         private string _baseDirectory;
-        private IADTManager _adtManager;
-        private IWMOManager _wmoManager;
-        private IM2Manager _m2Manager;
-
         private WDTFile _wdt;
 
+
+        private readonly IADTManager _adtManager;
         public IADTManager ADTManager
         {
             get { return _adtManager; }
         }
 
+        private readonly IWMOManager _wmoManager;
         public IWMOManager WMOManager
         {
             get { return _wmoManager; }
         }
 
+        private readonly IM2Manager _m2Manager;
         public IM2Manager M2Manager
         {
             get { return _m2Manager; }
+        }
+
+        private readonly NavMeshManager _meshManager;
+        public NavMeshManager MeshManager
+        {
+            get { return _meshManager; }
         }
 
         public WDTFile WDT
@@ -62,7 +69,7 @@ namespace TerrainDisplay.Extracted
             _adtManager = new ExtractedADTManager(this, _baseDirectory, _mapId);
             _m2Manager = new ExtractedM2Manager(_baseDirectory, _mapId);
             _wmoManager = new ExtractedWMOManager(_baseDirectory, _mapId);
-            
+            _meshManager = new NavMeshManager();
         }
 
         public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)

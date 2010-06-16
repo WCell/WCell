@@ -34,5 +34,13 @@ namespace TerrainDisplay
             vertex.Y = vertex.Z;
             vertex.Z = temp;
         }
+
+        internal static void TransformRecastCoordsToWoWCoords(ref Vector3 vertex)
+        {
+            //var temp = vertex.Z;
+            //vertex.Z = vertex.Y;
+            //vertex.Y = vertex.X*-1;
+            //vertex.X = temp;
+        }
     }
 }

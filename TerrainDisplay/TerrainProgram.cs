@@ -38,11 +38,12 @@ namespace TerrainDisplay
                                           100.0f);
 			
 			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-            //using (var game = new Game1(_avatarPosition))
-            //{
-            //    game.Run();
-            //}
             new RecastRunner(TerrainManager).Start();
+
+            using (var game = new Game1(AvatarPosition))
+            {
+                game.Run();
+            }
         }
     }
 }

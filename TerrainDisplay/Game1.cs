@@ -100,10 +100,10 @@ namespace TerrainDisplay
         {
             // TODO: Add your initialization logic here
             Components.Add(new AxisRenderer(this));
-            Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
-			Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
-			Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
-            //Components.Add(new RecastRenderer(this, _terrainManager));
+            //Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
+			//Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
+			//Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
+            Components.Add(new RecastRenderer(this, TerrainProgram.TerrainManager.MeshManager));
 
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;

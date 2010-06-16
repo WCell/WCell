@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 using Microsoft.Xna.Framework;
@@ -6,6 +7,7 @@ using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WDT;
 using TerrainDisplay.MPQ.WMO;
+using TerrainDisplay.Recast;
 
 namespace TerrainDisplay.MPQ
 {
@@ -32,6 +34,12 @@ namespace TerrainDisplay.MPQ
         public IM2Manager M2Manager
         {
             get { return _m2Manager; }
+        }
+
+        private readonly NavMeshManager _meshManager;
+        public NavMeshManager MeshManager
+        {
+            get { return _meshManager; }
         }
 
         private readonly WDTFile _wdtFile;
@@ -63,6 +71,7 @@ namespace TerrainDisplay.MPQ
             _adtManager = new ADTManager(baseFileDirectory, _internalMapName, this);
             _wmoManager = new WMOManager(baseFileDirectory);
             _m2Manager = new M2Manager(baseFileDirectory);
+            _meshManager = new NavMeshManager();
         }
 
         public void LoadTile(TileIdentifier tileId)
