@@ -7,6 +7,8 @@ namespace TerrainDisplay.Recast
 {
 	public class NavMeshPolyLink
 	{
+	    public const uint NullLink = 0xFFFFFFFF;
+
 		public uint Reference;					// Neighbour reference.
 		public uint Next;						// Index to next link.
 		public byte Edge;						// Index to polygon edge which owns this link. 

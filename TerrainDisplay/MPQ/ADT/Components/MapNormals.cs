@@ -20,13 +20,13 @@ namespace TerrainDisplay.MPQ.ADT.Components
         public Vector3[,] GetLowResNormalMatrix()
         {
             var normals = new Vector3[9, 9];
-            for (var r = 0; r < 17; r++)
+            for (var x = 0; x < 17; x++)
             {
-                if (r % 2 != 0) continue;
-                for (var c = 0; c < 9; c++)
+                if (x % 2 != 0) continue;
+                for (var y = 0; y < 9; y++)
                 {
-                    var count = ((r / 2) * 9) + ((r / 2) * 8) + c;
-                    normals[r / 2, c] = Normals[count];
+                    var count = ((x / 2) * 9) + ((x / 2) * 8) + y;
+                    normals[y, x / 2] = Normals[count];
                 }
             }
             return normals;

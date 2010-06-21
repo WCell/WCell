@@ -10,6 +10,9 @@ namespace TerrainDisplay.MPQ.ADT
 {
     public class ADT : ADTBase
     {
+        private static Color TerrainColor = Color.SlateGray;
+        private static Color WaterColor = Color.SlateGray;
+
         private const float MAX_FLAT_LAND_DELTA = 0.005f;
         private const float MAX_FLAT_WATER_DELTA = 0.001f;
 
@@ -112,7 +115,7 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 for (var indexY = 0; indexY < 16; indexY++)
                 {
-                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices);
+                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices, WaterColor);
                     GenerateLiquidIndices(indexY, indexX, vertexCounter, LiquidIndices);
                     vertexCounter += tempVertexCounter;
                 }
@@ -129,7 +132,7 @@ namespace TerrainDisplay.MPQ.ADT
                 for (var indexY = 0; indexY < 16; indexY++)
                 {
                     GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
-                    GenerateHeightVertices(indexY, indexX, Vertices);
+                    GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
                 }
             }
         }
@@ -141,7 +144,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices)
+        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
         {
             var tempVertexCounter = 0;
             var mapChunk = MapChunks[indexY, indexX];
@@ -186,7 +189,7 @@ namespace TerrainDisplay.MPQ.ADT
 
                     var position = new Vector3(xPos, yPos, zPos);
 
-                    vertices.Add(new VertexPositionNormalColored(position, clr, Vector3.Up));
+                    vertices.Add(new VertexPositionNormalColored(position, color, Vector3.Up));
                     tempVertexCounter++;
                 }
             }
@@ -232,11 +235,11 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices)
+        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color terrainColor)
         {
             var mcnk = MapChunks[indexY, indexX];
             var lowResMap = mcnk.Heights.GetLowResMapMatrix();
-            //var lowResNormal = mcnk.Normals.GetLowResNormalMatrix();
+            var lowResNormal = mcnk.Normals.GetLowResNormalMatrix();
 
             var counter = 0;
             for (var xStep = 0; xStep < 9; xStep++)
@@ -249,9 +252,7 @@ namespace TerrainDisplay.MPQ.ADT
                                (yStep*TerrainConstants.UnitSize);
                     var zPos = lowResMap[yStep, xStep] + mcnk.Header.Z;
 
-                    var color = Color.Green;
-
-                    //var theNormal = lowResNormal[r, c];
+                    var theNormal = lowResNormal[yStep, xStep];
 
                     //var cosAngle = Vector3.Dot(Vector3.Up, theNormal);
                     //var angle = MathHelper.ToDegrees((float)Math.Acos(cosAngle));
@@ -262,8 +263,7 @@ namespace TerrainDisplay.MPQ.ADT
                     //}
 
                     var position = new Vector3(xPos, yPos, zPos);
-                    //vertices.Add(new VertexPositionNormalColored(position, color, theNormal));
-                    vertices.Add(new VertexPositionNormalColored(position, color, Vector3.Up));
+                    vertices.Add(new VertexPositionNormalColored(position, terrainColor, theNormal));
                     counter++;
                 }
             }

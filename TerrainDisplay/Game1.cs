@@ -98,19 +98,19 @@ namespace TerrainDisplay
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            Components.Add(new AxisRenderer(this));
-            //Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
-			//Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
-			//Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
-            Components.Add(new RecastRenderer(this, TerrainProgram.TerrainManager.MeshManager));
-
             _graphics.PreferredBackBufferWidth = 1024;
             _graphics.PreferredBackBufferHeight = 768;
             _graphics.IsFullScreen = false;
             _graphics.ApplyChanges();
             InitializeEffect();
 
+            // TODO: Add your initialization logic here
+            Components.Add(new AxisRenderer(this));
+            Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
+			Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
+			Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
+            Components.Add(new RecastRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
+            
             base.Initialize();
         }
 
@@ -180,14 +180,15 @@ namespace TerrainDisplay
             _basicEffect.AmbientLightColor = new Vector3(0.75f, 0.75f, 0.75f);
             _basicEffect.DirectionalLight0.Enabled = true;
             _basicEffect.DirectionalLight0.DiffuseColor = Vector3.One;
-            _basicEffect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, -1.0f));
+            _basicEffect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(1.0f, -1.0f, 0.0f));
             _basicEffect.DirectionalLight0.SpecularColor = Vector3.One;
 
             _basicEffect.DirectionalLight1.Enabled = true;
-            _basicEffect.DirectionalLight1.DiffuseColor = new Vector3(0.8f, 0.8f, 0.8f);
+            _basicEffect.DirectionalLight1.DiffuseColor = new Vector3(0.1f, 0.1f, 0.1f);
             _basicEffect.DirectionalLight1.Direction = Vector3.Normalize(new Vector3(-1.0f, -1.0f, 1.0f));
 
             _basicEffect.LightingEnabled = true;
+            
 
             foreach (var pass in _basicEffect.CurrentTechnique.Passes)
             {

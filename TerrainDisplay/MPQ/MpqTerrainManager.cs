@@ -104,8 +104,8 @@ namespace TerrainDisplay.MPQ
                 vecOffset = CopyVectorsToRecastArray(tile.Vertices, vertices, vecOffset);
 
         	    // The liquid information
-                idxOffset = CopyIndicesToRecastArray(tile.LiquidIndices, indices, idxOffset, vecOffset);
-                vecOffset = CopyVectorsToRecastArray(tile.LiquidVertices, vertices, vecOffset);
+                //idxOffset = CopyIndicesToRecastArray(tile.LiquidIndices, indices, idxOffset, vecOffset);
+                //vecOffset = CopyVectorsToRecastArray(tile.LiquidVertices, vertices, vecOffset);
         	}
 
         	// Get the WMO triangles
@@ -119,8 +119,8 @@ namespace TerrainDisplay.MPQ
 
         private void CalcArraySizes(out int vecCount, out int idxCount)
         {
-            vecCount = CalcVecArraySize(true, true, true, true);
-            idxCount = CalcIntArraySize(true, true, true, true);
+            vecCount = CalcVecArraySize(true, false, true, true);
+            idxCount = CalcIntArraySize(true, false, true, true);
         }
 
         private static int CopyIndicesToRecastArray(IList<int> renderIndices, IList<int> indices, int idxOffset, int vecOffset)

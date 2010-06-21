@@ -11,6 +11,7 @@ namespace TerrainDisplay.MPQ.M2
 {
     public class M2Manager : IM2Manager
     {
+        private static Color M2Color = Color.SlateGray;
         #region variables
 
         /// <summary>
@@ -128,15 +129,14 @@ namespace TerrainDisplay.MPQ.M2
                 tempIndices.Add(tri[0]);
             }
 
-            var currentM2 = Transform(tempVertices, tempIndices, doodadDefinition);
+            var currentM2 = Transform(model, tempIndices, doodadDefinition);
            
             M2s.Add(currentM2);
         }
 
-        private static M2 Transform(IList<Vector3> vertices, IEnumerable<int> indicies, MapDoodadDefinition mddf)
+        private static M2 Transform(M2Model model, IEnumerable<int> indicies, MapDoodadDefinition mddf)
         {
             var currentM2 = new M2();
-
             currentM2.Vertices.Clear();
             currentM2.Indices.Clear();
 
@@ -157,33 +157,29 @@ namespace TerrainDisplay.MPQ.M2
             worldMatrix = Matrix.Multiply(worldMatrix, rotateX);
             worldMatrix = Matrix.Multiply(worldMatrix, rotateY);
 
-            for (var i = 0; i < vertices.Count; i++)
+            for (var i = 0; i < model.BoundingVertices.Length; i++)
             {
-                // Scale and transform
-                var vertex = vertices[i];
-                
-                // Scale
-                //Vector3 scaledVector;
-                //Vector3.Transform(ref vertex, ref scaleMatrix, out scaledVector);
+                var position = model.BoundingVertices[i];
+                var normal = model.BoundingNormals[i];
 
-                // Rotate
-                Vector3 rotatedVector;
-                //Vector3.Transform(ref scaledVector, ref rotateZ, out rotatedVector);
-                //Vector3.Transform(ref rotatedVector, ref rotateX, out rotatedVector);
-                //Vector3.Transform(ref rotatedVector, ref rotateY, out rotatedVector);
+                // Scale and Rotate
+                Vector3 rotatedPosition;
+                Vector3.Transform(ref position, ref worldMatrix, out rotatedPosition);
 
-                Vector3.Transform(ref vertex, ref worldMatrix, out rotatedVector);
+                Vector3 rotatedNormal;
+                Vector3.Transform(ref normal, ref worldMatrix, out rotatedNormal);
+                rotatedNormal.Normalize();
 
                 // Translate
                 Vector3 finalVector;
-                Vector3.Add(ref rotatedVector, ref origin, out finalVector);
+                Vector3.Add(ref rotatedPosition, ref origin, out finalVector);
 
-                currentM2.Vertices.Add(new VertexPositionNormalColored(finalVector, Color.Red, Vector3.Up));
+                currentM2.Vertices.Add(new VertexPositionNormalColored(finalVector, M2Color, rotatedNormal));
             }
 
-            currentM2.AABB = new AABB(currentM2.Vertices);
-            currentM2.OBB = new OBB(currentM2.AABB.Bounds.Center(), currentM2.AABB.Bounds.Extents(),
-                                     Matrix.CreateRotationY(mddf.OrientationB - 90));
+            //currentM2.AABB = new AABB(currentM2.Vertices);
+            //currentM2.OBB = new OBB(currentM2.AABB.Bounds.Center(), currentM2.AABB.Bounds.Extents(),
+            //                         Matrix.CreateRotationY(mddf.OrientationB - 90));
 
             currentM2.Indices.AddRange(indicies);
             return currentM2;

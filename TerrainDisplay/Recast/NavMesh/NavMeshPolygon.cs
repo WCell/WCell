@@ -11,12 +11,20 @@ namespace TerrainDisplay.Recast
 	public class NavMeshPolygon
 	{
 		public static int VERTS_PER_POLYGON = 6;
+	    
 
-		public int FirstLink;												// Index to first link in linked list.
-		public ushort[] Vertices;											// Indices to vertices of the poly.
+		public uint FirstLink;												// Index to first link in linked list.
+	    public byte VertCount;
+        public ushort[] Vertices;											// Indices to vertices of the poly.
 		public ushort[] Neighbors;											// Refs to neighbours of the poly.
 		public ushort Flags;												// Flags (see dtPolyFlags).
-		public byte Area = 6;												// Area ID of the polygon.
-		public byte Type = 2;												// Polygon type, see dtPolyTypes.
+		public byte Area;   												// Area ID of the polygon.
+		public NavMeshPolyTypes Type;   									// Polygon type, see dtPolyTypes
 	}
+
+    public enum NavMeshPolyTypes : byte
+    {
+        Ground = 0,
+        OffMeshConnection = 1,
+    }
 }

@@ -17,6 +17,9 @@ namespace TerrainDisplay.Extracted
 {
     public class ExtractedADT : ADTBase
     {
+        private static Color TerrainColor = Color.Green;
+        private static Color Watercolor = Color.Blue;
+
         public bool IsWMOOnly;
         public List<ExtractedWMODefinition> WMODefs;
         public List<ExtractedMapM2Definition> M2Defs;
@@ -43,7 +46,7 @@ namespace TerrainDisplay.Extracted
             {
                 for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
                 {
-                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices);
+                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices, Watercolor);
                     GenerateLiquidIndices(indexY, indexX, vertexCounter, LiquidIndices);
                     vertexCounter += tempVertexCounter;
                 }
@@ -60,12 +63,12 @@ namespace TerrainDisplay.Extracted
                 for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
                 {
                     GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
-                    GenerateHeightVertices(indexY, indexX, Vertices);
+                    GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
                 }
             }
         }
 
-        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices)
+        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
         {
             var tempVertexCounter = 0;
             var mapChunk = Chunks[indexY, indexX];
@@ -139,7 +142,7 @@ namespace TerrainDisplay.Extracted
             }
         }
 
-        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices)
+        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
         {
             var mcnk = Chunks[indexY, indexX];
             var lowResMap = mcnk.HeightMap;
@@ -166,7 +169,7 @@ namespace TerrainDisplay.Extracted
                     }
 
                     var position = new Vector3(xPos, yPos, zPos);
-                    vertices.Add(new VertexPositionNormalColored(position, Color.Green, Vector3.Up));
+                    vertices.Add(new VertexPositionNormalColored(position, color, Vector3.Up));
                     counter++;
                 }
             }

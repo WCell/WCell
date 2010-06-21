@@ -6,12 +6,17 @@ using TerrainDisplay.Collision;
 using TerrainDisplay.Collision._3D;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WMO.Components;
 
 namespace TerrainDisplay.MPQ.WMO
 {
     public class WMOManager : IWMOManager
     {
+        private static Color WMOColor = Color.SlateGray;
+        private static Color WMOModelColor = Color.SlateGray; //Color.LightGray;
+        private static Color WMOWaterColor = Color.Blue; //Color.LightGray;
+
         /// <summary>
         /// List of filenames managed by this WMOManager
         /// </summary>
@@ -139,9 +144,7 @@ namespace TerrainDisplay.MPQ.WMO
                 for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
                 {
                     var curDoodadDef = wmoRoot.DoodadDefinitions[i];
-                    var curM2 = M2.M2ModelParser.Process(_baseDirectory, curDoodadDef.FilePath);
-
-                    var tempVertices = new List<Vector3>(curM2.BoundingVertices);
+                    var curM2 = M2ModelParser.Process(_baseDirectory, curDoodadDef.FilePath);
 
                     var tempIndices = new List<int>();
                     for (var j = 0; j < curM2.BoundingTriangles.Length; j++)
@@ -153,7 +156,7 @@ namespace TerrainDisplay.MPQ.WMO
                         tempIndices.Add(tri[0]);
                     }
 
-                    var rotatedM2 = TransformWMOM2(tempVertices, tempIndices, curDoodadDef);
+                    var rotatedM2 = TransformWMOM2(curM2, tempIndices, curDoodadDef);
                     wmoRoot.WMOM2s.Add(rotatedM2);
                 }
             }
@@ -188,12 +191,16 @@ namespace TerrainDisplay.MPQ.WMO
                 //if (!currentGroup.Header.HasMLIQ) continue;
 
                 offset = currentWMO.Vertices.Count;
-                foreach (var baseVector in currentGroup.Vertices)
+                for (var i = 0; i < currentGroup.Vertices.Count; i++)
                 {
-                    var rotatedVector = Vector3.Transform(baseVector, rotateZ);
-                    var finalVector = rotatedVector + origin;
+                    var basePosVector = currentGroup.Vertices[i];
+                    var rotatedPosVector = Vector3.Transform(basePosVector, rotateZ);
+                    var finalPosVector = rotatedPosVector + origin;
 
-                    currentWMO.AddVertex(finalVector);
+                    var baseNormVector = currentGroup.Normals[i];
+                    var rotatedNormVector = Vector3.Transform(baseNormVector, rotateZ);
+                    
+                    currentWMO.Vertices.Add(new VertexPositionNormalColored(finalPosVector, WMOColor, rotatedNormVector));
                 }
 
                 for (var index = 0; index < currentGroup.Indices.Count; index++)
@@ -203,68 +210,67 @@ namespace TerrainDisplay.MPQ.WMO
                     currentWMO.AddIndex(currentGroup.Indices[index].Index2 + offset);
                 }
                 
-                
-                if (currentGroup.Header.HasMLIQ)
+                // WMO Liquids
+                if (!currentGroup.Header.HasMLIQ) continue;
+
+                var liqInfo = currentGroup.LiquidInfo;
+                var liqOrigin = liqInfo.BaseCoordinates;
+
+                offset = currentWMO.Vertices.Count;
+                var tempListTop = new List<Vector3>();
+                for (var xStep = 0; xStep < liqInfo.XVertexCount; xStep++)
                 {
-                    var liqInfo = currentGroup.LiquidInfo;
-                    var liqOrigin = liqInfo.BaseCoordinates;
-
-                    offset = currentWMO.Vertices.Count;
-                    var tempListTop = new List<Vector3>();
-                    for (var xStep = 0; xStep < liqInfo.XVertexCount; xStep++)
+                    for (var yStep = 0; yStep < liqInfo.YVertexCount; yStep++)
                     {
-                        for (var yStep = 0; yStep < liqInfo.YVertexCount; yStep++)
-                        {
-                            var xPos = liqOrigin.X + xStep * TerrainConstants.UnitSize;
-                            var yPos = liqOrigin.Y + yStep * TerrainConstants.UnitSize;
-                            var zPosTop = liqInfo.HeightMapMax[xStep, yStep];
+                        var xPos = liqOrigin.X + xStep * TerrainConstants.UnitSize;
+                        var yPos = liqOrigin.Y + yStep * TerrainConstants.UnitSize;
+                        var zPosTop = liqInfo.HeightMapMax[xStep, yStep];
                             
-                            var liqVecTop = new Vector3(xPos, yPos, zPosTop);
+                        var liqVecTop = new Vector3(xPos, yPos, zPosTop);
                             
-                            var rotatedTop = Vector3.Transform(liqVecTop, rotateZ);
-                            var vecTop = rotatedTop + origin;
+                        var rotatedTop = Vector3.Transform(liqVecTop, rotateZ);
+                        var vecTop = rotatedTop + origin;
 
-                            currentWMO.Vertices.Add(new VertexPositionNormalColored(vecTop, Color.Blue, Vector3.Up));
-                            tempListTop.Add(vecTop);
-                        }
+                        currentWMO.Vertices.Add(new VertexPositionNormalColored(vecTop, WMOWaterColor, Vector3.Up));
+                        tempListTop.Add(vecTop);
                     }
-
-                    var boundsList = new List<Vector3>();
-                    for (var row = 0; row < liqInfo.XTileCount; row++)
-                    {
-                        for (var col = 0; col < liqInfo.YTileCount; col++)
-                        {
-                            if ((liqInfo.LiquidTileFlags[row, col] & 0x0F) == 0x0F) continue;
-
-                            var index = ((row + 1)*(liqInfo.YVertexCount) + col);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-
-                            index = (row*(liqInfo.YVertexCount) + col);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-
-                            index = (row*(liqInfo.YVertexCount) + col + 1);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-
-                            index = ((row + 1)*(liqInfo.YVertexCount) + col + 1);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-
-                            index = ((row + 1)*(liqInfo.YVertexCount) + col);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-
-                            index = (row*(liqInfo.YVertexCount) + col + 1);
-                            boundsList.Add(tempListTop[index]);
-                            currentWMO.Indices.Add(offset + index);
-                        }
-                    }
-
-                    //var bounds = BoundingBox.CreateFromPoints(boundsList.ToArray());
-                    //DrawBoundingBox(bounds, Color.Blue, currentWMO);
                 }
+
+                var boundsList = new List<Vector3>();
+                for (var row = 0; row < liqInfo.XTileCount; row++)
+                {
+                    for (var col = 0; col < liqInfo.YTileCount; col++)
+                    {
+                        if ((liqInfo.LiquidTileFlags[row, col] & 0x0F) == 0x0F) continue;
+
+                        var index = ((row + 1)*(liqInfo.YVertexCount) + col);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+
+                        index = (row*(liqInfo.YVertexCount) + col);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+
+                        index = (row*(liqInfo.YVertexCount) + col + 1);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+
+                        index = ((row + 1)*(liqInfo.YVertexCount) + col + 1);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+
+                        index = ((row + 1)*(liqInfo.YVertexCount) + col);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+
+                        index = (row*(liqInfo.YVertexCount) + col + 1);
+                        boundsList.Add(tempListTop[index]);
+                        currentWMO.Indices.Add(offset + index);
+                    }
+                }
+
+                //var bounds = BoundingBox.CreateFromPoints(boundsList.ToArray());
+                //DrawBoundingBox(bounds, Color.Blue, currentWMO);
             }
 
             //Rotate the M2s to the new orientation
@@ -273,12 +279,17 @@ namespace TerrainDisplay.MPQ.WMO
                 foreach (var currentM2 in currentWMO.WMOM2s)
                 {
                     offset = currentWMO.Vertices.Count;
-                    foreach (var baseVector in currentM2.Vertices)
+                    for (var i = 0; i < currentM2.Vertices.Count; i++)
                     {
-                        var rotatedVector = Vector3.Transform(baseVector.Position, rotateZ);
-                        var finalVector = rotatedVector + origin;
+                        var basePosition = currentM2.Vertices[i];
+                        var rotatedPosition = Vector3.Transform(basePosition.Position, rotateZ);
+                        var finalPosition = rotatedPosition + origin;
 
-                        currentWMO.AddM2Vertex(finalVector);
+                        var rotatedNormal = Vector3.Transform(basePosition.Normal, rotateZ);
+                        
+                        basePosition.Position = finalPosition;
+                        basePosition.Normal = rotatedNormal;
+                        currentWMO.Vertices.Add(basePosition);
                     }
 
                     foreach (var index in currentM2.Indices)
@@ -395,7 +406,7 @@ namespace TerrainDisplay.MPQ.WMO
             currentWMO.Indices.Add(offset + 2);
         }
 
-        private static M2.M2 TransformWMOM2(IList<Vector3> vectors, IEnumerable<int> indicies, DoodadDefinition modd)
+        private static M2.M2 TransformWMOM2(M2Model model, IEnumerable<int> indicies, DoodadDefinition modd)
         {
             var currentM2 = new M2.M2();
 
@@ -419,10 +430,11 @@ namespace TerrainDisplay.MPQ.WMO
 
             var compositeMatrix = Matrix.Multiply(scaleMatrix, rotMatrix);
 
-            for (var i = 0; i < vectors.Count; i++)
+            for (var i = 0; i < model.BoundingVertices.Length; i++)
             {
                 // Scale and transform
-                var vector = vectors[i];
+                var basePosVector = model.BoundingVertices[i];
+                var baseNormVector = model.BoundingNormals[i];
                 //PositionUtil.TransformToXNACoordSystem(ref vertex.Position);
 
                 // Scale
@@ -430,15 +442,18 @@ namespace TerrainDisplay.MPQ.WMO
                 //Vector3.Transform(ref vector, ref scaleMatrix, out scaledVector);
 
                 // Rotate
-                Vector3 rotatedVector;
-                //Vector3.Transform(ref scaledVector, ref rotMatrix, out rotatedVector);
-                Vector3.Transform(ref vector, ref compositeMatrix, out rotatedVector);
+                Vector3 rotatedPosVector;
+                Vector3.Transform(ref basePosVector, ref compositeMatrix, out rotatedPosVector);
+
+                Vector3 rotatedNormVector;
+                Vector3.Transform(ref baseNormVector, ref compositeMatrix, out rotatedNormVector);
+                rotatedNormVector.Normalize();
 
                 // Translate
-                Vector3 finalVector;
-                Vector3.Add(ref rotatedVector, ref origin, out finalVector);
+                Vector3 finalPosVector;
+                Vector3.Add(ref rotatedPosVector, ref origin, out finalPosVector);
 
-                currentM2.Vertices.Add(new VertexPositionNormalColored(finalVector, Color.Red, Vector3.Up));
+                currentM2.Vertices.Add(new VertexPositionNormalColored(finalPosVector, WMOModelColor, rotatedNormVector));
             }
 
             //currentM2.AABB = new AABB(currentM2.Vertices);

@@ -8,6 +8,8 @@ namespace TerrainDisplay.Recast
 {
     public class NavMesh
     {
+        public const ushort ExternalLinkId = 0x8000;
+
     	public readonly long Id;
 		public readonly Vector3 Origin;
     	public readonly float TileWidth, TileHeight;

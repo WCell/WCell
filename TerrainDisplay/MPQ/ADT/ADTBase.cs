@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace TerrainDisplay.MPQ.ADT
 {
@@ -18,7 +19,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public abstract int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices);
+        public abstract int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color);
 
         /// <summary>
         /// Adds the rendering liquid indices to the provided list for the MapChunk given by:
@@ -36,7 +37,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public abstract int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices);
+        public abstract int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color);
 
         /// <summary>
         /// Adds the rendering indices to the provided list for the MapChunk given by:

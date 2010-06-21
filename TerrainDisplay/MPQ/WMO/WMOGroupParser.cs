@@ -467,12 +467,10 @@ namespace TerrainDisplay.MPQ.WMO
         /// <param name="group"></param>
         static void ReadMONR(BinaryReader file, WMOGroup group)
         {
+            // Read the vector normals
             for (var i=0;i<group.VertexCount;i++)
             {
-                var vectX = file.ReadSingle() * -1;
-                var vectY = file.ReadSingle();
-                var vectZ = file.ReadSingle();
-                group.Normals.Add(new Vector3(vectX, vectY, vectZ));
+                group.Normals.Add(file.ReadWMOVector3());
             }
         }
 

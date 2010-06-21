@@ -37,9 +37,9 @@ namespace TerrainDisplay
 
         internal static void TransformRecastCoordsToWoWCoords(ref Vector3 vertex)
         {
-            //var temp = vertex.Z;
-            //vertex.Z = vertex.Y;
-            //vertex.Y = vertex.X*-1;
+            var temp = vertex.Z;
+            vertex.Z = vertex.Y;
+            vertex.Y = temp*-1;
             //vertex.X = temp;
         }
     }
