@@ -9,10 +9,11 @@ namespace TerrainDisplay.Recast
 {
     public class NavMeshManager
     {
-        private Color meshPolyColor = Color.WhiteSmoke;
         private const float intraTileLineWidth = 1.5f;
         private const float interTileLineWidth = 2.5f;
         private NavMesh _mesh;
+
+        private Color MeshPolyColor { get { return Color.Black; } }
 
         public void SetNavMesh(NavMesh mesh)
         {
@@ -47,27 +48,59 @@ namespace TerrainDisplay.Recast
             var idxs = new List<int>();
 
             var tiles = _mesh.Tiles;
-            int offset;
+            var debugCount = 0;
             for (var x = 0; x < _mesh.Width; x++)
             {
                 for (var y = 0; y < _mesh.Height; y++)
                 {
                     var tile = tiles[x, y];
                     if (tile == null) continue;
+                    debugCount++;
+                    //if (debugCount != 5) continue;
+                    
 
-                    offset = verts.Count();
+                    var offset = verts.Count();
                     for (var i = 0; i < tile.Vertices.Length; i++)
                     {
                         var vertex = tile.Vertices[i];
                         PositionUtil.TransformRecastCoordsToWoWCoords(ref vertex);
-                        verts.Add(new VertexPositionNormalColored(vertex, meshPolyColor, Vector3.Up));
+                        verts.Add(new VertexPositionNormalColored(vertex, MeshPolyColor, Vector3.Down));
                     }
 
-                    foreach (var polygon in tile.Polygons)
+                    var detailOffset = verts.Count;
+                    for (var i = 0; i < tile.DetailedVertices.Length; i++)
                     {
-                        if (polygon == null) continue;
+                        var vertex = tile.DetailedVertices[i];
+                        PositionUtil.TransformRecastCoordsToWoWCoords(ref vertex);
+                        verts.Add(new VertexPositionNormalColored(vertex, MeshPolyColor, Vector3.Down));
+                    }
 
-                        TriangulatePolygon(polygon, offset, idxs);
+                    for (int i = 0; i < tile.Polygons.Length; i++)
+                    {
+                        var polygon = tile.Polygons[i];
+                        if (polygon == null) continue;
+                        if (polygon.Type == NavMeshPolyTypes.OffMeshConnection) continue;
+
+                        var detail = tile.DetailPolygons[i];
+                        for (var j = 0; j < detail.TriCount; j++)
+                        {
+                            var detailTri = tile.DetailedTriangles[detail.TriBase + j];
+                            for (var k = 0; k < 3; k++)
+                            {
+                                var curVertIdx = detailTri[k];
+                                if (curVertIdx < polygon.VertCount)
+                                {
+                                    var polyVert = polygon.Vertices[curVertIdx];
+                                    idxs.Add(offset + polyVert);
+                                }
+                                else
+                                {
+                                    var detailIdx = (detail.VertBase + curVertIdx - polygon.VertCount);
+                                    idxs.Add(detailOffset + detailIdx);
+                                }
+                            }
+                        }
+                        //TriangulatePolygon(polygon, offset, idxs);
                     }
                 }
             }

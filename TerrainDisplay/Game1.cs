@@ -105,11 +105,13 @@ namespace TerrainDisplay
             InitializeEffect();
 
             // TODO: Add your initialization logic here
+            Components.Add(new RecastFrameRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
+            Components.Add(new RecastSolidRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
             Components.Add(new AxisRenderer(this));
             Components.Add(new ADTRenderer(this, TerrainProgram.TerrainManager.ADTManager));
 			Components.Add(new M2Renderer(this, TerrainProgram.TerrainManager.M2Manager));
 			Components.Add(new WMORenderer(this, TerrainProgram.TerrainManager.WMOManager));
-            Components.Add(new RecastRenderer(this, _graphics, TerrainProgram.TerrainManager.MeshManager));
+            
             
             base.Initialize();
         }
@@ -189,18 +191,19 @@ namespace TerrainDisplay
 
             _basicEffect.LightingEnabled = true;
             
-
             foreach (var pass in _basicEffect.CurrentTechnique.Passes)
             {
                 pass.Begin();
                 _graphics.GraphicsDevice.RenderState.CullMode = CullMode.None;
                 _graphics.GraphicsDevice.RenderState.FillMode = FillMode.WireFrame;
+                _graphics.GraphicsDevice.RenderState.AlphaBlendEnable = true;
                 
                 // Make the renderers draw their stuff
                 base.Draw(gameTime);
                 
                 _graphics.GraphicsDevice.RenderState.FillMode = FillMode.Solid;
                 _graphics.GraphicsDevice.RenderState.CullMode = CullMode.CullClockwiseFace;
+                _graphics.GraphicsDevice.RenderState.AlphaBlendEnable = false;
                 pass.End();
             }
 

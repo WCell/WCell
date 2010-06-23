@@ -74,6 +74,7 @@ namespace TerrainDisplay.MPQ.WMO
 
             for (var i = 0; i < _cachedVertices.Length; i++)
             {
+                _cachedVertices[i].Normal = Vector3.Down;
                 PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
             }
         }

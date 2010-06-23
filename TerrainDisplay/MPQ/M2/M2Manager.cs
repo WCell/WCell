@@ -11,7 +11,11 @@ namespace TerrainDisplay.MPQ.M2
 {
     public class M2Manager : IM2Manager
     {
-        private static Color M2Color = Color.SlateGray;
+        private static Color M2Color
+        {
+            get { return Color.DarkSlateGray; }
+        }
+
         #region variables
 
         /// <summary>
@@ -83,7 +87,7 @@ namespace TerrainDisplay.MPQ.M2
             {
                 for (var v = 0; v < m2.Vertices.Count; v++)
                 {
-                    _renderVertices.Add(m2.Vertices[v]);
+                   _renderVertices.Add(m2.Vertices[v]);
                 }
                 for (var i = 0; i < m2.Indices.Count; i++)
                 {

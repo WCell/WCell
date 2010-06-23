@@ -13,9 +13,9 @@ namespace TerrainDisplay.MPQ.WMO
 {
     public class WMOManager : IWMOManager
     {
-        private static Color WMOColor = Color.SlateGray;
-        private static Color WMOModelColor = Color.SlateGray; //Color.LightGray;
-        private static Color WMOWaterColor = Color.Blue; //Color.LightGray;
+        private static Color WMOColor { get { return Color.DarkSlateGray; } }
+        private static Color WMOModelColor { get { return Color.DarkSlateGray; } }
+        private static Color WMOWaterColor { get { return Color.DarkSlateGray; } }
 
         /// <summary>
         /// List of filenames managed by this WMOManager

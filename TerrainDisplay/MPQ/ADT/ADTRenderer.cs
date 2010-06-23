@@ -85,7 +85,9 @@ namespace TerrainDisplay.MPQ.ADT
                 // Handle the ADTs
                 for (var v = 0; v < adt.Vertices.Count; v++)
                 {
-                    tempVertices.Add(adt.Vertices[v]);
+                    var vertex = adt.Vertices[v];
+                    vertex.Normal = Vector3.Down;
+                    tempVertices.Add(vertex);
                 }
                 for (var i = 0; i < adt.Indices.Count; i++)
                 {
@@ -93,14 +95,14 @@ namespace TerrainDisplay.MPQ.ADT
                 }
                 offset = tempVertices.Count;
 
-                for (var v = 0; v < adt.LiquidVertices.Count; v++)
-                {
-                    tempVertices.Add(adt.LiquidVertices[v]);
-                }
-                for (var i = 0; i < adt.LiquidIndices.Count; i++)
-                {
-                    tempIndicies.Add(adt.LiquidIndices[i] + offset);
-                }
+                //for (var v = 0; v < adt.LiquidVertices.Count; v++)
+                //{
+                //    tempVertices.Add(adt.LiquidVertices[v]);
+                //}
+                //for (var i = 0; i < adt.LiquidIndices.Count; i++)
+                //{
+                //    tempIndicies.Add(adt.LiquidIndices[i] + offset);
+                //}
                 offset = tempVertices.Count;
             }
 

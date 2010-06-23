@@ -10,8 +10,15 @@ namespace TerrainDisplay.MPQ.ADT
 {
     public class ADT : ADTBase
     {
-        private static Color TerrainColor = Color.SlateGray;
-        private static Color WaterColor = Color.SlateGray;
+        private static Color TerrainColor
+        {
+            get { return Color.DarkSlateGray; }
+        }
+
+        private static Color WaterColor
+        {
+            get { return Color.DarkSlateGray; }
+        }
 
         private const float MAX_FLAT_LAND_DELTA = 0.005f;
         private const float MAX_FLAT_WATER_DELTA = 0.001f;
