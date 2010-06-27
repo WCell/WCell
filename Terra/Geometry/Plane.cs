@@ -2,13 +2,13 @@ using System;
 using WCell.Util.Graphics;
 
 
-namespace Terra
+namespace Terra.Geometry
 {
      public class Plane
      {
-          public double A;
-          public double B;
-          public double C;
+          public float A;
+          public float B;
+          public float C;
           
           /// <summary>
           /// Creates a new Plane through the points p, q, r
@@ -34,14 +34,14 @@ namespace Terra
                C = p.Z - A*p.X - B*p.Y;
           }
           
-          public double Evaluate (double x, double y)
+          public float this[float x, float y]
           {
-               return (A*x + B*y + C);
+              get { return (A*x + B*y + C); }
           }
           
-          public double Evaluate (int x, int y)
+          public float this[int x, int y]
           {
-               return (A*x + B*y + C);
+              get { return (A*x + B*y + C); }
           }
           
           public override string ToString()

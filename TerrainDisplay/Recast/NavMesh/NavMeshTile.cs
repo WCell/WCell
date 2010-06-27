@@ -60,7 +60,7 @@ namespace TerrainDisplay.Recast
 		///// </summary>
 		//public BVTreeNode TreeNode;
 
-        /*/// <summary>
+        /// <summary>
         /// Indexes the DetailedVertices and DetailedTriangles by the Tile's Polygons
         /// </summary>
 	    public NavMeshPolyDetail[] DetailPolygons;
@@ -74,6 +74,5 @@ namespace TerrainDisplay.Recast
 		///// Eye candy (colored version of the original polygons?)
 		///// </summary>
 		public NavMeshDetailTriIndex[] DetailedTriangles;
-         */
 	}
 }

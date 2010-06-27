@@ -2,7 +2,7 @@ using System;
 using TerrainDisplay.Terra;
 using WCell.Util.Graphics;
 
-namespace Terra
+namespace Terra.Geometry
 {
      public class Edge : ILabelled
      {
@@ -39,13 +39,14 @@ namespace Terra
              Token = 0;
          }
          
-         // Primitive Methods
+         
+         // Primitives
          public Edge ONext { get { return next; } }
          public Edge Sym { get { return qNext.qNext; } }
          public Edge Rot { get { return qNext; } }
          public Edge InvRot { get { return qPrev; } }
          
-         // Synthesized Methods
+         // Synthesized
          public Edge OPrev { get { return Rot.ONext.Rot; } }
          public Edge DNext { get { return Sym.ONext.Sym; } }
          public Edge DPrev { get { return InvRot.ONext.InvRot; } }
@@ -57,7 +58,6 @@ namespace Terra
          public Vector2 Orig
          {
              get { return data; }
-             set { data = value; }
          }
 
          public Vector2 Dest
@@ -68,6 +68,7 @@ namespace Terra
          public Triangle LFace
          {
              get { return lFace; }
+             set { lFace = value; }
          }
 
 
@@ -77,18 +78,34 @@ namespace Terra
              Sym.data = dest;
          }
 
-         public static bool IsRightOf (ref Vector2 p, Edge e)
+         public static bool IsRightOf (Vector2 p, Edge e)
          {
              var orig = e.Orig;
              var dest = e.Dest;
              return GeometryHelpers.IsRightOf(ref p, ref orig, ref dest);
          }
 
-         public static bool IsLeftOf (ref Vector2 p, Edge e)
+         public static bool IsLeftOf (Vector2 p, Edge e)
          {
              var orig = e.Orig;
              var dest = e.Dest;
              return GeometryHelpers.IsLeftOf(ref p, ref orig, ref dest);
+         }
+
+         public static void Splice (Edge a, Edge b)
+         {
+             var alpha = a.ONext.Rot;
+             var beta = b.ONext.Rot;
+
+             var t1 = b.ONext;
+             var t2 = a.ONext;
+             var t3 = beta.ONext;
+             var t4 = alpha.ONext;
+
+             a.next = t1;
+             b.next = t2;
+             alpha.next = t3;
+             beta.next = t4;
          }
 
          public override string ToString()

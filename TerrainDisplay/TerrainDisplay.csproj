@@ -130,7 +130,10 @@
     <Compile Include="MPQ\M2\M2ModelParser.cs" />
     <Compile Include="MPQ\M2\M2Renderer.cs" />
     <Compile Include="MPQ\OffsetLocation.cs" />
-    <Compile Include="MPQ\PositionUtil.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
+    <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
+    <Compile Include="Recast\RecastRendererBase.cs" />
+    <Compile Include="Utils\PositionUtil.cs" />
     <Compile Include="MPQ\Signatures.cs" />
     <Compile Include="MPQ\TerrainConstants.cs" />
     <Compile Include="MPQ\MpqTerrainManager.cs" />
@@ -170,7 +173,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
     <Compile Include="Recast\NavMesh\NavMesh.cs" />
-    <Compile Include="Recast\RecastRenderer.cs" />
+    <Compile Include="Recast\RecastFrameRenderer.cs" />
     <Compile Include="Recast\RecastRunner.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="VertexPositionNormalColored.cs" />

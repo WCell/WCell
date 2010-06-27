@@ -14,7 +14,7 @@ namespace TerrainDisplay.Recast
 	    
 
 		public uint FirstLink;												// Index to first link in linked list.
-	    public byte VertCount;
+	    public ushort VertCount;
         public ushort[] Vertices;											// Indices to vertices of the poly.
 		public ushort[] Neighbors;											// Refs to neighbours of the poly.
 		public ushort Flags;												// Flags (see dtPolyFlags).

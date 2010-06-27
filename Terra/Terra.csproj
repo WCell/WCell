@@ -43,13 +43,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Geometry.cs" />
+    <Compile Include="Geometry\Axis.cs" />
+    <Compile Include="Geometry\GeometryHelpers.cs" />
+    <Compile Include="Greedy\Candidate.cs" />
+    <Compile Include="Greedy\DataPoint.cs" />
+    <Compile Include="Greedy\FloatMask.cs" />
+    <Compile Include="Greedy\GreedySubdivision.cs" />
+    <Compile Include="Greedy\ImportMask.cs" />
+    <Compile Include="Greedy\TrackedTriangle.cs" />
+    <Compile Include="Greedy\GreedyInsert.cs" />
+    <Compile Include="Memory\Heap.cs" />
+    <Compile Include="Maps\DirectMap.cs" />
+    <Compile Include="Geometry\Side.cs" />
     <Compile Include="ILabelled.cs" />
-    <Compile Include="Line.cs" />
-    <Compile Include="Plane.cs" />
+    <Compile Include="Geometry\Line.cs" />
+    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Geometry\Plane.cs" />
+    <Compile Include="Memory\HeapNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QuadEdge.cs" />
-    <Compile Include="Triangle.cs" />
+    <Compile Include="Geometry\QuadEdge.cs" />
+    <Compile Include="Geometry\Triangle.cs" />
+    <Compile Include="Subdivision.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

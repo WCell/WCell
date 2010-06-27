@@ -1,17 +1,27 @@
 using WCell.Util.Graphics;
 
-namespace Terra
+namespace Terra.Geometry
 {
     public static class GeometryHelpers
     {
-        public const double Epsilon = 1.0e-6;
-        public const double EpsilonSquared = 1.0e-12;
+        public const float Epsilon = 1.0e-6f;
+        public const float EpsilonSquared = 1.0e-12f;
 
         /// <summary>
         /// Return 2*area of the oriented triangle given by vertices A, B, C
         /// Area is positive if the winding order is CCW
         /// </summary>
-        public static double TriArea(ref Vector2 a, ref Vector2 b, ref Vector2 c)
+        public static float TriArea(ref Vector2 a, ref Vector2 b, ref Vector2 c)
+        {
+            var area = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
+            return area;
+        }
+
+        /// <summary>
+        /// Return 2*area of the oriented triangle given by vertices A, B, C
+        /// Area is positive if the winding order is CCW
+        /// </summary>
+        public static float TriArea(Vector2 a, Vector2 b, Vector2 c)
         {
             var area = (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
             return area;
@@ -54,19 +64,4 @@ namespace Terra
             return ((aProd - bProd + cProd - dProd) > Epsilon);
         }
     }
-     
-     public enum Axis
-     {
-          X = 0,
-          Y = 1,
-          Z = 2,
-          W = 3
-     }
-     
-     public enum Side
-     {
-          Left = -1,
-          On = 0,
-          Right = 1
-     }
 }

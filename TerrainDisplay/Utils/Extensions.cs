@@ -179,5 +179,11 @@ namespace TerrainDisplay.Util
         {
             return br.BaseStream.Position < br.BaseStream.Length;
         }
+
+        public static bool IsNullOrEmpty(this System.Array array)
+        {
+            if (array == null) return true;
+            return (array.Length == 0);
+        }
     }
 }

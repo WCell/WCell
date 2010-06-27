@@ -48,7 +48,7 @@ namespace TerrainDisplay.Recast
 				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lBMins,
 				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 17)]byte[] lBMaxs,
 
-            /*int dCount,
+            int dCount,
                 [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]ushort[] dVBases,
                 [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]ushort[] dVCounts,
                 [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]ushort[] dTBases,
@@ -58,14 +58,14 @@ namespace TerrainDisplay.Recast
                 [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 29)]float[] dVerts, 
                 
             int dTCount,
-                [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 31)]byte[] dTris,*/
+                [MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 31)]byte[] dTris,
 
 			int omCount,
-				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]float[] omPos,
-				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]float[] omRads,
-				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]ushort[] omPolys,
-				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]byte[] omFlags,
-				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 24)]byte[] omSides
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 33)]float[] omPos,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 33)]float[] omRads,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 33)]ushort[] omPolys,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 33)]byte[] omFlags,
+				[MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 33)]byte[] omSides
 			);
 
 		#endregion
@@ -274,7 +274,7 @@ namespace TerrainDisplay.Recast
 				byte[] lBMins,
 				byte[] lBMaxs,
 
-            /*int dCount,
+            int dCount,
                 ushort[] dVBases,
                 ushort[] dVCounts,
                 ushort[] dTBases,
@@ -284,7 +284,7 @@ namespace TerrainDisplay.Recast
                 float[] dVerts,
 
             int dTCount,
-                byte[] dTris,*/
+                byte[] dTris,
 
 			int omCount,																					// off mesh connections
 				float[] omPos,
@@ -325,16 +325,17 @@ namespace TerrainDisplay.Recast
 					Neighbors = neighbors,
 					Vertices = verts,
 					Area = pAreas[i],
-					Type = (NavMeshPolyTypes)pTypes[i]
+					Type = (NavMeshPolyTypes)pTypes[i],
+                    VertCount = pvCounts[i]
 				};
 
-			    var count = 1;
-                for (var j = 1; j < MaxVertsPerPolygon; j++)
-                {
-                    if (polys[i].Vertices[j] <= 0) continue;
-                    count++;
-                }
-                polys[i].VertCount = (byte)count;
+                //var count = 1;
+                //for (var j = 1; j < MaxVertsPerPolygon; j++)
+                //{
+                //    if (polys[i].Vertices[j] <= 0) continue;
+                //    count++;
+                //}
+                //polys[i].VertCount = (byte)count;
 
 				vidx += MaxVertsPerPolygon;
 			}
@@ -354,7 +355,7 @@ namespace TerrainDisplay.Recast
 				};
 			}
 
-		    /*var details = new NavMeshPolyDetail[dCount];
+		    var details = new NavMeshPolyDetail[dCount];
             for (var i = 0; i < dCount; i++)
             {
                 details[i] = new NavMeshPolyDetail
@@ -366,19 +367,32 @@ namespace TerrainDisplay.Recast
                 };
             }
 
+            if (dVCount == 0) Console.WriteLine("Managed dVertCount: {0}", dVCount);
 		    var detailVerts = new Vector3[dVCount/3];
             var dVIdx = 0;
             for (var i = 0; i < (dVCount/3); i++)
             {
-                detailVerts[i] = new Vector3(dVerts[dVIdx++], dVerts[dVIdx++], dVerts[dVIdx++]);
+                detailVerts[i] = new Vector3
+                {
+                    X = dVerts[dVIdx++],
+                    Y = dVerts[dVIdx++],
+                    Z = dVerts[dVIdx++]
+                };
             }
 
+            if (dTCount == 0) Console.WriteLine("Managed dTriCount: {0}", dTCount);
 		    var detailTris = new NavMeshDetailTriIndex[dTCount/4];
 		    var dTIdx = 0;
             for (var i = 0; i < (dTCount/4); i++)
             {
-                detailTris[i] = new NavMeshDetailTriIndex(dTris[dTIdx++], dTris[dTIdx++], dTris[dTIdx++], dTris[dTIdx++]);
-            }*/
+                detailTris[i] = new NavMeshDetailTriIndex
+                {
+                    Index0 = dTris[dTIdx++],
+                    Index1 = dTris[dTIdx++],
+                    Index2 = dTris[dTIdx++]
+                };
+                dTIdx++;
+            }
 
 			// Off-mesh connections
 			var omCons = new NavOffMeshConnection[omCount];
@@ -411,9 +425,9 @@ namespace TerrainDisplay.Recast
 				Polygons = polys,
 				Links = links,
 				OffMeshConnections = omCons,
-                /*DetailPolygons = details,
+                DetailPolygons = details,
                 DetailedVertices = detailVerts,
-                DetailedTriangles = detailTris*/
+                DetailedTriangles = detailTris
 			};
 
 			mesh.Tiles[x, y] = tile;

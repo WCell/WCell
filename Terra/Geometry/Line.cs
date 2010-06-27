@@ -2,16 +2,16 @@ using System;
 using WCell.Util.Graphics;
 
 
-namespace Terra
+namespace Terra.Geometry
 {
      /// <summary>
      /// A Barycentric representation of a Line in 2D space
      /// </summary>
      public class Line
      {
-          public double A;
-          public double B;
-          public double C;
+          public float A;
+          public float B;
+          public float C;
           
           /// <summary>
           /// Creates a new Line connecting the points p, q
@@ -31,8 +31,24 @@ namespace Terra
                B = p.X/len;
                C = (A*p.X + B*p.Y)*-1;
           }
+
+          public Line(Vector2 p, Vector2 q)
+          {
+              Vector2 t;
+              Vector2.Subtract(ref q, ref p, out t);
+
+              var len = t.Length();
+              if (len == 0)
+              {
+                  throw new DivideByZeroException("Cannot create a line from zero length segment.");
+              }
+
+              A = p.Y / len;
+              B = p.X / len;
+              C = (A * p.X + B * p.Y) * -1;
+          }
           
-          public double Eval(ref Vector2 p)
+          public float Eval(ref Vector2 p)
           {
                return (A*p.X + B*p.Y + C);
           }
@@ -61,8 +77,8 @@ namespace Terra
                     throw new DivideByZeroException("The two lines are parallel.");
                }
                
-               p.X = (float)((B*l.C - C*l.B)/denom);
-               p.Y = (float)((C*l.A - A*l.C)/denom);
+               p.X = (B*l.C - C*l.B)/denom;
+               p.Y = (C*l.A - A*l.C)/denom;
           }
           
           public override string ToString()
