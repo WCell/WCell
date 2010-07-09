@@ -123,9 +123,12 @@ namespace WCell.RealmServer.Spells
 
 				id = GetInt32(rawData, 0);
 				range.MinDist = (uint)GetFloat(rawData, 1);
-				// another min ?
+                // min range friendly
 				range.MaxDist = (uint)GetFloat(rawData, 3);
-				// another max?
+				// max range friendly
+                // flags (uint32)
+                // char* ???
+                // char* ???
 
 				return range;
 			}

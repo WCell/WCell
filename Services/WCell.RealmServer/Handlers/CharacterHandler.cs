@@ -1137,8 +1137,8 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOGOUT_RESPONSE, 5))
 			{
-				packet.WriteByte((byte)error);
-				packet.WriteUInt(0);
+                packet.WriteUInt(1);
+                packet.WriteByte((byte)error);
 
 				client.Send(packet);
 			}

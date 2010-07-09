@@ -3,6 +3,7 @@ obj
 *.user
 *.cache
 *_ReSharper.*
+*.vs10x
 Run/Content/dbc*
 Run/Content/Maps/*
 Run/Docs/*

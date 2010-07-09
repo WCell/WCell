@@ -28,16 +28,17 @@ namespace WCell.Constants.Relations
 		None = 0x00,
 		Friend = 0x01,
 		Ignore = 0x02,
-		Muted = 0x04
+		Muted = 0x04,
+		RecruitAFriend = 0x08,
 	}
 
-    [Flags]
-    public enum LFGRolesMask : byte
-    {
-        None = 0,
-        Leader = 1,
-        Tank = 2,
-        Healer = 4,
-        Damage = 8
-    }
+	[Flags]
+	public enum LFGRolesMask : byte
+	{
+		None = 0,
+		Leader = 1,
+		Tank = 2,
+		Healer = 4,
+		Damage = 8
+	}
 }
