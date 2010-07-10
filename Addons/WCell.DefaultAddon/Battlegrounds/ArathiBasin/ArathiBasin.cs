@@ -231,9 +231,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             }
         }
 
-        #region Spell/GO fixes
+		#region Spell/GO fixes
 
-        [Initialization]
+		[Initialization]
         [DependentInitialization(typeof(GOMgr))]
         public static void FixGOs()
         {

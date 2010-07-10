@@ -357,7 +357,7 @@ namespace WCell.RealmServer.Skills
 
 		public void LearnMax(SkillLine skillLine)
 		{
-			GetOrCreate(skillLine.Id, (uint)skillLine.Tier.Values.Length - 1, skillLine.MaxValue);
+			GetOrCreate(skillLine.Id, skillLine.MaxValue, skillLine.MaxValue);
 			//Add(skill, 375, 375, instant);
 		}
 

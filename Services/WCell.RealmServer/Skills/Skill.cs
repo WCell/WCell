@@ -16,8 +16,10 @@
 
 using System;
 using NLog;
+using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
+using WCell.RealmServer.Modifiers;
 using WCell.Util;
 
 namespace WCell.RealmServer.Skills
@@ -102,6 +104,10 @@ namespace WCell.RealmServer.Skills
 			{
 				m_skills.Owner.SetUInt16Low(PlayerField + 1, value);
 				m_record.CurrentValue = value;
+				if (SkillLine.Id == SkillId.Defense)
+				{
+					m_skills.Owner.UpdateDefense();
+				}
 			}
 		}
 
@@ -150,6 +156,10 @@ namespace WCell.RealmServer.Skills
 			set
 			{
 				m_skills.Owner.SetInt16Low(PlayerField + 2, value);
+				if(SkillLine.Id == SkillId.Defense)
+				{
+					m_skills.Owner.UpdateDefense();
+				}
 			}
 		}
 

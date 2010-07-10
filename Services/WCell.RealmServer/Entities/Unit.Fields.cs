@@ -1555,5 +1555,15 @@ namespace WCell.RealmServer.Entities
 			get;
 			internal set;
 		}
+
+		public virtual uint Defense
+		{
+			get
+			{
+				return (uint)(5*Level);
+			}
+			internal set
+			{}
+		}
 	}
 }

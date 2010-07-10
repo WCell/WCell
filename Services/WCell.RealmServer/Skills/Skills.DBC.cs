@@ -113,19 +113,19 @@ namespace WCell.RealmServer.Skills
 		{
 			public override SkillTier ConvertTo(byte[] rawData, ref int id)
 			{
-				id = GetInt32(rawData, 0);
-
-				int currentIndex = 0;
 				SkillTier tier = new SkillTier();
 
-				tier.Id = GetUInt32(rawData, currentIndex++);
+				int index = 0;
+				id = (int) (tier.Id = GetUInt32(rawData, index++));
+
+				tier.Id = (uint)id;
                 uint[] cost = new uint[16];
                 uint[] value = new uint[16];
 
                 for (int i = 0; i < 16; i++)
                 {
-                    cost[i] = GetUInt32(rawData, currentIndex + i);
-                    value[i] = GetUInt32(rawData, currentIndex + i + 16);
+                    cost[i] = GetUInt32(rawData, index + i);
+                    value[i] = GetUInt32(rawData, index + i + 16);
                 }
 
                 tier.Values = value.Where(i => i != 0).ToArray();

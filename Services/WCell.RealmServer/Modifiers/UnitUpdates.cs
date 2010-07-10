@@ -589,13 +589,20 @@ namespace WCell.RealmServer.Modifiers
 				critChance += chr.GetCombatRatingMod(CombatRating.MeleeCritChance) /
 							  GameTables.GetCRTable(CombatRating.MeleeCritChance)[chr.Level - 1];
 
+				var rangedCritChance = chr.GetCombatRatingMod(CombatRating.RangedCritChance) /
+							  GameTables.GetCRTable(CombatRating.RangedCritChance)[chr.Level - 1];
+
 				// Crit chance from agility
+				rangedCritChance += ((Character)unit).Archetype.Class.CalculateRangedCritChance(unit.Level, unit.Agility);
+				rangedCritChance += unit.StatModsInt[(int)StatModifierInt.RangedCritChance];
+				rangedCritChance = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.CritChance], rangedCritChance);
+
 				critChance += ((Character)unit).Archetype.Class.CalculateMeleeCritChance(unit.Level, unit.Agility);
 				critChance += unit.StatModsInt[(int)StatModifierInt.CritChance];
 				critChance = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.CritChance], critChance);
 
 				chr.CritChanceMeleePct = critChance;
-				chr.CritChanceRangedPct = critChance;
+				chr.CritChanceRangedPct = rangedCritChance;
 				chr.CritChanceOffHandPct = critChance;
 			}
 		}
@@ -619,6 +626,26 @@ namespace WCell.RealmServer.Modifiers
 																				 );
 				dodgeChance += unit.StatModsInt[(int)StatModifierInt.DodgeChance];
 				chr.DodgeChance = dodgeChance;
+			}
+		}
+
+		/// <summary>
+		/// Increases the defense skill according to your defense rating
+		/// Updates Dodge and Parry chances
+		/// </summary>
+		/// <param name="unit"></param>
+		internal static void UpdateDefense(this Unit unit)
+		{
+			var chr = unit as Character;
+			if (chr != null)
+			{
+				var defense = chr.GetCombatRatingMod(CombatRating.DefenseSkill) /
+							  GameTables.GetCRTable(CombatRating.DefenseSkill)[chr.Level - 1];
+
+				//chr.Defense = chr.Skills[SkillId.Defense].ActualValue + defense;
+				chr.Defense = (uint)defense;
+				UpdateDodgeChance(unit);
+				UpdateParryChance(unit);
 			}
 		}
 

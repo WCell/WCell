@@ -20,6 +20,7 @@ namespace WCell.RealmServer.RacesClasses
 {
     /// <summary>
     /// Defines the basics of the Hunter class.
+    /// TODO: Needs revising, formulas rechecked.
     /// </summary>
     public class HunterClass : BaseClass
 	{

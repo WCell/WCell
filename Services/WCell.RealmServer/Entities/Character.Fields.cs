@@ -20,6 +20,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Quests;
+using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
@@ -671,7 +672,6 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Gets the total modifier of the corresponding CombatRating (in %) 
-		/// ~MOK: Doubt it's in % (I'm guessing it's the value)
 		/// </summary>
 		public int GetCombatRatingMod(CombatRating rating)
 		{
@@ -728,9 +728,7 @@ namespace WCell.RealmServer.Entities
 					UnitUpdates.UpdateSpellCritChance(this);
 					break;
 				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDodgeChance(this);
-					UnitUpdates.UpdateParryChance(this);
-					//UnitUpdates.UpdateDefense
+					UnitUpdates.UpdateDefense(this);
 					break;
 			}
 		}
@@ -851,6 +849,11 @@ namespace WCell.RealmServer.Entities
 		{
 			get;
 			set;
+		}
+
+		public override uint Defense
+		{
+			get; internal set;
 		}
 		#endregion
 

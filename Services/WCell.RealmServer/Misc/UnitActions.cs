@@ -7,6 +7,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.Util;
@@ -957,7 +958,12 @@ namespace WCell.RealmServer.Misc
 				}
 				// else: no change (mobs def is smaller than player's weapon skill)
 			}
-			if (chance > 10000)
+
+			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
+			var attackerCritChance = Victim.MultiplierMods[(int)StatModifierFloat.AttackerCritChance];
+			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
+
+			if (chance > 100)
 			{
 				return 10000;
 			}

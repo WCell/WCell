@@ -122,6 +122,11 @@ namespace WCell.RealmServer.Skills
 				{
 					return Math.Max(1, Tier.Values[Tier.Values.Length - 1]);
 				}
+
+				if(Category == SkillCategory.WeaponProficiency)
+				{
+					return 400;
+				}
 				return 1;
 			}
 		}

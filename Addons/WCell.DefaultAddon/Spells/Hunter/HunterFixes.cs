@@ -25,6 +25,10 @@ namespace WCell.Addons.Default.Spells.Hunter
 			// Only one Sting per Hunter can be active on any one target
 			AuraHandler.AddAuraGroup(SpellLineId.HunterSurvivalWyvernSting, SpellLineId.HunterSerpentSting,
 				SpellLineId.HunterScorpidSting, SpellLineId.HunterViperSting, SpellLineId.HunterSerpentSting);
+
+			// Expose Weakness aura applied on the target  - Seems the spell has changed
+			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
+			//                   SpellId.ExposeWeakness_2);
 		}
 	}
 }

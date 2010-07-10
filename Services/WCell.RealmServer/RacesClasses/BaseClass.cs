@@ -31,6 +31,7 @@ namespace WCell.RealmServer.RacesClasses
 {
     /// <summary>
     /// Defines the basics of a class.
+    /// NOTE that all equations don't take boni from combat ratings into account
     /// </summary>
     public abstract class BaseClass
     {
@@ -187,32 +188,25 @@ namespace WCell.RealmServer.RacesClasses
             //    return (float) (((intellect / 166.6667) + classConstant) + (critRating/45.91));
             //}
             //return (intellect/80f);
-            var critBase = GameTables.BaseSpellCritChance[(int)Id-1];
+            var critBase = GameTables.BaseSpellCritChance[(int)Id-1]*100;
             var critMod = GameTables.GetClassSpellCritChanceValue(level, Id);
 
-            // Crit from crit rating.
-            var critRating = 0;
-            return 1f / critBase + intellect * critMod + critRating;
+        	return critBase + intellect/critMod;
         }
 
         /// <summary>
         /// Calculates the melee critical chance for the class at a specific level, base Agility and added Agility.
-        /// TODO: Figure out BaseMeleeCritChance and implement diminishing returns
+        /// TODO: Implement diminishing returns
         /// </summary>
         /// <param name="level">the player's level</param>
-        /// <param name="baseAgi">the player's base Agility</param>
-        /// <returns>the total magic critical chance</returns>
+        /// <param name="agility">the player's Agility</param>
+        /// <returns>the total melee critical chance</returns>
         public float CalculateMeleeCritChance(int level, int agility)
         {
-            //level = MathUtil.ClampMinMax(level, 1, 100);
-
-            //return
-            //    ((GameTables.BaseMeleeCritChance[((int)Id) - 1] +
-            //      (GameTables.GetClassMeleeCritChanceValue(level, Id) *
-            //       baseAgi)));
-            var crit = agility/GameTables.GetClassMeleeCritChanceValue(level, Id);
-            var baseCrit = GameTables.BaseMeleeCritChance[(int) Id-1];
-            return crit + baseCrit;
+			var baseCrit = GameTables.BaseMeleeCritChance[((int)Id) - 1] * 100;
+			var critFromAgi = agility / (GameTables.GetClassMeleeCritChanceValue(level, Id));
+			var crit = baseCrit + critFromAgi;
+			return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>
@@ -220,14 +214,12 @@ namespace WCell.RealmServer.RacesClasses
         /// http://www.wowwiki.com/Formulas:Critical_hit_chance
         /// http://www.wowwiki.com/Formulas:Agility
         /// </summary>
-        public float CalculateRangedCritChance(int level, int baseAgi)
+        public float CalculateRangedCritChance(int level, int agility)
         {
-            level = MathUtil.ClampMinMax(level, 1, 100);
-
-            return
-                ((GameTables.BaseMeleeCritChance[((int)Id)-1] +
-                  (GameTables.GetClassMeleeCritChanceValue(level, Id) *
-                   baseAgi))) * 100f;
+        	var baseCrit = GameTables.BaseMeleeCritChance[((int) Id) - 1]* 100;
+        	var critFromAgi = agility/(GameTables.GetClassMeleeCritChanceValue(level, Id));
+        	var crit = baseCrit + critFromAgi;
+        	return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>

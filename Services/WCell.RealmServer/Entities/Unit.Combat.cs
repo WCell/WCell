@@ -650,8 +650,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual float CalcCritDamage(float dmg, Unit victim, SpellEffect effect)
 		{
-			dmg = (dmg * (1.5f - (victim.GetResiliencePct() * 2)));
-			return dmg;
+			return dmg * 2;
 		}
 
 		/// <summary>

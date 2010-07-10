@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 			{
 				var mod = trigger.Text.NextModifiers();
 				var id = trigger.Text.NextEnum(SkillId.None);
-				var amount = trigger.Text.NextUInt(1000);
+				var amount = trigger.Text.NextUInt(0);
 				var chr = (Character)trigger.Args.Target;
 				var inv = chr.Inventory;
 
@@ -98,9 +98,9 @@ namespace WCell.RealmServer.Commands
 				if (skillLine != null)
 				{
 					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
-					skill.CurrentValue = (ushort)skillLine.MaxValue;
+					skill.CurrentValue = amount > 0 ? (ushort)amount : (ushort)skillLine.MaxValue;
 					skill.MaxValue = (ushort)skillLine.MaxValue;
-					trigger.Reply("Skill {0} set to {1}.", skillLine, amount);
+					trigger.Reply("Skill {0} set to {1}.", skillLine, amount > 0 ? amount : skillLine.MaxValue);
 					if (mod == "r")
 					{
 						// add bags
