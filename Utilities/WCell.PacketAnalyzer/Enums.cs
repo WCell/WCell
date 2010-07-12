@@ -29,21 +29,9 @@ namespace WCell.PacketAnalysis
 		/// String that is preceeded with its length in one byte
 		/// </summary>
 		PascalStringByte,
-		/// <summary>
-		/// String that is preceeded with its length in a UShort
-		/// </summary>
-		PascalStringUShort,
-		/// <summary>
-		/// String that is preceeded with its length in a UInt
-		/// </summary>
-		PascalStringUInt,
-
         PackedDate,
         UnixTime,
 		Count,
-
-        
-
 		NotSimple = 0xFF
 	}
 

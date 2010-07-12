@@ -191,38 +191,6 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns>The string being read.</returns>
-		public string ReadPascalStringUShort()
-		{
-			int size = ReadUInt16();
-
-			if (!EnsureData(size))
-			{
-				return "";
-			}
-
-			return new string(ReadChars(size));
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <returns>The string being read.</returns>
-		public string ReadPascalStringUInt()
-		{
-			var size = ReadInt32();
-
-			if (!EnsureData(size))
-			{
-				return "";
-			}
-
-			return new string(ReadChars(size));
-		}
-
-		/// <summary>
 		/// Reads a string from the current stream, and reverses it. The string read is of length bytes.
 		/// </summary>
 		/// <returns>The string being read.</returns>
