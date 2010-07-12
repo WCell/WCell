@@ -67,7 +67,7 @@
       <Case Either="MonsterSay, MonsterParty, MonsterYell, MonsterWhisper, MonsterEmote, RaidBossWhisper, RaidBossEmote, Battlenet">
         <Simple>
           <Name>Sender's Name</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Receiving Character</Name>
@@ -77,13 +77,13 @@
           <Case And="0xF040000000000000"><!--Not a Character and not a pet-->
             <Simple>
               <Name>Unknown String -- the object's Name?</Name>
-              <Type>CString</Type>
+              <Type>PascalStringUInt</Type>
             </Simple>
           </Case> 
         </Switch>
         <Simple>
           <Name>Message</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -95,7 +95,7 @@
       <Case Equals="WhisperInform">
         <Simple>
           <Name>Message</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Receiving Character</Name>
@@ -103,7 +103,7 @@
         </Simple>
         <Simple>
           <Name>Unknown String -- object's Name?</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -121,13 +121,13 @@
           <Case And="0xF000000000000000">
             <Simple>
               <Name>Message</Name>
-              <Type>CString</Type>
+              <Type>PascalStringUInt</Type>
             </Simple>
           </Case>
         </Switch>
         <Simple>
           <Name>Unknown String</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -143,7 +143,7 @@
         </Simple>
         <Simple>
           <Name>Message</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -167,7 +167,7 @@
         </Simple>
         <Simple>
           <Name>Message</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -183,7 +183,7 @@
         </Simple>
         <Simple>
           <Name>Message</Name>
-          <Type>CString</Type>
+          <Type>PascalStringUInt</Type>
         </Simple>
         <Simple>
           <Name>Chat Tag</Name>
@@ -362,7 +362,7 @@
     </Simple>
     <Simple>
       <Name>Target Character's Name</Name>
-      <Type>CString</Type>
+      <Type>PascalStringUInt</Type>
     </Simple>
   </RealmPacket>
 

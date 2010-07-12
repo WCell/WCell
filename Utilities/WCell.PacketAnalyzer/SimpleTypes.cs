@@ -169,6 +169,22 @@ namespace WCell.PacketAnalysis
 				}
 				return parser.Packet.ReadPascalString();
 			};
+			SimpleReaders[(uint)SimpleType.PascalStringUShort] = (segment, parser) => {
+				if (parser.Packet.RemainingLength < 2)
+				{
+					WarnLength(SimpleType.PascalStringUShort, segment, parser);
+					return "";
+				}
+				return parser.Packet.ReadPascalStringUShort();
+			};
+			SimpleReaders[(uint)SimpleType.PascalStringUInt] = (segment, parser) => {
+				if (parser.Packet.RemainingLength < 4)
+				{
+					WarnLength(SimpleType.PascalStringUInt, segment, parser);
+					return "";
+				}
+				return parser.Packet.ReadPascalStringUInt();
+			};
 
 		    SimpleReaders[(int) SimpleType.PackedDate] =
 		        (segment, parser) =>
@@ -220,6 +236,8 @@ namespace WCell.PacketAnalysis
 			SimpleTypeConverters[(uint)SimpleType.PackedGuid] = obj => (EntityId)obj;
 			SimpleTypeConverters[(uint)SimpleType.CString] = obj => (string)obj;
 			SimpleTypeConverters[(uint)SimpleType.PascalStringByte] = obj => (string)obj;
+			SimpleTypeConverters[(uint)SimpleType.PascalStringUShort] = obj => (string)obj;
+			SimpleTypeConverters[(uint)SimpleType.PascalStringUInt] = obj => (string)obj;
 			SimpleTypeConverters[(uint)SimpleType.Vector3] = obj => (Vector3)obj;
             SimpleTypeConverters[(uint)SimpleType.PackedVector3] = obj => (Vector3)obj;
 			SimpleTypeConverters[(uint)SimpleType.Vector4] = obj => (Vector4)obj;
@@ -244,6 +262,8 @@ namespace WCell.PacketAnalysis
 			SimpleTypeMap[(uint)SimpleType.CString] = typeof(string);
 
 			SimpleTypeMap[(uint)SimpleType.PascalStringByte] = typeof(string);
+			SimpleTypeMap[(uint)SimpleType.PascalStringUShort] = typeof(string);
+			SimpleTypeMap[(uint)SimpleType.PascalStringUInt] = typeof(string);
 
 		    SimpleTypeMap[(int) SimpleType.PackedDate] = typeof (DateTime);
 		    SimpleTypeMap[(int) SimpleType.UnixTime] = typeof (DateTime);
@@ -342,6 +362,8 @@ namespace WCell.PacketAnalysis
 
 			SimpleStringReaders[(uint)SimpleType.CString] = str => str;
 			SimpleStringReaders[(uint)SimpleType.PascalStringByte] = str => str;
+			SimpleStringReaders[(uint)SimpleType.PascalStringUShort] = str => str;
+			SimpleStringReaders[(uint)SimpleType.PascalStringUInt] = str => str;
 		}
 		#endregion
 

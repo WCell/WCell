@@ -434,7 +434,8 @@ namespace WCell.Core.Network
 
 		public override void Write(string str)
 		{
-		    WriteCString(str);
+			Write(DefaultEncoding.GetBytes(str));
+			Write((byte)0);
 		}
 
         /// <summary>
@@ -444,6 +445,16 @@ namespace WCell.Core.Network
         public virtual void WriteCString(string str)
         {
 			Write(DefaultEncoding.GetBytes(str));
+			Write((byte)0);
+        }
+
+        /// <summary>
+        /// Writes a C-style UTF8 string to the stream (actual string is null-terminated)
+        /// </summary>
+        /// <param name="str">String to write</param>
+        public virtual void WriteUTF8CString(string str)
+        {
+            Write(Encoding.UTF8.GetBytes(str));
 			Write((byte)0);
         }
 
