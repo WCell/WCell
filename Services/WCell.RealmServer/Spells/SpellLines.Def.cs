@@ -1,9 +1,9 @@
-using WCell.Constants;
 using WCell.Constants.Spells;
+using WCell.Constants;
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.RealmServer.Spells
@@ -241,7 +241,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PathOfFrost, 
 					SpellHandler.Get(SpellId.ClassSkillPathOfFrost))};
 
-			AddSpellLines((ClassId)0, lines);
+			AddSpellLines(ClassId.PetTalents, lines);
 			#endregion
 
 			#region Warrior (125)
@@ -737,7 +737,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.WarriorSpellReflection, 
 					SpellHandler.Get(SpellId.ClassSkillSpellReflection))};
 
-			AddSpellLines(ClassId.Warrior , lines);
+			AddSpellLines(ClassId.Warrior, lines);
 			#endregion
 
 			#region Paladin (133)
@@ -1269,7 +1269,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PaladinWarhorseSummon, 
 					SpellHandler.Get(SpellId.ClassSkillWarhorseSummon))};
 
-			AddSpellLines(ClassId.Paladin , lines);
+			AddSpellLines(ClassId.Paladin, lines);
 			#endregion
 
 			#region Hunter (137)
@@ -1816,7 +1816,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.HunterAspectOfTheViper, 
 					SpellHandler.Get(SpellId.ClassSkillAspectOfTheViper))};
 
-			AddSpellLines(ClassId.Hunter , lines);
+			AddSpellLines(ClassId.Hunter, lines);
 			#endregion
 
 			#region Rogue (119)
@@ -2292,7 +2292,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.RogueShiv, 
 					SpellHandler.Get(SpellId.ClassSkillShiv))};
 
-			AddSpellLines(ClassId.Rogue , lines);
+			AddSpellLines(ClassId.Rogue, lines);
 			#endregion
 
 			#region Priest (124)
@@ -2884,10 +2884,10 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.PriestShadowfiend, 
 					SpellHandler.Get(SpellId.ClassSkillShadowfiend))};
 
-			AddSpellLines(ClassId.Priest , lines);
+			AddSpellLines(ClassId.Priest, lines);
 			#endregion
 
-			#region DeathKnight (145)
+			#region DeathKnight (146)
 			lines = new SpellLine[]
 			{
 				new SpellLine(SpellLineId.DeathKnightUnholyVirulence, 
@@ -3367,9 +3367,11 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.DeathKnightRaiseAlly, 
 					SpellHandler.Get(SpellId.ClassSkillRaiseAlly)),
 				new SpellLine(SpellLineId.DeathKnightRuneOfTheStoneskinGargoyle, 
-					SpellHandler.Get(SpellId.ClassSkillRuneOfTheStoneskinGargoyle))};
+					SpellHandler.Get(SpellId.ClassSkillRuneOfTheStoneskinGargoyle)),
+				new SpellLine(SpellLineId.DeathKnightRuneOfTheNerubianCarapace, 
+					SpellHandler.Get(SpellId.ClassSkillRuneOfTheNerubianCarapace))};
 
-			AddSpellLines(ClassId.DeathKnight , lines);
+			AddSpellLines(ClassId.DeathKnight, lines);
 			#endregion
 
 			#region Shaman (134)
@@ -4008,7 +4010,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.ShamanHeroism, 
 					SpellHandler.Get(SpellId.ClassSkillHeroism))};
 
-			AddSpellLines(ClassId.Shaman , lines);
+			AddSpellLines(ClassId.Shaman, lines);
 			#endregion
 
 			#region Mage (150)
@@ -4678,7 +4680,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.MagePortalDalaran, 
 					SpellHandler.Get(SpellId.ClassSkillPortalDalaran))};
 
-			AddSpellLines(ClassId.Mage, lines);
+			AddSpellLines(ClassId.Shaman, lines);
 			#endregion
 
 			#region Warlock (133)

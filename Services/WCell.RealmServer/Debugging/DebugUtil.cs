@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Debugging
 		/// <summary>
 		/// Where to load Packet definitions from
 		/// </summary>
-		static DirectoryInfo DefinitionDir;
+		public static DirectoryInfo DefinitionDir;
 
 		static IndentTextWriter m_defaultWriter;
 		static Dictionary<string, IndentTextWriter> m_packetWriters;

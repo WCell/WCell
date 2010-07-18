@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.GameObjects
@@ -2672,7 +2672,7 @@ namespace WCell.Constants.GameObjects
 		/// </summary>
 		TheBarrens_2 = 2976,
 		/// <summary>
-		/// Type: Chest (Consumable)
+		/// Type: QuestGiver
 		/// Lock: Unlocked
 		/// </summary>
 		DirtStainedMap = 3076,
@@ -15061,11 +15061,13 @@ namespace WCell.Constants.GameObjects
 		ShadowforgeCache = 113757,
 		/// <summary>
 		/// Type: Chest (Consumable)
+		/// Trap: Easter Egg Trap (ID: 194047, 194047)
 		/// Lock: Unlocked
 		/// </summary>
 		BrightlyColoredEgg = 113769,
 		/// <summary>
 		/// Type: Chest (Consumable)
+		/// Trap: Easter Egg Trap (ID: 194047, 194047)
 		/// Lock: Unlocked
 		/// </summary>
 		BrightlyColoredEgg_2 = 113771,
@@ -30427,7 +30429,7 @@ namespace WCell.Constants.GameObjects
 		/// Type: Door
 		/// Lock: Unlocked
 		/// </summary>
-		SergeantsQuarters = 181032,
+		BloodDrenchedDoor = 181032,
 		/// <summary>
 		/// Type: Door
 		/// </summary>
@@ -45140,11 +45142,11 @@ namespace WCell.Constants.GameObjects
 		/// <summary>
 		/// Type: Generic
 		/// </summary>
-		EclatApogide01 = 185933,
+		ApexisShard01 = 185933,
 		/// <summary>
 		/// Type: Generic
 		/// </summary>
-		EclatApogide02 = 185934,
+		ApexisShard02 = 185934,
 		/// <summary>
 		/// Type: Generic
 		/// </summary>
@@ -53235,6 +53237,7 @@ namespace WCell.Constants.GameObjects
 		Campfire_701 = 177326,
 		/// <summary>
 		/// Type: SpellFocus
+		/// Trap: Campfire (ID: 2061, 2061)
 		/// </summary>
 		Campfire_702 = 177327,
 		/// <summary>
@@ -55960,11 +55963,13 @@ namespace WCell.Constants.GameObjects
 		JournalOfJandiceBarov = 180794,
 		/// <summary>
 		/// Type: Chest (Consumable)
+		/// Trap: Easter Egg Trap (ID: 194047, 194047)
 		/// Lock: Unlocked
 		/// </summary>
 		BrightlyColoredEgg_3 = 113770,
 		/// <summary>
 		/// Type: Chest (Consumable)
+		/// Trap: Easter Egg Trap (ID: 194047, 194047)
 		/// Lock: Unlocked
 		/// </summary>
 		BrightlyColoredEgg_4 = 113768,
@@ -80963,6 +80968,174 @@ namespace WCell.Constants.GameObjects
 		/// Trap: Bonfire Damage (ID: 2066, 2066)
 		/// </summary>
 		Forge_140 = 202394,
+		/// <summary>
+		/// Type: Mailbox
+		/// </summary>
+		Mailbox_201 = 195528,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		GenericCageTop = 200300,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		GenericCageBottom = 200332,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		HolidayValentineShadowfangKeepChemistrySet02 = 200333,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		HolidayValentineShadowfangKeepChemistrySet03 = 200334,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		HolidayValentineShadowfangKeepChemistrySet04 = 200335,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		ForsakenWagon = 200336,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		ForsakenPlagueBarrel = 200337,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		ForsakenPlagueBarrelEmpty = 200338,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		DuskwoodTable = 201289,
+		/// <summary>
+		/// Type: SpellFocus
+		/// </summary>
+		ChemicalWagon = 201716,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		LargeCrate = 201752,
+		/// <summary>
+		/// Type: Chest
+		/// Lock: Unlocked
+		/// </summary>
+		CrownChemicalCoSupplies = 201778,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		RocketDeliverySystem = 201906,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		ValentineArchX200 = 201940,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		PlagueWagonEmpty = 202105,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		StandingLargeVal_2 = 202169,
+		/// <summary>
+		/// Type: Button
+		/// </summary>
+		Doodad_Dalaran_Fountain_01 = 202616,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_3 = 201874,
+		/// <summary>
+		/// Type: Trap
+		/// </summary>
+		FrostTrap_3 = 202106,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		AllianceTeleporter = 201858,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		GunshipArmory_4 = 201873,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		TheCaptainsChest_3 = 202336,
+		/// <summary>
+		/// Type: Door
+		/// </summary>
+		GunshipStairs_2 = 201709,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		Doodad_InstancePortal_PurpleDifficulty03_3 = 202266,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		Doodad_InstancePortal_Purqq_2 = 202265,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		LightOfElune_2 = 180713,
+		/// <summary>
+		/// Type: SpellFocus
+		/// Trap: Ectoplasmic Distiller Trap (ID: 181054, 181054)
+		/// </summary>
+		EctoplasmicDistiller = 181057,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		AllianceTent = 201868,
+		/// <summary>
+		/// Type: Generic
+		/// </summary>
+		AllianceBanner_99 = 201869,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		TakksNest = 202081,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		RavasaurMatriarchsNest = 202082,
+		/// <summary>
+		/// Type: Goober (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		BallAndChain_4 = 202168,
+		/// <summary>
+		/// Type: Goober
+		/// </summary>
+		DedicationOfHonor = 202443,
+		/// <summary>
+		/// Type: Chest
+		/// Lock: Unlocked
+		/// </summary>
+		StolenTournamentInvitation = 194423,
+		/// <summary>
+		/// Type: Chest
+		/// Lock: Unlocked
+		/// </summary>
+		BlackKnightsOrders = 194424,
+		/// <summary>
+		/// Type: SpellFocus
+		/// Trap: Campfire (ID: 2061, 2061)
+		/// </summary>
+		Bonfire_650 = 195011,
+		/// <summary>
+		/// Type: Chest (Consumable)
+		/// Lock: Unlocked
+		/// </summary>
+		TheCaptainsChest_4 = 201710,
+		/// <summary>
+		/// Type: Trap
+		/// </summary>
+		EasterEggTrap = 194047,
 		End
 	}
 

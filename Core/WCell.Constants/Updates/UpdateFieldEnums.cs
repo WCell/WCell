@@ -1,6 +1,6 @@
 
 ///
-/// UpdateFields generated for Client-Version: 3.3.3.11723
+/// UpdateFields generated for Client-Version: 3.3.5.12340
 ///
 
 namespace WCell.Constants.Updates

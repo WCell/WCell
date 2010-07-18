@@ -621,7 +621,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var handler in m_handlers)
 			{
-				if (m_ticks < 1 || handler.SpellEffect.IsPeriodicAura) // initial tick or periodic handler
+				if (m_ticks < 1 || handler.SpellEffect.IsPeriodic) // initial tick or periodic handler
 				{
 					handler.Apply();
 				}

@@ -42,6 +42,7 @@ namespace WCell.Tools.Spells
 			WCellEnumWriter.WriteSpellLinesEnum();
 
 			using (writer = new CodeFileWriter(outputFileName, "WCell.RealmServer.Spells", "SpellLines", "static partial class", "",
+				"WCell.Constants",
 				"WCell.Constants.Spells"))
 			{
 				writer.WriteMethod("private", "static void", "SetupSpellLines", "", WriteSpellLinesMethod);
@@ -94,7 +95,7 @@ namespace WCell.Tools.Spells
 						++s;
 					}
 					writer.CloseBracket(true);
-					writer.WriteLine("AddSpellLines(lines);");
+					writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
 					writer.WriteEndRegion();
 					writer.WriteLine();
 				}

@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.Energize(m_aura.Caster, (int)((float)EffectValue * (m_aura.Auras.Owner.MaxPower)), m_spellEffect);
+			Owner.Energize(m_aura.Caster, (EffectValue * Owner.MaxPower + 50) / 100, m_spellEffect);
 		}
 
 	}

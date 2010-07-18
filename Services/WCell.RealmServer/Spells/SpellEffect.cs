@@ -116,7 +116,13 @@ namespace WCell.RealmServer.Spells
 		/// Whether it happens multiple times (certain Auras or channeled effects)
 		/// </summary>
 		[NotPersistent]
-		public bool IsPeriodic, IsPeriodicAura;
+		public bool IsPeriodic;
+
+		/// <summary>
+		/// Probably useless
+		/// </summary>
+		[NotPersistent]
+		public bool _IsPeriodicAura;
 
 		/// <summary>
 		/// Whether this effect has actual Objects as targets
@@ -283,7 +289,7 @@ namespace WCell.RealmServer.Spells
 
 			if (IsPeriodic = Amplitude > 0)
 			{
-				IsPeriodicAura = (AuraType == AuraType.PeriodicDamage ||
+				_IsPeriodicAura = (AuraType == AuraType.PeriodicDamage ||
 								  AuraType == AuraType.PeriodicDamagePercent ||
 								  AuraType == AuraType.PeriodicEnergize ||
 								  AuraType == AuraType.PeriodicHeal ||

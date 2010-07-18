@@ -25,7 +25,6 @@ namespace WCell.Util.Variables
 		/// <summary>
 		/// The object that holds the field or property (or null if static)
 		/// </summary>
-
 		public readonly Object Object;
 
 		public bool Serialized;
