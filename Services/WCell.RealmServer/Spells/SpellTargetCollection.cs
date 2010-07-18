@@ -798,21 +798,25 @@ namespace WCell.RealmServer.Spells.Extensions
 			var cast = targets.Cast;
 			var caster = cast.Caster;
 			var isHarmful = cast.Spell.HasHarmfulEffects;
+			var isHarmfulAndBeneficial = cast.Spell.HasHarmfulEffects == cast.Spell.HasBeneficialEffects;
 
-			if (isHarmful != caster.MayAttack(target))
+			if (!isHarmfulAndBeneficial)
 			{
-				if (isHarmful)
+				if (isHarmful != caster.MayAttack(target))
 				{
-					failedReason = SpellFailedReason.TargetFriendly;
+					if (isHarmful)
+					{
+						failedReason = SpellFailedReason.TargetFriendly;
+					}
+					else
+					{
+						failedReason = SpellFailedReason.TargetEnemy;
+					}
 				}
-				else
+				else if (isHarmful && !target.CanBeHarmed)
 				{
-					failedReason = SpellFailedReason.TargetEnemy;
+					failedReason = SpellFailedReason.NotHere;
 				}
-			}
-			else if (isHarmful && !target.CanBeHarmed)
-			{
-				failedReason = SpellFailedReason.NotHere;
 			}
 		}
 
