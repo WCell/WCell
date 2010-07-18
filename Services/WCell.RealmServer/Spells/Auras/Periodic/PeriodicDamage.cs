@@ -14,6 +14,8 @@
  *
  *************************************************************************/
 
+using System;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
@@ -28,9 +30,34 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var holder = m_aura.Auras.Owner;
 			if (holder.IsAlive)
 			{
-				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, EffectValue);
+				var value = EffectValue;
+				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				{
+					var bonus = GetBleedBonus();
+					value = ((value*bonus) + 50)/100;
+				}
+
+
+				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, value);
 			}
 		}
 
+		private int GetBleedBonus()
+		{
+			var bonus = 0;
+			{
+				foreach (var aura in m_aura.Auras.ActiveAuras)
+				{
+					foreach (var handler in aura.Handlers)
+					{
+						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
+						{
+							bonus += handler.EffectValue;
+						}
+					}
+				}
+			}
+			return bonus;
+		}
 	}
 };

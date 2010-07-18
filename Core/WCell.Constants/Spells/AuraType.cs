@@ -449,7 +449,10 @@ namespace WCell.Constants.Spells
 		Aura_252 = 252,
 		Aura_253 = 253,
 		Aura_254 = 254,
-		Aura_255 = 255,
+		/// <summary>
+		/// Increases damage taken from bleed in %
+		/// </summary>
+		IncreaseBleedEffectPct = 255,
 		Aura_256 = 256,
 		Aura_257 = 257,
 		Aura_258 = 258,

@@ -220,7 +220,10 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Effect_153 = 153, // Highest as of 2.4.3.8606
 		Unused_154 = 154,
-		EnableTitanGrip = 155, // Dual wield 2H
+		/// <summary>
+		/// Allows 2h weapons to be carried in 1h and applied an aura
+		/// </summary>
+		Allow2HWeaponIn1HAndApplyAura = 155, // Dual wield 1H
 		AddPrismaticGem = 156, // Add Socket
 		CreateItem2 = 157, // Create Item
 		Milling = 158,

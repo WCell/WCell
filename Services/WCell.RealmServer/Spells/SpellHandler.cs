@@ -123,7 +123,7 @@ namespace WCell.RealmServer.Spells
 
 		#region Add / Remove
 		/// <summary>
-		/// Can be used to exist a Spell that does not exist.
+		/// Can be used to add a Spell that does not exist.
 		/// Usually used for spells that are unknown to the client to signal a certain state.
 		/// </summary>
 		/// <param name="id"></param>

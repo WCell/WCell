@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -164,13 +164,13 @@ namespace WCell.RealmServer.Spells
 
 			HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
 
-			var auraEffects = GetEffectsWith(effect => effect.AuraEffectHandlerCreator != null);
+			var auraEffects = GetEffectsWhere(effect => effect.AuraEffectHandlerCreator != null);
 			if (auraEffects != null)
 			{
 				AuraEffects = auraEffects.ToArray();
 			}
 
-			var areaAuraEffects = GetEffectsWith(effect => effect.IsAreaAuraEffect);
+			var areaAuraEffects = GetEffectsWhere(effect => effect.IsAreaAuraEffect);
 
 			if (areaAuraEffects != null)
 			{

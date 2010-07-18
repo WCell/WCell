@@ -85,6 +85,19 @@ namespace WCell.RealmServer.Misc
 				aaction.Blocked > 0;
 		};
 
+		public static ProcValidator StunValidator = (target, action) =>
+		{
+			var aaction = action as DamageAction;
+			if (aaction == null || aaction.Spell == null || 
+				!aaction.Spell.IsAura || !action.Attacker.MayAttack(action.Victim))
+			{
+				return false;
+			}
+
+			//var stunEffect = aaction.Spell.GetEffectsWhere(effect => effect.AuraType == AuraType.ModStun);
+			return aaction.Spell.Attributes.HasAnyFlag(SpellAttributes.MovementImpairing);
+		};
+
 		public readonly WeakRef CreatorRef;
 		public readonly ProcHandlerTemplate Template;
 		private int m_stackCount;

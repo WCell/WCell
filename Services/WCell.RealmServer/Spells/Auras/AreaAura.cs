@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (m_targets != null)
 			{
-				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius));
+				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius)).ToArray();
 
 			    foreach (var target in toRemove)
 				{

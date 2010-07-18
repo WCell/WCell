@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Talents
 					}
 					if (spell.IsTeachSpell)
 					{
-						spell = spell.GetEffectsWith(effect => effect.TriggerSpell != null)[0].TriggerSpell;
+						spell = spell.GetEffectsWhere(effect => effect.TriggerSpell != null)[0].TriggerSpell;
 					}
 
 					if (spell != null)

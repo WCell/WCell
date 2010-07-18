@@ -792,7 +792,7 @@ namespace WCell.RealmServer.Spells
 			return null;
 		}
 
-		public List<SpellEffect> GetEffectsWith(Predicate<SpellEffect> predicate)
+		public List<SpellEffect> GetEffectsWhere(Predicate<SpellEffect> predicate)
 		{
 			List<SpellEffect> effects = null;
 			foreach (var effect in Effects)

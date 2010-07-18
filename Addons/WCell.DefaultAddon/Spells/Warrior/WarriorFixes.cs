@@ -81,6 +81,11 @@ namespace WCell.Addons.Default.Spells.Warrior
 				SpellId.EffectEnrageRank1, SpellId.EffectEnrageRank2, SpellId.EffectEnrageRank3,
 				SpellId.EffectEnrageRank4, SpellId.EffectEnrageRank5);
 
+			// wrecking crew has no spell restrictions
+			SpellLineId.WarriorArmsWreckingCrew.Apply(spell => {
+				spell.ForeachEffect(effect => effect.AffectMask = new uint[3]);
+			});
+
 
 			// Concussion Blow deals AP based school damage
 			SpellLineId.WarriorProtectionConcussionBlow.Apply(spell =>
@@ -168,6 +173,34 @@ namespace WCell.Addons.Default.Spells.Warrior
 					effect.AuraEffectHandlerCreator = () => new ProcStrikeAdditionalTargetHandler();
 					effect.IsProc = true;
 				}
+			});
+
+			// Second wind triggers a spell on the carrier if "struck by a Stun or Immobilize effect"
+			SpellHandler.Apply(spell =>
+			{
+				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
+					ProcTriggerFlags.SpellHit,
+					ProcHandler.StunValidator,
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1)
+				));
+			}, SpellId.WarriorArmsSecondWindRank1);
+			SpellHandler.Apply(spell =>
+			{
+				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
+					ProcTriggerFlags.SpellHit,
+					ProcHandler.StunValidator,
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2)
+				));
+			}, SpellId.WarriorArmsSecondWindRank2);
+
+			// Trauma should only proc on crit hit
+			SpellLineId.WarriorArmsTrauma.Apply(spell => {
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitSelf;
+			});
+
+			// Safe Guard should only affect Intervene
+			SpellLineId.WarriorProtectionSafeguard.Apply(spell => {
+				spell.Effects.First().AffectMask = SpellHandler.Get(SpellId.ClassSkillIntervene).SpellClassMask;
 			});
 		}
 

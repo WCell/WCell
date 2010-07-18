@@ -536,8 +536,8 @@ namespace WCell.RealmServer.Spells
 			{
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 				{
-					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.TotalMeleeAP * ap);
+					var factor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
+					value += (int)(caster.TotalMeleeAP * factor);
 				}
 			}
 			return value;
