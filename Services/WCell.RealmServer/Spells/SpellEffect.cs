@@ -536,8 +536,8 @@ namespace WCell.RealmServer.Spells
 			{
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 				{
-					var factor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.TotalMeleeAP * factor);
+					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
+					value += (int)(caster.TotalMeleeAP * ap);
 				}
 			}
 			return value;
@@ -867,4 +867,3 @@ namespace WCell.RealmServer.Spells
 		#endregion
 	}
 }
-
