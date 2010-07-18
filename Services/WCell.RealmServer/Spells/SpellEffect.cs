@@ -63,6 +63,7 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsUsed;
 
+
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
 
