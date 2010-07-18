@@ -1,6 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Instances xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Setting>
+    <Name>Unkkk</Name>
+    <Type> </Type>
+  </Setting>
+  <Setting>
     <Name>ShadowfangKeep</Name>
     <Type>WCell.Addons.Default.Instances.ShadowfangKeep</Type>
   </Setting>

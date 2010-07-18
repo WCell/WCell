@@ -11,6 +11,7 @@ namespace WCell.Constants.World
 		EasternKingdoms = 0,
 		Kalimdor = 1,
 		Testing = 13,
+		Unkkk = 29,
 		ScottTest = 25,
 		AlteracValley = 30,
 		ShadowfangKeep = 33,
