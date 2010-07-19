@@ -816,7 +816,7 @@ namespace WCell.RealmServer.Entities
 				// do a critcheck
 				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
 				{
-					var roll = Utility.Random(1f, 101);
+					var roll = Utility.Random(1f, 10001);
 
 					if (roll <= critChance)
 					{

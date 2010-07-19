@@ -199,8 +199,16 @@ namespace WCell.Addons.Default.Spells.Warrior
 			});
 
 			// Safe Guard should only affect Intervene
-			SpellLineId.WarriorProtectionSafeguard.Apply(spell => {
+			SpellLineId.WarriorProtectionSafeguard.Apply(spell =>
+			{
 				spell.Effects.First().AffectMask = SpellHandler.Get(SpellId.ClassSkillIntervene).SpellClassMask;
+			});
+
+			// S&B should only affect Devastate and Revenge
+			SpellLineId.WarriorProtectionSwordAndBoard.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				effect.AddToEffectMask(SpellLineId.WarriorRevenge, SpellLineId.WarriorProtectionDevastate);
 			});
 		}
 

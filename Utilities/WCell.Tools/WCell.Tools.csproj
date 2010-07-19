@@ -252,6 +252,7 @@
     <Compile Include="Maps\ObjectFileReader.cs" />
     <Compile Include="Maps\ZoneTileSetReader.cs" />
     <Compile Include="Maps\ZoneGridWriter.cs" />
+    <Compile Include="Misc\Dos2Unix.cs" />
     <Compile Include="Mokrago\CombatRatingsOutput.cs" />
     <Compile Include="Spells\SpellEffectCreator.cs" />
     <Compile Include="Domi\Output\SkillOutput.cs" />

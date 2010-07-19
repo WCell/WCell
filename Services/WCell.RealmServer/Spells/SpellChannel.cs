@@ -150,7 +150,7 @@ namespace WCell.RealmServer.Spells
 				var spell = m_cast.Spell;
 				var caster = m_cast.CasterUnit;
 
-				m_duration = spell.GetDuration(caster.CasterInfo);
+				m_duration = spell.Durations.Max;
 				m_amplitude = spell.ChannelAmplitude;
 
 				if (m_amplitude < 1)
@@ -160,13 +160,23 @@ namespace WCell.RealmServer.Spells
 				}
 
 				caster.ChannelSpell = spell.SpellId;
-				SpellHandler.SendChannelStart(caster, spell.SpellId, m_duration);
 
 				var now = Environment.TickCount;
 				m_ticks = 0;
 				m_maxTicks = m_duration / m_amplitude;
 				m_channelHandlers = channelHandlers;
+
+				// get duration again, this time with modifiers
+				m_duration = spell.GetDuration(caster.CasterInfo);
+				if (m_amplitude < 1)
+				{
+					// only one tick
+					m_amplitude = m_duration;
+				}
+
 				m_until = now + m_duration;
+				SpellHandler.SendChannelStart(caster, spell.SpellId, m_duration);
+
 
 				if (m_channeling)
 				{

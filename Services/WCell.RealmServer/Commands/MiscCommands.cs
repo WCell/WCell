@@ -371,6 +371,7 @@ namespace WCell.RealmServer.Commands
 				{
 					args[i] = args[i].Trim();
 				}
+
 				try
 				{
 					object result;

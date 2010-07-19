@@ -222,7 +222,15 @@ namespace WCell.Util
 
 		public static Type GetActualType(this MemberInfo member)
 		{
-			var rawType = member.GetVariableType();
+			Type rawType;
+			if (!(member is Type))
+			{
+				rawType = member.GetVariableType();
+			}
+			else
+			{
+				rawType = (Type)member;
+			}
 			var isArr = rawType.IsArray;
 
 			Type memberType;
