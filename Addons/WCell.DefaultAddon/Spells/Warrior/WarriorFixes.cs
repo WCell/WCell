@@ -61,27 +61,5 @@ namespace WCell.Addons.Default.Spells.Warrior
 				effect.SpellEffectHandlerCreator = (cast, effct) => new SchoolDamageByAPPctEffectHandler(cast, effct);
 			});
 		}
-
-		// TODO: substract consumed proc charges
-		// TODO: make DoRawDamage aggro NPCs
-		public class ProcStrikeAdditionalTargetHandler : AuraEffectHandler
-		{
-			public override void OnProc(RealmServer.Entities.Unit target, IUnitAction action)
-			{
-				var dmgAction = action as DamageAction;
-				if (dmgAction == null) return;
-				dmgAction.MarkInUse();
-				Owner.AddMessage(() =>
-				{
-					var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != target);
-					if (nextTarget != null)
-					{
-						dmgAction.Victim = nextTarget;
-						dmgAction.SpellEffect = m_spellEffect;
-						target.DoRawDamage(dmgAction);
-					}
-				});
-			}
-		}
 	}
 }
