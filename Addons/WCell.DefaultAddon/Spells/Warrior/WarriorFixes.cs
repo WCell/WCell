@@ -210,6 +210,16 @@ namespace WCell.Addons.Default.Spells.Warrior
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.AddToEffectMask(SpellLineId.WarriorRevenge, SpellLineId.WarriorProtectionDevastate);
 			});
+
+			// Shockwave needs to deal damage in % of AP
+			SpellLineId.WarriorProtectionShockwave.Apply(spell => {
+				var stunEffect = spell.GetEffect(AuraType.ModStun);
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				effect.ImplicitTargetA = stunEffect.ImplicitTargetA;
+				effect.Radius = stunEffect.Radius;
+
+				effect.SpellEffectHandlerCreator = (cast, effct) => new SchoolDamageByAPPctEffectHandler(cast, effct);
+			});
 		}
 
 		// TODO: substract consumed proc charges

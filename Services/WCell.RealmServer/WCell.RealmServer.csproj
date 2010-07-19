@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -241,6 +241,7 @@
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
+    <Compile Include="Spells\SpellException.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />

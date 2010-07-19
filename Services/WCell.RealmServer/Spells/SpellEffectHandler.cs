@@ -185,6 +185,7 @@ namespace WCell.RealmServer.Spells
 			int val = CalcEffectValue();
 			if (CurrentTargetNo > 0)
 			{
+				// chain target damage comes with diminishing returns
 				var dmgMod = m_cast.Spell.DamageMultipliers[0];
 				if (m_cast.Caster is Character)
 				{

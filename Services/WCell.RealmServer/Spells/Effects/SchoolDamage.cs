@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var caster = (Unit)m_cast.Caster;
-			var value = ((caster.TotalMeleeAP * CalcEffectValue()) + 50) / 100;
+			var value = ((caster.TotalMeleeAP * CalcDamageValue()) + 50) / 100;
 
 			((Unit)target).DoSpellDamage((Unit)m_cast.Caster, Effect, value);
 		}
