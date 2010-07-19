@@ -10,41 +10,28 @@ namespace WCell.Tools.Misc
 {
 	public static class Dos2Unix
 	{
+		public static string[] StandardCodingTextFiles = new[] { ".sln", "proj", ".txt", ".cs", ".xml" };
+
+		/// <summary>
+		/// Converts all line endings of all text files in wcell from crlf to lf
+		/// </summary>
 		[Tool]
-		public static void Convert(string directory, string suffix1, string suffix2, string suffix3, string suffix4)
+		public static void ConvertLines()
 		{
-			Convert(directory, new[] { suffix1, suffix2, suffix3, suffix4 });
+			ConvertLines(ToolConfig.WCellRoot, StandardCodingTextFiles);
 		}
 
-		//[Tool]
-		public static void Convert(string directory, string suffix1, string suffix2, string suffix3)
-		{
-			Convert(directory, new[] { suffix1, suffix2, suffix3 });
-		}
-
-		//[Tool]
-		public static void Convert(string directory, string suffix1, string suffix2)
-		{
-			Convert(directory, new[] { suffix1, suffix2 });
-		}
-
-		//[Tool]
-		public static void Convert(string directory, string suffix1)
-		{
-			Convert(directory, new[] { suffix1 });
-		}
-
-		public static void Convert(string directory, params string[] suffixes)
+		public static void ConvertLines(string directory, params string[] suffixes)
 		{
 			foreach (var file in Directory.GetFileSystemEntries(directory))
 			{
 				if (Directory.Exists(file))
 				{
-					Convert(file, suffixes);
+					ConvertLines(file, suffixes);
 				}
 				else
 				{
-					if (suffixes.Any(suffix => file.EndsWith(suffix)))
+					if (suffixes.Any(suffix => suffix.Length > 0 && file.EndsWith(suffix)))
 					{
 						// found the right kind of file
 						var lines = File.ReadLines(file);
