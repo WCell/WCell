@@ -1,4 +1,4 @@
-﻿namespace NHibernate.Tool.hbm2ddl
+namespace NHibernate.Tool.hbm2ddl
 {
 	using System;
 	using System.Collections;

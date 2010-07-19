@@ -75,4 +75,3 @@ namespace WCell.Constants.Updates
 	}
 
 }
-

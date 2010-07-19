@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;

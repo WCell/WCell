@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Global;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Waypoints;
 using WCell.Util.Commands;
 using WCell.Util.Graphics;

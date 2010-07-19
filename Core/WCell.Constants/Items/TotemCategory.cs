@@ -45,4 +45,3 @@ namespace WCell.Constants.Items
 	}
 
 }
-

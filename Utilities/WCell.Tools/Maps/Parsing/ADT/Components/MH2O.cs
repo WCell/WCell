@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Tools.Maps.Constants;
 
 namespace WCell.Tools.Maps.Parsing.ADT.Components

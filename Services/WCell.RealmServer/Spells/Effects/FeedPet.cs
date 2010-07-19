@@ -1,4 +1,4 @@
-﻿using WCell.Constants.NPCs;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 

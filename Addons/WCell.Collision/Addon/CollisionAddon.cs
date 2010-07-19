@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Global;

@@ -31,4 +31,3 @@ namespace WCell.MPQTool.StormLibWrapper
         }
     }
 }
-

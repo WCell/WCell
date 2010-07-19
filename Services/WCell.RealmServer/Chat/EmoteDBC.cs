@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Misc;
+using WCell.Constants.Misc;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;

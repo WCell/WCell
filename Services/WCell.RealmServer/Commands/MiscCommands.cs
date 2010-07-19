@@ -841,4 +841,3 @@ namespace WCell.RealmServer.Commands
 	}
 	#endregion
 }
-

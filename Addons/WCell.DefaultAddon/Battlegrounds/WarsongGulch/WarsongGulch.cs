@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants;
 using WCell.Constants.AreaTriggers;
 using WCell.Constants.GameObjects;

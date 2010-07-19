@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.Updates;
 using WCell.Util;
 using WCell.Util.Commands;

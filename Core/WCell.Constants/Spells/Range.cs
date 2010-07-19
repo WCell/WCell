@@ -76,4 +76,3 @@ namespace WCell.Constants.Spells
 	}
 
 }
-

@@ -1,4 +1,4 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 using WCell.RealmServer.Instances;
 
 namespace WCell.RealmServer.Global

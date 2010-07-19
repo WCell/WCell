@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;

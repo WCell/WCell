@@ -148,4 +148,3 @@ namespace WCell.Constants.World
 	}
 
 }
-

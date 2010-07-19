@@ -1,4 +1,4 @@
-﻿namespace WCell.Tools.Maps.Parsing.ADT.Components
+namespace WCell.Tools.Maps.Parsing.ADT.Components
 {
     /// <summary>
     /// Contains offsets (relative to Base) for some other chunks that appear in the file. Since the file follows a well-defined structure, this is redundant information.

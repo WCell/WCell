@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Util.Collections;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;

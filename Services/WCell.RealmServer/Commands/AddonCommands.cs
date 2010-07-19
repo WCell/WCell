@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
 using WCell.RealmServer.Addons;

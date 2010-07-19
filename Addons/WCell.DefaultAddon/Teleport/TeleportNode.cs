@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.RealmServer;

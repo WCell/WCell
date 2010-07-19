@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Entities;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Graphics;

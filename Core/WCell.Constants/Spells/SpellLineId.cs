@@ -1457,4 +1457,3 @@ namespace WCell.Constants.Spells
 	}
 
 }
-

@@ -1,4 +1,4 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;

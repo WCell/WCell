@@ -5956,4 +5956,3 @@ namespace WCell.RealmServer.Spells
 	}
 
 }
-

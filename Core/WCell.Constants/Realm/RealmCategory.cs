@@ -50,4 +50,3 @@ namespace WCell.Constants.Realm
 	}
 
 }
-

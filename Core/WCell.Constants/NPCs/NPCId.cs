@@ -126477,4 +126477,3 @@ namespace WCell.Constants.NPCs
 	}
 
 }
-

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
 using WCell.Constants;
 using WCell.Constants.World;

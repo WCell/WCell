@@ -7547,4 +7547,3 @@ namespace WCell.Constants.Items
 	}
 
 }
-

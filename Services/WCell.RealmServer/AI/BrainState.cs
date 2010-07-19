@@ -1,4 +1,4 @@
-﻿namespace WCell.RealmServer.AI
+namespace WCell.RealmServer.AI
 {
 	public enum BrainState
 	{

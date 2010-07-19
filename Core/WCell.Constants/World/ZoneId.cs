@@ -2320,4 +2320,3 @@ namespace WCell.Constants.World
 	}
 
 }
-

@@ -1,4 +1,4 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras
 {

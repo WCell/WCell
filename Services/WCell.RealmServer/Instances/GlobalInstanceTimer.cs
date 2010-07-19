@@ -1,4 +1,4 @@
-﻿using Castle.ActiveRecord;
+using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.Core.Database;
 using System;

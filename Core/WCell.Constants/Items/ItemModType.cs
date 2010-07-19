@@ -1,4 +1,4 @@
-﻿namespace WCell.Constants.Items
+namespace WCell.Constants.Items
 {
 	/// <summary>
 	/// Item modifiers

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 {

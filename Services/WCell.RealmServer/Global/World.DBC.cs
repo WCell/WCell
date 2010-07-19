@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants;
 using WCell.Constants.World;
 using WCell.Core.DBC;

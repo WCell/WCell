@@ -29,4 +29,3 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		}
 	}
 };
-

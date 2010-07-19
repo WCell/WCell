@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.World;
 using WCell.Core.TerrainAnalysis;
 using WCell.RealmServer.Global;

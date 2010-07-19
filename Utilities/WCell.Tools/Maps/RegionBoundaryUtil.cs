@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.World;
 using WCell.Tools.Maps.Parsing.WDT;
 using WCell.Util.Graphics;

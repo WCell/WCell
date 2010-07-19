@@ -1,4 +1,4 @@
-﻿namespace WCell.Intercommunication.DataTypes
+namespace WCell.Intercommunication.DataTypes
 {
 	public interface IRoleGroup
 	{

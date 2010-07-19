@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 

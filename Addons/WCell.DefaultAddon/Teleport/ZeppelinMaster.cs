@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs;
 using WCell.Constants.NPCs;
 using WCell.Constants.Factions;
 using WCell.Core.Initialization;

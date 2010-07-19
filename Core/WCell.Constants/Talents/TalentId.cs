@@ -905,4 +905,3 @@ namespace WCell.Constants.Talents
 	}
 
 }
-

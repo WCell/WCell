@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Written by Mokrago from the WCell team.
  * Please see the wiki article on my findings and more documentation.
  * 

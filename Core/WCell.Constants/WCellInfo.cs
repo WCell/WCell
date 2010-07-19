@@ -27,4 +27,3 @@ namespace WCell.Constants
 	}
 
 }
-

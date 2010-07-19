@@ -1233,4 +1233,3 @@ namespace WCell.Constants.AreaTriggers
 	}
 
 }
-

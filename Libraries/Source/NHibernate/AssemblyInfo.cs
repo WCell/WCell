@@ -23,4 +23,3 @@ using System.Security;
 [assembly: AssemblyFileVersionAttribute("2.0.1.4000")]
 [assembly: AssemblyDelaySignAttribute(false)]
 [assembly: AllowPartiallyTrustedCallersAttribute()]
-

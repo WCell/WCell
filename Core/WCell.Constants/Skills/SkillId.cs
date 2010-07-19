@@ -163,4 +163,3 @@ namespace WCell.Constants.Skills
 	}
 
 }
-

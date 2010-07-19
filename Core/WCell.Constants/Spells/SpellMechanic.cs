@@ -44,4 +44,3 @@ namespace WCell.Constants.Spells
 	}
 
 }
-

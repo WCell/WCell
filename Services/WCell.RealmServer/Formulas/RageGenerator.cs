@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Misc;
 

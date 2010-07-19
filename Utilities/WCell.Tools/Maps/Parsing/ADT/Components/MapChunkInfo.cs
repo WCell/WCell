@@ -1,4 +1,4 @@
-﻿namespace WCell.Tools.Maps.Parsing.ADT.Components
+namespace WCell.Tools.Maps.Parsing.ADT.Components
 {
     public class MapChunkInfo
     {

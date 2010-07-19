@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using WCell.Tools.Maps.Parsing.WMO.Components;
 using WCell.Util.Graphics;
 

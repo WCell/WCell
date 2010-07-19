@@ -1,4 +1,4 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Modifiers;
 

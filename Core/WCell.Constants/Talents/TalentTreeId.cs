@@ -46,4 +46,3 @@ namespace WCell.Constants.Talents
 	}
 
 }
-

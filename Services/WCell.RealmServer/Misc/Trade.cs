@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Core;

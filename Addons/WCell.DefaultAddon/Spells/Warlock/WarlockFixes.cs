@@ -1,4 +1,4 @@
-﻿using WCell.Constants.GameObjects;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;

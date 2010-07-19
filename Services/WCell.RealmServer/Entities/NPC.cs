@@ -660,7 +660,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		//
-		// Todo: Pets get about 7.5% of the hunter’s ranged attack power added to their spell damage.
+		// Todo: Pets get about 7.5% of the hunterï¿½s ranged attack power added to their spell damage.
 		//
 
 		public override int FireResist

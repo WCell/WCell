@@ -1,4 +1,4 @@
-﻿using WCell.Util.Graphics;
+using WCell.Util.Graphics;
 
 namespace WCell.Tools.Maps.Parsing.WMO.Components
 {

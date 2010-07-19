@@ -853,4 +853,3 @@ namespace WCell.Constants.Factions
 	}
 
 }
-

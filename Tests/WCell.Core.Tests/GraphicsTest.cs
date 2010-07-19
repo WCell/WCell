@@ -1,4 +1,4 @@
-﻿using WCell.Core.Graphics;
+using WCell.Core.Graphics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace WCell.Core.Tests
 {
