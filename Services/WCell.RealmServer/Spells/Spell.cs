@@ -124,6 +124,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsTeachSpell;
 
+		/// <summary>
+		/// Whether it has any individual or category cooldown
+		/// </summary>
+		public bool HasCooldown;
+
 		public bool HasIndividualCooldown;
 
 		/// <summary>
@@ -584,6 +589,8 @@ namespace WCell.RealmServer.Spells
 			HasIndividualCooldown = CooldownTime > 0 ||
 				(IsWeaponAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
+			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
+
 			//IsAoe = HasEffectWith((effect) => {
 			//    if (effect.ImplicitTargetA == ImplicitTargetType.)
 			//        effect.ImplicitTargetA = ImplicitTargetType.None;
@@ -613,6 +620,7 @@ namespace WCell.RealmServer.Spells
 			{
 				ToString();
 			}
+
 			if (IsPreventionDebuff || Mechanic.IsNegative())
 			{
 				HasHarmfulEffects = true;
@@ -996,7 +1004,8 @@ namespace WCell.RealmServer.Spells
 
 		public bool ShouldShowToClient()
 		{
-			return IsRangedAbility || Visual != 0 || Visual2 != 0 || IsChanneled || CastDelay > 0
+			return IsRangedAbility || Visual != 0 || Visual2 != 0 ||
+			       IsChanneled || CastDelay > 0 || HasCooldown;
 				// || (!IsPassive && IsAura)
 				;
 		}

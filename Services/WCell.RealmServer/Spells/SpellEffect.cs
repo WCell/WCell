@@ -63,7 +63,6 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsUsed;
 
-
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
 
@@ -329,7 +328,8 @@ namespace WCell.RealmServer.Spells
 			{
 				HarmType = HarmType.Harmful;
 			}
-			else
+			else if (!HasTarget(ImplicitTargetType.Duel) && 
+				(ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
 			{
 				HarmType = HarmType.Beneficial;
 			}
