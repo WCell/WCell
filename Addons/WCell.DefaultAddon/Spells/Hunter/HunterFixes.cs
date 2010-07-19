@@ -40,6 +40,10 @@ namespace WCell.Addons.Default.Spells.Hunter
 
             // Multi-Shot affects three targets
             SpellLineId.HunterMultiShot.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain);
+
+            // Moongonse Bite does incorrect damage 
+            SpellLineId.HunterMongooseBite.Apply(FixMongooseBiteRank);
+
 		}
 
 		private static void FixVolleyRank(Spell spell)
@@ -47,10 +51,17 @@ namespace WCell.Addons.Default.Spells.Hunter
 			spell.Effects[0].SpellEffectHandlerCreator =
 				(cast, effect) => new VolleyHandler(cast, effect);
 		}
+
         private static void FixArcaneShotRank(Spell spell)
         {
             spell.Effects[0].SpellEffectHandlerCreator =
                 (cast, effect) => new ArcaneShotHandler(cast, effect);
+        }
+
+        private static void FixMongooseBiteRank(Spell spell)
+        {
+            spell.Effects[0].SpellEffectHandlerCreator =
+                (cast, effect) => new MongooseBiteHandler(cast, effect);
         }
 	}
 }
