@@ -858,6 +858,16 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 		#endregion
 
+		/// <summary>
+		/// Returns whether there are any harmful Auras on the Unit.
+		/// Unit cannot leave combat mode while under the influence of harmful Auras.
+		/// </summary>
+		/// <returns></returns>
+		public bool HasHarmfulAura()
+		{
+			return FindFirst(aura => !aura.IsBeneficial) != null;
+		}
+
 		#region Persistence
 		/// <summary>
 		/// Called after Character entered world
@@ -888,6 +898,9 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
+		/// <summary>
+		/// Save all savable auras
+		/// </summary>
 		internal void SaveAurasNow()
 		{
 			foreach (var aura in m_visibleAuras)
@@ -896,7 +909,7 @@ namespace WCell.RealmServer.Spells.Auras
 					aura != GhostAura &&
 					!aura.Spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
 					!aura.CasterInfo.IsItem &&
-					(!aura.HasTimeout || aura.TimeLeft > 20000)
+					(!aura.HasTimeout || aura.TimeLeft > 10000)
 					)
 				{
 					aura.SaveNow();
@@ -904,16 +917,6 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 		#endregion
-
-		/// <summary>
-		/// Returns whether there are any harmful Auras on the Unit.
-		/// Unit cannot leave combat mode while under the influence of harmful Auras.
-		/// </summary>
-		/// <returns></returns>
-		public bool HasHarmfulAura()
-		{
-			return FindFirst(aura => !aura.IsBeneficial) != null;
-		}
 
 		#region Utilities
 		public IEnumerator<Aura> GetEnumerator()

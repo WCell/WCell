@@ -696,7 +696,9 @@ namespace WCell.RealmServer.Spells
             IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
                        Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
-			HasModifierEffects = HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+			HasModifierEffects = HasModifierEffects || 
+				HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+
 			ForeachEffect(effect =>
 			{
 				for (var i = 0; i < 3; i++)

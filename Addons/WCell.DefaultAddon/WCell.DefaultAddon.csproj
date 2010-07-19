@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -254,6 +254,9 @@
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
     <Compile Include="Spells\Hunter\VolleyHandler.cs" />
+    <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
+    <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
+    <Compile Include="Spells\Warrior\WarriorProtectionFixes.cs" />
     <Compile Include="Teleport\TeleportNetwork.cs" />
     <Compile Include="Samples\AmbusherQuestSample.cs" />
     <Compile Include="Samples\MixedSamples.cs" />

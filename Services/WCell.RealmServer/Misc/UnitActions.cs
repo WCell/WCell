@@ -662,7 +662,8 @@ namespace WCell.RealmServer.Misc
 					ResistPct = 0;
 				}
 
-				Attacker.AddDamageMods(this);
+				Victim.AddDefenseMods(this);
+				Attacker.AddAttackMods(this);
 
 				Resisted = (ResistPct * Damage / 100f).RoundInt();
 				Absorbed = Victim.Absorb(UsedSchool, Damage);
@@ -1102,18 +1103,23 @@ namespace WCell.RealmServer.Misc
 		}
 	}
 
-	public interface IAttackModifier
+	public interface IAttackEventHandler
 	{
 		/// <summary>
 		/// Called before hit chance, damage etc is determined.
 		/// This is not used for Spell attacks, since those only have a single "stage".
 		/// NOT CURRENTLY IMPLEMENTED
 		/// </summary>
-		void ModPreAttack(DamageAction action);
+		void OnBeforeAttack(DamageAction action);
 
 		/// <summary>
-		/// Called when the strike only depends on whether it can be resisted
+		/// Called on the attacker, right before resistance is subtracted and final damage is evaluated
 		/// </summary>
-		void ModAttack(DamageAction action);
+		void OnAttack(DamageAction action);
+
+		/// <summary>
+		/// Called on the defender, right before resistance is subtracted and final damage is evaluated
+		/// </summary>
+		void OnDefend(DamageAction action);
 	}
 }

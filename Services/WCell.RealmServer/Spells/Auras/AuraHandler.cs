@@ -184,6 +184,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Expertise] = () => new ModExpertiseHandler();
 			EffectHandlers[(int)AuraType.ModHitChance] = () => new ModHitChanceHandler();
 			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();
+			EffectHandlers[(int)AuraType.CriticalBlockPct] = () => new CriticalBlockPctHandler();
+			EffectHandlers[(int)AuraType.ModAPByArmor] = () => new ModAPByArmorHandler();
 			
 
 			// make sure, there are no missing handlers

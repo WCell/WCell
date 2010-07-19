@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Applies modifications to your attacks
 		/// </summary>
-		public readonly List<IAttackModifier> AttackModifiers = new List<IAttackModifier>(1);
+		public readonly List<IAttackEventHandler> AttackEventHandlers = new List<IAttackEventHandler>(1);
 
 		/// <summary>
 		/// The maximum distance in yards to a valid attackable target
@@ -311,15 +311,6 @@ namespace WCell.RealmServer.Entities
 				SetFloat(UnitFields.RANGED_ATTACK_POWER_MULTIPLIER, value);
 				this.UpdateRangedAttackPower();
 			}
-		}
-
-		/// <summary>
-		/// Ranged AP bonus by Intelligence
-		/// </summary>
-		public int RangedAttackIntMod
-		{
-			get;
-			internal set;
 		}
 
 		public int TotalRangedAP

@@ -182,11 +182,22 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddDamageMods(DamageAction action)
+		public virtual void AddAttackMods(DamageAction action)
 		{
-			foreach (var mod in AttackModifiers)
+			foreach (var mod in AttackEventHandlers)
 			{
-				mod.ModAttack(action);
+				mod.OnAttack(action);
+			}
+		}
+
+		/// <summary>
+		/// Adds damage mods to the given AttackAction
+		/// </summary>
+		public virtual void AddDefenseMods(DamageAction action)
+		{
+			foreach (var mod in AttackEventHandlers)
+			{
+				mod.OnAttack(action);
 			}
 		}
 
@@ -221,6 +232,16 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Standard Attack
+
+		/// <summary>
+		/// Use the given weapon to strike
+		/// </summary>
+		/// <param name="weapon"></param>
+		public void Strike()
+		{
+			Strike(MainWeapon);
+		}
+
 		/// <summary>
 		/// Use the given weapon to strike
 		/// </summary>
@@ -254,6 +275,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(Unit target)
+		{
+			Strike(MainWeapon, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given weapon on the given target.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, Unit target)
 		{
 			Strike(weapon, GetUnusedAction(), target);
@@ -264,8 +295,23 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(DamageAction action, Unit target)
+		{
+			Strike(MainWeapon, action, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given Weapon and AttackAction.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
+			if (!target.IsInWorld)
+			{
+				return;
+			}
+
 			if (weapon == null)
 			{
 				log.Error("Trying to strike without weapon: " + this);
@@ -468,7 +514,8 @@ namespace WCell.RealmServer.Entities
 
 			if (attacker != null)
 			{
-				attacker.AddDamageMods(action);
+				AddDefenseMods(action);
+				attacker.AddAttackMods(action);
 
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))

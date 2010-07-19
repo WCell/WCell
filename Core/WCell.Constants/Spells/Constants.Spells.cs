@@ -165,6 +165,7 @@ namespace WCell.Constants.Spells
 		/// Just killed someone who yielded honor or xp
 		/// Used by Victory Rush amongst others
 		/// Stays on for 20 secs
+		/// Applied by Effect: Victorious (Id: 32216)?
 		/// </summary>
 		KillYieldedHonorOrXp = 0x0200,
 
