@@ -15,10 +15,12 @@ namespace WCell.Addons.Default.Spells.Paladin
 	public static class PaladinMiscFixes
 	{
 		[Initialization(InitializationPass.Second)]
+
 		public static void FixPaladin()
 		{
 			FixBlessings();
 			FixStrongBuffs();
+			FixHolyShock();
 
 			// Players may only have one Hand on them per Paladin at any one time
 			AuraHandler.AddAuraCasterGroup(
@@ -61,7 +63,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// Custom proc (target = the one who is blessed): 
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
 				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.RangedAttackSelf, 
+					ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.RangedAttackSelf,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.BlessingOfSanctuary)
 					));
@@ -105,6 +107,50 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 			SpellHandler.Apply(spell => { spell.IsPreventionDebuff = true; },
 							   SpellId.AvengingWrathMarker, SpellId.Forbearance);
+		}
+
+		private static void FixHolyShock()
+		{
+			AddHolyShockSpell(SpellId.PaladinHolyHolyShockRank1, SpellId.ClassSkillHolyShockRank1_2, SpellId.ClassSkillHolyShockRank1);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank2, SpellId.ClassSkillHolyShockRank2_3, SpellId.ClassSkillHolyShockRank2_2);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank3, SpellId.ClassSkillHolyShockRank3_3, SpellId.ClassSkillHolyShockRank3_2);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank4, SpellId.ClassSkillHolyShockRank4_3, SpellId.ClassSkillHolyShockRank4_2);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank5, SpellId.ClassSkillHolyShockRank5_3, SpellId.ClassSkillHolyShockRank5_2);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank6_3, SpellId.ClassSkillHolyShockRank6_2, SpellId.ClassSkillHolyShockRank6);
+			AddHolyShockSpell(SpellId.ClassSkillHolyShockRank7_3, SpellId.ClassSkillHolyShockRank7, SpellId.ClassSkillHolyShockRank7_2);
+		}
+
+		static void AddHolyShockSpell(SpellId spellid, SpellId heal, SpellId dmg)
+		{
+			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new HolyShockHandler(cast, effect, heal, dmg); }, spellid);
+		}
+
+		public class HolyShockHandler : SpellEffectHandler
+		{
+			SpellId heal;
+			SpellId dmg;
+			public HolyShockHandler(SpellCast cast, SpellEffect eff, SpellId heal, SpellId dmg)
+				: base(cast, eff)
+			{
+				this.heal = heal;
+				this.dmg = dmg;
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var chr = m_cast.Caster as Character;
+				if (chr != null)
+				{
+					if (chr.MayAttack(target))
+					{
+						chr.SpellCast.Trigger(dmg, target);
+					}
+					else
+					{
+						chr.SpellCast.Trigger(heal, target);
+					}
+				}
+			}
 		}
 	}
 }
