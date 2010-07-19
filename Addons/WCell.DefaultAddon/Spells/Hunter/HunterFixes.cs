@@ -37,6 +37,9 @@ namespace WCell.Addons.Default.Spells.Hunter
 
             // Arcane Shot does incorrect damage
             SpellLineId.HunterArcaneShot.Apply(FixArcaneShotRank);
+
+            // Multi-Shot affects three targets
+            SpellLineId.HunterMultiShot.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain);
 		}
 
 		private static void FixVolleyRank(Spell spell)
