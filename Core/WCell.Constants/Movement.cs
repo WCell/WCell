@@ -87,7 +87,11 @@ namespace WCell.Constants
 		Flag_31_0x80000000 = 0x80000000,
 
 		//IsTranslating = 0xC0100F,
-		IsTranslating = Forward | Backward | StrafeLeft | StrafeRight | Falling | Ascend | Descend
+		IsTranslating = Forward | Backward | StrafeLeft | StrafeRight | Falling | Ascend | Descend,
+
+		Orientation = PitchDown | PitchUp | Left | Right,
+
+		All = uint.MaxValue
 	}
 
 	[Flags]

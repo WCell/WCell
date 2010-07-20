@@ -83,7 +83,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Heroic Throw "causing ${$m1+$AP*.50} damage"
 			SpellLineId.WarriorHeroicThrow.Apply(spell =>
 			{
-				spell.Effects[0].APValueFactorPct = 50;
+				spell.Effects[0].APValueFactor = 0.5f;
 			});
 		}
 	}
