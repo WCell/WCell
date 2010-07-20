@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Commands
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var prefix = trigger.Args.User != null ? trigger.Args.User.Name + ": " : "";
-			World.Broadcast(prefix + trigger.Text.Remainder);
+			World.Broadcast("LOL"+prefix + trigger.Text.Remainder);
 		}
 	}
 	#endregion
