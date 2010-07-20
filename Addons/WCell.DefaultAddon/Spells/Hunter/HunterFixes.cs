@@ -29,36 +29,50 @@ namespace WCell.Addons.Default.Spells.Hunter
 			// Expose Weakness aura applied on the target  - Seems the spell has changed
 			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
 			//                   SpellId.ExposeWeakness_2);
+            
+            
+            FixMarkmanshipSpells();
+            FixSurvivalSpells();
 
-			// Volley does incorrect damage
-			SpellHandler.Apply(FixVolleyRank, SpellId.EffectClassSkillVolleyRank1, SpellId.EffectClassSkillVolleyRank2,
-						  SpellId.EffectClassSkillVolleyRank3, SpellId.EffectClassSkillVolleyRank4,
-						  SpellId.EffectClassSkillVolleyRank5, SpellId.EffectClassSkillVolleyRank6);
 
-            // Arcane Shot does incorrect damage
-            SpellLineId.HunterArcaneShot.Apply(FixArcaneShotRank);
-
-            // Multi-Shot affects three targets
-            SpellLineId.HunterMultiShot.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain);
-
-            // Moongonse Bite does incorrect damage 
-            SpellLineId.HunterMongooseBite.Apply(spell => 
+		}
+        #region Markmanship
+        private static void FixMarkmanshipSpells()
+		{
+            // Volley does incorrect damage ($RAP*0.083700 + $m1)
+            SpellHandler.Apply(spell =>
                 {
-                    spell.Effects[0].APValueFactor = 0.2f;
+                    spell.Effects[0].SpellEffectHandlerCreator =
+                    (cast, effect) => new VolleyHandler(cast, effect);
+                }, SpellId.EffectClassSkillVolleyRank1, SpellId.EffectClassSkillVolleyRank2,
+                          SpellId.EffectClassSkillVolleyRank3, SpellId.EffectClassSkillVolleyRank4,
+                          SpellId.EffectClassSkillVolleyRank5, SpellId.EffectClassSkillVolleyRank6
+                          );
+
+            // Arcane Shot does incorrect damage ($RAP*0.15 + $m1)
+            SpellLineId.HunterArcaneShot.Apply(spell =>
+                {
+                    spell.Effects[0].SpellEffectHandlerCreator =
+                        (cast, effect) => new ArcaneShotHandler(cast, effect);
                 });
 
-		}
-
-		private static void FixVolleyRank(Spell spell)
-		{
-			spell.Effects[0].SpellEffectHandlerCreator =
-				(cast, effect) => new VolleyHandler(cast, effect);
-		}
-
-        private static void FixArcaneShotRank(Spell spell)
-        {
-            spell.Effects[0].SpellEffectHandlerCreator =
-                (cast, effect) => new ArcaneShotHandler(cast, effect);
+            // Multi-Shot affects three targets
+            SpellLineId.HunterMultiShot.Apply(spell => 
+                {
+                    spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain;
+                });
         }
-	}
+        #endregion
+
+        #region Survival
+        private static void FixSurvivalSpells()
+        {
+            // Moongonse Bite does incorrect damage ($AP*0.2 + $m1)
+            SpellLineId.HunterMongooseBite.Apply(spell =>
+            {
+                spell.Effects[0].APValueFactor = 0.2f;
+            });
+        }
+        #endregion
+    }
 }
