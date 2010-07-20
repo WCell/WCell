@@ -319,7 +319,7 @@ namespace WCell.RealmServer.Global
 			{
 				evt(action);
 			}
-			action.Victim.Region.OnDeath(action);
+			action.Victim.Region.OnPlayerDeath(action);
 		}
 
 		public void NotifyPlayerResurrected(Character chr)

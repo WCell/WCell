@@ -103,6 +103,11 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Whether this is a ranged attack (includes wands)
 		/// </summary>
+		public bool IsRanged;
+
+		/// <summary>
+		/// Whether this is a ranged attack (includes wands), that is not triggered
+		/// </summary>
 		public bool IsRangedAbility;
 
 		/// <summary>
@@ -557,9 +562,10 @@ namespace WCell.RealmServer.Spells
 
 			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);	// don't use Enum.HasFlag!
 
-			IsRangedAbility = !IsTriggeredSpell &&
-				(Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
+			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
 					   AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+
+			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 

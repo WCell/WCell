@@ -409,14 +409,25 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public Character MasterChar
-		{
-			get { return m_master as Character; }
-		}
-
 		public bool HasMaster
 		{
 			get { return m_master != null && m_master != this; }
+		}
+
+		/// <summary>
+		/// Either this or the master as Character. 
+		/// Returns null if neither is Character.
+		/// </summary>
+		public Character PlayerMaster
+		{
+			get
+			{
+				if (this is Character)
+				{
+					return (Character)this;
+				}
+				return m_master as Character;
+			}
 		}
 		#endregion
 
@@ -1445,9 +1456,9 @@ namespace WCell.RealmServer.Entities
 			get { return false; }
 		}
 
-		public bool IsPlayerOwned
+		public bool BelongsToPlayer
 		{
-			get { return this is Character || m_master is Character; }
+			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
 		}
 
 		public virtual bool IsPlayerControlled

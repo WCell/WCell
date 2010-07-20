@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public static float RegenTickMultiplier = 5.0f;
 
-	    public static float RegenTickDelay = 1.0f;
+		public static float RegenTickDelay = 1.0f;
 
 		/// <summary>
 		/// The amount of milliseconds for the time of "Interrupted" power regen
@@ -122,6 +122,8 @@ namespace WCell.RealmServer.Entities
 
 		protected Unit m_FirstAttacker;
 
+		private Unit m_LastKiller;
+
 		protected bool m_IsPinnedDown;
 
 		protected internal TimerEntry m_TaxiMovementTimer;
@@ -167,6 +169,22 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// The Unit that last killed this guy or null, if none or gone (is not reliable over time).
+		/// </summary>
+		public Unit LastKiller
+		{
+			get
+			{
+				if (!m_LastKiller.IsInWorld)
+				{
+					m_LastKiller = null;
+				}
+				return m_LastKiller;
+			}
+			internal set { m_LastKiller = value; }
+		}
+
+		/// <summary>
 		/// Whether this Unit is currently participating in PvP.
 		/// That is if both participants are players and/or belong to players.
 		/// </summary>
@@ -176,8 +194,8 @@ namespace WCell.RealmServer.Entities
 			{
 				return
 					m_FirstAttacker != null &&
-					IsPlayerControlled &&
-					m_FirstAttacker.IsPlayerControlled;
+					BelongsToPlayer &&
+					m_FirstAttacker.BelongsToPlayer;
 			}
 		}
 
@@ -794,7 +812,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var critChance = 0f;
 			var crit = false;
-            int overheal = 0;
+			int overheal = 0;
 
 			if (healer == null)
 			{
@@ -831,15 +849,15 @@ namespace WCell.RealmServer.Entities
 
 			if (value > 0)
 			{
-                value = (int)(value * Utility.Random(0.95f, 1.05f));
-                if (Health + value > MaxHealth)
-                {
-                    overheal = (Health + value) - MaxHealth;
-                    value = (MaxHealth - Health);
-                }
-                Health += value;
-                value += overheal;
-                CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
+				value = (int)(value * Utility.Random(0.95f, 1.05f));
+				if (Health + value > MaxHealth)
+				{
+					overheal = (Health + value) - MaxHealth;
+					value = (MaxHealth - Health);
+				}
+				Health += value;
+				value += overheal;
+				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
 			if (healer is Unit)

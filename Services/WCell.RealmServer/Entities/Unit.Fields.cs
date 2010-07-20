@@ -1228,11 +1228,6 @@ namespace WCell.RealmServer.Entities
 			Power = BasePower;
 		}
 
-		public bool BelongsToPlayer
-		{
-			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
-		}
-
 		/// <summary>
 		/// Whether this is a Player or owned by a player
 		/// </summary>

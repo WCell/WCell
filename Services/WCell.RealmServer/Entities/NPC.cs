@@ -124,7 +124,6 @@ namespace WCell.RealmServer.Entities
 			Class = entry.ClassId;
 			Race = entry.RaceId;
 			YieldsXpOrHonor = entry.GeneratesXp;
-		    ExtraFlags = entry.ExtraFlags;
 			SheathType = SheathType.Melee;
 
 			// speeds
@@ -845,27 +844,7 @@ namespace WCell.RealmServer.Entities
 				EnterFinalState();
 			}
 
-            if (looter is Character && YieldsXpOrHonor)
-			{
-				if (m_region.XpCalculator != null)
-				{
-					// TODO: Consider reductions if someone else killed the mob
-					var chr = (Character)looter;
-					var baseXp = m_region.XpCalculator(looter.Level, this);
-					XpGenerator.CombatXpDistributer(chr, this, baseXp);
-
-					if (chr.Group != null)
-					{
-						chr.Group.DistributeGroupQuestKills(chr, this);
-					}
-					else
-					{
-						chr.QuestLog.OnNPCInteraction(this);
-					}
-				}
-			}
-
-            if(UnitExtraFlags.InstanceBind)
+			m_region.OnNPCDied(this);
 
 			if (m_currentTamer != null)
 			{

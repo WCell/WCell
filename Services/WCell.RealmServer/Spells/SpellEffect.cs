@@ -538,8 +538,9 @@ namespace WCell.RealmServer.Spells
 			{
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 				{
-					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.TotalMeleeAP * ap + 0.5f);
+					var apFactor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
+					var ap = Spell.IsRanged ? caster.TotalRangedAP : caster.TotalMeleeAP;
+					value += (int)(ap * apFactor + 0.5f);	// implicit rounding
 				}
 			}
 			return value;
