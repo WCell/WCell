@@ -87,16 +87,14 @@ namespace WCell.RealmServer.Instances
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj.m_DifficultyIndex == m_DifficultyIndex &&
-				obj.RegionId == RegionId &&
-				obj.InstanceId == InstanceId;
+			return obj.m_DifficultyIndex == m_DifficultyIndex && obj.BindTime.Equals(BindTime) && Equals(obj.RegionId, RegionId) && obj.InstanceId == InstanceId;
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (InstanceBinding)) return false;
+			if (!(obj is InstanceBinding)) return false;
 			return Equals((InstanceBinding) obj);
 		}
 

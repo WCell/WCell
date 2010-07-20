@@ -431,6 +431,10 @@ namespace WCell.RealmServer.Entities
 				{
 					UnitFlags |= UnitFlags.SelectableNotAttackable;
 				}
+				else if (mechanic == SpellMechanic.Enraged)
+				{
+					AuraState |= AuraStateMask.Enraged;
+				}
 			}
 
 			// change the value
@@ -515,6 +519,10 @@ namespace WCell.RealmServer.Entities
 					else if (mechanic == SpellMechanic.Invulnerable && m_mechanics[(int)SpellMechanic.Invulnerable] == 0)
 					{
 						UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+					}
+					else if (mechanic == SpellMechanic.Enraged)
+					{
+						AuraState &= ~AuraStateMask.Enraged;
 					}
 				}
 			}

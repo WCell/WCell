@@ -356,8 +356,9 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnDamageAction(action);
 
-			var chr = action.Attacker as Character;
-			var pvp = IsPvPing && chr != null;
+			var pvp = action.Attacker.IsPvPing;
+			var chr = action.Attacker.PlayerMaster;
+
 			var killingBlow = !IsAlive;
 
 			if (action.Attacker != null &&
@@ -385,16 +386,7 @@ namespace WCell.RealmServer.Entities
 
 			if (killingBlow)
 			{
-				// this Character died in the process
-				if (pvp)
-				{
-					if (YieldsXpOrHonor)
-					{
-						chr.Proc(ProcTriggerFlags.GainExperience, this, action, true);
-						chr.OnHonorableKill(action);
-					}
-				}
-				else
+				if (!pvp)
 				{
 					// durability loss
 					m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
@@ -1852,7 +1844,6 @@ namespace WCell.RealmServer.Entities
 			{
 				m_zone.Info.OnHonorableKill(this, victim);
 			}
-			m_region.OnHonorableKill(action);
 		}
 
 		private uint CalcHonorForKill(Character victim)

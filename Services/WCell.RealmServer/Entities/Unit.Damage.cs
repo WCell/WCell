@@ -393,7 +393,14 @@ namespace WCell.RealmServer.Entities
 					action.Victim.DrainManaShield(ref dmg);
 				}
 
-				action.Victim.Health -= dmg;
+				var health = action.Victim.Health;
+
+				if (dmg >= health)
+				{
+					LastKiller = action.Attacker;
+				}
+
+				action.Victim.Health = health - dmg;
 			}
 		}
 	}

@@ -865,7 +865,7 @@ namespace WCell.RealmServer.Global
 			for (var i = 0; i < objs.Length; i++)
 			{
 				var obj = objs[i];
-				if (!(obj is Character) && (!(obj is Unit) || obj.MasterChar != null))
+				if (!(obj is Character) && (!(obj is Unit) || obj.BelongsToPlayer))
 				{
 					// only delete things that are not Characters or belong to Characters
 					obj.DeleteNow();
@@ -2432,12 +2432,58 @@ namespace WCell.RealmServer.Global
 
 		#endregion
 
+		/// <summary>
+		/// Is called whenever a Character dies.
+		/// </summary>
+		/// <param name="action"></param>
+		protected internal virtual void OnPlayerDeath(IDamageAction action)
+		{
+			if (action.Attacker.IsPvPing)
+			{
+				if (action.Victim.YieldsXpOrHonor)
+				{
+					var attacker = ((Character)action.Attacker);
+					attacker.Proc(ProcTriggerFlags.GainExperience, action.Victim, action, true);
+					attacker.OnHonorableKill(action);
+					OnHonorableKill(action);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Is called whenevr an honorable character was killed by another character
+		/// </summary>
+		/// <param name="action"></param>
 		protected internal virtual void OnHonorableKill(IDamageAction action)
 		{
 		}
 
-		protected internal virtual void OnDeath(IDamageAction action)
+		/// <summary>
+		/// Is called whenever an NPC dies
+		/// </summary>
+		protected internal virtual void OnNPCDied(NPC npc)
 		{
+			var looter = npc.FirstAttacker;
+			if (looter is Character && npc.YieldsXpOrHonor)
+			{
+				if (XpCalculator != null)
+				{
+					// distribute XP
+					// TODO: Consider reductions if someone else killed the mob
+					var chr = (Character) looter;
+					var baseXp = XpCalculator(looter.Level, npc);
+					XpGenerator.CombatXpDistributer(chr, npc, baseXp);
+
+					if (chr.Group != null)
+					{
+						chr.Group.DistributeGroupQuestKills(chr, npc);
+					}
+					else
+					{
+						chr.QuestLog.OnNPCInteraction(npc);
+					}
+				}
+			}
 		}
 	}
 }

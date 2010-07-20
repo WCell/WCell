@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -47,6 +47,11 @@ namespace WCell.Addons.Default.Spells.Warrior
 				effect.BasePoints = 0;	// only 1%
 			}, SpellId.EffectClassSkillBloodthirst);
 
+			// Intercept should also deal "${$AP*0.12} damage"
+			SpellLineId.WarriorIntercept.Apply(spell =>
+			{
+				var effect = spell.AddEffect(SpellEffectType.Dummy);
+			});
 		}
 	}
 }
