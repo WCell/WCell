@@ -233,7 +233,7 @@ namespace WCell.RealmServer.RacesClasses
         {
 			// default mana generation
             //return (10f + (spirit / 7f));
-			var regen = (0.001 + Math.Pow(chr.Intellect, 0.5) * chr.Spirit * GameTables.BaseRegen[chr.Level]) * Unit.RegenTickSeconds;
+            var regen = (float)(0.001f + (float)Math.Sqrt(chr.Intellect) * chr.Spirit * GameTables.BaseRegen[chr.Level]) * Unit.RegenTickMultiplier;
 			if (chr.IsInCombat)
 			{
 				regen = (regen * chr.ManaRegenPerTickInterruptedPct) / 100;

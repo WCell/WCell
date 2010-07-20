@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Handlers
 				var spline = packet.ReadFloat();
 			}
 
-			var onlyOrientation = !moveFlags.HasAnyFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
+			var onlyOrientation = moveFlags.HasAnyFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_HEARTBEAT &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP_ASCEND &&

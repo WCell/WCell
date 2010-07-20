@@ -64,7 +64,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The default delay between 2 Regeneration ticks (for Health and the default Power) in seconds
 		/// </summary>
-		public static float RegenTickSeconds = 5.0f;
+		public static float RegenTickMultiplier = 5.0f;
+
+	    public static float RegenTickDelay = 1.0f;
 
 		/// <summary>
 		/// The amount of milliseconds for the time of "Interrupted" power regen
@@ -623,7 +625,7 @@ namespace WCell.RealmServer.Entities
 		public void InitializeRegeneration()
 		{
 			this.UpdatePowerRegen();
-			m_RegenerationDelay = RegenTickSeconds;
+			m_RegenerationDelay = RegenTickDelay;
 			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regen);
 			m_regenTimer.Start();
 			m_regenerates = true;
