@@ -61,6 +61,12 @@ namespace WCell.Addons.Default.Spells.Hunter
                 {
                     spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain;
                 });
+
+            SpellLineId.HunterMarksmanshipReadiness.Apply(spell =>
+                {
+                    spell.Effects[0].SpellEffectHandlerCreator =
+                        (cast, effect) => new ReadinessHandler(cast, effect);
+                });
         }
         #endregion
 
