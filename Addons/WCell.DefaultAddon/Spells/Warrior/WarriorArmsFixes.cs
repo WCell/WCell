@@ -85,6 +85,12 @@ namespace WCell.Addons.Default.Spells.Warrior
 			{
 				spell.Effects[0].APValueFactor = 0.5f;
 			});
+
+			// Mocking Blow is against npcs only
+			SpellLineId.WarriorMockingBlow.Apply(spell =>
+			{
+				spell.CanCastOnPlayer = false;
+			});
 		}
 	}
 
