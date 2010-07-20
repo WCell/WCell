@@ -792,6 +792,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var critChance = 0f;
 			var crit = false;
+            int overheal = 0;
 
 			if (healer == null)
 			{
@@ -828,14 +829,15 @@ namespace WCell.RealmServer.Entities
 
 			if (value > 0)
 			{
-				if (Health + value > MaxHealth)
-				{
-					value = (MaxHealth - Health);
-				}
-
-				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit);
-
-				Health += value;
+                value = (int)(value * Utility.Random(0.95f, 1.05f));
+                if (Health + value > MaxHealth)
+                {
+                    overheal = (Health + value) - MaxHealth;
+                    value = (MaxHealth - Health);
+                }
+                Health += value;
+                value += overheal;
+                CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
 			if (healer is Unit)
