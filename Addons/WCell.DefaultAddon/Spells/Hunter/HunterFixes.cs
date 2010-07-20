@@ -42,8 +42,8 @@ namespace WCell.Addons.Default.Spells.Hunter
             // Volley does incorrect damage ($RAP*0.083700 + $m1)
             SpellHandler.Apply(spell =>
                 {
-                    spell.Effects[0].SpellEffectHandlerCreator =
-                    (cast, effect) => new VolleyHandler(cast, effect);
+                    spell.Effects[0].APValueFactor = 0.08370f;
+
                 }, SpellId.EffectClassSkillVolleyRank1, SpellId.EffectClassSkillVolleyRank2,
                           SpellId.EffectClassSkillVolleyRank3, SpellId.EffectClassSkillVolleyRank4,
                           SpellId.EffectClassSkillVolleyRank5, SpellId.EffectClassSkillVolleyRank6
