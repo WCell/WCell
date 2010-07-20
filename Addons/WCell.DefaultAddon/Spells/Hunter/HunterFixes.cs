@@ -52,8 +52,7 @@ namespace WCell.Addons.Default.Spells.Hunter
             // Arcane Shot does incorrect damage ($RAP*0.15 + $m1)
             SpellLineId.HunterArcaneShot.Apply(spell =>
                 {
-                    spell.Effects[0].SpellEffectHandlerCreator =
-                        (cast, effect) => new ArcaneShotHandler(cast, effect);
+                    spell.Effects[0].APValueFactor = 0.15f;
                 });
 
             // Multi-Shot affects three targets
