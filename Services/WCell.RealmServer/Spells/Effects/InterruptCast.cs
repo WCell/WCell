@@ -27,9 +27,21 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
+		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		{
+			//if (!target.IsUsingSpell)
+			//{
+			//    return SpellFailedReason.
+			//}
+			return base.CheckValidTarget(target);
+		}
+
 		protected override void Apply(WorldObject target)
 		{
-			target.SpellCast.Cancel(SpellFailedReason.Fizzle);
+			if (target.IsUsingSpell)
+			{
+				target.SpellCast.Cancel(SpellFailedReason.Interrupted);	
+			}
 		}
 
 		public override ObjectTypes TargetType

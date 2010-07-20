@@ -267,8 +267,9 @@ namespace WCell.RealmServer.Spells
 		#region Init & Auto Generation of fields
 		internal void Init2()
 		{
-			ValueMin = BasePoints + DiceSides;
-			ValueMax = BasePoints + (DiceSides/* * DiceCount*/); // TODO: check this!
+			// see http://www.wowhead.com/spell=25269 for comparison
+			ValueMin = BasePoints + 1;
+			ValueMax = BasePoints + DiceSides; // TODO: check this!
 
 			IsTargetAreaEffect = TargetAreaEffects.Contains(ImplicitTargetA) || TargetAreaEffects.Contains(ImplicitTargetB);
 
@@ -538,15 +539,20 @@ namespace WCell.RealmServer.Spells
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 				{
 					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.TotalMeleeAP * ap);
+					value += (int)(caster.TotalMeleeAP * ap + 0.5f);
 				}
 			}
 			return value;
 		}
 
+		public int CalcEffectValue()
+		{
+			return CalcEffectValue(0, 0);
+		}
+
 		public int CalcEffectValue(int level, int comboPoints)
 		{
-			var value = BasePoints;
+			var value = BasePoints+1;
 
 			// apply Unit boni
 			value += (int)Math.Round(RealPointsPerLevel * Spell.GetMaxLevelDiff(level));
@@ -554,9 +560,9 @@ namespace WCell.RealmServer.Spells
 
 			// die += (uint)Math.Round(Effect.DicePerLevel * caster.Level);
 
-			// dice boni
-			value += DiceSides;
-			//value += Utility.Random(DiceCount, DiceCount * DiceSides);
+			// dice bonus
+			// see http://www.wowhead.com/spell=25269 for comparison
+			value += Utility.Random(0, DiceSides);
 
 			return value;
 		}

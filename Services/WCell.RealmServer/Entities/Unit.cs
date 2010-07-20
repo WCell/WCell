@@ -64,7 +64,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The default delay between 2 Regeneration ticks (for Health and the default Power) in seconds
 		/// </summary>
-		public static float RegenTickSeconds = 5.0f;
+		public static float RegenTickMultiplier = 5.0f;
+
+	    public static float RegenTickDelay = 1.0f;
 
 		/// <summary>
 		/// The amount of milliseconds for the time of "Interrupted" power regen
@@ -623,7 +625,7 @@ namespace WCell.RealmServer.Entities
 		public void InitializeRegeneration()
 		{
 			this.UpdatePowerRegen();
-			m_RegenerationDelay = RegenTickSeconds;
+			m_RegenerationDelay = RegenTickDelay;
 			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regen);
 			m_regenTimer.Start();
 			m_regenerates = true;
@@ -792,6 +794,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var critChance = 0f;
 			var crit = false;
+            int overheal = 0;
 
 			if (healer == null)
 			{
@@ -828,14 +831,15 @@ namespace WCell.RealmServer.Entities
 
 			if (value > 0)
 			{
-				if (Health + value > MaxHealth)
-				{
-					value = (MaxHealth - Health);
-				}
-
-				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit);
-
-				Health += value;
+                value = (int)(value * Utility.Random(0.95f, 1.05f));
+                if (Health + value > MaxHealth)
+                {
+                    overheal = (Health + value) - MaxHealth;
+                    value = (MaxHealth - Health);
+                }
+                Health += value;
+                value += overheal;
+                CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
 			if (healer is Unit)

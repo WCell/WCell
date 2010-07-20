@@ -256,7 +256,7 @@ namespace WCell.RealmServer.Handlers
 			return packet;
 		}
 
-		public static void SendHealLog(WorldObject caster, Unit target, uint spellId, int value, bool critical)
+		public static void SendHealLog(WorldObject caster, Unit target, uint spellId, int value, bool critical, int overheal)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLHEALLOG, 25))
 			{
@@ -265,7 +265,7 @@ namespace WCell.RealmServer.Handlers
 
 				packet.Write(spellId);
 				packet.Write(value);
-				packet.Write((uint)0);		// overheal
+				packet.Write(overheal);		// overheal
 				packet.Write(0);			// absorb
 				packet.Write((byte)(critical ? 1 : 0));
 				packet.Write((byte)0);		// unused

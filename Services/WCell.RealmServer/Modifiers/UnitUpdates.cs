@@ -167,10 +167,8 @@ namespace WCell.RealmServer.Modifiers
 
 
 			UpdatePower(unit);
-			float apBonus = unit.StatModsInt[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect];
-			if (apBonus > 0)
+			if (unit.StatModsInt[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] > 0)
 			{
-				unit.RangedAttackIntMod = ((apBonus * intel) / 100f).RoundInt();
 				unit.UpdateRangedAttackPower();
 			}
 		}
@@ -329,6 +327,7 @@ namespace WCell.RealmServer.Modifiers
 				var lvl = chr.Level;
 				var agil = chr.Agility;
 				var str = unit.Strength;
+
 				chr.MeleeAttackPower = clss.CalculateMeleeAP(lvl, str, agil);
 			}
 
@@ -345,7 +344,15 @@ namespace WCell.RealmServer.Modifiers
 				var lvl = chr.Level;
 				var agil = chr.Agility;
 				var str = unit.Strength;
-				chr.RangedAttackPower = clss.CalculateRangedAP(lvl, str, agil) + chr.RangedAttackIntMod;
+
+				var val = clss.CalculateRangedAP(lvl, str, agil);
+
+				var apBonus = unit.StatModsInt[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect];
+				if (apBonus > 0)
+				{
+					val += (apBonus * unit.Intellect) + 50 / 100;
+				}
+				chr.RangedAttackPower = val;
 			}
 			unit.UpdateRangedDamage();
 		}

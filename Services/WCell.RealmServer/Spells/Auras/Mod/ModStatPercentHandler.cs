@@ -11,6 +11,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (SpellEffect.MiscValue == -1)
 			{
+				// all stats
 				vals = new int[(int)StatType.End];
 				for (var stat = StatType.Strength; stat < StatType.End; stat++)
 				{
@@ -30,6 +31,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (SpellEffect.MiscValue == -1)
 			{
+				// all stats
 				for (var stat = StatType.Strength; stat <= StatType.Spirit; stat++)
 				{
 					Owner.RemoveStatMod(stat, vals[(int)stat], SpellEffect.Spell.IsPassive);

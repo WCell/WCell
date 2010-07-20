@@ -1,2 +1,3 @@
-- added missing updates for 3.3.5
-- fixed periodic auras
+- tested: Cleave works
+- to test: WarriorRetaliation & more
+- fixed melee damage calculation against multiple target

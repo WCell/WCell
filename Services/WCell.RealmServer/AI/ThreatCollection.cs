@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.AI.Groups;
 
+using AggressorPair = System.Collections.Generic.KeyValuePair<WCell.RealmServer.Entities.Unit, int>;
+
 namespace WCell.RealmServer.AI
 {
 	/// <summary>
@@ -16,7 +18,7 @@ namespace WCell.RealmServer.AI
 		/// </summary>
 		public static int RequiredHighestThreatPct = 110;
 
-		public readonly List<KeyValuePair<Unit, int>> AggressorPairs;
+		public readonly List<AggressorPair> AggressorPairs;
 		private Unit m_CurrentAggressor;
 		private int m_highestThreat;
 		private Unit m_taunter;
@@ -26,7 +28,7 @@ namespace WCell.RealmServer.AI
 		#region Constructors
 		public ThreatCollection()
 		{
-			AggressorPairs = new List<KeyValuePair<Unit, int>>(5);
+			AggressorPairs = new List<AggressorPair>(5);
 		}
 
 		#endregion
@@ -58,16 +60,23 @@ namespace WCell.RealmServer.AI
 					return;
 				}
 
-				KeyValuePair<Unit, int> aggressor;
+				AggressorPair aggressor;
 				var index = GetIndex(unit);
+				var newIndex = index;
+
 				if (index == -1)
 				{
-					// new Aggressor
-					OnNewAggressor(unit);
-
-					aggressor = new KeyValuePair<Unit, int>(unit, value);
-					AggressorPairs.Add(aggressor);
 					index = AggressorPairs.Count - 1;
+					newIndex = index;
+
+					// moving up
+					while (newIndex - 1 >= 0 && AggressorPairs[newIndex - 1].Value < value)
+					{
+						--newIndex;
+					}
+
+					aggressor = new AggressorPair(unit, value);
+					AggressorPairs.Insert(newIndex, aggressor);
 				}
 				else
 				{
@@ -77,7 +86,6 @@ namespace WCell.RealmServer.AI
 						return;
 					}
 
-					var newIndex = index;
 					if (value > aggressor.Value)
 					{
 						// moving up
@@ -86,11 +94,8 @@ namespace WCell.RealmServer.AI
 							--newIndex;
 						}
 
-						if (newIndex != index)
-						{
-							AggressorPairs.RemoveAt(index);
-							AggressorPairs.Insert(newIndex, aggressor);
-						}
+						AggressorPairs.RemoveAt(index);
+						AggressorPairs.Insert(newIndex, new AggressorPair(aggressor.Key, value));
 					}
 					else
 					{
@@ -100,39 +105,42 @@ namespace WCell.RealmServer.AI
 							++newIndex;
 						}
 
-						if (newIndex != index)
+						AggressorPairs.Insert(newIndex, new AggressorPair(aggressor.Key, value));
+						AggressorPairs.RemoveAt(index);
+					}
+				}
+
+				if (m_taunter == null)
+				{
+					// update current aggressor, if there is no taunter
+					if (unit == m_CurrentAggressor)
+					{
+						// updated current aggressor's threat
+						if (newIndex == 0)
 						{
-							AggressorPairs.Insert(newIndex, aggressor);
-							AggressorPairs.RemoveAt(index);
+							// still at the top
+							m_highestThreat = value;
+						}
+						else if (IsNewHighestThreat(AggressorPairs[0].Value))
+						{
+							// moved down
+							m_CurrentAggressor = AggressorPairs[0].Key;
+							m_highestThreat = AggressorPairs[0].Value;
+							OnNewAggressor(m_CurrentAggressor);
 						}
 					}
-
-					index = newIndex;
-				}
-
-				if (unit == m_CurrentAggressor)
-				{
-					if (index == 0)
+					else if ((newIndex == 0 && IsNewHighestThreat(value)) || m_CurrentAggressor == null)
 					{
-						// still at the top
+						// someone who was not the aggressor
+						m_CurrentAggressor = unit;
 						m_highestThreat = value;
+						OnNewAggressor(m_CurrentAggressor);
 					}
-					else if (IsNewHighestThreat(AggressorPairs[0].Value))
-					{
-						// moved down
-						m_CurrentAggressor = AggressorPairs[0].Key;
-						m_highestThreat = AggressorPairs[0].Value;
-					}
-				}
-				else if (IsNewHighestThreat(value) || m_CurrentAggressor == null)
-				{
-					m_CurrentAggressor = unit;
-					m_highestThreat = value;
 				}
 			}
 		}
 
-		public KeyValuePair<Unit, int> GetThreat(Unit unit)
+		public AggressorPair GetThreat(Unit unit)
 		{
 			foreach (var aggressor in AggressorPairs)
 			{
@@ -141,7 +149,7 @@ namespace WCell.RealmServer.AI
 					return aggressor;
 				}
 			}
-			return default(KeyValuePair<Unit, int>);
+			return default(AggressorPair);
 		}
 
 		public int GetIndex(Unit unit)
@@ -176,11 +184,7 @@ namespace WCell.RealmServer.AI
 				{
 					// Taunt wore off
 					m_taunter = null;
-					if (AggressorPairs.Count > 0)
-					{
-						m_CurrentAggressor = AggressorPairs[0].Key;
-						m_highestThreat = AggressorPairs[0].Value;
-					}
+					FindNewAggressor();
 				}
 			}
 		}
@@ -200,6 +204,22 @@ namespace WCell.RealmServer.AI
 		}
 
 		#endregion
+
+		private void FindNewAggressor()
+		{
+			if (AggressorPairs.Count == 0)
+			{
+				m_CurrentAggressor = null;
+				m_highestThreat = 0;
+			}
+			else
+			{
+				var pair = AggressorPairs[0];
+				m_CurrentAggressor = pair.Key;
+				m_highestThreat = pair.Value;
+				OnNewAggressor(pair.Key);
+			}
+		}
 
 		/// <summary>
 		/// Whether the given amount is at least RequiredHighestThreatPct more than the current highest Threat
@@ -240,19 +260,13 @@ namespace WCell.RealmServer.AI
 				}
 			}
 
-			if (m_CurrentAggressor == unit)
+			if (m_taunter == unit)
 			{
-				if (AggressorPairs.Count == 0)
-				{
-					m_CurrentAggressor = null;
-					m_highestThreat = 0;
-				}
-				else
-				{
-					var pair = AggressorPairs[0];
-					m_CurrentAggressor = pair.Key;
-					m_highestThreat = pair.Value;
-				}
+				Taunter = null;
+			}
+			else if (m_CurrentAggressor == unit)
+			{
+				FindNewAggressor();
 			}
 		}
 
@@ -271,9 +285,9 @@ namespace WCell.RealmServer.AI
 		/// Returns an array of size 0-max, containing the Units with the highest Threat and their amount.
 		/// </summary>
 		/// <param name="max"></param>
-		public KeyValuePair<Unit, int>[] GetHighestThreatAggressorPairs(int max)
+		public AggressorPair[] GetHighestThreatAggressorPairs(int max)
 		{
-			var targets = new KeyValuePair<Unit, int>[Math.Min(max, AggressorPairs.Count)];
+			var targets = new AggressorPair[Math.Min(max, AggressorPairs.Count)];
 
 			for (var i = targets.Length; i >= 0; i--)
 			{

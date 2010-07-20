@@ -182,11 +182,22 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddDamageMods(DamageAction action)
+		public virtual void AddAttackMods(DamageAction action)
 		{
-			foreach (var mod in AttackModifiers)
+			foreach (var mod in AttackEventHandlers)
 			{
-				mod.ModAttack(action);
+				mod.OnAttack(action);
+			}
+		}
+
+		/// <summary>
+		/// Adds damage mods to the given AttackAction
+		/// </summary>
+		public virtual void AddDefenseMods(DamageAction action)
+		{
+			foreach (var mod in AttackEventHandlers)
+			{
+				mod.OnAttack(action);
 			}
 		}
 
@@ -221,6 +232,16 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Standard Attack
+
+		/// <summary>
+		/// Use the given weapon to strike
+		/// </summary>
+		/// <param name="weapon"></param>
+		public void Strike()
+		{
+			Strike(MainWeapon);
+		}
+
 		/// <summary>
 		/// Use the given weapon to strike
 		/// </summary>
@@ -254,6 +275,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(Unit target)
+		{
+			Strike(MainWeapon, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given weapon on the given target.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, Unit target)
 		{
 			Strike(weapon, GetUnusedAction(), target);
@@ -264,8 +295,23 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(DamageAction action, Unit target)
+		{
+			Strike(MainWeapon, action, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given Weapon and AttackAction.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
+			if (!target.IsInWorld)
+			{
+				return;
+			}
+
 			if (weapon == null)
 			{
 				log.Error("Trying to strike without weapon: " + this);
@@ -278,23 +324,6 @@ namespace WCell.RealmServer.Entities
 			//    m_Movement.Stop();
 			//}
 
-			// calc damage
-			if (weapon == m_offhandWeapon)
-			{
-				action.Damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
-			}
-			else
-			{
-				if (weapon.IsRanged)
-				{
-					action.Damage = Utility.Random((int)MinRangedDamage, (int)MaxRangedDamage + 1);
-				}
-				else
-				{
-					action.Damage = Utility.Random((int)MinDamage, (int)MaxDamage + 1);
-				}
-			}
-
 			target.IsInCombat = true;
 
 			action.Victim = target;
@@ -305,27 +334,6 @@ namespace WCell.RealmServer.Entities
 			{
 				// Pending combat ability
 				var ability = m_pendingCombatAbility;
-				// get boni, damage and let the Spell impact
-				var multiplier = 100;
-				SpellEffect effect = null;
-				foreach (var effectHandler in ability.Handlers)
-				{
-					if (effectHandler.Effect.IsStrikeEffectFlat)
-					{
-						action.Damage += effectHandler.CalcEffectValue();
-					}
-					else if (effectHandler.Effect.IsStrikeEffectPct)
-					{
-						multiplier += effectHandler.CalcEffectValue();
-					}
-
-					if (effect == null)
-					{
-						// use the first effect
-						effect = effectHandler.Effect;
-					}
-				}
-				action.Damage = (action.Damage * multiplier) / 100;
 
 				// send pending animation
 				if (ability.IsInstant)
@@ -342,17 +350,17 @@ namespace WCell.RealmServer.Entities
 				m_pendingCombatAbility = null;
 
 				action.Schools = ability.Spell.SchoolMask;
-				action.SpellEffect = effect;
+				action.SpellEffect = ability.Spell.Effects[0];
 
-				if (ability.Spell.IsAreaSpell)
+				if (ability.Targets.Count > 0)
 				{
-					var totalDmg = action.Damage;
 					action.IsDot = false;
 
 					// AoE spell
 					foreach (var targ in ability.Targets)
 					{
-						action.Reset(this, (Unit)targ, weapon, totalDmg);
+						var dmg = GetWeaponDamage(weapon, ability);
+						action.Reset(this, (Unit)targ, weapon, dmg);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
 						{
@@ -364,6 +372,9 @@ namespace WCell.RealmServer.Entities
 				else
 				{
 					// single target
+
+					// calc damage
+					action.Damage = GetWeaponDamage(weapon, m_pendingCombatAbility);
 					if (!action.DoAttack() &&
 						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
 					{
@@ -381,9 +392,13 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
+				// no combat ability
 				m_extraAttacks += 1;
 				do
 				{
+					// calc damage
+					action.Damage = GetWeaponDamage(weapon, m_pendingCombatAbility);
+
 					action.Schools = weapon.Damages.AllSchools();
 					if (action.Schools == DamageSchoolMask.None)
 					{
@@ -395,6 +410,49 @@ namespace WCell.RealmServer.Entities
 				} while (--m_extraAttacks > 0);
 			}
 			action.OnFinished();
+		}
+
+		/// <summary>
+		/// Returns random damage for the given weapon
+		/// </summary>
+		public int GetWeaponDamage(IWeapon weapon, SpellCast pendingAbility)
+		{
+			int damage;
+			if (weapon == m_offhandWeapon)
+			{
+				damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
+			}
+			else
+			{
+				if (weapon.IsRanged)
+				{
+					damage = Utility.Random((int)MinRangedDamage, (int)MaxRangedDamage + 1);
+				}
+				else
+				{
+					damage = Utility.Random((int)MinDamage, (int)MaxDamage + 1);
+				}
+			}
+
+			if (pendingAbility != null && pendingAbility.IsCasting)
+			{
+				// get boni, damage and let the Spell impact
+				var multiplier = 100;
+
+				foreach (var effectHandler in pendingAbility.Handlers)
+				{
+					if (effectHandler.Effect.IsStrikeEffectFlat)
+					{
+						damage += effectHandler.CalcEffectValue();
+					}
+					else if (effectHandler.Effect.IsStrikeEffectPct)
+					{
+						multiplier += effectHandler.CalcEffectValue();
+					}
+				}
+				damage = (damage * multiplier + 50) / 100;
+			}
+			return damage;
 		}
 		#endregion
 
@@ -468,7 +526,8 @@ namespace WCell.RealmServer.Entities
 
 			if (attacker != null)
 			{
-				attacker.AddDamageMods(action);
+				AddDefenseMods(action);
+				attacker.AddAttackMods(action);
 
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))

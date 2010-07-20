@@ -24,6 +24,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
@@ -695,7 +696,9 @@ namespace WCell.RealmServer.Spells
             IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
                        Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
-			HasModifierEffects = HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+			HasModifierEffects = HasModifierEffects || 
+				HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+
 			ForeachEffect(effect =>
 			{
 				for (var i = 0; i < 3; i++)
@@ -770,6 +773,7 @@ namespace WCell.RealmServer.Spells
 					return effect;
 				}
 			}
+			ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
 			return null;
 		}
 
@@ -785,6 +789,7 @@ namespace WCell.RealmServer.Spells
 					return effect;
 				}
 			}
+			ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			return null;
 		}
 

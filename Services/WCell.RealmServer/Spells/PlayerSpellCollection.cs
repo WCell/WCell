@@ -727,12 +727,20 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public override void ClearCooldown(Spell cooldownSpell)
 		{
+			ClearCooldown(cooldownSpell, true);
+		}
+
+		/// <summary>
+		/// Clears the cooldown for this spell and all spells in its category
+		/// </summary>
+		public void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
+		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)
 			{
 				// send cooldown update to client
 				SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
-				if (cooldownSpell.Category != 0)
+				if (alsoCategory && cooldownSpell.Category != 0)
 				{
 					foreach (var spell in m_byId.Values)
 					{
@@ -759,7 +767,7 @@ namespace WCell.RealmServer.Spells
 				idCooldown = null;
 			}
 
-			if (m_categoryCooldowns != null)
+			if (alsoCategory && m_categoryCooldowns != null)
 			{
 				if (m_categoryCooldowns.TryGetValue(cooldownSpell.Category, out catCooldown))
 				{
