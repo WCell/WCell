@@ -1,0 +1,4 @@
+-  Added support to UnitExtraFlags.NoXP.
+-  Added UnitExtraFlags enum.
+-  Updated the CreatureCache and CreatureCacheConverter to patch 3.3.5 (it was really outdated).
+-  

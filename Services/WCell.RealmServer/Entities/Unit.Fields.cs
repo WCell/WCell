@@ -1253,6 +1253,12 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
+	    public UnitExtraFlags ExtraFlags
+	    {
+	        get;
+            set;
+	    }
+
 		#region Health
 		public void Kill()
 		{

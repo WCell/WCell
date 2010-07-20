@@ -124,6 +124,7 @@ namespace WCell.RealmServer.Entities
 			Class = entry.ClassId;
 			Race = entry.RaceId;
 			YieldsXpOrHonor = entry.GeneratesXp;
+		    ExtraFlags = entry.ExtraFlags;
 			SheathType = SheathType.Melee;
 
 			// speeds
@@ -844,7 +845,7 @@ namespace WCell.RealmServer.Entities
 				EnterFinalState();
 			}
 
-			if (looter is Character && YieldsXpOrHonor)
+            if (looter is Character && YieldsXpOrHonor)
 			{
 				if (m_region.XpCalculator != null)
 				{
@@ -863,6 +864,8 @@ namespace WCell.RealmServer.Entities
 					}
 				}
 			}
+
+            if(UnitExtraFlags.InstanceBind)
 
 			if (m_currentTamer != null)
 			{
