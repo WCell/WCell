@@ -42,7 +42,10 @@ namespace WCell.Addons.Default.Spells.Hunter
             SpellLineId.HunterMultiShot.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain);
 
             // Moongonse Bite does incorrect damage 
-            SpellLineId.HunterMongooseBite.Apply(FixMongooseBiteRank);
+            SpellLineId.HunterMongooseBite.Apply(spell => 
+                {
+                    spell.Effects[0].APValueFactor = 0.2f;
+                });
 
 		}
 
@@ -56,12 +59,6 @@ namespace WCell.Addons.Default.Spells.Hunter
         {
             spell.Effects[0].SpellEffectHandlerCreator =
                 (cast, effect) => new ArcaneShotHandler(cast, effect);
-        }
-
-        private static void FixMongooseBiteRank(Spell spell)
-        {
-            spell.Effects[0].SpellEffectHandlerCreator =
-                (cast, effect) => new MongooseBiteHandler(cast, effect);
         }
 	}
 }
