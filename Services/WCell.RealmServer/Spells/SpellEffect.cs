@@ -54,7 +54,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Amount of AP to be added to the EffectValue
 		/// </summary>
-		public float APValueFactor;
+		public float APValueFactorPct;
 
 		/// <summary>
 		/// Amount of AP to be added to the EffectValue per combo point
@@ -536,10 +536,10 @@ namespace WCell.RealmServer.Spells
 			}
 			if (caster != null)
 			{
-				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
+				if (APValueFactorPct != 0 || APPerComboPointValueFactor != 0)
 				{
-					var ap = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					value += (int)(caster.TotalMeleeAP * ap);
+					var ap = APValueFactorPct + (APPerComboPointValueFactor * caster.ComboPoints);
+					value += ((int)(caster.TotalMeleeAP * ap) + 50)/100;
 				}
 			}
 			return value;

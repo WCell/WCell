@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Spells
 		public SpellFailedReason ValidateTarget(WorldObject target, TargetFilter filter)
 		{
 			var handler = FirstHandler;
-
+			var caster = handler.Cast.Caster;
 			var spell = handler.Effect.Spell;
 
 			if (!target.CheckObjType(handler.TargetType))
@@ -130,9 +130,12 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.BadTargets;
 			}
 
-			var caster = handler.Cast.Caster;
-			var failReason = spell.CheckValidTarget(caster, target);
+			if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 && !target.IsInFrontOf(caster))
+			{
+				return SpellFailedReason.NotInfront;
+			}
 
+			var failReason = spell.CheckValidTarget(caster, target);
 			if (failReason != SpellFailedReason.Ok)
 			{
 				return failReason;

@@ -74,9 +74,16 @@ namespace WCell.Addons.Default.Spells.Warrior
 				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitSelf;
 			});
 
+			// Taste for blood only triggers once every 6 seconds
 			SpellLineId.WarriorArmsTasteForBlood.Apply(spell =>
 			{
 				spell.ProcDelay = 6000;
+			});
+
+			// Heroic Throw "causing ${$m1+$AP*.50} damage"
+			SpellLineId.WarriorHeroicThrow.Apply(spell =>
+			{
+				spell.Effects[0].APValueFactorPct = 50;
 			});
 		}
 	}

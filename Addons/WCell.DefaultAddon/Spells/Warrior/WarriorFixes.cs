@@ -8,6 +8,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Warrior
@@ -17,7 +18,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 		[Initialization(InitializationPass.Second)]
 		public static void FixWarrior()
 		{
-
 			// Charge doesn't generate rage
 			SpellLineId.WarriorCharge.Apply(spell =>
 			{
@@ -60,6 +60,49 @@ namespace WCell.Addons.Default.Spells.Warrior
 				effect.BasePoints = 15;
 				effect.SpellEffectHandlerCreator = (cast, effct) => new SchoolDamageByAPPctEffectHandler(cast, effct);
 			});
+
+			// Retaliation needs to retaliate
+			SpellLineId.WarriorRetaliation.Apply(spell => {
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.IsProc = true;
+				effect.AuraEffectHandlerCreator = () => new RetaliationEffectHandler();
+			});
+
+			// cleave should attack two enemies
+			SpellLineId.WarriorCleave.Apply(spell =>
+			{
+				spell.Effects[0].ChainTargets = 2;
+			});
+		}
+	}
+
+	class RetaliationEffectHandler : AttackEventEffectHandler
+	{
+		public override void OnBeforeAttack(DamageAction action)
+		{
+			// do nothing
+		}
+
+		public override void OnAttack(DamageAction action)
+		{
+			// do nothing
+		}
+
+		public override void OnDefend(DamageAction action)
+		{
+			// strike back
+			var victim = action.Victim;
+			var atk = action.Attacker;
+			if (!atk.IsBehind(victim))
+			{
+				victim.AddMessage(() =>
+				{
+					if (atk.IsInWorld && victim.MayAttack(atk))
+					{
+						victim.Strike(atk);
+					}
+				});
+			}
 		}
 	}
 }
