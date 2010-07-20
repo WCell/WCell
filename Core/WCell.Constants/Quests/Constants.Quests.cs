@@ -134,6 +134,7 @@ namespace WCell.Constants.Quests
 		HiddenRewards = 0x0200, //combined with 0x80
 		Unknown4      = 0x0400,
 		TBCRaces      = 0x0800,
-		Daily         = 0x1000
+		Daily         = 0x1000,
+        AutoAccept    = 0x80000,                // quests in starting areas
 	}
 }

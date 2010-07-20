@@ -173,8 +173,8 @@ namespace WCell.RealmServer.Handlers
 					pkt.Write(0);
 				}
 
-				pkt.Write(entry.Float1);
-				pkt.Write(entry.Float2);
+				pkt.Write(entry.HpModifier);
+				pkt.Write(entry.ManaModifier);
 				pkt.Write(entry.IsLeader);
 
 				for (i = 0; i < 4; i++)

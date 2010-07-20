@@ -357,6 +357,8 @@ namespace WCell.RealmServer.Quests
 				{
 					// start a single quest if there is only one and the user did not start it yet
 					QuestHandler.SendDetails(qHolder, list[0], chr, true);
+                    if (list[0].Flags.HasFlag(QuestFlags.AutoAccept))
+                        chr.QuestLog.TryAddQuest(list[0], qHolder);
 				}
 				else
 				{

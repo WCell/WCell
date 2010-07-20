@@ -358,6 +358,8 @@ namespace WCell.RealmServer.Quests
 					{
 						// Offer the next Quest if its also offered by the same QuestGiver
 						QuestHandler.SendDetails(qHolder, nq, chr, true);
+                        if (nq.Flags.HasFlag(QuestFlags.AutoAccept))
+                            chr.QuestLog.TryAddQuest(nq, qHolder);
 					}
 				}
 				return true;

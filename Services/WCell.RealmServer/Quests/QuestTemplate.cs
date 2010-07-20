@@ -110,12 +110,12 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// 
 		/// </summary>
-		public FactionReputationEntry MinReqReputation;
+		public FactionReputationEntry ObjectiveMinReputation;
 
 		/// <summary>
 		/// Player cannot have more than this in reputation
 		/// </summary>
-		public FactionReputationEntry MaxReqReputation;
+		public FactionReputationEntry ObjectiveMaxReputation;
 
 		/// <summary>
 		/// Gets or sets the reward money in copper, if it's negative,
@@ -586,24 +586,6 @@ namespace WCell.RealmServer.Quests
 			if (RequiredClass != 0 && RequiredClass != chr.Class)
 			{
 				return QuestInvalidReason.WrongClass;
-			}
-
-			if (MinReqReputation.ReputationIndex != FactionReputationIndex.None && MinReqReputation.Value != 0)
-			{
-				var rep = chr.Reputations[MinReqReputation.ReputationIndex];
-				if (rep == null || rep.Value < MinReqReputation.Value)
-				{
-					return QuestInvalidReason.NoRequirements;
-				}
-			}
-
-			if (MaxReqReputation.ReputationIndex != FactionReputationIndex.None && MaxReqReputation.Value != 0)
-			{
-				var rep = chr.Reputations[MaxReqReputation.ReputationIndex];
-				if ((rep != null && rep.Value > MaxReqReputation.Value) || MaxReqReputation.Value < 0)
-				{
-					return QuestInvalidReason.NoRequirements;
-				}
 			}
 
 			if (RequiredSkill != SkillId.None && RequiredSkill > 0 &&

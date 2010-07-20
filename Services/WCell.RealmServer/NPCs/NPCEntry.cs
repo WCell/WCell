@@ -101,9 +101,9 @@ namespace WCell.RealmServer.NPCs
 		[Persistent(4)]
 		public uint[] DisplayIds = new uint[4];
 
-		public float Float1;
+		public float HpModifier;
 
-		public float Float2;
+		public float ManaModifier;
 
 		public bool IsLeader;
 
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.NPCs
 
 		public int RangedAttackPower;
 
-		public int OffhandAttackPower;
+		// public int OffhandAttackPower;
 
 		public DamageSchool DamageSchool;
 
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-		public int ExtraFlags;
+        public UnitExtraFlags ExtraFlags;
 
 		public MovementType MovementType;
 
@@ -793,7 +793,7 @@ namespace WCell.RealmServer.NPCs
 
 			ModelInfos = new UnitModelInfo[DisplayIds.Length];
 
-			GeneratesXp = Type != NPCType.Critter && Type != NPCType.None;
+			GeneratesXp = (Type != NPCType.Critter && Type != NPCType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
 
 			var x = 0;
 			for (var i = 0; i < DisplayIds.Length; i++)
@@ -1024,7 +1024,7 @@ namespace WCell.RealmServer.NPCs
 			writer.WriteLineNotDefault(RangedAttackTime, "RangedAttackTime: " + RangedAttackTime);
 			writer.WriteLineNotDefault(AttackPower, "AttackPower: " + AttackPower);
 			writer.WriteLineNotDefault(RangedAttackPower, "RangedAttackPower: " + RangedAttackPower);
-			writer.WriteLineNotDefault(OffhandAttackPower, "OffhandAttackPower: " + OffhandAttackPower);
+			//writer.WriteLineNotDefault(OffhandAttackPower, "OffhandAttackPower: " + OffhandAttackPower);
 			writer.WriteLineNotDefault(MinDamage + MaxDamage, "Damage: {0} - {1}", MinDamage, MaxDamage);
 			writer.WriteLineNotDefault(RangedMinDamage + RangedMaxDamage, "RangedDamage: {0} - {1}", RangedMinDamage,
 									   RangedMaxDamage);
