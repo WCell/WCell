@@ -253,6 +253,8 @@
     <Compile Include="Instances\ZulAman.cs" />
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
+    <Compile Include="Spells\Hunter\ArcaneShotHandler.cs" />
+    <Compile Include="Spells\Hunter\MongooseBiteHandler.cs" />
     <Compile Include="Spells\Hunter\VolleyHandler.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
