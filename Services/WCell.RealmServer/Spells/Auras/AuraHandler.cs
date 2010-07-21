@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModDecreaseSpeed] = () => new ModDecreaseSpeedHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseEnergy] = () => new ModIncreaseEnergyHandler();
 			EffectHandlers[(int)AuraType.ModShapeshift] = () => new ShapeshiftHandler();
-			EffectHandlers[(int)AuraType.ModHealingPercent] = () => new ModHealingPercentHandler();
+			EffectHandlers[(int)AuraType.ModHealingPercent] = () => new ModHealingTakenPctHandler();
 			EffectHandlers[(int)AuraType.ModHealingDone] = () => new ModHealingDoneHandler();
 			EffectHandlers[(int)AuraType.SchoolImmunity] = () => new SchoolImmunityHandler();
 			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
@@ -139,7 +139,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModIncreaseEnergyPercent] = () => new ModIncreaseEnergyPercentHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseHealthPercent] = () => new ModIncreaseHealthPercentHandler();
 			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();
-			EffectHandlers[(int)AuraType.ModHealingTaken] = () => new ModHealingTakenHandler();
+			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();
 			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();
 			EffectHandlers[(int)AuraType.ModSpecificCombatRating] = () => new ModCombatRatingStat();
 			EffectHandlers[(int)AuraType.ModBaseResistancePercent] = () => new ModBaseResistancePercentHandler();
@@ -173,7 +173,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();
 			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
 			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifyHandler();
-			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfSpirit] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfStat] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModSpellHealingByPercentOfStat] = () => new ModHealingByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
 			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
 			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();

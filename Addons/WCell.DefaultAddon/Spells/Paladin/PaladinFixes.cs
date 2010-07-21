@@ -9,6 +9,8 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -41,6 +43,13 @@ namespace WCell.Addons.Default.Spells.Paladin
 				SpellLineId.PaladinHandOfReckoning,
 				SpellLineId.PaladinHandOfSacrifice,
 				SpellLineId.PaladinHandOfSalvation);
+
+			// Gift of the Naaru: "The amount healed is increased by your spell power or attack power, whichever is higher."
+			SpellLineId.PaladinSecondarySkillGiftOfTheNaaruRacial.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.PeriodicHeal);
+				effect.AuraEffectHandlerCreator = () => new GiftOfTheNaaruPaladinHandler();
+			});
 		}
 
 		#region Blessings
@@ -137,6 +146,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new HolyShockHandler(cast, effect, heal, dmg); }, spellid);
 		}
 
+		#region Holy Shock
 		public class HolyShockHandler : SpellEffectHandler
 		{
 			SpellId heal;
@@ -164,5 +174,44 @@ namespace WCell.Addons.Default.Spells.Paladin
 				}
 			}
 		}
+		#endregion
+
+		#region GiftOfTheNaaruPaladinHandler
+		public class GiftOfTheNaaruPaladinHandler : PeriodicHealHandler
+		{
+			private int totalBonus;
+			public GiftOfTheNaaruPaladinHandler()
+			{
+			}
+
+			protected override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+			{
+				if (target is Character)
+				{
+					var chr = (Character)target;
+					var ap = target.TotalMeleeAP;
+					var sp = chr.GetDamageDoneMod(DamageSchool.Holy);
+					if (ap > sp)
+					{
+						totalBonus = ap;
+					}
+					else
+					{
+						totalBonus = sp;
+					}
+				}
+			}
+
+			protected override void Apply()
+			{
+				var val = totalBonus / m_aura.TicksLeft;
+				totalBonus -= val;
+
+				val += EffectValue;
+
+				Owner.Heal(m_aura.Caster, val, m_spellEffect);
+			}
+		}
+		#endregion
 	}
 }

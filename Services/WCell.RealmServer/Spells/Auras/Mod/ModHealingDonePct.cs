@@ -7,14 +7,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     /// <summary>
     /// Increases healing taken in %
     /// </summary>
-    public class ModHealingTakenHandler : AuraEffectHandler
+    public class ModHealingDonePctHandler : AuraEffectHandler
 	{
 		protected internal override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.HealingTakenModPct += EffectValue;
+				owner.HealingDoneModPct += EffectValue;
 			}
 		}
 
@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.HealingTakenModPct -= EffectValue;
+				owner.HealingDoneModPct -= EffectValue;
 			}
 		}
     }

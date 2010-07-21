@@ -1,3 +1,9 @@
-- implemented ModSpellHitChance, ModCritHealValuePct, ModSpellPowerByAPPct, ModDamageDoneVersusCreatureType, ModCritHealValuePct, Avoidance effects
-- to test: PaladinHolySacredCleansing, PaladinProtectionTouchedByTheLight, PaladinHolyJudgementsOfThePure
-- moved spell-related events to Spell
+- to test: PaladinSecondarySkillGiftOfTheNaaruRacial & more
+- fixed ModHealingDonePct / vendors & trainers (broken due to HasFlag) / LocalizedGossipMenuItem to accept a LangKey as input -> Example:
+						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
+												{
+																			menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, LangKey.GossipOptionTrainer, convo =>
+																										{
+																																		((NPC)convo.Speaker).TalkToTrainer(convo.Character);
+																																									}));
+																																															}

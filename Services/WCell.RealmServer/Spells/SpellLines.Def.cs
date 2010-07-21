@@ -4680,7 +4680,7 @@ namespace WCell.RealmServer.Spells
 				new SpellLine(SpellLineId.MagePortalDalaran, 
 					SpellHandler.Get(SpellId.ClassSkillPortalDalaran))};
 
-			AddSpellLines(ClassId.Shaman, lines);
+			AddSpellLines(ClassId.Mage, lines);
 			#endregion
 
 			#region Warlock (133)

@@ -34,6 +34,11 @@ namespace WCell.RealmServer.Lang
 
 		CmdSpellGetDescription,
 		CmdSpellGetParamInfo,
+
+		GossipOptionBanker,
+		GossipOptionFlightMaster,
+		GossipOptionTrainer,
+		GossipOptionVendor
 	}
 
 	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>

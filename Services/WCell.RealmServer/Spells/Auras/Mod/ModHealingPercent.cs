@@ -7,7 +7,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     /// <summary>
     /// Increases healing done by %
     /// </summary>
-    public class ModHealingPercentHandler : AuraEffectHandler
+    public class ModHealingTakenPctHandler : AuraEffectHandler
     {
         protected internal override void Apply()
         {

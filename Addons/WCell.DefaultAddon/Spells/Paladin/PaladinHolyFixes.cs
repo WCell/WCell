@@ -57,6 +57,14 @@ namespace WCell.Addons.Default.Spells.Paladin
 				procEff.ClearAffectMask();
 				procEff.AddToAffectMask(SealsAndJudgements.AllJudgements);
 			});
+
+			// Holy Wrath "causing ${$m1+0.07*$SPH+0.07*$AP} to ${$M1+0.07*$SPH+0.07*$AP} Holy damage (...)  for $d"
+			SpellLineId.PaladinHolyWrath.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				effect.APValueFactor = 0.07f;
+				effect.SpellPowerValuePct = 7;
+			});
 		}
 
 		public class IlluminationHandler : AuraEffectHandler

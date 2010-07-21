@@ -937,7 +937,7 @@
     <Compile Include="Spells\Auras\Mod\ModHaste.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModHealingTaken.cs">
+    <Compile Include="Spells\Auras\Mod\ModHealingDonePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModHealthRegenInCombat.cs">

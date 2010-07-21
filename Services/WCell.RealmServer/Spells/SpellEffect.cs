@@ -830,8 +830,8 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.Mounted, typeof(NPCId));
 			SetAuraEffectMiscValueType(AuraType.ModShapeshift, typeof(ShapeshiftForm));
 			SetAuraEffectMiscValueType(AuraType.Transform, typeof(NPCId));
-			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(DamageSchoolMask));
-			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));
+			SetAuraEffectMiscValueType(AuraType.ModSpellDamageByPercentOfStat, typeof(DamageSchoolMask));
+			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfStat, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.DamagePctAmplifier, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSilenceDurationPercent, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.ModMechanicDurationPercent, typeof(SpellMechanic));
@@ -839,8 +839,8 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance, typeof(DamageSchool));
 			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance2, typeof(DamageSchool));
 
-			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(StatType));
-			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(StatType));
+			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfStat, typeof(StatType));
+			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfStat, typeof(StatType));
 
 
 			SetSpellEffectEffectMiscValueType(SpellEffectType.Dispel, typeof(DispelType));
