@@ -30,6 +30,7 @@ namespace WCell.Addons.Default.Spells.Hunter
 			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
 			//                   SpellId.ExposeWeakness_2);
 
+
 			// Volley does incorrect damage
 			SpellHandler.Apply(FixVolleyRank, SpellId.EffectClassSkillVolleyRank1, SpellId.EffectClassSkillVolleyRank2,
 						  SpellId.EffectClassSkillVolleyRank3, SpellId.EffectClassSkillVolleyRank4,
