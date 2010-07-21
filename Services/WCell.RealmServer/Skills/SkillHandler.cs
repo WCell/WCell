@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Skills
 					if (ability.Skill.Category == SkillCategory.Profession ||
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
-						if (ability.Spell.GetEffect(SpellEffectType.Skill) != null)
+						if (ability.Spell.HasEffect(SpellEffectType.Skill))
 						{
 							ability.Skill.TeachingSpells.Add(ability.Spell);
 						}

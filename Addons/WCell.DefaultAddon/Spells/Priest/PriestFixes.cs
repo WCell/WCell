@@ -44,7 +44,7 @@ namespace WCell.Addons.Default.Spells.Priest
 			{
 				var effect = spell.GetEffect(AuraType.AddTargetTrigger);
 				effect.ImplicitTargetA = ImplicitTargetType.Self;
-				effect.AddToEffectMask(SpellLineId.PriestShadowMindFlay);
+				effect.AddToAffectMask(SpellLineId.PriestShadowMindFlay);
 			});
 
 			// Dispersion also regenerates Mana

@@ -858,10 +858,11 @@ namespace WCell.RealmServer.Misc
 			else
 			{
 				skillBonus = Victim.Level * 5; // defskill of mobs depends on their lvl.
+
 			}
 
 			// attacker hit mods
-			var attackHitChanceMod = Victim.IntMods[(int)(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance)];
+			var attackHitChanceMod = Victim.GetIntMod(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance);
 			hitchance += attackHitChanceMod * 100;
 
 			if (Attacker is Character)

@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Entities
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
 
-			m_gossipMenu = entry.DefaultGossip; // set gossip menu
+			GossipMenu = entry.DefaultGossip; // set gossip menu
 
 			// TODO: Init stats
 			//for (int i = 0; i < 5; i++)

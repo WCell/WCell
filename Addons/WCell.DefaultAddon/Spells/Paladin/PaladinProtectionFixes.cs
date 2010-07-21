@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,13 +21,10 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellHandler.Apply(spell =>
 			{
 				var firstEffect = spell.Effects[0];
-				for (var i = 2; i < 3; i++)
+				for (var i = spell.Effects.Length; i < 3; i++)
 				{
 					// add up to two filler effects, so the heal effect is at the 4th place
-					if (spell.Effects.Length < i)
-					{
-						spell.AddEffect(SpellEffectType.Dummy);
-					}
+					spell.AddEffect(SpellEffectType.Dummy);
 				}
 
 				if (spell.Effects.Length != 3)
@@ -48,7 +45,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				var effect = spell.Effects[1];
 				effect.MiscValue = (int)SpellModifierType.EffectValue4AndBeyond;
-				effect.AddToEffectMask(PaladinFixes.PaladinAuras);	// applies to all auras
+				effect.AddToAffectMask(PaladinFixes.PaladinAuras);	// applies to all auras
 			});
 
 
@@ -68,12 +65,19 @@ namespace WCell.Addons.Default.Spells.Paladin
 			});
 
 
-			// Avenger Shield should be "dealing ${$m1+0.07*$SPH+0.07*$AP} to ${$M1+0.07*$SPH+0.07*$AP} Holy damage"
+			// Avenger's Shield should be "dealing ${$m1+0.07*$SPH+0.07*$AP} to ${$M1+0.07*$SPH+0.07*$AP} Holy damage"
 			SpellLineId.PaladinProtectionAvengersShield.Apply(spell =>
 			{
 				var dmgEffect = spell.GetEffect(SpellEffectType.SchoolDamage);
 				dmgEffect.APValueFactor = 0.07f;
 				dmgEffect.SpellPowerValuePct = 7;
+			});
+
+			// Shield of the Templar should proc from Avenger's Shield
+			SpellLineId.PaladinProtectionShieldOfTheTemplar.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinProtectionAvengersShield);
 			});
 		}
 	}

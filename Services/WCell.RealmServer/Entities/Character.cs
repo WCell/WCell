@@ -1363,16 +1363,16 @@ namespace WCell.RealmServer.Entities
 			action.Damage = dmg;
 		}
 
-		public override int AddHealingMods(int dmg, SpellEffect effect, DamageSchool school)
+		public override int AddHealingMods(int healValue, SpellEffect effect, DamageSchool school)
 		{
-			dmg += (int)((dmg * HealingDoneModPct) / 100f);
-			dmg += HealingDoneMod;
+			healValue += (int)((healValue * HealingDoneModPct) / 100f);
+			healValue += HealingDoneMod;
 			if (effect != null)
 			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, dmg);
+				healValue = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, healValue);
 			}
 
-			return dmg;
+			return healValue;
 		}
 
 		public override int GetGeneratedThreat(int dmg, DamageSchool school, SpellEffect effect)

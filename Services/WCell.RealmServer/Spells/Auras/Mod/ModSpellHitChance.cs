@@ -22,23 +22,23 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// <summary>
 	/// Mods Spell crit chance in %
 	/// </summary>
-	public class ModSpellCritChanceHandler : AuraEffectHandler
+	public class ModSpellHitChanceHandler : AuraEffectHandler
 	{
 		protected internal override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
-			{	
+			{
 				if (m_spellEffect.MiscValue == 0)
 				{
 					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 					{
-						owner.ModSpellCritMod(s, EffectValue);
+						owner.ModSpellHitChance(s, EffectValue);
 					}
 				}
 				else
 				{
-					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, EffectValue);
+					owner.ModSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
 				}
 			}
 		}
@@ -52,12 +52,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 					{
-						owner.ModSpellCritMod(s, -EffectValue);
+						owner.ModSpellHitChance(s, -EffectValue);
 					}
 				}
 				else
 				{
-					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, -EffectValue);	
+					owner.ModSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
 				}
 			}
 		}

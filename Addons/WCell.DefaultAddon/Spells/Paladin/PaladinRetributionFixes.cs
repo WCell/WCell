@@ -39,11 +39,11 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.PartyAroundCaster);
 				effect1.TriggerSpellId = SpellId.EffectReplenishment;
-				effect1.AddToEffectMask(SealsAndJudgements.AllJudgements);
+				effect1.AddToAffectMask(SealsAndJudgements.AllJudgements);
 
 				var effect2 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.Self);
 				effect2.TriggerSpellId = SpellId.JudgementsOfTheWise;
-				effect2.AddToEffectMask(SealsAndJudgements.AllJudgements);
+				effect2.AddToAffectMask(SealsAndJudgements.AllJudgements);
 			});
 			// Replenishment effect "Replenishes $s1% of maximum mana per 5 sec for $57669d."
 			SpellHandler.Apply(spell =>
@@ -70,8 +70,8 @@ namespace WCell.Addons.Default.Spells.Paladin
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraType = AuraType.ProcTriggerSpell;
 				effect.TriggerSpellId = SpellId.RighteousVengeance;
-				effect.AddToEffectMask(SealsAndJudgements.AllJudgements);
-				effect.AddToEffectMask(SpellLineId.PaladinRetributionDivineStorm, SpellLineId.PaladinRetributionCrusaderStrike);
+				effect.AddToAffectMask(SealsAndJudgements.AllJudgements);
+				effect.AddToAffectMask(SpellLineId.PaladinRetributionDivineStorm, SpellLineId.PaladinRetributionCrusaderStrike);
 
 				// TODO: Create new aura handler
 				//    -> after procing the debuff, get the SpellId.RighteousVengeance aura and set TotalDamage on it's ParameterizedPeriodicDamageHandler
@@ -88,6 +88,8 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
 			});
+
+			// TODO: PaladinRetributionSheathOfLight (similar to PaladinRetributionRighteousVengeance)
 		}
 	}
 

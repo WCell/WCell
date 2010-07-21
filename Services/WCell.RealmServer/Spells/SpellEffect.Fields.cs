@@ -97,7 +97,6 @@ namespace WCell.RealmServer.Spells
 
 		[Persistent(3)]
 		public uint[] AffectMask = new uint[3];
-
 		#endregion
 
 		#region IDataHolder Members

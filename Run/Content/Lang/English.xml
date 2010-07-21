@@ -53,5 +53,18 @@
     <Item Key="CmdSpellGetParamInfo">
       <Value>&lt;spellid or lineid&gt;</Value>
     </Item>
+
+    <Item Key="GossipOptionTrainer">
+      <Value>Train me...</Value>
+    </Item>
+    <Item Key="GossipOptionFlightMaster">
+      <Value>I want to fly...</Value>
+    </Item>
+    <Item Key="GossipOptionBanker">
+      <Value>Show Bank Account...</Value>
+    </Item>
+    <Item Key="GossipOptionVendor">
+      <Value>"Let me see your wares..."</Value>
+    </Item>
   </Items>
 </Translation>

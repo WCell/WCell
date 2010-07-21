@@ -142,7 +142,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsTame
 		{
-            get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
+			get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
 		}
 
 		/// <summary>
@@ -165,7 +165,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool PersistsThroughDeath
 		{
-            get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
+			get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
 		}
 
 		/// <summary>
@@ -517,12 +517,11 @@ namespace WCell.RealmServer.Spells
 			{
 				return;
 			}
-			inited = true;
 
-            IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
+			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
 				ChannelInterruptFlags > 0;
 
-            IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
+			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
 				// tracking spells are also passive		     
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
@@ -588,9 +587,9 @@ namespace WCell.RealmServer.Spells
 			else
 			{
 				EquipmentSlot =
-                    (IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
-                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
-                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
+					(IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
+					(AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
+					(AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
@@ -648,7 +647,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+			ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 
@@ -689,9 +688,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-                (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-                                        AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-                                        AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+				(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+										AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+										AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -699,10 +698,10 @@ namespace WCell.RealmServer.Spells
 				InterruptFlags |= InterruptFlags.OnTakeDamage;
 			}
 
-            IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-                       Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
+					   Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
-			HasModifierEffects = HasModifierEffects || 
+			HasModifierEffects = HasModifierEffects ||
 				HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			ForeachEffect(effect =>
@@ -741,6 +740,13 @@ namespace WCell.RealmServer.Spells
 				}
 			});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
+
+
+			if (GetEffect(SpellEffectType.QuestComplete) != null)
+			{
+				SpellHandler.QuestCompletors.Add(this);
+			}
+			inited = true;
 		}
 		#endregion
 
@@ -767,10 +773,28 @@ namespace WCell.RealmServer.Spells
 			return false;
 		}
 
+		public bool HasEffect(SpellEffectType type)
+		{
+			return GetEffect(type, false) != null;
+		}
+
+		public bool HasEffect(AuraType type)
+		{
+			return GetEffect(type, false) != null;
+		}
+
 		/// <summary>
 		/// Returns the first SpellEffect of the given Type within this Spell
 		/// </summary>
 		public SpellEffect GetEffect(SpellEffectType type)
+		{
+			return GetEffect(type, true);
+		}
+
+		/// <summary>
+		/// Returns the first SpellEffect of the given Type within this Spell
+		/// </summary>
+		public SpellEffect GetEffect(SpellEffectType type, bool force)
 		{
 			foreach (var effect in Effects)
 			{
@@ -781,7 +805,11 @@ namespace WCell.RealmServer.Spells
 			}
 			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
 			//return null;
-			throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
+			if (inited && force)
+			{
+				throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -789,22 +817,28 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
+			return GetEffect(type, true);
+		}
+
+		/// <summary>
+		/// Returns the first SpellEffect of the given Type within this Spell
+		/// </summary>
+		public SpellEffect GetEffect(AuraType type, bool force)
+		{
 			foreach (var effect in Effects)
 			{
 				if (effect.AuraType == type)
 				{
 					return effect;
 				}
-<<<<<<< HEAD
-			}
-			ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
-			return null;
-=======
 			}
 			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			//return null;
-			throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
->>>>>>> wcell/master
+			if (inited && force)
+			{
+				throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
+			}
+			return null;
 		}
 
 		public SpellEffect GetFirstEffectWith(Predicate<SpellEffect> predicate)
@@ -1028,9 +1062,9 @@ namespace WCell.RealmServer.Spells
 		public bool ShouldShowToClient()
 		{
 			return IsRangedAbility || Visual != 0 || Visual2 != 0 ||
-			       IsChanneled || CastDelay > 0 || HasCooldown;
-				// || (!IsPassive && IsAura)
-				;
+				   IsChanneled || CastDelay > 0 || HasCooldown;
+			// || (!IsPassive && IsAura)
+			;
 		}
 
 		/// <summary>

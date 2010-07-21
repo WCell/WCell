@@ -346,11 +346,6 @@ namespace WCell.RealmServer.Spells
 				if (spell != null)
 				{
 					spell.Init2();
-
-					if (spell.GetEffect(SpellEffectType.QuestComplete) != null)
-					{
-						QuestCompletors.Add(spell);
-					}
 				}
 			}
 			SkillHandler.Initialize2();

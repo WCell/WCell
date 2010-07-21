@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -89,7 +89,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionSwordAndBoard.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				effect.AddToEffectMask(SpellLineId.WarriorRevenge, SpellLineId.WarriorProtectionDevastate);
+				effect.AddToAffectMask(SpellLineId.WarriorRevenge, SpellLineId.WarriorProtectionDevastate);
 			});
 
 			// Shockwave needs to deal damage in % of AP

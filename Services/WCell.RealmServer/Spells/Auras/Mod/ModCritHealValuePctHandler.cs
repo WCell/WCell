@@ -14,26 +14,22 @@
  *
  *************************************************************************/
 
+using WCell.Constants;
+using WCell.RealmServer.Modifiers;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// Only one spell:
-	/// Spell: Improved Block Value (Id: 21540)
-	//ProcChance: 101
-	//BaseLevel: 1
-	//Level: 1
-	//Duration: 10000 - 10000 (0)
-	//RequiredTotemCategoryId[1]: 16711932
 
-	//    Effect: ApplyAura (ModBlockSkill)
-	//        ImplicitTargetA: Self
-	//        BasePoints: 19
-	//        BaseDice: 1
-	//        DiceSides: 1
-	//        Radius: 5
-	/// 
-	/// </summary>
-	public class ModBlockSkillHandler : AuraEffectHandler
+	public class ModCritHealValuePctHandler : AuraEffectHandler
 	{
+		protected internal override void Apply()
+		{
+			Owner.ChangeModifier(StatModifierInt.CriticalHealValuePct, EffectValue);
+		}
+
+		protected internal override void Remove(bool cancelled)
+		{
+			Owner.ChangeModifier(StatModifierInt.CriticalHealValuePct, -EffectValue);
+		}
 	}
 };

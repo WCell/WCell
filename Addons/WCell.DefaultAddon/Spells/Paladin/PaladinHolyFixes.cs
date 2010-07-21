@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.IsProc = true;
-				effect.AddToEffectMask(SpellLineId.PaladinHolyHolyShock);			// also works for Holy Shock
+				effect.AddToAffectMask(SpellLineId.PaladinHolyHolyShock);			// also works for Holy Shock
 				effect.AuraEffectHandlerCreator = () => new IlluminationHandler();
 			});
 
@@ -33,13 +33,37 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellLineId.PaladinHolyImprovedLayOnHands.Apply(spell =>
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.ActionOther | ProcTriggerFlags.HealOther;
-				spell.GetEffect(AuraType.ProcTriggerSpell).AddToEffectMask(SpellLineId.PaladinLayOnHands);
+				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinLayOnHands);
 			});
 
 			// Holy Shield only procs on block
 			SpellLineId.PaladinProtectionHolyShield.Apply(spell =>
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.Block;
+			});
+
+			// Sacred Cleansing should proc on Cleanse
+			SpellLineId.PaladinHolySacredCleansing.Apply(spell =>
+			{
+				var procEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				procEffect.ClearAffectMask();
+				procEffect.AddToAffectMask(SpellLineId.PaladinCleanse);
+			});
+
+			// Judgements of the Pure procs on all judgements
+			SpellLineId.PaladinHolyJudgementsOfThePure.Apply(spell =>
+			{
+				var procEff = spell.GetEffect(AuraType.ProcTriggerSpell);
+				procEff.ClearAffectMask();
+				procEff.AddToAffectMask(SealsAndJudgements.AllJudgements);
+			});
+
+			// Holy Wrath "causing ${$m1+0.07*$SPH+0.07*$AP} to ${$M1+0.07*$SPH+0.07*$AP} Holy damage (...)  for $d"
+			SpellLineId.PaladinHolyWrath.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				effect.APValueFactor = 0.07f;
+				effect.SpellPowerValuePct = 7;
 			});
 		}
 

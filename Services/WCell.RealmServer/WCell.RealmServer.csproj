@@ -234,6 +234,7 @@
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
     <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageDoneVersusCreatureTypeHandler.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
@@ -906,7 +908,7 @@
     <Compile Include="Spells\Auras\Mod\ModBlockPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModBlockSkill.cs">
+    <Compile Include="Spells\Auras\Mod\ModCritHealValuePctHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModCastingSpeed.cs">
@@ -936,7 +938,7 @@
     <Compile Include="Spells\Auras\Mod\ModHaste.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModHealingTaken.cs">
+    <Compile Include="Spells\Auras\Mod\ModHealingDonePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModHealthRegenInCombat.cs">
@@ -1271,7 +1273,6 @@
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
->>>>>>> wcell/master
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

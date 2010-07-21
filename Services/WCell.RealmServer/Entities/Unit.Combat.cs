@@ -209,9 +209,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual int AddHealingMods(int dmg, SpellEffect effect, DamageSchool school)
+		public virtual int AddHealingMods(int healValue, SpellEffect effect, DamageSchool school)
 		{
-			return dmg;
+			return healValue;
 		}
 
 		/// <summary>
@@ -529,10 +529,6 @@ namespace WCell.RealmServer.Entities
 
 			action.Victim = this;
 
-<<<<<<< HEAD
-			if (attacker != null)
-			{
-=======
 			if (attacker != null)
 			{
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
@@ -545,7 +541,6 @@ namespace WCell.RealmServer.Entities
 					action.IsCritical = false;
 				}
 
->>>>>>> wcell/master
 				AddDefenseMods(action);
 				attacker.AddAttackMods(action);
 

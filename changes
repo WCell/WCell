@@ -1,3 +1,9 @@
-- implemented ModDamageDoneVersusCreatureType, Attacker*HitChances
-- added SpellPowerValuePct to Spell
-- to test: PaladinProtectionCombatExpertise, PaladinRetributionCrusade, PaladinRetributionJudgementsOfTheWise, PaladinProtectionAvengersShield, PaladinRetributionTheArtOfWar & more
+- to test: PaladinSecondarySkillGiftOfTheNaaruRacial & more
+- fixed ModHealingDonePct / vendors & trainers (broken due to HasFlag) / LocalizedGossipMenuItem to accept a LangKey as input -> Example:
+						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
+												{
+																			menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, LangKey.GossipOptionTrainer, convo =>
+																										{
+																																		((NPC)convo.Speaker).TalkToTrainer(convo.Character);
+																																									}));
+																																															}

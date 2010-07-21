@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Gossips
 	{
 		public NPCId NPCId;
 
-		public uint GossipId;
+		public uint TextId;
 
 		public uint GetId()
 		{
@@ -224,7 +224,7 @@ namespace WCell.RealmServer.Gossips
 			var entry = NPCMgr.GetEntry(NPCId);
 			if (entry != null && entry.DefaultGossip == null)
 			{
-				var menu = new GossipMenu(GossipId);
+				var menu = new GossipMenu(TextId);
 				GossipMgr.gossipCount++;
 
 				entry.DefaultGossip = menu;
