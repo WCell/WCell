@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
@@ -357,8 +358,8 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// CreatureTypes
-			if (TargetCreatureTypes != TargetCreatureMask.None &&
-				(!(target is NPC) || !((NPC)target).CheckCreatureType(TargetCreatureTypes)))
+			if (CreatureMask != CreatureMask.None &&
+				(!(target is NPC) || !((NPC)target).CheckCreatureType(CreatureMask)))
 			{
 				return SpellFailedReason.BadImplicitTargets;
 			}

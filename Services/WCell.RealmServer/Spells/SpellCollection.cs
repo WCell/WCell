@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -32,7 +33,16 @@ namespace WCell.RealmServer.Spells
 	{
 		public static readonly int SpellEnhancerCount = (int)Utility.GetMaxEnum<SpellModifierType>() + 1;
 
+		/// <summary>
+		/// All spells by id
+		/// </summary>
 		protected Dictionary<uint, Spell> m_byId;
+
+		/// <summary>
+		/// Additional effects to be triggered when casting certain Spells
+		/// </summary>
+		private List<AddTargetTriggerHandler> m_TargetTriggers;
+
 
 		protected SpellCollection(Unit owner)
 			: this(owner, true)
@@ -264,5 +274,47 @@ namespace WCell.RealmServer.Spells
 		public abstract bool IsReady(Spell spell);
 
 		public abstract void ClearCooldown(Spell spell);
+
+		#region Special Spell Casting behavior
+
+		public List<AddTargetTriggerHandler> TargetTriggers
+		{
+			get
+			{
+				if (m_TargetTriggers == null)
+				{
+					m_TargetTriggers = new List<AddTargetTriggerHandler>(3);
+				}
+				return m_TargetTriggers;
+			}
+		}
+
+		/// <summary>
+		/// Trigger all spells that might be triggered by the given Spell
+		/// </summary>
+		/// <param name="spell"></param>
+		public void TriggerSpellsFor(SpellCast cast)
+		{
+			int val;
+			var spell = cast.Spell;
+			for (var i = 0; i < TargetTriggers.Count; i++)
+			{
+				var triggerHandler = TargetTriggers[i];
+				var effect = triggerHandler.SpellEffect;
+				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
+					spell.MatchesMask(effect.AffectMask) &&
+					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
+					spell != effect.TriggerSpell)	// prevent inf loops
+				{
+					var caster = triggerHandler.Aura.Caster;
+					if (caster != null)
+					{
+						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
+						cast.Trigger(effect.TriggerSpell);
+					}
+				}
+			}
+		}
+		#endregion
 	}
 }

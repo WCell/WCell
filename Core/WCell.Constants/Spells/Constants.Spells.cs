@@ -1113,28 +1113,6 @@ namespace WCell.Constants.Spells
         KidneyShot = 0x00200000,*/
 	}
 
-	/// <summary>
-	/// Mask from CreatureType.dbc
-	/// </summary>
-	[Flags]
-	public enum TargetCreatureMask
-	{
-		None = 0x0,
-		Beast = 0x1,
-		Dragonkin = 0x2,
-		Demon = 0x4,
-		Elemental = 0x8,
-		Giant = 0x10,
-		Undead = 0x20,
-		Humanoid = 0x40,
-		Critter = 0x80,
-		Mechanical = 0x100,
-		NotSpecified = 0x200,
-		Totem = 0x400,
-		NonCombatPet = 0x800,
-        GasCloud = 0x1000,
-	}
-
 	[Flags]
 	public enum SpellTargetFlags : uint
 	{

@@ -7,7 +7,7 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Spells.Auras.Mod
 {
 	/// <summary>
-	/// Only used for WarriorArmsEndlessRage
+	/// TODO: Only used for WarriorArmsEndlessRage
 	/// </summary>
 	public class ModRageFromDamageDealtPercentHandler : AuraEffectHandler
 	{

@@ -440,7 +440,10 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		ComprehendLanguage = 244,
 		ModMagicEffectDurationPercent = 245,
-		Aura_246 = 246,
+		/// <summary>
+		/// Used in Pure of Heart and Master Poisoner
+		/// </summary>
+		ModPoisonDurationPct = 246,
 		Aura_247 = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
 		Aura_249 = 249,
@@ -513,15 +516,15 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Only: Deterrence (Id: 67801) [Deterrence_3]
 		/// </summary>
-		Aura_288 = 288,
+		Aura_288_Unused = 288,
 		/// <summary>
 		/// Only: PaladinProtectionCombatExpertise (no apparent effect)
 		/// </summary>
-		Aura_290 = 290,
+		Aura_290_Unused = 290,
 		/// <summary>
 		/// Always with ModXpPct (no apparent effect)
 		/// </summary>
-		Aura_291 = 291,
+		Aura_291_Unused = 291,
 		Aura_292 = 292,
 		Aura_293 = 293,
         Aura_294 = 294,

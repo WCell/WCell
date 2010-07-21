@@ -7,7 +7,9 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -26,7 +28,65 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// TODO: Repentance should be "removing the effect of Righteous Vengeance"
 			SpellLineId.PaladinRetributionRepentance.Apply(spell =>
 			{
-				
+
+			});
+
+			// Judgements of The Wise procs spells on allies and self, upon damaging judgements
+			SpellLineId.PaladinRetributionJudgementsOfTheWise.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.MaxTargets = 10;
+
+				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.PartyAroundCaster);
+				effect1.TriggerSpellId = SpellId.EffectReplenishment;
+				effect1.AddToEffectMask(SealsAndJudgements.AllJudgements);
+
+				var effect2 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.Self);
+				effect2.TriggerSpellId = SpellId.JudgementsOfTheWise;
+				effect2.AddToEffectMask(SealsAndJudgements.AllJudgements);
+			});
+			// Replenishment effect "Replenishes $s1% of maximum mana per 5 sec for $57669d."
+			SpellHandler.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.PeriodicEnergize);
+				effect.Amplitude = 5000;
+				effect.AuraEffectHandlerCreator = () => new PeriodicEnergizePctHandler();
+			},
+			SpellId.EffectReplenishment);
+			// "Gain $s1% of your base mana."
+			SpellHandler.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.Energize);
+				effect.SpellEffectHandlerCreator = (cast, effct) => new EnergizePctEffectHandler(cast, effct);
+			},
+			SpellId.JudgementsOfTheWise);
+
+
+			// Righteous Vengeance procs on crit with Judgement, Crusader Strike and Divine Storm
+			SpellLineId.PaladinRetributionRighteousVengeance.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
+
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.AuraType = AuraType.ProcTriggerSpell;
+				effect.TriggerSpellId = SpellId.RighteousVengeance;
+				effect.AddToEffectMask(SealsAndJudgements.AllJudgements);
+				effect.AddToEffectMask(SpellLineId.PaladinRetributionDivineStorm, SpellLineId.PaladinRetributionCrusaderStrike);
+
+				// TODO: Create new aura handler
+				//    -> after procing the debuff, get the SpellId.RighteousVengeance aura and set TotalDamage on it's ParameterizedPeriodicDamageHandler
+			});
+			SpellHandler.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.PeriodicDamage);
+				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicDamageHandler();
+			},
+			SpellId.RighteousVengeance);
+
+			// AoW should only proc on crit hit
+			SpellLineId.PaladinRetributionTheArtOfWar.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
 			});
 		}
 	}
@@ -65,7 +125,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				if (action.Victim.MayAttack(action.Attacker))
 				{
-					var dmg = (EffectValue*action.Damage + 50) / 100;
+					var dmg = (EffectValue * action.Damage + 50) / 100;
 					if (dmg > max)
 					{
 						dmg = max;

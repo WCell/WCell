@@ -85,7 +85,7 @@ namespace WCell.RealmServer.NPCs
 
 		public string InfoString = "";
 
-		public NPCType Type;
+		public CreatureType Type;
 
 		public CreatureFamilyId FamilyId;
 
@@ -317,7 +317,7 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public IWeapon CreateMainHandWeapon()
 		{
-			if (Type == NPCType.None || Type == NPCType.Totem || Type == NPCType.NotSpecified)
+			if (Type == CreatureType.None || Type == CreatureType.Totem || Type == CreatureType.NotSpecified)
 			{
 				// these kinds of NPCs do not attack ever
 				return GenericWeapon.Peace;
@@ -720,7 +720,7 @@ namespace WCell.RealmServer.NPCs
 			DefaultDecayDelay = _DefaultDecayDelay;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == NPCType.NotSpecified)
+			if (Type == CreatureType.NotSpecified)
 			{
 				IsIdle = true;
 			}
@@ -793,7 +793,7 @@ namespace WCell.RealmServer.NPCs
 
 			ModelInfos = new UnitModelInfo[DisplayIds.Length];
 
-			GeneratesXp = (Type != NPCType.Critter && Type != NPCType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
+			GeneratesXp = (Type != CreatureType.Critter && Type != CreatureType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
 
 			var x = 0;
 			for (var i = 0; i < DisplayIds.Length; i++)

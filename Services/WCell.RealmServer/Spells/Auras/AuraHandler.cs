@@ -188,8 +188,11 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.DisarmMainHand] = () => new DisarmMainHandHandler();
 			EffectHandlers[(int)AuraType.DisarmOffhandAndShield] = () => new DisarmOffHandHandler();
 			EffectHandlers[(int)AuraType.DisarmRanged] = () => new DisarmRangedHandler();
+			EffectHandlers[(int)AuraType.ModDamageDoneVersusCreatureType] = () => new ModDamageDoneVersusCreatureTypeHandler();
+			EffectHandlers[(int)AuraType.ModAttackerSpellHitChance] = () => new ModAttackerSpellHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModAttackerMeleeHitChance] = () => new ModAttackerMeleeHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModAttackerRangedHitChance] = () => new ModAttackerRangedHitChanceHandler();
 			
-
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
 			{

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
@@ -523,6 +524,7 @@ namespace WCell.RealmServer.Entities
 
 				if (dmg >= health)
 				{
+					// kill
 					LastKiller = action.Attacker;
 				}
 

@@ -18,6 +18,7 @@ using System;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Modifiers;
@@ -113,6 +114,8 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_TargetResMods;
 		protected int[] m_spellInterruptProt;
 		protected int[] m_threatMods;
+		protected int[] m_dmgBonusVsCreatureTypePct;
+		protected int[] m_attackerSpellHitChance;
 
 		protected int m_ManaShieldAmount;
 		protected float m_ManaShieldFactor;
@@ -1083,7 +1086,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var school in dmgTypes)
 			{
-				ModSpellInterruptProt((DamageSchool)school, delta);
+				ModThreat((DamageSchool)school, delta);
 			}
 		}
 
@@ -1102,6 +1105,64 @@ namespace WCell.RealmServer.Entities
 				return dmg;
 			}
 			return dmg + ((dmg * m_threatMods[(int)school]) / 100);
+		}
+		#endregion
+
+		#region Creature Type Damage
+
+		/// <summary>
+		/// Damage bonus vs creature type in %
+		/// </summary>
+		public void ModDmgBonusVsCreatureTypePct(CreatureType type, int delta)
+		{
+			if (m_dmgBonusVsCreatureTypePct == null)
+			{
+				m_dmgBonusVsCreatureTypePct = new int[(int)CreatureType.End];
+			}
+			var val = m_dmgBonusVsCreatureTypePct[(int)type] + delta;
+			m_dmgBonusVsCreatureTypePct[(int)type] = val;
+		}
+
+		/// <summary>
+		/// Damage bonus vs creature type in %
+		/// </summary>
+		public void ModDmgBonusVsCreatureTypePct(uint[] creatureTypes, int delta)
+		{
+			foreach (var type in creatureTypes)
+			{
+				ModDmgBonusVsCreatureTypePct((CreatureType)type, delta);
+			}
+		}
+		#endregion
+
+		#region Spell Avoidance
+		public int GetAttackerSpellHitChanceMod(DamageSchool school)
+		{
+			return m_attackerSpellHitChance != null ? m_attackerSpellHitChance[(int) school] : 0;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModAttackerSpellHitChance(DamageSchool school, int delta)
+		{
+			if (m_attackerSpellHitChance == null)
+			{
+				m_attackerSpellHitChance = CreateDamageSchoolArr();
+			}
+			var val = m_attackerSpellHitChance[(int)school] + delta;
+			m_attackerSpellHitChance[(int)school] = val;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModAttackerSpellHitChance(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				ModAttackerSpellHitChance((DamageSchool)school, delta);
+			}
 		}
 		#endregion
 

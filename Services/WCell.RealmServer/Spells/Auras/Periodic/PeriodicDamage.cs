@@ -59,4 +59,25 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			return bonus;
 		}
 	}
+
+	public class ParameterizedPeriodicDamageHandler : PeriodicDamageHandler
+	{
+		public int TotalDamage { get; set; }
+
+		public ParameterizedPeriodicDamageHandler() : this(0)
+		{
+		}
+
+		public ParameterizedPeriodicDamageHandler(int totalDmg)
+		{
+			TotalDamage = totalDmg;
+		}
+
+		protected internal override void Apply()
+		{
+			BaseEffectValue = TotalDamage / m_aura.TicksLeft;
+			TotalDamage -= BaseEffectValue;
+			base.Apply();
+		}
+	}
 };

@@ -1531,13 +1531,13 @@ namespace WCell.RealmServer.Entities
 			minion.Master = this;
 
 			var type = minion.Entry.Type;
-			if (type != NPCType.None && type != NPCType.NotSpecified)
+			if (type != CreatureType.None && type != CreatureType.NotSpecified)
 			{
-				if (type == NPCType.NonCombatPet)
+				if (type == CreatureType.NonCombatPet)
 				{
 					minion.Brain.DefaultState = BrainState.Follow;
 				}
-				else if (type == NPCType.Totem)
+				else if (type == CreatureType.Totem)
 				{
 					// can't move
 					minion.Brain.DefaultState = BrainState.Roam;
@@ -1667,8 +1667,7 @@ namespace WCell.RealmServer.Entities
 				}
 				var proc = m_procHandlers[i];
 				if (proc.NextProcTime <= now &&
-					(proc.ProcTriggerFlags.HasAnyFlag(flags) &&  // PositiveSpell & ActionSelf must come together to be worth anything
-						(flags != ProcTriggerFlags.HealOther || proc.ProcTriggerFlags.HasAnyFlag(ProcTriggerFlags.ActionOther))) &&
+					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					var chance = (int)proc.ProcChance;

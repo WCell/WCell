@@ -779,8 +779,9 @@ namespace WCell.RealmServer.Spells
 					return effect;
 				}
 			}
-			ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
-			return null;
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
+			//return null;
+			throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
 		}
 
 		/// <summary>
@@ -795,8 +796,9 @@ namespace WCell.RealmServer.Spells
 					return effect;
 				}
 			}
-			ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
-			return null;
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
+			//return null;
+			throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
 		}
 
 		public SpellEffect GetFirstEffectWith(Predicate<SpellEffect> predicate)
@@ -1216,9 +1218,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "TargetType: " + TargetFlags);
 			}
-			if ((int)TargetCreatureTypes != 0)
+			if ((int)CreatureMask != 0)
 			{
-				writer.WriteLine(indent + "TargetUnitTypes: " + TargetCreatureTypes);
+				writer.WriteLine(indent + "TargetUnitTypes: " + CreatureMask);
 			}
 			if ((int)RequiredSpellFocus != 0)
 			{
@@ -1537,5 +1539,14 @@ namespace WCell.RealmServer.Spells
 			return GetEnumerator();
 		}
 		#endregion
+
+		#region Spell Alternatives
+
+		#endregion
+
+		protected Spell Clone()
+		{
+			return (Spell)MemberwiseClone();
+		}
 	}
 }

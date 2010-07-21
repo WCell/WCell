@@ -43,7 +43,7 @@ namespace WCell.Addons.Default.Samples
 			{
 				DefaultName = "Sample Grizzly",
 				EntryFlags = NPCEntryFlags.Tamable,
-				Type = NPCType.Humanoid,
+				Type = CreatureType.Humanoid,
 				DisplayIds = new[] { 21635u },
 				Scale = 1,
 				MinLevel = 73,

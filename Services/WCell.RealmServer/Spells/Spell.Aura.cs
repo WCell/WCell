@@ -376,7 +376,7 @@ namespace WCell.RealmServer.Spells
 				TargetProcSpells = new HashSet<Spell>();
 			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
+			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 

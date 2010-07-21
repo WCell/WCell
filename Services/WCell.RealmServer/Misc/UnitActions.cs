@@ -416,6 +416,10 @@ namespace WCell.RealmServer.Misc
 				else
 				{
 					flags |= ProcTriggerFlags.SpellCast;
+					if (IsCritical)
+					{
+						flags |= ProcTriggerFlags.SpellCastCritical;
+					}
 				}
 
 				if (IsRangedAttack)
@@ -856,6 +860,10 @@ namespace WCell.RealmServer.Misc
 				skillBonus = Victim.Level * 5; // defskill of mobs depends on their lvl.
 			}
 
+			// attacker hit mods
+			var attackHitChanceMod = Victim.IntMods[(int)(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance)];
+			hitchance += attackHitChanceMod * 100;
+
 			if (Attacker is Character)
 			{
 				var atk = Attacker as Character;
@@ -1005,7 +1013,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
-			var attackerCritChance = Victim.MultiplierMods[(int)StatModifierFloat.AttackerCritChance];
+			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance];
 			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
 
 			if (chance > 100)

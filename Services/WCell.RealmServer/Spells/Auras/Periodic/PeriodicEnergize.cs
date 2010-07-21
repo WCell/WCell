@@ -29,6 +29,18 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				m_aura.Auras.Owner.Energize(m_aura.Caster, EffectValue, m_spellEffect);
 			}
 		}
+	}
 
+	public class PeriodicEnergizePctHandler : AuraEffectHandler
+	{
+		protected internal override void Apply()
+		{
+			var type = (PowerType)m_spellEffect.MiscValue;
+			if (type == Owner.PowerType)
+			{
+				var val = (Owner.MaxPower * EffectValue + 50) / 100;
+				m_aura.Auras.Owner.Energize(m_aura.Caster, val, m_spellEffect);
+			}
+		}
 	}
 };

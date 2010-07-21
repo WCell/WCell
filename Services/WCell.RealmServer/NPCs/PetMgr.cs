@@ -512,7 +512,7 @@ namespace WCell.RealmServer.NPCs
 			where T : IPetRecord, new()
 		{
 			var record = new T();
-			var mode = entry.Type == NPCType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+			var mode = entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
 
 			record.OwnerId = ownerId;
 			record.AttackMode = mode;

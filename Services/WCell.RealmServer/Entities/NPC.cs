@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: NPC.cs
  *   copyright		: (C) The WCell Team
@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Entities
 				EnsureSpells();
 			}
 
-			if (m_entry.Type == NPCType.Totem || m_entry.Type == NPCType.None)
+			if (m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None)
 			{
 				m_Movement.MayMove = false;
 			}
@@ -887,10 +887,10 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Checks whether this NPC is of the given type
 		/// </summary>
-		public bool CheckCreatureType(TargetCreatureMask mask)
+		public bool CheckCreatureType(CreatureMask mask)
 		{
 			var type = Entry.Type;
-		    return mask.HasFlag((TargetCreatureMask) (1 << ((int) type - 1)));
+		    return mask.HasFlag((CreatureMask) (1 << ((int) type - 1)));
 		}
 
 		internal void SetScale()

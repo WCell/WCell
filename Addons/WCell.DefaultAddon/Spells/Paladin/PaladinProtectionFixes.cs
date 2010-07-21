@@ -37,7 +37,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				// add heal effect as the 4th effect
 				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura);
-
 				healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
 				healEffect.Radius = firstEffect.Radius;
 				healEffect.AuraType = AuraType.ModHealingPercent;
@@ -58,6 +57,23 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraEffectHandlerCreator = () => new SpiritualAttunementHandler();
+			});
+
+
+			// Combat Expertise increases "chance to critically hit by $s2%"
+			SpellLineId.PaladinProtectionCombatExpertise.Apply(spell =>
+			{
+				var effect = spell.Effects[1];
+				effect.AuraType = AuraType.ModCritPercent;
+			});
+
+
+			// Avenger Shield should be "dealing ${$m1+0.07*$SPH+0.07*$AP} to ${$M1+0.07*$SPH+0.07*$AP} Holy damage"
+			SpellLineId.PaladinProtectionAvengersShield.Apply(spell =>
+			{
+				var dmgEffect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				dmgEffect.APValueFactor = 0.07f;
+				dmgEffect.SpellPowerValuePct = 7;
 			});
 		}
 	}

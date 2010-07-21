@@ -42,4 +42,22 @@ namespace WCell.RealmServer.Spells.Effects
 			get { return ObjectTypes.Unit; }
 		}
 	}
+
+	public class EnergizePctEffectHandler : EnergizeEffectHandler
+	{
+		public EnergizePctEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var type = (PowerType)Effect.MiscValue;
+			if (type == ((Unit)target).PowerType)
+			{
+				var val = (m_cast.CasterUnit.MaxPower * CalcEffectValue() + 50) / 100;
+				((Unit)target).Energize(m_cast.Caster, val, Effect);
+			}
+		}
+	}
 }

@@ -93,7 +93,8 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Heal = 0x8000,
 
-		SpellCastSpecific = 0x10000,
+		SpellCastCritical = 0x10000,
+
 		/// <summary>
 		/// We get hit by a spell
 		/// </summary>
