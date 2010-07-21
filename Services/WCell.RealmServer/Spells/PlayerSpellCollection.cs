@@ -292,15 +292,15 @@ namespace WCell.RealmServer.Spells
 			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
 		}
 
-		///// <summary>
-		///// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
-		///// </summary>
-		//public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
-		//{
-		//    var flatMod = GetModifierFlat(type, spell);
-		//    var percentMod = GetModifierPercent(type, spell);
-		//    return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
-		//}
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
+		}
 
 		/// <summary>
 		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)

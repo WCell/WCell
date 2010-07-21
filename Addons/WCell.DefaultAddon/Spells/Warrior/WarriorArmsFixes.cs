@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,7 +71,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Trauma should only proc on crit hit
 			SpellLineId.WarriorArmsTrauma.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitSelf;
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
 			});
 
 			// Taste for blood only triggers once every 6 seconds

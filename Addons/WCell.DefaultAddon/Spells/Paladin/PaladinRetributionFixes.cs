@@ -22,6 +22,12 @@ namespace WCell.Addons.Default.Spells.Paladin
 				spell.ProcTriggerFlags = ProcTriggerFlags.None;
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ReflectDamagePctHandler();
 			});
+
+			// TODO: Repentance should be "removing the effect of Righteous Vengeance"
+			SpellLineId.PaladinRetributionRepentance.Apply(spell =>
+			{
+				
+			});
 		}
 	}
 

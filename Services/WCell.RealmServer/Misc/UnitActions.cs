@@ -86,6 +86,46 @@ namespace WCell.RealmServer.Misc
 	}
 	#endregion
 
+	#region SimpleUnitAction
+	public class SimpleUnitAction : IUnitAction
+	{
+		public Unit Attacker
+		{
+			get;
+			set;
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public Spell Spell
+		{
+			get;
+			set;
+		}
+	}
+	#endregion
+
+	#region SimpleUnitAction
+	public class HealAction : SimpleUnitAction
+	{
+		public int Value
+		{
+			get;
+			set;
+		}
+
+		public bool IsCritical
+		{
+			get;
+			set;
+		}
+	}
+	#endregion
+
 	#region SimpleDamageAction
 	public class SimpleDamageAction : IDamageAction
 	{
@@ -352,6 +392,10 @@ namespace WCell.RealmServer.Misc
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
 					}
 				}
+				if (Blocked > 0)
+				{
+					flags |= ProcTriggerFlags.Block;
+				}
 				return flags;
 			}
 		}
@@ -360,7 +404,7 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				var flags = ProcTriggerFlags.ActionSelf;
+				var flags = ProcTriggerFlags.ActionOther;
 				if (SpellEffect != null)
 				{
 					if (SpellEffect.IsProc)
@@ -376,7 +420,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackSelf;
+					flags |= ProcTriggerFlags.RangedAttackOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -384,10 +428,10 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackSelf;
+					flags |= ProcTriggerFlags.MeleeAttackOther;
 					if (IsCritical)
 					{
-						flags |= ProcTriggerFlags.MeleeCriticalHitSelf;
+						flags |= ProcTriggerFlags.MeleeCriticalHitOther;
 					}
 				}
 				return flags;

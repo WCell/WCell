@@ -1001,16 +1001,20 @@ namespace WCell.RealmServer.Spells
 			return Math.Abs(casterLevel - BaseLevel);
 		}
 
-		public int CalcPowerCost(Unit caster, DamageSchool school, Spell spell, PowerType type)
+		public int CalcBasePowerCost(Unit caster)
 		{
 			var cost = PowerCost + (PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
 			if (PowerCostPercentage > 0)
 			{
 				cost += (PowerCostPercentage *
-					((type == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
+					((PowerType == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
 			}
+			return cost;
+		}
 
-			return caster.GetPowerCost(school, spell, cost);
+		public int CalcPowerCost(Unit caster, DamageSchool school)
+		{
+			return caster.GetPowerCost(school, this, CalcBasePowerCost(caster));
 		}
 
 		public bool ShouldShowToClient()

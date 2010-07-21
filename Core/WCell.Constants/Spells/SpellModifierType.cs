@@ -118,6 +118,11 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Chance of this spell being resisted against dispel
 		/// </summary>
-		DispelResistance = 28
+		DispelResistance = 28,
+
+		/// <summary>
+		/// CUSTOM: To hack around the DBC hack-arounds
+		/// </summary>
+		EffectValue4AndBeyond = 30
 	}
 }

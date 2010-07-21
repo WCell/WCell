@@ -862,6 +862,17 @@ namespace WCell.RealmServer.Entities
 
 			if (healer is Unit)
 			{
+				var action = new HealAction
+				{
+					Attacker = (Unit)healer,
+					Victim = this,
+					Spell = effect != null ? effect.Spell : null,
+					IsCritical = crit,
+					Value = value
+				};
+				((Unit)healer).Proc(ProcTriggerFlags.HealOther, this, action, true);
+				Proc(ProcTriggerFlags.Heal, ((Unit)healer), action, false);
+
 				OnHeal((Unit)healer, effect, value);
 			}
 		}
@@ -1413,9 +1424,9 @@ namespace WCell.RealmServer.Entities
 			}
 			if (selected is Unit)
 			{
-				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell), spell, spell.PowerType);
+				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell));
 			}
-			return Power >= spell.CalcPowerCost(this, spell.Schools[0], spell, spell.PowerType);
+			return Power >= spell.CalcPowerCost(this, spell.Schools[0]);
 		}
 
 		public DamageSchool GetLeastResistant(Spell spell)
@@ -1656,7 +1667,8 @@ namespace WCell.RealmServer.Entities
 				}
 				var proc = m_procHandlers[i];
 				if (proc.NextProcTime <= now &&
-					proc.ProcTriggerFlags.HasAnyFlag(flags) &&
+					(proc.ProcTriggerFlags.HasAnyFlag(flags) &&  // PositiveSpell & ActionSelf must come together to be worth anything
+						(flags != ProcTriggerFlags.HealOther || proc.ProcTriggerFlags.HasAnyFlag(ProcTriggerFlags.ActionOther))) &&
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					var chance = (int)proc.ProcChance;
@@ -1669,7 +1681,10 @@ namespace WCell.RealmServer.Entities
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);
-						proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						if (proc.MinProcDelay > 0)
+						{
+							proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						}
 
 						if (charges > 0 && proc.StackCount == 0)
 						{

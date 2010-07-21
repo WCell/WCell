@@ -515,9 +515,9 @@ namespace WCell.RealmServer.Spells
 			var value = CalcEffectValue(caster != null ? caster.Level : 1, caster != null ? caster.ComboPoints : 0);
 			if (caster is Character)
 			{
-				SpellModifierType type;
 				if (EffectIndex <= 2)
 				{
+					SpellModifierType type;
 					switch (EffectIndex)
 					{
 						case 0:
@@ -526,11 +526,14 @@ namespace WCell.RealmServer.Spells
 						case 1:
 							type = SpellModifierType.EffectValue2;
 							break;
-						default:
+						case 3:
 							type = SpellModifierType.EffectValue3;
 							break;
+						default:
+							type = SpellModifierType.EffectValue4AndBeyond;
+							break;
 					}
-					value = ((Character) caster).PlayerSpells.GetModifiedInt(type, Spell, value);
+					value = ((Character)caster).PlayerSpells.GetModifiedInt(type, Spell, value);
 				}
 				value = ((Character)caster).PlayerSpells.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
 			}
@@ -804,7 +807,6 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModPowerRegen, typeof(PowerType));
 			SetAuraEffectMiscValueType(AuraType.ModPowerRegenPercent, typeof(PowerType));
 			SetAuraEffectMiscValueType(AuraType.ModRating, typeof(CombatRatingMask));
-			SetAuraEffectMiscValueType(AuraType.ModRating, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSkill, typeof(SkillId));
 			SetAuraEffectMiscValueType(AuraType.ModSkillTalent, typeof(SkillId));
 			SetAuraEffectMiscValueType(AuraType.ModStat, typeof(StatType));
@@ -819,6 +821,7 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.DamagePctAmplifier, typeof(DamageSchoolMask));
 			SetAuraEffectMiscValueType(AuraType.ModSilenceDurationPercent, typeof(SpellMechanic));
+			SetAuraEffectMiscValueType(AuraType.ModMechanicDurationPercent, typeof(SpellMechanic));
 
 			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(StatType));
 			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(StatType));

@@ -706,9 +706,7 @@ namespace WCell.RealmServer.Spells
 				var powerCost = m_spell.CalcPowerCost(caster,
 													  Selected is Unit
 														? ((Unit)Selected).GetLeastResistant(m_spell)
-														: m_spell.Schools[0],
-													  m_spell,
-													  m_spell.PowerType);
+														: m_spell.Schools[0]);
 				if (m_spell.PowerType != PowerType.Health)
 				{
 					caster.Power -= powerCost;

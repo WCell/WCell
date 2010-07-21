@@ -37,7 +37,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// We attack
 		/// </summary>
-		MeleeAttackSelf = 0x4,
+		MeleeAttackOther = 0x4,
 		/// <summary>
 		/// We are critically hit
 		/// </summary>
@@ -54,34 +54,44 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// We attack physically with ranged weapon
 		/// </summary>
-		RangedAttackSelf = 0x40,
+		RangedAttackOther = 0x40,
 		/// <summary>
 		/// We are critcally hit with a ranged weapon
 		/// </summary>
 		RangedCriticalHit = 0x80,
 
 		/// <summary>
-		/// We land a critical hit
+		/// We land a critical hit on sb else
 		/// </summary>
-		PhysicalAttackSelf = 0x100,
+		PhysicalAttackOther = 0x100,
 		/// <summary>
 		/// We are attacked physically
 		/// </summary>
 		MeleeAttack = 0x200,
 		/// <summary>
-		/// 
+		/// We do something with someone else
 		/// </summary>
-		ActionSelf = 0x400,
+		ActionOther = 0x400,
 		/// <summary>
 		/// Unused
 		/// </summary>
 		ProcTrigger0x800 = 0x800,
 
-		MeleeCriticalHitSelf = 0x1000,
+		/// <summary>
+		/// We critically hit someone
+		/// </summary>
+		MeleeCriticalHitOther = 0x1000,
+
 		RangedAttack = 0x2000,
 
-		PositiveSpell = 0x4000,
-		PositiveSpellSelf = 0x8000,
+		/// <summary>
+		/// We heal sb else
+		/// </summary>
+		HealOther = 0x4000,
+		/// <summary>
+		/// We get healed
+		/// </summary>
+		Heal = 0x8000,
 
 		SpellCastSpecific = 0x10000,
 		/// <summary>
