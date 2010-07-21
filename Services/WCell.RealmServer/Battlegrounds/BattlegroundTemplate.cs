@@ -44,6 +44,8 @@ namespace WCell.RealmServer.Battlegrounds
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
 
+        public PvPDifficultyEntry[] Difficulties;
+
 		public int MinPlayerCount
 		{
 			get { return MinPlayersPerTeam * 2; }
@@ -53,7 +55,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			return (uint) Id;
 		}
-
+        
 		public DataHolderState DataHolderState
 		{
 			get;
@@ -79,6 +81,12 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
+            {
+                if (entry.mapId == RegionId)
+                    Difficulties[entry.bracketId] = entry;
+            }
+
             RegionInfo.MinLevel = Math.Max(1, MinLevel);
             RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
 
@@ -88,18 +96,24 @@ namespace WCell.RealmServer.Battlegrounds
             SetStartPos();
 		}
 
+        public int GetBracketIdForLevel(int level)
+        {
+            var diff = Difficulties.First(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+            return diff.bracketId; 
+        }
+
 		private void CreateQueues()
-		{   
-            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
+		{
+            Queues = new GlobalBattlegroundQueue[Difficulties.Length];
+            foreach (var entry in Difficulties)
             {
-                if (entry.mapId == RegionId)
                     AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
             }
 		}
 
 		void AddQueue(GlobalBattlegroundQueue queue)
 		{
-			for (var i = queue.MinLevel - 1; i < queue.MaxLevel; i++)
+			for (var i = queue.MinLevel; i < queue.MaxLevel; i++)
 			{
 				Queues[i] = queue;
 			}
@@ -122,11 +136,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <returns>the appropriate queue for the given character level</returns>
 		public GlobalBattlegroundQueue GetQueue(int level)
 		{
-			// normalize level
-			level = Math.Max(1, level);
-			level = Math.Min(level, Queues.Length);
-
-			return Queues[level - 1];
+            return Queues[GetBracketIdForLevel(level)];
 		}
 
 		#region Enqueue

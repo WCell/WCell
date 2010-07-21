@@ -33,5 +33,6 @@ namespace WCell.RealmServer.Battlegrounds
                             };
             return entry;
         }
+
     }
 }
