@@ -233,6 +233,7 @@
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
     <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageDoneVersusCreatureTypeHandler.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
@@ -905,7 +907,7 @@
     <Compile Include="Spells\Auras\Mod\ModBlockPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModBlockSkill.cs">
+    <Compile Include="Spells\Auras\Mod\ModCritHealValuePctHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModCastingSpeed.cs">

@@ -28,10 +28,17 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			var owner = Owner as Character;
 			if (owner != null)
-			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+			{	
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, EffectValue);
+					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+					{
+						owner.ModSpellCritMod(s, EffectValue);
+					}
+				}
+				else
+				{
+					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, EffectValue);
 				}
 			}
 		}
@@ -41,9 +48,16 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, -EffectValue);
+					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+					{
+						owner.ModSpellCritMod(s, -EffectValue);
+					}
+				}
+				else
+				{
+					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, -EffectValue);	
 				}
 			}
 		}

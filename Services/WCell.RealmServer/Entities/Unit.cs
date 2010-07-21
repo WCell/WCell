@@ -324,6 +324,18 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		/// <summary>
+		/// Returns one of the arbitrary modifier values
+		/// </summary>
+		public int GetIntMod(StatModifierInt stat)
+		{
+			if (IntMods != null)
+			{
+				return IntMods[(int) stat];
+			}
+			return 0;
+		}
+
 		#region Death
 		public virtual bool IsAlive
 		{
@@ -841,7 +853,7 @@ namespace WCell.RealmServer.Entities
 
 					if (roll <= critChance)
 					{
-						value = (int)(value * SpellHandler.SpellCritBaseFactor);
+						value = (int)(value * (SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
 						crit = true;
 					}
 				}

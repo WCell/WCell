@@ -20,9 +20,9 @@ using WCell.RealmServer.Modifiers;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
-	/// Haste for melee, ranged and spells
+	/// Haste for melee, ranged and spells in %
 	/// </summary>
-	public class ModTimeBetweenAttacksHandler : AuraEffectHandler
+	public class ModHastePctHandler : AuraEffectHandler
 	{
 		float val;
 

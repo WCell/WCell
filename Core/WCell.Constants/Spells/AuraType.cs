@@ -74,7 +74,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Aura_48 = 48,
 		ModDodgePercent = 49,
-		ModBlockSkill = 50,
+		ModCritHealValuePct = 50,
 		ModBlockPercent = 51,
 		ModCritPercent = 52,
 		PeriodicLeech = 53,
@@ -300,7 +300,7 @@ namespace WCell.Constants.Spells
 		ModFactionReputationGainPercent = 190,
 		UseNormalMovementSpeed = 191,
 		ModMeleeHastePercent = 192,
-		ModTimeBetweenAttacks = 193,
+		ModHastePct = 193,
 		/// <summary>
 		/// No longer unused as of 3.0.2
 		/// Function may have changed though
@@ -320,7 +320,7 @@ namespace WCell.Constants.Spells
 		ModAttackerCritChancePercent = 197,
 		Unused_ModAllWeaponSkills = 198,
 		/// <summary>
-		/// What is this?
+		/// Used exactly like ModSpellHitChance
 		/// </summary>
 		ModSpellHitChance2 = 199,
 		ModXpPct = 200,
@@ -408,13 +408,13 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Vehicle = 236,
 		/// <summary>
-		/// Increases your spell power by an amount equal to X% of your attack power.
+		/// Increases your spell power by an amount equal to a percentage of your attack power.
 		/// </summary>
 		ModSpellPowerByAPPct = 237,
 		/// <summary>
-		/// Always in combo with Aura_237, unnecessary (adding this would add spell power twice)
+		/// Always in combo with ModSpellPowerByAPPct -> unnecessary (adding this would add spell power twice)
 		/// </summary>
-		Aura_238 = 238,
+		ModHealingPowerByAPPct = 238,
 		/// <summary>
 		/// Noggenfogger Elixir (Id: 16595)
 		/// </summary>

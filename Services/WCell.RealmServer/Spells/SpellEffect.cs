@@ -836,6 +836,8 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModSilenceDurationPercent, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.ModMechanicDurationPercent, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.TrackCreatures, typeof(CreatureType));
+			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance, typeof(DamageSchool));
+			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance2, typeof(DamageSchool));
 
 			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfSpirit, typeof(StatType));
 			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfSpirit, typeof(StatType));
@@ -880,7 +882,12 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Modify Effects
-		public void AddToEffectMask(params SpellLineId[] abilities)
+		public void ClearAffectMask()
+		{
+			AffectMask = new uint[3];
+		}
+
+		public void AddToAffectMask(params SpellLineId[] abilities)
 		{
 			foreach (var ability in abilities)
 			{

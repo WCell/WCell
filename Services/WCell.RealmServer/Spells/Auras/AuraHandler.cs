@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();
 			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();
 			EffectHandlers[(int)AuraType.ModDodgePercent] = () => new ModDodgePercentHandler();
-			EffectHandlers[(int)AuraType.ModBlockSkill] = () => new ModBlockSkillHandler();
+			EffectHandlers[(int)AuraType.ModCritHealValuePct] = () => new ModCritHealValuePctHandler();
 			EffectHandlers[(int)AuraType.ModBlockPercent] = () => new ModBlockPercentHandler();
 			EffectHandlers[(int)AuraType.ModParryPercent] = () => new ModParryPercentHandler();
 			EffectHandlers[(int)AuraType.ModShieldBlockvaluePct] = () => new ModShieldBlockValuePercentHandler();
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.PowerBurn] = () => new PowerBurnHandler();
 			EffectHandlers[(int)AuraType.ModDebuffResistancePercent] = () => new ModDebuffResistancePercentHandler();
 			EffectHandlers[(int)AuraType.ModRating] = () => new ModRatingHandler();
-			EffectHandlers[(int)AuraType.ModTimeBetweenAttacks] = () => new ModTimeBetweenAttacksHandler();
+			EffectHandlers[(int)AuraType.ModHastePct] = () => new ModHastePctHandler();
 			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();
 			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();
 			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();
@@ -192,6 +192,9 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModAttackerSpellHitChance] = () => new ModAttackerSpellHitChanceHandler();
 			EffectHandlers[(int)AuraType.ModAttackerMeleeHitChance] = () => new ModAttackerMeleeHitChanceHandler();
 			EffectHandlers[(int)AuraType.ModAttackerRangedHitChance] = () => new ModAttackerRangedHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModSpellPowerByAPPct] = () => new ModSpellPowerByAPPctHandler();
+			EffectHandlers[(int)AuraType.ModSpellHitChance] = () => new ModSpellHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();
 			
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

@@ -116,6 +116,7 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_threatMods;
 		protected int[] m_dmgBonusVsCreatureTypePct;
 		protected int[] m_attackerSpellHitChance;
+		protected int[] m_SpellHitChance;
 
 		protected int m_ManaShieldAmount;
 		protected float m_ManaShieldFactor;
@@ -980,6 +981,37 @@ namespace WCell.RealmServer.Entities
 				return 0;
 			}
 			return m_spellInterruptProt[(int)spell.Schools[0]];
+		}
+		#endregion
+
+		#region Spell Hit Chance
+		public int GetSpellHitChanceMod(DamageSchool school)
+		{
+			return m_SpellHitChance != null ? m_SpellHitChance[(int)school] : 0;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModSpellHitChance(DamageSchool school, int delta)
+		{
+			if (m_SpellHitChance == null)
+			{
+				m_SpellHitChance = CreateDamageSchoolArr();
+			}
+			var val = m_SpellHitChance[(int)school] + delta;
+			m_SpellHitChance[(int)school] = val;
+		}
+
+		/// <summary>
+		/// Spell avoidance
+		/// </summary>
+		public void ModSpellHitChance(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				ModSpellHitChance((DamageSchool)school, delta);
+			}
 		}
 		#endregion
 

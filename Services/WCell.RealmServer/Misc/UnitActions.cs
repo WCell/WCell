@@ -861,7 +861,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// attacker hit mods
-			var attackHitChanceMod = Victim.IntMods[(int)(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance)];
+			var attackHitChanceMod = Victim.GetIntMod(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance);
 			hitchance += attackHitChanceMod * 100;
 
 			if (Attacker is Character)
