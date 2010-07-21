@@ -38,11 +38,11 @@ namespace WCell.RealmServer.Talents
 		public readonly TalentTree[] Trees;
 		internal readonly int[] m_treePoints;
 
-		public TalentCollection(IHasTalents chr)
+		public TalentCollection(IHasTalents unit)
 		{
-			Owner = chr;
+			Owner = unit;
 
-			Trees = TalentMgr.TreesByClass[(uint)chr.Class];
+			Trees = TalentMgr.TreesByClass[(uint)unit.Class];
 			m_treePoints = new int[Trees.Length];
 		}
 

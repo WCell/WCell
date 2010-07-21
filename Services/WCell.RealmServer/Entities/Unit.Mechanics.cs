@@ -16,6 +16,7 @@
 
 using System;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -232,16 +233,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the owner is disarmed
+		/// Whether this Unit is currently stunned (!= rooted)
 		/// </summary>
-		public bool IsDisarmed
-		{
-			get
-			{
-				return IsUnderInfluenceOf(SpellMechanic.Disarmed);
-			}
-		}
-
 		public int Stunned
 		{
 			get
@@ -394,46 +387,31 @@ namespace WCell.RealmServer.Entities
 					}
 				}
 
-				if (mechanic == SpellMechanic.Frozen)
+				switch (mechanic)
 				{
-					// Apply Frozen AuraState
-					AuraState |= AuraStateMask.Frozen;
-				}
-
-
-				if (mechanic == SpellMechanic.Mounted)
-				{
-					// Now mounted
-					UnitFlags |= UnitFlags.Mounted;
-					SpeedFactor += MountSpeedMod;
-					m_auras.RemoveByFlag(AuraInterruptFlags.OnMount);
-				}
-				else if (mechanic == SpellMechanic.Slowed)
-				{
-					UnitFlags |= UnitFlags.Pacified;
-				}
-				else if (mechanic == SpellMechanic.Disarmed)
-				{
-					UnitFlags |= UnitFlags.Disarmed;
-					MainWeapon = GenericWeapon.Fists;
-					OffHandWeapon = null;
-					RangedWeapon = null;
-				}
-				else if (mechanic == SpellMechanic.Fleeing)
-				{
-					UnitFlags |= UnitFlags.Feared;
-				}
-				else if (mechanic == SpellMechanic.Disoriented)
-				{
-					UnitFlags |= UnitFlags.Confused;
-				}
-				else if (mechanic == SpellMechanic.Invulnerable)
-				{
-					UnitFlags |= UnitFlags.SelectableNotAttackable;
-				}
-				else if (mechanic == SpellMechanic.Enraged)
-				{
-					AuraState |= AuraStateMask.Enraged;
+					case SpellMechanic.Frozen:
+						AuraState |= AuraStateMask.Frozen;
+						break;
+					case SpellMechanic.Mounted:
+						UnitFlags |= UnitFlags.Mounted;
+						SpeedFactor += MountSpeedMod;
+						m_auras.RemoveByFlag(AuraInterruptFlags.OnMount);
+						break;
+					case SpellMechanic.Slowed:
+						UnitFlags |= UnitFlags.Pacified;
+						break;
+					case SpellMechanic.Fleeing:
+						UnitFlags |= UnitFlags.Feared;
+						break;
+					case SpellMechanic.Disoriented:
+						UnitFlags |= UnitFlags.Confused;
+						break;
+					case SpellMechanic.Invulnerable:
+						UnitFlags |= UnitFlags.SelectableNotAttackable;
+						break;
+					case SpellMechanic.Enraged:
+						AuraState |= AuraStateMask.Enraged;
+						break;
 				}
 			}
 
@@ -488,41 +466,30 @@ namespace WCell.RealmServer.Entities
 						UnitFlags &= ~UnitFlags.Silenced;
 					}
 
-					if (mechanic == SpellMechanic.Frozen)
+					switch (mechanic)
 					{
-						// Remove Frozen AuraState
-						AuraState ^= AuraStateMask.Frozen;
-					}
-
-					if (mechanic == SpellMechanic.Mounted)
-					{
-						UnitFlags &= ~UnitFlags.Mounted;
-						SpeedFactor -= MountSpeedMod;
-					}
-					else if (mechanic == SpellMechanic.Disarmed && m_mechanics[(int)SpellMechanic.Disarmed] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Disarmed;
-						// TODO: Put weapons back in place
-					}
-					else if (mechanic == SpellMechanic.Slowed && m_mechanics[(int)SpellMechanic.Slowed] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Pacified;
-					}
-					else if (mechanic == SpellMechanic.Fleeing && m_mechanics[(int)SpellMechanic.Horrified] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Feared;
-					}
-					else if (mechanic == SpellMechanic.Disoriented && m_mechanics[(int)SpellMechanic.Disoriented] == 0)
-					{
-						UnitFlags &= ~UnitFlags.Confused;
-					}
-					else if (mechanic == SpellMechanic.Invulnerable && m_mechanics[(int)SpellMechanic.Invulnerable] == 0)
-					{
-						UnitFlags &= ~UnitFlags.SelectableNotAttackable;
-					}
-					else if (mechanic == SpellMechanic.Enraged)
-					{
-						AuraState &= ~AuraStateMask.Enraged;
+						case SpellMechanic.Frozen:
+							AuraState ^= AuraStateMask.Frozen;
+							break;
+						case SpellMechanic.Mounted:
+							UnitFlags &= ~UnitFlags.Mounted;
+							SpeedFactor -= MountSpeedMod;
+							break;
+						case SpellMechanic.Slowed:
+							UnitFlags &= ~UnitFlags.Pacified;
+							break;
+						case SpellMechanic.Fleeing:
+							UnitFlags &= ~UnitFlags.Feared;
+							break;
+						case SpellMechanic.Disoriented:
+							UnitFlags &= ~UnitFlags.Confused;
+							break;
+						case SpellMechanic.Invulnerable:
+							UnitFlags &= ~UnitFlags.SelectableNotAttackable;
+							break;
+						case SpellMechanic.Enraged:
+							AuraState &= ~AuraStateMask.Enraged;
+							break;
 					}
 				}
 			}

@@ -324,6 +324,17 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Item is currently equipped.
+		/// </summary>
+		public bool IsEquipped
+		{
+			get
+			{
+				return m_container == m_owningCharacter.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
+			}
+		}
+
+		/// <summary>
 		/// Whether this Item is currently equipped and is not a kind of container.
 		/// </summary>
 		public bool IsEquippedItem
@@ -338,23 +349,21 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether this Item is currently equipped.
-		/// </summary>
-		public bool IsEquipped
-		{
-			get
-			{
-				return m_container == m_owningCharacter.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
-			}
-		}
-
-		/// <summary>
 		/// Whether this is a Container and it is currently
 		/// equipped or in a bankbag slot (so Items can be put into it).
 		/// </summary>
 		public bool IsEquippedContainer
 		{
 			get { return m_container == m_owningCharacter.Inventory && ItemMgr.ContainerSlotsWithBank[Slot]; }
+		}
+
+		/// <summary>
+		/// Wheter this item's bonuses are applied
+		/// </summary>
+		public bool IsApplied
+		{
+			get;
+			private set;
 		}
 
 		public bool IsBuyback
@@ -365,6 +374,11 @@ namespace WCell.RealmServer.Entities
 					   m_record.Slot <= (int)InventorySlot.BuyBackLast &&
 					   m_container == m_owningCharacter.Inventory;
 			}
+		}
+
+		public InventorySlotTypeMask InventorySlotMask
+		{
+			get { return m_template.InventorySlotMask; }
 		}
 
 		/// <summary>
@@ -425,13 +439,6 @@ namespace WCell.RealmServer.Entities
 		public bool CanStackWith(Item otherItem)
 		{
 			return m_template.IsStackable && m_template == otherItem.m_template;
-		}
-
-		public override void Dispose(bool disposing)
-		{
-			m_owningCharacter = null;
-			m_isInWorld = false;
-			IsDeleted = true;
 		}
 
 		/// <summary>
@@ -957,12 +964,59 @@ namespace WCell.RealmServer.Entities
 			return err;
 		}
 
+		internal void OnEquipDecision()
+		{
+			// weapon handling
+			if (m_template.IsWeapon)
+			{
+				var slot = (InventorySlot)Slot;
+
+				switch (slot)
+				{
+					case InventorySlot.MainHand:
+						m_owningCharacter.MainWeapon = this;
+						return;
+					case InventorySlot.OffHand:
+						m_owningCharacter.OffHandWeapon = this;
+						return;
+					case InventorySlot.ExtraWeapon:
+						m_owningCharacter.RangedWeapon = this;
+						return;
+				}
+			}
+			OnEquip();
+		}
+
+		internal void OnUnequipDecision(InventorySlot slot)
+		{
+			// weapon handling
+			if (m_template.IsWeapon)
+			{
+				switch (slot)
+				{
+					case InventorySlot.MainHand:
+						m_owningCharacter.MainWeapon = null;
+						return;
+					case InventorySlot.OffHand:
+						m_owningCharacter.OffHandWeapon = null;
+						return;
+					case InventorySlot.ExtraWeapon:
+						m_owningCharacter.RangedWeapon = null;
+						return;
+				}
+			}
+			OnUnEquip(slot);
+		}
+
 		/// <summary>
 		/// Called when this Item gets equipped.
 		/// Requires region context.
 		/// </summary>
 		public void OnEquip()
 		{
+			if (IsApplied) return;
+			IsApplied = true;
+
 			var slot = (InventorySlot)Slot;
 			var chr = OwningCharacter;
 			if (slot < InventorySlot.Bag1 && !m_template.IsAmmo)
@@ -994,23 +1048,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			// weapon handling
-			if (m_template.IsWeapon)
-			{
-				if (slot == InventorySlot.MainHand)
-				{
-					m_owningCharacter.MainWeapon = this;
-				}
-				else if (slot == InventorySlot.OffHand)
-				{
-					m_owningCharacter.OffHandWeapon = this;
-				}
-				else if (slot == InventorySlot.ExtraWeapon)
-				{
-					m_owningCharacter.RangedWeapon = this;
-				}
-			}
-			else if (slot == InventorySlot.Invalid)
+			// ammo
+			if (slot == InventorySlot.Invalid)
 			{
 				// ammo
 				chr.UpdateRangedDamage();
@@ -1071,6 +1110,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void OnUnEquip(InventorySlot slot)
 		{
+			if (!IsApplied) return;
+			IsApplied = false;
+
 			var chr = OwningCharacter;
 			if (!m_template.IsAmmo)
 			{
@@ -1109,23 +1151,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			// damages
-			if (m_template.IsWeapon)
-			{
-				if (slot == InventorySlot.MainHand)
-				{
-					m_owningCharacter.MainWeapon = null;
-				}
-				else if (slot == InventorySlot.OffHand)
-				{
-					m_owningCharacter.OffHandWeapon = null;
-				}
-				else if (slot == InventorySlot.ExtraWeapon)
-				{
-					m_owningCharacter.RangedWeapon = null;
-				}
-			}
-			else if (slot == InventorySlot.Invalid)
+			// ammo
+			if (slot == InventorySlot.Invalid)
 			{
 				// ammo
 				chr.UpdateRangedDamage();
@@ -1287,6 +1314,13 @@ namespace WCell.RealmServer.Entities
 			return m_owningCharacter == chr;
 		}
 		#endregion
+
+		public override void Dispose(bool disposing)
+		{
+			m_owningCharacter = null;
+			m_isInWorld = false;
+			IsDeleted = true;
+		}
 
 		public override string ToString()
 		{

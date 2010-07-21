@@ -352,7 +352,7 @@ namespace WCell.RealmServer.Handlers
 						packet.Zero(CharEnumItemCount * CharEnumItemBytes);
 						packet.Position = itemOffset;
 
-						if (record.New)
+						if (record.JustCreated)
 						{
 							var archetype = ArchetypeMgr.GetArchetype(record.Race, record.Class);
 							if (archetype != null)

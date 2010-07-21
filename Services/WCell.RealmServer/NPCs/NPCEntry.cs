@@ -323,7 +323,7 @@ namespace WCell.RealmServer.NPCs
 				return GenericWeapon.Peace;
 			}
 
-			return new GenericWeapon(MinDamage, MaxDamage, AttackTime);
+			return new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, MinDamage, MaxDamage, AttackTime);
 		}
 
 		/// <summary>
@@ -333,7 +333,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (OffhandAttackTime > 0 && OffhandMaxDamage > 0 && OffhandMinDamage > 0)
 			{
-				return new GenericWeapon(OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponOffHand, OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
 			}
 			return null;
 		}
@@ -345,7 +345,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (RangedAttackTime > 0)
 			{
-				return new GenericWeapon(true, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
 			}
 			return null;
 		}
@@ -842,8 +842,6 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		public static NPCCreator DefaultCreator = entry => new NPC();
-
 		public bool IsVendor
 		{
 			get { return VendorItems != null; }
@@ -902,6 +900,8 @@ namespace WCell.RealmServer.NPCs
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;
 		}
+
+		public static NPCCreator DefaultCreator = entry => new NPC();
 
 		public IBrain DefaultBrainCreator(NPC npc)
 		{

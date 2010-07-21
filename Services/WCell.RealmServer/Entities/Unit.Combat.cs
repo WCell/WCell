@@ -197,7 +197,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var mod in AttackEventHandlers)
 			{
-				mod.OnAttack(action);
+				mod.OnDefend(action);
 			}
 		}
 
@@ -526,18 +526,22 @@ namespace WCell.RealmServer.Entities
 
 			if (attacker != null)
 			{
-				AddDefenseMods(action);
-				attacker.AddAttackMods(action);
-
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
-					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 					action.IsCritical = true;
 				}
 				else
 				{
 					action.IsCritical = false;
+				}
+
+				AddDefenseMods(action);
+				attacker.AddAttackMods(action);
+
+				if (action.IsCritical)
+				{
+					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 				}
 			}
 

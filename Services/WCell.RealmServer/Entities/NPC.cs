@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -83,8 +84,6 @@ namespace WCell.RealmServer.Entities
 			// auras
 			m_auras = new NPCAuraCollection(this);
 
-			var mainWeapon = entry.CreateMainHandWeapon();
-
 			SpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
@@ -137,7 +136,9 @@ namespace WCell.RealmServer.Entities
 
 			Array.Copy(entry.Resistances, m_baseResistances, m_baseResistances.Length);
 
-			MainWeapon = mainWeapon;
+			MainWeapon = m_entry.CreateMainHandWeapon();
+			RangedWeapon = m_entry.CreateRangedWeapon();
+			OffHandWeapon = entry.CreateOffhandWeapon();
 
 			// Set Level/Scale *after* MainWeapon is set:
 			var level = entry.GetRandomLevel();
@@ -175,9 +176,6 @@ namespace WCell.RealmServer.Entities
 			SetInt32(UnitFields.BASE_MANA, mana);
 			SetInt32(UnitFields.POWER1, mana);
 
-			OffHandWeapon = entry.CreateOffhandWeapon();
-			RangedWeapon = entry.CreateRangedWeapon();
-
 			HoverHeight = entry.HoverHeight;
 
 			m_Movement = new Movement(this);
@@ -210,10 +208,7 @@ namespace WCell.RealmServer.Entities
 
 			AddEquipment();
 
-			CanMelee = mainWeapon != GenericWeapon.Peace;
-
-			// TODO: Don't create talents if this is not a pet
-			m_petTalents = new TalentCollection(this);
+			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
 			m_brain = m_entry.BrainCreator(this);
 			m_brain.IsRunning = true;
@@ -1101,6 +1096,24 @@ namespace WCell.RealmServer.Entities
 		public override float MaxAttackRange
 		{
 			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
+		}
+
+		/// <summary>
+		/// NPCs only have their default items which may always be used, so no invalidation
+		/// takes place.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					return m_entry.CreateMainHandWeapon();
+				case InventorySlotType.WeaponRanged:
+					return m_entry.CreateRangedWeapon();
+				case InventorySlotType.WeaponOffHand:
+					return m_entry.CreateOffhandWeapon();
+			}
+			return null;
 		}
 
 		protected override void OnEnterCombat()

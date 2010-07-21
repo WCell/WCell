@@ -94,7 +94,7 @@ namespace WCell.Constants.Spells
 		PeriodicManaLeech = 64,
 		ModCastingSpeed = 65,
 		FeignDeath = 66,
-		ModDisarm = 67,
+		DisarmMainHand = 67,
 		ModStalked = 68,
 		SchoolAbsorb = 69,
 		ExtraAttacks = 70,
@@ -452,7 +452,11 @@ namespace WCell.Constants.Spells
 		/// See: WarriorProtectionCriticalBlock
 		/// </summary>
 		CriticalBlockPct = 253,
-		Aura_254 = 254,
+
+		/// <summary>
+		/// Disarms offhand and/or shield (same slot)
+		/// </summary>
+		DisarmOffhandAndShield = 254,
 		/// <summary>
 		/// Increases damage taken from bleed in %
 		/// </summary>
@@ -486,7 +490,10 @@ namespace WCell.Constants.Spells
 		Aura_275 = 275,
 		Aura_276 = 276,
 		Aura_277 = 277,
-		Aura_278 = 278,
+		/// <summary>
+		/// 
+		/// </summary>
+		DisarmRanged = 278,
 		Aura_279 = 279,
 		ModArmorPenetration = 280,
 		Aura_281 = 281,
@@ -531,5 +538,13 @@ namespace WCell.Constants.Spells
         Aura_305 = 305,
         Aura_306 = 307,
 		End = 500
+	}
+
+	[Flags]
+	public enum DisarmMask : uint
+	{
+		MainHand = 1,
+		Ranged = 2,
+		Offhand = 3
 	}
 }

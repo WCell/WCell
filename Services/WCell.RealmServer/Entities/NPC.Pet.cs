@@ -122,12 +122,24 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
+		public bool HasTalents
+		{
+			get { return m_petTalents != null; }
+		}
+
 		/// <summary>
 		/// Collection of all this Pet's Talents
 		/// </summary>
 		public TalentCollection Talents
 		{
-			get { return m_petTalents; }
+			get
+			{
+				if (m_petTalents == null)
+				{
+					m_petTalents = new TalentCollection(this);
+				}
+				return m_petTalents;
+			}
 		}
 
 		public int FreeTalentPoints

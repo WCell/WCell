@@ -236,7 +236,11 @@ namespace WCell.RealmServer.Items
 
 		#region Custom
 		[NotPersistent]
-		public InventorySlotTypeMask InventorySlotMask;
+		public InventorySlotTypeMask InventorySlotMask
+		{
+			get;
+			set;
+		}
 
 		[NotPersistent]
 		public uint RandomSuffixFactor;
@@ -726,6 +730,12 @@ namespace WCell.RealmServer.Items
 				}
 			}
 
+			// Disarmed
+			if (IsWeapon && !chr.MayCarry(InventorySlotMask))
+			{
+				return InventoryError.CANT_DO_WHILE_DISARMED;
+			}
+
 			// TODO: Add missing restrictions
 			// if (template.RequiredLockpickSkill
 			// if (template.RequiredPvPRank
@@ -738,7 +748,7 @@ namespace WCell.RealmServer.Items
 		{
 			IsThrowable = InventorySlotType == InventorySlotType.Thrown;
 			IsRangedWeapon = IsThrowable ||
-				InventorySlotType == InventorySlotType.Ranged ||
+				InventorySlotType == InventorySlotType.WeaponRanged ||
 				InventorySlotType == InventorySlotType.RangedRight;
 			IsMeleeWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon ||
 							InventorySlotType == InventorySlotType.Weapon ||

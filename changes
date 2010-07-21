@@ -1,6 +1,3 @@
-- added Unit.LastKiller
-- added Region.OnNPCDied
-- added WorldObject.PlayerMaster (returns itself or the master as Character, or null if neither is Character)
-- fixed Spell AP boni to use ranged AP for ranged spells
-- fixed some death-related issues
-- to be tested: Taunting, WarriorEnragedRegeneration
+- added ThreatTest
+- fixed NPC creation in tests / ThreatCollection / Disarm / more spells
+- to test: PaladinRetributionEyeForAnEye

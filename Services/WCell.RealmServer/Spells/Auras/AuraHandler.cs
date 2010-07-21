@@ -3,7 +3,7 @@
  *   file		: AuraHandler.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (sÃ¸, 31 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (sø, 31 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1238 $
  *
@@ -104,7 +104,6 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.PeriodicHealthFunnel] = () => new PeriodicHealthFunnelHandler();
 			EffectHandlers[(int)AuraType.PeriodicManaLeech] = () => new PeriodicManaLeechHandler();
 			EffectHandlers[(int)AuraType.ModCastingSpeed] = () => new ModCastingSpeedHandler();
-			EffectHandlers[(int)AuraType.ModDisarm] = () => new DisarmHandler();
 			EffectHandlers[(int)AuraType.SchoolAbsorb] = () => new SchoolAbsorbHandler();
 			EffectHandlers[(int)AuraType.ModSpellCritChanceForSchool] = () => new ModSpellCritChanceForSchoolHandler();
 			EffectHandlers[(int)AuraType.ModPowerCost] = () => new ModPowerCostHandler();
@@ -186,6 +185,9 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();
 			EffectHandlers[(int)AuraType.CriticalBlockPct] = () => new CriticalBlockPctHandler();
 			EffectHandlers[(int)AuraType.ModAPByArmor] = () => new ModAPByArmorHandler();
+			EffectHandlers[(int)AuraType.DisarmMainHand] = () => new DisarmMainHandHandler();
+			EffectHandlers[(int)AuraType.DisarmOffhandAndShield] = () => new DisarmOffHandHandler();
+			EffectHandlers[(int)AuraType.DisarmRanged] = () => new DisarmRangedHandler();
 			
 
 			// make sure, there are no missing handlers

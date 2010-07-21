@@ -15,7 +15,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 	public static class PaladinMiscFixes
 	{
 		[Initialization(InitializationPass.Second)]
-
 		public static void FixPaladin()
 		{
 			FixBlessings();
