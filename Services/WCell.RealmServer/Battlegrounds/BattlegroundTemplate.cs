@@ -18,12 +18,6 @@ namespace WCell.RealmServer.Battlegrounds
 	[DataHolder]
 	public class BattlegroundTemplate : IDataHolder
 	{
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		[Variable("DefaultBGLevelRange")]
-		public static int DefaultLevelRange = 10;
-
 		public BattlegroundId Id;
 
 		[NotPersistent]
@@ -40,11 +34,6 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public Vector3 AllianceStartPosition, HordeStartPosition;
 		public float AllianceStartOrientation, HordeStartOrientation;
-
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		public int LevelRange = DefaultLevelRange;
 
 		[NotPersistent]
 		public BattlegroundCreator Creator;
@@ -90,8 +79,8 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
-			RegionInfo.MinLevel = Math.Max(1, MinLevel);
-			RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
+            RegionInfo.MinLevel = Math.Max(1, MinLevel);
+            RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
 
 			BattlegroundMgr.Templates[(int)Id] = this;
 
@@ -100,31 +89,12 @@ namespace WCell.RealmServer.Battlegrounds
 		}
 
 		private void CreateQueues()
-		{
-			if (MaxLevel == 0)
-			{
-				MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
-			}
-			if (MinLevel == 0)
-			{
-				MinLevel = 1;
-			}
-
-			Queues = new GlobalBattlegroundQueue[RealmServerConfiguration.MaxCharacterLevel];
-
-			var lvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, MaxLevel);
-			var bracket = 0;
-
-			AddQueue(new GlobalBattlegroundQueue(this, ++bracket, lvl, lvl));
-
-			while (lvl >= MinLevel)
-			{
-				var maxLvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, lvl - 1);
-				var minLvl = Math.Max(lvl - LevelRange, MinLevel);
-				AddQueue(new GlobalBattlegroundQueue(this, ++bracket, minLvl, maxLvl));
-
-				lvl -= LevelRange;
-			}
+		{   
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
+            {
+                if (entry.mapId == RegionId)
+                    AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+            }
 		}
 
 		void AddQueue(GlobalBattlegroundQueue queue)

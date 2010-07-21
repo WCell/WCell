@@ -39,6 +39,8 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public static MappedDBCReader<BattlemasterList, BattlemasterConverter> BattlemasterListReader;
 
+        public static MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter> PVPDifficultyReader;
+
 		/// <summary>
 		/// Indexed by BattlegroundId
 		/// </summary>
@@ -136,6 +138,8 @@ namespace WCell.RealmServer.Battlegrounds
 		public static void InitializeBGs()
 		{
 			BattlemasterListReader = new MappedDBCReader<BattlemasterList, BattlemasterConverter>(RealmServerConfiguration.GetDBCFile("BattlemasterList.dbc"));
+
+            PVPDifficultyReader = new MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter>(RealmServerConfiguration.GetDBCFile("PvpDifficulty.dbc"));
 
 			ContentHandler.Load<BattlegroundTemplate>();
 
