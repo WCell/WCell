@@ -1019,7 +1019,7 @@ namespace WCell.RealmServer.NPCs
 			writer.WriteLineNotDefault(NPCFlags, "Flags: " + NPCFlags);
 			writer.WriteLineNotDefault(DynamicFlags, "DynamicFlags: " + DynamicFlags);
 			writer.WriteLineNotDefault(UnitFlags, "UnitFlags: " + UnitFlags);
-			writer.WriteLineNotDefault(ExtraFlags, "ExtraFlags: " + ExtraFlags.ToString("0x:X"));
+			writer.WriteLineNotDefault(ExtraFlags, "ExtraFlags: " + ExtraFlags.ToString("0x{0:X}"));
 			writer.WriteLineNotDefault(AttackTime + OffhandAttackTime, "AttackTime: " + AttackTime, "Offhand: " + OffhandAttackTime);
 			writer.WriteLineNotDefault(RangedAttackTime, "RangedAttackTime: " + RangedAttackTime);
 			writer.WriteLineNotDefault(AttackPower, "AttackPower: " + AttackPower);
