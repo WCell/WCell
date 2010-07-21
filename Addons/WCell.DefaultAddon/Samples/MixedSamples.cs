@@ -43,7 +43,7 @@ namespace WCell.Addons.Default.Samples
 			{
 				DefaultName = "Sample Grizzly",
 				EntryFlags = NPCEntryFlags.Tamable,
-				Type = NPCType.Humanoid,
+				Type = CreatureType.Humanoid,
 				DisplayIds = new[] { 21635u },
 				Scale = 1,
 				MinLevel = 73,
@@ -167,7 +167,7 @@ namespace WCell.Addons.Default.Samples
 				BuyPrice = 1421,
 				SellPrice = 284,
 				Level = 12,
-				InventorySlotType = InventorySlotType.Ranged,
+				InventorySlotType = InventorySlotType.WeaponRanged,
 				Damages = new[] { new DamageInfo { Minimum = 14, Maximum = 25 } },
 				BondType = ItemBondType.OnPickup,
 				Material = Material.Wood,

@@ -184,6 +184,11 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual void AddAttackMods(DamageAction action)
 		{
+			if (action.Victim is NPC && m_dmgBonusVsCreatureTypePct != null)
+			{
+				var bonus = m_dmgBonusVsCreatureTypePct[(int) ((NPC) this).Entry.Type];
+				action.Damage += (bonus*action.Damage + 50)/100;
+			}
 			foreach (var mod in AttackEventHandlers)
 			{
 				mod.OnAttack(action);
@@ -197,7 +202,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var mod in AttackEventHandlers)
 			{
-				mod.OnAttack(action);
+				mod.OnDefend(action);
 			}
 		}
 
@@ -524,20 +529,29 @@ namespace WCell.RealmServer.Entities
 
 			action.Victim = this;
 
+<<<<<<< HEAD
 			if (attacker != null)
 			{
-				AddDefenseMods(action);
-				attacker.AddAttackMods(action);
-
+=======
+			if (attacker != null)
+			{
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
-					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 					action.IsCritical = true;
 				}
 				else
 				{
 					action.IsCritical = false;
+				}
+
+>>>>>>> wcell/master
+				AddDefenseMods(action);
+				attacker.AddAttackMods(action);
+
+				if (action.IsCritical)
+				{
+					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 				}
 			}
 
@@ -575,6 +589,8 @@ namespace WCell.RealmServer.Entities
 			}
 
 			res *= resistChance;
+
+			res -= defender.GetAttackerSpellHitChanceMod(dmgSchool);
 
 			if (res < 1)
 			{
@@ -726,8 +742,10 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CheckResist(Unit attacker, DamageSchool school, SpellMechanic mechanic)
 		{
-			if (GetMechanicResistance(mechanic) +
-				GetResistChancePct(attacker, school) > Utility.Random(0f, 100f))
+			if (Utility.Random(0f, 100f) <
+				GetMechanicResistance(mechanic) -
+				GetAttackerSpellHitChanceMod(school) +
+				GetResistChancePct(attacker, school))
 				return true;
 
 			return false;
@@ -738,7 +756,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CheckDebuffResist(int attackerLevel, DamageSchool school)
 		{
-			if (GetDebuffResistance(school) > Utility.Random(0, 100))
+			if (Utility.Random(0, 100) < 
+				GetDebuffResistance(school) -
+				GetAttackerSpellHitChanceMod(school))
 				return true;
 
 			return false;

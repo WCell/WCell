@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -184,9 +184,10 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Battlegrounds\PvPDifficulty.cs" />
+	<Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
+    <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Lang\LangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="RealmAccount.cs" />
@@ -231,9 +232,11 @@
     <Compile Include="Res\Resources.cs" />
     <Compile Include="Res\WCell.RealmServer.Designer.cs" />
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
     <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDamageDoneVersusCreatureTypeHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModRageFromDamageDealtPercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModHitChanceHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
@@ -241,6 +244,7 @@
     <Compile Include="Spells\Auras\Mod\ModExpertiseHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
@@ -539,7 +543,6 @@
     <Compile Include="Events\AccountEvents.cs" />
     <Compile Include="Events\Global\World.cs" />
     <Compile Include="Events\Help\Tickets\Ticket.cs" />
-    <Compile Include="Events\Spells\SpellCast.cs" />
     <Compile Include="Events\Spells\SpellChannel.cs" />
     <Compile Include="Extensions.cs">
       <SubType>Code</SubType>
@@ -1268,6 +1271,7 @@
     <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+>>>>>>> wcell/master
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

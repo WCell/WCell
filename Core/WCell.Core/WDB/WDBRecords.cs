@@ -39,7 +39,7 @@ namespace WCell.Core.WDB
         /// <summary>
         /// CreatureType.dbc
         /// </summary>
-        public NPCType Type;
+        public CreatureType Type;
         /// <summary>
         /// CreatureFamily.dbc
         /// </summary>
@@ -103,7 +103,7 @@ namespace WCell.Core.WDB
 
             cache.Flags = (NPCEntryFlags)binReader.ReadUInt32();
 
-            cache.Type = (NPCType)binReader.ReadUInt32();
+            cache.Type = (CreatureType)binReader.ReadUInt32();
             cache.Family = binReader.ReadUInt32();
             cache.Rank = (CreatureRank)binReader.ReadUInt32();
             cache.CreatureRelation1 = binReader.ReadUInt32();

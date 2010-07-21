@@ -24,20 +24,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerSpells.TargetTriggers.Add(this);
-			}
+			Owner.Spells.TargetTriggers.Add(this);
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerSpells.TargetTriggers.Remove(this);
-			}
+			Owner.Spells.TargetTriggers.Remove(this);
 		}
 	}
 };

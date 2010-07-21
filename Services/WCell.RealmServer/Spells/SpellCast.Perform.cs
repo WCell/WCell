@@ -46,89 +46,44 @@ namespace WCell.RealmServer.Spells
 				m_targets = new HashSet<WorldObject>();
 			}
 
-			var handlers = new SpellEffectHandler[m_spell.EffectHandlerCount];
+			//var extraEffects = CasterUnit.Spells.GetExtraEffectsForSpell(m_spell.SpellId);
+			//var hasExtraEffects = extraEffects != null;
+			var handlers = new SpellEffectHandler[m_spell.EffectHandlerCount];// + (hasExtraEffects ? extraEffects.Count : 0)];
 			var h = 0;
-			for (var i = 0; i < m_spell.Effects.Length; i++)
+			foreach (var effect in m_spell.Effects)
 			{
-				// make sure, we have the right Caster-Type
-				var effect = m_spell.Effects[i];
 				if (effect.SpellEffectHandlerCreator == null)
 				{
 					continue;
 				}
 
-				var handler = effect.SpellEffectHandlerCreator(this, effect);
-				handlers[h++] = handler;
-
-				handler.CheckCasterType(ref failReason);
+				InitHandler(effect, h, handlers, out targets, ref failReason);
 				if (failReason != SpellFailedReason.Ok)
 				{
 					return failReason;
 				}
-
-				handler.Initialize(ref failReason);
-				if (failReason != SpellFailedReason.Ok)
-				{
-					return failReason;
-				}
-
-				// find targets and amount SpellTargetCollection if effects have same ImplicitTargetTypes
-				targets = null;
-				if (m_initialTargets != null)
-				{
-					// do we have given targets?
-					//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
-					targets = new SpellTargetCollection();
-					for (var j = 0; j < m_initialTargets.Length; j++)
-					{
-						var target = m_initialTargets[j];
-						if (target.IsInWorld)
-						{
-							var err = handler.CheckValidTarget(target);
-							if (err != SpellFailedReason.Ok)
-							{
-								if (!IsAoE)
-								{
-									return err;
-								}
-							}
-							else
-							{
-								targets.Add(target);
-							}
-						}
-					}
-				}
-				else if (handler.HasOwnTargets)
-				{
-					// check if we have same target-types, else collect targets specifically for this Effect
-					for (var j = 0; j < i; j++)
-					{
-						var handler2 = handlers[j];
-						if (handler.Effect.TargetsEqual(handler2.Effect))
-						{
-							targets = handler2.Targets;
-							break;
-						}
-					}
-
-					if (targets == null)
-					{
-						//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
-						targets = new SpellTargetCollection();
-					}
-				}
-
-				if (targets != null)
-				{
-					handler.Targets = targets;
-					targets.m_handlers.Add(handler);
-				}
+				h++;
 			}
+			//if (hasExtraEffects)
+			//{
+			//    foreach (var effect in extraEffects)
+			//    {
+			//        if (effect.SpellEffectHandlerCreator == null)
+			//        {
+			//            continue;
+			//        }
 
+			//        InitHandler(effect, h, handlers, out targets, ref failReason);
+			//        if (failReason != SpellFailedReason.Ok)
+			//        {
+			//            return failReason;
+			//        }
+			//        h++;
+			//    }
+			//}
 
 			// Initialize Targets
-			for (var i = 0; i < handlers.Length; i++)
+			for (var i = 0; i < h; i++)
 			{
 				var handler = handlers[i];
 				if (handler.Targets != null)
@@ -156,6 +111,81 @@ namespace WCell.RealmServer.Spells
 			}
 			return failReason;
 		}
+
+		private void InitHandler(SpellEffect effect, int h, SpellEffectHandler[] handlers, out SpellTargetCollection targets, ref SpellFailedReason failReason)
+		{
+			targets = null;
+
+			var handler = effect.SpellEffectHandlerCreator(this, effect);
+			handlers[h] = handler;
+
+			// make sure, we have the right Caster-Type
+			handler.CheckCasterType(ref failReason);
+			if (failReason != SpellFailedReason.Ok)
+			{
+				return;
+			}
+
+			handler.Initialize(ref failReason);
+			if (failReason != SpellFailedReason.Ok)
+			{
+				return;
+			}
+
+			// find targets and amount SpellTargetCollection if effects have same ImplicitTargetTypes
+			if (m_initialTargets != null)
+			{
+				// do we have given targets?
+				//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
+				targets = new SpellTargetCollection();
+				for (var j = 0; j < m_initialTargets.Length; j++)
+				{
+					var target = m_initialTargets[j];
+					if (target.IsInWorld)
+					{
+						var err = handler.CheckValidTarget(target);
+						if (err != SpellFailedReason.Ok)
+						{
+							if (!IsAoE)
+							{
+								failReason = err;
+								return;
+							}
+						}
+						else
+						{
+							targets.Add(target);
+						}
+					}
+				}
+			}
+			else if (handler.HasOwnTargets)
+			{
+				// check if we have same target-types, else collect targets specifically for this Effect
+				for (var j = 0; j < h; j++)
+				{
+					var handler2 = handlers[j];
+					if (handler.Effect.TargetsEqual(handler2.Effect))
+					{
+						targets = handler2.Targets;
+						break;
+					}
+				}
+
+				if (targets == null)
+				{
+					//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
+					targets = new SpellTargetCollection();
+				}
+			}
+
+			if (targets != null)
+			{
+				handler.Targets = targets;
+				targets.m_handlers.Add(handler);
+			}
+		}
+
 		#endregion
 
 		#region Perform
@@ -706,9 +736,7 @@ namespace WCell.RealmServer.Spells
 				var powerCost = m_spell.CalcPowerCost(caster,
 													  Selected is Unit
 														? ((Unit)Selected).GetLeastResistant(m_spell)
-														: m_spell.Schools[0],
-													  m_spell,
-													  m_spell.PowerType);
+														: m_spell.Schools[0]);
 				if (m_spell.PowerType != PowerType.Health)
 				{
 					caster.Power -= powerCost;
@@ -783,9 +811,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// trigger dynamic post-cast spells, eg Shadow Weave etc, and consumes spell modifiers (if required)
+			// trigger dynamic post-cast spells, eg Shadow Weave etc
+			caster.Spells.TriggerSpellsFor(this);
 			if (caster is Character)
 			{
+				// consumes spell modifiers (if required)
 				((Character)caster).PlayerSpells.OnCasted(this);
 				if (!m_casting)
 				{
@@ -794,11 +824,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Casted event
-			var evt = Casted;
-			if (evt != null)
-			{
-				evt(this);
-			}
+			m_spell.NotifyCasted(this);
 
 			//if (CasterChar != null)
 			//{

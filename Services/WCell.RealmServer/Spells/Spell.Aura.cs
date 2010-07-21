@@ -238,10 +238,10 @@ namespace WCell.RealmServer.Spells
 					log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
 				}
 
-				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.SpellCast))
+				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.SpellCast))
 				{
 					// we don't want any SpellCast to trigger on that
-					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackSelf;
+					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
 				}
 
 				IsProc = ProcTriggerEffects != null;
@@ -376,7 +376,7 @@ namespace WCell.RealmServer.Spells
 				TargetProcSpells = new HashSet<Spell>();
 			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
+			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 

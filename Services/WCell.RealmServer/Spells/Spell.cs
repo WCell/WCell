@@ -779,8 +779,9 @@ namespace WCell.RealmServer.Spells
 					return effect;
 				}
 			}
-			ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
-			return null;
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
+			//return null;
+			throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
 		}
 
 		/// <summary>
@@ -794,9 +795,16 @@ namespace WCell.RealmServer.Spells
 				{
 					return effect;
 				}
+<<<<<<< HEAD
 			}
 			ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			return null;
+=======
+			}
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
+			//return null;
+			throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
+>>>>>>> wcell/master
 		}
 
 		public SpellEffect GetFirstEffectWith(Predicate<SpellEffect> predicate)
@@ -1001,16 +1009,20 @@ namespace WCell.RealmServer.Spells
 			return Math.Abs(casterLevel - BaseLevel);
 		}
 
-		public int CalcPowerCost(Unit caster, DamageSchool school, Spell spell, PowerType type)
+		public int CalcBasePowerCost(Unit caster)
 		{
 			var cost = PowerCost + (PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
 			if (PowerCostPercentage > 0)
 			{
 				cost += (PowerCostPercentage *
-					((type == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
+					((PowerType == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
 			}
+			return cost;
+		}
 
-			return caster.GetPowerCost(school, spell, cost);
+		public int CalcPowerCost(Unit caster, DamageSchool school)
+		{
+			return caster.GetPowerCost(school, this, CalcBasePowerCost(caster));
 		}
 
 		public bool ShouldShowToClient()
@@ -1212,9 +1224,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "TargetType: " + TargetFlags);
 			}
-			if ((int)TargetCreatureTypes != 0)
+			if ((int)CreatureMask != 0)
 			{
-				writer.WriteLine(indent + "TargetUnitTypes: " + TargetCreatureTypes);
+				writer.WriteLine(indent + "TargetUnitTypes: " + CreatureMask);
 			}
 			if ((int)RequiredSpellFocus != 0)
 			{
@@ -1533,5 +1545,14 @@ namespace WCell.RealmServer.Spells
 			return GetEnumerator();
 		}
 		#endregion
+
+		#region Spell Alternatives
+
+		#endregion
+
+		protected Spell Clone()
+		{
+			return (Spell)MemberwiseClone();
+		}
 	}
 }

@@ -936,38 +936,29 @@ namespace WCell.RealmServer.Spells.Auras
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
 			var proced = false;
-			if (!m_spell.Attributes.HasFlag(SpellAttributes.MovementImpairing) &&
-				!m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative))
+
+			var hasProcEffects = m_spell.ProcTriggerEffects != null;
+			if (hasProcEffects)
 			{
-				// normal proc trigger
-				var hasProcEffects = m_spell.ProcTriggerEffects != null;
-				if (!m_spell.IsPassive || hasProcEffects)
+				foreach (var handler in m_handlers)
 				{
-					foreach (var handler in m_handlers)
+					if (handler.SpellEffect.IsProc)
 					{
-						if (!hasProcEffects || handler.SpellEffect.IsProc)
+						// only trigger proc effects or all effects, if there arent any proc-specific effects
+						if ((!handler.SpellEffect.HasAffectMask ||
+							(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
 						{
-							// only trigger proc effects or all effects, if there arent any proc-specific effects
-							if ((!handler.SpellEffect.HasAffectMask ||
-								(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
-							{
-								// only trigger if no AffectMask is set or the triggerer matches the proc mask
-								handler.OnProc(triggerer, action);
-								proced = true;
-							}
+							// only trigger if no AffectMask is set or the triggerer matches the proc mask
+							handler.OnProc(triggerer, action);
+							proced = true;
 						}
 					}
 				}
-			}
+			}	
 			else
 			{
-				// proc simply breaks movement impairing or negative effect
+				// Simply count down stack count and remove aura eventually
 				proced = true;
-				if (m_stackCount == 0)
-				{
-					Remove(true);
-					return;
-				}
 			}
 
 			if (proced && m_spell.MaxStackCount > 1)

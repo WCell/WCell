@@ -1088,7 +1088,7 @@ namespace WCell.RealmServer.Entities
 			this.UpdateAllDamages();
 		}
 
-		private void ModDamageBonusPct(DamageSchool school, int delta)
+		private void ModDamageModPct(DamageSchool school, int delta)
 		{
 			if (delta == 0)
 			{
@@ -1101,11 +1101,11 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds/Removes a percent modifier to all of the given damage schools
 		/// </summary>
-		public void ModDamageBonusPct(uint[] schools, int delta)
+		public void ModDamageModPct(uint[] schools, int delta)
 		{
 			foreach (var school in schools)
 			{
-				ModDamageBonusPct((DamageSchool)school, delta);
+				ModDamageModPct((DamageSchool)school, delta);
 			}
 			this.UpdateAllDamages();
 		}

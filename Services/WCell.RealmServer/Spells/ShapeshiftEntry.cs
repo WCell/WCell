@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells
 		public uint BarOrder;
 		public string Name;
 		public ShapeshiftInfoFlags Flags;
-		public NPCType CreatureType;
+		public CreatureType CreatureType;
 		/// <summary>
 		/// In millis
 		/// </summary>
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Spells
 			entry.BarOrder = GetUInt32(rawData, index++);
 			entry.Name = GetString(rawData, ref index);
 			entry.Flags = (ShapeshiftInfoFlags)GetUInt32(rawData, index++);
-			entry.CreatureType = (NPCType)GetInt32(rawData, index++);
+			entry.CreatureType = (CreatureType)GetInt32(rawData, index++);
 			index++;	// this columnn is set iff AttackTime is set
 			entry.AttackTime = GetInt32(rawData, index++);
 

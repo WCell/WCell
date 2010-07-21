@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Cell.Core;
 using NLog;
 using WCell.Constants;
@@ -830,7 +831,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Notify that we are about to cast
-			return NotifyCasting();
+			return m_spell.NotifyCasting(this);
 		}
 
 		SpellFailedReason FinishPrepare()
@@ -844,25 +845,6 @@ namespace WCell.RealmServer.Spells
 			}
 
 			return Perform();
-		}
-
-		/// <summary>
-		/// Triggers the Casting event
-		/// </summary>
-		/// <returns></returns>
-		SpellFailedReason NotifyCasting()
-		{
-			var evt = Casting;
-			if (evt != null)
-			{
-				var err = evt(this);
-				if (err != SpellFailedReason.Ok)
-				{
-					Cancel(err);
-					return err;
-				}
-			}
-			return SpellFailedReason.Ok;
 		}
 
 		/// <summary>
@@ -1150,11 +1132,14 @@ namespace WCell.RealmServer.Spells
 		{
 			if (Caster.MayAttack(target))
 			{
+				var school = target.GetLeastResistant(spell);
+				// evasion
 				if (target.IsEvading)
 				{
 					return CastMissReason.Evade;
 				}
 
+				// immune & invul
                 if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
 					(target is Character && ((Character)target).Role.IsStaff))
 				{
@@ -1163,23 +1148,22 @@ namespace WCell.RealmServer.Spells
 						return CastMissReason.Immune_2;
 					}
 
-					var immune = true;
-					for (var i = 0; i < spell.Schools.Length; i++)
-					{
-						var school = spell.Schools[i];
-						if (!target.IsImmune(school))
-						{
-							immune = false;
-							break;
-						}
-					}
-					if (immune)
+					if (spell.Schools.All(target.IsImmune))
 					{
 						return CastMissReason.Immune;
 					}
 				}
 
-                if (target.CheckResist(CasterUnit, target.GetLeastResistant(spell), spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
+				//// avoid/miss
+				//var avoidance = target.GetSpellAvoidancePct(school);
+				//if (avoidance > 0 && Utility.Random(1, 101) < avoidance)
+				//{
+				//    return CastMissReason.Miss;
+				//}
+
+
+				// resist
+                if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
 				{
 					return CastMissReason.Resist;
 				}
@@ -1248,7 +1232,8 @@ namespace WCell.RealmServer.Spells
 				time -= (pct * time) / 100; // reduce by protection %
 				if (Caster is Character)
 				{
-					time = ((Character)Caster).PlayerSpells.GetModifiedInt(SpellModifierType.PushbackReduction, m_spell, time);
+					// pushback reduction is a positive value
+					time = ((Character)Caster).PlayerSpells.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
 				}
 			}
 			return Math.Max(0, time);
@@ -1460,11 +1445,7 @@ namespace WCell.RealmServer.Spells
 				m_channel.Close(true);
 			}
 
-			var evt = Cancelling;
-			if (evt != null)
-			{
-				evt(this, reason);
-			}
+			m_spell.NotifyCancelled(this, reason);
 
 			// Client already disconnected?
 			if (reason != SpellFailedReason.Ok && !m_passiveCast && m_spell.ShouldShowToClient())

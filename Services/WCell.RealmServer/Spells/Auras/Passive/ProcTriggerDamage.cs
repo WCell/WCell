@@ -28,13 +28,16 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			var val = m_spellEffect.CalcEffectValue(m_aura.CasterInfo);
 
-			if (action is IDamageAction)
+			//if (action is IDamageAction)
+			//{
+			//    ((IDamageAction)action).Damage += val;
+			//}
+			//else
 			{
-				((IDamageAction)action).Damage += val;
-			}
-			else
-			{
-				m_aura.Auras.Owner.DoSpellDamage(target, m_spellEffect, val);
+				if (Owner.MayAttack(target))
+				{
+					Owner.DoSpellDamage(target, m_spellEffect, val);
+				}
 			}
 		}
 	}

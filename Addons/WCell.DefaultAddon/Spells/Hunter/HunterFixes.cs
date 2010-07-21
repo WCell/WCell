@@ -34,7 +34,6 @@ namespace WCell.Addons.Default.Spells.Hunter
             FixMarkmanshipSpells();
             FixSurvivalSpells();
 
-
 		}
         #region Markmanship
         private static void FixMarkmanshipSpells()

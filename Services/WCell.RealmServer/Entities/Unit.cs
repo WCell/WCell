@@ -862,6 +862,17 @@ namespace WCell.RealmServer.Entities
 
 			if (healer is Unit)
 			{
+				var action = new HealAction
+				{
+					Attacker = (Unit)healer,
+					Victim = this,
+					Spell = effect != null ? effect.Spell : null,
+					IsCritical = crit,
+					Value = value
+				};
+				((Unit)healer).Proc(ProcTriggerFlags.HealOther, this, action, true);
+				Proc(ProcTriggerFlags.Heal, ((Unit)healer), action, false);
+
 				OnHeal((Unit)healer, effect, value);
 			}
 		}
@@ -1413,9 +1424,9 @@ namespace WCell.RealmServer.Entities
 			}
 			if (selected is Unit)
 			{
-				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell), spell, spell.PowerType);
+				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell));
 			}
-			return Power >= spell.CalcPowerCost(this, spell.Schools[0], spell, spell.PowerType);
+			return Power >= spell.CalcPowerCost(this, spell.Schools[0]);
 		}
 
 		public DamageSchool GetLeastResistant(Spell spell)
@@ -1520,13 +1531,13 @@ namespace WCell.RealmServer.Entities
 			minion.Master = this;
 
 			var type = minion.Entry.Type;
-			if (type != NPCType.None && type != NPCType.NotSpecified)
+			if (type != CreatureType.None && type != CreatureType.NotSpecified)
 			{
-				if (type == NPCType.NonCombatPet)
+				if (type == CreatureType.NonCombatPet)
 				{
 					minion.Brain.DefaultState = BrainState.Follow;
 				}
-				else if (type == NPCType.Totem)
+				else if (type == CreatureType.Totem)
 				{
 					// can't move
 					minion.Brain.DefaultState = BrainState.Roam;
@@ -1669,7 +1680,10 @@ namespace WCell.RealmServer.Entities
 					{
 						var charges = proc.StackCount;
 						proc.TriggerProc(triggerer, action);
-						proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						if (proc.MinProcDelay > 0)
+						{
+							proc.NextProcTime = now.AddMilliseconds(proc.MinProcDelay);
+						}
 
 						if (charges > 0 && proc.StackCount == 0)
 						{

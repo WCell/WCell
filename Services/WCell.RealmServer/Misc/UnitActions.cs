@@ -86,6 +86,46 @@ namespace WCell.RealmServer.Misc
 	}
 	#endregion
 
+	#region SimpleUnitAction
+	public class SimpleUnitAction : IUnitAction
+	{
+		public Unit Attacker
+		{
+			get;
+			set;
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public Spell Spell
+		{
+			get;
+			set;
+		}
+	}
+	#endregion
+
+	#region SimpleUnitAction
+	public class HealAction : SimpleUnitAction
+	{
+		public int Value
+		{
+			get;
+			set;
+		}
+
+		public bool IsCritical
+		{
+			get;
+			set;
+		}
+	}
+	#endregion
+
 	#region SimpleDamageAction
 	public class SimpleDamageAction : IDamageAction
 	{
@@ -352,6 +392,10 @@ namespace WCell.RealmServer.Misc
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
 					}
 				}
+				if (Blocked > 0)
+				{
+					flags |= ProcTriggerFlags.Block;
+				}
 				return flags;
 			}
 		}
@@ -360,7 +404,7 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				var flags = ProcTriggerFlags.ActionSelf;
+				var flags = ProcTriggerFlags.ActionOther;
 				if (SpellEffect != null)
 				{
 					if (SpellEffect.IsProc)
@@ -372,11 +416,15 @@ namespace WCell.RealmServer.Misc
 				else
 				{
 					flags |= ProcTriggerFlags.SpellCast;
+					if (IsCritical)
+					{
+						flags |= ProcTriggerFlags.SpellCastCritical;
+					}
 				}
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackSelf;
+					flags |= ProcTriggerFlags.RangedAttackOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -384,10 +432,10 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackSelf;
+					flags |= ProcTriggerFlags.MeleeAttackOther;
 					if (IsCritical)
 					{
-						flags |= ProcTriggerFlags.MeleeCriticalHitSelf;
+						flags |= ProcTriggerFlags.MeleeCriticalHitOther;
 					}
 				}
 				return flags;
@@ -812,6 +860,10 @@ namespace WCell.RealmServer.Misc
 				skillBonus = Victim.Level * 5; // defskill of mobs depends on their lvl.
 			}
 
+			// attacker hit mods
+			var attackHitChanceMod = Victim.IntMods[(int)(IsRangedAttack ? StatModifierInt.AttackerRangedHitChance : StatModifierInt.AttackerMeleeHitChance)];
+			hitchance += attackHitChanceMod * 100;
+
 			if (Attacker is Character)
 			{
 				var atk = Attacker as Character;
@@ -961,7 +1013,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
-			var attackerCritChance = Victim.MultiplierMods[(int)StatModifierFloat.AttackerCritChance];
+			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance];
 			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
 
 			if (chance > 100)

@@ -14,18 +14,20 @@
  *
  *************************************************************************/
 
+using WCell.Constants.Spells;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModMechanicDurationPercentHandler : AuraEffectHandler
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Mechanic, EffectValue);
+			m_aura.Auras.Owner.ModMechanicDurationMod((SpellMechanic) m_spellEffect.MiscValue, EffectValue);
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ModMechanicDurationMod(m_spellEffect.Mechanic, -EffectValue);
+			m_aura.Auras.Owner.ModMechanicDurationMod((SpellMechanic)m_spellEffect.MiscValue, -EffectValue);
 		}
 	}
 };

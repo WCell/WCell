@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
@@ -69,16 +71,31 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
+				if (value == m_mainWeapon)
+				{
+					return;
+				}
+
 				if (value == null)
 				{
 					// always make sure that a weapon is equipped
 					value = GenericWeapon.Fists;
 				}
 
+				if (m_mainWeapon is Item)
+				{
+					((Item) m_mainWeapon).OnUnEquip(InventorySlot.MainHand);
+				}
+
 				m_mainWeapon = value;
 
 				this.UpdateMainDamage();
 				this.UpdateMainAttackTime();
+
+				if (value is Item)
+				{
+					((Item) value).OnEquip();
+				}
 			}
 		}
 
@@ -94,12 +111,22 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_RangedWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_RangedWeapon = value;
+					return;
+				}
 
-					this.UpdateRangedAttackTime();
-					this.UpdateRangedDamage();
+				if (m_RangedWeapon is Item)
+				{
+					((Item)m_RangedWeapon).OnUnEquip(InventorySlot.ExtraWeapon);
+				}
+				m_RangedWeapon = value;
+
+				this.UpdateRangedAttackTime();
+				this.UpdateRangedDamage();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -116,12 +143,23 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_offhandWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_offhandWeapon = value;
+					return;
+				}
 
-					this.UpdateOffHandDamage();
-					this.UpdateOffHandAttackTime();
+				if (m_offhandWeapon is Item)
+				{
+					((Item)m_offhandWeapon).OnUnEquip(InventorySlot.OffHand);
+				}
+
+				m_offhandWeapon = value;
+
+				this.UpdateOffHandDamage();
+				this.UpdateOffHandAttackTime();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -130,22 +168,111 @@ namespace WCell.RealmServer.Entities
 		{
 			switch (slot)
 			{
-				case EquipmentSlot.OffHand:
-					return m_offhandWeapon;
+				case EquipmentSlot.MainHand:
+					return m_mainWeapon;
 				case EquipmentSlot.ExtraWeapon:
 					return m_RangedWeapon;
-				default:
+				case EquipmentSlot.OffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public IWeapon GetWeapon(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
 					return m_mainWeapon;
+				case InventorySlotType.WeaponRanged:
+					return m_RangedWeapon;
+				case InventorySlotType.WeaponOffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public void SetWeapon(InventorySlotType slot, IWeapon weapon)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					MainWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponRanged:
+					RangedWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponOffHand:
+					OffHandWeapon = weapon;
+					break;
 			}
 		}
 
 		/// <summary>
-		/// Whether this Unit should use melee at all
+		/// Whether this Unit is allowed to melee at all
 		/// </summary>
 		public bool CanMelee
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region Disarm
+		private InventorySlotTypeMask m_DisarmMask;
+
+		public bool MayCarry(InventorySlotTypeMask itemMask)
+		{
+			return (itemMask & DisarmMask) == 0;
+		}
+
+		/// <summary>
+		/// The mask of slots of currently disarmed items.
+		/// </summary>
+		public InventorySlotTypeMask DisarmMask
+		{
+			get { return m_DisarmMask; }
+		}
+
+		/// <summary>
+		/// Disarms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void SetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask |= m;
+
+			SetWeapon(type, null);
+		}
+
+		/// <summary>
+		/// Rearms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void UnsetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (!m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask &= ~m;
+
+			SetWeapon(type, GetOrInvalidateItem(type));
+		}
+
+		/// <summary>
+		/// Finds the item for the given slot. 
+		/// Unequips it and returns null, if it may not currently be used.
+		/// </summary>
+		protected virtual IWeapon GetOrInvalidateItem(InventorySlotType type)
+		{
+			return null;
 		}
 		#endregion
 
@@ -266,7 +393,7 @@ namespace WCell.RealmServer.Entities
 				value += MeleeAttackPowerModsPos;
 				value -= MeleeAttackPowerModsNeg;
 
-				value = ((1 + MeleeAttackPowerMultiplier)*value).RoundInt();
+				value = ((1 + MeleeAttackPowerMultiplier) * value).RoundInt();
 				return value;
 			}
 		}
@@ -397,6 +524,7 @@ namespace WCell.RealmServer.Entities
 
 				if (dmg >= health)
 				{
+					// kill
 					LastKiller = action.Attacker;
 				}
 

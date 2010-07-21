@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,7 +71,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Trauma should only proc on crit hit
 			SpellLineId.WarriorArmsTrauma.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitSelf;
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
 			});
 
 			// Taste for blood only triggers once every 6 seconds
@@ -90,6 +90,19 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorMockingBlow.Apply(spell =>
 			{
 				spell.CanCastOnPlayer = false;
+			});
+
+			// Heroic Throw "causing ${$m1+$AP*.50} damage"
+			SpellLineId.WarriorHeroicThrow.Apply(spell =>
+			{
+				spell.Effects[0].APValueFactor = 0.5f;
+			});
+
+			// Shattering Throw "causing ${$64382m1+$AP*.50} damage" and 
+			// TODO: "reducing the armor on the target by $64382s2% for $64382d or removing any invulnerabilities"
+			SpellLineId.WarriorShatteringThrow.Apply(spell =>
+			{
+				spell.Effects[0].APValueFactor = 0.5f;
 			});
 		}
 	}

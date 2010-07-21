@@ -85,7 +85,7 @@ namespace WCell.RealmServer.NPCs
 
 		public string InfoString = "";
 
-		public NPCType Type;
+		public CreatureType Type;
 
 		public CreatureFamilyId FamilyId;
 
@@ -317,13 +317,13 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public IWeapon CreateMainHandWeapon()
 		{
-			if (Type == NPCType.None || Type == NPCType.Totem || Type == NPCType.NotSpecified)
+			if (Type == CreatureType.None || Type == CreatureType.Totem || Type == CreatureType.NotSpecified)
 			{
 				// these kinds of NPCs do not attack ever
 				return GenericWeapon.Peace;
 			}
 
-			return new GenericWeapon(MinDamage, MaxDamage, AttackTime);
+			return new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, MinDamage, MaxDamage, AttackTime);
 		}
 
 		/// <summary>
@@ -333,7 +333,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (OffhandAttackTime > 0 && OffhandMaxDamage > 0 && OffhandMinDamage > 0)
 			{
-				return new GenericWeapon(OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponOffHand, OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
 			}
 			return null;
 		}
@@ -345,7 +345,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (RangedAttackTime > 0)
 			{
-				return new GenericWeapon(true, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
 			}
 			return null;
 		}
@@ -720,7 +720,7 @@ namespace WCell.RealmServer.NPCs
 			DefaultDecayDelay = _DefaultDecayDelay;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == NPCType.NotSpecified)
+			if (Type == CreatureType.NotSpecified)
 			{
 				IsIdle = true;
 			}
@@ -793,7 +793,7 @@ namespace WCell.RealmServer.NPCs
 
 			ModelInfos = new UnitModelInfo[DisplayIds.Length];
 
-			GeneratesXp = (Type != NPCType.Critter && Type != NPCType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
+			GeneratesXp = (Type != CreatureType.Critter && Type != CreatureType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
 
 			var x = 0;
 			for (var i = 0; i < DisplayIds.Length; i++)
@@ -841,8 +841,6 @@ namespace WCell.RealmServer.NPCs
 				NPCCreator = DefaultCreator;
 			}
 		}
-
-		public static NPCCreator DefaultCreator = entry => new NPC();
 
 		public bool IsVendor
 		{
@@ -902,6 +900,8 @@ namespace WCell.RealmServer.NPCs
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;
 		}
+
+		public static NPCCreator DefaultCreator = entry => new NPC();
 
 		public IBrain DefaultBrainCreator(NPC npc)
 		{

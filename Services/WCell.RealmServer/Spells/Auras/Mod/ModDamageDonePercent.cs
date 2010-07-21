@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			if (m_aura.Auras.Owner is Character)
 			{
-				((Character)m_aura.Auras.Owner).ModDamageBonusPct(m_spellEffect.MiscBitSet, EffectValue);
+				((Character)m_aura.Auras.Owner).ModDamageModPct(m_spellEffect.MiscBitSet, EffectValue);
 			}
 		}
 
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			if (m_aura.Auras.Owner is Character)
 			{
-				((Character)m_aura.Auras.Owner).ModDamageBonusPct(m_spellEffect.MiscBitSet, -EffectValue);
+				((Character)m_aura.Auras.Owner).ModDamageModPct(m_spellEffect.MiscBitSet, -EffectValue);
 			}
 		}
 	}

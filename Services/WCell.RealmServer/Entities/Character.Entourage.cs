@@ -634,7 +634,7 @@ namespace WCell.RealmServer.Entities
 		protected internal override void OnMinionEnteredRegion(NPC minion)
 		{
 			base.OnMinionEnteredRegion(minion);
-			if (minion.Entry.Type == NPCType.Totem)
+			if (minion.Entry.Type == CreatureType.Totem)
 			{
 				if (m_totems == null)
 				{
@@ -669,7 +669,7 @@ namespace WCell.RealmServer.Entities
 					((ActiveRecordBase)m_activePet.PetRecord).SaveLater();
 				}
 			}
-			else if (minion.Entry.Type == NPCType.Totem)
+			else if (minion.Entry.Type == CreatureType.Totem)
 			{
 				if (m_totems != null)
 				{

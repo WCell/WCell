@@ -130,11 +130,6 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.BadTargets;
 			}
 
-			if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 && !target.IsInFrontOf(caster))
-			{
-				return SpellFailedReason.NotInfront;
-			}
-
 			var failReason = spell.CheckValidTarget(caster, target);
 			if (failReason != SpellFailedReason.Ok)
 			{
@@ -200,9 +195,14 @@ namespace WCell.RealmServer.Spells
 		{
 			var handler = FirstHandler;
 			var caster = handler.Cast.Caster;
+			var spell = handler.Cast.Spell;
 
 			first.IterateEnvironment(handler.GetRadius(), target =>
 			{
+				if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 && !target.IsInFrontOf(caster))
+				{
+					return true;
+				}	
 				if (target != caster &&
 					target != first &&
 					((harmful && caster.MayAttack(target)) ||

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.DBC;
 using WCell.RealmServer.Content;
@@ -31,8 +32,6 @@ namespace WCell.RealmServer.Spells
 {
 	/// <summary>
 	/// Represents a Spell (which -in fact- is any kind of effect or action) in WoW.
-	/// 
-	/// TODO: Spell-Crafting through XML overrides
 	/// </summary>
 	public partial class Spell
 	{
@@ -226,7 +225,7 @@ namespace WCell.RealmServer.Spells
                     spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
                     spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
                     spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
-                    spell.TargetCreatureTypes = (TargetCreatureMask)GetUInt32(rawData, currentIndex++);    // 17
+                    spell.CreatureMask = (CreatureMask)GetUInt32(rawData, currentIndex++);    // 17
 					spell.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, currentIndex++);              // 18
 					spell.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, currentIndex++);               // 19
 					spell.RequiredCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 20

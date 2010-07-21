@@ -107,6 +107,7 @@ namespace WCell.RealmServer.Tests
 			{
 				if (m_npcPool == null)
 				{
+					EnsureMinimalSetup();
 					m_npcPool = new NPCPool();
 				}
 				return m_npcPool;

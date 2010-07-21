@@ -49,11 +49,6 @@ namespace WCell.RealmServer.Spells
 		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
-		/// Additional effects to be triggered when casting certain Spells
-		/// </summary>
-		public readonly List<AddTargetTriggerHandler> TargetTriggers = new List<AddTargetTriggerHandler>(1);
-
-		/// <summary>
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
@@ -292,15 +287,15 @@ namespace WCell.RealmServer.Spells
 			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
 		}
 
-		///// <summary>
-		///// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
-		///// </summary>
-		//public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
-		//{
-		//    var flatMod = GetModifierFlat(type, spell);
-		//    var percentMod = GetModifierPercent(type, spell);
-		//    return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
-		//}
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
+		}
 
 		/// <summary>
 		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
@@ -350,36 +345,8 @@ namespace WCell.RealmServer.Spells
 			return amount;
 		}
 
-		/// <summary>
-		/// Trigger all spells that might be triggered by the given Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		public void TriggerSpellsFor(SpellCast cast)
-		{
-			int val;
-			var spell = cast.Spell;
-			for (var i = 0; i < TargetTriggers.Count; i++)
-			{
-				var triggerHandler = TargetTriggers[i];
-				var effect = triggerHandler.SpellEffect;
-				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
-					spell.MatchesMask(effect.AffectMask) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
-					spell != effect.TriggerSpell)	// prevent inf loops
-				{
-					var caster = triggerHandler.Aura.Caster;
-					if (caster != null)
-					{
-						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
-						cast.Trigger(effect.TriggerSpell);
-					}
-				}
-			}
-		}
-
 		public void OnCasted(SpellCast cast)
 		{
-			TriggerSpellsFor(cast);
 			var spell = cast.Spell;
 			if (ModifiersWithCharges > 0)
 			{

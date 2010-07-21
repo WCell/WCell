@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Legs] = new[] { EquipmentSlot.Pants };
 			slots[(int)InventorySlotType.Neck] = new[] { EquipmentSlot.Neck };
 			slots[(int)InventorySlotType.Quiver] = AllBagSlots;
-			slots[(int)InventorySlotType.Ranged] = new[] { EquipmentSlot.ExtraWeapon };
+			slots[(int)InventorySlotType.WeaponRanged] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.RangedRight] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.Relic] = new[] { EquipmentSlot.ExtraWeapon };
 			slots[(int)InventorySlotType.Robe] = new[] { EquipmentSlot.Chest };
