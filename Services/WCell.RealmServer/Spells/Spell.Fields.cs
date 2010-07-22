@@ -71,11 +71,11 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask AllowedShapeshiftMask;//13
+		public ShapeshiftMask AllowedShapeshiftMask;//13
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ExcludeShapeshiftMask;//14
+		public ShapeshiftMask ExcludeShapeshiftMask;//14
 
 		public SpellTargetFlags TargetFlags;
 		/// <summary>

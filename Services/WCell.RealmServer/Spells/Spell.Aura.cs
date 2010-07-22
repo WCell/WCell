@@ -188,12 +188,12 @@ namespace WCell.RealmServer.Spells
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
 			IsShapeshift = HasEffectWith(effect =>
 			{
-				if (effect.AuraType == AuraType.ModShapeshift)
-				{
-					var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
-					return info.CreatureType > 0;
-				}
-				return effect.AuraType == AuraType.Transform;
+				//if (effect.AuraType == AuraType.ModShapeshift)
+				//{
+				//    var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
+				//    return info.CreatureType > 0;
+				//}
+				return effect.AuraType == AuraType.ModShapeshift || effect.AuraType == AuraType.Transform;
 			});
 
 			CanStack = MaxStackCount > 0;
@@ -241,6 +241,11 @@ namespace WCell.RealmServer.Spells
 				}
 
 				IsProc = ProcTriggerEffects != null;
+			}
+
+			if (Id == 2458)
+			{
+				ToString();
 			}
 
 			if (AuraUID == 0)

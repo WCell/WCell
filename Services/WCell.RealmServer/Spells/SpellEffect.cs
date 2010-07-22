@@ -306,7 +306,12 @@ namespace WCell.RealmServer.Spells
 								  AuraType == AuraType.PeriodicTriggerSpell);
 			}
 
-			if ((HasTarget(ImplicitTargetType.AllEnemiesAroundCaster,
+			if (Spell.IsPassive)
+			{
+				// proc effect etc
+				HarmType = HarmType.Beneficial;
+			}
+			else if ((HasTarget(ImplicitTargetType.AllEnemiesAroundCaster,
 				ImplicitTargetType.AllEnemiesInArea,
 				ImplicitTargetType.AllEnemiesInAreaChanneled,
 				ImplicitTargetType.AllEnemiesInAreaInstant,

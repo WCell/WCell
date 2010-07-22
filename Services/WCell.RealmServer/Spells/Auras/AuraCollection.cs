@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
@@ -32,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras
 	/// Represents the collection of all Auras of a Unit
 	/// TODO: Uniqueness of Auras?
 	/// </summary>
-	public class AuraCollection
+	public class AuraCollection : IEnumerable<Aura>
 	{
 		public const byte InvalidIndex = 0xFF;
 		private static Logger log = LogManager.GetCurrentClassLogger();
@@ -942,27 +943,6 @@ namespace WCell.RealmServer.Spells.Auras
 		#endregion
 
 		#region Utilities
-		public IEnumerator<Aura> GetEnumerator()
-		{
-			if (m_auras.Count == 0)
-			{
-				return Aura.EmptyEnumerator;
-			}
-			return _GetEnumerator();
-		}
-
-		/// <summary>
-		/// We need a second method because yield return and return statements cannot
-		/// co-exist in one method.
-		/// </summary>
-		/// <returns></returns>
-		IEnumerator<Aura> _GetEnumerator()
-		{
-			for (var i = 0; i < m_AuraArray.Length; i++)
-			{
-				yield return m_AuraArray[i];
-			}
-		}
 
 		/// <summary>
 		/// Dumps all currently applied auras to the given chr
@@ -1013,6 +993,34 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 			return false;
+		}
+
+
+		/// <summary>
+		/// We need a second method because yield return and return statements cannot
+		/// co-exist in one method.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerator<Aura> _GetEnumerator()
+		{
+			for (var i = 0; i < m_AuraArray.Length; i++)
+			{
+				yield return m_AuraArray[i];
+			}
+		}
+
+		public IEnumerator<Aura> GetEnumerator()
+		{
+			if (m_auras.Count == 0)
+			{
+				return Aura.EmptyEnumerator;
+			}
+			return _GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 	}
 }

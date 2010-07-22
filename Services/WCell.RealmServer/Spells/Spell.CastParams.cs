@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Shapeshift
-			var shapeshiftMask = caster.ShapeShiftMask;
+			var shapeshiftMask = caster.ShapeshiftMask;
 			bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
 			if (ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
 			{

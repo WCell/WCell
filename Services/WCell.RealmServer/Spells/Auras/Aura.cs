@@ -485,9 +485,6 @@ namespace WCell.RealmServer.Spells.Auras
 				handler.Init(this);
 			}
 
-
-
-
 			CheckActivation();
 
 			m_auras.OnAuraChange(this);
@@ -524,31 +521,18 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
+		/// <summary>
+		/// These checks coincide with the checks in <see cref="PlayerAuraCollection"/>
+		/// </summary>
 		internal void CheckActivation()
 		{
 			var owner = Owner as Character;
 			if (owner == null ||
 				!m_spell.IsPassive ||
-				!m_spell.HasItemRequirements ||
-				m_spell.CheckItemRestrictionsWithout(null, owner.Inventory) == SpellFailedReason.Ok)
+				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictionsWithout(null, owner.Inventory) == SpellFailedReason.Ok) &&
+				(m_spell.AllowedShapeshiftMask == 0 || m_spell.AllowedShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
 			{
 				IsActive = true;
-			}
-		}
-
-		internal void EvalActive(Item item, bool equip)
-		{
-			// is only called for Characters
-			var plr = (Character) m_auras.Owner;
-			if (equip && !m_IsActive)
-			{
-				// check if new item satisfys conditions
-				IsActive = Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
-			}
-			else if (!equip && m_IsActive)
-			{
-				// check if the conditions are still met
-				IsActive = m_spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
 			}
 		}
 

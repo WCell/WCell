@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
@@ -19,7 +20,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		List<Aura> shapeshiftRestrictedAuras;
 
-		public PlayerAuraCollection(Character owner) : base(owner)
+		public PlayerAuraCollection(Character owner)
+			: base(owner)
 		{
 		}
 
@@ -56,31 +58,68 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					ItemRestrictedAuras.Add(aura);
 				}
+				if (aura.Spell.AllowedShapeshiftMask != 0)
+				{
+					ShapeshiftRestrictedAuras.Add(aura);
+				}
 			}
 		}
 
 		protected internal override void Cancel(Aura aura)
 		{
 			base.Cancel(aura);
-			if (aura.Spell.IsPassive && aura.Spell.HasItemRequirements)
+			if (aura.Spell.IsPassive)
 			{
-				ItemRestrictedAuras.Remove(aura);
+				if (aura.Spell.HasItemRequirements)
+				{
+					ItemRestrictedAuras.Remove(aura);
+				}
+				if (aura.Spell.AllowedShapeshiftMask != 0)
+				{
+					ShapeshiftRestrictedAuras.Add(aura);
+				}
 			}
 		}
 
 		internal void OnEquip(Item item)
 		{
-			foreach (var aura in ItemRestrictedAuras)
+			if (itemRestrictedAuras != null)
 			{
-				aura.EvalActive(item, true);
+				var plr = (Character)m_owner;
+				foreach (var aura in itemRestrictedAuras)
+				{
+					if (!aura.IsActive)
+					{
+						aura.IsActive = aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
+					}
+				}
 			}
 		}
 
 		internal void OnUnEquip(Item item)
 		{
-			foreach (var aura in ItemRestrictedAuras)
+			if (itemRestrictedAuras != null)
 			{
-				aura.EvalActive(item, false);
+				var plr = (Character)m_owner;
+				foreach (var aura in itemRestrictedAuras)
+				{
+					if (aura.IsActive)
+					{
+						aura.IsActive = aura.Spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
+					}
+				}
+			}
+		}
+
+		internal void OnShapeshiftFormChanged()
+		{
+			if (shapeshiftRestrictedAuras != null)
+			{
+				foreach (var aura in shapeshiftRestrictedAuras)
+				{
+					// is active, only if new shapeshift mask is also allowed
+					aura.IsActive = aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask);
+				}
 			}
 		}
 	}

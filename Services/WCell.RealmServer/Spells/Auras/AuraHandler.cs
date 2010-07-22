@@ -138,6 +138,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModMountedSpeedAlways] = () => new ModMountedSpeedAlwaysHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseEnergyPercent] = () => new ModIncreaseEnergyPercentHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseHealthPercent] = () => new ModIncreaseHealthPercentHandler();
+			EffectHandlers[(int)AuraType.ModIncreaseHealth] = () => new ModIncreaseHealthHandler();
 			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();
 			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();
 			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();

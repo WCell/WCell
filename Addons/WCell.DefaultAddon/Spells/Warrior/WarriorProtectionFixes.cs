@@ -40,7 +40,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 				}
 			});
 
-
 			// Concussion Blow deals AP based school damage
 			SpellLineId.WarriorProtectionConcussionBlow.Apply(spell =>
 			{
@@ -62,20 +61,15 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionLastStand.Apply(spell =>
 			{
 				lastStandEffect = spell.GetEffect(SpellEffectType.Dummy);
-				if (lastStandEffect != null)
-				{
-					lastStandEffect.EffectType = SpellEffectType.TriggerSpell;
-					lastStandEffect.TriggerSpellId = SpellId.ClassSkillLastStand;
-				}
+				lastStandEffect.EffectType = SpellEffectType.TriggerSpell;
+				lastStandEffect.TriggerSpellId = SpellId.ClassSkillLastStand;
 			});
 			SpellHandler.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.ModIncreaseHealth);
-				if (effect != null && lastStandEffect != null)
-				{
-					effect.BasePoints = lastStandEffect.BasePoints;
-					effect.DiceSides = lastStandEffect.DiceSides;
-				}
+				effect.AuraType = AuraType.ModIncreaseHealthPercent;	// increase health in %
+				effect.BasePoints = lastStandEffect.BasePoints;			// set correct value
+				effect.DiceSides = lastStandEffect.DiceSides;
 			}, SpellId.ClassSkillLastStand);
 
 			// Safe Guard should only affect Intervene

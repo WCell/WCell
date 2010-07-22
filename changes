@@ -1,3 +1,3 @@
-- added missing files
-- fixed shapeshift checks / implemented AuraType.IgnoreShapeshiftRequirement
-- passive spells won't have any caster checks anymore (the spell should be casted but the aura might only be active under certain conditions)
+- fixed: No negative passive auras / warrior stances / warrior last stand
+- implemented: Only activate certain passive auras, if any of their required shapeshiftmasks is active
+- to test: DruidFeralCombatSharpenedClaws, DruidFeralCombatPrimalFury

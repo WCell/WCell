@@ -235,6 +235,7 @@
     <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />

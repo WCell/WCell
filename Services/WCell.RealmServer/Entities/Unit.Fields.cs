@@ -28,6 +28,7 @@ using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.Items;
@@ -1158,7 +1159,7 @@ namespace WCell.RealmServer.Entities
 			get { return (ShapeshiftForm)GetByte(UnitFields.BYTES_2, 3); }
 			set
 			{
-				// TODO: Shapeshifters dont hit with their weapon
+				// TODO: Shapeshifters dont use their weapons
 				// TODO: AttackTime is overridden
 				// TODO: Horde shapeshifters are missing some models
 
@@ -1209,15 +1210,20 @@ namespace WCell.RealmServer.Entities
 					DisplayId = NativeDisplayId;
 				}
 
+				if (m_auras is PlayerAuraCollection)
+				{
+					((PlayerAuraCollection)m_auras).OnShapeshiftFormChanged();
+				}
+
 				SetByte(UnitFields.BYTES_2, 3, (byte)value);
 			}
 		}
 
-		public ShapeShiftMask ShapeShiftMask
+		public ShapeshiftMask ShapeshiftMask
 		{
 			get
 			{
-				return (ShapeShiftMask)(1 << (int)(ShapeshiftForm));
+				return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1));
 			}
 		}
 		#endregion

@@ -219,9 +219,9 @@ namespace WCell.RealmServer.Spells
                     spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
                     spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
                     spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.AllowedShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);             // 11
+                    spell.AllowedShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
                     spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
-                    spell.ExcludeShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);      // 13
+                    spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
                     spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
                     spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
                     spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16

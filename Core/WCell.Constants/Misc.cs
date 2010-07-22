@@ -305,7 +305,7 @@ namespace WCell.Constants
 	}
 
 	[Flags]
-	public enum ShapeShiftMask : uint
+	public enum ShapeshiftMask : uint
 	{
 		Cat = 1,
 		TreeOfLife = 2,

@@ -25,7 +25,14 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Sharpened Claws only works "while in Bear, Dire Bear or Cat Form"
 			SpellLineId.DruidFeralCombatSharpenedClaws.Apply(spell =>
 			{
-				spell.AllowedShapeshiftMask = ShapeShiftMask.Bear | ShapeShiftMask.DireBear | ShapeShiftMask.Cat;
+				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
+			});
+
+			// Primal Fury is triggered by critical hits and only active in "in Bear and Dire Bear Form"
+			SpellLineId.DruidFeralCombatPrimalFury.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
+				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 		}
 	}
