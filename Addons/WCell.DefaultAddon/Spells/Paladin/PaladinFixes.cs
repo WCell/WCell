@@ -204,7 +204,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 			protected override void Apply()
 			{
-				var val = totalBonus / m_aura.TicksLeft;
+				var val = totalBonus / (m_aura.TicksLeft + 1);
 				totalBonus -= val;
 
 				val += EffectValue;

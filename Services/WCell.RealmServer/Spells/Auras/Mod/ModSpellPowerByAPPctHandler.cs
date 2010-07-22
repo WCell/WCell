@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,12 +23,13 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			}
 
 			values = new int[m_spellEffect.MiscBitSet.Length];
-			foreach (var school in m_spellEffect.MiscBitSet)
+			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
-				var sp = owner.GetDamageDoneMod((DamageSchool)school);
-				var val = (sp * EffectValue + 50) / 100;
-				values[school] = val;
-				owner.AddDamageMod((DamageSchool)school, val);
+				var school = m_spellEffect.MiscBitSet[i];
+				var sp = owner.GetDamageDoneMod((DamageSchool) school);
+				var val = (sp*EffectValue + 50)/100;
+				values[i] = val;
+				owner.AddDamageMod((DamageSchool) school, val);
 			}
 		}
 
@@ -40,9 +41,10 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 				return;
 			}
 
-			foreach (var school in m_spellEffect.MiscBitSet)
+			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
-				owner.RemoveDamageMod((DamageSchool)school, values[school]);
+				var school = m_spellEffect.MiscBitSet[i];
+				owner.RemoveDamageMod((DamageSchool) school, values[i]);
 			}
 		}
 	}

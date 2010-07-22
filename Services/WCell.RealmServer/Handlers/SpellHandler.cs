@@ -255,7 +255,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var spell = cast.Spell;
 				if (cast.Selected is Unit && !spell.IsAreaSpell &&
-					(spell.Visual != 0 || spell.IsWeaponAbility))
+					(spell.Visual != 0 || spell.IsPhysicalAbility))
 				{
 					flags = SpellTargetFlags.Unit;
 				}

@@ -14,10 +14,10 @@ namespace WCell.Constants.Spells
 		/// Several Hashsets containing all SpellMechanics that can toggle 
 		/// CanHarm, CanMove and CanCastSpells respectively
 		/// </summary>
-		public static readonly bool[] HarmMechanics = new bool[(int)SpellMechanic.End];
+		public static readonly bool[] HarmPreventionMechanics = new bool[(int)SpellMechanic.End];
 		public static readonly bool[] MoveMechanics = new bool[(int)SpellMechanic.End];
 		public static readonly bool[] InteractMechanics = new bool[(int)SpellMechanic.End];
-		public static readonly bool[] SpellMechanics = new bool[(int)SpellMechanic.End];
+		public static readonly bool[] SpellCastPreventionMechanics = new bool[(int)SpellMechanic.End];
 		public static readonly bool[] NegativeMechanics = new bool[(int)SpellMechanic.End];
 
 		static SpellConstants()
@@ -46,24 +46,24 @@ namespace WCell.Constants.Spells
 			InteractMechanics[(int)SpellMechanic.Sapped] = true;
 
 			//HarmMechanics[(int)SpellMechanic.Dazed] = true;
-			HarmMechanics[(int)SpellMechanic.Fleeing] = true;
-			HarmMechanics[(int)SpellMechanic.Frozen] = true;
-			HarmMechanics[(int)SpellMechanic.Healing] = true;
-			HarmMechanics[(int)SpellMechanic.Banished] = true;
-			HarmMechanics[(int)SpellMechanic.Incapacitated] = true;
-			HarmMechanics[(int)SpellMechanic.Stunned] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Fleeing] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Frozen] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Healing] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Banished] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Incapacitated] = true;
+			HarmPreventionMechanics[(int)SpellMechanic.Stunned] = true;
 
-			SpellMechanics[(int)SpellMechanic.Silenced] = true;
-			SpellMechanics[(int)SpellMechanic.Disoriented] = true;
-			SpellMechanics[(int)SpellMechanic.Fleeing] = true;
-			SpellMechanics[(int)SpellMechanic.Incapacitated] = true;
-			SpellMechanics[(int)SpellMechanic.Asleep] = true;
-			SpellMechanics[(int)SpellMechanic.Charmed] = true;
-			SpellMechanics[(int)SpellMechanic.Banished] = true;
-			SpellMechanics[(int)SpellMechanic.Horrified] = true;
-			SpellMechanics[(int)SpellMechanic.Turned] = true;
-			SpellMechanics[(int)SpellMechanic.Stunned] = true;
-			SpellMechanics[(int)SpellMechanic.Frozen] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Silenced] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Disoriented] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Fleeing] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Incapacitated] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Asleep] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Charmed] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Banished] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Horrified] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Turned] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Stunned] = true;
+			SpellCastPreventionMechanics[(int)SpellMechanic.Frozen] = true;
 
 			foreach (SpellMechanic mech in Enum.GetValues(typeof(SpellMechanic)))
 			{
@@ -73,7 +73,7 @@ namespace WCell.Constants.Spells
 				}
 
 				if (MoveMechanics[(int)mech] || InteractMechanics[(int)mech] ||
-					HarmMechanics[(int)mech] || SpellMechanics[(int)mech])
+					HarmPreventionMechanics[(int)mech] || SpellCastPreventionMechanics[(int)mech])
 				{
 					NegativeMechanics[(int)mech] = true;
 				}

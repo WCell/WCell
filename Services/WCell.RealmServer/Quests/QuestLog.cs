@@ -787,4 +787,3 @@ namespace WCell.RealmServer.Quests
 		}
 	}
 }
-

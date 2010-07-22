@@ -337,9 +337,12 @@ namespace WCell.Constants.Spells
 		ModSpeedMountedFlight = 207,
 		ModSpeedFlight = 208,
 		Aura_209 = 209,
-		Aura_210 = 210,
 		/// <summary>
-		/// Seems to be a copy of AuraModPartySpeedMounted
+		/// Modifies flight speed in %
+		/// </summary>
+		ModFlightSpeed = 210,
+		/// <summary>
+		/// Seems to be the same as AuraModPartySpeedMounted (increases mount speed)
 		/// </summary>
 		Aura_211 = 211,
 		ModRangedAttackPowerByPercentOfIntellect = 212,

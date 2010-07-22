@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using WCell.RealmServer.Lang;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants.Spells;
@@ -134,7 +135,7 @@ namespace WCell.RealmServer.Spells
 			{
 				Id = id,
 				SpellId = (SpellId)id,
-				Name = name,
+				Name = "[" +RealmLocalizer.Instance.Translate(LangKey.Custom).ToUpper() + "] " + name,
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -90,6 +90,14 @@ namespace WCell.Addons.Default.Spells.Paladin
 			});
 
 			// TODO: PaladinRetributionSheathOfLight (similar to PaladinRetributionRighteousVengeance)
+
+			// Hammer of Wrath "strikes an enemy for ${$m1+0.15*$SPH+0.15*$AP} to ${$M1+0.15*$SPH+0.15*$AP} Holy damage"
+			SpellLineId.PaladinHammerOfWrath.Apply(spell =>
+			{
+				var dmgEffect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				dmgEffect.APValueFactor = 0.15f;
+				dmgEffect.SpellPowerValuePct = 15;
+			});
 		}
 	}
 

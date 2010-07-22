@@ -129,3 +129,4 @@ namespace WCell.Addons.Default.Spells.Warrior
 		}
 	}
 }
+

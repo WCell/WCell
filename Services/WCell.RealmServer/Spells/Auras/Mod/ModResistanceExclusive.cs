@@ -25,17 +25,17 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			foreach (var flag in m_spellEffect.MiscBitSet)
+			foreach (DamageSchool school in m_spellEffect.MiscBitSet)
 			{
-				m_aura.Auras.Owner.AddResistanceBuff((DamageSchool)flag, EffectValue);
+				m_aura.Auras.Owner.AddResistanceBuff(school, EffectValue);
 			}
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			foreach (var flag in m_spellEffect.MiscBitSet)
+			foreach (DamageSchool flag in m_spellEffect.MiscBitSet)
 			{
-				m_aura.Auras.Owner.RemoveResistanceBuff((DamageSchool)flag, EffectValue);
+				m_aura.Auras.Owner.RemoveResistanceBuff(flag, EffectValue);
 			}
 		}
 	}

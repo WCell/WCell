@@ -924,8 +924,38 @@ namespace WCell.RealmServer.Spells.Auras
 			set;
 		}
 
-		public bool CanBeTriggeredBy(Unit target, IUnitAction action, bool active)
+		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
+			var hasProcEffects = m_spell.ProcTriggerEffects != null;
+			var canProc = false;
+
+			if (hasProcEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (handler.SpellEffect.IsProc)
+					{
+						// only trigger proc effects or all effects, if there arent any proc-specific effects
+						if ((!handler.SpellEffect.HasAffectMask ||
+							(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
+						{
+							// only trigger if no AffectMask is set or the triggerer matches the proc mask
+							canProc = true;
+							break;
+						}
+					}
+				}
+			}
+			else
+			{
+				// Simply count down stack count and remove aura eventually
+				canProc = true;
+			}
+			if (!canProc)
+			{
+				return false;
+			}
+
 			if (m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active))
 			{
 				return true;
@@ -948,7 +978,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if ((!handler.SpellEffect.HasAffectMask ||
 							(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
 						{
-							// only trigger if no AffectMask is set or the triggerer matches the proc mask
+							// only trigger if no AffectMask is set or the trigger matches the proc mask
 							handler.OnProc(triggerer, action);
 							proced = true;
 						}
@@ -957,7 +987,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}	
 			else
 			{
-				// Simply count down stack count and remove aura eventually
+				// Simply reduce stack count and remove aura eventually
 				proced = true;
 			}
 

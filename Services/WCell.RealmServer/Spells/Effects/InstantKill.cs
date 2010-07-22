@@ -28,15 +28,13 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
+			((Unit)target).LastKiller = m_cast.CasterUnit;
 			((Unit)target).Health = 0;
 		}
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

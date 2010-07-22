@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -65,6 +66,24 @@ namespace WCell.Addons.Default.Spells.Paladin
 				effect.APValueFactor = 0.07f;
 				effect.SpellPowerValuePct = 7;
 			});
+
+			// Exorcism "Causes ${$m1+0.15*$SPH+0.15*$AP} to ${$M1+0.15*$SPH+0.15*$AP}" and crits against demons and the undead
+			SpellLineId.PaladinExorcism.Apply(spell =>
+			{
+				var dmgEffect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				dmgEffect.APValueFactor = 0.15f;
+				dmgEffect.SpellPowerValuePct = 15;
+
+				//var critMonsterEffect = 
+				spell.AddAuraEffect(() => new CritCreatureMaskHandler(CreatureMask.Demon | CreatureMask.Undead),
+					dmgEffect.ImplicitTargetA);
+			});
+
+			// Lay on Hands applies Forbearance, if used on self
+			SpellLineId.PaladinLayOnHands.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ApplySelfForbearanceHandler(), ImplicitTargetType.Self);
+			});
 		}
 
 		public class IlluminationHandler : AuraEffectHandler
@@ -81,6 +100,18 @@ namespace WCell.Addons.Default.Spells.Paladin
 						caster.Energize(caster, cost, SpellEffect);
 					}
 				}
+			}
+		}
+	}
+
+	public class ApplySelfForbearanceHandler : AuraEffectHandler
+	{
+		protected override void Apply()
+		{
+			if (Owner.CasterInfo == m_aura.Caster.CasterInfo)
+			{
+				// apply Forbearance when casting on self
+				Owner.SpellCast.TriggerSelf(SpellId.Forbearance);
 			}
 		}
 	}

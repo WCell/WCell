@@ -568,6 +568,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#endregion
 
 		#region Remove
+
 		/// <summary>
 		/// Removes all visible Auras that match the given predicate
 		/// </summary>
@@ -582,7 +583,28 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					aura.Remove(true);
 				}
+			}
+		}
 
+		/// <summary>
+		/// Removes up to the given max amount of visible Auras that match the given predicate
+		/// </summary>
+		/// <param name="predicate"></param>
+		public void RemoveWhere(Predicate<Aura> predicate, int max)
+		{
+			//Aura[] auras = m_nonPassiveAuras.ToArray();
+			var auras = m_visibleAuras;
+			var count = 0;
+			foreach (var aura in auras)
+			{
+				if (aura != null && predicate(aura))
+				{
+					aura.Remove(true);
+					if (count >= max)
+					{
+						break;
+					}
+				}
 			}
 		}
 

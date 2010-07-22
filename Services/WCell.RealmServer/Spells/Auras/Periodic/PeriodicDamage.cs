@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected internal override void Apply()
 		{
-			BaseEffectValue = TotalDamage / m_aura.TicksLeft;
+			BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
 			TotalDamage -= BaseEffectValue;
 			base.Apply();
 		}

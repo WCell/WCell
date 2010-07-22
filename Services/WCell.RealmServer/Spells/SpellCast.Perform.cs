@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				if (IsInstant && !m_spell.IsWeaponAbility)
+				if (IsInstant && !m_spell.IsPhysicalAbility)
 				{
 					SendCastStart();
 				}
@@ -378,7 +378,7 @@ namespace WCell.RealmServer.Spells
 				var delayedImpact = delay > Caster.Region.UpdateDelay / 1000f; // only delay if its noticable
 
 				SpellFailedReason err;
-				if (m_spell.IsWeaponAbility && !m_spell.IsRangedAbility && Caster is Unit)
+				if (m_spell.IsPhysicalAbility && !m_spell.IsRangedAbility && Caster is Unit)
 				{
 					// will be triggered during the next strike
 					CasterUnit.m_pendingCombatAbility = this;
@@ -423,7 +423,7 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				if (m_casting && !spell.IsWeaponAbility)
+				if (m_casting && !spell.IsPhysicalAbility)
 				{
 					// weapon abilities will call this after execution
 					if (Caster is Unit)
@@ -582,7 +582,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// check for weapon abilities
-			if (m_spell.IsWeaponAbility && !IsChanneling)
+			if (m_spell.IsPhysicalAbility && !IsChanneling)
 			{
 				if (Caster is Unit)
 				{
@@ -607,7 +607,7 @@ namespace WCell.RealmServer.Spells
 			//}
 
 			// clean it up
-			if ((delayed || m_spell.IsWeaponAbility) && (!m_spell.IsChanneled) && m_casting)
+			if ((delayed || m_spell.IsPhysicalAbility) && (!m_spell.IsChanneled) && m_casting)
 			{
 				Cleanup(true);
 			}
@@ -692,7 +692,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Using a combat ability
-			if (m_spell.IsWeaponAbility && m_spell.IsRangedAbility && Caster is Character)
+			if (m_spell.IsPhysicalAbility && m_spell.IsRangedAbility && Caster is Character)
 			{
 				if (m_spell.IsThrow)
 				{

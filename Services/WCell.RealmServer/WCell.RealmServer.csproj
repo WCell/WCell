@@ -234,6 +234,8 @@
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
     <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
+    <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
     <Compile Include="Spells\SpellException.cs" />
@@ -741,7 +744,7 @@
     <Compile Include="Spells\ISpellParameters.cs" />
     <Compile Include="Spells\ITickedTimer.cs" />
     <Compile Include="Spells\Spell.Aura.cs" />
-    <Compile Include="Spells\Spell.Overrides.cs" />
+    <Compile Include="Spells\Spell.Variables.cs" />
     <Compile Include="Spells\SpellAIBehavior.cs" />
     <Compile Include="Spells\SpellCast.Aura.cs" />
     <Compile Include="Spells\SpellCast.Perform.cs" />

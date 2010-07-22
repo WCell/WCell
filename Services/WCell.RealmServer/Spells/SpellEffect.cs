@@ -53,6 +53,7 @@ namespace WCell.RealmServer.Spells
 		#region Variables
 		/// <summary>
 		/// Factor of the amount of AP to be added to the EffectValue
+		/// TODO: Change to int (%)
 		/// </summary>
 		public float APValueFactor;
 

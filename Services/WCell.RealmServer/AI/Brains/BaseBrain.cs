@@ -360,6 +360,11 @@ namespace WCell.RealmServer.AI.Brains
 				return false;
 			}
 
+			if (m_owner.CanDoHarm)
+			{
+				return false;
+			}
+
 			if (!m_owner.IsAreaActive && !m_owner.Region.ScanInactiveAreas)
 			{
 				// don't scan inactive Nodes
