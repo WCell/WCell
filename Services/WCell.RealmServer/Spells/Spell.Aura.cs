@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
@@ -63,7 +65,7 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect[] AreaAuraEffects;
 
 		/// <summary>
-		/// Whether the Aura's effects should be applied once for each of its Applications
+		/// Whether the Aura's effects should multiply it's effect value by the amount of its Applications
 		/// </summary>
 		public bool CanStack;
 
@@ -72,18 +74,25 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int StackCount;
 
+		/// <summary>
+		/// Only has Aura effects
+		/// </summary>
 		public bool IsPureAura;
 
+		/// <summary>
+		/// Only has positive Aura effects
+		/// </summary>
 		public bool IsPureBuff;
 
+		/// <summary>
+		/// Only has negative Aura effects
+		/// </summary>
 		public bool IsPureDebuff;
 
 		/// <summary>
 		/// whether this Spell applies the death effect
 		/// </summary>
 		public bool IsGhost;
-
-		public bool IsProc;
 
 		/// <summary>
 		/// Whether this is a proc and whether its own effects handle procs (or false, if customary proc handlers have been added)
@@ -164,32 +173,19 @@ namespace WCell.RealmServer.Spells
 
 			HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
 
-			var auraEffects = GetEffectsWhere(effect => effect.AuraEffectHandlerCreator != null);
-			if (auraEffects != null)
-			{
-				AuraEffects = auraEffects.ToArray();
-			}
-
-			var areaAuraEffects = GetEffectsWhere(effect => effect.IsAreaAuraEffect);
-
-			if (areaAuraEffects != null)
-			{
-				AreaAuraEffects = areaAuraEffects.ToArray();
-			}
+			AuraEffects = GetEffectsWhere(effect => effect.AuraEffectHandlerCreator != null);
+			AreaAuraEffects = GetEffectsWhere(effect => effect.IsAreaAuraEffect);
 
 			IsAreaAura = AreaAuraEffects != null;
-
 			IsPureAura = !IsDamageSpell && !HasEffectWith(effect => effect.EffectType != SpellEffectType.ApplyAura ||
 																	effect.EffectType != SpellEffectType.ApplyAuraToMaster ||
 																	effect.EffectType != SpellEffectType.ApplyStatAura ||
 																	effect.EffectType != SpellEffectType.ApplyStatAuraPercent);
 
 			IsPureBuff = IsPureAura && HasBeneficialEffects && !HasHarmfulEffects;
-
 			IsPureDebuff = IsPureAura && HasHarmfulEffects && !HasBeneficialEffects;
 
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
-
 			IsShapeshift = HasEffectWith(effect =>
 			{
 				if (effect.AuraType == AuraType.ModShapeshift)

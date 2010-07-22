@@ -543,6 +543,10 @@ namespace WCell.Constants.Spells
         Aura_304 = 304,
         Aura_305 = 305,
         Aura_306 = 307,
+		/// <summary>
+		/// No apparent effect, probably used in combination with talents
+		/// </summary>
+		UnkFrozenHunterDebuff,
 		End = 500
 	}
 

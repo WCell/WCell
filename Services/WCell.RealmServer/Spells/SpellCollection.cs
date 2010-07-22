@@ -273,7 +273,15 @@ namespace WCell.RealmServer.Spells
 
 		public abstract bool IsReady(Spell spell);
 
-		public abstract void ClearCooldown(Spell spell);
+		/// <summary>
+		/// Clears the cooldown for this spell only
+		/// </summary>
+		public void ClearCooldown(Spell cooldownSpell)
+		{
+			ClearCooldown(cooldownSpell, true);
+		}
+
+		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory);
 
 		#region Special Spell Casting behavior
 

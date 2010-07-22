@@ -194,8 +194,8 @@ namespace WCell.RealmServer.Entities
 			{
 				return
 					m_FirstAttacker != null &&
-					BelongsToPlayer &&
-					m_FirstAttacker.BelongsToPlayer;
+					IsOwnedByPlayer &&
+					m_FirstAttacker.IsOwnedByPlayer;
 			}
 		}
 

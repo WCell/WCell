@@ -10,6 +10,8 @@ namespace WCell.RealmServer.Lang
 	/// </summary>
 	public enum LangKey
 	{
+		// ########################################################################
+		// Misc
 		None = 0,
 		Done,
 		Custom,
@@ -36,10 +38,17 @@ namespace WCell.RealmServer.Lang
 		CmdSpellGetDescription,
 		CmdSpellGetParamInfo,
 
+
+		// ########################################################################
+		// Gossips
 		GossipOptionBanker,
 		GossipOptionFlightMaster,
 		GossipOptionTrainer,
-		GossipOptionVendor
+		GossipOptionVendor,
+
+		// ########################################################################
+		// Ingame notifications
+		GodModeIsActivated
 	}
 
 	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>

@@ -441,7 +441,6 @@ namespace WCell.Constants
 
 	public enum StatModifierFloat
 	{
-		Health = 0,
 		Power,
 		AttackerCritChance,
         BlockValue,

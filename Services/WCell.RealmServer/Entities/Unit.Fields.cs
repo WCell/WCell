@@ -1229,7 +1229,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether this is a Player or owned by a player
+		/// Whether this is actively controlled by a player. 
+		/// Not to be confused with IsOwnedByPlayer.
 		/// </summary>
 		public override bool IsPlayerControlled
 		{
@@ -1372,7 +1373,7 @@ namespace WCell.RealmServer.Entities
 
 		public int HealthPct
 		{
-			get { return (100 * Health) / MaxHealth; }
+			get { return (100 * Health + (1 >> MaxHealth)) / MaxHealth; }
 			set { Health = ((value * MaxHealth) + 50) / 100; }
 		}
 

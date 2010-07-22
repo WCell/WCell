@@ -67,7 +67,11 @@
       <Value>Show Bank Account...</Value>
     </Item>
     <Item Key="GossipOptionVendor">
-      <Value>"Let me see your wares..."</Value>
+      <Value>Let me see your wares...</Value>
+    </Item>
+
+    <Item Key="GodModeIsActivated">
+      <Value>GodMode is Activated!</Value>
     </Item>
   </Items>
 </Translation>

@@ -35,6 +35,7 @@ using WCell.RealmServer.Help.Tickets;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
@@ -729,9 +730,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sends a message to the client.
 		/// </summary>
-		public void SendSystemMessage(string msg)
+		public void SendSystemMessage(LangKey key, params object[] args)
 		{
-			ChatMgr.SendSystemMessage(this, msg);
+			ChatMgr.SendSystemMessage(this, RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
 		/// <summary>
@@ -742,12 +743,9 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendSystemMessage(this, string.Format(msg, args));
 		}
 
-		/// <summary>
-		/// Flashes a notification in the middle of the screen
-		/// </summary>
-		public void Notify(string msg)
+		public void Notify(LangKey key, params object[] args)
 		{
-			MiscHandler.SendNotification(this, msg);
+			Notify(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
 		/// <summary>

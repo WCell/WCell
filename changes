@@ -1,5 +1,3 @@
-- fixed IPC fail notification (now only annoys you once, and not every second)
-- fixed traps (except for some targeting issues)
-- fixed all kinds of WorldObject vs Unit inconsistencies
-- fixed several small bugs I recently introduced
-- will fix areaaura soon
+- fixed trap targeting & trap procs (untested)
+- fixed ModIncreaseHealth & Last Stand (thanks to failrs)
+- to test: HunterSurvivalEntrapment

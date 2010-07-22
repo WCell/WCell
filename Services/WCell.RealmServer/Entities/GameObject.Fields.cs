@@ -173,10 +173,10 @@ namespace WCell.RealmServer.Entities
 
     	public Unit Owner
     	{
-    		get { return m_Owner; }
+    		get { return m_master; }
             set
             {
-                m_Owner = value;
+                Master = value;
                 Faction = value != null ? value.Faction : Faction.NullFaction;
             }
     	}

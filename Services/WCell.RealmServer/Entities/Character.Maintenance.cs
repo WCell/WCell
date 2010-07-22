@@ -5,6 +5,7 @@ using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
@@ -481,12 +482,6 @@ namespace WCell.RealmServer.Entities
 
 				OnLogin();
 
-				if (!m_record.JustCreated)
-				{
-					LoadDeathState();
-					LoadEquipmentState();
-				}
-
 #if DEV
 				// do this check in case that we did not load Items yet
 				if (ItemMgr.Loaded)
@@ -506,6 +501,11 @@ namespace WCell.RealmServer.Entities
 
 					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
+				}
+				else
+				{
+					LoadDeathState();
+					LoadEquipmentState();
 				}
 
 				var ticket = TicketMgr.Instance.GetTicket(EntityId.Low);
@@ -576,7 +576,7 @@ namespace WCell.RealmServer.Entities
 					if (GodMode)
 					{
 						//Notify("Your GodMode is " + (GodMode ? "ON" : "OFF") + "!");
-						Notify("GodMode is Activated!");
+						Notify(LangKey.GodModeIsActivated);
 					}
 
 					var login = LoggedIn;

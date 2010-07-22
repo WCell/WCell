@@ -236,9 +236,7 @@ namespace WCell.RealmServer.Spells
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive 
-					&& !spell.HasHarmfulEffects
-					)
+				if (spell.IsPassive && !spell.HasHarmfulEffects)
 				{
 					chr.SpellCast.Start(spell, true, Owner);
 				}
@@ -690,17 +688,9 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Clears the cooldown for this spell and all spells in its category
+		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell)
-		{
-			ClearCooldown(cooldownSpell, true);
-		}
-
-		/// <summary>
-		/// Clears the cooldown for this spell and all spells in its category
-		/// </summary>
-		public void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
 		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)

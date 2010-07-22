@@ -135,7 +135,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 				{
 					new AreaAura(trap, Spell, this);
 				}
-				trap.IsTrap = true;
+				trap.m_IsTrap = true;
 			}
 		}
 	}

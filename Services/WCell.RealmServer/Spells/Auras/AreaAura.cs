@@ -1,8 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
@@ -33,6 +35,11 @@ namespace WCell.RealmServer.Spells.Auras
 		float m_elapsed;
 		ISpellParameters m_params;
 		private int m_remainingCharges;
+
+		///// <summary>
+		///// The two filters for the two target types of a SpellEffect (assuming all area aura effects share the same target type)
+		///// </summary>
+		//private TargetFilter m_targetFilter, m_targetFilter2;
 
 		/// <summary>
 		/// Creates a new AreaAura that will auto-trigger the given Spell on everyone, according
@@ -159,6 +166,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			m_holder.AreaAura = null;
 			m_holder = null;
+			m_remainingCharges = 0;		// make sure Remove will not be called again
 
 			if (m_timer != null)
 			{
@@ -243,15 +251,14 @@ namespace WCell.RealmServer.Spells.Auras
 
 			// find new targets
 			var newTargets = new List<WorldObject>();
-			var exclMobs = m_holder.Faction.Id == 0;
+			var exclMobs = m_holder.Faction.Id == 0;	// neutral aura holders, for events etc
 
-			m_holder.IterateEnvironment(
-				m_radius,
+			m_holder.IterateEnvironment(m_radius,
 				obj =>
 				{
 					if (obj != m_holder &&
-						((exclMobs && obj is Character) || (!exclMobs && obj is Unit)) &&
-						((Unit)obj).IsAlive &&
+						((exclMobs && obj.IsOwnedByPlayer) || (!exclMobs && obj is Unit)) &&
+						(m_spell.HasHarmfulEffects == m_holder.MayAttack(obj)) &&
 						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{
 						if (!auraEffects || !m_targets.ContainsKey((Unit)obj))
@@ -260,7 +267,8 @@ namespace WCell.RealmServer.Spells.Auras
 						}
 					}
 					return true;
-				});
+				}
+			);
 
 			for (var i = 0; i < newTargets.Count; i++)
 			{
@@ -283,6 +291,11 @@ namespace WCell.RealmServer.Spells.Auras
 					m_holder.SpellCast.Trigger(m_spell, target);
 				}
 
+				if (m_holder.IsTrap)
+				{
+					OnTrapTriggered(target);
+				}
+
 				if (m_remainingCharges != 0)
 				{
 					m_remainingCharges--;
@@ -294,13 +307,29 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
+		/// <summary>
+		/// Called when the holder is a trap and the given triggerer triggered it.
+		/// </summary>
+		/// <param name="triggerer"></param>
+		private void OnTrapTriggered(Unit triggerer)
+		{
+			// trap trigger proc
+			var owner = ((GameObject)m_holder).Owner;
+			if (owner != null)
+			{
+				triggerer.Proc(ProcTriggerFlags.TrapTriggered, triggerer,
+					new TrapTriggerAction { Attacker = owner, Spell = m_spell, Victim = triggerer },
+					false);
+			}
+		}
+
 		private void RemoveInvalidTargets()
 		{
 			if (m_targets != null)
 			{
 				var toRemove = m_targets.Where(target => !target.Key.IsInRadius(m_holder, m_radius)).ToArray();
 
-			    foreach (var target in toRemove)
+				foreach (var target in toRemove)
 				{
 					if (target.Value.IsAdded)
 					{
@@ -329,7 +358,7 @@ namespace WCell.RealmServer.Spells.Auras
 				// TODO: Flash message ontop of the head
 				return;
 			}
-			
+
 			// try to stack/apply aura
 			var aura = target.Auras.AddAura(m_casterInfo, m_spell, false);
 			if (aura != null)

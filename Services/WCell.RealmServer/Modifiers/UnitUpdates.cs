@@ -76,7 +76,6 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
-			MultiModHandlers[(int)StatModifierFloat.Health] = UpdateHealth;
 			MultiModHandlers[(int)StatModifierFloat.CritChance] = UpdateCritChance;
 			MultiModHandlers[(int)StatModifierFloat.Power] = UpdatePower;
 			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
@@ -218,7 +217,6 @@ namespace WCell.RealmServer.Modifiers
 			var stamina = unit.Stamina;
 			var stamBonus = Math.Max(stamina, 20) + (Math.Max(0, stamina - 20) * 10);
 			var value = unit.BaseHealth + stamBonus + unit.MaxHealthMod;
-			value = value < 0 ? 0 : GetMultiMod(unit.FloatMods[(int)StatModifierFloat.Health], value);
 
 			unit.SetInt32(UnitFields.MAXHEALTH, value);
 		}
@@ -721,7 +719,7 @@ namespace WCell.RealmServer.Modifiers
 		/// </summary>
 		public static int GetMultiMod(float modValue, int value)
 		{
-			return (int)Math.Round(value * (1 + modValue));
+			return (int)(value * (1 + modValue) + 0.5f);
 		}
 
 		public static float GetMultiMod(float modValue, float value)

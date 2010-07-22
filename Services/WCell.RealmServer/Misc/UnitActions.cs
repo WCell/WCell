@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Misc
 	}
 	#endregion
 
-	#region SimpleUnitAction
+	#region HealAction
 	public class HealAction : SimpleUnitAction
 	{
 		public int Value
@@ -123,6 +123,12 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
+	}
+	#endregion
+
+	#region TrapTriggerAction
+	public class TrapTriggerAction : SimpleUnitAction
+	{
 	}
 	#endregion
 

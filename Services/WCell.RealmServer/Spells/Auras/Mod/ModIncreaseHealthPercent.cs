@@ -21,17 +21,19 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModIncreaseHealthPercentHandler : AuraEffectHandler
 	{
-		float value;
+		int health;
 
 		protected internal override void Apply()
 		{
-			value = EffectValue / 100f;
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.Health, value);
+			health = ((Owner.MaxHealth * EffectValue) + 50) / 100;	//rounded
+			Owner.Health += health;
+			Owner.MaxHealthMod += health;
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.Health, -value);
+			Owner.Health -= health;
+			Owner.MaxHealthMod -= health;
 		}
 	}
 };

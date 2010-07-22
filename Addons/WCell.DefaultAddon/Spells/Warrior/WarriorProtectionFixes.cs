@@ -73,7 +73,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 				var effect = spell.GetEffect(AuraType.ModIncreaseHealth);
 				if (effect != null && lastStandEffect != null)
 				{
-					effect.AuraEffectHandlerCreator = () => new AddMaxHealthPctToHealthHandler();
 					effect.BasePoints = lastStandEffect.BasePoints;
 					effect.DiceSides = lastStandEffect.DiceSides;
 				}
@@ -109,22 +108,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.AuraEffectHandlerCreator = () => new DamageShieldHandler();
 			});
-		}
-
-		public class AddMaxHealthPctToHealthHandler : AuraEffectHandler
-		{
-			private int health;
-
-			protected override void Apply()
-			{
-				health = ((Owner.MaxHealth * EffectValue) + 50) / 100;	//rounded
-				Owner.Health += health;
-			}
-
-			protected override void Remove(bool cancelled)
-			{
-				Owner.Health -= health;
-			}
 		}
 
 		class DamageShieldHandler : AttackEventEffectHandler

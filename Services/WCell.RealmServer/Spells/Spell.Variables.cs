@@ -64,6 +64,11 @@ namespace WCell.RealmServer.Spells
 		public Vector3 SpellTargetLocation;
 
 		/// <summary>
+		/// Wheter this Aura can proc
+		/// </summary>
+		public bool IsProc;
+
+		/// <summary>
 		/// Amount of millis before this Spell may proc another time (if it is a proc)
 		/// </summary>
 		public int ProcDelay;

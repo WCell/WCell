@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using WCell.RealmServer.Lang;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
@@ -1053,14 +1054,30 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Chatting
+		public virtual ClientLocale Locale
+		{
+			get;
+			set;
+		}
+
 		public virtual void Say(string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, message);
 		}
 
+		public void Say(LangKey key, params object[] args)
+		{
+			Say(RealmLocalizer.Instance.Translate(Locale, key, args));
+		}
+
 		public void Say(string message, params object[] args)
 		{
 			Say(string.Format(message, args));
+		}
+
+		public void Yell(LangKey key, params object[] args)
+		{
+			Yell(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
 		public virtual void Yell(string message)
@@ -1071,6 +1088,11 @@ namespace WCell.RealmServer.Entities
 		public void Yell(string message, params object[] args)
 		{
 			Yell(string.Format(message, args));
+		}
+
+		public void Emote(LangKey key, params object[] args)
+		{
+			Emote(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
 		public virtual void Emote(string message)
@@ -1236,6 +1258,11 @@ namespace WCell.RealmServer.Entities
 		public void AddMessage(Action action)
 		{
 			m_messageQueue.Enqueue(new Message(action));
+		}
+
+		public virtual bool IsTrap
+		{
+			get { return false; }
 		}
 
 		#region Factions/Hostility
@@ -1444,7 +1471,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value == null)
 					{
-						if ((this is GameObject && ((GameObject)this).IsTrap) || this is DynamicObject)
+						if (IsTrap || this is DynamicObject)
 						{
 							// remove trap when aura gets removed
 							Delete();
@@ -1472,11 +1499,18 @@ namespace WCell.RealmServer.Entities
 			get { return false; }
 		}
 
-		public bool BelongsToPlayer
+		/// <summary>
+		/// This or it's master is a player
+		/// </summary>
+		public bool IsOwnedByPlayer
 		{
 			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
 		}
 
+		/// <summary>
+		/// Whether this is actively controlled by a player. 
+		/// Not to be confused with IsOwnedByPlayer.
+		/// </summary>
 		public virtual bool IsPlayerControlled
 		{
 			get { return false; }

@@ -56,11 +56,11 @@ namespace WCell.RealmServer.Entities
 		protected Faction m_faction;
 
 		protected GameObjectHandler m_handler;
-		protected Unit m_Owner;
 		protected bool m_respawns;
 		protected GOTemplate m_template;
 		protected TimerEntry m_decayTimer, m_respawnTimer;
 		protected GameObject m_linkedTrap;
+		protected internal bool m_IsTrap;
 
 		/// <summary>
 		/// Use the <c>Create()</c> method to create new GameObjects
@@ -109,10 +109,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Traps get removed when their AreaAura gets removed
 		/// </summary>
-		public bool IsTrap
+		public override bool IsTrap
 		{
-			get;
-			internal set;
+			get { return m_IsTrap; }
 		}
 
 		/// <summary>
@@ -295,7 +294,7 @@ namespace WCell.RealmServer.Entities
 			// add Trap
 			if (m_entry.LinkedTrap != null)
 			{
-				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_Owner);
+				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_master);
 				//if (m_entry.LinkedTrap.DisplayId != 0)
 				//{
 				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_region, m_position, m_Owner);

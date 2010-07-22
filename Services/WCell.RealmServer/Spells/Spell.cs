@@ -860,7 +860,7 @@ namespace WCell.RealmServer.Spells
 			return null;
 		}
 
-		public List<SpellEffect> GetEffectsWhere(Predicate<SpellEffect> predicate)
+		public SpellEffect[] GetEffectsWhere(Predicate<SpellEffect> predicate)
 		{
 			List<SpellEffect> effects = null;
 			foreach (var effect in Effects)
@@ -874,7 +874,7 @@ namespace WCell.RealmServer.Spells
 					effects.Add(effect);
 				}
 			}
-			return effects;
+			return effects != null ? effects.ToArray() : null;
 		}
 
 		/// <summary>
