@@ -720,8 +720,8 @@ namespace WCell.RealmServer.Misc
 					ResistPct = 0;
 				}
 
-				Victim.AddDefenseMods(this);
-				Attacker.AddAttackMods(this);
+				Victim.OnDefend(this);
+				Attacker.OnAttack(this);
 
 				Resisted = (ResistPct * Damage / 100f).RoundInt();
 				Absorbed = Victim.Absorb(UsedSchool, Damage);

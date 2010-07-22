@@ -1,3 +1,4 @@
+using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.NPCs;
@@ -229,7 +230,7 @@ namespace WCell.RealmServer.Gossips
 
 				entry.DefaultGossip = menu;
 
-				if (entry.NPCFlags.HasFlag(NPCFlags.SpiritHealer))
+				if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
 				{
 					entry.NPCFlags |= NPCFlags.Gossip;
 				}

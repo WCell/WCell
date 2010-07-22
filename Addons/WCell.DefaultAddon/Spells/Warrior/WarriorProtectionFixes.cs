@@ -106,11 +106,11 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionDamageShield.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraEffectHandlerCreator = () => new DamageShieldHandler();
+				effect.AuraEffectHandlerCreator = () => new WarriorDamageShieldHandler();
 			});
 		}
 
-		class DamageShieldHandler : AttackEventEffectHandler
+		class WarriorDamageShieldHandler : AttackEventEffectHandler
 		{
 
 			public override void OnBeforeAttack(DamageAction action)
@@ -129,12 +129,14 @@ namespace WCell.Addons.Default.Spells.Warrior
 				if (action.Blocked > 0)
 				{
 					var dmg = (action.Blocked * EffectValue + 50) / 100;
-					action.Victim.AddMessage(() =>
+					var victim = action.Victim;
+					var attacker = action.Attacker;
+
+					victim.AddMessage(() =>
 					{
-						if (action.Victim.MayAttack(action.Attacker))
+						if (victim.MayAttack(attacker))
 						{
-							// TODO: Add mods to damage?
-							action.Attacker.DoSpellDamage(action.Victim, SpellEffect, dmg);
+							attacker.DoSpellDamage(victim, SpellEffect, dmg);
 						}
 					});
 				}

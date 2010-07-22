@@ -1170,7 +1170,7 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 				}
-
+				
 
 				var entry = SpellHandler.ShapeshiftEntries.Get((uint)value);
 				if (entry != null)

@@ -182,14 +182,14 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddAttackMods(DamageAction action)
+		public void OnAttack(DamageAction action)
 		{
 			if (action.Victim is NPC && m_dmgBonusVsCreatureTypePct != null)
 			{
 				var bonus = m_dmgBonusVsCreatureTypePct[(int)((NPC)action.Victim).Entry.Type];
 				if (bonus != 0)
 				{
-					action.Damage += (bonus*action.Damage + 50)/100;
+					action.Damage += (bonus * action.Damage + 50) / 100;
 				}
 			}
 			foreach (var mod in AttackEventHandlers)
@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddDefenseMods(DamageAction action)
+		public virtual void OnDefend(DamageAction action)
 		{
 			foreach (var mod in AttackEventHandlers)
 			{
@@ -212,7 +212,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual int AddHealingMods(int healValue, SpellEffect effect, DamageSchool school)
+		public virtual int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)
 		{
 			return healValue;
 		}
@@ -468,7 +468,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Does spell-damage to this Unit
 		/// </summary>
-		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg)
+		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true)
 		{
 			DamageSchool school;
 			if (effect != null)
@@ -496,6 +496,7 @@ namespace WCell.RealmServer.Entities
 
 			if (IsEvading || IsImmune(school) || IsInvulnerable || !IsAlive)
 			{
+				// cannot deal damage to this guy
 				return;
 			}
 
@@ -507,6 +508,7 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
+				// recycle DamageAction object
 				action.Attacker = attacker;
 				action.HitFlags = 0;
 				action.VictimState = 0;
@@ -515,12 +517,14 @@ namespace WCell.RealmServer.Entities
 
 			if (effect != null)
 			{
+				// Some kind of spell is involved
 				action.UsedSchool = school;
 				action.Schools = effect.Spell.SchoolMask;
 				action.IsDot = effect.IsPeriodic;
 			}
 			else
 			{
+				// pure white melee damage
 				action.UsedSchool = DamageSchool.Physical;
 				action.Schools = DamageSchoolMask.Physical;
 				action.IsDot = false;
@@ -534,6 +538,9 @@ namespace WCell.RealmServer.Entities
 
 			if (attacker != null)
 			{
+				// the damage is caused by someone else (i.e. not environmental damage etc)
+
+				// critical hits
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
@@ -545,8 +552,14 @@ namespace WCell.RealmServer.Entities
 					action.IsCritical = false;
 				}
 
-				AddDefenseMods(action);
-				attacker.AddAttackMods(action);
+				// add mods and call events
+				OnDefend(action);
+				attacker.OnAttack(action);
+
+				if (addDamageBonuses && attacker is Character)
+				{
+					((Character)attacker).AddDamageModsToAction(action);
+				}
 			}
 
 
@@ -555,9 +568,9 @@ namespace WCell.RealmServer.Entities
 			action.Blocked = 0; // TODO: Deflect
 			action.SpellEffect = effect;
 
-			//TODO: figure this out: However, when spells do only damage, it's not just a full hit or full miss situation. Pure damage spells can be resisted for 0%, 25%, 50%, 75%, or 100% of their regular damage. 
 
 			DoRawDamage(action);
+
 			CombatLogHandler.SendMagicDamage(action);
 			action.OnFinished();
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
@@ -663,7 +676,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var atk = (Character)attacker;
 				dodgeChance -= atk.Expertise * 0.25f;
-				dodgeChance += atk.IntMods[(int) StatModifierInt.TargetDodgesAttackChance];
+				dodgeChance += atk.IntMods[(int)StatModifierInt.TargetDodgesAttackChance];
 			}
 
 			dodgeChance *= 100;
@@ -727,14 +740,14 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual float CalcCritDamage(float dmg, Unit victim, SpellEffect effect)
 		{
-			if(effect != null)
+			if (effect != null)
 			{
-				return (int)(dmg*1.5);
+				return (int)(dmg * 1.5f);
 			}
 			var multiplier = 200;
 			multiplier -= (int)victim.GetResiliencePct();
 			multiplier += victim.GetIntMod(StatModifierInt.CritDamageBonusPct);
-			return dmg*multiplier;
+			return (dmg * multiplier + 100) / 200;
 		}
 
 		/// <summary>
@@ -765,7 +778,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CheckDebuffResist(int attackerLevel, DamageSchool school)
 		{
-			if (Utility.Random(0, 100) < 
+			if (Utility.Random(0, 100) <
 				GetDebuffResistance(school) -
 				GetAttackerSpellHitChanceMod(school))
 				return true;
@@ -1245,7 +1258,7 @@ namespace WCell.RealmServer.Entities
 					{
 						// proc (if not offhand)
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
-						Proc(targetProcTriggerFlags, action.Attacker, action, false);	
+						Proc(targetProcTriggerFlags, action.Attacker, action, false);
 					}
 				}
 			}

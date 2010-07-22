@@ -158,14 +158,16 @@ namespace WCell.RealmServer.Modifiers
 
 			if (unit is Character)
 			{
+				var chr = (Character)unit;
 				if (unit.PowerType == PowerType.Mana)
 				{
-					UpdateSpellCritChance((Character)unit);
+					UpdateSpellCritChance(chr);
 				}
+
+				// TODO Update spell power: AddDamageMod & HealingDoneMod
 
 				UpdatePowerRegen(unit);
 			}
-
 
 			UpdatePower(unit);
 			if (unit.IntMods[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] > 0)

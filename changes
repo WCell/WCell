@@ -1,3 +1,2 @@
-- fixed trap targeting & trap procs (untested)
-- fixed ModIncreaseHealth & Last Stand (thanks to failrs)
-- to test: HunterSurvivalEntrapment
+- fixed: DoT and HoT does not add spell power, but uses periodic damage bonuses instead / crit damage (thanks to Shyax)
+- to test: DruidBalanceImprovedMoonfire, DruidBalanceNaturesGrace, DruidBalanceMoonfury, DruidFeralCombatThickHide

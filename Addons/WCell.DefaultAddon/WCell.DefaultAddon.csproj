@@ -253,6 +253,9 @@
     <Compile Include="Instances\ZulAman.cs" />
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
+    <Compile Include="Spells\Druid\DruidBalanceFixes.cs" />
+    <Compile Include="Spells\Druid\DruidFeralCombatFixes.cs" />
+    <Compile Include="Spells\Druid\DruidRestorationFixes.cs" />
     <Compile Include="Spells\Hunter\HunterMarkmanshipFixes.cs" />
     <Compile Include="Spells\Hunter\HunterSurvivalFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />

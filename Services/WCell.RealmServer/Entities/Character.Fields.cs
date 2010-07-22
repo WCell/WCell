@@ -817,6 +817,20 @@ namespace WCell.RealmServer.Entities
 			internal set { SetFloat(PlayerFields.OFFHAND_CRIT_PERCENTAGE, value); }
 		}
 
+		/// <summary>
+		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
+		/// </summary>
+		public int GetTotalDamageDoneMod(DamageSchool school, int dmg, Spell spell = null)
+		{
+			dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school), dmg);
+			if (spell != null)
+			{
+				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
+			}
+			dmg += GetDamageDoneMod(school);
+			return dmg;
+		}
+
 		public int GetDamageDoneMod(DamageSchool school)
 		{
 			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -

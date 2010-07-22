@@ -355,8 +355,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Lets this Unit die - called when Health is smaller than 1.
 		/// Different from <see cref="Kill"/> which actively kills the Unit.
+		/// Is called when this Unit dies, i.e. Health gets smaller than 1.
 		/// </summary>
 		protected void Die()
 		{
@@ -826,25 +826,33 @@ namespace WCell.RealmServer.Entities
 			var crit = false;
 			int overheal = 0;
 
-			if (healer == null)
-			{
-				healer = this;
-			}
-
 			if (effect != null)
 			{
 				var oldVal = value;
-				if (healer is Character)
+				
+				if (healer != null)
 				{
-					value = ((Character)healer).AddHealingMods(value, effect, effect.Spell.Schools[0]);
+					if (effect.IsPeriodic)
+					{
+						// add periodic boni
+						if (healer is Character)
+						{
+							value = ((Character)healer).PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, effect.Spell, value);
+						}
+					}
+					else
+					{
+						// add healing mods (spell power for healing)
+						value = healer.AddHealingModsToAction(value, effect, effect.Spell.Schools[0]);
+					}
 				}
 
 				if (this is Character)
 				{
-					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
+					value += (int) ((oldVal*((Character) this).HealingTakenModPct)/100);
 				}
 
-				critChance = GetSpellCritChance((DamageSchool)effect.Spell.SchoolMask) * 100;
+				critChance = GetSpellCritChance((DamageSchool) effect.Spell.SchoolMask)*100;
 
 				// do a critcheck
 				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
@@ -853,7 +861,7 @@ namespace WCell.RealmServer.Entities
 
 					if (roll <= critChance)
 					{
-						value = (int)(value * (SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
+						value = (int) (value*(SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
 						crit = true;
 					}
 				}
@@ -872,7 +880,7 @@ namespace WCell.RealmServer.Entities
 				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
-			if (healer is Unit)
+			if (healer != null)
 			{
 				var action = new HealAction
 				{
@@ -882,10 +890,10 @@ namespace WCell.RealmServer.Entities
 					IsCritical = crit,
 					Value = value
 				};
-				((Unit)healer).Proc(ProcTriggerFlags.HealOther, this, action, true);
-				Proc(ProcTriggerFlags.Heal, ((Unit)healer), action, false);
+				healer.Proc(ProcTriggerFlags.HealOther, this, action, true);
+				Proc(ProcTriggerFlags.Heal, healer, action, false);
 
-				OnHeal((Unit)healer, effect, value);
+				OnHeal(healer, effect, value);
 			}
 		}
 
@@ -1112,7 +1120,7 @@ namespace WCell.RealmServer.Entities
 			if (!(obj is Unit))
 			{
 				// Object
-				return base.CanSee(obj);
+				return true;
 			}
 
 			var unit = obj as Unit;
@@ -1142,11 +1150,7 @@ namespace WCell.RealmServer.Entities
 
 			if (IsGhost)
 			{
-				// dead can only see the dead and those occupying their corpse!
-				if (unit.IsGhost)
-				{
-					return true;
-				}
+				// dead can only see the dead and those near their corpse!
 				if (this is Character)
 				{
 					var corpse = ((Character)this).Corpse;

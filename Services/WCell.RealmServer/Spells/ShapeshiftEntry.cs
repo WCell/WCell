@@ -55,11 +55,11 @@ namespace WCell.RealmServer.Spells
 			entry.Id = (ShapeshiftForm)GetInt32(rawData, index++);
 			entry.BarOrder = GetUInt32(rawData, index++);
 			entry.Name = GetString(rawData, ref index);
+
 			entry.Flags = (ShapeshiftInfoFlags)GetUInt32(rawData, index++);
 			entry.CreatureType = (CreatureType)GetInt32(rawData, index++);
-			index++;	// this columnn is set iff AttackTime is set
+			index++;
 			entry.AttackTime = GetInt32(rawData, index++);
-
 			entry.ModelIdAlliance = GetUInt32(rawData, index++);
 			entry.ModelIdHorde = GetUInt32(rawData, index++);
 

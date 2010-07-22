@@ -1348,20 +1348,24 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds all damage boni and mali
 		/// </summary>
-		public override void AddAttackMods(DamageAction action)
+		public void AddDamageModsToAction(DamageAction action)
 		{
-			base.AddAttackMods(action);
-			var dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)action.UsedSchool), action.Damage);
-			if (action.Spell != null)
-			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, action.Spell, dmg);
-			}
+			int dmg;
 
-			dmg += GetDamageDoneMod(action.UsedSchool);
+			if (!action.IsDot)
+			{
+				// does not add to dot
+				dmg = GetTotalDamageDoneMod(action.UsedSchool, action.Damage, action.Spell);
+			}
+			else
+			{
+				// periodic damage mod
+				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
+			}
 			action.Damage = dmg;
 		}
 
-		public override int AddHealingMods(int healValue, SpellEffect effect, DamageSchool school)
+		public override int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)
 		{
 			healValue += (int)((healValue * HealingDoneModPct) / 100f);
 			healValue += HealingDoneMod;
