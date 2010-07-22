@@ -3,7 +3,7 @@
  *   file		: AuraHandler.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (sø, 31 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (sï¿½, 31 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1238 $
  *

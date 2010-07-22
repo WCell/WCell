@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Entities;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 

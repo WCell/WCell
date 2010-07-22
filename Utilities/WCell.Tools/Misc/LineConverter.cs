@@ -8,9 +8,10 @@ using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Misc
 {
-	public static class Dos2Unix
+	public static class LineConverter
 	{
 		public static string[] StandardCodingTextFiles = new[] { ".sln", "proj", ".txt", ".cs", ".xml" };
+		public static string LineEnding = "\r\n";
 
 		/// <summary>
 		/// Converts all line endings of all text files in wcell from crlf to lf
@@ -31,11 +32,13 @@ namespace WCell.Tools.Misc
 				}
 				else
 				{
+// ReSharper disable AccessToModifiedClosure
 					if (suffixes.Any(suffix => suffix.Length > 0 && file.EndsWith(suffix)))
+// ReSharper restore AccessToModifiedClosure
 					{
 						// found the right kind of file
 						var lines = File.ReadLines(file);
-						var text = string.Join("\n", lines);
+						var text = string.Join(LineEnding, lines);
 						File.WriteAllText(file, text);
 					}
 				}

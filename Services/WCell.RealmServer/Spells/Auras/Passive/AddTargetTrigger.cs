@@ -18,6 +18,7 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
+	/// test
 	/// Gives EffectValue% to trigger another Spell
 	/// </summary>
 	public class AddTargetTriggerHandler : AuraEffectHandler
