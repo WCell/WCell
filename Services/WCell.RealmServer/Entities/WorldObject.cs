@@ -1022,7 +1022,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsInFrontOfThis(Vector3 pos)
 		{
-			var angle = Math.Abs(m_orientation - GetAngleTowards(m_position));
+			var angle = Math.Abs(m_orientation - GetAngleTowards(pos));
 			return angle <= InFrontAngleMax ||
 				angle >= InFrontAngleMin;
 		}
