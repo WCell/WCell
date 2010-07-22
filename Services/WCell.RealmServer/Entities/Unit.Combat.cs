@@ -663,6 +663,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var atk = (Character)attacker;
 				dodgeChance -= atk.Expertise * 0.25f;
+				dodgeChance += atk.IntMods[(int) StatModifierInt.TargetDodgesAttackChance];
 			}
 
 			dodgeChance *= 100;
@@ -717,9 +718,23 @@ namespace WCell.RealmServer.Entities
 			return resiliencePercentage;
 		}
 
+		/// <summary>
+		/// Modified by victim's resilience
+		/// </summary>
+		/// <param name="dmg"></param>
+		/// <param name="victim"></param>
+		/// <param name="effect"></param>
+		/// <returns></returns>
 		public virtual float CalcCritDamage(float dmg, Unit victim, SpellEffect effect)
 		{
-			return dmg * 2;
+			if(effect != null)
+			{
+				return (int)(dmg*1.5);
+			}
+			var multiplier = 200;
+			multiplier -= (int)victim.GetResiliencePct();
+			multiplier += victim.GetIntMod(StatModifierInt.CritDamageBonusPct);
+			return dmg*multiplier;
 		}
 
 		/// <summary>

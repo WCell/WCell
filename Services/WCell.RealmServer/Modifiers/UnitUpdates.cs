@@ -70,6 +70,8 @@ namespace WCell.RealmServer.Modifiers
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.CritChance] = UpdateCritChance;
 			FlatIntModHandlers[(int)StatModifierInt.ParryChance] = UpdateParryChance;
+			FlatIntModHandlers[(int)StatModifierInt.AttackerMeleeHitChance] = UpdateMeleeHitChance;
+			FlatIntModHandlers[(int)StatModifierInt.AttackerRangedHitChance] = UpdateRangedHitChance;
 
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
@@ -661,7 +663,44 @@ namespace WCell.RealmServer.Modifiers
 			unit.BoundingRadius = unit.Model.BoundingRadius * unit.ScaleX;
 		}
 
+		internal static void UpdateMeleeHitChance(this Unit unit)
+		{
+			float hitChance;
+			hitChance = unit.IntMods[(int) StatModifierInt.HitChance];
+			if(unit is Character)
+			{
+				var chr = unit as Character;
 
+				hitChance += chr.GetCombatRatingMod(CombatRating.MeleeHitChance)/
+				             GameTables.GetCRTable(CombatRating.MeleeHitChance)[chr.Level - 1];
+				chr.HitChance = hitChance;
+			}
+		}
+
+		internal static void UpdateRangedHitChance(this Unit unit)
+		{
+			float hitChance;
+			hitChance = unit.IntMods[(int)StatModifierInt.HitChance];
+			if (unit is Character)
+			{
+				var chr = unit as Character;
+
+				hitChance += chr.GetCombatRatingMod(CombatRating.RangedHitChance) /
+							 GameTables.GetCRTable(CombatRating.RangedHitChance)[chr.Level - 1];
+				chr.HitChance = hitChance;
+			}
+		}
+
+		internal static void UpdateExpertise(this Unit unit)
+		{
+			if(unit is Character)
+			{
+				var chr = unit as Character;
+				var expertise = (uint)chr.IntMods[(int) StatModifierInt.Expertise];
+				expertise += (uint)(chr.GetCombatRatingMod(CombatRating.Expertise)/GameTables.GetCRTable(CombatRating.Expertise)[chr.Level - 1]);
+				chr.Expertise = expertise;
+			}
+		}
 		//static int ApplyMultiMod(ModifierMulti mod, int value)
 		//{
 		//    var modValue = unit.MultiplierMods[(int)mod];

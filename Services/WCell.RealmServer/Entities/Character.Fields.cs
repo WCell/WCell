@@ -731,6 +731,15 @@ namespace WCell.RealmServer.Entities
 				case CombatRating.DefenseSkill:
 					UnitUpdates.UpdateDefense(this);
 					break;
+				case CombatRating.MeleeHitChance:
+					UnitUpdates.UpdateMeleeHitChance(this);
+					break;
+				case CombatRating.RangedHitChance:
+					UnitUpdates.UpdateRangedHitChance(this);
+					break;
+				case CombatRating.Expertise:
+					UnitUpdates.UpdateExpertise(this);
+					break;
 			}
 		}
 
@@ -839,12 +848,17 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Modifies the chance to hit
+		/// Character's hit chance in %
 		/// </summary>
-		public int HitChanceMod
+		public float HitChance
 		{
 			get;
 			set;
+		}
+
+		public float RangedHitChance
+		{
+			get; set;
 		}
 
 		public override uint Defense
