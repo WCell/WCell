@@ -9,27 +9,27 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Intact: Num hits
         /// </summary>
-        public uint IntactNumHits
+        public int IntactNumHits
         {
             get { return Fields[0]; }
         }
 
-        public uint CreditProxyCreature
+        public int CreditProxyCreature
         {
             get { return Fields[1]; }
         }
 
-        public uint Field103_2
+        public int Field103_2
         {
             get { return Fields[2]; }
         }
 
-        public uint IntactEvent
+        public int IntactEvent
         {
             get { return Fields[3]; }
         }
 
-        public uint Field103_4
+        public int Field103_4
         {
             get { return Fields[4]; }
         }
@@ -37,51 +37,51 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Damaged: Num hits
         /// </summary>
-        public uint DamagedNumHits
+        public int DamagedNumHits
         {
             get { return Fields[5]; }
         }
 
-        public uint Field103_6
+        public int Field103_6
         {
             get { return Fields[6]; }
         }
-        public uint Field103_7
+        public int Field103_7
         {
             get { return Fields[7]; }
         }
-        public uint Field103_8
+        public int Field103_8
         {
             get { return Fields[8]; }
         }
 
-        public uint DamagedEvent
+        public int DamagedEvent
         {
             get { return Fields[9]; }
         }
-        public uint Field103_10
+        public int Field103_10
         {
             get { return Fields[10]; }
         }
-        public uint Field103_11
+        public int Field103_11
         {
             get { return Fields[11]; }
         }
-        public uint Field103_12
+        public int Field103_12
         {
             get { return Fields[12]; }
         }
-        public uint Field103_13
+        public int Field103_13
         {
             get { return Fields[13]; }
         }
 
-        public uint DestroyedEvent
+        public int DestroyedEvent
         {
             get { return Fields[14]; }
         }
 
-        public uint Field103_15
+        public int Field103_15
         {
             get { return Fields[15]; }
         }
@@ -89,17 +89,17 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Rebuilding: Time (in seconds)
         /// </summary>
-        public uint RebuildingTime
+        public int RebuildingTime
         {
             get { return Fields[16]; }
         }
 
-        public uint Field103_16
+        public int Field103_16
         {
             get { return Fields[17]; }
         }
 
-        public uint DestructibleData
+        public int DestructibleData
         {
             get { return Fields[18]; }
         }
@@ -107,26 +107,26 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Rebuilding: Event
         /// </summary>
-        public uint RebuildingEvent
+        public int RebuildingEvent
         {
             get { return Fields[19]; }
         }
 
-        public uint Field103_20
+        public int Field103_20
         {
             get { return Fields[20]; }
         }
-        public uint Field103_21
+        public int Field103_21
         {
             get { return Fields[21]; }
         }
 
-        public uint DamageEvent
+        public int DamageEvent
         {
             get { return Fields[22]; }
         }
 
-        public uint Field103_23
+        public int Field103_23
         {
             get { return Fields[23]; }
         }

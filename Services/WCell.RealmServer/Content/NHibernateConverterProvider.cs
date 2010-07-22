@@ -35,6 +35,7 @@ namespace WCell.RealmServer.Content
 
 		static NHibernateConverterProvider()
 		{
+			StandardConverters[typeof(int)] = new ToIntConverter();
 			StandardConverters[typeof(uint)] = new ToUIntConverter();
 			StandardConverters[typeof(string)] = new ToStringConverter();
 		}
@@ -54,7 +55,7 @@ namespace WCell.RealmServer.Content
 				return new CustomReader(stdConv);
 			}
 
-			if (type.IsEnum && (Enum.GetUnderlyingType(type)) == typeof (uint))
+			if (type.IsEnum && (Enum.GetUnderlyingType(type)) == typeof(uint))
 			{
 				return new CustomReader(new ToUIntEnumConverter(type));
 			}

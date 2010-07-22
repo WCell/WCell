@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Commands
 	{
 		public static Spell[] RetrieveSpells(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			var ids = trigger.Text.Remainder.Split(new[] {","}, StringSplitOptions.RemoveEmptyEntries);
+			var ids = trigger.Text.Remainder.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries);
 			var spells = new List<Spell>(ids.Length);
 			foreach (var id in ids)
 			{
@@ -215,11 +215,15 @@ namespace WCell.RealmServer.Commands
 							clss = target.Class;
 						}
 
-						var count = target.Spells.Count;
+						var count = 0;
 						var lines = SpellLines.GetLines(clss);
 						foreach (var line in lines)
 						{
-							AddSpell(target, line.HighestRank, mod.Contains("r"));
+							if (line.HighestRank.Talent == null)
+							{
+								AddSpell(target, line.HighestRank, mod.Contains("r"));
+								count++;
+							}
 						}
 						if (count > 0)
 						{
@@ -251,7 +255,8 @@ namespace WCell.RealmServer.Commands
 					{
 						trigger.Reply("Spell doesn't exist.");
 					}
-					else {
+					else
+					{
 						foreach (var spell in spells)
 						{
 							AddSpell(target, spell, mod.Contains("r"));
@@ -280,7 +285,7 @@ namespace WCell.RealmServer.Commands
 				if (spell.Talent != null && chr != null)
 				{
 					// talent
-					chr.Talents.Set(spell.Talent, spell.Rank-1);
+					chr.Talents.Set(spell.Talent, spell.Rank - 1);
 				}
 				else
 				{

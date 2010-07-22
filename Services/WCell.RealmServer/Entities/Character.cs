@@ -347,7 +347,7 @@ namespace WCell.RealmServer.Entities
 			base.OnDamageAction(action);
 
 			var pvp = action.Attacker.IsPvPing;
-			var chr = action.Attacker.PlayerMaster;
+			var chr = action.Attacker.CharacterMaster;
 
 			var killingBlow = !IsAlive;
 

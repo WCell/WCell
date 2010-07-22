@@ -34,7 +34,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		{
 			if (Fields == null)
 			{
-				Fields = new uint[GOConstants.EntryFieldCount];
+				Fields = new int[GOConstants.EntryFieldCount];
 			}
 		}
 	}
@@ -68,7 +68,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		}
 
 		[NotPersistent]
-		public uint MaxCharges
+		public int MaxCharges
 		{
 			get;
 			set;
@@ -82,14 +82,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		}
 
 		[NotPersistent]
-		public uint StartDelay
+		public int StartDelay
 		{
 			get;
 			set;
 		}
 
 		[NotPersistent]
-		public uint Radius
+		public int Radius
 		{
 			get;
 			set;

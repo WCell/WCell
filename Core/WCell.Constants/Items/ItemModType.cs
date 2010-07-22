@@ -67,6 +67,9 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HitRating = 31,
 
+		/// <summary>
+		/// Used
+		/// </summary>
 		CriticalStrikeRating = 32,
 		/// <summary>
 		/// Unused

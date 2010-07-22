@@ -547,6 +547,7 @@ namespace WCell.RealmServer.Spells.Extensions
 			{
 				log.Warn("Non-Player {0} tried to cast Pet - spell {1}", caster, targets.Cast.Spell);
 				failReason = SpellFailedReason.TargetNotPlayer;
+				return;
 			}
 
 			var pet = ((Character)caster).ActivePet;

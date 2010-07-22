@@ -63,7 +63,7 @@ namespace WCell.RealmServer.Spells.Effects
 			{
 				effectValue = CalcDamageValue();
 			}
-			((Unit)target).Heal(m_cast.Caster, effectValue, Effect);
+			((Unit)target).Heal(m_cast.CasterUnit, effectValue, Effect);
 		}
 
 		public override ObjectTypes TargetType

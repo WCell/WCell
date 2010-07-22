@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var type = (PowerType)Effect.MiscValue;
 			if (type == ((Unit)target).PowerType)
-				((Unit)target).Energize(m_cast.Caster, CalcEffectValue(), Effect);
+				((Unit)target).Energize(m_cast.CasterUnit, CalcEffectValue(), Effect);
 		}
 
 		public override ObjectTypes TargetType
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Spells.Effects
 			if (type == ((Unit)target).PowerType)
 			{
 				var val = (m_cast.CasterUnit.MaxPower * CalcEffectValue() + 50) / 100;
-				((Unit)target).Energize(m_cast.Caster, val, Effect);
+				((Unit)target).Energize(m_cast.CasterUnit, val, Effect);
 			}
 		}
 	}

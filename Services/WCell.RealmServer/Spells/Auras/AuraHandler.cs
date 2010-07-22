@@ -302,6 +302,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			AddAuraGroupEvaluator(IsTransform);
 			AddAuraGroupEvaluator(IsStealth);
+			AddAuraGroupEvaluator(IsTracker);
 		}
 
 		/// <summary>
@@ -318,6 +319,12 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			return spell.HasEffectWith(effect =>
 									   effect.AuraType == AuraType.ModStealth);
+		}
+
+		static bool IsTracker(Spell spell)
+		{
+			return spell.HasEffect(AuraType.TrackCreatures) || spell.HasEffect(AuraType.TrackResources) ||
+			       spell.HasEffect(AuraType.TrackStealthed);
 		}
 
 		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)

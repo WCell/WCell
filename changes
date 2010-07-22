@@ -1,3 +1,5 @@
-- implemented DamageShield, CritCreatureMaskHandler, pacify & silence & more
-- to test: PaladinRetributionAura, PaladinExorcism, PaladinLayOnHands, PaladinShieldOfRighteousness, PaladinRighteousDefense, PaladinDivineIntervention
-- fixed ModSpellPowerByAPPctHandler (caused exceptions) / NoInitialAggro - check (seems useless now, probably changed)
+- fixed IPC fail notification (now only annoys you once, and not every second)
+- fixed traps (except for some targeting issues)
+- fixed all kinds of WorldObject vs Unit inconsistencies
+- fixed several small bugs I recently introduced
+- will fix areaaura soon

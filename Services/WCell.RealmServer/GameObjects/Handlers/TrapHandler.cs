@@ -9,8 +9,6 @@ namespace WCell.RealmServer.GameObjects
 	/// </summary>
 	public class TrapHandler : GameObjectHandler
 	{
-		private static Logger sLog = LogManager.GetCurrentClassLogger();
-
 		protected internal override void Initialize(GameObject go)
 		{
 		    //var hidden = (go.Entry as GOTrapEntry).Hidden;

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
@@ -737,14 +738,9 @@ namespace WCell.RealmServer.Entities
 
 		#region Tracking of Resources & Creatures
 
-		/// <summary>
-		/// The Aura that activated a Resource- or CreatureTracker (or null if the player is not tracking anything)
-		/// </summary>
-		public Aura CurrentTracker { get; internal set; }
-
-		public CreatureTrackingMask CreatureTracking
+		public CreatureMask CreatureTracking
 		{
-			get { return (CreatureTrackingMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
+			get { return (CreatureMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
 			internal set { SetUInt32(PlayerFields.TRACK_CREATURES, (uint)value); }
 		}
 

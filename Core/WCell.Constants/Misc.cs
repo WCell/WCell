@@ -260,15 +260,6 @@ namespace WCell.Constants
 	}
 
 	/// <summary>
-	/// Mask of NPCType
-	/// </summary>
-	[Flags]
-	public enum CreatureTrackingMask : uint
-	{
-		None = 0,
-	}
-
-	/// <summary>
 	/// Mask of LockInteractionType
 	/// </summary>
 	[Flags]

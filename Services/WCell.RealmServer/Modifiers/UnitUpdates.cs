@@ -350,7 +350,7 @@ namespace WCell.RealmServer.Modifiers
 				var apBonus = unit.IntMods[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect];
 				if (apBonus > 0)
 				{
-					val += (apBonus * unit.Intellect) + 50 / 100;
+					val += (apBonus * unit.Intellect + 50) / 100;
 				}
 				chr.RangedAttackPower = val;
 			}

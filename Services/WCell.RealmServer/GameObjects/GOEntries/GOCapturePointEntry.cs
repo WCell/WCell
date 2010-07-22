@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The activation radius (?)
 		/// </summary>
-		public uint Radius
+		public int Radius
 		{
     		get { return Fields[ 0 ]; }
     	}
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Unknown, possibly a server-side dummy spell-effect. Not a SpellId from Spells.dbc
 		/// </summary>
-		public uint SpellId
+		public int SpellId
 		{
     		get { return Fields[ 1 ]; }
     	}
@@ -26,7 +26,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint WorldState1
+		public int WorldState1
 		{
     		get { return Fields[ 2 ]; }
     	}
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint WorldState2
+		public int WorldState2
 		{
     		get { return Fields[ 3 ]; }
     	}
@@ -42,7 +42,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint WinEventId1
+		public int WinEventId1
 		{
     		get { return Fields[ 4 ]; }
     	}
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint WinEventId2
+		public int WinEventId2
 		{
     		get { return Fields[ 5 ]; }
     	}
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint ContestedEventId1
+		public int ContestedEventId1
 		{
     		get { return Fields[ 6 ]; }
     	}
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint ContestedEventId2
+		public int ContestedEventId2
 		{
     		get { return Fields[ 7 ]; }
     	}
@@ -74,7 +74,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint ProgressEventId1
+		public int ProgressEventId1
 		{
     		get { return Fields[ 8 ]; }
     	}
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint ProgressEventId2
+		public int ProgressEventId2
 		{
     		get { return Fields[ 9 ]; }
     	}
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint NeutralEventId1
+		public int NeutralEventId1
 		{
     		get { return Fields[ 10 ]; }
     	}
@@ -98,7 +98,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint NeutralEventId2
+		public int NeutralEventId2
 		{
     		get { return Fields[ 11 ]; }
     	}
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint NeutralPercent
+		public int NeutralPercent
 		{
     		get { return Fields[ 12 ]; }
     	}
@@ -114,7 +114,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint WorldState3
+		public int WorldState3
 		{
     		get { return Fields[ 13 ]; }
     	}
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint MinSuperiority
+		public int MinSuperiority
 		{
     		get { return Fields[ 14 ]; }
     	}
@@ -130,7 +130,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint MaxSuperiority
+		public int MaxSuperiority
 		{
     		get { return Fields[ 15 ]; }
     	}
@@ -138,7 +138,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint MinTime
+		public int MinTime
 		{
     		get { return Fields[ 16 ]; }
     	}
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-		public uint MaxTime
+		public int MaxTime
 		{
     		get { return Fields[ 17 ]; }
     	}
@@ -167,7 +167,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[19] != 0; }
 		}
 
-        public uint StartingValue
+        public int StartingValue
         {
             get { return Fields[20]; }
         }

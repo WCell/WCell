@@ -11,7 +11,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The maximum amount of Units that can sitting on the chair at the same time.
 	    /// </summary>
-	    public uint MaxCount
+	    public int MaxCount
 	    {
             get { return Fields[0]; }
 	    }
@@ -41,7 +41,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[2] != 0; }
 	    }
 
-	    public uint TriggeredEvent
+	    public int TriggeredEvent
 	    {
             get { return Fields[3]; }
 	    }

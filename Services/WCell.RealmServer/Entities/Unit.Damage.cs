@@ -480,6 +480,10 @@ namespace WCell.RealmServer.Entities
 		public void DoRawDamage(IDamageAction action)
 		{
 			// Default on damage stuff
+			if (m_FirstAttacker == null && action.Attacker != null)
+			{
+				FirstAttacker = action.Attacker;
+			}
 			action.Victim.OnDamageAction(action);
 
 			// events
