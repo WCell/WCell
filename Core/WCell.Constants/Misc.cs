@@ -474,6 +474,7 @@ namespace WCell.Constants
 		BlockValue,
         ParryChance,
         RangedCritChance,
+		HitChance,
 
 		RangedAttackPowerByPercentOfIntellect,
 
@@ -483,8 +484,14 @@ namespace WCell.Constants
 
 		AttackerMeleeHitChance,
 		AttackerRangedHitChance,
+		/// <summary>
+		/// A negative chance that reduces target's dodge chance
+		/// </summary>
+		TargetDodgesAttackChance,
 
-		CriticalHealValuePct
+		CriticalHealValuePct,
+
+		Expertise
 	}
 
 	public enum AreaTriggerType : uint

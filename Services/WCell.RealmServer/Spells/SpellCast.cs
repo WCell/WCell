@@ -1127,6 +1127,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Indicates whether a spell hit a target or not
+		/// TODO: Actually check whether a spell 'Misses' (CastMissReason.Miss)
 		/// </summary>
 		public CastMissReason CheckCastHit(Unit target, Spell spell)
 		{
@@ -1138,7 +1139,6 @@ namespace WCell.RealmServer.Spells
 				{
 					return CastMissReason.Evade;
 				}
-
 				// immune & invul
                 if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
 					(target is Character && ((Character)target).Role.IsStaff))
