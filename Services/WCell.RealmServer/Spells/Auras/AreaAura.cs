@@ -252,6 +252,7 @@ namespace WCell.RealmServer.Spells.Auras
 					if (obj != m_holder &&
 						((exclMobs && obj is Character) || (!exclMobs && obj is Unit)) &&
 						((Unit)obj).IsAlive &&
+						SpellTargetCollection.
 						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{
 						if (!auraEffects || !m_targets.ContainsKey((Unit)obj))
