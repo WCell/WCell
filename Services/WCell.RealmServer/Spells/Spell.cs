@@ -1253,9 +1253,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "AttributesExD: " + AttributesExD);
 			}
-			if ((int)ShapeshiftMask != 0)
+			if ((int)AllowedShapeshiftMask != 0)
 			{
-				writer.WriteLine(indent + "ShapeshiftMask: " + ShapeshiftMask);
+				writer.WriteLine(indent + "ShapeshiftMask: " + AllowedShapeshiftMask);
 			}
 			if ((int)ExcludeShapeshiftMask != 0)
 			{

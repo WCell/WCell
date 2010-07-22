@@ -1,2 +1,3 @@
-- fixed: DoT and HoT does not add spell power, but uses periodic damage bonuses instead / crit damage (thanks to Shyax)
-- to test: DruidBalanceImprovedMoonfire, DruidBalanceNaturesGrace, DruidBalanceMoonfury, DruidFeralCombatThickHide
+- added missing files
+- fixed shapeshift checks / implemented AuraType.IgnoreShapeshiftRequirement
+- passive spells won't have any caster checks anymore (the spell should be casted but the aura might only be active under certain conditions)

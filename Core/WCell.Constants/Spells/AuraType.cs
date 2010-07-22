@@ -493,7 +493,10 @@ namespace WCell.Constants.Spells
 		Aura_272 = 272,
 		Aura_273 = 273,
 		Aura_274 = 274,
-		Aura_275 = 275,
+		/// <summary>
+		/// Removes any shapeshift requirements, spells become usable when using any shapeshift form
+		/// </summary>
+		IgnoreShapeshiftRequirement = 275,
 		Aura_276 = 276,
 		Aura_277 = 277,
 		/// <summary>

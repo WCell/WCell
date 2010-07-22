@@ -1142,6 +1142,17 @@ namespace WCell.RealmServer.Entities
 			set { SetByte(UnitFields.BYTES_2, 2, (byte)value); }
 		}
 
+		#endregion
+
+		#region Shapeshifting
+		/// <summary>
+		/// The entry of the current shapeshift form
+		/// </summary>
+		public ShapeshiftEntry ShapeshiftEntry
+		{
+			get { return SpellHandler.ShapeshiftEntries.Get((uint)ShapeshiftForm); }
+		}
+
 		public ShapeshiftForm ShapeshiftForm
 		{
 			get { return (ShapeshiftForm)GetByte(UnitFields.BYTES_2, 3); }
@@ -1209,7 +1220,6 @@ namespace WCell.RealmServer.Entities
 				return (ShapeShiftMask)(1 << (int)(ShapeshiftForm));
 			}
 		}
-
 		#endregion
 
 		/// <summary>

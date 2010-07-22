@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ShapeshiftMask;//13
+		public ShapeShiftMask AllowedShapeshiftMask;//13
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>

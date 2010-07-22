@@ -778,7 +778,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (!m_passiveCast && CasterUnit != null)
+			if (!m_passiveCast && !m_spell.IsPassive && CasterUnit != null)
 			{
 				// don't sit on a ride (even if you try to, the Client will show you dismounted - maybe add auto-remount for GodMode)
 				var spell = m_spell;
@@ -897,7 +897,7 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		protected SpellFailedReason CheckPlayerCast(WorldObject selected)
 		{
-			var caster = (Character)Caster;
+			var caster = (Character) Caster;
 			if (m_spell.TargetFlags != 0 && !IsAoE && selected == caster)
 			{
 				// Caster is selected by default
@@ -916,7 +916,7 @@ namespace WCell.RealmServer.Spells
 
 				if (m_spell.HasHarmfulEffects && selected is Unit)
 				{
-					if (((Unit)selected).IsEvading || ((Unit)selected).IsInvulnerable)
+					if (((Unit) selected).IsEvading || ((Unit) selected).IsInvulnerable)
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
@@ -926,7 +926,7 @@ namespace WCell.RealmServer.Spells
 				//    ((Unit)Caster).Face(TargetLoc);				
 				//}			
 			}
-			// we can't cast if we are dead
+				// we can't cast if we are dead
 			else if (!caster.IsAlive)
 			{
 				return SpellFailedReason.CasterDead;
@@ -943,7 +943,7 @@ namespace WCell.RealmServer.Spells
 
 			// check required skill
 			if (m_spell.Ability != null && m_spell.Ability.RedValue > 0 &&
-				caster.Skills.GetValue(m_spell.Ability.Skill.Id) < m_spell.Ability.RedValue)
+			    caster.Skills.GetValue(m_spell.Ability.Skill.Id) < m_spell.Ability.RedValue)
 			{
 				return SpellFailedReason.MinSkill;
 			}
@@ -967,13 +967,10 @@ namespace WCell.RealmServer.Spells
 					return SpellFailedReason.DontReport;
 				}
 			}
-
-			if (!IsPassive)
+			
+			if (!caster.HasEnoughPowerToCast(m_spell, null))
 			{
-				if (!caster.HasEnoughPowerToCast(m_spell, null))
-				{
-					return SpellFailedReason.NoPower;
-				}
+				return SpellFailedReason.NoPower;
 			}
 
 			// Item restrictions			

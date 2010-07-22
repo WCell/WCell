@@ -42,7 +42,8 @@ namespace WCell.RealmServer.Spells.Auras
 
 		/// <summary>
 		/// An immutable array that contains all Auras and is re-created
-		/// whenever an Aura is added or removed (for faster iteration during Updating).
+		/// whenever an Aura is added or removed (lazily prevents threading and update issues -> Find something better).
+		/// TODO: Recycle
 		/// </summary>
 		protected Aura[] m_AuraArray;
 
@@ -987,5 +988,31 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 		#endregion
+
+		/// <summary>
+		/// Returns whether the given spell was modified to be casted 
+		/// in any shapeshift form, (even if it usually requires a specific one).
+		/// </summary>
+		public bool IsShapeshiftRequirementIgnored(Spell spell)
+		{
+			foreach (var aura in m_AuraArray)
+			{
+				if (aura.Spell.SpellClassSet != spell.SpellClassSet)
+				{
+					// must be same class
+					continue;
+				}
+				foreach (var handler in aura.Handlers)
+				{
+					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
+					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
+						spell.MatchesMask(handler.SpellEffect.AffectMask))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
 	}
 }

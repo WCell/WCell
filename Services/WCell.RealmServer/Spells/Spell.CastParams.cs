@@ -71,19 +71,6 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.RequiresSpellFocus;
 			}
 
-			// shapeshift
-			if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
-				caster.ShapeshiftForm != ShapeshiftForm.Normal)
-			{
-				//return SpellFailedReason.NotShapeshift;
-			}
-
-			// Stealth Required			
-			else if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
-			{
-				return SpellFailedReason.OnlyStealthed;
-			}
-
 			// Not while silenced		
 			else if (!caster.CanCastSpells &&
 					(!IsPhysicalAbility ||
@@ -113,11 +100,6 @@ namespace WCell.RealmServer.Spells
 			{
 				return SpellFailedReason.RequiresSpellFocus;
 			}
-			// shapeshift			
-			//if (Attributes.Has(SpellAttributes.NotWhileShapeshifted) && caster.ShapeShiftForm != ShapeShiftForm.Normal)
-			{
-				//return SpellFailedReason.NotShapeshift;			
-			}
 
 			// AuraStates
 			if (RequiredCasterAuraState != 0 || ExcludeCasterAuraState != 0)
@@ -136,6 +118,52 @@ namespace WCell.RealmServer.Spells
 				(RequiredCasterAuraId != 0 && !caster.Auras.Contains(RequiredCasterAuraId)))
 			{
 				return SpellFailedReason.CasterAurastate;
+			}
+
+			// Shapeshift
+			var shapeshiftMask = caster.ShapeShiftMask;
+			bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
+			if (ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			{
+				if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+				{
+					return SpellFailedReason.NotShapeshift;
+				}
+			}
+			else if (!AllowedShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			{
+				// our mask did not pass -> do the default checks
+				var shapeshiftEntry = caster.ShapeshiftEntry;
+				var shapeshifted = shapeshiftEntry != null && (shapeshiftEntry.Flags & ShapeshiftInfoFlags.NotActualShapeshift) == 0;
+
+				if (shapeshifted)
+				{
+					if (AllowedShapeshiftMask != 0)
+					{
+						// When shapeshifted, can only use spells that allow this form
+						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+						{
+							return SpellFailedReason.OnlyShapeshift;
+						}
+					}
+					else if (Attributes.HasAnyFlag(SpellAttributes.NotWhileShapeshifted))
+					{
+						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+						{
+							// cannot cast this spell when shapeshifted
+							return SpellFailedReason.NotShapeshift;
+						}
+					}
+				}
+
+				if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+				{
+					if (ignoreShapeshiftRequirement || caster.Auras.IsShapeshiftRequirementIgnored(this))
+					{
+						// Stealth Required, but not stealthed
+						return SpellFailedReason.OnlyStealthed;
+					}
+				}
 			}
 
 			var spells = caster.Spells as PlayerSpellCollection;
@@ -437,7 +465,7 @@ namespace WCell.RealmServer.Spells
 
 			if (action.Spell != null)
 			{
-				if (active)	
+				if (active)
 				{
 					// owner == attacker
 					if (CasterProcSpells != null)
@@ -445,7 +473,7 @@ namespace WCell.RealmServer.Spells
 						return CasterProcSpells.Contains(action.Spell);
 					}
 				}
-				else if (TargetProcSpells != null)	
+				else if (TargetProcSpells != null)
 				{
 					// owner == victim
 					return TargetProcSpells.Contains(action.Spell);

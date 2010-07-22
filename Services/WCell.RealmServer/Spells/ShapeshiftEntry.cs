@@ -12,11 +12,15 @@ namespace WCell.RealmServer.Spells
 	[Flags]
 	public enum ShapeshiftInfoFlags : uint
 	{
+		/// <summary>
+		/// This is used for stances and anything that does not really shift the form of the caster
+		/// </summary>
+		NotActualShapeshift = 0x0001,
 
 		/// <summary>
 		/// Only used in cat form
 		/// </summary>
-		AgilityBasedAttackPower = 0x20,
+		AgilityBasedAttackPower = 0x20
 	}
 
 	public class ShapeshiftEntry

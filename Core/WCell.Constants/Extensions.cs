@@ -129,6 +129,16 @@ namespace WCell.Constants
 		{
 			return (flags & otherFlags) != 0;
 		}
+
+		public static bool HasAnyFlag(this  ShapeShiftMask flags, ShapeShiftMask otherFlags)
+		{
+			return (flags & otherFlags) != 0;
+		}
+
+		public static ShapeShiftMask ToMask(this ShapeshiftForm form)
+		{
+			return (ShapeShiftMask) (1 << (int) form);
+		}
 		#endregion
 	}
 }

@@ -548,7 +548,7 @@ namespace WCell.Constants.Spells
         /// </summary>
         RevivePet = 0x40000,
 
-        AttrExB_19_0x80000 = 0x80000,//19
+        DoesNotNeedShapeshift = 0x80000,//19
 
         RequiresBehindTarget = 0x100000,
 
