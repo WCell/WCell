@@ -44,6 +44,7 @@ namespace WCell.RealmServer.Battlegrounds
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
 
+        [NotPersistent]
         public PvPDifficultyEntry[] Difficulties;
 
 		public int MinPlayerCount
