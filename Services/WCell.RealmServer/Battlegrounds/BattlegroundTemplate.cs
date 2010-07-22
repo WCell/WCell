@@ -82,6 +82,8 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
+            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId)) + 1];
+
             foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
             {
                 if (entry.mapId == RegionId)
@@ -114,10 +116,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		void AddQueue(GlobalBattlegroundQueue queue)
 		{
-			for (var i = queue.MinLevel; i < queue.MaxLevel; i++)
-			{
-				Queues[i] = queue;
-			}
+				Queues[queue.BracketId] = queue;
 		}
 
 		/// <summary>
