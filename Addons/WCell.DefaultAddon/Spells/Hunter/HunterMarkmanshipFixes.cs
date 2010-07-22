@@ -52,12 +52,15 @@ namespace WCell.Addons.Default.Spells.Hunter
 
         protected override void Apply(WorldObject target)
         {
-            var charSpells = ((Unit)target).Spells;
-            foreach (Spell spell in charSpells)
+            if (target is Character)
             {
-                if (spell.SpellLine.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
+                var charSpells = ((Character)target).PlayerSpells;
+                foreach (Spell spell in charSpells)
                 {
-                    SpellHandler.SendClearCoolDown((Character)target, spell.SpellId);
+                    if (spell.SpellLine.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
+                    {
+                        charSpells.ClearCooldown(spell);
+                    }
                 }
             }
         }

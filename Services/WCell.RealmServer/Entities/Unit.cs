@@ -1734,7 +1734,7 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					NPCFlags ^= NPCFlags.Gossip;
+					NPCFlags &= ~NPCFlags.Gossip;
 				}
 			}
 		}

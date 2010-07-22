@@ -236,7 +236,7 @@ namespace WCell.RealmServer.Gossips
 				}
 				else
 				{
-					entry.NPCFlags ^= NPCFlags.Gossip;
+					entry.NPCFlags &= ~NPCFlags.Gossip;
 				}
 			}
 		}
