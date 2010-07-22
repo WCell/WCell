@@ -35,6 +35,11 @@ namespace WCell.RealmServer.Factions
 			set;
 		}
 
+		bool IsInWorld
+		{
+			get;
+		}
+
 		/// <summary>
 		/// Indicates whether the 2 objects have a good relationship
 		/// </summary>

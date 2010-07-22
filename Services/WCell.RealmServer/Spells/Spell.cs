@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// whether this is an ability involving any kind of weapon-attack
 		/// </summary>
-		public bool IsWeaponAbility;
+		public bool IsPhysicalAbility;
 
 		/// <summary>
 		/// Whether this can trigger an instant Strike
@@ -568,7 +568,7 @@ namespace WCell.RealmServer.Spells
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
-			IsWeaponAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
+			IsPhysicalAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
 
 			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 
@@ -593,7 +593,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-				(IsWeaponAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+				(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -703,6 +703,9 @@ namespace WCell.RealmServer.Spells
 
 			HasModifierEffects = HasModifierEffects ||
 				HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+
+			// cannot taunt players
+			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
 
 			ForeachEffect(effect =>
 			{

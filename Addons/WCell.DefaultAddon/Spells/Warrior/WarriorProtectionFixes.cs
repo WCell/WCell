@@ -148,7 +148,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 					var dmg = (action.Blocked * EffectValue + 50) / 100;
 					action.Victim.AddMessage(() =>
 					{
-						if (action.Attacker.IsInWorld && action.Victim.MayAttack(action.Attacker))
+						if (action.Victim.MayAttack(action.Attacker))
 						{
 							// TODO: Add mods to damage?
 							action.Attacker.DoSpellDamage(action.Victim, SpellEffect, dmg);

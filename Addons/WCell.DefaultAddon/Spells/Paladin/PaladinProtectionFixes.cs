@@ -9,6 +9,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Paladin
 {
@@ -79,6 +80,43 @@ namespace WCell.Addons.Default.Spells.Paladin
 				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.GetEffect(AuraType.ProcTriggerSpell).AddToAffectMask(SpellLineId.PaladinProtectionAvengersShield);
 			});
+
+			// Shield of Righteousness "causing Holy damage based on your block value plus an additional $s1"
+			SpellLineId.PaladinShieldOfRighteousness.Apply(spell =>
+			{
+				var dmgEffect = spell.GetEffect(SpellEffectType.SchoolDamage);
+				dmgEffect.SpellEffectHandlerCreator = (cast, effct) => new ShieldOfRighteousnessHandler(cast, effct);
+			});
+
+			// Righteous Defense should be "commanding up to 3 enemies attacking the target to attack the Paladin instead."
+			SpellLineId.PaladinRighteousDefense.Apply(spell =>
+			{
+				// trigger uses a server-side spell to taunt 3 guys around the target
+				var triggerEffect = spell.GetEffect(SpellEffectType.TriggerSpell);
+
+				// create spell, give it 3 targets
+				var triggerSpell = SpellHandler.AddCustomSpell((uint)triggerEffect.TriggerSpellId, "Righteous Defense Trigger");
+				triggerSpell.MaxTargets = 3;
+
+				// add taunt effect
+				var tauntEff = triggerSpell.AddAuraEffect(AuraType.ModTaunt);
+				tauntEff.ImplicitTargetA = ImplicitTargetType.AllEnemiesInArea;
+				tauntEff.Radius = 5;
+			});
+
+			// Hand of reckoning also deals 1 + 0.5 * AP damage
+			SpellLineId.PaladinHandOfReckoning.Apply(spell =>
+			{
+				var dmgEffect = spell.AddEffect(SpellEffectType.SchoolDamage);
+				dmgEffect.ImplicitTargetA = spell.Effects[0].ImplicitTargetA;
+				dmgEffect.APValueFactor = 0.5f;
+			});
+
+			// Hammer of Justice also interrupts spell casting
+			SpellLineId.PaladinHammerOfJustice.Apply(spell =>
+			{
+				spell.AddTriggerSpellEffect(SpellId.InterruptRank1, ImplicitTargetType.SingleEnemy);
+			});
 		}
 	}
 
@@ -92,6 +130,24 @@ namespace WCell.Addons.Default.Spells.Paladin
 				var value = (haction.Value * EffectValue + 50) / 100;
 				Owner.Energize(action.Attacker, value, SpellEffect);
 			}
+		}
+	}
+
+	public class ShieldOfRighteousnessHandler : SchoolDamageEffectHandler
+	{
+		public ShieldOfRighteousnessHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var dmg = CalcEffectValue();
+			if (m_cast.CasterUnit is Character)
+			{
+				dmg += (int)m_cast.CasterChar.BlockValue;
+			}
+			((Unit)target).DoSpellDamage((Unit)m_cast.Caster, Effect, dmg);
 		}
 	}
 }

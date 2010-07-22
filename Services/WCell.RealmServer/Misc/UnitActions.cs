@@ -297,7 +297,7 @@ namespace WCell.RealmServer.Misc
 			get
 			{
 				return Weapon != null &&
-					   (SpellEffect == null || SpellEffect.Spell.IsWeaponAbility);
+					   (SpellEffect == null || SpellEffect.Spell.IsPhysicalAbility);
 			}
 		}
 
@@ -636,13 +636,18 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeCritical()
 		{
-			Damage = Attacker.CalcCritDamage(Damage, Victim, SpellEffect).RoundInt();
+			IsCritical = Victim.StandState == StandState.Stand;
+			SetCriticalDamage();
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Resist_1 | HitFlags.Resist_2 | HitFlags.CriticalStrike;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
 			// Automatic double damage against sitting target - but doesn't proc crit abilities
-			IsCritical = Victim.StandState == StandState.Stand;
 			DoStrike();
+		}
+
+		public void SetCriticalDamage()
+		{
+			Damage = Attacker.CalcCritDamage(Damage, Victim, SpellEffect).RoundInt();
 		}
 
 		public void StrikeGlancing()
@@ -673,7 +678,6 @@ namespace WCell.RealmServer.Misc
 			{
 				var level = Attacker.Level;
 				var res = Victim.GetResistance(UsedSchool) - Attacker.GetTargetResistanceMod(UsedSchool);
-
 
 				if (res > 0)
 				{

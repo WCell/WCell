@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var unit = (Unit)target;
-			unit.Heal(m_cast.Caster, unit.MaxHealth - unit.Health, Effect);
+			unit.Heal(m_cast.Caster, m_cast.CasterUnit.MaxHealth, Effect);
 		}
 
 		public override ObjectTypes TargetType

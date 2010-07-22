@@ -31,6 +31,5 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			m_aura.Auras.Owner.DecDmgImmunityCount(m_spellEffect.MiscBitSet);
 		}
-
 	}
 };

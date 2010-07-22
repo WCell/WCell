@@ -7,6 +7,9 @@
     <Item Key="Addon">
       <Value>Addon</Value>
     </Item>
+    <Item Key="Custom">
+      <Value>Custom</Value>
+    </Item>
     <Item Key="Library">
       <Value>Library</Value>
     </Item>

@@ -36,15 +36,12 @@ namespace WCell.RealmServer.Spells.Effects
 				throw new Exception("Invalid DispelType None in Spell: " + Effect.Spell);
 			}
 
-		    ((Unit) target).Auras.RemoveWhere(aura => aura.Spell.DispelType == dispelType);
+		    ((Unit) target).Auras.RemoveWhere(aura => aura.Spell.DispelType == dispelType, CalcEffectValue());
 		}
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

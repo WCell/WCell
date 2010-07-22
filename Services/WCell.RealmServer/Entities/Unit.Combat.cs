@@ -535,6 +535,7 @@ namespace WCell.RealmServer.Entities
 					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
 					action.IsCritical = true;
+					action.SetCriticalDamage();
 				}
 				else
 				{
@@ -543,11 +544,6 @@ namespace WCell.RealmServer.Entities
 
 				AddDefenseMods(action);
 				attacker.AddAttackMods(action);
-
-				if (action.IsCritical)
-				{
-					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
-				}
 			}
 
 

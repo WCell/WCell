@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Entities
 		[Initialization(InitializationPass.Tenth)]
 		public static void InitSpeeds()
 		{
-			
+
 		}
 
 		public static readonly int MechanicCount = (int)Convert.ChangeType(Utility.GetMaxEnum<SpellMechanic>(), typeof(int)) + 1;
@@ -104,6 +104,7 @@ namespace WCell.RealmServer.Entities
 		// mod counters
 		protected uint m_flying, m_waterWalk, m_hovering, m_featherFalling;
 		protected int m_stealthed;
+		private int m_Pacified;
 
 		protected int[] m_mechanics;
 		protected int[] m_mechanicImmunities;
@@ -136,7 +137,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected bool m_canMove;
 
-		protected bool m_canInteract, m_canHarm, m_canCastSpells, m_evades;
+		protected bool m_canInteract, m_canHarm, m_canCastSpells, m_evades, m_canDoPhysicalActivity;
 
 		protected float m_speedFactor, m_swimFactor, m_flightFactor, m_mountMod;
 
@@ -158,13 +159,37 @@ namespace WCell.RealmServer.Entities
 
 		#region SpellMechanic Types
 		/// <summary>
-		/// Whether the Unit is allowed to cast spells
+		/// Whether the Unit is allowed to cast spells that are not physical abilities
 		/// </summary>
 		public bool CanCastSpells
 		{
-			get
+			get { return m_canCastSpells; }
+		}
+
+		/// <summary>
+		/// Wheter the Unit is allowed to attack and use physical abilities
+		/// </summary>
+		public bool CanDoPhysicalActivity
+		{
+			get { return m_canDoPhysicalActivity; }
+			private set
 			{
-				return m_canCastSpells;
+				if (m_canDoPhysicalActivity != value) return;
+
+				m_canDoPhysicalActivity = value;
+				if (value)
+				{
+					// disable physical abilities
+					IsFighting = false;
+					if (m_spellCast != null && m_spellCast.IsCasting && m_spellCast.Spell.IsPhysicalAbility)
+					{
+						m_spellCast.Cancel(SpellFailedReason.Pacified);
+					}
+				}
+				else
+				{
+					// enable physical abilities
+				}
 			}
 		}
 
@@ -230,10 +255,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public override bool CanDoHarm
 		{
-			get
-			{
-				return m_canHarm && base.CanDoHarm;
-			}
+			get { return m_canHarm && base.CanDoHarm; }
 		}
 
 		/// <summary>
@@ -298,6 +320,30 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Pacified units cannot attack or use physical abilities
+		/// </summary>
+		public int Pacified
+		{
+			get { return m_Pacified; }
+			set
+			{
+				if (m_Pacified == value) return;
+				if (value <= 0 && m_Pacified > 0)
+				{
+					// disable pacify
+					UnitFlags &= ~UnitFlags.Pacified;
+				}
+				else if (value > 0)
+				{
+					// enable pacify
+					UnitFlags |= UnitFlags.Pacified;
+				}
+				m_Pacified = value;
+				SetCanHarmState();
+			}
+		}
+
+		/// <summary>
 		/// Return whether the given Mechanic applies to the Unit
 		/// </summary>
 		public bool IsUnderInfluenceOf(SpellMechanic mechanic)
@@ -307,21 +353,6 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 			return m_mechanics[(int)mechanic] > 0;
-		}
-
-		/// <summary>
-		/// Checks whether any of the mechanics of the given set are influencing the owner
-		/// </summary>
-		bool IsAnySetNoCheck(bool[] set)
-		{
-			for (int i = 1; i < set.Length; i++)
-			{
-				if (set[i] && m_mechanics[i] > 0)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
@@ -356,7 +387,7 @@ namespace WCell.RealmServer.Entities
 						MovementHandler.SendRooted((Character)this, 1);
 					}
 					//UnitFlags |= UnitFlags.Influenced;
-                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
+					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnStunned))
 					{
 						SpellCast.Cancel();
 					}
@@ -370,24 +401,24 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// harmfulnes
-				if (m_canHarm && SpellConstants.HarmMechanics[(int)mechanic])
+				if (m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 				{
-					m_canHarm = false;
-					if (IsUsingSpell && SpellCast.Spell.HasHarmfulEffects)
-					{
-						SpellCast.Cancel();
-					}
+					SetCanHarmState();
 				}
 
 				// check if we can still cast spells
-				if (m_canCastSpells && SpellConstants.SpellMechanics[(int)mechanic])
+				if (m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic])
 				{
 					// check if we can still cast spells
 					m_canCastSpells = false;
-					UnitFlags |= UnitFlags.Silenced;
-                    if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
+					if (IsUsingSpell && SpellCast.Spell.InterruptFlags.HasFlag(InterruptFlags.OnSilence))
 					{
 						SpellCast.Cancel();
+					}
+					if (!m_canDoPhysicalActivity && m_canHarm)
+					{
+						// no spells and no physical activities -> No harm
+						SetCanHarmState();
 					}
 				}
 
@@ -401,8 +432,8 @@ namespace WCell.RealmServer.Entities
 						SpeedFactor += MountSpeedMod;
 						m_auras.RemoveByFlag(AuraInterruptFlags.OnMount);
 						break;
-					case SpellMechanic.Slowed:
-						UnitFlags |= UnitFlags.Pacified;
+					case SpellMechanic.Silenced:
+						UnitFlags |= UnitFlags.Silenced;
 						break;
 					case SpellMechanic.Fleeing:
 						UnitFlags |= UnitFlags.Feared;
@@ -459,15 +490,20 @@ namespace WCell.RealmServer.Entities
 						//UnitFlags &= ~UnitFlags.UnInteractable;
 					}
 
-					if (!m_canHarm && SpellConstants.HarmMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.HarmMechanics))
+					if (!m_canHarm && SpellConstants.HarmPreventionMechanics[(int)mechanic])
 					{
-						m_canHarm = true;
+						SetCanHarmState();
 					}
 
-					if (!m_canCastSpells && SpellConstants.SpellMechanics[(int)mechanic] && !IsAnySetNoCheck(SpellConstants.SpellMechanics))
+					if (!m_canCastSpells && SpellConstants.SpellCastPreventionMechanics[(int)mechanic] &&
+						!IsAnySetNoCheck(SpellConstants.SpellCastPreventionMechanics))
 					{
 						m_canCastSpells = true;
-						UnitFlags &= ~UnitFlags.Silenced;
+						if (!m_canDoPhysicalActivity && !m_canHarm)
+						{
+							// can do spells and no physical activities -> Can harm
+							SetCanHarmState();
+						}
 					}
 
 					switch (mechanic)
@@ -479,8 +515,8 @@ namespace WCell.RealmServer.Entities
 							UnitFlags &= ~UnitFlags.Mounted;
 							SpeedFactor -= MountSpeedMod;
 							break;
-						case SpellMechanic.Slowed:
-							UnitFlags &= ~UnitFlags.Pacified;
+						case SpellMechanic.Silenced:
+							UnitFlags &= ~UnitFlags.Silenced;
 							break;
 						case SpellMechanic.Fleeing:
 							UnitFlags &= ~UnitFlags.Feared;
@@ -498,6 +534,36 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+		/// <summary>
+		/// Checks whether any of the mechanics of the given set are influencing the owner
+		/// </summary>
+		private bool IsAnySetNoCheck(bool[] set)
+		{
+			for (var i = 0; i < set.Length; i++)
+			{
+				if (set[i] && m_mechanics[i] > 0)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		private void SetCanHarmState()
+		{
+			if (!IsAnySetNoCheck(SpellConstants.HarmPreventionMechanics))
+			{
+				CanDoPhysicalActivity = m_Pacified <= 0;
+				m_canHarm = m_canDoPhysicalActivity || !IsUnderInfluenceOf(SpellMechanic.Silenced);
+			}
+			else
+			{
+				CanDoPhysicalActivity = false;
+				m_canHarm = false;
+			}
+		}
+
 		#endregion
 
 		#region Immunities
@@ -599,7 +665,7 @@ namespace WCell.RealmServer.Entities
 			Auras.RemoveWhere(aura =>
 				aura.Spell.AuraUID != effect.Spell.AuraUID &&
 				aura.Spell.SchoolMask.HasAnyFlag(effect.Spell.SchoolMask) &&
-                !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
+				!aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability));
 		}
 
 		/// <summary>
@@ -644,7 +710,7 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
-                    ((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
+					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
 			m_mechanicImmunities[(int)mechanic]++;
@@ -761,7 +827,7 @@ namespace WCell.RealmServer.Entities
 			}
 			if (m_DamageAction != null)
 			{
-                if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+				if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
 					return 0;
 			}
 			var absorb = 0;
@@ -1170,7 +1236,7 @@ namespace WCell.RealmServer.Entities
 		#region Spell Avoidance
 		public int GetAttackerSpellHitChanceMod(DamageSchool school)
 		{
-			return m_attackerSpellHitChance != null ? m_attackerSpellHitChance[(int) school] : 0;
+			return m_attackerSpellHitChance != null ? m_attackerSpellHitChance[(int)school] : 0;
 		}
 
 		/// <summary>
@@ -1893,7 +1959,7 @@ namespace WCell.RealmServer.Entities
 			m_mountMod = 0;
 
 			m_flying = m_waterWalk = m_hovering = m_featherFalling = 0;
-			m_canMove = m_canHarm = m_canInteract = m_canCastSpells = true;
+			m_canMove = m_canHarm = m_canInteract = m_canCastSpells = m_canDoPhysicalActivity = true;
 
 			m_walkSpeed = DefaultWalkSpeed;
 			m_walkBackSpeed = DefaultWalkBackSpeed;

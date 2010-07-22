@@ -15,12 +15,46 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Fleeing);
+			Owner.Pacified++;
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Fleeing);
+			Owner.Pacified--;
+		}
+	}
+
+	/// <summary>
+	/// Prevents carrier from attacking or using "physical abilities"
+	/// </summary>
+	public class ModSilenceHandler : AuraEffectHandler
+	{
+		protected internal override void Apply()
+		{
+			Owner.IncMechanicCount(SpellMechanic.Silenced);
+		}
+
+		protected internal override void Remove(bool cancelled)
+		{
+			Owner.DecMechanicCount(SpellMechanic.Silenced);
+		}
+	}
+
+	/// <summary>
+	/// Prevents carrier from attacking or using "physical abilities"
+	/// </summary>
+	public class ModPacifySilenceHandler : AuraEffectHandler
+	{
+		protected internal override void Apply()
+		{
+			Owner.Pacified++;
+			Owner.IncMechanicCount(SpellMechanic.Silenced);
+		}
+
+		protected internal override void Remove(bool cancelled)
+		{
+			Owner.Pacified--;
+			Owner.DecMechanicCount(SpellMechanic.Silenced);
 		}
 	}
 }

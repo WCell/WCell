@@ -85,22 +85,22 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Not while silenced		
-			else if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
-					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+			else if (!caster.CanCastSpells &&
+					(!IsPhysicalAbility ||
+					(InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
+					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))))
 			{
 				return SpellFailedReason.Silenced;
 			}
-			else if (!caster.CanDoHarm && HasHarmfulEffects)
+			// cannot use physical ability or not do harm at all
+			else if ((!caster.CanDoPhysicalActivity && IsPhysicalAbility) ||
+					(!caster.CanDoHarm && HasHarmfulEffects))
 			{
 				return SpellFailedReason.Pacified;
 			}
 			else if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 			{
 				return SpellFailedReason.Stunned;
-			}
-			else if (!caster.CanCastSpells)
-			{
-				return SpellFailedReason.Interrupted;
 			}
 			// Combo points			
 			else if (IsFinishingMove && caster.ComboPoints == 0)
@@ -329,6 +329,10 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason CheckValidTarget(WorldObject caster, WorldObject target)
 		{
+			if (AttributesEx.HasAnyFlag(SpellAttributesEx.CannotTargetSelf) && target == caster)
+			{
+				return SpellFailedReason.NoValidTargets;
+			}
 			if (target is Unit)
 			{
 				// AuraState
@@ -403,13 +407,13 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
-			{
-				if (target is Unit && ((Unit)target).IsInCombat)
-				{
-					return SpellFailedReason.TargetAffectingCombat;
-				}
-			}
+			//if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
+			//{
+			//    if (target is Unit && ((Unit)target).IsInCombat)
+			//    {
+			//        return SpellFailedReason.TargetAffectingCombat;
+			//    }
+			//}
 
 			if (Range.MinDist > 0 &&
 				//caster.IsInRadius(target, caster.GetSpellMinRange(Range.MinDist, target)))

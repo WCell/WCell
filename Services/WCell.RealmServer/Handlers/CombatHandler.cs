@@ -13,12 +13,13 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleAttackSwing(IRealmClient client, RealmPacketIn packet)
 		{
 			var chr = client.ActiveCharacter;
-			if (chr.CanDoHarm)
+			if (chr.CanDoPhysicalActivity)
 			{
 				var targetId = packet.ReadEntityId();
 				var target = chr.Region.GetObject(targetId) as Unit;
 
-				if (target != null && chr.CanHarm(target) &&
+				if (target != null && 
+					chr.CanHarm(target) &&
 					chr.CanSee(target))
 				{
 					chr.Target = target;

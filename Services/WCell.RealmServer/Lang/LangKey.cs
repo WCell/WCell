@@ -12,6 +12,7 @@ namespace WCell.RealmServer.Lang
 	{
 		None = 0,
 		Done,
+		Custom,
 		Addon,
 		Library,
 		PlayerNotOnline,

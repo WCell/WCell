@@ -192,7 +192,10 @@ namespace WCell.Constants.Spells
 		/// Unused
 		/// </summary>
 		Unused_Effect_139 = 139, // Clear Quest
-		Effect_140 = 140, // Spawn GameObject? 
+		/// <summary>
+		/// Weird name, from wowhead
+		/// </summary>
+		TriggerSpellFromTargetWithCasterAsTarget = 140,
 		Effect_141 = 141, // Damage and Reduced Speed (Blood Bolt)
 		/// <summary>
 		/// Deals with branching targets

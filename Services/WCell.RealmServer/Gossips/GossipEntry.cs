@@ -95,7 +95,7 @@ namespace WCell.RealmServer.Gossips
 		public GossipEntry()
 		{
 		}
-
+		
 		public GossipEntry(uint id, string text)
 		{
 			GossipId = id;

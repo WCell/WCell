@@ -1,9 +1,3 @@
-- to test: PaladinSecondarySkillGiftOfTheNaaruRacial & more
-- fixed ModHealingDonePct / vendors & trainers (broken due to HasFlag) / LocalizedGossipMenuItem to accept a LangKey as input -> Example:
-						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
-												{
-																			menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, LangKey.GossipOptionTrainer, convo =>
-																										{
-																																		((NPC)convo.Speaker).TalkToTrainer(convo.Character);
-																																									}));
-																																															}
+- implemented DamageShield, CritCreatureMaskHandler, pacify & silence & more
+- to test: PaladinRetributionAura, PaladinExorcism, PaladinLayOnHands, PaladinShieldOfRighteousness, PaladinRighteousDefense, PaladinDivineIntervention
+- fixed ModSpellPowerByAPPctHandler (caused exceptions) / NoInitialAggro - check (seems useless now, probably changed)

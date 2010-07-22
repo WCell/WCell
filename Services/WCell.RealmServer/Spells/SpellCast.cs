@@ -1224,7 +1224,7 @@ namespace WCell.RealmServer.Spells
 			if (Caster is Unit)
 			{
 				var pct = ((Unit)Caster).GetSpellInterruptProt(m_spell);
-				if (pct > 100)
+				if (pct >= 100)
 				{
 					return 0;
 				}

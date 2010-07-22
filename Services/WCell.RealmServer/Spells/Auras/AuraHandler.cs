@@ -172,7 +172,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Charm] = () => new CharmAuraHandler();
 			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();
 			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
-			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifyHandler();
+			EffectHandlers[(int)AuraType.ModSilence] = () => new ModSilenceHandler();
+			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifySilenceHandler();
 			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfStat] = () => new ModSpellDamageByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.ModSpellHealingByPercentOfStat] = () => new ModHealingByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
@@ -196,7 +197,9 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModSpellPowerByAPPct] = () => new ModSpellPowerByAPPctHandler();
 			EffectHandlers[(int)AuraType.ModSpellHitChance] = () => new ModSpellHitChanceHandler();
 			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();
-			
+			EffectHandlers[(int)AuraType.DamageShield] = () => new DamageShieldEffectHandler();
+			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();
+
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
 			{
@@ -319,7 +322,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)
 		{
-			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0 )
+			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0)
 			{
 				throw new InvalidOperationException("Cannot set an Aura Group Evaluator at runtime because Aura Group IDs cannot be re-evaluated at this time. " +
 					"Please register the evaluator during startup.");
