@@ -10,20 +10,52 @@ namespace WCell.RealmServer.Spells.Auras
 	public class PlayerAuraCollection : AuraCollection
 	{
 		/// <summary>
-		/// Set of Auras that are only applied under certain circumstances
+		/// Set of Auras that are only applied when certain items are equipped
 		/// </summary>
-		public List<Aura> ItemRestrictedAuras = new List<Aura>(3);
+		List<Aura> itemRestrictedAuras;
+
+		/// <summary>
+		/// Set of Auras that are only applied in certain shapeshift forms
+		/// </summary>
+		List<Aura> shapeshiftRestrictedAuras;
 
 		public PlayerAuraCollection(Character owner) : base(owner)
 		{
 		}
 
+		List<Aura> ItemRestrictedAuras
+		{
+			get
+			{
+				if (itemRestrictedAuras == null)
+				{
+					itemRestrictedAuras = new List<Aura>(3);
+				}
+				return itemRestrictedAuras;
+			}
+		}
+
+		List<Aura> ShapeshiftRestrictedAuras
+		{
+			get
+			{
+				if (shapeshiftRestrictedAuras == null)
+				{
+					shapeshiftRestrictedAuras = new List<Aura>(3);
+				}
+				return shapeshiftRestrictedAuras;
+			}
+		}
+
 		public override void AddAura(Aura aura, bool update)
 		{
 			base.AddAura(aura, update);
-			if (aura.Spell.IsPassive && aura.Spell.HasItemRequirements)
+			if (aura.Spell.IsPassive)
 			{
-				ItemRestrictedAuras.Add(aura);
+				if (aura.Spell.HasItemRequirements)
+				{
+					ItemRestrictedAuras.Add(aura);
+				}
 			}
 		}
 

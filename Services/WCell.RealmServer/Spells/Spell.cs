@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Spells
 		public static readonly Spell[] EmptyArray = new Spell[0];
 
 		[NotVariable]
-		public static bool ForceEffectLookup = false;
+		public static bool ForceDataPresense = false;
 
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
@@ -824,7 +824,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
-			return GetEffect(type, ForceEffectLookup);
+			return GetEffect(type, ForceDataPresense);
 		}
 
 		/// <summary>

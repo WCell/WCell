@@ -18,7 +18,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				// copy AffectMask from proc effect, which has it all set correctly
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				var triggerSpellEffect = effect.TriggerSpell.GetEffect(AuraType.ModCastingSpeed);
+				var triggerSpellEffect = effect.GetTriggerSpell().GetEffect(AuraType.ModCastingSpeed);
 				effect.AffectMask = triggerSpellEffect.AffectMask;
 			});
 		}

@@ -538,22 +538,20 @@ namespace WCell.RealmServer.Spells.Auras
 
 		internal void EvalActive(Item item, bool equip)
 		{
-			if (m_spell.IsPassive && m_spell.HasItemRequirements)
+			// is only called for Characters
+			var plr = (Character) m_auras.Owner;
+			if (equip && !m_IsActive)
 			{
-				// is only called for Characters
-				var plr = (Character)m_auras.Owner;
-				if (equip && !m_IsActive)
-				{
-					// check if new item satisfys conditions
-					IsActive = Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
-				}
-				else if (!equip && m_IsActive)
-				{
-					// check if the conditions are still met
-					IsActive = m_spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
-				}
+				// check if new item satisfys conditions
+				IsActive = Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
+			}
+			else if (!equip && m_IsActive)
+			{
+				// check if the conditions are still met
+				IsActive = m_spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
 			}
 		}
+
 		#endregion
 
 		#region Apply & Stack

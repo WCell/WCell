@@ -43,7 +43,7 @@ namespace WCell.RealmServerConsole
         	}
         	Thread.CurrentThread.IsBackground = true;
 
-			Spell.ForceEffectLookup = true;
+			Spell.ForceDataPresense = true;
         	RealmServer.Program.Start();
         	RealmServerConsole.Run();
         }

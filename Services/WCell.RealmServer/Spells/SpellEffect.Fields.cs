@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
@@ -86,9 +87,23 @@ namespace WCell.RealmServer.Spells
 
 		public int MiscValueB;
 
+		/// <summary>
+		/// Not set during InitializationPass 2, so 
+		/// for fixing things, use GetTriggerSpell() instead.
+		/// </summary>
 		[NotPersistent]
 		public Spell TriggerSpell;
 		public SpellId TriggerSpellId;
+
+		public Spell GetTriggerSpell()
+		{
+			var spell = SpellHandler.Get(TriggerSpellId);
+			if (spell == null && Spell.ForceDataPresense)
+			{
+				throw new ContentException("Spell {0} does not have a valid TriggerSpellId: {1}", this, TriggerSpellId);
+			}
+			return spell;
+		}
 
 		/// <summary>
 		/// 
