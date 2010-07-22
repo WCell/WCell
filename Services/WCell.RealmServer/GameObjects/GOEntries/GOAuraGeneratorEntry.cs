@@ -24,13 +24,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 					return false;
 				}
 			}
-			set { Fields[ 0 ] = ( value ? 1u : 0u ); }
+			set { Fields[ 0 ] = ( value ? 1 : 0 ); }
     	}
 
 		/// <summary>
 		/// Area of effect (?)
 		/// </summary>
-    	public uint Radius
+    	public int Radius
     	{
     		get { return Fields[ 1 ]; }
 			set { Fields[ 1 ] = value;}
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-    	public uint ConditionId1
+    	public int ConditionId1
     	{
     		get { return Fields[ 3 ]; }
 			set { Fields[ 3 ] = value;}
@@ -64,7 +64,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-    	public uint ConditionId2
+    	public int ConditionId2
     	{
 			get { return Fields[ 5 ]; }
 			set { Fields[ 5 ] = value; }
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 					return false;
 				}
 			}
-			set { Fields[ 6 ] = ( value ? 1u : 0u ); }
+			set { Fields[ 6 ] = ( value ? 1 : 0 ); }
     	}
 	}
 }

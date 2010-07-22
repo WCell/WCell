@@ -12,7 +12,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Id for an Event that is triggered upon activating this object (?)
 		/// </summary>
-    	public uint EventId
+    	public int EventId
     	{
     		get { return Fields[ 1 ]; }
     	}
@@ -36,14 +36,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Id for a text object that is displayed when activating this object (?)
 		/// </summary>
-    	public override uint OpenTextId
+    	public override int OpenTextId
     	{
             get { return Fields[4]; }
     	}
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
 		}
 	}
 }

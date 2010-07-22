@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The minimum level a character must be to activate this object.
 	    /// </summary>
-	    public uint MinLevel
+	    public int MinLevel
 	    {
             get { return Fields[0]; }
 	    }
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The maximum level a character can be to activate this object.
 	    /// </summary>
-	    public uint MaxLevel
+	    public int MaxLevel
 	    {
             get { return Fields[1]; }
 	    }

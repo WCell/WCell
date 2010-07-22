@@ -143,11 +143,11 @@ namespace WCell.Addons.Default.Spells.Paladin
 		protected override void Apply(WorldObject target)
 		{
 			var dmg = CalcEffectValue();
-			if (m_cast.CasterUnit is Character)
+			if (m_cast.CasterChar != null)
 			{
 				dmg += (int)m_cast.CasterChar.BlockValue;
 			}
-			((Unit)target).DoSpellDamage((Unit)m_cast.Caster, Effect, dmg);
+			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
 		}
 	}
 }

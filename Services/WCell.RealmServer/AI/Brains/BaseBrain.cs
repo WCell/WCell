@@ -360,7 +360,7 @@ namespace WCell.RealmServer.AI.Brains
 				return false;
 			}
 
-			if (m_owner.CanDoHarm)
+			if (!m_owner.CanDoHarm)
 			{
 				return false;
 			}

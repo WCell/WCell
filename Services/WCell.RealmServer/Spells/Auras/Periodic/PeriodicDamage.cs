@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			var holder = m_aura.Auras.Owner;
+			var holder = Owner;
 			if (holder.IsAlive)
 			{
 				var value = EffectValue;
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					value = ((value*bonus) + 50)/100;
 				}
 
-				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, value);
+				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value);
 			}
 		}
 

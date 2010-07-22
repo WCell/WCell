@@ -53,7 +53,17 @@ namespace WCell.Core.Addons
 		{
 			if (m_addon == null)
 			{
-				foreach (var type in m_assembly.GetTypes())
+				Type[] types;
+				try
+				{
+					types = m_assembly.GetTypes();
+				}
+				catch (Exception e)
+				{
+					throw new Exception(string.Format("Unable to load Addon {0} - " +
+						"please make sure that it and it's dependencies were built against the current build and all it's dependencies are available.", this), e);
+				}
+				foreach (var type in types)
 				{
 					var interfaces = type.GetInterfaces();
 					if (interfaces.Contains(typeof(IWCellAddon)))
@@ -76,9 +86,9 @@ namespace WCell.Core.Addons
 		{
 			if (m_addon == null)
 			{
-				return "AddonContext for " + m_assembly.FullName;
+				return m_assembly.FullName;
 			}
-			return "AddonContext for " + m_addon.GetDefaultDescription();
+			return m_addon.GetDefaultDescription();
 		}
 	}
 }

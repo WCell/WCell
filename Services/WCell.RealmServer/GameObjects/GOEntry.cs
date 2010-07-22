@@ -100,7 +100,7 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		[Persistent(GOConstants.EntryFieldCount)]
-		public uint[] Fields = new uint[GOConstants.EntryFieldCount];
+		public int[] Fields = new int[GOConstants.EntryFieldCount];
 
 		/// <summary>
 		/// All Templates that use this GOEntry

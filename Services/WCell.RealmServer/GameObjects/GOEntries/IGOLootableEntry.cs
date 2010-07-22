@@ -15,11 +15,11 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Minimum number of consecutive times this object can be opened.
 		/// </summary>
-		uint MinRestock { get; set; }
+		int MinRestock { get; set; }
 
 		/// <summary>
 		/// Maximum number of consecutive times this object can be opened.
 		/// </summary>
-		uint MaxRestock { get; set; }
+		int MaxRestock { get; set; }
 	}
 }

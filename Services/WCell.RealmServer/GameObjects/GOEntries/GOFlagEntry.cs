@@ -20,7 +20,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
-        public uint LockId
+        public int LockId
         {
             get { return Fields[0]; }
         }
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get;
         }
 
-        public abstract uint OpenTextId
+        public abstract int OpenTextId
         { 
             get;
         }

@@ -270,9 +270,9 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// The actual Caster (returns null if caster went offline)
 		/// </summary>
-		public WorldObject Caster
+		public Unit Caster
 		{
-			get { return m_casterInfo.Caster; }
+			get { return m_casterInfo.CasterUnit; }
 		}
 
 		public Unit Owner

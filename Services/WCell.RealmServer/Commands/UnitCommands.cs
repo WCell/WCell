@@ -34,15 +34,7 @@ namespace WCell.RealmServer.Commands
 			}
 
 			SpellHandler.SendVisual(target, SpellId.Lightning);
-			if (target is NPC)
-			{
-				var npc = (NPC)target;
-				if (npc.FirstAttacker == null)
-				{
-					npc.FirstAttacker = trigger.Args.Character;
-				}
-			}
-			target.Kill();
+			target.Kill(trigger.Args.Character);
 		}
 
 		public override bool NeedsCharacter

@@ -168,7 +168,7 @@ namespace WCell.Tools.Domi.Output
 					field.Name != "Id" && field.Name != "GOId")
 				{
 					var val = field.GetValue(entry);
-					if (val == null)
+					if (val == null || val is Delegate)
 					{
 						continue;
 					}

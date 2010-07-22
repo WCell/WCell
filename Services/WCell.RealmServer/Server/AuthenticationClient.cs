@@ -35,9 +35,6 @@ namespace WCell.RealmServer.Server
 	{
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 
-		[Variable("IPCReconnectInterval")]
-		public static int ReconnectInterval = 5;
-
 		[Variable("IPCUpdateInterval")]
 		public static int UpdateInterval = 5;
 
@@ -47,6 +44,7 @@ namespace WCell.RealmServer.Server
 		readonly object lck = new object();
 		private readonly NetTcpBinding binding;
 		private DateTime lastUpdate;
+		private bool m_warned;
 
 		/// <summary>
 		/// Initializes this Authentication Client
@@ -54,8 +52,7 @@ namespace WCell.RealmServer.Server
 		public AuthenticationClient()
 		{
 			m_IsRunning = true;
-			binding = new NetTcpBinding();
-			binding.Security.Mode = SecurityMode.None;
+			binding = new NetTcpBinding {Security = {Mode = SecurityMode.None}};
 		}
 
 		/// <summary>
@@ -96,14 +93,20 @@ namespace WCell.RealmServer.Server
             internal set;
         }
 
+		/// <summary>
+		/// Notifies the conection maintenance to be re-scheduled immediately. 
+		/// Does not wait for the reconnect attempt to start or finish.
+		/// </summary>
 		public void ForceUpdate()
 		{
 			// little trick to force an update
+			m_warned = false;
 			lastUpdate = DateTime.Now - TimeSpan.FromSeconds(UpdateInterval);
 		}
 
 		public void StartConnect(string netAddr)
 		{
+			m_warned = false;
 			m_netAddr = netAddr;
 			m_IsRunning = true;
 			if (lastUpdate == default(DateTime))
@@ -118,6 +121,11 @@ namespace WCell.RealmServer.Server
 		/// </summary>
 		protected bool Connect()
 		{
+			if (!m_warned)
+			{
+				log.Info(Resources.ConnectingToAuthServer);
+			}
+
 			RealmServer.Instance.EnsureContext();
 
 			Disconnect(true);
@@ -140,19 +148,24 @@ namespace WCell.RealmServer.Server
 			{
 				m_ClientProxy = null;
 
-				if (!(e is EndpointNotFoundException))
+				if (e is EndpointNotFoundException)
 				{
-                    LogUtil.ErrorException(e, Resources.IPCProxyFailedException, ReconnectInterval);
+					if (!m_warned)
+					{
+						log.Error(Resources.IPCProxyFailed, UpdateInterval);
+						m_warned = true;
+					}
 				}
 				else
 				{
-					log.Error(Resources.IPCProxyFailed, ReconnectInterval);
+					LogUtil.ErrorException(e, Resources.IPCProxyFailedException, UpdateInterval);
 				}
 				conn = false;
 			}
 
 			if (conn)
 			{
+				m_warned = false;
 				var evt = Connected;
 				if (evt != null)
 				{
@@ -161,7 +174,7 @@ namespace WCell.RealmServer.Server
 			}
 			else
 			{
-				Reconnect();
+				ScheduleReconnect();
 			}
 			return conn;
 		}
@@ -171,16 +184,16 @@ namespace WCell.RealmServer.Server
 			if (ex is CommunicationException)
 			{
 				// Connection got interrupted
-				log.Warn("Lost connection to AuthServer. Trying to reconnect in {0}...", ReconnectInterval);
+				log.Warn("Lost connection to AuthServer. Scheduling reconnection attempt...");
 			}
 			else
 			{
 				LogUtil.ErrorException(ex, Resources.CommunicationException);
 			}
-			Reconnect();
+			ScheduleReconnect();
 		}
 
-		protected void Reconnect()
+		protected void ScheduleReconnect()
 		{
 			Disconnect(false);
 		}
@@ -205,10 +218,9 @@ namespace WCell.RealmServer.Server
 				{
 					if (!RealmServer.Instance.IsRunning)
 					{
+						m_warned = false;
 						return;
 					}
-
-					log.Info(Resources.ResetIPCConnection);
 
 					if (Connect())
 					{

@@ -12,7 +12,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
     	/// <summary>
     	/// (ms)
     	/// </summary>
-    	public uint WhenToPause
+    	public int WhenToPause
     	{
     		get { return Fields[ 0 ]; }
     	}
@@ -20,7 +20,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-    	public uint StartOpen
+    	public int StartOpen
     	{
     		get { return Fields[ 1 ]; }
     	}
@@ -28,17 +28,17 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// ???
 		/// </summary>
-    	public uint AutoClose
+    	public int AutoClose
     	{
 			get { return Fields[ 2 ]; }
     	}
 
-        public uint Pause1EventId
+        public int Pause1EventId
         {
             get { return Fields[3]; }
         }
 
-        public uint Pause2EventId
+        public int Pause2EventId
         {
             get { return Fields[4]; }
         }

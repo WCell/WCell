@@ -186,8 +186,11 @@ namespace WCell.RealmServer.Entities
 		{
 			if (action.Victim is NPC && m_dmgBonusVsCreatureTypePct != null)
 			{
-				var bonus = m_dmgBonusVsCreatureTypePct[(int) ((NPC) this).Entry.Type];
-				action.Damage += (bonus*action.Damage + 50)/100;
+				var bonus = m_dmgBonusVsCreatureTypePct[(int)((NPC)action.Victim).Entry.Type];
+				if (bonus != 0)
+				{
+					action.Damage += (bonus*action.Damage + 50)/100;
+				}
 			}
 			foreach (var mod in AttackEventHandlers)
 			{

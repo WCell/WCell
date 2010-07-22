@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spells.Effects
 				value /= 1000;
 			}
 
-			((Unit)target).LeechPower(m_cast.Caster, value, Effect.RealPointsPerLevel, Effect);
+			((Unit)target).LeechPower(m_cast.CasterUnit, value, Effect.RealPointsPerLevel, Effect);
 		}
 
 		public override ObjectTypes TargetType

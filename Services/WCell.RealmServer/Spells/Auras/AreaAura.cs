@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells.Auras
 		float m_duration;
 		float m_elapsed;
 		ISpellParameters m_params;
-		private uint m_remainingCharges;
+		private int m_remainingCharges;
 
 		/// <summary>
 		/// Creates a new AreaAura that will auto-trigger the given Spell on everyone, according
@@ -252,8 +252,7 @@ namespace WCell.RealmServer.Spells.Auras
 					if (obj != m_holder &&
 						((exclMobs && obj is Character) || (!exclMobs && obj is Unit)) &&
 						((Unit)obj).IsAlive &&
-						((m_spell.HasHarmfulEffects && !obj.IsInSanctuary && m_holder.CanHarm(obj)) ||
-						(m_spell.HasBeneficialEffects && m_holder.IsAlliedWith(obj))))
+						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{
 						if (!auraEffects || !m_targets.ContainsKey((Unit)obj))
 						{

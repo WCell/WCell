@@ -9,7 +9,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Possibly whether or not this button is pressed?
         /// </summary>
-        public uint StartOpen
+        public int StartOpen
         {
             get { return Fields[0]; }
         }
@@ -17,7 +17,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
-        public uint LockId
+        public int LockId
         {
             get { return Fields[1]; }
         }
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Possibly the time delay before the door auto-closes?
         /// </summary>
-        public uint AutoClose
+        public int AutoClose
         {
             get { return Fields[2]; }
         }
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// ???
         /// </summary>
-        public uint NoDamageImmune
+        public int NoDamageImmune
         {
             get { return Fields[4]; }
         }
@@ -41,7 +41,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// ???
         /// </summary>
-        public uint Large
+        public int Large
         {
             get { return Fields[5]; }
         }
@@ -49,7 +49,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// A reference to an object holding the Text to display upon pressing the button?
         /// </summary>
-        public uint OpenTextId
+        public int OpenTextId
         {
             get { return Fields[6]; }
         }
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// A reference to an object holding the Text to display upon unpressing the button?
         /// </summary>
-        public uint CloseTextId
+        public int CloseTextId
         {
             get { return Fields[7]; }
         }
@@ -65,8 +65,8 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId); 
-			LinkedTrapId = Fields[3];
+			Lock = LockEntry.Entries.Get((uint)LockId); 
+			LinkedTrapId = (uint) Fields[3];
 			LosOk = Fields[8] == 1;
 		}
 	}

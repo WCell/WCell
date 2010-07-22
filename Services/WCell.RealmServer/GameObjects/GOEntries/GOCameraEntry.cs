@@ -9,7 +9,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
-        public uint LockId
+        public int LockId
         {
             get { return Fields[0]; }
         }
@@ -17,7 +17,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// CinematicCameraId from CinematicCamera.dbc
         /// </summary>
-        public uint CinematicCameraId
+        public int CinematicCameraId
         {
             get { return Fields[1]; }
         }
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of an Event associated with this camera (?)
         /// </summary>
-        public uint EventId
+        public int EventId
         {
             get { return Fields[2]; }
         }
@@ -33,14 +33,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of a text object associated with this camera (?)
         /// </summary>
-        public uint OpenTextId
+        public int OpenTextId
         {
             get { return Fields[3]; }
         }
 
         protected internal override void InitEntry()
         {
-            Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
         }
     }
 }

@@ -648,9 +648,10 @@ namespace WCell.RealmServer.Res {
         /// <summary>
         ///   Looks up a localized string similar to Resetting the IPC connection to the AuthServer!.
         /// </summary>
-        internal static string ResetIPCConnection {
+		internal static string ConnectingToAuthServer
+		{
             get {
-                return ResourceManager.GetString("ResetIPCConnection", resourceCulture);
+				return ResourceManager.GetString("ConnectingToAuthServer", resourceCulture);
             }
         }
         

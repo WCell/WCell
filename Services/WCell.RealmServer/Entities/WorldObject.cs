@@ -418,7 +418,7 @@ namespace WCell.RealmServer.Entities
 		/// Either this or the master as Character. 
 		/// Returns null if neither is Character.
 		/// </summary>
-		public Character PlayerMaster
+		public Character CharacterMaster
 		{
 			get
 			{
@@ -427,6 +427,22 @@ namespace WCell.RealmServer.Entities
 					return (Character)this;
 				}
 				return m_master as Character;
+			}
+		}
+
+		/// <summary>
+		/// Either this or the master as Unit. 
+		/// Returns null if neither is Unit.
+		/// </summary>
+		public Unit UnitMaster
+		{
+			get
+			{
+				if (this is Unit)
+				{
+					return (Unit)this;
+				}
+				return m_master as Unit;
 			}
 		}
 		#endregion

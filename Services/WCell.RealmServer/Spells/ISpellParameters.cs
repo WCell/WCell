@@ -4,12 +4,12 @@ namespace WCell.RealmServer.Spells
 	{
 		Spell Spell { get; }
 
-		uint MaxCharges { get; }
+		int MaxCharges { get; }
 
 		int Amplitude { get; }
 
-		uint StartDelay { get; }
-
-		uint Radius { get; }
+		int StartDelay { get; }
+		
+		int Radius { get; }
 	}
 }

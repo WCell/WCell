@@ -14,7 +14,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The TaxiPathId from TaxiPaths.dbc
 		/// </summary>
-		public uint TaxiPathId
+		public int TaxiPathId
 		{
 			get { return Fields[0]; }
 		}
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The speed this object moves at.
 		/// </summary>
-		public uint MoveSpeed
+		public int MoveSpeed
 		{
 			get { return Fields[1]; }
 		}
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The rate this object accelerates at.
 		/// </summary>
-		public uint AccelRate
+		public int AccelRate
 		{
 			get { return Fields[2]; }
 		}
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The Id of an Event to call when this object is activated (?)
 		/// </summary>
-		public uint StartEventId
+		public int StartEventId
 		{
 			get { return Fields[3]; }
 		}
@@ -46,7 +46,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The Id of an Event to call when this object is deactivated (?)
 		/// </summary>
-		public uint StopEventId
+		public int StopEventId
 		{
 			get { return Fields[4]; }
 		}
@@ -54,7 +54,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Ref to TransportPhysics.dbc
 		/// </summary>
-		public uint TransportPhysics
+		public int TransportPhysics
 		{
 			get { return Fields[5]; }
 		}
@@ -62,12 +62,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The Id of a Map this object is associated with (?)
 		/// </summary>
-		public uint MapId
+		public int MapId
 		{
 			get { return Fields[6]; }
 		}
 
-		public uint WorldState1
+		public int WorldState1
 		{
 			get { return Fields[7]; }
 		}
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		public override void FinalizeDataHolder()
 		{
-			m_path = TaxiMgr.PathsById.Get(TaxiPathId);
+			m_path = TaxiMgr.PathsById.Get((uint)TaxiPathId);
 
 			TransportEntry transportEntry;
 

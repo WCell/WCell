@@ -16,7 +16,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The LockId from Lock.dbc
 	    /// </summary>
-	    public uint LockId
+	    public int LockId
 	    {
             get { return Fields[0]; }
 	    }
@@ -24,7 +24,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of the quest required to be active in order to interact with this goober.
 	    /// </summary>
-	    public uint QuestId
+	    public int QuestId
 	    {
             get { return Fields[1]; }
 	    }
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of an Event associated with this goober (?)
 	    /// </summary>
-	    public uint EventId
+	    public int EventId
 	    {
             get { return Fields[2]; }
 	    }
@@ -41,7 +41,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The time delay before this goober auto-closes after being opened. (?)
 	    /// </summary>
-	    public uint AutoClose
+	    public int AutoClose
 	    {
             get { return Fields[3]; }
 	    }
@@ -49,7 +49,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// ???
 	    /// </summary>
-	    public uint CustomAnim
+	    public int CustomAnim
 	    {
             get { return Fields[4]; }
 	    }
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// Time between allowed interactions with this goober (?)
 	    /// </summary>
-	    public uint Cooldown
+	    public int Cooldown
 	    {
             get { return Fields[6]; }
 	    }
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of a PageText object associated with this goober.
 	    /// </summary>
-	    public uint PageId
+	    public int PageId
 	    {
             get { return Fields[7]; }
 	    }
@@ -118,7 +118,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of a text object to be displayed when opening this goober (?)
 	    /// </summary>
-	    public uint OpenTextId
+	    public int OpenTextId
 	    {
             get { return Fields[14]; }
 	    }
@@ -126,17 +126,17 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of a text object to be displayed when closing this goober (?)
 	    /// </summary>
-	    public uint CloseTextId
+	    public int CloseTextId
 	    {
             get { return Fields[15]; }
 	    }
 
-	    public uint FloatingTooltip
+	    public int FloatingTooltip
 	    {
             get { return Fields[18]; }
 	    }
 
-	    public uint GossipId
+	    public int GossipId
 	    {
             get { return Fields[19]; }
 	    }
@@ -148,12 +148,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
             Spell = SpellHandler.Get(SpellId);
 
 			IsConsumable = Fields[5] > 0;
 
-			LinkedTrapId = Fields[12];
+			LinkedTrapId = (uint) Fields[12];
 
 			LosOk = Fields[16] > 0;
 			AllowMounted = Fields[17] > 0;

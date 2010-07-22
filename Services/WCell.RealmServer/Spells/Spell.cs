@@ -36,6 +36,7 @@ using WCell.Util;
 using WCell.Util.Data;
 using System.Text.RegularExpressions;
 using WCell.Util.Graphics;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -64,6 +65,9 @@ namespace WCell.RealmServer.Spells
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
 		public static readonly Spell[] EmptyArray = new Spell[0];
+
+		[NotVariable]
+		public static bool ForceEffectLookup = false;
 
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
@@ -820,7 +824,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
-			return GetEffect(type, true);
+			return GetEffect(type, ForceEffectLookup);
 		}
 
 		/// <summary>

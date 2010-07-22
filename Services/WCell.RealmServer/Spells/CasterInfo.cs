@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public Unit CasterUnit
 		{
-			get { return m_caster as Unit; }
+			get { return m_caster != null ? m_caster.UnitMaster : null; }
 		}
 
 		//public DynamicObject CasterObject

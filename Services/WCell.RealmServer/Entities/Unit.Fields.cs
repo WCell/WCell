@@ -1255,8 +1255,22 @@ namespace WCell.RealmServer.Entities
 	    }
 
 		#region Health
+
 		public void Kill()
 		{
+			Kill(null);
+		}
+
+		public void Kill(Unit killer)
+		{
+			if (killer != null)
+			{
+				if (FirstAttacker == null)
+				{
+					FirstAttacker = killer;
+				}
+				LastKiller = killer;
+			}
 			Health = 0;
 		}
 
