@@ -83,11 +83,7 @@ namespace WCell.RealmServer.Spells.Auras
 				m_targets = new Dictionary<Unit, Aura>();
 			}
 
-			if (holder.AreaAura != null)
-			{
-				holder.AreaAura.Remove(true);
-			}
-			holder.AreaAura = this;
+			holder.AddAreaAura(this);
 		}
 
 		#region Properties
@@ -164,7 +160,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public void Remove(bool cancelled)
 		{
-			m_holder.AreaAura = null;
+			m_holder.CancelAreaAura(this);
 			m_holder = null;
 			m_remainingCharges = 0;		// make sure Remove will not be called again
 

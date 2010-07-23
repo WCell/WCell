@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.RealmServer.Lang;
 using WCell.Util.Collections;
 using NLog;
@@ -89,7 +90,7 @@ namespace WCell.RealmServer.Entities
 		protected float m_orientation;
 		protected SpellCast m_spellCast;
 
-		protected AreaAura m_areaAura;
+		protected List<AreaAura> m_areaAuras;
 
 		protected CasterInfo m_casterInfo;
 
@@ -1456,35 +1457,86 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region AreaAuras
 		/// <summary>
-		/// A currently active AreaAura or null
+		/// The set of currently active AreaAuras or null.
+		/// Do not modify the list.
 		/// </summary>
-		public AreaAura AreaAura
+		public List<AreaAura> AreaAuras
 		{
-			get
-			{
-				return m_areaAura;
-			}
-			internal set
-			{
-				if (value != m_areaAura)
-				{
-					if (value == null)
-					{
-						if (IsTrap || this is DynamicObject)
-						{
-							// remove trap when aura gets removed
-							Delete();
-						}
-						else if (this is Unit)
-						{
-							((Unit)this).Auras.Cancel(m_areaAura.Spell);
-						}
-					}
-					m_areaAura = value;
-				}
-			}
+			get { return m_areaAuras; }
 		}
+
+		public bool HasAreaAuras
+		{
+			get { return m_areaAuras != null && m_areaAuras.Count > 0; }
+		}
+
+		/// <summary>
+		/// Called when AreaAura is created
+		/// </summary>
+		internal void AddAreaAura(AreaAura aura)
+		{
+			if (m_areaAuras == null)
+			{
+				m_areaAuras = new List<AreaAura>(2);
+			}
+			m_areaAuras.Add(aura);
+		}
+
+		/// <summary>
+		/// Returns the first AreaAura of the given spell
+		/// </summary>
+		public AreaAura GetAreaAura(Spell spell)
+		{
+			if (m_areaAuras == null)
+			{
+				return null;
+			}
+			return m_areaAuras.FirstOrDefault(aura => aura.Spell == spell);
+		}
+
+		/// <summary>
+		/// Cancels the first AreaAura of the given spell
+		/// </summary>
+		/// <returns>Wheter it found & removed one</returns>
+		public bool CancelAreaAura(Spell spell)
+		{
+			var aura = GetAreaAura(spell);
+			if (spell != null)
+			{
+				return CancelAreaAura(aura);
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Called by AreaAura.Remove
+		/// </summary>
+		internal bool CancelAreaAura(AreaAura aura)
+		{
+			if (m_areaAuras == null)
+			{
+				return false;
+			}
+			
+			if (m_areaAuras.Remove(aura))
+			{
+				if (this is Unit)
+				{
+					((Unit)this).Auras.Cancel(aura.Spell);
+				}
+				else if (m_areaAuras.Count == 0 && (IsTrap || this is DynamicObject))
+				{
+					// remove trap & dynamic object when aura gets removed
+					Delete();
+				}
+				return true;
+			}
+			return false;
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Indicates whether this Object can see the other object
@@ -1593,9 +1645,12 @@ namespace WCell.RealmServer.Entities
 
 			if (m_region != null)
 			{
-				if (m_areaAura != null)
+				if (m_areaAuras != null)
 				{
-					m_areaAura.Remove(true);
+					foreach (var aura in m_areaAuras.ToArray())
+					{
+						aura.Remove(true);
+					}
 				}
 				m_region.RemoveObjectNow(this);
 			}

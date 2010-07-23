@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Commands
 	{
 		protected override void Initialize()
 		{
-			Init("Aura");
+			Init("Aura", "Auras");
 			EnglishDescription = "Provides commands to manage Auras (ie Buffs, Debuffs, passive effects).";
 		}
 

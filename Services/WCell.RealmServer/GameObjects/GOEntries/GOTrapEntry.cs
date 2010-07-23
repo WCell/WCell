@@ -129,7 +129,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		protected internal override void InitGO(GameObject trap)
 		{
 			// init Trap
-			if (trap.AreaAura == null)
+			if (!trap.HasAreaAuras)
 			{
 				if (Spell != null)
 				{

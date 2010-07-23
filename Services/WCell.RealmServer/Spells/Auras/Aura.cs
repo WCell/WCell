@@ -699,11 +699,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public void Cancel()
 		{
 			var owner = m_auras.Owner;
-			if (owner.AreaAura != null && owner.AreaAura.Spell == m_spell)
-			{
-				owner.AreaAura.Remove(true);
-			}
-			else
+			if (!owner.CancelAreaAura(m_spell))
 			{
 				Remove(true);
 			}
@@ -714,17 +710,10 @@ namespace WCell.RealmServer.Spells.Auras
 			if (m_spell.IsAreaAura)
 			{
 				// can only cancel AreaAuras if you are the one causing it or if it can time-out
-
 				var owner = m_auras.Owner;
-				if (owner.AreaAura != null && owner.AreaAura.Spell == m_spell)
+				if (owner.EntityId.Low == CasterInfo.CasterId || Caster == null || Caster.UnitMaster == owner)
 				{
-					owner.AreaAura.Remove(true);
-					return true;
-				}
-				else if (HasTimeout)
-				{
-					Remove(true);
-					return true;
+					return owner.CancelAreaAura(m_spell);
 				}
 			}
 			else

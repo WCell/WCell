@@ -1350,19 +1350,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void AddDamageModsToAction(DamageAction action)
 		{
-			int dmg;
-
 			if (!action.IsDot)
 			{
 				// does not add to dot
-				dmg = GetTotalDamageDoneMod(action.UsedSchool, action.Damage, action.Spell);
+				action.Damage = GetTotalDamageDoneMod(action.UsedSchool, action.Damage, action.Spell);
 			}
-			else
+			else if (action.SpellEffect != null)
 			{
 				// periodic damage mod
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
+				action.Damage = PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
 			}
-			action.Damage = dmg;
 		}
 
 		public override int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)

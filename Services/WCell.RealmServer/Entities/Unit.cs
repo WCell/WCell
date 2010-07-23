@@ -219,7 +219,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// A collection of all Auras (buffs/debuffs) of this Unit
+		/// A collection of all Auras (talents/buffs/debuffs) of this Unit
 		/// </summary>
 		public AuraCollection Auras
 		{
@@ -1806,12 +1806,6 @@ namespace WCell.RealmServer.Entities
 
 			m_auras.Owner = null;
 			m_auras = null;
-
-			if (m_areaAura != null)
-			{
-				m_areaAura.Holder = null;
-				m_areaAura = null;
-			}
 
 			m_charm = null;
 			m_channeled = null;
