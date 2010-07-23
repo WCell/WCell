@@ -21,7 +21,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Shield Spec is proc'ed when owner dodges, blocks or parries
 			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
 			{
-				spell.AddCasterProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandler(
 					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),

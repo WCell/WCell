@@ -412,29 +412,16 @@ namespace WCell.RealmServer.Spells
 
 		#region Custom Proc Handlers
 		/// <summary>
-		/// Add Handler which, when used, can proc this Spell 
+		/// Add Handler to be enabled when this aura spell is active
 		/// </summary>
-		public void AddCasterProcHandler(ProcHandlerTemplate handler)
+		public void AddProcHandler(ProcHandlerTemplate handler)
 		{
-			if (CasterProcHandlers == null)
+			if (ProcHandlers == null)
 			{
-				CasterProcHandlers = new List<ProcHandlerTemplate>();
-			}
-			handler.IsAttackerTriggerer = true;
-			CasterProcHandlers.Add(handler);
-		}
-
-		/// <summary>
-		/// Add Handler which can proc this Spell on their Target
-		/// </summary>
-		public void AddTargetProcHandler(ProcHandlerTemplate handler)
-		{
-			if (TargetProcHandlers == null)
-			{
-				TargetProcHandlers = new List<ProcHandlerTemplate>();
+				ProcHandlers = new List<ProcHandlerTemplate>();
 			}
 			handler.IsAttackerTriggerer = false;
-			TargetProcHandlers.Add(handler);
+			ProcHandlers.Add(handler);
 		}
 		#endregion
 

@@ -56,6 +56,13 @@ namespace WCell.RealmServer.GameObjects
 
 		public static GOEntry GetEntry(GOEntryId id)
 		{
+			if (!loaded)
+			{
+				if (ContentHandler.ForceDataPresence)
+				{
+					throw new ContentException("Tried to get GOEntry but GOs are not loaded: {0}", id);
+				}
+			}
 			GOEntry entry;
 			Entries.TryGetValue((uint)id, out entry);
 			return entry;

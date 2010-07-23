@@ -669,9 +669,9 @@ namespace WCell.RealmServer.Items
 		/// <param name="templ"></param>
 		/// <param name="amount"></param>
 		/// <returns></returns>
-		public SimpleSlotId FindFreeSlotCheck(ItemTemplate templ, int amount)
+		public SimpleSlotId FindFreeSlotCheck(ItemTemplate templ, int amount, out InventoryError err)
 		{
-			var err = InventoryError.OK;
+			err = InventoryError.OK;
 			var possibleAmount = amount;
 			CheckUniqueness(templ, ref possibleAmount, ref err, true);
 			if (possibleAmount != amount)
@@ -679,7 +679,12 @@ namespace WCell.RealmServer.Items
 				return SimpleSlotId.Default;
 			}
 
-			return FindFreeSlot(templ, amount);
+			var slot = FindFreeSlot(templ, amount);
+			if (slot.Slot == INVALID_SLOT)
+			{
+				err = InventoryError.INVENTORY_FULL;
+			}
+			return slot;
 		}
 
 		/// <summary>

@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ToolConfig xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <PATool SelectedDir="D:\coding\C#\Logs\" OutputFilePath="D:\coding\C#\Logs\PAToolOutput.txt" Parser="KSniffer" />
-</ToolConfig>

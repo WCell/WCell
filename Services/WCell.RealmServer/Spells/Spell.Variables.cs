@@ -52,16 +52,10 @@ namespace WCell.RealmServer.Spells
 		public HashSet<Spell> RemovalProcSpells;
 
 		/// <summary>
-		/// ProcHandlers to be added to the caster of this Spell.
+		/// Custom proc handlers to be added to targets of this Aura (this spell must be an Aura).
 		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
 		/// </summary>
-		public List<ProcHandlerTemplate> CasterProcHandlers;
-
-		/// <summary>
-		/// ProcHandlers to be added to the targets of this Spell.
-		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
-		/// </summary>
-		public List<ProcHandlerTemplate> TargetProcHandlers;
+		public List<ProcHandlerTemplate> ProcHandlers;
 
 		/// <summary>
 		/// Used for teleport spells amongst others

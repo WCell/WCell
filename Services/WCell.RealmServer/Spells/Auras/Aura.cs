@@ -817,6 +817,14 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Enable & Disable
 		private void Enable()
 		{
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.ProcHandlers != null && Caster != null)
+			{
+				foreach (var templ in m_spell.ProcHandlers)
+				{
+					Owner.AddProcHandler(new ProcHandler(Caster, Owner, templ));
+				}
+			}
 
 			// apply all aura-related effects
 			ApplyNonPeriodicEffects();
@@ -834,6 +842,15 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <param name="cancelled"></param>
 		internal void Disable(bool cancelled)
 		{
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.ProcHandlers != null && Caster != null)
+			{
+				foreach (var templ in m_spell.ProcHandlers)
+				{
+					Owner.RemoveProcHandler(templ);
+				}
+			}
+
 			if (m_spell.DoesAuraHandleProc)
 			{
 				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
@@ -978,7 +995,7 @@ namespace WCell.RealmServer.Spells.Auras
 						}
 					}
 				}
-			}	
+			}
 			else
 			{
 				// Simply reduce stack count and remove aura eventually

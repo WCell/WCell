@@ -95,11 +95,11 @@ namespace WCell.RealmServer.Spells
 		public bool IsGhost;
 
 		/// <summary>
-		/// Whether this is a proc and whether its own effects handle procs (or false, if customary proc handlers have been added)
+		/// Whether this is a proc and whether its own effects handle procs (or false, if not a proc or custom proc handlers have been added)
 		/// </summary>
 		public bool DoesAuraHandleProc
 		{
-			get { return IsProc && TargetProcHandlers == null && CasterProcHandlers == null; }
+			get { return IsProc && ProcHandlers == null; }
 		}
 
 		public bool IsVehicle;
@@ -149,10 +149,10 @@ namespace WCell.RealmServer.Spells
 
 			if (!IsAura)
 			{
-				//if (TargetProcHandlers != null)
-				//{
-				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has TargetProcHandlers: {0}", this);
-				//}
+				if (ProcHandlers != null)
+				{
+					throw new InvalidSpellDataException("Invalid Non-Aura spell has ProcHandlers: {0}", this);
+				}
 				//if (CasterProcHandlers != null)
 				//{
 				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has CasterProcHandlers: {0}", this);

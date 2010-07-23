@@ -53,7 +53,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Second wind triggers a spell on the carrier if "struck by a Stun or Immobilize effect"
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandler(
 					ProcTriggerFlags.SpellHit,
 					ProcHandler.StunValidator,
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1)
@@ -61,7 +61,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			}, SpellId.WarriorArmsSecondWindRank1);
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddTargetProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandler(
 					ProcTriggerFlags.SpellHit,
 					ProcHandler.StunValidator,
 					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2)

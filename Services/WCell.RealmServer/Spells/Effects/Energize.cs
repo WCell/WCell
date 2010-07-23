@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Constants;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 
@@ -28,6 +29,15 @@ namespace WCell.RealmServer.Spells.Effects
 		public EnergizeEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
+		}
+
+		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		{
+			if (((Unit)target).Power == ((Unit)target).MaxPower)
+			{
+				return ((Unit)target).PowerType == PowerType.Mana ? SpellFailedReason.AlreadyAtFullMana : SpellFailedReason.AlreadyAtFullPower;
+			}
+			return base.CheckValidTarget(target);
 		}
 
 		protected override void Apply(WorldObject target)

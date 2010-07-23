@@ -877,7 +877,7 @@ namespace WCell.RealmServer.Entities
 				}
 				Health += value;
 				value += overheal;
-				CombatLogHandler.SendHealLog(healer, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
+				CombatLogHandler.SendHealLog(healer ?? this, this, effect != null ? effect.Spell.Id : 0, value, crit, overheal);
 			}
 
 			if (healer != null)

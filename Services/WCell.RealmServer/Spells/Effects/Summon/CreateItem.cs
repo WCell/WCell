@@ -54,10 +54,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 			// find a free slot
 			// TODO: Add & use HoldFreeSlotCheck instead, so slot won't get occupied
-			slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount);
-			if (slotId.Slot == BaseInventory.INVALID_SLOT)
+			InventoryError error;
+			slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount, out error);
+			if (error != InventoryError.OK)
 			{
-				ItemHandler.SendInventoryError((Character)target, InventoryError.INVENTORY_FULL);
+				ItemHandler.SendInventoryError((Character)target, error);
 				return SpellFailedReason.DontReport;
 			}
 

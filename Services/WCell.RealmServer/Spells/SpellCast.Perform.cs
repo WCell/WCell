@@ -787,30 +787,6 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// custom prochandlers to be applied when spell is casted
-			if (m_spell.TargetProcHandlers != null)
-			{
-				for (var i = 0; i < m_spell.TargetProcHandlers.Count; i++)
-				{
-					var proc = m_spell.TargetProcHandlers[i];
-					foreach (var target in m_targets)
-					{
-						if (target is Unit)
-						{
-							((Unit)target).AddProcHandler(new ProcHandler(caster, (Unit)target, proc));
-						}
-					}
-				}
-			}
-			if (m_spell.CasterProcHandlers != null)
-			{
-				for (var i = 0; i < m_spell.CasterProcHandlers.Count; i++)
-				{
-					var proc = m_spell.CasterProcHandlers[i];
-					caster.AddProcHandler(new ProcHandler(caster, caster, proc));
-				}
-			}
-
 			// trigger dynamic post-cast spells, eg Shadow Weaving etc
 			caster.Spells.TriggerSpellsFor(this);
 			if (caster is Character)

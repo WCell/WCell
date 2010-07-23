@@ -1,4 +1,3 @@
-- added item fix capabilities
-- added Spell.RemoveEffect
-- fixed mana agate
-- fixed DruidRestorationIntensity
+- fixed demonic circle teleport max range / energize effect to report error when at full power
+- fixed custom proc handlers to be enabled/disabled with aura
+- deleted Tools.xml
