@@ -57,6 +57,13 @@ namespace WCell.Addons.Default.Spells.Warlock
 
             // Demonic Circle Summon
             SpellHandler.Apply(spell => spell.AddCasterTriggerSpells(teleReqSpell.SpellId), SpellLineId.WarlockDemonicCircleSummon);
+
+            //life tap
+            SpellHandler.Apply(spell =>
+            {
+                var spellEffect = spell.GetEffect(SpellEffectType.Dummy);
+                spellEffect.SpellEffectHandlerCreator = (cast, effect) => new LifeTapHandler(cast, effect);
+            }, SpellLineId.WarlockLifeTap);
         }
 
         public class IncreaseDamageIfAuraPresentHandler : SpellEffectHandler
@@ -94,6 +101,44 @@ namespace WCell.Addons.Default.Spells.Warlock
                 {
                     m_aura.Auras.Owner.SpellCast.TriggerSelf(SpellId.ClassSkillCurseOfDoomEffect);
                 }
+            }
+        }
+
+        public class LifeTapHandler : SpellEffectHandler
+        {
+            public LifeTapHandler(SpellCast cast, SpellEffect effect): base(cast, effect)
+            {}
+
+            public override void Apply()
+            {
+                var chr = Cast.Caster as Character;
+
+                if(chr != null)
+                {
+                    int effectValue = CalcEffectValue();
+                    int removeHealth = (int) (chr.Spirit * 1.5f) + effectValue;
+                    int addMana = (int)(chr.GetDamageDoneMod(Effect.Spell.Schools[0]) * 0.5f) + effectValue;
+                    if((chr.Health - removeHealth) >= 1)
+                    {
+                        chr.Health -= removeHealth;
+                        chr.Power += addMana;
+                    }
+                }
+            }
+
+            public override SpellFailedReason CheckValidTarget(WorldObject target)
+            {
+                var chr = target as Character;
+                if (chr != null)
+                {
+                    int effectValue = CalcEffectValue();
+                    int removeHealth = (int)(chr.Spirit * 1.5f) + effectValue;
+                    if ((chr.Health - removeHealth) <= 1)
+                    {
+                        return SpellFailedReason.CantDoThatRightNow;
+                    }
+                }
+                return base.CheckValidTarget(target);
             }
         }
     }
