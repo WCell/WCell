@@ -13,6 +13,9 @@
     <Item Key="Library">
       <Value>Library</Value>
     </Item>
+    <Item Key="NotConnectedToAuthServer">
+      <Value>Not connected to AuthServer</Value>
+    </Item>
     <Item Key="PlayerNotOnline">
       <Value>Player is not online: {0}</Value>
     </Item>

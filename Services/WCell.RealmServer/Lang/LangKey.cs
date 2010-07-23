@@ -17,6 +17,7 @@ namespace WCell.RealmServer.Lang
 		Custom,
 		Addon,
 		Library,
+		NotConnectedToAuthServer,
 		PlayerNotOnline,
 
 		// #######################################################################

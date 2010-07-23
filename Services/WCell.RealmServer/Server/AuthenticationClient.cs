@@ -20,6 +20,7 @@ using System.Threading;
 using NLog;
 using WCell.Core.Timers;
 using WCell.Intercommunication.Client;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Res;
 using WCell.Util;
 using WCell.Util.NLog;
@@ -44,7 +45,9 @@ namespace WCell.RealmServer.Server
 		readonly object lck = new object();
 		private readonly NetTcpBinding binding;
 		private DateTime lastUpdate;
+
 		private bool m_warned;
+		private string m_warnInfo;
 
 		/// <summary>
 		/// Initializes this Authentication Client
@@ -100,13 +103,13 @@ namespace WCell.RealmServer.Server
 		public void ForceUpdate()
 		{
 			// little trick to force an update
-			m_warned = false;
+			RearmDisconnectWarning();
 			lastUpdate = DateTime.Now - TimeSpan.FromSeconds(UpdateInterval);
 		}
 
 		public void StartConnect(string netAddr)
 		{
-			m_warned = false;
+			RearmDisconnectWarning();
 			m_netAddr = netAddr;
 			m_IsRunning = true;
 			if (lastUpdate == default(DateTime))
@@ -123,6 +126,7 @@ namespace WCell.RealmServer.Server
 		{
 			if (!m_warned)
 			{
+				AddDisconnectWarningToTitle();
 				log.Info(Resources.ConnectingToAuthServer);
 			}
 
@@ -165,7 +169,7 @@ namespace WCell.RealmServer.Server
 
 			if (conn)
 			{
-				m_warned = false;
+				RearmDisconnectWarning();
 				var evt = Connected;
 				if (evt != null)
 				{
@@ -218,7 +222,7 @@ namespace WCell.RealmServer.Server
 				{
 					if (!RealmServer.Instance.IsRunning)
 					{
-						m_warned = false;
+						RearmDisconnectWarning();
 						return;
 					}
 
@@ -249,6 +253,7 @@ namespace WCell.RealmServer.Server
 				m_ClientProxy.State != CommunicationState.Closed &&
 			    m_ClientProxy.State != CommunicationState.Closing)
 			{
+				AddDisconnectWarningToTitle();
 				try
 				{
 					if (notify && m_ClientProxy.State == CommunicationState.Opened)
@@ -273,6 +278,22 @@ namespace WCell.RealmServer.Server
 				{
 					evt(this, null);
 				}
+			}
+		}
+
+		void AddDisconnectWarningToTitle()
+		{
+			m_warnInfo = " - ######### " + RealmLocalizer.Instance.Translate(LangKey.NotConnectedToAuthServer).ToUpper() + " #########";
+			Console.Title += m_warnInfo;
+		}
+
+		void RearmDisconnectWarning()
+		{
+			m_warned = false;
+			if (m_warnInfo != null)
+			{
+				Console.Title = Console.Title.Replace(m_warnInfo, "");
+				m_warnInfo = null;	
 			}
 		}
 	}
