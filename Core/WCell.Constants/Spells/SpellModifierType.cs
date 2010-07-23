@@ -99,14 +99,11 @@ namespace WCell.Constants.Spells
 		/// Modifies the EffectValue (positive) for periodic aura effects
 		/// </summary>
 		PeriodicEffectValue = 22,
-		/// <summary>
-		/// 
-		/// </summary>
-		Dot = 22,
+
 		/// <summary>
 		/// Modifies the third effect
 		/// </summary>
-		EffectValue3 = 22,
+		EffectValue3 = 23,
 		/// <summary>
 		/// Increases by % of SpellPower
 		/// </summary>

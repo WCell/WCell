@@ -823,7 +823,7 @@ namespace WCell.RealmServer.Spells.Auras
 		private void Enable()
 		{
 			// custom prochandlers to be applied when spell is casted
-			if (m_spell.ProcHandlers != null && Caster != null)
+			if (m_spell.IsProc && Caster != null)
 			{
 				foreach (var templ in m_spell.ProcHandlers)
 				{
@@ -831,14 +831,14 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 
-			// apply all aura-related effects
-			ApplyNonPeriodicEffects();
-
 			if (m_spell.DoesAuraHandleProc)
 			{
 				// only add proc if there is not a custom handler for it
 				m_auras.Owner.AddProcHandler(this);
 			}
+
+			// apply all aura-related effects
+			ApplyNonPeriodicEffects();
 		}
 
 		/// <summary>

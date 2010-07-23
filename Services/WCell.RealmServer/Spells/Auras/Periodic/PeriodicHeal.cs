@@ -18,11 +18,26 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class PeriodicHealHandler : AuraEffectHandler
 	{
-
 		protected internal override void Apply()
 		{
 			Owner.Heal(m_aura.Caster, EffectValue, m_spellEffect);
 		}
+	}
 
+	public class ParameterizedPeriodicHealHandler : PeriodicHealHandler
+	{
+		public int TotalHeal { get; set; }
+
+		public ParameterizedPeriodicHealHandler(int totalDmg = 0)
+		{
+			TotalHeal = totalDmg;
+		}
+
+		protected internal override void Apply()
+		{
+			BaseEffectValue = TotalHeal / (m_aura.TicksLeft + 1);
+			TotalHeal -= BaseEffectValue;
+			base.Apply();
+		}
 	}
 };

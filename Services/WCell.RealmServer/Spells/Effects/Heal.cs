@@ -27,43 +27,14 @@ namespace WCell.RealmServer.Spells.Effects
 	/// </summary>
 	public class HealEffectHandler : SpellEffectHandler
 	{
-		Aura toConsume;
-
 		public HealEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
-		{
-			if (Effect.Spell.RequiredTargetAuraState == AuraState.RejuvenationOrRegrowth)
-			{
-				// consume Reju or Regrowth and apply its full effect at once
-				toConsume = ((Unit)target).Auras.FindFirst((aura) =>
-				{
-					return aura.Spell.IsRejuvenationOrRegrowth && toConsume.TimeLeft > 100;
-				});
-				if (toConsume == null)
-				{
-					return SpellFailedReason.TargetAurastate;
-				}
-			}
-			return SpellFailedReason.Ok;
-		}
-
 		protected override void Apply(WorldObject target)
 		{
-			int effectValue;
-			if (toConsume != null)
-			{
-				// TODO: Correct effect-value
-				effectValue = toConsume.MaxApplications;
-			}
-			else
-			{
-				effectValue = CalcDamageValue();
-			}
-			((Unit)target).Heal(m_cast.CasterUnit, effectValue, Effect);
+			((Unit)target).Heal(m_cast.CasterUnit, CalcDamageValue(), Effect);
 		}
 
 		public override ObjectTypes TargetType

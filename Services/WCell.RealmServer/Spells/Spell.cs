@@ -209,11 +209,6 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect DOEffect;
 
 		/// <summary>
-		/// whether this is a Rejuvenation or Regrowth effect
-		/// </summary>
-		public bool IsRejuvenationOrRegrowth;
-
-		/// <summary>
 		/// whether this is a Heal-spell
 		/// </summary>
 		public bool IsHealSpell;
@@ -1018,19 +1013,6 @@ namespace WCell.RealmServer.Spells
 			Effects = effects;
 		}
 		#endregion
-
-		/// <summary>
-		/// This is pretty ugly, but its the easiest way to find out whether we have a certain spell
-		/// until we provide spell overrides
-		/// </summary>
-		internal void FigureSpellFieldsByNamesOrIds()
-		{
-			// TODO: Move to PlayerSpells.cs and remove the IsRejuvenationOrRegrowth field
-			if (!IsTeachSpell && (Name.Equals("Rejuvenation") || Name.Equals("Regrowth")))
-			{
-				IsRejuvenationOrRegrowth = true;
-			}
-		}
 
 		#region Misc Methods & Props
 		public bool MatchesMask(uint[] masks)

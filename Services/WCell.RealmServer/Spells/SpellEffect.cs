@@ -297,13 +297,13 @@ namespace WCell.RealmServer.Spells
 			if (IsPeriodic = Amplitude > 0)
 			{
 				_IsPeriodicAura = (AuraType == AuraType.PeriodicDamage ||
-								  AuraType == AuraType.PeriodicDamagePercent ||
-								  AuraType == AuraType.PeriodicEnergize ||
-								  AuraType == AuraType.PeriodicHeal ||
-								  AuraType == AuraType.PeriodicHealthFunnel ||
-								  AuraType == AuraType.PeriodicLeech ||
-								  AuraType == AuraType.PeriodicManaLeech ||
-								  AuraType == AuraType.PeriodicTriggerSpell);
+				                   AuraType == AuraType.PeriodicDamagePercent ||
+				                   AuraType == AuraType.PeriodicEnergize ||
+				                   AuraType == AuraType.PeriodicHeal ||
+				                   AuraType == AuraType.PeriodicHealthFunnel ||
+				                   AuraType == AuraType.PeriodicLeech ||
+				                   AuraType == AuraType.PeriodicManaLeech ||
+				                   AuraType == AuraType.PeriodicTriggerSpell);
 			}
 
 			if (Spell.IsPassive)
@@ -312,48 +312,42 @@ namespace WCell.RealmServer.Spells
 				HarmType = HarmType.Beneficial;
 			}
 			else if ((HasTarget(ImplicitTargetType.AllEnemiesAroundCaster,
-				ImplicitTargetType.AllEnemiesInArea,
-				ImplicitTargetType.AllEnemiesInAreaChanneled,
-				ImplicitTargetType.AllEnemiesInAreaInstant,
-				ImplicitTargetType.CurrentSelection) ||
-
-				HasTarget(ImplicitTargetType.InFrontOfCaster,
-						ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
-						ImplicitTargetType.LocationInFrontCaster,
-						ImplicitTargetType.NetherDrakeSummonLocation,
-						ImplicitTargetType.SelectedEnemyChanneled,
-						ImplicitTargetType.SelectedEnemyDeadlyPoison,
-						ImplicitTargetType.SingleEnemy,
-						ImplicitTargetType.SpreadableDesease,
-						ImplicitTargetType.TargetAtOrientationOfCaster)) &&
-
-				(!HasTarget(
-				ImplicitTargetType.Self,
-				ImplicitTargetType.AllFriendlyInAura,
-				ImplicitTargetType.AllParty,
-				ImplicitTargetType.AllPartyAroundCaster,
-				ImplicitTargetType.AllPartyInArea,
-				ImplicitTargetType.PartyAroundCaster,
-				ImplicitTargetType.AllPartyInAreaChanneled) ||
-
-				Spell.Mechanic.IsNegative()))
+			                    ImplicitTargetType.AllEnemiesInArea,
+			                    ImplicitTargetType.AllEnemiesInAreaChanneled,
+			                    ImplicitTargetType.AllEnemiesInAreaInstant,
+			                    ImplicitTargetType.CurrentSelection) ||
+			          HasTarget(ImplicitTargetType.InFrontOfCaster,
+			                    ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
+			                    ImplicitTargetType.LocationInFrontCaster,
+			                    ImplicitTargetType.NetherDrakeSummonLocation,
+			                    ImplicitTargetType.SelectedEnemyChanneled,
+			                    ImplicitTargetType.SelectedEnemyDeadlyPoison,
+			                    ImplicitTargetType.SingleEnemy,
+			                    ImplicitTargetType.SpreadableDesease,
+			                    ImplicitTargetType.TargetAtOrientationOfCaster)) &&
+			         (!HasTarget(
+			         	ImplicitTargetType.Self,
+			         	ImplicitTargetType.AllFriendlyInAura,
+			         	ImplicitTargetType.AllParty,
+			         	ImplicitTargetType.AllPartyAroundCaster,
+			         	ImplicitTargetType.AllPartyInArea,
+			         	ImplicitTargetType.PartyAroundCaster,
+			         	ImplicitTargetType.AllPartyInAreaChanneled) ||
+			          Spell.Mechanic.IsNegative()))
 			{
 				HarmType = HarmType.Harmful;
 			}
-			else if (!HasTarget(ImplicitTargetType.Duel) && 
-				(ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
+			else if (!HasTarget(ImplicitTargetType.Duel) &&
+			         (ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
 			{
 				HarmType = HarmType.Beneficial;
 			}
-
-			if (Spell.IsPassive)
+			
+			// do some correction for ModManaRegen
+			if (AuraType == AuraType.ModManaRegen && Amplitude == 0)
 			{
-				// do some correction for ModManaRegen
-				if (AuraType == AuraType.ModManaRegen && Amplitude == 0)
-				{
-					// 5000 ms if not specified otherwise
-					Amplitude = ModManaRegenHandler.DefaultAmplitude;
-				}
+				// 5000 ms if not specified otherwise
+				Amplitude = ModManaRegenHandler.DefaultAmplitude;
 			}
 
 			HasTargets = !NoTargetTypes.Contains(ImplicitTargetA) || !NoTargetTypes.Contains(ImplicitTargetB);
@@ -361,8 +355,8 @@ namespace WCell.RealmServer.Spells
 			HasSingleTarget = HasTargets && !IsAreaEffect;
 
 			IsAreaAuraEffect = (EffectType == SpellEffectType.PersistantAreaAura ||
-					EffectType == SpellEffectType.ApplyAreaAura ||
-					EffectType == SpellEffectType.ApplyGroupAura);
+			                    EffectType == SpellEffectType.ApplyAreaAura ||
+			                    EffectType == SpellEffectType.ApplyGroupAura);
 
 			if (EffectType == SpellEffectType.ApplyGroupAura)
 			{
@@ -377,35 +371,36 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsAuraEffect = IsAreaAuraEffect ||
-						   EffectType == SpellEffectType.ApplyAura ||
-						   EffectType == SpellEffectType.ApplyAuraToMaster ||
-						   EffectType == SpellEffectType.ApplyPetAura ||
-						   EffectType == SpellEffectType.ApplyStatAura ||
-						   EffectType == SpellEffectType.ApplyStatAuraPercent;
+			               EffectType == SpellEffectType.ApplyAura ||
+			               EffectType == SpellEffectType.ApplyAuraToMaster ||
+			               EffectType == SpellEffectType.ApplyPetAura ||
+			               EffectType == SpellEffectType.ApplyStatAura ||
+			               EffectType == SpellEffectType.ApplyStatAuraPercent;
 
 			IsEnhancer = IsAuraEffect && (AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent);
 
-			MiscBitSet = MiscValue > 0 ? Utility.GetSetIndices((uint)MiscValue) : new uint[0];
+			MiscBitSet = MiscValue > 0 ? Utility.GetSetIndices((uint) MiscValue) : new uint[0];
 
-            MinValue = BasePoints;// + DiceCount; TODO: check this!
+			MinValue = BasePoints; // + DiceCount; TODO: check this!
 
 			IsStrikeEffectFlat = EffectType == SpellEffectType.WeaponDamage ||
-								 EffectType == SpellEffectType.WeaponDamageNoSchool ||
-								 EffectType == SpellEffectType.NormalizedWeaponDamagePlus;
+			                     EffectType == SpellEffectType.WeaponDamageNoSchool ||
+			                     EffectType == SpellEffectType.NormalizedWeaponDamagePlus;
 
 			IsStrikeEffectPct = EffectType == SpellEffectType.WeaponPercentDamage;
 
 			IsTotem = HasTarget(ImplicitTargetType.TotemAir) ||
-				HasTarget(ImplicitTargetType.TotemEarth) ||
-				HasTarget(ImplicitTargetType.TotemFire) ||
-				HasTarget(ImplicitTargetType.TotemWater);
+			          HasTarget(ImplicitTargetType.TotemEarth) ||
+			          HasTarget(ImplicitTargetType.TotemFire) ||
+			          HasTarget(ImplicitTargetType.TotemWater);
 
-			IsProc = IsProc || (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) || AuraType == AuraType.ProcTriggerDamage;
+			IsProc = IsProc || (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) ||
+			         AuraType == AuraType.ProcTriggerDamage;
 
 			IsHealEffect = EffectType == SpellEffectType.Heal ||
-				EffectType == SpellEffectType.HealMaxHealth ||
-				AuraType == AuraType.PeriodicHeal ||
-				(TriggerSpell != null && TriggerSpell.IsHealSpell);
+			               EffectType == SpellEffectType.HealMaxHealth ||
+			               AuraType == AuraType.PeriodicHeal ||
+			               (TriggerSpell != null && TriggerSpell.IsHealSpell);
 
 			IsModifierEffect = AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent;
 
@@ -425,11 +420,11 @@ namespace WCell.RealmServer.Spells
 
 			if (SpellEffectHandlerCreator == null && !IsUsed)
 			{
-				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int)EffectType];
+				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int) EffectType];
 			}
 			if (IsAuraEffect && AuraEffectHandlerCreator == null)
 			{
-				AuraEffectHandlerCreator = AuraHandler.EffectHandlers[(int)AuraType];
+				AuraEffectHandlerCreator = AuraHandler.EffectHandlers[(int) AuraType];
 				if (AuraEffectHandlerCreator == null)
 				{
 					AuraEffectHandlerCreator = AuraHandler.EffectHandlers[0];

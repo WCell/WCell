@@ -229,10 +229,10 @@ namespace WCell.RealmServer.Spells
 					// no proc-specific effects -> all effects are triggered on proc
 					ProcTriggerEffects = null;
 				}
-				else if (ProcTriggerEffects.Length > 1)
-				{
-					log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
-				}
+				//else if (ProcTriggerEffects.Length > 1)
+				//{
+				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
+				//}
 
 				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.SpellCast))
 				{
@@ -241,11 +241,6 @@ namespace WCell.RealmServer.Spells
 				}
 
 				IsProc = ProcTriggerEffects != null;
-			}
-
-			if (Id == 2458)
-			{
-				ToString();
 			}
 
 			if (AuraUID == 0)
