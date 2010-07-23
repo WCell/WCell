@@ -1210,12 +1210,12 @@ namespace WCell.RealmServer.Entities
 					DisplayId = NativeDisplayId;
 				}
 
+				SetByte(UnitFields.BYTES_2, 3, (byte)value);
+
 				if (m_auras is PlayerAuraCollection)
 				{
 					((PlayerAuraCollection)m_auras).OnShapeshiftFormChanged();
 				}
-
-				SetByte(UnitFields.BYTES_2, 3, (byte)value);
 			}
 		}
 

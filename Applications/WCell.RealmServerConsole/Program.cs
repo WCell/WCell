@@ -41,9 +41,10 @@ namespace WCell.RealmServerConsole
         	{
         		GCSettings.LatencyMode = GCLatencyMode.Interactive;
         	}
+
         	Thread.CurrentThread.IsBackground = true;
 
-			Spell.ForceDataPresense = true;
+			Spell.ForceDataPresence = true;
         	RealmServer.Program.Start();
         	RealmServerConsole.Run();
         }

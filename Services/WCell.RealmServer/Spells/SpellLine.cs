@@ -18,11 +18,12 @@ namespace WCell.RealmServer.Spells
 		private readonly Spell m_firstSpell;
 
 		public readonly SpellLineId LineId;
+		private int count;
 
 		public SpellLine(SpellLineId id, params Spell[] spells)
 		{
 			LineId = id;
-			AuraUID =  (uint)id;
+			AuraUID = (uint)id;
 			Spells = new List<Spell>();
 			if (spells.Length > 0)
 			{
@@ -47,6 +48,11 @@ namespace WCell.RealmServer.Spells
 		public ClassId ClassId
 		{
 			get { return m_firstSpell.ClassId; }
+		}
+
+		public int SpellCount
+		{
+			get { return count; }
 		}
 
 		public Spell FirstRank
@@ -84,6 +90,7 @@ namespace WCell.RealmServer.Spells
 			}
 			Spells.Add(spell);
 			spell.Line = this;
+			count++;
 		}
 
 		public IEnumerator<Spell> GetEnumerator()

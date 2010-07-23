@@ -42,7 +42,6 @@ namespace WCell.RealmServer.Spells
 						spell.PreviousRank = last;
 						last.NextRank = spell;
 					}
-					spell.SpellLine = line;
 					last = spell;
 				}
 			}

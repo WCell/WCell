@@ -1,3 +1,2 @@
-- fixed: No negative passive auras / warrior stances / warrior last stand
-- implemented: Only activate certain passive auras, if any of their required shapeshiftmasks is active
-- to test: DruidFeralCombatSharpenedClaws, DruidFeralCombatPrimalFury
+- fixed DruidFeralCombatLeaderOfThePack
+- to test: DruidFeralCombatFeralSwiftness, DruidFeralCombatHeartOfTheWild

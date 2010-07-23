@@ -693,9 +693,20 @@ namespace WCell.RealmServer.Spells.Auras
 		#endregion
 
 		#region Remove & Cancel
+		/// <summary>
+		/// Cancels and removes this Aura
+		/// </summary>
 		public void Cancel()
 		{
-			Remove(true);
+			var owner = m_auras.Owner;
+			if (owner.AreaAura != null && owner.AreaAura.Spell == m_spell)
+			{
+				owner.AreaAura.Remove(true);
+			}
+			else
+			{
+				Remove(true);
+			}
 		}
 
 		public bool TryRemove(bool cancelled)
@@ -725,7 +736,8 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes this Aura from the player
+		/// Removes this Aura from the player, but does not remove an AreaAura if it is triggered
+		/// by this Aura. Use Cancel instead.
 		/// </summary>
 		/// <param name="cancelled"></param>
 		public void Remove(bool cancelled)

@@ -57,7 +57,7 @@ namespace WCell.Addons.Default.Spells.Hunter
                 var charSpells = ((Character)target).PlayerSpells;
                 foreach (Spell spell in charSpells)
                 {
-                    if (spell.SpellLine.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
+                    if (spell.Line.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
                     {
                         charSpells.ClearCooldown(spell);
                     }

@@ -156,7 +156,7 @@ namespace WCell.Tools.Spells
 					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
 					{
 						var spell = spellEntry.Spell;
-						if (spell.Id == 20900)
+						if (spell.Id == 24866)
 						{
 							spell.ToString();
 						}

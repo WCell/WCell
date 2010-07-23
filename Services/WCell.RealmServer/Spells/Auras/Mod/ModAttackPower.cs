@@ -48,12 +48,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue / 100;
+			m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue / 100f;
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue / 100;
+			m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue / 100f;
 		}
 	}
 	#endregion
@@ -90,12 +90,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected internal override void Apply()
 		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue / 100;
+			m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue / 100f;
 		}
 
 		protected internal override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue / 100;
+			m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue / 100f;
 		}
 	}
 	#endregion

@@ -285,7 +285,7 @@ namespace WCell.RealmServer.Commands
 				if (spell.Talent != null && chr != null)
 				{
 					// talent
-					chr.Talents.Set(spell.Talent, spell.Rank - 1);
+					chr.Talents.Set(spell.Talent, spell.Line.SpellCount - 1);
 				}
 				else
 				{

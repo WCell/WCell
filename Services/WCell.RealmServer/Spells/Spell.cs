@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Spells
 		public static readonly Spell[] EmptyArray = new Spell[0];
 
 		[NotVariable]
-		public static bool ForceDataPresense = false;
+		public static bool ForceDataPresence = false;
 
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
@@ -278,11 +278,6 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public ItemTemplate[] RequiredTools;
 
-		/// <summary>
-		/// The SpellLine this Spell belongs to (or null)
-		/// </summary>
-		public SpellLine SpellLine;
-
 		public Spell NextRank, PreviousRank;
 
 		/// <summary>
@@ -339,7 +334,7 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsEnhancer;
 
-		private bool inited;
+		private bool init1, init2;
 
 		public SpellLine Line;
 		#endregion
@@ -457,6 +452,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Initialize()
 		{
+			init1 = true;
 			var learnSpellEffect = GetEffect(SpellEffectType.LearnSpell);
 			if (learnSpellEffect == null)
 			{
@@ -517,10 +513,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Init2()
 		{
-			if (inited)
+			if (init2)
 			{
 				return;
 			}
+			init2 = true;
 
 			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
 				ChannelInterruptFlags > 0;
@@ -753,7 +750,6 @@ namespace WCell.RealmServer.Spells
 			{
 				SpellHandler.QuestCompletors.Add(this);
 			}
-			inited = true;
 		}
 		#endregion
 
@@ -812,7 +808,7 @@ namespace WCell.RealmServer.Spells
 			}
 			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
 			//return null;
-			if (inited && force)
+			if (!init1 && force)
 			{
 				throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
 			}
@@ -824,7 +820,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
-			return GetEffect(type, ForceDataPresense);
+			return GetEffect(type, ForceDataPresence);
 		}
 
 		/// <summary>
@@ -841,7 +837,7 @@ namespace WCell.RealmServer.Spells
 			}
 			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			//return null;
-			if (inited && force)
+			if (!init1 && force)
 			{
 				throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			}
