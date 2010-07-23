@@ -110,6 +110,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public float PointsPerComboPoint;
 
+		/// <summary>
+		/// Multi purpose.
+		/// 1. If it is a proc effect, determines set of spells that can proc this proc (use <see cref="AddToAffectMask"/>)
+		/// 2. If it is a modifier effect, determines set of spells to be affected by this effect
+		/// 3. Ignored in some cases
+		/// 4. Special applications in some cases
+		/// </summary>
 		[Persistent(3)]
 		public uint[] AffectMask = new uint[3];
 		#endregion

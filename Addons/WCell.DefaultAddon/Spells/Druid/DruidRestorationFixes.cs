@@ -67,11 +67,11 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// these two have some kind of multiplier added to their periodic heal: "${$m1*5*$<mult>}"
-			FixRegrwothAndRejuvenation(SpellLineId.DruidRejuvenation);
-			FixRegrwothAndRejuvenation(SpellLineId.DruidRegrowth);
+			FixRegrowthAndRejuvenation(SpellLineId.DruidRejuvenation);
+			FixRegrowthAndRejuvenation(SpellLineId.DruidRegrowth);
 		}
 
-		private static void FixRegrwothAndRejuvenation(SpellLineId line)
+		private static void FixRegrowthAndRejuvenation(SpellLineId line)
 		{
 			line.Apply(spell =>
 			{
