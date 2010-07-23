@@ -524,7 +524,11 @@ namespace WCell.RealmServer.Spells
 		public int CalcEffectValue(Unit caster)
 		{
 			var value = CalcEffectValue(caster != null ? caster.Level : 1, caster != null ? caster.ComboPoints : 0);
+			return CalcEffectValue(caster, value);
+		}
 
+		public int CalcEffectValue(Unit caster, int value)
+		{
 			if (caster != null)
 			{
 				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)

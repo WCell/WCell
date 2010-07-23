@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 			else
 			{
-				Owner.SpellCast.ValidateAndTrigger(m_spellEffect.TriggerSpell, target);
+				Owner.SpellCast.ValidateAndTrigger(m_spellEffect.TriggerSpell, target, action);
 			}
 		}
 	}

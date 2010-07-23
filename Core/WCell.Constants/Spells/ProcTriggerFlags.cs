@@ -126,6 +126,11 @@ namespace WCell.Constants.Spells
 		 * The Following effects were added to provide additional functionality:
 		 */
 		/// <summary>
+		/// Triggered when an Aura gets removed
+		/// </summary>
+		AuraRemoved = 0x40000000,
+
+		/// <summary>
 		/// Triggered when blocking damage
 		/// </summary>
 		Block = 0x80000000,

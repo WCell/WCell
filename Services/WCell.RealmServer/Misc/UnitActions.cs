@@ -10,6 +10,7 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 
 namespace WCell.RealmServer.Misc
@@ -29,6 +30,15 @@ namespace WCell.RealmServer.Misc
 		/// Victim or Target or Receiver
 		/// </summary>
 		Unit Victim { get; }
+
+		/// <summary>
+		/// Reference count is used to support pooling
+		/// </summary>
+		int ReferenceCount
+		{
+			get;
+			set;
+		}
 
 		Spell Spell
 		{
@@ -106,6 +116,15 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set {  }
+		}
 	}
 	#endregion
 
@@ -129,6 +148,43 @@ namespace WCell.RealmServer.Misc
 	#region TrapTriggerAction
 	public class TrapTriggerAction : SimpleUnitAction
 	{
+	}
+	#endregion
+
+	#region AuraRemovedAction
+	public class AuraRemovedAction : IUnitAction
+	{
+		public Unit Attacker
+		{
+			get;
+			set;
+		}
+
+		public Unit Victim
+		{
+			get;
+			set;
+		}
+
+		public Aura Aura
+		{
+			get; 
+			set;
+		}
+
+		public Spell Spell
+		{
+			get { return Aura.Spell; }
+		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set { }
+		}
 	}
 	#endregion
 
@@ -195,6 +251,15 @@ namespace WCell.RealmServer.Misc
 		public Spell Spell
 		{
 			get { return null; }
+		}
+
+		/// <summary>
+		/// Does nothing
+		/// </summary>
+		public int ReferenceCount
+		{
+			get { return 0; }
+			set { }
 		}
 	}
 	#endregion
@@ -286,16 +351,20 @@ namespace WCell.RealmServer.Misc
 
 		public HitFlags HitFlags;
 
-		#region Situational Properties
-		public DamageSchool UsedSchool
+		/// <summary>
+		/// Actions that are marked in use, will not be recycled
+		/// </summary>
+		public int ReferenceCount
 		{
 			get;
 			set;
 		}
 
-		public bool IsInUse
+		#region Situational Properties
+		public DamageSchool UsedSchool
 		{
-			get { return Victim != null; }
+			get;
+			set;
 		}
 
 		public bool IsWeaponAttack
@@ -750,9 +819,6 @@ namespace WCell.RealmServer.Misc
 			{
 				CombatHandler.SendAttackerStateUpdate(this);
 			}
-
-			// reset Target
-			Victim = null;
 		}
 		#endregion
 
@@ -1116,18 +1182,6 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
-		/// <summary>
-		/// Actions that are marked in use, will not be recycled
-		/// </summary>
-		public void MarkInUse()
-		{
-			// make sure, Attacker won't re-use this
-			if (Attacker.DamageAction == this)
-			{
-				Attacker.DamageAction = null;
-			}
-		}
-
 		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
 		{
 			Attacker = attacker;
@@ -1142,7 +1196,7 @@ namespace WCell.RealmServer.Misc
 			{
 				((NPC)(Victim)).ThreatCollection.AddNew(Attacker);
 			}
-			Victim = null;
+			ReferenceCount--;
 			SpellEffect = null;
 		}
 

@@ -105,21 +105,6 @@ namespace WCell.RealmServer.Entities
 		protected internal SpellCast m_pendingCombatAbility;
 
 		/// <summary>
-		/// Recycled AttackState (not actually relevant)
-		/// </summary>
-		internal DamageAction DamageAction
-		{
-			get
-			{
-				return m_DamageAction;
-			}
-			set
-			{
-				m_DamageAction = value;
-			}
-		}
-
-		/// <summary>
 		/// The last time when this Unit was still actively Fighting
 		/// </summary>
 		public int LastCombatTime
@@ -232,7 +217,7 @@ namespace WCell.RealmServer.Entities
 
 		internal DamageAction GetUnusedAction()
 		{
-			if (m_DamageAction == null || m_DamageAction.IsInUse)
+			if (m_DamageAction == null || m_DamageAction.ReferenceCount > 0)
 			{
 				return new DamageAction(this);
 			}
@@ -486,7 +471,7 @@ namespace WCell.RealmServer.Entities
 						ap = TotalMeleeAP;
 					}
 
-					dmg += (ap + 7) / 14;	// round
+					dmg += (ap + 7)/14; // round
 				}
 			}
 			else
@@ -500,20 +485,13 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
-			var action = attacker != null ? attacker.m_DamageAction : m_DamageAction;
-			if (action == null || action.IsInUse)
-			{
-				// currently in use
-				action = new DamageAction(attacker);
-			}
-			else
-			{
-				// recycle DamageAction object
-				action.Attacker = attacker;
-				action.HitFlags = 0;
-				action.VictimState = 0;
-				action.Weapon = null;
-			}
+			var action = GetUnusedAction();
+
+			// reset values
+			action.Attacker = attacker;
+			action.HitFlags = 0;
+			action.VictimState = 0;
+			action.Weapon = null;
 
 			if (effect != null)
 			{
@@ -542,7 +520,7 @@ namespace WCell.RealmServer.Entities
 
 				// critical hits
 				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
-					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
+				    attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
 				{
 					action.IsCritical = true;
 					action.SetCriticalDamage();
@@ -558,13 +536,13 @@ namespace WCell.RealmServer.Entities
 
 				if (addDamageBonuses && attacker is Character)
 				{
-					((Character)attacker).AddDamageModsToAction(action);
+					((Character) attacker).AddDamageModsToAction(action);
 				}
 			}
 
 
 			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
-			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
+			action.Resisted = (int) Math.Round(action.Damage*action.ResistPct/100);
 			action.Blocked = 0; // TODO: Deflect
 			action.SpellEffect = effect;
 
@@ -1254,7 +1232,7 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
-					if (action.Weapon != OffHandWeapon)
+					if (action.Weapon == null || action.Weapon != OffHandWeapon)
 					{
 						// proc (if not offhand)
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);

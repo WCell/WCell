@@ -464,6 +464,17 @@ namespace WCell.RealmServer.Spells
 			get { return m_triggerEffect != null ? m_triggerEffect.IsAreaEffect : m_spell.IsAreaSpell; }
 			//get { return m_spell.IsAreaSpell; }
 		}
+
+		/// <summary>
+		/// The action that triggered this SpellCast, if any.
+		/// If you want to save the Action for a point later in time, you need to
+		/// increment the ReferenceCount, and decrement it when you are done with it.
+		/// </summary>
+		public IUnitAction TriggerAction
+		{
+			get;
+			private set;
+		}
 		#endregion
 
 		public SpellEffectHandler GetHandler(SpellEffectType type)
@@ -562,7 +573,7 @@ namespace WCell.RealmServer.Spells
 				selected = Caster;
 			}
 			// 0x18A02
-            if (TargetFlags.HasAnyFlag(
+			if (TargetFlags.HasAnyFlag(
 				SpellTargetFlags.SpellTargetFlag_Dynamic_0x10000 |
 				SpellTargetFlags.Corpse |
 				SpellTargetFlags.Object |
@@ -583,7 +594,7 @@ namespace WCell.RealmServer.Spells
 				TargetLoc = selected.Position;
 			}
 			// 0x1010
-            if (Caster is Character && TargetFlags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+			if (Caster is Character && TargetFlags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				var uid = packet.ReadPackedEntityId();
 				UsedItem = ((Character)Caster).Inventory.GetItem(uid);
@@ -594,13 +605,13 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x20
-            if (TargetFlags.HasAnyFlag(SpellTargetFlags.SourceLocation))
+			if (TargetFlags.HasAnyFlag(SpellTargetFlags.SourceLocation))
 			{
 				region.GetObject(packet.ReadPackedEntityId());		// since 3.2.0
 				SourceLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
 			}
 			// 0x40
-            if (TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
+			if (TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
 			{
 				selected = region.GetObject(packet.ReadPackedEntityId());
 				TargetLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
@@ -608,7 +619,7 @@ namespace WCell.RealmServer.Spells
 				targetFound = true;
 			}
 			// 0x2000
-            if (TargetFlags.HasAnyFlag(SpellTargetFlags.String))
+			if (TargetFlags.HasAnyFlag(SpellTargetFlags.String))
 			{
 				StringTarget = packet.ReadCString();
 			}
@@ -783,13 +794,13 @@ namespace WCell.RealmServer.Spells
 				// don't sit on a ride (even if you try to, the Client will show you dismounted - maybe add auto-remount for GodMode)
 				var spell = m_spell;
 
-                if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileMounted))
+				if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileMounted))
 				{
 					CasterUnit.Dismount();
 				}
 
 				// make sure, the Caster is standing
-                if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileSitting))
+				if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileSitting))
 				{
 					CasterUnit.StandState = StandState.Stand;
 				}
@@ -897,7 +908,7 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		protected SpellFailedReason CheckPlayerCast(WorldObject selected)
 		{
-			var caster = (Character) Caster;
+			var caster = (Character)Caster;
 			if (m_spell.TargetFlags != 0 && !IsAoE && selected == caster)
 			{
 				// Caster is selected by default
@@ -916,7 +927,7 @@ namespace WCell.RealmServer.Spells
 
 				if (m_spell.HasHarmfulEffects && selected is Unit)
 				{
-					if (((Unit) selected).IsEvading || ((Unit) selected).IsInvulnerable)
+					if (((Unit)selected).IsEvading || ((Unit)selected).IsInvulnerable)
 					{
 						return SpellFailedReason.TargetAurastate;
 					}
@@ -926,7 +937,7 @@ namespace WCell.RealmServer.Spells
 				//    ((Unit)Caster).Face(TargetLoc);				
 				//}			
 			}
-				// we can't cast if we are dead
+			// we can't cast if we are dead
 			else if (!caster.IsAlive)
 			{
 				return SpellFailedReason.CasterDead;
@@ -943,7 +954,7 @@ namespace WCell.RealmServer.Spells
 
 			// check required skill
 			if (m_spell.Ability != null && m_spell.Ability.RedValue > 0 &&
-			    caster.Skills.GetValue(m_spell.Ability.Skill.Id) < m_spell.Ability.RedValue)
+				caster.Skills.GetValue(m_spell.Ability.Skill.Id) < m_spell.Ability.RedValue)
 			{
 				return SpellFailedReason.MinSkill;
 			}
@@ -967,7 +978,7 @@ namespace WCell.RealmServer.Spells
 					return SpellFailedReason.DontReport;
 				}
 			}
-			
+
 			if (!caster.HasEnoughPowerToCast(m_spell, null))
 			{
 				return SpellFailedReason.NoPower;
@@ -1137,7 +1148,7 @@ namespace WCell.RealmServer.Spells
 					return CastMissReason.Evade;
 				}
 				// immune & invul
-                if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
+				if (!spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability) ||
 					(target is Character && ((Character)target).Role.IsStaff))
 				{
 					if (target.IsInvulnerable)
@@ -1160,7 +1171,7 @@ namespace WCell.RealmServer.Spells
 
 
 				// resist
-                if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
+				if (target.CheckResist(CasterUnit, school, spell.Mechanic) && !spell.AttributesExB.HasFlag(SpellAttributesExB.CannotBeResisted))
 				{
 					return CastMissReason.Resist;
 				}
@@ -1193,7 +1204,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// check for interruption
-            if (m_spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
+			if (m_spell.InterruptFlags.HasFlag(InterruptFlags.OnTakeDamage))
 			{
 				Cancel();
 			}
@@ -1395,10 +1406,15 @@ namespace WCell.RealmServer.Spells
 		{
 			var passiveCast = InheritSpellCast();
 
-			passiveCast.ValidateAndTrigger(spell, target);
+			passiveCast.ValidateAndTrigger(spell, target, null);
 		}
 
 		public void ValidateAndTrigger(Spell spell, WorldObject target)
+		{
+			ValidateAndTrigger(spell, target, null);
+		}
+
+		public void ValidateAndTrigger(Spell spell, WorldObject target, IUnitAction action)
 		{
 			WorldObject[] targets;
 
@@ -1409,6 +1425,12 @@ namespace WCell.RealmServer.Spells
 			else
 			{
 				targets = new[] { target };
+			}
+
+			if (action != null)
+			{
+				action.ReferenceCount++;
+				TriggerAction = action;
 			}
 
 			Start(spell, true, targets);
@@ -1488,15 +1510,15 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Close the timer and get rid of circular references; will be called automatically
 		/// </summary>
-		internal protected void Cleanup(bool disposeHandlers)
+		internal protected void Cleanup(bool finalCleanup)
 		{
 			isPlayerCast = false;
 
 			Id = 0;
 			m_casting = false;
-			if (disposeHandlers)
+			if (finalCleanup)
 			{
-				DisposeHandlers(m_handlers);
+				DoFinalCleanup(m_handlers);
 			}
 			if (m_spell.IsTame && Selected is NPC)
 			{
@@ -1520,17 +1542,23 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		private void DisposeHandlers(SpellEffectHandler[] handlers)
+		private void DoFinalCleanup(SpellEffectHandler[] handlers)
 		{
-			if (handlers == null)
-				return;
-
-			foreach (var handler in handlers)
+			if (TriggerAction != null)
 			{
-				// can be null if spell is cancelled during initialization
-				if (handler != null)
+				TriggerAction.ReferenceCount--;
+				TriggerAction = null;
+			}
+
+			if (handlers != null)
+			{
+				foreach (var handler in handlers)
 				{
-					handler.Cleanup();
+					// can be null if spell is cancelled during initialization
+					if (handler != null)
+					{
+						handler.Cleanup();
+					}
 				}
 			}
 		}

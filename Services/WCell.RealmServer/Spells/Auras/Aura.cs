@@ -268,11 +268,19 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// The actual Caster (returns null if caster went offline)
+		/// The actual Caster (returns null if caster went offline or disappeared for some other reason)
 		/// </summary>
 		public Unit Caster
 		{
-			get { return m_casterInfo.CasterUnit; }
+			get
+			{
+				var caster = m_casterInfo.CasterUnit;
+				if (caster != null && caster.ContextHandler == Owner.ContextHandler)
+				{
+					return caster;
+				}
+				return null;
+			}
 		}
 
 		public Unit Owner
@@ -698,11 +706,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public void Cancel()
 		{
-			var owner = m_auras.Owner;
-			if (!owner.CancelAreaAura(m_spell))
-			{
-				Remove(true);
-			}
+			Remove(true);
 		}
 
 		public bool TryRemove(bool cancelled)
@@ -725,8 +729,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes this Aura from the player, but does not remove an AreaAura if it is triggered
-		/// by this Aura. Use Cancel instead.
+		/// Removes this Aura from the player
 		/// </summary>
 		/// <param name="cancelled"></param>
 		public void Remove(bool cancelled)
@@ -734,6 +737,19 @@ namespace WCell.RealmServer.Spells.Auras
 			if (IsAdded)
 			{
 				IsAdded = false;
+
+				var owner = m_auras.Owner;
+				var caster = Caster;
+				if (caster != null)
+				{
+					owner.Proc(ProcTriggerFlags.AuraRemoved, owner, 
+						new AuraRemovedAction{Attacker = caster, Victim = owner, Aura = this}, true);
+				}
+
+				if (m_spell.IsAreaAura && owner.CancelAreaAura(m_spell))
+				{
+					return;
+				}
 
 				var auras = m_auras;
 
@@ -744,7 +760,7 @@ namespace WCell.RealmServer.Spells.Auras
 				auras.Cancel(this);
 				if (m_controller != null)
 				{
-					m_controller.OnRemove(auras.Owner, this);
+					m_controller.OnRemove(owner, this);
 				}
 
 				if (m_record != null)
