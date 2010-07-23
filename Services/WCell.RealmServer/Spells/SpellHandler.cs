@@ -499,9 +499,14 @@ namespace WCell.RealmServer.Spells
 			UnsetHandler(SpellEffectType.Parry);
 		}
 
+		public static void UnsetHandler(SpellEffectType type)
+		{
+			SpellEffectCreators[(int)type] = null;
+		}
+
 		#endregion
 
-		#region SummonHandlers
+		#region Summons
 		static void InitSummonHandlers()
 		{
 			// non combat pets
@@ -538,11 +543,6 @@ namespace WCell.RealmServer.Spells
 		private static void InitShapeShiftInfos()
 		{
 			new DBCReader<ShapeshiftEntryConverter>(RealmServerConfiguration.GetDBCFile("SpellShapeshiftForm"));
-		}
-
-		public static void UnsetHandler(SpellEffectType type)
-		{
-			SpellEffectCreators[(int)type] = null;
 		}
 
 		public static ClassId ToClassId(this SpellClassSet classSet)

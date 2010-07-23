@@ -39,6 +39,7 @@ namespace WCell.Addons.Default.Spells.Mage
 		}
 	}
 
+	#region Burnout
 	public class BurnoutHandler : SpellEffectHandler
 	{
 		public BurnoutHandler(SpellCast cast, SpellEffect effect)
@@ -71,4 +72,5 @@ namespace WCell.Addons.Default.Spells.Mage
 			}
 		}
 	}
+	#endregion
 }
