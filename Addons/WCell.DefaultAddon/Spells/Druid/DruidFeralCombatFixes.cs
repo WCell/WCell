@@ -48,6 +48,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 				// increase 10% of something, depending on the form
 				var direBearEffect = spell.AddAuraEffect(() => new HeartOfTheWildDireBearHandler());
+				direBearEffect.MiscValue = (int)StatType.Stamina;	// increases stamina
 				direBearEffect.BasePoints = dummy.BasePoints;
 				direBearEffect.DiceSides = dummy.DiceSides;
 
@@ -89,7 +90,11 @@ namespace WCell.Addons.Default.Spells.Druid
 		}
 	}
 
-	public class HeartOfTheWildDireBearHandler : ModTotalStatPercentHandler
+	#region Heart of the Wild
+	/// <summary>
+	/// Increases stats when in dire bear form
+	/// </summary>
+	class HeartOfTheWildDireBearHandler : ModTotalStatPercentHandler
 	{
 		private bool applied;
 		protected override void Apply()
@@ -112,7 +117,10 @@ namespace WCell.Addons.Default.Spells.Druid
 		}
 	}
 
-	public class HeartOfTheWildCatHandler : ModMeleeAttackPowerPercentHandler
+	/// <summary>
+	/// Increases AP if in cat form
+	/// </summary>
+	class HeartOfTheWildCatHandler : ModMeleeAttackPowerPercentHandler
 	{
 		private bool applied;
 		protected override void Apply()
@@ -134,4 +142,5 @@ namespace WCell.Addons.Default.Spells.Druid
 			}
 		}
 	}
+	#endregion
 }

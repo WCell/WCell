@@ -37,14 +37,19 @@ namespace WCell.RealmServer.Spells
 		public Spell[] TargetTriggerSpells, CasterTriggerSpells;
 
 		/// <summary>
-		/// Set of specific Spells which, when used, can proc this Spell.
+		/// Set of Spells which, when used by the caster of this spell, can proc this Spell.
 		/// </summary>
 		public HashSet<Spell> CasterProcSpells;
 
 		/// <summary>
-		/// Set of specific Spells which can proc this Spell on their targets.
+		/// Set of Spells which, when used by the caster of this spell, can proc this Spell on their targets.
 		/// </summary>
 		public HashSet<Spell> TargetProcSpells;
+
+		/// <summary>
+		/// Set of Spells which can be proc'ed, when removed from the owner of this aura (if the owner owns those spells).
+		/// </summary>
+		public HashSet<Spell> RemovalProcSpells;
 
 		/// <summary>
 		/// ProcHandlers to be added to the caster of this Spell.

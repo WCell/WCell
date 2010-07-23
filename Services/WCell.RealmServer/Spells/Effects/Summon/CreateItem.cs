@@ -52,15 +52,16 @@ namespace WCell.RealmServer.Spells.Effects
 				return SpellFailedReason.ItemNotFound;
 			}
 
-		    // find a free slot
-		    slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount);
-		    if (slotId.Slot == BaseInventory.INVALID_SLOT)
-		    {
-		        ItemHandler.SendInventoryError((Character)target, InventoryError.INVENTORY_FULL);
-		        return SpellFailedReason.DontReport;
-		    }
+			// find a free slot
+			// TODO: Add & use HoldFreeSlotCheck instead, so slot won't get occupied
+			slotId = ((Character)target).Inventory.FindFreeSlotCheck(templ, amount);
+			if (slotId.Slot == BaseInventory.INVALID_SLOT)
+			{
+				ItemHandler.SendInventoryError((Character)target, InventoryError.INVENTORY_FULL);
+				return SpellFailedReason.DontReport;
+			}
 
-		    return SpellFailedReason.Ok;
+			return SpellFailedReason.Ok;
 		}
 
 		protected override void Apply(WorldObject target)
@@ -78,10 +79,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
+			get { return ObjectTypes.Player; }
 		}
 	}
 }

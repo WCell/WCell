@@ -122,6 +122,11 @@ namespace WCell.RealmServer.Commands
 						{
 							spell = talent.Spells[talent.Spells.Length - 1]; // add highest rank
 						}
+
+						if (spell == null)
+						{
+							continue;
+						}
 					}
 				}
 				spells.Add(spell);

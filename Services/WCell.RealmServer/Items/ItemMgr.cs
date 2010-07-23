@@ -75,6 +75,28 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Returns the ItemTemplate with the given id
 		/// </summary>
+		public static ItemTemplate GetTemplateForced(ItemId id)
+		{
+			ItemTemplate templ;
+			if ((uint)id >= Templates.Length)
+			{
+				templ = null;
+			}
+			else
+			{
+				templ = Templates[(uint)id];
+			}
+
+			if (templ == null)
+			{
+				throw new ContentException("Requested ItemTemplate does not exist: {0}", id);
+			}
+			return templ;
+		}
+
+		/// <summary>
+		/// Returns the ItemTemplate with the given id
+		/// </summary>
 		public static ItemTemplate GetTemplate(uint id)
 		{
 			if (id >= Templates.Length)
@@ -621,7 +643,16 @@ namespace WCell.RealmServer.Items
 				ContentHandler.Load<ItemTemplate>();
 				ContentHandler.Load<ItemRandomEnchantEntry>();
 
-				Loaded = true;
+				OnLoaded();
+
+				foreach (var templ in Templates)
+				{
+					if (templ != null)
+					{
+						templ.InitializeTemplate();
+					}
+				}
+
 				TruncSets();
 
 				if (ArchetypeMgr.Loaded)
@@ -629,12 +660,13 @@ namespace WCell.RealmServer.Items
 					ArchetypeMgr.LoadItems();
 				}
 
-				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
-
 				SpellHandler.InitTools();
 				LoadItemCharRelations();
 
 				AuctionMgr.Instance.LoadItems();
+
+				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
+				Loaded = true;
 			}
 		}
 
@@ -850,5 +882,24 @@ namespace WCell.RealmServer.Items
 			RandomSuffixReader.Entries.TryGetValue((int)id, out entry);
 			return entry;
 		}
+
+		#region Apply changes when loading
+		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();
+		public static void Apply(Action<ItemTemplate> cb, params ItemId[] ids)
+		{
+			foreach (var id in ids)
+			{
+				loadHooks.Add(new KeyValuePair<ItemId, Action<ItemTemplate>>(id, cb));
+			}
+		}
+
+		static void OnLoaded()
+		{
+			foreach (var hook in loadHooks)
+			{
+				hook.Value(GetTemplateForced(hook.Key));
+			}
+		}
+		#endregion
 	}
 }

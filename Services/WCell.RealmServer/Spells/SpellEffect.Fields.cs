@@ -98,7 +98,7 @@ namespace WCell.RealmServer.Spells
 		public Spell GetTriggerSpell()
 		{
 			var spell = SpellHandler.Get(TriggerSpellId);
-			if (spell == null && Spell.ForceDataPresence)
+			if (spell == null && ContentHandler.ForceDataPresence)
 			{
 				throw new ContentException("Spell {0} does not have a valid TriggerSpellId: {1}", this, TriggerSpellId);
 			}

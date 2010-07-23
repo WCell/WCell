@@ -430,7 +430,11 @@ namespace WCell.RealmServer.Items
 		public void FinalizeDataHolder()
 		{
 			CheckId();
+			ArrayUtil.Set(ref ItemMgr.Templates, Id, this);
+		}
 
+		internal void InitializeTemplate()
+		{
 			if (Names == null)
 			{
 				Names = new string[(int)ClientLocale.End];
@@ -597,8 +601,6 @@ namespace WCell.RealmServer.Items
 			IsCharter = Flags.HasFlag(ItemFlags.Charter);
 
 			RandomSuffixFactor = EnchantMgr.GetRandomSuffixFactor(this);
-
-			ArrayUtil.Set(ref ItemMgr.Templates, Id, this);
 
 			if (IsCharter)
 			{

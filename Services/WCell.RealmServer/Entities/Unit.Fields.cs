@@ -1182,7 +1182,7 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 				}
-				
+
 
 				var entry = SpellHandler.ShapeshiftEntries.Get((uint)value);
 				if (entry != null)
@@ -1221,10 +1221,7 @@ namespace WCell.RealmServer.Entities
 
 		public ShapeshiftMask ShapeshiftMask
 		{
-			get
-			{
-				return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1));
-			}
+			get { return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1)); }
 		}
 		#endregion
 
@@ -1265,11 +1262,11 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
-	    public UnitExtraFlags ExtraFlags
-	    {
-	        get;
-            set;
-	    }
+		public UnitExtraFlags ExtraFlags
+		{
+			get;
+			set;
+		}
 
 		#region Health
 
@@ -1478,8 +1475,10 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return Math.Max(0, GetInt32(UnitFields.POWER1 + (int)PowerType) +
-					(m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0));
+				// TODO: fix this thing
+				// power is now calculated and regenerated continuously client-side
+				// so we also need to interpolate power values server-side
+				return UpdatePower();
 			}
 			set
 			{
@@ -1496,6 +1495,15 @@ namespace WCell.RealmServer.Entities
 					MiscHandler.SendPowerUpdate(this, PowerType, value);
 				}
 			}
+		}
+
+		private int UpdatePower()
+		{
+			var val = GetInt32(UnitFields.POWER1 + (int)PowerType) +
+					  (m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0);
+			val = MathUtil.ClampMinMax(val, 0, MaxPower);
+			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
+			return val;
 		}
 
 		/// <summary>
@@ -1592,10 +1600,10 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return (uint)(5*Level);
+				return (uint)(5 * Level);
 			}
 			internal set
-			{}
+			{ }
 		}
 	}
 }

@@ -14,16 +14,10 @@
  *
  *************************************************************************/
 
-using System;
-using Cell.Core;
 using NLog;
 using System.Runtime;
 using System.Threading;
-using WCell.RealmServer.Lang;
-using WCell.RealmServer.Spells;
-using WCell.Util.Lang;
-using WCell.Util.NLog;
-using System.Text.RegularExpressions;
+using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole
 {
@@ -44,7 +38,7 @@ namespace WCell.RealmServerConsole
 
         	Thread.CurrentThread.IsBackground = true;
 
-			Spell.ForceDataPresence = true;
+			ContentHandler.ForceDataPresence = true;
         	RealmServer.Program.Start();
         	RealmServerConsole.Run();
         }

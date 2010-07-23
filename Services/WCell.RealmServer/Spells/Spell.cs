@@ -66,9 +66,6 @@ namespace WCell.RealmServer.Spells
 
 		public static readonly Spell[] EmptyArray = new Spell[0];
 
-		[NotVariable]
-		public static bool ForceDataPresence = false;
-
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
 		//    var effects = new HashSet<SpellEffectType>();
@@ -820,7 +817,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
-			return GetEffect(type, ForceDataPresence);
+			return GetEffect(type, ContentHandler.ForceDataPresence);
 		}
 
 		/// <summary>
@@ -1008,6 +1005,30 @@ namespace WCell.RealmServer.Spells
 		public void ClearEffects()
 		{
 			Effects = new SpellEffect[0];
+		}
+
+		public void RemoveEffect(AuraType type)
+		{
+			RemoveEffect(GetEffect(type));
+		}
+
+		public void RemoveEffect(SpellEffectType type)
+		{
+			RemoveEffect(GetEffect(type));
+		}
+
+		public void RemoveEffect(SpellEffect toRemove)
+		{
+			var effects = new SpellEffect[Effects.Length - 1];
+			var e = 0;
+			foreach (var effct in Effects)
+			{
+				if (effct != toRemove)
+				{
+					effects[e++] = effct;
+				}
+			}
+			Effects = effects;
 		}
 		#endregion
 

@@ -286,9 +286,9 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Proc Spells
+		#region Caster Proc Spells
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger the given spells' procs.
 		/// </summary>
 		public void AddCasterProcSpells(params SpellId[] spellIds)
 		{
@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger the given spells' procs.
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -321,7 +321,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger the given spells' procs.
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -332,8 +332,9 @@ namespace WCell.RealmServer.Spells
 			CasterProcSpells.AddRange(spells);
 			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
+		#endregion
 
-
+		#region Target Proc Spells
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
@@ -380,6 +381,54 @@ namespace WCell.RealmServer.Spells
 			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
 		#endregion
+
+		//#region Removal Proc Spells
+		///// <summary>
+		///// Add Spells that are to trigger their procs .
+		///// </summary>
+		//public void AddRemovalProcSpells(params SpellId[] spellIds)
+		//{
+		//    var spells = new Spell[spellIds.Length];
+		//    for (var i = 0; i < spellIds.Length; i++)
+		//    {
+		//        var id = spellIds[i];
+		//        var spell = SpellHandler.Get(id);
+		//        if (spell == null)
+		//        {
+		//            throw new InvalidSpellDataException("Invalid SpellId: " + id);
+		//        }
+		//        spells[i] = spell;
+		//    }
+		//    AddRemovalProcSpells(spells);
+		//}
+
+		///// <summary>
+		///// Add Spells which, when casted by the owner of this Aura, can cause it to trigger the given spells' procs.
+		///// </summary>
+		//public void AddRemovalProcSpells(params SpellLineId[] spellSetIds)
+		//{
+		//    var list = new List<Spell>(spellSetIds.Length * 6);
+		//    foreach (var id in spellSetIds)
+		//    {
+		//        var line = SpellLines.GetLine(id);
+		//        list.AddRange(line);
+		//    }
+		//    AddRemovalProcSpells(list.ToArray());
+		//}
+
+		///// <summary>
+		///// Add Spells which, when casted by the owner of this Aura, can cause it to trigger the given spells' procs.
+		///// </summary>
+		//public void AddRemovalProcSpells(params Spell[] spells)
+		//{
+		//    if (RemovalProcSpells == null)
+		//    {
+		//        RemovalProcSpells = new HashSet<Spell>();
+		//    }
+		//    RemovalProcSpells.AddRange(spells);
+		//    ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+		//}
+		//#endregion
 
 		public bool CanOverride(Spell spell)
 		{

@@ -210,6 +210,7 @@
     <Compile Include="Instances\UtgardePinnacle.cs" />
     <Compile Include="Instances\VaultOfArchavon.cs" />
     <Compile Include="Instances\VioletHold.cs" />
+    <Compile Include="Items\PlayerAbilityItemFixes.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />
     <Compile Include="Instances\AhnQirajTemple.cs" />

@@ -45,6 +45,13 @@ namespace WCell.Addons.Default.Spells.Druid
 				var triggerSpellEffect = effect.GetTriggerSpell().GetEffect(AuraType.ModCastingSpeed);
 				effect.AffectMask = triggerSpellEffect.AffectMask;
 			});
+
+			// Intensity only procs for Enrage
+			SpellLineId.DruidRestorationIntensity.Apply(spell =>
+			{
+				var proc = spell.GetEffect(AuraType.ProcTriggerSpell);
+				proc.AddToAffectMask(SpellLineId.DruidEnrage);
+			});
 		}
 	}
 }

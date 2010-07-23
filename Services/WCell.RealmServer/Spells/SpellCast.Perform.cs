@@ -811,7 +811,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// trigger dynamic post-cast spells, eg Shadow Weave etc
+			// trigger dynamic post-cast spells, eg Shadow Weaving etc
 			caster.Spells.TriggerSpellsFor(this);
 			if (caster is Character)
 			{

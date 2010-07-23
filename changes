@@ -1,2 +1,4 @@
-- fixed DruidFeralCombatLeaderOfThePack
-- to test: DruidFeralCombatFeralSwiftness, DruidFeralCombatHeartOfTheWild
+- added item fix capabilities
+- added Spell.RemoveEffect
+- fixed mana agate
+- fixed DruidRestorationIntensity

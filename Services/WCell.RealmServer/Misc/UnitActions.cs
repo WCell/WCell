@@ -418,9 +418,6 @@ namespace WCell.RealmServer.Misc
 						// procs can't trigger procs
 						return ProcTriggerFlags.None;
 					}
-				}
-				else
-				{
 					flags |= ProcTriggerFlags.SpellCast;
 					if (IsCritical)
 					{
@@ -1119,6 +1116,9 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
+		/// <summary>
+		/// Actions that are marked in use, will not be recycled
+		/// </summary>
 		public void MarkInUse()
 		{
 			// make sure, Attacker won't re-use this

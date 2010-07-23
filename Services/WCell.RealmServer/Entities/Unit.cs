@@ -950,12 +950,13 @@ namespace WCell.RealmServer.Entities
 		{
 			if (value > 0)
 			{
-				if (Power + value > MaxPower)
+				var power = Power;
+				var max = MaxPower;
+				if (power + value > max)
 				{
-					value = MaxPower - Power;
-					Power = MaxPower;
+					value = max - power;
+					Power = max;
 				}
-
 				else
 				{
 					Power += value;
@@ -1615,6 +1616,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Remnoves the first proc that triggers the given spell
+		/// </summary>
 		public void RemoveProcHandler(SpellId procId)
 		{
 			if (m_procHandlers != null)
@@ -1637,6 +1641,24 @@ namespace WCell.RealmServer.Entities
 				foreach (var handler in m_procHandlers)
 				{
 					if (predicate(handler))
+					{
+						m_procHandlers.Remove(handler);
+						break;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Removes the first custom ProcHandler that uses the given template.
+		/// </summary>
+		public void RemoveProcHandler(ProcHandlerTemplate template)
+		{
+			if (m_procHandlers != null)
+			{
+				foreach (var handler in m_procHandlers)
+				{
+					if (handler is ProcHandler && ((ProcHandler)handler).Template == template)
 					{
 						m_procHandlers.Remove(handler);
 						break;

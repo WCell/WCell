@@ -31,6 +31,12 @@ namespace WCell.RealmServer.Content
 		/// </summary>
 		[Variable("ContentErrorResponse")]
 		public static ErrorResponse ErrorResponse = ErrorResponse.None;
+
+		/// <summary>
+		/// Causes an error to be thrown if certain data is not present when requested
+		/// </summary>
+		[NotVariable]
+		public static bool ForceDataPresence = false;
 		//ErrorResponse.Warn;
 
 		public static bool EnableCaching = true;
