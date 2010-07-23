@@ -501,6 +501,11 @@ namespace WCell.RealmServer.Entities
 
 					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
+
+                    if(Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
+                    }
 				}
 				else
 				{
