@@ -506,6 +506,10 @@ namespace WCell.RealmServer.Entities
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
                     }
+                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
+                    }
 				}
 				else
 				{
