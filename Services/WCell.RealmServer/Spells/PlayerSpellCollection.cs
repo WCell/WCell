@@ -114,9 +114,18 @@ namespace WCell.RealmServer.Spells
 		void AddSpell(Spell spell, bool isNew)
 		{
 			// make sure the char knows the skill that this spell belongs to
-			if (spell.Ability != null && !OwnerChar.Skills.Contains(spell.Ability.Skill.Id))
+			if (spell.Ability != null)
 			{
-				OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				var skill = OwnerChar.Skills[spell.Ability.Skill.Id];
+				if (skill == null)
+				{
+					// learn new skill
+					skill = OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				}	// else upgrade tier
+				if (skill.CurrentTierSpell == null || skill.CurrentTierSpell.SkillTier < spell.SkillTier)
+				{
+					skill.CurrentTierSpell = spell;
+				}
 			}
 
 			if (!m_byId.ContainsKey(spell.Id))

@@ -20,6 +20,7 @@ using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 
 namespace WCell.RealmServer.Skills
@@ -161,7 +162,24 @@ namespace WCell.RealmServer.Skills
 
 		public SkillTierId CurrentTier
 		{
-			get { return SkillLine.GetTier(CurrentValue); }
+			get
+			{
+				if (CurrentTierSpell != null)
+				{
+					return CurrentTierSpell.SkillTier;
+				}
+				// added skill without a spell (means that a GM or Dev was playing around)
+				return SkillLine.GetTier(CurrentValue);
+			}
+		}
+
+		/// <summary>
+		/// The spell that represents the current tier
+		/// </summary>
+		public Spell CurrentTierSpell
+		{
+			get;
+			internal set;
 		}
 
 		/// <summary>

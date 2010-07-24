@@ -266,6 +266,11 @@ namespace WCell.RealmServer.Spells
 		public SkillLine Skill;
 
 		/// <summary>
+		/// The tier of the skill that this spell represents (if this is a Skill spell)
+		/// </summary>
+		public SkillTierId SkillTier;
+
+		/// <summary>
 		/// Tools that are required by this spell (is set during Initialization of Items)
 		/// </summary>
 		public ItemTemplate[] RequiredTools;
@@ -711,6 +716,14 @@ namespace WCell.RealmServer.Spells
 					SpellHandler.SpellsRequiringTools.Add(this);
 				}
 				ArrayUtil.PruneVals(ref RequiredToolIds);
+			}
+
+			var skillEffect = GetEffectsWhere(effect => 
+				effect.EffectType == SpellEffectType.SkillStep || 
+				effect.EffectType == SpellEffectType.Skill).FirstOrDefault();
+			if (skillEffect != null)
+			{
+				SkillTier = (SkillTierId) skillEffect.BasePoints;
 			}
 
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
