@@ -503,11 +503,14 @@ namespace WCell.RealmServer.Entities
 					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
 
-					if (Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
-					{
-						CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
-					}
-					Skills.UpdateSkillsForLevel(Level);
+                    if(Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
+                    }
+                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
+                    }
 				}
 				else
 				{
