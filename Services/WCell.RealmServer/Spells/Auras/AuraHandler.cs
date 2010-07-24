@@ -200,6 +200,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();
 			EffectHandlers[(int)AuraType.DamageShield] = () => new DamageShieldEffectHandler();
 			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();
+			EffectHandlers[(int)AuraType.ModDamageTaken] = () => new ModDamageTakenHandler();
+			EffectHandlers[(int)AuraType.ModDamageTakenPercent] = () => new ModDamageTakenPercentHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

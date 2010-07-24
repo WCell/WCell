@@ -1449,7 +1449,7 @@ namespace WCell.RealmServer.Entities
 				//if (PowerType == PowerType.Mana)
 				SetInt32(UnitFields.BASE_MANA, value);
 
-				this.UpdatePower();
+				this.UpdateMaxPower();
 
 				if ((PowerType != PowerType.Rage) && (PowerType != PowerType.Energy))
 				{

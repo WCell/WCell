@@ -500,8 +500,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#endregion
 
-		#region Active
-
+		#region Active & Enable & Disable
 		private bool m_IsActive;
 
 		/// <summary>
@@ -544,6 +543,51 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				IsActive = true;
 			}
+		}
+
+		private void Enable()
+		{
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.IsProc && Caster != null && m_spell.ProcHandlers != null)
+			{
+				foreach (var templ in m_spell.ProcHandlers)
+				{
+					Owner.AddProcHandler(new ProcHandler(Caster, Owner, templ));
+				}
+			}
+
+			if (m_spell.DoesAuraHandleProc)
+			{
+				// only add proc if there is not a custom handler for it
+				m_auras.Owner.AddProcHandler(this);
+			}
+
+			// apply all aura-related effects
+			ApplyNonPeriodicEffects();
+		}
+
+		/// <summary>
+		/// Guaranteed Cleanup
+		/// </summary>
+		/// <param name="cancelled"></param>
+		internal void Disable(bool cancelled)
+		{
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.ProcHandlers != null && Caster != null)
+			{
+				foreach (var templ in m_spell.ProcHandlers)
+				{
+					Owner.RemoveProcHandler(templ);
+				}
+			}
+
+			if (m_spell.DoesAuraHandleProc)
+			{
+				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
+				m_auras.Owner.RemoveProcHandler(this);
+			}
+
+			CallAllHandlers(handler => handler.IsActive = false);
 		}
 		#endregion
 
@@ -845,53 +889,6 @@ namespace WCell.RealmServer.Spells.Auras
 		public void OnRemove(Unit owner, Aura aura)
 		{
 			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region Enable & Disable
-		private void Enable()
-		{
-			// custom prochandlers to be applied when spell is casted
-			if (m_spell.IsProc && Caster != null && m_spell.ProcHandlers != null)
-			{
-				foreach (var templ in m_spell.ProcHandlers)
-				{
-					Owner.AddProcHandler(new ProcHandler(Caster, Owner, templ));
-				}
-			}
-
-			if (m_spell.DoesAuraHandleProc)
-			{
-				// only add proc if there is not a custom handler for it
-				m_auras.Owner.AddProcHandler(this);
-			}
-
-			// apply all aura-related effects
-			ApplyNonPeriodicEffects();
-		}
-
-		/// <summary>
-		/// Guaranteed Cleanup
-		/// </summary>
-		/// <param name="cancelled"></param>
-		internal void Disable(bool cancelled)
-		{
-			// custom prochandlers to be applied when spell is casted
-			if (m_spell.ProcHandlers != null && Caster != null)
-			{
-				foreach (var templ in m_spell.ProcHandlers)
-				{
-					Owner.RemoveProcHandler(templ);
-				}
-			}
-
-			if (m_spell.DoesAuraHandleProc)
-			{
-				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
-				m_auras.Owner.RemoveProcHandler(this);
-			}
-
-			CallAllHandlers(handler => handler.IsActive = false);
 		}
 		#endregion
 

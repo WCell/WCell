@@ -58,12 +58,12 @@ namespace WCell.RealmServer.Modifiers
 
 		static UnitUpdates()
 		{
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdatePower;
-			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = UpdatePower;
+			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
+			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegen] = UpdateHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenInCombat] = UpdateCombatHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdatePower;
+			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] = UpdateRangedAttackPower;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
@@ -169,7 +169,7 @@ namespace WCell.RealmServer.Modifiers
 				UpdatePowerRegen(unit);
 			}
 
-			UpdatePower(unit);
+			UpdateMaxPower(unit);
 			if (unit.IntMods[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] > 0)
 			{
 				unit.UpdateRangedAttackPower();
@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Modifiers
 			unit.SetInt32(UnitFields.MAXHEALTH, value);
 		}
 
-		internal static void UpdatePower(this Unit unit)
+		internal static void UpdateMaxPower(this Unit unit)
 		{
 			var value = unit.BasePower + unit.IntMods[(int)StatModifierInt.Power];
 			if (unit is Character && unit.PowerType == PowerType.Mana)
@@ -231,7 +231,7 @@ namespace WCell.RealmServer.Modifiers
 				var intelBase = ((Character)unit).Archetype.FirstLevelStats.Intellect;
 				value += intelBase + (unit.Intellect - intelBase) * ManaPerInt;
 			}
-			value = (value*unit.IntMods[(int) StatModifierInt.PowerPct] + 50) / 100;
+			value += (value*unit.IntMods[(int) StatModifierInt.PowerPct] + 50) / 100;
 			if (value < 0)
 			{
 				value = 0;

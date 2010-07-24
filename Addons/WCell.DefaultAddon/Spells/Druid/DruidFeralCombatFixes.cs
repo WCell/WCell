@@ -38,9 +38,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 
-			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
-			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
-
 			// Heart of the wild: "while in Bear or Dire Bear Form your Stamina is increased by $s3% and while in Cat Form your attack power is increased by $s2%."
 			SpellLineId.DruidFeralCombatHeartOfTheWild.Apply(spell =>
 			{
@@ -67,6 +64,16 @@ namespace WCell.Addons.Default.Spells.Druid
 				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
 			});
+
+			// Primal Tenacity has the wrong effect type: "reduces all damage taken while stunned by $s2% while in Cat Form."
+			SpellLineId.DruidFeralCombatPrimalTenacity.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.SchoolAbsorb);
+				effect.AuraType = AuraType.ModDamageTakenPercent;		// should reduce damage taken
+			});
+
+			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
+			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
 		}
 
 		private static void FixFeralSwiftness(SpellId origSpell, SpellId triggerSpell)

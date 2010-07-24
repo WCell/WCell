@@ -7,7 +7,7 @@ using WCell.Constants.Spells;
 namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	/// <summary>
-	/// Toggles an aura while active
+	/// Applies another aura while active and removes it when turning inactive
 	/// </summary>
 	public class ToggleAuraHandler : AuraEffectHandler
 	{

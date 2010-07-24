@@ -76,12 +76,6 @@ namespace WCell.RealmServer.RacesClasses
 		[NotPersistent]
 		public readonly List<ItemStack> FemaleItems = new List<ItemStack>();
 
-		// <summary>
-		// All initial skills of this Archetype
-		// </summary>
-		//[NotPersistent]
-		//public readonly List<PlayerSkillEntry> Skills = new List<PlayerSkillEntry>();
-
 		[NotPersistent]
 		public byte[] ActionButtons = CreateActionButtons();
 

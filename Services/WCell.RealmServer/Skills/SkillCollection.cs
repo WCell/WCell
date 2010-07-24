@@ -114,11 +114,12 @@ namespace WCell.RealmServer.Skills
 				skill.GainRand(chance, 1);
 		}
 
-		public void UpdateSkillsForLevel(int level)
+		internal void UpdateSkillsForLevel(int level)
 		{
 			foreach (var sk in m_skills.Values)
 			{
-				if (sk.SkillLine.Category == SkillCategory.WeaponProficiency)
+				if (sk.SkillLine.Category == SkillCategory.WeaponProficiency ||
+					sk.SkillLine.Category == SkillCategory.ArmorProficiency)
 				{
 					sk.MaxValue = (ushort)(5 * level);
 				}
