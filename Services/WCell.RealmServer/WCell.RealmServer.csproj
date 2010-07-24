@@ -1060,7 +1060,7 @@
     <Compile Include="Spells\Auras\Mod\ModThreat.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModTimeBetweenAttacks.cs">
+    <Compile Include="Spells\Auras\Mod\ModHastePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Passive\AddCasterHitTrigger.cs">
