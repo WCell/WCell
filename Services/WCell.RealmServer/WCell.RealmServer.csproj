@@ -754,7 +754,7 @@
     <Compile Include="Spells\SpellLine.cs" />
     <Compile Include="Spells\SpellLines.cs" />
     <Compile Include="Spells\SpellLines.Def.cs" />
-    <Compile Include="Spells\SpellSummonHandlers.cs" />
+    <Compile Include="Spells\SpellSummons.cs" />
     <Compile Include="Talents\CharacterSpecProfile.cs" />
     <Compile Include="Talents\CharacterTalentCollection.cs" />
     <Compile Include="Talents\IHasTalents.cs" />

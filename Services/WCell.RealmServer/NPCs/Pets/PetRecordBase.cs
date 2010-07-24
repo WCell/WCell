@@ -49,7 +49,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 	    public virtual PetType Type
 	    {
-	        get { return PetType.None; }
+	        get { return PetType.End; }
 	        set { }
 	    }
 

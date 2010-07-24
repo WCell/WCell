@@ -242,9 +242,16 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Only valid for SpellEffects of type Summon
 		/// </summary>
-		public SpellSummonHandler SummonHandler
+		public SpellSummonEntry SummonEntry
 		{
-			get { return SpellHandler.GetSummonHandler((SummonType)MiscValueB); }
+			get
+			{
+				if (EffectType != SpellEffectType.Summon || (SummonType)MiscValueB == SummonType.None)
+				{
+					return null;
+				}
+				return SpellHandler.GetSummonEntry((SummonType)MiscValueB);
+			}
 		}
 
 		/// <summary>
@@ -574,7 +581,7 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue(int level, int comboPoints)
 		{
-			var value = BasePoints+1;
+			var value = BasePoints;
 
 			// apply Unit boni
 			value += (int)Math.Round(RealPointsPerLevel * Spell.GetMaxLevelDiff(level));
@@ -584,7 +591,10 @@ namespace WCell.RealmServer.Spells
 
 			// dice bonus
 			// see http://www.wowhead.com/spell=25269 for comparison
-			value += Utility.Random(0, DiceSides);
+			if (DiceSides > 0)
+			{
+				value += Utility.Random(1, DiceSides);
+			}
 
 			return value;
 		}
@@ -697,6 +707,35 @@ namespace WCell.RealmServer.Spells
 			if (TriggerSpellId != SpellId.None)
 			{
 				writer.WriteLine(indent + "Triggers: {0} ({1})", TriggerSpellId, (uint)TriggerSpellId);
+			}
+
+			var summonEntry = SummonEntry;
+			if (summonEntry != null)
+			{
+				writer.WriteLine(indent + "Summon information:");
+				indent += "\t";
+				writer.WriteLine(indent + "Summon ID: {0}", summonEntry.Id);
+				if (summonEntry.Group != 0)
+				{
+					writer.WriteLine(indent + "Summon Group: {0}", summonEntry.Group);
+				}
+				if (summonEntry.FactionTemplateId != 0)
+				{
+					writer.WriteLine(indent + "Summon Faction: {0}", summonEntry.FactionTemplateId);
+				}
+				if (summonEntry.Type != 0)
+				{
+					writer.WriteLine(indent + "Summon Type: {0}", summonEntry.Type);
+				}
+				if (summonEntry.Flags != 0)
+				{
+					writer.WriteLine(indent + "Summon Flags: {0}", summonEntry.Flags);
+				}
+				if (summonEntry.Slot != 0)
+				{
+					writer.WriteLine(indent + "Summon Slot: {0}", summonEntry.Slot);
+				}
+
 			}
 		}
 		#endregion

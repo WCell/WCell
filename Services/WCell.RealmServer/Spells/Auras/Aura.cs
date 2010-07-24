@@ -823,7 +823,7 @@ namespace WCell.RealmServer.Spells.Auras
 		private void Enable()
 		{
 			// custom prochandlers to be applied when spell is casted
-			if (m_spell.IsProc && Caster != null)
+			if (m_spell.IsProc && Caster != null && m_spell.ProcHandlers != null)
 			{
 				foreach (var templ in m_spell.ProcHandlers)
 				{

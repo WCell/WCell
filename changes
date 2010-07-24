@@ -1,3 +1,2 @@
-- implemented ProcTriggerFlags.AuraRemoved
-- implemented a link for Spells that are triggered by procs to access an instance of the IUnitAction object that triggered the proc
-- fixed more bugs
+- fixed up summon system / force of nature & other summon spells
+- more/cleanup goes without saying

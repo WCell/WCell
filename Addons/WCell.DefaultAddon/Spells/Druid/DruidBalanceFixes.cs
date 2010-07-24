@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
+using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Druid
 {
@@ -21,6 +24,9 @@ namespace WCell.Addons.Default.Spells.Druid
 				var triggerSpellEffect = effect.GetTriggerSpell().GetEffect(AuraType.ModCastingSpeed);
 				effect.AffectMask = triggerSpellEffect.AffectMask;
 			});
+
+			// Force of Nature's summon entry needs to be changed to Friendly, rather than pet
+			SpellHandler.GetSummonEntry(SummonType.ForceOfNature).Group = SummonGroup.Friendly;
 		}
 	}
 }
