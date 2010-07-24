@@ -128,22 +128,12 @@ namespace WCell.RealmServer.Spells.Auras
 						}
 						else
 						{
-							aura.IsActive = true;	// Aura is running
+							aura.IsActive = true; // Aura is running
 						}
 					}
-
-					if (aura.Spell.HasShapeshiftDependentEffects)
+					else if (aura.Spell.HasShapeshiftDependentEffects)
 					{
-						// TODO: has shapeshift-dependent effects
-						var ownerForm = Owner.ShapeshiftMask;
-						foreach (var handler in aura.Handlers)
-						{
-							if (handler.SpellEffect.RequiredShapeshiftMask == 0 ||
-							    (handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(ownerForm)))
-							{
-								
-							}
-						}
+						aura.ReEvaluateNonPeriodicEffects();
 					}
 				}
 			}

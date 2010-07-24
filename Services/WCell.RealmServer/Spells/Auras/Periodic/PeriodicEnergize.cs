@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PeriodicEnergizeHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (type == m_aura.Auras.Owner.PowerType)
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 	public class PeriodicEnergizePctHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (type == Owner.PowerType)

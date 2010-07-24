@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModResistanceExclusiveHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			foreach (DamageSchool school in m_spellEffect.MiscBitSet)
 			{
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			foreach (DamageSchool flag in m_spellEffect.MiscBitSet)
 			{

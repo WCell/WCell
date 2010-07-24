@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PeriodicHealthFunnelHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.Heal(m_aura.Caster, EffectValue, m_spellEffect);
 		}

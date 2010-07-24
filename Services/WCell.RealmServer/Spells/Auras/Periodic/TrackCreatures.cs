@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var chr = ((Character)m_aura.Auras.Owner);
 
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			chr.CreatureTracking = (CreatureMask)(1 << (m_spellEffect.MiscValue - 1));
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var chr = ((Character)m_aura.Auras.Owner);
 

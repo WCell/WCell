@@ -26,13 +26,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		float value;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			value = EffectValue / 100f;
 			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, value);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, -value);
 		}

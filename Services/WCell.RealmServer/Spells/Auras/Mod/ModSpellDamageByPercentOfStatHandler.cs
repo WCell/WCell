@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	{
 		private int value;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var stat = (StatType)SpellEffect.MiscValueB;
 
@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (m_aura.Auras.Owner is Character)
 			{
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	{
 		private int value;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var stat = (StatType)SpellEffect.MiscValueB;
 
@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (m_aura.Auras.Owner is Character)
 			{

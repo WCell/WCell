@@ -23,12 +23,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class AddTargetTriggerHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.Spells.TargetTriggers.Add(this);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.Spells.TargetTriggers.Remove(this);
 		}

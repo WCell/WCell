@@ -1,2 +1,2 @@
-- fixed up summon system / force of nature & other summon spells
-- more/cleanup goes without saying
+- fixed shapeshift dependent spell handling (can now be adjusted per effect)
+-> fixed Heart of the Wild

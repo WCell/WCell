@@ -56,7 +56,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 				}
 			});
 
-			// Last Stand has a Dummy instead of applying an Aura
+			// Last Stand has a Dummy and does not apply an Aura (through triggering the Aura spell)
 			SpellEffect lastStandEffect = null;
 			SpellLineId.WarriorProtectionLastStand.Apply(spell =>
 			{

@@ -21,12 +21,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class InterruptRegenHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.Regenerates = false;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.Regenerates = true;
 		}

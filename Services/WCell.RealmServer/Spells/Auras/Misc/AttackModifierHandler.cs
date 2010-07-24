@@ -8,12 +8,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public abstract class AttackEventEffectHandler : AuraEffectHandler, IAttackEventHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.AttackEventHandlers.Add(this);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.AttackEventHandlers.Remove(this);
 		}

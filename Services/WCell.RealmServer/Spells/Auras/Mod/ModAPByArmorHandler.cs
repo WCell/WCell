@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 	{
 		private int amt;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			//var modEffect = SpellEffect.Spell.GetEffect(SpellEffectType.Dummy);
 			//if (modEffect == null)
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (amt > 0)
 			{

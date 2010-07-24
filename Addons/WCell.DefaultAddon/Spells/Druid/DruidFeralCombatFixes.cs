@@ -47,12 +47,14 @@ namespace WCell.Addons.Default.Spells.Druid
 				var dummy = spell.GetEffect(SpellEffectType.Dummy);
 
 				// increase 10% of something, depending on the form
-				var direBearEffect = spell.AddAuraEffect(() => new HeartOfTheWildDireBearHandler());
-				direBearEffect.MiscValue = (int)StatType.Stamina;	// increases stamina
-				direBearEffect.BasePoints = dummy.BasePoints;
-				direBearEffect.DiceSides = dummy.DiceSides;
+				var bearEffect = spell.AddAuraEffect(AuraType.ModTotalStatPercent);
+				bearEffect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				bearEffect.MiscValue = (int)StatType.Stamina;										// increases stamina
+				bearEffect.BasePoints = dummy.BasePoints;
+				bearEffect.DiceSides = dummy.DiceSides;
 
-				var catEffect = spell.AddAuraEffect(() => new HeartOfTheWildCatHandler());
+				var catEffect = spell.AddAuraEffect(AuraType.ModAttackPowerPercent);
+				catEffect.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 				catEffect.BasePoints = dummy.BasePoints;
 				catEffect.DiceSides = dummy.DiceSides;
 			});
@@ -89,58 +91,4 @@ namespace WCell.Addons.Default.Spells.Druid
 			triggerSpell);
 		}
 	}
-
-	#region Heart of the Wild
-	/// <summary>
-	/// Increases stats when in dire bear form
-	/// </summary>
-	class HeartOfTheWildDireBearHandler : ModTotalStatPercentHandler
-	{
-		private bool applied;
-		protected override void Apply()
-		{
-			var owner = Owner;
-			applied = owner.ShapeshiftForm == ShapeshiftForm.DireBear;
-			if (applied)
-			{
-				// increase Stamina
-				base.Apply();
-			}
-		}
-
-		protected override void Remove(bool cancelled)
-		{
-			if (applied)
-			{
-				base.Remove(cancelled);
-			}
-		}
-	}
-
-	/// <summary>
-	/// Increases AP if in cat form
-	/// </summary>
-	class HeartOfTheWildCatHandler : ModMeleeAttackPowerPercentHandler
-	{
-		private bool applied;
-		protected override void Apply()
-		{
-			var owner = Owner;
-			applied = owner.ShapeshiftForm == ShapeshiftForm.Cat;
-			if (applied)
-			{
-				// increase AP
-				base.Apply();
-			}
-		}
-
-		protected override void Remove(bool cancelled)
-		{
-			if (applied)
-			{
-				base.Remove(cancelled);
-			}
-		}
-	}
-	#endregion
 }

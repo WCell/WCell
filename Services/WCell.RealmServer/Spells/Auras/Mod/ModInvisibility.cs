@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModInvisibilityHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			InvisType type = (InvisType)m_spellEffect.MiscValue;
 		}

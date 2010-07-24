@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		SpellMechanic mechanic;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			mechanic = SpellEffect.Mechanic;
 			if (mechanic == SpellMechanic.None)
@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			m_aura.Auras.Owner.IncMechanicCount(mechanic);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.DecMechanicCount(mechanic);
 		}

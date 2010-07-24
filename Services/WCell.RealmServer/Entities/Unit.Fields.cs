@@ -894,7 +894,7 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, delta);
+				ModBaseResistance(school, -delta);
 			}
 		}
 
@@ -912,13 +912,13 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, delta);
 			}
 		}
 

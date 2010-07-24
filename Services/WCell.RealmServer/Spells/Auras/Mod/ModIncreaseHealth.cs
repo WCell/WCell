@@ -21,13 +21,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModIncreaseHealthHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.Health += EffectValue;
 			Owner.MaxHealthMod += EffectValue;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			//Owner.Health -= health;
 			Owner.MaxHealthMod -= EffectValue;

@@ -718,9 +718,9 @@ namespace WCell.RealmServer.Spells
 				ArrayUtil.PruneVals(ref RequiredToolIds);
 			}
 
-			var skillEffect = GetEffectsWhere(effect => 
+			var skillEffect = GetFirstEffectWith(effect => 
 				effect.EffectType == SpellEffectType.SkillStep || 
-				effect.EffectType == SpellEffectType.Skill).FirstOrDefault();
+				effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
 				SkillTier = (SkillTierId) skillEffect.BasePoints;

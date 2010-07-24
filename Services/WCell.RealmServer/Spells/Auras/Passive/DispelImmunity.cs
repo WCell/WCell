@@ -24,12 +24,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class DispelImmunityHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.IncDispelImmunity((DispelType)m_spellEffect.MiscValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.DecDispelImmunity((DispelType)m_spellEffect.MiscValue);
 		}

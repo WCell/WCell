@@ -23,14 +23,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		int health;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			health = ((Owner.MaxHealth * EffectValue) + 50) / 100;	//rounded
 			Owner.Health += health;
 			Owner.MaxHealthMod += health;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.Health -= health;
 			Owner.MaxHealthMod -= health;

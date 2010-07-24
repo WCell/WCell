@@ -63,14 +63,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			get { return (DamageSchoolMask)m_spellEffect.MiscValue; }
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			remainingValue = EffectValue;
 			m_aura.Auras.Owner.AddDmgAbsorption(this);
 		}
 
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.RemoveDmgAbsorption(this);
 		}

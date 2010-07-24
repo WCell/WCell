@@ -9,12 +9,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 {
 	public class ModAttackerSpellHitChanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ModAttackerSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ModAttackerSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
 		}
@@ -22,12 +22,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 
 	public class ModAttackerMeleeHitChanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ChangeModifier(StatModifierInt.AttackerMeleeHitChance, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ChangeModifier(StatModifierInt.AttackerMeleeHitChance, -EffectValue);
 		}
@@ -35,12 +35,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 
 	public class ModAttackerRangedHitChanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ChangeModifier(StatModifierInt.AttackerRangedHitChance, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ChangeModifier(StatModifierInt.AttackerRangedHitChance, -EffectValue);
 		}

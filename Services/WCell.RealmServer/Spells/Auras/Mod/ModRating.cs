@@ -24,14 +24,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModRatingHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 				owner.ModCombatRating(m_spellEffect.MiscBitSet, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)

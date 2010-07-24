@@ -22,12 +22,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 	public class ModCritHealValuePctHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ChangeModifier(StatModifierInt.CriticalHealValuePct, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ChangeModifier(StatModifierInt.CriticalHealValuePct, -EffectValue);
 		}

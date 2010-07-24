@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var val = EffectValue;
 			var target = m_aura.Auras.Owner;

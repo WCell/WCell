@@ -18,12 +18,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			SpellAlternateVersion = spellAlternateVersion;
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			
 		}

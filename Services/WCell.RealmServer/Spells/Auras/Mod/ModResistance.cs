@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModResistancePctHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{

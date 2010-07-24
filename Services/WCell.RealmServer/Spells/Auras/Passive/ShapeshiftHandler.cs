@@ -44,12 +44,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ShapeshiftForm = form;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ShapeshiftForm = ShapeshiftForm.Normal;
 		}

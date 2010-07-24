@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
             }
 		}
 
-        protected internal override void Apply()
+        protected override void Apply()
 		{
             var chr = m_aura.Auras.Owner as Character;
             if (chr != null) 
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 		    }
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 		    var chr = m_aura.Auras.Owner as Character;
 		    if (chr != null)

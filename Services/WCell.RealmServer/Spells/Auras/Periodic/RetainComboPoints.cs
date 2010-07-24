@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class RetainComboPointsHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			
 		}

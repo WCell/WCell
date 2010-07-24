@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicDamageHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var holder = Owner;
 			if (holder.IsAlive)
@@ -73,11 +73,10 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			TotalDamage = totalDmg;
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
 			TotalDamage -= BaseEffectValue;
-			base.Apply();
 		}
 	}
 };

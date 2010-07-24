@@ -19,13 +19,13 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			ToggleAuraSpell = SpellHandler.Get(auraId);
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			// add aura
 			activeToggleAura = Owner.Auras.AddAura(m_aura.CasterInfo, ToggleAuraSpell, true);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (activeToggleAura != null)
 			{

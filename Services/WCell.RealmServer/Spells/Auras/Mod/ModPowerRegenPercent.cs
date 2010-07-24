@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)
