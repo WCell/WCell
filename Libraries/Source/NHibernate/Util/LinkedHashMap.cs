@@ -68,7 +68,7 @@ namespace NHibernate.Util
 			{
 				Entry<TEKey, TEValue> other = obj as Entry<TEKey, TEValue>;
 				if (other == null) return false;
-				if (other == this) return true;
+				if (other == (object)this) return true;
 
 				return ((key == null ? other.Key == null : key.Equals(other.Key)) &&
 				        (evalue == null ? other.Value == null : evalue.Equals(other.Value)));

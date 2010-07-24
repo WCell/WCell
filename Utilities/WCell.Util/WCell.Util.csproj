@@ -261,7 +261,6 @@
     <Compile Include="Threading\TaskParallel\DelegateBasedObserver.cs" />
     <Compile Include="Threading\TaskParallel\DelegateExtensions.cs" />
     <Compile Include="Threading\TaskParallel\LazyExtensions.cs" />
-    <Compile Include="Threading\TaskParallel\LinqToTasks.cs" />
     <Compile Include="Threading\Messages.cs" />
     <Compile Include="Threading\TaskParallel\ParallelLinqExtensions.cs" />
     <Compile Include="Threading\TaskParallel\ParallelLinqOptions.cs" />
