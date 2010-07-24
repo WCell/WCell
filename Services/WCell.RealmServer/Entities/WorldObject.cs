@@ -1481,6 +1481,18 @@ namespace WCell.RealmServer.Entities
 			{
 				m_areaAuras = new List<AreaAura>(2);
 			}
+			else if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.PaladinAura))
+			{
+				// cannot be applied with other AreaAuras of that type
+				foreach (var aaura in m_areaAuras)
+				{
+					if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.PaladinAura))
+					{
+						aaura.Remove(true);
+						break;
+					}
+				}
+			}
 			m_areaAuras.Add(aura);
 		}
 
