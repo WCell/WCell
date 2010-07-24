@@ -3,7 +3,7 @@
  *   file		: SkillRaceClassInfo.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lÃ¸, 07 mar 2009) $
+ *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lø, 07 mar 2009) $
  *   last author	: $LastChangedBy: ralekdev $
  *   revision		: $Rev: 784 $
  *
@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Skills
 		public ClassMask ClassMask;//3
 		public SkillRaceClassFlags Flags;//4
 		public uint MinimumLevel;//5
-		public SkillTier Tier;//6
+		public SkillTiers Tiers;//6
 
 		/// <summary>
 		/// SkillCostsData.dbc
@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Skills
 				indent + "Classes: " + ClassMask + "\n" +
 				indent + "Flags: " + Flags + "\n" +
 				indent + "MinLevel: " + MinimumLevel + "\n" +
-				indent + "Tier: " + Tier + "\n" +
+				indent + "Tier: " + Tiers + "\n" +
 				indent + "SkillCostsIndex: " + SkillCostIndex + "\n";
 		}
 	}

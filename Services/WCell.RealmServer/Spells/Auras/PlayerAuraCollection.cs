@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
@@ -58,7 +59,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					ItemRestrictedAuras.Add(aura);
 				}
-				if (aura.Spell.AllowedShapeshiftMask != 0)
+				if (aura.Spell.IsModalShapeshiftDependentAura)
 				{
 					ShapeshiftRestrictedAuras.Add(aura);
 				}
@@ -117,8 +118,33 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				foreach (var aura in shapeshiftRestrictedAuras)
 				{
-					// is active, only if new shapeshift mask is also allowed
-					aura.IsActive = aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask);
+					if (aura.Spell.AllowedShapeshiftMask != 0)
+					{
+						// the entire Aura is toggled
+						if (!aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+						{
+							aura.IsActive = false;	// Aura is off
+							continue;
+						}
+						else
+						{
+							aura.IsActive = true;	// Aura is running
+						}
+					}
+
+					if (aura.Spell.HasShapeshiftDependentEffects)
+					{
+						// TODO: has shapeshift-dependent effects
+						var ownerForm = Owner.ShapeshiftMask;
+						foreach (var handler in aura.Handlers)
+						{
+							if (handler.SpellEffect.RequiredShapeshiftMask == 0 ||
+							    (handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(ownerForm)))
+							{
+								
+							}
+						}
+					}
 				}
 			}
 		}

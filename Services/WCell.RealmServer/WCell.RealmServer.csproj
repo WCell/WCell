@@ -880,7 +880,7 @@
     <Compile Include="Skills\SkillCollection.cs" />
     <Compile Include="Skills\SkillLine.cs" />
     <Compile Include="Skills\SkillHandler.cs" />
-    <Compile Include="Skills\SkillTier.cs" />
+    <Compile Include="Skills\SkillTiers.cs" />
     <Compile Include="Spells\Auras\AreaAura.cs" />
     <Compile Include="Spells\Auras\Aura.cs">
       <SubType>Code</SubType>

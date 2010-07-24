@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using WCell.Constants.Skills;
 using WCell.Util;
 
 namespace WCell.RealmServer.Skills
@@ -21,46 +22,55 @@ namespace WCell.RealmServer.Skills
 	/// <summary>
 	/// Represents the requirements that are needed to advance a Skill to the next tier
 	/// </summary>
-	public struct SkillTier
+	public struct SkillTiers
 	{
 		//public static SkillTier DefaultTier = new SkillTier(75, 150, 225, 300, 375);
 
 		public uint Id;
-        /// <summary>
-        /// The cost of each tier
-        /// </summary>
-        public uint[] Costs;
-        /// <summary>
-        /// The limit of each tier
-        /// </summary>
-        public uint[] Values;
+		/// <summary>
+		/// The cost of each tier
+		/// </summary>
+		public uint[] Costs;
+		/// <summary>
+		/// The limit of each tier
+		/// </summary>
+		public uint[] MaxValues;
+
+		public uint GetCost(SkillTierId id)
+		{
+			return Costs[(uint)id];
+		}
+
+		public uint GetMaxValue(SkillTierId id)
+		{
+			return MaxValues[(uint)id];
+		}
 
 		public override string ToString()
 		{
-			return Id > 0 ? ("Id: " + Id + ", MaxValues: " + Values.ToString(", ")) : "0";
+			return Id > 0 ? ("Id: " + Id + ", MaxValues: " + MaxValues.ToString(", ")) : "0";
 		}
 
-		public static bool operator ==(SkillTier tier, SkillTier tier2)
+		public static bool operator ==(SkillTiers tiers, SkillTiers tier2)
 		{
-			return tier.Equals(tier2);
+			return tiers.Equals(tier2);
 		}
 
-		public static bool operator !=(SkillTier tier, SkillTier tier2)
+		public static bool operator !=(SkillTiers tiers, SkillTiers tier2)
 		{
-			return !(tier == tier2);
+			return !(tiers == tier2);
 		}
 
 		public override bool Equals(object obj)
 		{
 			return
-				obj is SkillTier &&
-				(((SkillTier)obj).Values == null) == (((SkillTier)obj).Values == null) &&
-				(Values == null || Values.Equals(((SkillTier)obj).Values));
+				obj is SkillTiers &&
+				(MaxValues == null || MaxValues.Equals(((SkillTiers)obj).MaxValues));
 		}
 
 		public override int GetHashCode()
 		{
-			return (Values != null ? Values.GetHashCode() : 1);
+			return (MaxValues != null ? MaxValues.GetHashCode() : 1);
 		}
 	}
 }

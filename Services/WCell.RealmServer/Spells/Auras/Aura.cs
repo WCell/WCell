@@ -538,7 +538,9 @@ namespace WCell.RealmServer.Spells.Auras
 			if (owner == null ||
 				!m_spell.IsPassive ||
 				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictionsWithout(null, owner.Inventory) == SpellFailedReason.Ok) &&
-				(m_spell.AllowedShapeshiftMask == 0 || m_spell.AllowedShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
+				(!m_spell.IsModalShapeshiftDependentAura || 
+					m_spell.AllowedShapeshiftMask == 0 ||
+					m_spell.AllowedShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
 			{
 				IsActive = true;
 			}

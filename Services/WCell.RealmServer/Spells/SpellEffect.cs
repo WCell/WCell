@@ -69,6 +69,11 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsUsed;
 
+		/// <summary>
+		/// Only use this effect if the caster is in the given form (if given)
+		/// </summary>
+		public ShapeshiftMask RequiredShapeshiftMask;
+
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
 

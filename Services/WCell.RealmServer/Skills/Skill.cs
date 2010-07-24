@@ -29,8 +29,6 @@ namespace WCell.RealmServer.Skills
 	/// </summary>
 	public class Skill
 	{
-		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-
 		public readonly PlayerFields PlayerField;
 		public readonly SkillLine SkillLine;
 
@@ -38,7 +36,7 @@ namespace WCell.RealmServer.Skills
 		/// The containing SkillCollection
 		/// </summary>
 		readonly SkillCollection m_skills;
-	    readonly SkillRecord m_record;
+		readonly SkillRecord m_record;
 
 		public Skill(SkillCollection skills, PlayerFields field, SkillRecord record, SkillLine skillLine)
 		{
@@ -70,25 +68,6 @@ namespace WCell.RealmServer.Skills
 			MaxValue = (ushort)max;
 
 			m_record.CreateLater();
-		}
-
-		/// <summary>
-		/// Checks whether the given tier can be activated
-		/// </summary>
-		public bool IsTierActivated(uint tier)
-		{
-			if (SkillLine.HasTier(tier))
-			{
-				// TODO: Correct tier-value calculation
-				// So far: You must have Max - 15 of the tier before to activate the next one
-				// (which is the tier that you are in right now)
-				uint tierLimit = SkillLine.Tier.Values[tier];
-				if (CurrentValue >= tierLimit - 15)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
@@ -156,7 +135,7 @@ namespace WCell.RealmServer.Skills
 			set
 			{
 				m_skills.Owner.SetInt16Low(PlayerField + 2, value);
-				if(SkillLine.Id == SkillId.Defense)
+				if (SkillLine.Id == SkillId.Defense)
 				{
 					m_skills.Owner.UpdateDefense();
 				}
@@ -172,18 +151,40 @@ namespace WCell.RealmServer.Skills
 			set { m_skills.Owner.SetInt16High(PlayerField + 2, value); }
 		}
 
+		/// <summary>
+		/// The persistant record that can be saved to/loaded from DB
+		/// </summary>
 		internal SkillRecord Record
 		{
-			get
-			{
-				return m_record;
-			}
+			get { return m_record; }
+		}
+
+		public SkillTierId CurrentTier
+		{
+			get { return SkillLine.GetTier(CurrentValue); }
 		}
 
 		/// <summary>
-		/// Gains up to maxGain with the given chance.
+		/// Checks whether the given tier can be learned
 		/// </summary>
-		public void Gain(int chance, int maxGain)
+		public bool CanLearnTier(SkillTierId tier)
+		{
+			if (SkillLine.HasTier(tier))
+			{
+				uint tierLimit = SkillLine.Tiers.GetMaxValue(tier);
+				if (CurrentValue >= tierLimit - 100)
+				{
+					// cannot be learnt if we have less than max - 100 in that skill
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Gains up to maxGain skill points with the given chance.
+		/// </summary>
+		public void GainRand(int chance, int maxGain)
 		{
 			int current = CurrentValue;
 			int maxPossGain = MaxValue - current;
@@ -213,7 +214,7 @@ namespace WCell.RealmServer.Skills
 		/// </summary>
 		public void LearnAllAbilities()
 		{
-			foreach (SkillAbility ability in SkillHandler.GetAbilities(SkillLine.Id))
+			foreach (var ability in SkillHandler.GetAbilities(SkillLine.Id))
 			{
 				if (ability != null)
 				{

@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Modal Auras cannot be updated, but must be replaced
 		/// </summary>
-		public bool IsModalAura;
+		public bool IsAutoRepeating;
 
 		/// <summary>
 		/// General Amplitude for Spells that represent AreaAuras (can only have one per spell)
@@ -127,7 +127,20 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsFlyingMount;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public bool CanApplyMultipleTimes;
+
+		/// <summary>
+		/// Whether the Aura has effects that depend on the wearer's Shapeshift form
+		/// </summary>
+		public bool HasShapeshiftDependentEffects;
+
+		/// <summary>
+		/// Whether the Aura is in any way dependent on the wearer's shapeshift form
+		/// </summary>
+		public bool IsModalShapeshiftDependentAura;
 
 		/// <summary>
 		/// 
@@ -169,7 +182,7 @@ namespace WCell.RealmServer.Spells
 				}
 			});
 
-			IsModalAura = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+			IsAutoRepeating = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
 			HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
 
@@ -219,6 +232,9 @@ namespace WCell.RealmServer.Spells
 
 			CanApplyMultipleTimes = Attributes == (SpellAttributes.NoVisibleAura | SpellAttributes.Passive) &&
 									Skill == null && Talent == null;
+
+			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
+			IsModalShapeshiftDependentAura = IsPassive && (AllowedShapeshiftMask != 0 || HasShapeshiftDependentEffects);
 
 			// procs
 			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)

@@ -220,6 +220,7 @@
     <Compile Include="Relations\Constants.Relations.cs" />
     <Compile Include="Relations\Extensions.cs" />
     <Compile Include="Skills\SkillId.cs" />
+    <Compile Include="Skills\SkillTierId.cs" />
     <Compile Include="Spells\AuraType.cs" />
     <Compile Include="Spells\Constants.Spells.cs" />
     <Compile Include="Spells\Extensions.cs" />

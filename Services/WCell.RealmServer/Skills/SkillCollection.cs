@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Skills
 			{
 				int chance = GetSkillGainChance(targetLevel, skill);
 
-				skill.Gain(chance, 1);
+				skill.GainRand(chance, 1);
 			}
 		}
 
@@ -111,7 +111,7 @@ namespace WCell.RealmServer.Skills
 
 			int chance = GetSkillGainChance(attackerLevel, skill);
 			if (skill != null)
-				skill.Gain(chance, 1);
+				skill.GainRand(chance, 1);
 		}
 
 		public void UpdateSkillsForLevel(int level)
@@ -129,21 +129,20 @@ namespace WCell.RealmServer.Skills
 		/// If this char is allowed to learn this skill (matching Race, Class and Level) on the given tier, 
 		/// the correspdonding SkillLine will be returned. Returns null if skill cannot be learnt.
 		/// </summary>
-		public SkillLine GetLine(SkillId id, uint tier)
+		public SkillLine GetLineIfLearnable(SkillId id, SkillTierId tier)
 		{
 			SkillRaceClassInfo info;
 			if (!AvailableSkills.TryGetValue(id, out info) || m_owner.Level < info.MinimumLevel)
 			{
 				return null;
 			}
-			if (tier == 0 || (info.SkillLine.Tier.Values.Length >= tier))
+
+			if (tier == 0 || (info.SkillLine.Tiers.MaxValues.Length >= (uint)tier))
 			{
 				Skill skill;
 				if (m_skills.TryGetValue(id, out skill))
 				{
-					// TODO: Correct tier-value calculation
-					uint tierLimit = skill.SkillLine.Tier.Values[tier];
-					if (skill.CurrentValue < tierLimit - 15)
+					if (skill.CanLearnTier(tier))
 					{
 						return null;
 					}
@@ -165,7 +164,7 @@ namespace WCell.RealmServer.Skills
 		/// Tries to learn the given tier for the given skill (if allowed)
 		/// </summary>
 		/// <returns>Whether it succeeded</returns>
-		public bool TryLearn(SkillId id, uint tier)
+		public bool TryLearn(SkillId id, SkillTierId tier)
 		{
 			Skill skill;
 			if (!m_skills.TryGetValue(id, out skill))
@@ -178,9 +177,9 @@ namespace WCell.RealmServer.Skills
 				skill = Add(info.SkillLine, false);
 			}
 
-			if (skill.IsTierActivated(tier))
+			if (skill.CanLearnTier(tier))
 			{
-				skill.MaxValue = (ushort)skill.SkillLine.Tier.Values[tier];
+				skill.MaxValue = (ushort)skill.SkillLine.Tiers.GetMaxValue(tier);
 			}
 			return true;
 		}
@@ -305,7 +304,7 @@ namespace WCell.RealmServer.Skills
 		/// <param name="ignoreRestrictions">Whether to ignore the race, class and level requirements of this skill</param>
 		public Skill Add(SkillId id, bool ignoreRestrictions)
 		{
-			SkillLine line = ignoreRestrictions ? SkillHandler.ById.Get((uint)id) : GetLine(id, 0);
+			SkillLine line = ignoreRestrictions ? SkillHandler.ById.Get((uint)id) : GetLineIfLearnable(id, 0);
 
 			if (line != null)
 			{
@@ -323,14 +322,14 @@ namespace WCell.RealmServer.Skills
 			return Add(line, line.InitialValue, line.InitialLimit, ignoreRestrictions);
 		}
 
-		public Skill GetOrCreate(SkillId id, uint tier, bool ignoreRestrictions)
+		public Skill GetOrCreate(SkillId id, SkillTierId tier, bool ignoreRestrictions)
 		{
 			Skill skill = GetOrCreate(id, ignoreRestrictions);
 			if (skill != null)
 			{
 				if (skill.SkillLine.HasTier(tier))
 				{
-					skill.MaxValue = (ushort)skill.SkillLine.Tier.Values[tier];
+					skill.MaxValue = (ushort)skill.SkillLine.Tiers.GetMaxValue(tier);
 				}
 			}
 			return skill;
