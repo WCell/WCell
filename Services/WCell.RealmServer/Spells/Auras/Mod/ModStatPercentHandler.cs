@@ -16,6 +16,7 @@ namespace WCell.RealmServer.Spells.Auras
 				for (var stat = StatType.Strength; stat < StatType.End; stat++)
 				{
 					val = (Owner.GetUnmodifiedBaseStatValue(stat) * EffectValue + 50) / 100;
+					vals[(int)stat] = val;
 					Owner.AddStatMod(stat, val, SpellEffect.Spell.IsPassive);
 				}
 			}

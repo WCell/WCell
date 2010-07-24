@@ -59,6 +59,7 @@ namespace WCell.RealmServer.Modifiers
 		static UnitUpdates()
 		{
 			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdatePower;
+			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = UpdatePower;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegen] = UpdateHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenInCombat] = UpdateCombatHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
@@ -77,7 +78,6 @@ namespace WCell.RealmServer.Modifiers
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.CritChance] = UpdateCritChance;
-			MultiModHandlers[(int)StatModifierFloat.Power] = UpdatePower;
 			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 			MultiModHandlers[(int)StatModifierFloat.PowerRegen] = UpdatePowerRegen;
@@ -231,7 +231,7 @@ namespace WCell.RealmServer.Modifiers
 				var intelBase = ((Character)unit).Archetype.FirstLevelStats.Intellect;
 				value += intelBase + (unit.Intellect - intelBase) * ManaPerInt;
 			}
-			value = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.Power], value);
+			value = (value*unit.IntMods[(int) StatModifierInt.PowerPct] + 50) / 100;
 			if (value < 0)
 			{
 				value = 0;

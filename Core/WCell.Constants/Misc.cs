@@ -441,7 +441,6 @@ namespace WCell.Constants
 
 	public enum StatModifierFloat
 	{
-		Power,
 		AttackerCritChance,
         BlockValue,
 		AttackTime,
@@ -453,6 +452,8 @@ namespace WCell.Constants
 	public enum StatModifierInt
 	{
 		Power = 1,
+
+		PowerPct,
 
 		/// <summary>
 		/// Overall HealthRegen
