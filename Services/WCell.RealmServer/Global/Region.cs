@@ -284,13 +284,13 @@ namespace WCell.RealmServer.Global
 		{
 			for (var i = 0; i < m_regionInfo.ZoneInfos.Count; i++)
 			{
-				var info = m_regionInfo.ZoneInfos[i];
-				var zone = new Zone(this, info);
+				var templ = m_regionInfo.ZoneInfos[i];
+				var zone = templ.Creator(this, templ);
 				if (zone.ParentZone == null)
 				{
 					MainZones.Add(zone);
 				}
-				Zones.Add(info.Id, zone);
+				Zones.Add(templ.Id, zone);
 			}
 
 			m_defaultZone = MainZones.FirstOrDefault();

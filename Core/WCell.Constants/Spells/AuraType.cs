@@ -174,7 +174,7 @@ namespace WCell.Constants.Spells
 		ModHealing = 115,
 		ModRegenInCombat = 116,
 		ModMechanicResistance = 117,
-		ModHealingPercent = 118,
+		ModHealingTakenPercent = 118,
 		Unused_SharePetTracking = 119,
 		Untrackable = 120,
 		Empathy = 121,

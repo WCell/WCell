@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Gossips
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Resurrect, "Resurrect...", convo =>
 							{
-								convo.Character.ResurrectSH();
+								convo.Character.ResurrectWithConsequences();
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.Petitioner))

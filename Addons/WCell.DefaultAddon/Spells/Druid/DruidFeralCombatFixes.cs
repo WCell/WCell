@@ -76,10 +76,23 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Survival of the Fittest "increases your armor contribution from cloth and leather items in Bear Form and Dire Bear Form by $s3%"
 			SpellLineId.DruidFeralCombatSurvivalOfTheFittest.Apply(spell =>
 			{
-				var effect = spell.GetEffect(AuraType.Dummy);
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
 				effect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 				effect.AuraEffectHandlerCreator = () => new SurvivalOfTheFittestHandler();
 			});
+
+			// Nurturing Instinct simply toggles an aura when in cat form: "and increases healing done to you by $47179s1% while in Cat form."
+			SpellHandler.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.NurturingInstinctRank1)).RequiredShapeshiftMask = ShapeshiftMask.Cat;
+			},
+			SpellId.DruidFeralCombatNurturingInstinctRank1);
+			SpellHandler.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.NurturingInstinctRank2)).RequiredShapeshiftMask = ShapeshiftMask.Cat;
+			},
+			SpellId.DruidFeralCombatNurturingInstinctRank2);
+
 
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);

@@ -1,0 +1,4 @@
+- fixed last initial power bug
+- renamed GOTemplate to GOSpawn
+- implemented custom Zone creators in ZoneTemplate
+- to test: DruidFeralCombatNurturingInstinct

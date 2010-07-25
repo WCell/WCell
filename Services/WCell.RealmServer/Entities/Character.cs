@@ -193,10 +193,7 @@ namespace WCell.RealmServer.Entities
 		#region Death/Resurrect
 		public override bool IsAlive
 		{
-			get
-			{
-				return !(m_auras.GhostAura != null || Health == 0);
-			}
+			get { return !(m_auras.GhostAura != null || Health == 0); }
 		}
 
 		/// <summary>
@@ -297,9 +294,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Resurrects and applies ResurrectionSickness if required
+		/// Resurrects, applies ResurrectionSickness and damages Items, if applicable
 		/// </summary>
-		public void ResurrectSH()
+		public void ResurrectWithConsequences()
 		{
 			Resurrect();
 
@@ -395,7 +392,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected override IWeapon GetOrInvalidateItem(InventorySlotType type)
 		{
-			var slot = (int) ItemMgr.EquipmentSlotsByInvSlot[(int) type][0];
+			var slot = (int)ItemMgr.EquipmentSlotsByInvSlot[(int)type][0];
 			var item = m_inventory[slot];
 			if (item == null)
 			{

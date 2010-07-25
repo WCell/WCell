@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModDecreaseSpeed] = () => new ModDecreaseSpeedHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseEnergy] = () => new ModIncreaseEnergyHandler();
 			EffectHandlers[(int)AuraType.ModShapeshift] = () => new ShapeshiftHandler();
-			EffectHandlers[(int)AuraType.ModHealingPercent] = () => new ModHealingTakenPctHandler();
+			EffectHandlers[(int)AuraType.ModHealingTakenPercent] = () => new ModHealingTakenPctHandler();
 			EffectHandlers[(int)AuraType.ModHealingDone] = () => new ModHealingDoneHandler();
 			EffectHandlers[(int)AuraType.SchoolImmunity] = () => new SchoolImmunityHandler();
 			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();
 			EffectHandlers[(int)AuraType.ModDamageTaken] = () => new ModDamageTakenHandler();
 			EffectHandlers[(int)AuraType.ModDamageTakenPercent] = () => new ModDamageTakenPercentHandler();
-			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModModAOEDamagePercentHandler();
+			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();
 			
 
 			// make sure, there are no missing handlers

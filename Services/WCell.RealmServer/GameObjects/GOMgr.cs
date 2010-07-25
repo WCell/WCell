@@ -45,7 +45,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// All existing GOTemplates by MapId
 		/// </summary>
-		public static List<GOTemplate>[] TemplatesByMap = new List<GOTemplate>[(int)MapId.End];
+		public static List<GOSpawn>[] TemplatesByMap = new List<GOSpawn>[(int)MapId.End];
 
 		public static GOEntry GetEntry(uint id)
 		{
@@ -68,7 +68,7 @@ namespace WCell.RealmServer.GameObjects
 			return entry;
 		}
 
-		public static List<GOTemplate> GetTemplates(MapId map)
+		public static List<GOSpawn> GetTemplates(MapId map)
 		{
 			return TemplatesByMap.Get((uint)map);
 		}
@@ -102,14 +102,14 @@ namespace WCell.RealmServer.GameObjects
 			}
 		}
 
-		public static void AddTemplate(GOTemplate template)
+		public static void AddTemplate(GOSpawn spawn)
 		{
-			var list = TemplatesByMap[(int)template.MapId];
+			var list = TemplatesByMap[(int)spawn.MapId];
 			if (list == null)
 			{
-				TemplatesByMap[(int)template.MapId] = list = new List<GOTemplate>(100);
+				TemplatesByMap[(int)spawn.MapId] = list = new List<GOSpawn>(100);
 			}
-			list.Add(template);
+			list.Add(spawn);
 		}
 
 		public static void LoadAll()
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.GameObjects
 			if (!Loaded)
 			{
 				ContentHandler.Load<GOEntry>();
-				ContentHandler.Load<GOTemplate>();
+				ContentHandler.Load<GOSpawn>();
 
 				new GOPortalEntry().FinalizeDataHolder();
 
@@ -130,7 +130,7 @@ namespace WCell.RealmServer.GameObjects
 					if (entry.Templates.Count == 0)
 					{
 						// make sure, every Entry has at least one template
-						entry.Templates.Add(new GOTemplate
+						entry.Templates.Add(new GOSpawn
 						{
 							Entry = entry,
 							Rotations = new float[0],
@@ -267,10 +267,10 @@ namespace WCell.RealmServer.GameObjects
 		})();
 		#endregion
 
-		public static GOTemplate GetClosestTemplate(this ICollection<GOTemplate> templates, IWorldLocation pos)
+		public static GOSpawn GetClosestTemplate(this ICollection<GOSpawn> templates, IWorldLocation pos)
 		{
 			var closestDistSq = float.MaxValue;
-			GOTemplate closest = null;
+			GOSpawn closest = null;
 			if (pos == null)
 			{
 				return templates.First();

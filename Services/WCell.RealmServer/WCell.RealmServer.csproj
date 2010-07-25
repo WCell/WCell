@@ -238,7 +238,7 @@
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
-    <Compile Include="Spells\Auras\Mod\ModModAOEDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
@@ -814,7 +814,7 @@
     <Compile Include="Misc\TutorialFlags.cs" />
     <Compile Include="GameObjects\GOEntry.cs" />
     <Compile Include="GameObjects\GOMgr.cs" />
-    <Compile Include="GameObjects\GOTemplate.cs" />
+    <Compile Include="GameObjects\GOSpawn.cs" />
     <Compile Include="Gossips\IGossipAction.cs" />
     <Compile Include="Gossips\GossipConversation.cs" />
     <Compile Include="Gossips\GossipMenu.cs" />

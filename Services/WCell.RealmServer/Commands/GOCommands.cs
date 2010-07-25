@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Commands
 
 				if (mod == "c")
 				{
-					ICollection<GOTemplate> templates;
+					ICollection<GOSpawn> templates;
 					if (entry != null)
 					{
 						templates = entry.Templates;
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 					}
 
 					// spawn closest
-					GOTemplate closest;
+					GOSpawn closest;
 
 					if (entry != null)
 					{
