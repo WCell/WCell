@@ -72,9 +72,25 @@
     <Item Key="GossipOptionVendor">
       <Value>Let me see your wares...</Value>
     </Item>
-
+	<Item Key="GossipOptionInnKeeper">
+	  <Value>Make this inn your home.</Value>
+	</Item>
+	<Item Key="GossipOptionSpiritHealer">
+	  <Value>Return me to life.</Value>
+	</Item>
+	<Item Key="GossipOptionTabardDesigner">
+	  <Value>I want to create a guild crest.</Value>
+	</Item>
+	<Item Key="GossipOptionStableMaster">
+	  <Value>I'd like to stable my pet here.</Value>
+	</Item>
+	
     <Item Key="GodModeIsActivated">
       <Value>GodMode is Activated!</Value>
     </Item>
+	
+	<Item Key="FeatureNotYetImplemented">
+	  <Value>Feature not yet implemented</Value>
+	</Item>
   </Items>
 </Translation>

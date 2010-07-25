@@ -40,7 +40,72 @@ namespace WCell.Addons.Default.Spells
             //                       {
             //                           spell.Effects[0].
             //                       });
+
+		    FixMounts();
 		}
+
+        private static void FixMounts()
+        {
+            // Invincible
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.Invincible, SpellId.Invincible_2,
+                                          SpellId.Invincible_3, SpellId.Invincible_4);
+            },
+                               SpellId.ClassSkillInvincible);
+
+            // Celestial Steed
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.CelestialSteed_3, SpellId.CelestialSteed_4,
+                                          SpellId.CelestialSteed, SpellId.CelestialSteed_2);
+            },
+                               SpellId.ClassSkillCelestialSteed);
+
+            // Big Love Rocket
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.BigLoveRocket_2, SpellId.BigLoveRocket_3,
+                                          SpellId.BigLoveRocket_4, SpellId.BigLoveRocket_5);
+            },
+                               SpellId.ClassSkillBigLoveRocket);
+
+            // Winged Steed of the Ebon Blade
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
+                                          SpellId.WingedSteedOfTheEbonBlade, SpellId.WingedSteedOfTheEbonBlade_2);
+            },
+                               SpellId.ClassSkillWingedSteedOfTheEbonBlade);
+
+            // X-53 Touring Rocket
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
+                                          SpellId.X53TouringRocket_2, SpellId.X53TouringRocket_3);
+            },
+                               SpellId.ClassSkillX53TouringRocket);
+
+            // Blazing Hippogryph
+            SpellHandler.Apply(spell =>
+            {
+                spell.Effects[2].SpellEffectHandlerCreator =
+                    (cast, effect) =>
+                    new MountSpellHandler(cast, effect, SpellId.None, SpellId.None,
+                                          SpellId.BlazingHippogryph, SpellId.BlazingHippogryph_2);
+            },
+                               SpellId.ClassSkillBlazingHippogryph);
+        }
 
 		public class AuraDeserterHandler : AuraEffectHandler
 		{
@@ -62,5 +127,48 @@ namespace WCell.Addons.Default.Spells
 				}
 			}
 		}
+
+        public class MountSpellHandler : SpellEffectHandler
+        {
+            private readonly SpellId _apprenticeRidingSpell;
+            private readonly SpellId _journeymanRidingSpell;
+            private readonly SpellId _expertRidingSpell;
+            private readonly SpellId _artisanRidingSpell;
+
+            public MountSpellHandler(SpellCast cast, SpellEffect effect, SpellId apprenticeRidingSkill, SpellId journeymanRidingSkill, SpellId expertRidingSkill, SpellId artisanRidingSkill)
+                : base(cast, effect)
+            {
+                _apprenticeRidingSpell = apprenticeRidingSkill;
+                _journeymanRidingSpell = journeymanRidingSkill;
+                _expertRidingSpell = expertRidingSkill;
+                _artisanRidingSpell = artisanRidingSkill;
+            }
+
+            public override void Apply()
+            {
+                var caster = m_cast.CasterUnit as Character;
+                if (caster == null) return;
+                if (_artisanRidingSpell != SpellId.None &&
+                    caster.Spells.Contains(SpellId.SecondarySkillArtisanRidingArtisan) && caster.Region.CanFly)
+                {
+                    m_cast.Trigger(_artisanRidingSpell, caster);
+                }
+                else if (_expertRidingSpell != SpellId.None &&
+                         caster.Spells.Contains(SpellId.SecondarySkillExpertRidingExpert) && caster.Region.CanFly)
+                {
+                    m_cast.Trigger(_expertRidingSpell, caster);
+                }
+                else if (_journeymanRidingSpell != SpellId.None &&
+                         caster.Spells.Contains(SpellId.SecondarySkillJourneymanRidingJourneyman))
+                {
+                    m_cast.Trigger(_journeymanRidingSpell, caster);
+                }
+                else if (_apprenticeRidingSpell != SpellId.None &&
+                         caster.Spells.Contains(SpellId.SecondarySkillApprenticeRidingApprentice))
+                {
+                    m_cast.Trigger(_apprenticeRidingSpell, caster);
+                }
+            }
+        }
 	}
 }
