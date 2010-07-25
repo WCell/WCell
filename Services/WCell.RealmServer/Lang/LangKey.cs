@@ -46,10 +46,15 @@ namespace WCell.RealmServer.Lang
 		GossipOptionFlightMaster,
 		GossipOptionTrainer,
 		GossipOptionVendor,
+        GossipOptionInnKeeper,
+        GossipOptionSpiritHealer,
+        GossipOptionTabardDesigner,
+        GossipOptionStableMaster,
 
 		// ########################################################################
 		// Ingame notifications
-		GodModeIsActivated
+		GodModeIsActivated,
+        FeatureNotYetImplemented
 	}
 
 	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>
