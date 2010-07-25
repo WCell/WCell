@@ -21,12 +21,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class MechanicImmunityHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.IncMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.DecMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue);
 		}

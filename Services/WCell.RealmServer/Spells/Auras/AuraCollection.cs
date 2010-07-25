@@ -3,7 +3,7 @@
  *   file		: AuraCollection.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lÃ¸, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -865,7 +865,7 @@ namespace WCell.RealmServer.Spells.Auras
 					aura.Spell != spell &&
 					aura.Spell.MatchesMask(spell.AllAffectingMasks))
 				{
-					aura.ReApplyEffects();
+					aura.ReApplyNonPeriodicEffects();
 				}
 			}
 		}
@@ -877,7 +877,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_AuraArray)
 			{
-				aura.ReApplyEffects();
+				aura.ReApplyNonPeriodicEffects();
 			}
 		}
 		#endregion

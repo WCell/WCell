@@ -6,6 +6,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
@@ -38,21 +39,20 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 
-			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
-			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
-
 			// Heart of the wild: "while in Bear or Dire Bear Form your Stamina is increased by $s3% and while in Cat Form your attack power is increased by $s2%."
 			SpellLineId.DruidFeralCombatHeartOfTheWild.Apply(spell =>
 			{
 				var dummy = spell.GetEffect(SpellEffectType.Dummy);
 
 				// increase 10% of something, depending on the form
-				var direBearEffect = spell.AddAuraEffect(() => new HeartOfTheWildDireBearHandler());
-				direBearEffect.MiscValue = (int)StatType.Stamina;	// increases stamina
-				direBearEffect.BasePoints = dummy.BasePoints;
-				direBearEffect.DiceSides = dummy.DiceSides;
+				var bearEffect = spell.AddAuraEffect(AuraType.ModTotalStatPercent);
+				bearEffect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				bearEffect.MiscValue = (int)StatType.Stamina;										// increases stamina
+				bearEffect.BasePoints = dummy.BasePoints;
+				bearEffect.DiceSides = dummy.DiceSides;
 
-				var catEffect = spell.AddAuraEffect(() => new HeartOfTheWildCatHandler());
+				var catEffect = spell.AddAuraEffect(AuraType.ModAttackPowerPercent);
+				catEffect.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 				catEffect.BasePoints = dummy.BasePoints;
 				catEffect.DiceSides = dummy.DiceSides;
 			});
@@ -65,8 +65,27 @@ namespace WCell.Addons.Default.Spells.Druid
 				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
 			});
+
+			// Primal Tenacity has the wrong effect type: "reduces all damage taken while stunned by $s2% while in Cat Form."
+			SpellLineId.DruidFeralCombatPrimalTenacity.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.SchoolAbsorb);
+				effect.AuraType = AuraType.ModDamageTakenPercent;		// should reduce damage taken
+			});
+
+			// Survival of the Fittest "increases your armor contribution from cloth and leather items in Bear Form and Dire Bear Form by $s3%"
+			SpellLineId.DruidFeralCombatSurvivalOfTheFittest.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				effect.AuraEffectHandlerCreator = () => new SurvivalOfTheFittestHandler();
+			});
+
+			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
+			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
 		}
 
+		#region FixFeralSwiftness
 		private static void FixFeralSwiftness(SpellId origSpell, SpellId triggerSpell)
 		{
 			// Feral Swiftness should only be applied in Cat Form
@@ -88,57 +107,31 @@ namespace WCell.Addons.Default.Spells.Druid
 			},
 			triggerSpell);
 		}
+		#endregion
 	}
 
-	#region Heart of the Wild
-	/// <summary>
-	/// Increases stats when in dire bear form
-	/// </summary>
-	class HeartOfTheWildDireBearHandler : ModTotalStatPercentHandler
+	#region SurvivalOfTheFittestHandler
+	public class SurvivalOfTheFittestHandler : ItemEquipmentEventAuraHandler
 	{
-		private bool applied;
-		protected override void Apply()
+		public override void OnEquip(Item item)
 		{
-			var owner = Owner;
-			applied = owner.ShapeshiftForm == ShapeshiftForm.DireBear;
-			if (applied)
+			var templ = item.Template;
+			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
+				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
 			{
-				// increase Stamina
-				base.Apply();
+				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
+				Owner.ModBaseResistance(DamageSchool.Physical, bonus);
 			}
 		}
 
-		protected override void Remove(bool cancelled)
+		public override void OnBeforeUnEquip(Item item)
 		{
-			if (applied)
+			var templ = item.Template;
+			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
+				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
 			{
-				base.Remove(cancelled);
-			}
-		}
-	}
-
-	/// <summary>
-	/// Increases AP if in cat form
-	/// </summary>
-	class HeartOfTheWildCatHandler : ModMeleeAttackPowerPercentHandler
-	{
-		private bool applied;
-		protected override void Apply()
-		{
-			var owner = Owner;
-			applied = owner.ShapeshiftForm == ShapeshiftForm.Cat;
-			if (applied)
-			{
-				// increase AP
-				base.Apply();
-			}
-		}
-
-		protected override void Remove(bool cancelled)
-		{
-			if (applied)
-			{
-				base.Remove(cancelled);
+				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
+				Owner.ModBaseResistance(DamageSchool.Physical, -bonus);
 			}
 		}
 	}

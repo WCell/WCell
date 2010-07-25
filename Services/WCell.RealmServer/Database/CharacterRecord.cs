@@ -1257,17 +1257,6 @@ namespace WCell.RealmServer.Database
 			TutorialFlags = new byte[32];
 			WatchedFaction = -1;
 
-			var setting = archetype.Class.GetLevelSetting(Level);
-			BaseHealth = setting.Health;
-			BasePower = archetype.Class.GetPowerForLevel(Level);
-
-			var stats = archetype.GetLevelStats((uint)Level);
-			BaseStrength = stats.Strength;
-			BaseStamina = stats.Stamina;
-			BaseSpirit = stats.Spirit;
-			BaseIntellect = stats.Intellect;
-			BaseAgility = stats.Agility;
-
 			DisplayId = archetype.Race.GetDisplayId(Gender);
 			ActionButtons = (byte[])archetype.ActionButtons.Clone();
 		}

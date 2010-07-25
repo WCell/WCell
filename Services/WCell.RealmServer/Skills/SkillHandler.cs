@@ -85,12 +85,12 @@ namespace WCell.RealmServer.Skills
 
 
 		#region Init
-		static MappedDBCReader<SkillTier, SkillTierConverter> TierReader;
+		static MappedDBCReader<SkillTiers, SkillTierConverter> TierReader;
 		static MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter> RaceClassReader;
 
 		internal static void Initialize()
 		{
-			TierReader = new MappedDBCReader<SkillTier, SkillTierConverter>(RealmServerConfiguration.GetDBCFile("SkillTiers.dbc"));
+			TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile("SkillTiers.dbc"));
 
 			var lineReader =
 				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile("SkillLine.dbc"));

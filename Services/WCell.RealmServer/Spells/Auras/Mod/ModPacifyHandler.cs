@@ -13,12 +13,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModPacifyHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.Pacified++;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.Pacified--;
 		}
@@ -29,12 +29,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModSilenceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.IncMechanicCount(SpellMechanic.Silenced);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.DecMechanicCount(SpellMechanic.Silenced);
 		}
@@ -45,13 +45,13 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModPacifySilenceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.Pacified++;
 			Owner.IncMechanicCount(SpellMechanic.Silenced);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.Pacified--;
 			Owner.DecMechanicCount(SpellMechanic.Silenced);

@@ -18,12 +18,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModScaleHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.ScaleX += EffectValue / 100f;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.ScaleX -= EffectValue / 100f;
 		}

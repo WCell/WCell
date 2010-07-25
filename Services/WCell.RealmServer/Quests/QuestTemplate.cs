@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Quests
 		/// Restricted to this Zone
 		/// </summary>
 		[NotPersistent]
-		public ZoneInfo ZoneInfo;
+		public ZoneTemplate ZoneTemplate;
 
 		/// <summary>
 		/// Id for QuestSort.dbc
@@ -1167,7 +1167,7 @@ namespace WCell.RealmServer.Quests
 			}
 			else if (Category > 0)
 			{
-				ZoneInfo = World.GetZoneInfo((ZoneId)Category);
+				ZoneTemplate = World.GetZoneInfo((ZoneId)Category);
 			}
 
 			List<QuestInteractionTemplate> goInteractions = null;

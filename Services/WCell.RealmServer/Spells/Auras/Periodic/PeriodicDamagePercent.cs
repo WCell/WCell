@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicDamagePercentHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var holder = m_aura.Auras.Owner;
 			if (m_aura.Caster != null)

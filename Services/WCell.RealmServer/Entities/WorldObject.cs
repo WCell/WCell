@@ -152,9 +152,9 @@ namespace WCell.RealmServer.Entities
 			Zone = zone;
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
-			get { return m_zone != null ? m_zone.Info : null; }
+			get { return m_zone != null ? m_zone.Template : null; }
 		}
 
 		public ZoneId ZoneId
@@ -1480,6 +1480,18 @@ namespace WCell.RealmServer.Entities
 			if (m_areaAuras == null)
 			{
 				m_areaAuras = new List<AreaAura>(2);
+			}
+			else if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.ExclusiveAreaAura))
+			{
+				// cannot be applied with other AreaAuras of that type
+				foreach (var aaura in m_areaAuras)
+				{
+					if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.ExclusiveAreaAura))
+					{
+						aaura.Remove(true);
+						break;
+					}
+				}
 			}
 			m_areaAuras.Add(aura);
 		}

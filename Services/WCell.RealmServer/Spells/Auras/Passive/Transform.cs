@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 		uint displayId;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner;
 			owner.Dismount();
@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner;
 			owner.DisplayId = displayId;

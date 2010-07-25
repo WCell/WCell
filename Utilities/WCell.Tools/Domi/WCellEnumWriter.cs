@@ -304,7 +304,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteZoneEnum()
 		{
-			WriteEnum("ZoneId", " : uint", "World", World.ZoneInfos,
+			WriteEnum("ZoneId", " : uint", "World", World.ZoneTemplates,
 					  (item) => { return true; },
 					  (item) => { return item.Name.Trim().Length > 0 ? item.Name : "Unnamed"; },
 					  (item) => { return ((uint)item.Id).ToString(); });

@@ -9,7 +9,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     /// </summary>
     public class ModHealingDonePctHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = Owner as Character;
 			if (owner != null)

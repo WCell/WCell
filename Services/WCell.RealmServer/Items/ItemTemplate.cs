@@ -27,6 +27,7 @@ namespace WCell.RealmServer.Items
 	[DataHolder]
 	public partial class ItemTemplate : IDataHolder, IMountableItem, IQuestHolderEntry
 	{
+		#region Standard Fields
 		[Persistent((int)ClientLocale.End)]
 		public string[] Names;
 
@@ -223,6 +224,12 @@ namespace WCell.RealmServer.Items
 		[Persistent(5)]
 		public ItemSpell[] Spells;
 
+		public int GetResistance(DamageSchool school)
+		{
+			return Resistances[(int) school];
+		}
+		#endregion
+
 		#region Vendor-Info
 		public uint StockRefillDelay;
 
@@ -234,7 +241,7 @@ namespace WCell.RealmServer.Items
 		public int BuyStackSize;
 		#endregion
 
-		#region Custom
+		#region Auto-generated fields
 		[NotPersistent]
 		public InventorySlotTypeMask InventorySlotMask
 		{
@@ -417,11 +424,6 @@ namespace WCell.RealmServer.Items
 			return Id;
 		}
 		#endregion
-
-		public void AddMod(ItemModType modType, int value)
-		{
-			ArrayUtil.AddOnlyOne(ref Mods, new StatModifier { Type = modType, Value = value });
-		}
 
 		#region Init
 		/// <summary>
@@ -618,6 +620,15 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		/// <summary>
+		/// Adds a new modifier to this Template
+		/// </summary>
+		public void AddMod(ItemModType modType, int value)
+		{
+			ArrayUtil.AddOnlyOne(ref Mods, new StatModifier { Type = modType, Value = value });
+		}
+
+		#region Checks
+		/// <summary>
 		/// 
 		/// </summary>
 		/// <param name="looter">Can be null</param>
@@ -767,12 +778,65 @@ namespace WCell.RealmServer.Items
 				throw new Exception("Found item-template (" + Id + ") with Id > " + ItemMgr.MaxId + ". Items with such a high ID would blow the item storage array.");
 			}
 		}
+		#endregion
 
-		public override string ToString()
+		#region Interface implementations
+		public ItemTemplate Template
 		{
-			return string.Format("{0} (Id: {1}{2})", DefaultName, Id,
-				InventorySlotType != InventorySlotType.None ? " (" + InventorySlotType + ")" : "");
+			get { return this; }
 		}
+
+		public ItemEnchantment[] Enchantments
+		{
+			get { return null; }
+		}
+
+		public bool IsEquipped
+		{
+			get { return false; }
+		}
+
+		public static IEnumerable<ItemTemplate> GetAllDataHolders()
+		{
+			return ItemMgr.Templates;
+		}
+
+		public QuestHolderInfo QuestHolderInfo
+		{
+			get;
+			internal set;
+		}
+
+		public IWorldLocation[] GetInWorldTemplates()
+		{
+			return null;
+		}
+
+		public Item Create()
+		{
+			return Creator();
+		}
+		#endregion
+
+		private void OnRecordCreated(ItemRecord record)
+		{
+			if (IsCharter)
+			{
+				PetitionRecord charter;
+				if (!record.IsNew)
+				{
+					// this is executed in the IO-context
+					charter = PetitionRecord.LoadRecord(record.EntityLowId);
+				}
+				else
+				{
+					charter = new PetitionRecord((uint)record.OwnerId, record.EntityLowId);
+				}
+
+				// TODO: Make charters work
+			}
+		}
+
 
 		#region Dump
 		public void Dump(TextWriter writer)
@@ -1048,57 +1112,10 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
-		public ItemTemplate Template
+		public override string ToString()
 		{
-			get { return this; }
-		}
-
-		public ItemEnchantment[] Enchantments
-		{
-			get { return null; }
-		}
-
-		public bool IsEquipped
-		{
-			get { return false; }
-		}
-
-		public static IEnumerable<ItemTemplate> GetAllDataHolders()
-		{
-			return ItemMgr.Templates;
-		}
-
-		public QuestHolderInfo QuestHolderInfo
-		{
-			get;
-			internal set;
-		}
-
-		public IWorldLocation[] GetInWorldTemplates()
-		{
-			return null;
-		}
-
-		public Item Create()
-		{
-			return Creator();
-		}
-
-		private void OnRecordCreated(ItemRecord record)
-		{
-			if (IsCharter)
-			{
-				PetitionRecord charter;
-				if (!record.IsNew)
-				{
-					// this is executed in the IO-context
-					charter = PetitionRecord.LoadRecord(record.EntityLowId);
-				}
-				else
-				{
-					charter = new PetitionRecord((uint)record.OwnerId, record.EntityLowId);
-				}
-			}
+			return string.Format("{0} (Id: {1}{2})", DefaultName, Id,
+				InventorySlotType != InventorySlotType.None ? " (" + InventorySlotType + ")" : "");
 		}
 	}
 }

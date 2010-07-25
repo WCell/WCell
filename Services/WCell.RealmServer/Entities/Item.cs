@@ -1100,6 +1100,13 @@ namespace WCell.RealmServer.Entities
 			}
 
 			m_owningCharacter.PlayerAuras.OnEquip(this);
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			{
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				{
+					handler.OnEquip(this);
+				}
+			}
 
 			m_template.NotifyEquip(this);
 		}
@@ -1201,7 +1208,14 @@ namespace WCell.RealmServer.Entities
 				m_hitProc = null;
 			}
 
-			m_owningCharacter.PlayerAuras.OnUnEquip(this);
+			m_owningCharacter.PlayerAuras.OnBeforeUnEquip(this);
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			{
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				{
+					handler.OnBeforeUnEquip(this);
+				}
+			}
 
 			m_template.NotifyUnequip(this);
 		}

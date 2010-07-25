@@ -65,6 +65,25 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return EffectValue >= 0; }
 		}
 
+		private bool m_IsActive;
+
+		public bool IsActive
+		{
+			get { return m_IsActive; }
+			internal set
+			{
+				if (m_IsActive == value ) return;
+				if ((m_IsActive = value))
+				{
+					Apply();
+				}
+				else
+				{
+					Remove(false);
+				}
+			}
+		}
+
 		/// <summary>
 		/// The Aura to which this AuraEffect belongs
 		/// </summary>
@@ -96,14 +115,14 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
-		protected internal virtual void Apply()
+		protected virtual void Apply()
 		{
 		}
 
 		/// <summary>
 		/// Is called by Aura to remove the effect from its holder
 		/// </summary>
-		protected internal virtual void Remove(bool cancelled)
+		protected virtual void Remove(bool cancelled)
 		{
 		}
 

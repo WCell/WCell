@@ -12,12 +12,12 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModMeleeCritDamageBonusHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ChangeModifier(StatModifierInt.CritDamageBonusPct, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ChangeModifier(StatModifierInt.CritDamageBonusPct, -EffectValue);
 		}

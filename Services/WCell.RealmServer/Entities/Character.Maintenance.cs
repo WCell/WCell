@@ -53,7 +53,8 @@ namespace WCell.RealmServer.Entities
 		/// <param name="record">The name of the character to load</param>
 		/// <param name="client">The client to associate with this character</param>
 		internal protected void Create(RealmAccount acc, CharacterRecord record, IRealmClient client)
-		{			client.ActiveCharacter = this;
+		{
+			client.ActiveCharacter = this;
 			acc.ActiveCharacter = this;
 
 			Type |= ObjectTypes.Player;
@@ -163,25 +164,26 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = this;
 			MoveControl.CanControl = true;
 
-			BaseHealth = m_record.BaseHealth;
-			SetBasePowerDontUpdate(m_record.BasePower);
-
-			SetBaseStat(StatType.Strength, m_record.BaseStrength);
-			SetBaseStat(StatType.Stamina, m_record.BaseStamina);
-			SetBaseStat(StatType.Spirit, m_record.BaseSpirit);
-			SetBaseStat(StatType.Intellect, m_record.BaseIntellect);
-			SetBaseStat(StatType.Agility, m_record.BaseAgility);
-
 			CanMelee = true;
 
 			// basic setup
 			if (record.JustCreated)
 			{
-				Power = PowerType == PowerType.Rage ? 0 : MaxPower;
-				SetInt32(UnitFields.HEALTH, MaxHealth);
+				ModStatsForLevel(1);
+				//Power = PowerType == PowerType.Rage ? 0 : MaxPower;
+				//SetInt32(UnitFields.HEALTH, MaxHealth);
 			}
 			else
 			{
+				BaseHealth = m_record.BaseHealth;
+				SetBasePowerDontUpdate(m_record.BasePower);
+
+				SetBaseStat(StatType.Strength, m_record.BaseStrength);
+				SetBaseStat(StatType.Stamina, m_record.BaseStamina);
+				SetBaseStat(StatType.Spirit, m_record.BaseSpirit);
+				SetBaseStat(StatType.Intellect, m_record.BaseIntellect);
+				SetBaseStat(StatType.Agility, m_record.BaseAgility);
+
 				Power = m_record.Power;
 				SetInt32(UnitFields.HEALTH, m_record.Health);
 			}
@@ -209,7 +211,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_zone != null)
 				{
-					SetZoneExplored(m_zone.Info, true);
+					SetZoneExplored(m_zone.Template, true);
 				}
 
 				//m_record.FreeTalentPoints = 0;
@@ -222,7 +224,6 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = 0u;
 				m_record.HonorPoints = 0u;
 				m_record.ArenaPoints = 0u;
-				Skills.UpdateSkillsForLevel(Level);
 			}
 			else
 			{
@@ -505,6 +506,10 @@ namespace WCell.RealmServer.Entities
                     if(Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
+                    }
+                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
                     }
 				}
 				else
@@ -907,7 +912,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				return Role.IsStaff ||
-					(!m_isInCombat && Zone != null && Zone.Info.IsCity) ||
+					(!m_isInCombat && Zone != null && Zone.Template.IsCity) ||
 					IsOnTaxi;
 			}
 		}

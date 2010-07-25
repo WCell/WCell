@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Global
 
 		internal static RegionInfo[] s_regionInfos = new RegionInfo[(int)MapId.End];
 		internal static Region[] s_Regions = new Region[(int)MapId.End];
-		internal static ZoneInfo[] s_ZoneInfos = new ZoneInfo[(int)ZoneId.End];
+		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
 
 		internal static InstancedRegion[][] s_instances = new InstancedRegion[(int)MapId.End][];
 
@@ -98,9 +98,9 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets the collection of zones.
 		/// </summary>
-		public static ZoneInfo[] ZoneInfos
+		public static ZoneTemplate[] ZoneTemplates
 		{
-			get { return s_ZoneInfos; }
+			get { return s_ZoneTemplates; }
 		}
 
 		/// <summary>
@@ -419,11 +419,11 @@ namespace WCell.RealmServer.Global
 		private static void LoadZoneInfos()
 		{
 			var atDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_AREATABLE);
-			var dbcRdr = new MappedDBCReader<ZoneInfo, AreaTableConverter>(atDbcPath);
+			var dbcRdr = new MappedDBCReader<ZoneTemplate, AreaTableConverter>(atDbcPath);
 
 			foreach (var zone in dbcRdr.Entries.Values)
 			{
-				ArrayUtil.Set(ref s_ZoneInfos, (uint)zone.Id, zone);
+				ArrayUtil.Set(ref s_ZoneTemplates, (uint)zone.Id, zone);
 
 				var region = s_regionInfos.Get((uint)zone.RegionId);
 				if (region != null)
@@ -434,15 +434,15 @@ namespace WCell.RealmServer.Global
 			}
 
 			// Set ParentZone and ChildZones
-			foreach (var zone in s_ZoneInfos)
+			foreach (var zone in s_ZoneTemplates)
 			{
 				if (zone != null)
 				{
-					zone.ParentZone = s_ZoneInfos.Get((uint)zone.ParentZoneId);
+					zone.ParentZone = s_ZoneTemplates.Get((uint)zone.ParentZoneId);
 				}
 			}
 
-			foreach (var zone in s_ZoneInfos)
+			foreach (var zone in s_ZoneTemplates)
 			{
 				if (zone != null)
 				{
@@ -1017,7 +1017,7 @@ namespace WCell.RealmServer.Global
 		/// <returns>the <see cref="RegionInfo" /> object for the given region ID</returns>
 		public static RegionInfo GetRegionInfo(MapId regionID)
 		{
-			if (s_ZoneInfos == null)
+			if (s_ZoneTemplates == null)
 			{
 				LoadMapData();
 			}
@@ -1029,9 +1029,9 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		/// <param name="zoneID">the ID to the zone to get</param>
 		/// <returns>the <see cref="Zone" /> object for the given zone ID</returns>
-		public static ZoneInfo GetZoneInfo(ZoneId zoneID)
+		public static ZoneTemplate GetZoneInfo(ZoneId zoneID)
 		{
-			return s_ZoneInfos.Get((uint)zoneID);
+			return s_ZoneTemplates.Get((uint)zoneID);
 		}
 
 		/// <summary>

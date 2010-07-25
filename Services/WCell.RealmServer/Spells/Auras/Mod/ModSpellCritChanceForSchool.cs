@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModSpellCritChanceForSchoolHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = Owner as Character;
 			if (owner != null)

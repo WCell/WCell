@@ -79,9 +79,9 @@ namespace WCell.RealmServer.GameObjects
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					if (((IWorldZoneLocation)Target).ZoneInfo != null)
+					if (((IWorldZoneLocation)Target).ZoneTemplate != null)
 					{
-						return ((IWorldZoneLocation)Target).ZoneInfo.Id;
+						return ((IWorldZoneLocation)Target).ZoneTemplate.Id;
 					}
 				}
 				return ZoneId.None;
@@ -95,13 +95,13 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Can be used to set the <see cref="Target"/>
 		/// </summary>
-		public ZoneInfo TargetZone
+		public ZoneTemplate TargetZone
 		{
 			get
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					return ((IWorldZoneLocation)Target).ZoneInfo;
+					return ((IWorldZoneLocation)Target).ZoneTemplate;
 				}
 				return null;
 			}

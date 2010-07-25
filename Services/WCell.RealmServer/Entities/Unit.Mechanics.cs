@@ -70,14 +70,6 @@ namespace WCell.RealmServer.Entities
 		public static readonly int DispelTypeCount = (int)Convert.ChangeType(Utility.GetMaxEnum<DispelType>(), typeof(int)) + 1;
 
 		/// <summary>
-		/// A dictionary that maps each specific DamageTypeMask-flag to its corresponding DamageType counterpart
-		/// </summary>
-		// public static readonly Dictionary<DamageTypeMask, DamageType> DamageTypeLookup = new Dictionary<DamageTypeMask, DamageType>();
-		/// <summary>
-		/// All DamageTypeMasks
-		/// </summary>
-		// public static readonly DamageTypeMask[] DamageTypeMasks = Utility.GetEnumValues<DamageTypeMask>();
-		/// <summary>
 		/// All CombatRatings
 		/// </summary>
 		public static readonly CombatRating[] CombatRatings = (CombatRating[])Enum.GetValues(typeof(CombatRating));
@@ -118,6 +110,9 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_dmgBonusVsCreatureTypePct;
 		protected int[] m_attackerSpellHitChance;
 		protected int[] m_SpellHitChance;
+		protected int[] m_spellCritMods;
+		protected int[] m_damageTakenMods;
+		protected int[] m_damageTakenPctMods;
 
 		protected int m_ManaShieldAmount;
 		protected float m_ManaShieldFactor;
@@ -734,26 +729,6 @@ namespace WCell.RealmServer.Entities
 
 
 		// TODO: ModDamageTaken and ModDamageTakenPercent
-		//public int GetDmgResistance(DamageType school)
-		//{
-		//    if (m_dmgResist == null) {
-		//        return 0;
-		//    }
-
-		//    m_dmgResist[(int)school] += value;
-		//}
-
-		///// <summary>
-		///// Adds resistance against certain damage
-		///// </summary>
-		//public void SetDmgnNullifier(DamageType school, int value)
-		//{
-		//    if (m_dmgResist == null) {
-		//        m_dmgResist = CreateDamageSchoolArr();
-		//    }
-
-		//    m_dmgResist[(int)school] += value;
-		//}
 		#endregion
 
 		#region Mechanic Resistance
@@ -1087,10 +1062,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual float GetSpellCritChance(DamageSchool school)
 		{
-			return 0;
+			return GetSpellCritMod(school);
 		}
-
-		protected int[] m_spellCritMods;
 
 		public int GetSpellCritMod(DamageSchool school)
 		{
@@ -1110,7 +1083,7 @@ namespace WCell.RealmServer.Entities
 			m_spellCritMods[(uint)school] = value;
 			if (this is Character)
 			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
+				((Character)this).UpdateSpellCritChance();
 			}
 		}
 
@@ -1141,7 +1114,7 @@ namespace WCell.RealmServer.Entities
 			}
 			if (this is Character)
 			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
+				((Character)this).UpdateSpellCritChance();
 			}
 		}
 
@@ -1158,7 +1131,123 @@ namespace WCell.RealmServer.Entities
 			}
 			if (this is Character)
 			{
-				UnitUpdates.UpdateSpellCritChance((Character)this);
+				((Character)this).UpdateSpellCritChance();
+			}
+		}
+		#endregion
+
+		#region Damage Taken Mods
+		/// <summary>
+		/// Returns the damage taken modifier for the given DamageSchool
+		/// </summary>
+		public int GetDamageTakenMod(DamageSchool school)
+		{
+			if (m_damageTakenMods == null)
+			{
+				return 0;
+			}
+			return m_damageTakenMods[(int)school];
+		}
+
+		public void SetDamageTakenMod(DamageSchool school, int value)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenMods[(uint)school] = value;
+		}
+
+		public void ModDamageTakenMod(DamageSchool school, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenMods[(int)school] += delta;
+		}
+
+		public void ModDamageTakenMod(DamageSchool[] schools, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenMods[(int)school] += delta;
+			}
+		}
+
+		public void ModDamageTakenMod(uint[] schools, int delta)
+		{
+			if (m_damageTakenMods == null)
+			{
+				m_damageTakenMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenMods[school] += delta;
+			}
+		}
+		#endregion
+
+		#region Damage Taken % Mods
+		/// <summary>
+		/// Returns the damage taken modifier for the given DamageSchool
+		/// </summary>
+		public int GetDamageTakenPctMod(DamageSchool school)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				return 0;
+			}
+			return m_damageTakenPctMods[(int)school];
+		}
+
+		public void SetDamageTakenPctMod(DamageSchool school, int value)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(uint)school] = value;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool school, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(int)school] += delta;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[(int)school] += delta;
+			}
+		}
+
+		public void ModDamageTakenPctMod(uint[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[school] += delta;
 			}
 		}
 		#endregion
@@ -1464,10 +1553,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public int Stealthed
 		{
-			get
-			{
-				return m_stealthed;
-			}
+			get { return m_stealthed; }
 			set
 			{
 				if (m_stealthed != value)
@@ -1927,22 +2013,24 @@ namespace WCell.RealmServer.Entities
 		/// Deactivates the mana shield once its used up.
 		/// </summary>
 		/// <param name="damage"></param>
-		public void DrainManaShield(ref int damage)
+		/// <returns>The amount of damage drained</returns>
+		public int DrainManaShield(int damage)
 		{
 			var power = Power;
-			var amount = damage;
-			if (amount >= m_ManaShieldAmount)
+			if (damage >= m_ManaShieldAmount)
 			{
-				amount = m_ManaShieldAmount;
+				damage = m_ManaShieldAmount;
 				m_auras.RemoveWhere(aura => aura.Spell.HasManaShield);
 			}
 
 			var powerPoints = (int)(power / m_ManaShieldFactor);
-			amount = Math.Min(amount, powerPoints);
 
+			var amount = Math.Min(damage, powerPoints);
 			m_ManaShieldAmount -= powerPoints;
 			Power = power - (int)(amount * m_ManaShieldFactor);
 			damage -= amount;
+
+			return amount;
 		}
 
 		public void SetManaShield(float factor, int amount)

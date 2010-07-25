@@ -18,278 +18,7 @@ using System;
 
 namespace WCell.Constants.Spells
 {
-
-    [Flags]
-    public enum CastFlags : uint
-    {
-        None = 0,
-        Flag_0x1 = 0x1,
-        Flag_0x2 = 0x2,
-        Flag_0x4 = 0x4,
-        Flag_0x8 = 0x8,
-        Flag_0x10 = 0x10,
-        Ranged = 0x20,
-        Flag_0x40 = 0x40,
-        Flag_0x80 = 0x80,
-        Flag_0x100 = 0x100,
-        Flag_0x200 = 0x200,
-        Flag_0x400 = 0x400,
-        Flag_0x800 = 0x800,
-        Flag_0x10000 = 0x10000,
-        Flag_0x20000 = 0x20000,
-        Flag_0x40000 = 0x40000,
-        Flag_0x80000 = 0x80000,
-        Flag_0x100000 = 0x100000,
-        Flag_0x200000 = 0x200000,
-        Flag_0x4000000 = 0x04000000,
-    }
-
-    [Flags]
-    public enum SpellLogFlags
-    {
-        None = 0,
-		SpellLogFlag_0x1 = 0x1,
-        Critical = 0x2,
-		SpellLogFlag_0x4 = 0x4,
-		SpellLogFlag_0x8 = 0x8,
-		SpellLogFlag_0x10 = 0x10,
-		SpellLogFlag_0x20 = 0x20,
-    }
-
-	public enum CastMissReason : byte
-	{
-		None = 0,
-		Miss = 1,
-		Resist = 2,
-		Dodge = 3,
-		Parry = 4,
-		Block = 5,
-		Evade = 6,
-		Immune = 7,
-        Immune_2 = 8,
-		Deflect = 9,
-		Absorb = 10,
-		Reflect = 11,
-	}
-
-	/// <summary>
-	/// Used in MiscValueB of SpellEffect.Summon
-	/// </summary>
-	public enum SummonType
-	{
-		Pet = 0,
-		Critter = 41,
-		Guardian = 61,
-		/// <summary>
-		/// Fire Totems
-		/// </summary>
-		TotemSlot1 = 63,
-		Wild = 64,
-		Possessed = 65,
-		Demon = 66,
-		Summon = 67,
-		TotemSlot2 = 81,
-		TotemSlot3 = 82,
-		/// <summary>
-		/// Air Totems
-		/// </summary>
-		TotemSlot4 = 83,
-		Totem = 121,
-		Type_181 = 181,
-		Type_187 = 187,
-		Type_247 = 247,
-		Critter2 = 307,
-		Critter3 = 407,
-		Type_409 = 409,
-		Type_427 = 427,
-		/// <summary>
-		/// Only used in steam tonk summon
-		/// </summary>
-		SummonAndPossess = 428,
-		Guardian2 = 713,
-		/// <summary>
-		/// Only used for the Priest's LightWell summon
-		/// </summary>
-		Lightwell = 1141,
-		Guardian3 = 1161,
-
-        /// <summary>
-        /// Summons the NPC exactly as in the entry, only used for ClassSkillCurseOfDoomEffect
-        /// </summary>
-        DoomGuard = 1221,
-		Elemental = 1561,
-		End
-	};
-
-    
-
-	[Flags]
-	public enum AuraStateMask : uint
-	{
-		None = 0x0000,
-		/// <summary>
-		/// Used for Revenge spell
-		/// </summary>
-		DodgeOrBlockOrParry = 0x0001,
-
-		/// <summary>
-		/// Very low on Health
-		/// </summary>
-		Health20Percent = 0x0002,
-
-		/// <summary>
-		/// Going Berserk
-		/// Only used by: Berserking Racial (Id: 26635)
-		/// </summary>
-		Berserk = 0x0004,
-
-		/// <summary>
-		/// Frozen
-		/// </summary>
-		Frozen = 0x0008,
-
-		/// <summary>
-		/// Used for judgemental Paladins
-		/// </summary>
-		Judgement = 0x0010,
-		AuraState0x0020 = 0x0020,
-
-		/// <summary>
-		/// Parried the last blow
-		/// </summary>
-		Parry = 0x0040,
-		State0x0080 = 0x0080,
-		State0x0100 = 0x0100,
-
-		/// <summary>
-		/// Just killed someone who yielded honor or xp
-		/// Used by Victory Rush amongst others
-		/// Stays on for 20 secs
-		/// Applied by Effect: Victorious (Id: 32216)?
-		/// </summary>
-		KillYieldedHonorOrXp = 0x0200,
-
-		/// <summary>
-		/// Only used by some Test spells
-		/// </summary>
-		ScoredCriticalHit = 0x0400,
-		State0x0800 = 0x0800,
-
-		/// <summary>
-		/// Low on Health
-		/// </summary>
-		Health35Percent = 0x1000,
-		
-		/// <summary>
-		/// Immolated (Damn Pyros!)
-		/// </summary>
-		Immolate = 0x2000,
-
-		/// <summary>
-		/// Only used with: Druid Restoration Swiftmend (Id: 18562) [DruidRestorationSwiftmend]
-		/// </summary>
-		RejuvenationOrRegrowth = 0x4000,
-		DeadlyPoison = 0x8000,
-		Enraged = 0x10000,
-		WeakenedSoul = 0x20000,
-		Hypothermia = 0x40000,
-		AuraState0x0080000 = 0x0080000,
-		AuraState0x0100000 = 0x0100000,
-		AuraState0x0200000 = 0x0200000,
-
-		/// <summary>
-		/// In good shape
-		/// </summary>
-		HealthAbove75Pct = 0x0400000
-	}
-
-	public enum AuraState : uint
-	{
-		None = 0,
-		DodgeOrBlockOrParry = 1,
-		Health20Percent = 2,
-		Berserk = 3,
-		Frozen = 4,
-		Judgement = 5,
-		AuraState6 = 6,
-		HunterParryRogueStealthAttack = 7,
-		/// <summary>
-		/// Unused
-		/// </summary>
-		State0x0080 = 8,
-		/// <summary>
-		/// Unused
-		/// </summary>
-		State0x0100 = 9,
-		/// <summary>
-		/// Only in ClassSkill Victory Rush (Id: 34428) as CasterAuraState
-		/// </summary>
-		KillYieldedHonorOrXp = 10,
-		ScoredCriticalHit = 11,
-		/// <summary>
-		/// Unused
-		/// </summary>
-		StealthInvis = 12,
-		Health35Percent = 13,
-		/// <summary>
-		/// Must be immolated; consumes Immolate after use
-		/// </summary>
-		Immolate = 14,
-		/// <summary>
-		/// Only used for ClassSkill Swiftmend (Id: 18562)
-		/// </summary>
-		RejuvenationOrRegrowth = 15,
-		DeadlyPoison = 16,
-        /// <summary>
-		/// Required by caster for Enraged Regeneration (Id: 55694)
-        /// </summary>
-        Enraged = 17,
-
-        //WeakenedSoul = 18,
-        ///// <summary>
-        ///// Results into: Hypothermia (Dummy Aura) - ARGHS
-        ///// Only in: ClassSkill Ice Block (Id: 45438)
-        ///// </summary>
-        //Hypothermia = 19,
-		HealthAbove75Pct = 23
-	}
-
-    public enum GenericFlags : uint
-    {
-        Flag_0_0x1 = 0x1,//0
-        Flag_1_0x2 = 0x2,//1
-        Flag_2_0x4 = 0x4,//2
-        Flag_3_0x8 = 0x8,//3
-        Flag_4_0x10 = 0x10,//4
-        Flag_5_0x20 = 0x20,//5
-        Flag_6_0x40 = 0x40,//6
-        Flag_7_0x80 = 0x80,//7
-        Flag_8_0x100 = 0x100,//8
-        Flag_9_0x200 = 0x200,//9
-        Flag_10_0x400 = 0x400,//10
-        Flag_11_0x800 = 0x800,//11
-        Flag_12_0x1000 = 0x1000,//12
-        Flag_13_0x2000 = 0x2000,//13
-        Flag_14_0x4000 = 0x4000,//14
-        Flag_15_0x8000 = 0x8000,//15
-        Flag_16_0x10000 = 0x10000,//16
-        Flag_17_0x20000 = 0x20000,//17
-        Flag_18_0x40000 = 0x40000,//18
-        Flag_19_0x80000 = 0x80000,//19
-        Flag_20_0x100000 = 0x100000,//20
-        Flag_21_0x200000 = 0x200000,//21
-        Flag_22_0x400000 = 0x400000,//22
-        Flag_23_0x800000 = 0x800000,//23
-        Flag_24_0x1000000 = 0x1000000,//24
-        Flag_25_0x2000000 = 0x2000000,//25
-        Flag_26_0x4000000 = 0x4000000,//26
-        Flag_27_0x8000000 = 0x8000000,//27
-        Flag_28_0x10000000 = 0x10000000,//28
-        Flag_29_0x20000000 = 0x20000000,//29
-        Flag_30_0x40000000 = 0x40000000,//30
-        Flag_31_0x80000000 = 0x80000000,//31
-    }
-
+	#region Attributes
 	[Flags]
 	public enum SpellAttributes : uint
 	{
@@ -520,9 +249,9 @@ namespace WCell.Constants.Spells
         AttrExB_3_0x8 = 0x8,//3
 
 		/// <summary>
-		/// Does not actually make this an Aura but indicates that effects dont stack with other modifiers?
+		/// Can only have one AreaAura with this modifier at a time
 		/// </summary>
-        PaladinAura = 0x10,
+        ExclusiveAreaAura = 0x10,
 
         AutoRepeat = 0x20, // auto shot
 
@@ -856,27 +585,9 @@ namespace WCell.Constants.Spells
 
         AttrExF_31_0x80000000 = 0x80000000,//31
 	}
+	#endregion
 
-    public enum SpellClassSet
-    {
-        Generic = 0,
-        Name_1 = 1,
-        Unused_Name_2 = 2,
-        Mage = 3,
-        Warrior = 4,
-        Warlock = 5,
-        Priest = 6,
-        Druid = 7,
-        Rogue = 8,
-        Hunter = 9,
-        Paladin = 10,
-        Shaman = 11,
-        Unused_Name_12 = 12,
-        Unused_Name_13 = 13,
-        DeathKnight = 15,
-        HunterPets = 17,
-    }
-
+	#region Interrupt
 	/// <summary>
 	/// Events that can interrupt casting
 	/// </summary>
@@ -970,149 +681,9 @@ namespace WCell.Constants.Spells
 		ChannelInterruptOn17 = 0x10000,
 		ChannelInterruptOn18 = 0x20000
 	}
+	#endregion
 
-    [Flags]
-    public enum SpellFacingFlags
-    {
-        RequiresInFront = 0x1,
-        Flag_1_0x2 = 0x2,
-        Flag_2_0x4 = 0x4,
-        Flag_3_0x8 = 0x8,
-    }
-
-	public enum SpellDefenseType
-	{
-		None = 0,
-		Magic = 1,
-		Melee = 2,
-		Ranged = 3
-	}
-
-    public enum SpellPreventionType
-    {
-        None = 0,
-        /// <summary>
-        /// Cannot cast spells of this type when Silenced
-        /// </summary>
-        Magic = 1,
-        /// <summary>
-        /// Cannot cast spells of this type when Pacified
-        /// </summary>
-        Melee = 2,
-    }
-
-	[Flags]
-	public enum SpellFamilyFlags : ulong
-	{
-		#region Generic
-		_0x0000000000000001 = 0x0000000000000001,
-		_0x0000000000000002 = 0x0000000000000002,
-		_0x0000000000000004 = 0x0000000000000004,
-		_0x0000000000000008 = 0x0000000000000008,
-
-		_0x0000000000000010 = 0x0000000000000010,
-		_0x0000000000000020 = 0x0000000000000020,
-		_0x0000000000000040 = 0x0000000000000040,
-		_0x0000000000000080 = 0x0000000000000080,
-
-		_0x0000000000000100 = 0x0000000000000100,
-		_0x0000000000000200 = 0x0000000000000200,
-		_0x0000000000000400 = 0x0000000000000400,
-		_0x0000000000000800 = 0x0000000000000800,
-
-		_0x0000000000001000 = 0x0000000000001000,
-		_0x0000000000002000 = 0x0000000000002000,
-		_0x0000000000004000 = 0x0000000000004000,
-		_0x0000000000008000 = 0x0000000000008000,
-
-		_0x0000000000010000 = 0x0000000000010000,
-		_0x0000000000020000 = 0x0000000000020000,
-		_0x0000000000040000 = 0x0000000000040000,
-		_0x0000000000080000 = 0x0000000000080000,
-
-		_0x0000000000100000 = 0x0000000000100000,
-		_0x0000000000200000 = 0x0000000000200000,
-		_0x0000000000400000 = 0x0000000000400000,
-		_0x0000000000800000 = 0x0000000000800000,
-
-		_0x0000000001000000 = 0x0000000001000000,
-		_0x0000000002000000 = 0x0000000002000000,
-		_0x0000000004000000 = 0x0000000004000000,
-		_0x0000000008000000 = 0x0000000008000000,
-
-		_0x0000000010000000 = 0x0000000010000000,
-		_0x0000000020000000 = 0x0000000020000000,
-		_0x0000000040000000 = 0x0000000040000000,
-		_0x0000000080000000 = 0x0000000080000000,
-
-		_0x0000000100000000 = 0x0000000100000000,
-		_0x0000000200000000 = 0x0000000200000000,
-		_0x0000000400000000 = 0x0000000400000000,
-		_0x0000000800000000 = 0x0000000800000000,
-
-		_0x0000001000000000 = 0x0000001000000000,
-		_0x0000002000000000 = 0x0000002000000000,
-		_0x0000004000000000 = 0x0000004000000000,
-		_0x0000008000000000 = 0x0000008000000000,
-
-		_0x0000010000000000 = 0x0000010000000000,
-		_0x0000020000000000 = 0x0000020000000000,
-		_0x0000040000000000 = 0x0000040000000000,
-		_0x0000080000000000 = 0x0000080000000000,
-
-		_0x0000100000000000 = 0x0000100000000000,
-		_0x0000200000000000 = 0x0000200000000000,
-		_0x0000400000000000 = 0x0000400000000000,
-		_0x0000800000000000 = 0x0000800000000000,
-
-		_0x0001000000000000 = 0x0001000000000000,
-		_0x0002000000000000 = 0x0002000000000000,
-		_0x0004000000000000 = 0x0004000000000000,
-		_0x0008000000000000 = 0x0008000000000000,
-
-		_0x0010000000000000 = 0x0010000000000000,
-		_0x0020000000000000 = 0x0020000000000000,
-		_0x0040000000000000 = 0x0040000000000000,
-		_0x0080000000000000 = 0x0080000000000000,
-
-		_0x0100000000000000 = 0x0100000000000000,
-		_0x0200000000000000 = 0x0200000000000000,
-		_0x0400000000000000 = 0x0400000000000000,
-		_0x0800000000000000 = 0x0800000000000000,
-
-		_0x1000000000000000 = 0x1000000000000000,
-		_0x2000000000000000 = 0x2000000000000000,
-		_0x4000000000000000 = 0x4000000000000000,
-		_0x8000000000000000 = 0x8000000000000000,
-		#endregion
-
-		/*// Paladin
-        Blessing = 0x10000000,
-        Seal = 0xA000200,
-
-        // Mage
-        MoltenArmor = 0x40000,
-        FrostIceArmor = 0x2000000,
-        MageArmor = 0x10000000,
-        Blizzard = 0x80,
-
-        // Shaman
-        LightningShield = 0x400,
-        EarthShield = 0x40000000000,
-
-
-        // Warrior
-        ThunderClap = 0x80,
-
-        // Rogue
-        Sap = 0x00000080,
-        Vanish = 0x00000800,
-        Stealth = 0x00400000,
-        Backstab = 0x00800004,
-        Feint = 0x08000000,
-        KidneyShot = 0x00200000,*/
-	}
-
+	#region Targeting
 	[Flags]
 	public enum SpellTargetFlags : uint
 	{
@@ -1302,32 +873,9 @@ namespace WCell.Constants.Spells
 		ConeInFrontOfCaster = 104,
 		Target_105						// Highest as of 3.2.2
     }
+	#endregion
 
-	public enum DispelType
-	{
-		Trinkets = -1,
-		None = 0,
-		Magic = 1,
-		Curse = 2,
-		Disease = 3,
-		Poison = 4,
-		Stealth = 5,
-		Invisibility = 6,
-		All = 7,
-
-		Frenzy = 9
-	};
-
-	public enum HarmType
-	{
-		/// <summary>
-		/// Neutral spell/effect or spell that has both, beneficial and harmful effects
-		/// </summary>
-		Neutral = 0,
-		Beneficial,
-		Harmful
-	}
-
+	#region AIGroupAction
 	// still usable?
 	public enum AIGroupAction
 	{
@@ -1425,7 +973,9 @@ namespace WCell.Constants.Spells
 		FlightPath = 0x5B,
 		UnitCombatTrigger = 0x5C
 	}
+	#endregion
 
+	#region InvisType
 	public enum InvisType : byte
 	{
 		Normal = 0,
@@ -1470,6 +1020,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Quests2 = 9
 	}
+	#endregion
 
 	#region Auras
 	/// <summary>
@@ -1480,13 +1031,13 @@ namespace WCell.Constants.Spells
 	{
 		None = 0,
 		Effect1AppliesAura = 0x1, // 001
-        Effect2AppliesAura = 0x2, // 010
-        Effect3AppliesAura = 0x4, // 100
+		Effect2AppliesAura = 0x2, // 010
+		Effect3AppliesAura = 0x4, // 100
 		TargetIsCaster = 0x8,
 		Positive = 0x10,
 		HasDuration = 0x20,
-        Flag_0x40 = 0x40,
-        Negative = 0x80,
+		Flag_0x40 = 0x40,
+		Negative = 0x80,
 	}
 
 	[Flags]
@@ -1501,11 +1052,272 @@ namespace WCell.Constants.Spells
 	}
 	#endregion
 
+	#region AuraState
+	[Flags]
+	public enum AuraStateMask : uint
+	{
+		None = 0x0000,
+		/// <summary>
+		/// Used for Revenge spell
+		/// </summary>
+		DodgeOrBlockOrParry = 0x0001,
+
+		/// <summary>
+		/// Very low on Health
+		/// </summary>
+		Health20Percent = 0x0002,
+
+		/// <summary>
+		/// Going Berserk
+		/// Only used by: Berserking Racial (Id: 26635)
+		/// </summary>
+		Berserk = 0x0004,
+
+		/// <summary>
+		/// Frozen
+		/// </summary>
+		Frozen = 0x0008,
+
+		/// <summary>
+		/// Used for judgemental Paladins
+		/// </summary>
+		Judgement = 0x0010,
+		AuraState0x0020 = 0x0020,
+
+		/// <summary>
+		/// Parried the last blow
+		/// </summary>
+		Parry = 0x0040,
+		State0x0080 = 0x0080,
+		State0x0100 = 0x0100,
+
+		/// <summary>
+		/// Just killed someone who yielded honor or xp
+		/// Used by Victory Rush amongst others
+		/// Stays on for 20 secs
+		/// Applied by Effect: Victorious (Id: 32216)?
+		/// </summary>
+		KillYieldedHonorOrXp = 0x0200,
+
+		/// <summary>
+		/// Only used by some Test spells
+		/// </summary>
+		ScoredCriticalHit = 0x0400,
+		State0x0800 = 0x0800,
+
+		/// <summary>
+		/// Low on Health
+		/// </summary>
+		Health35Percent = 0x1000,
+
+		/// <summary>
+		/// Immolated (Damn Pyros!)
+		/// </summary>
+		Immolate = 0x2000,
+
+		/// <summary>
+		/// Only used with: Druid Restoration Swiftmend (Id: 18562) [DruidRestorationSwiftmend]
+		/// </summary>
+		RejuvenationOrRegrowth = 0x4000,
+		DeadlyPoison = 0x8000,
+		Enraged = 0x10000,
+		WeakenedSoul = 0x20000,
+		Hypothermia = 0x40000,
+		AuraState0x0080000 = 0x0080000,
+		AuraState0x0100000 = 0x0100000,
+		AuraState0x0200000 = 0x0200000,
+
+		/// <summary>
+		/// In good shape
+		/// </summary>
+		HealthAbove75Pct = 0x0400000
+	}
+
+	public enum AuraState : uint
+	{
+		None = 0,
+		DodgeOrBlockOrParry = 1,
+		Health20Percent = 2,
+		Berserk = 3,
+		Frozen = 4,
+		Judgement = 5,
+		AuraState6 = 6,
+		HunterParryRogueStealthAttack = 7,
+		/// <summary>
+		/// Unused
+		/// </summary>
+		State0x0080 = 8,
+		/// <summary>
+		/// Unused
+		/// </summary>
+		State0x0100 = 9,
+		/// <summary>
+		/// Only in ClassSkill Victory Rush (Id: 34428) as CasterAuraState
+		/// </summary>
+		KillYieldedHonorOrXp = 10,
+		ScoredCriticalHit = 11,
+		/// <summary>
+		/// Unused
+		/// </summary>
+		StealthInvis = 12,
+		Health35Percent = 13,
+		/// <summary>
+		/// Must be immolated; consumes Immolate after use
+		/// </summary>
+		Immolate = 14,
+		/// <summary>
+		/// Only used for ClassSkill Swiftmend (Id: 18562)
+		/// </summary>
+		RejuvenationOrRegrowth = 15,
+		DeadlyPoison = 16,
+		/// <summary>
+		/// Required by caster for Enraged Regeneration (Id: 55694)
+		/// </summary>
+		Enraged = 17,
+
+		//WeakenedSoul = 18,
+		///// <summary>
+		///// Results into: Hypothermia (Dummy Aura) - ARGHS
+		///// Only in: ClassSkill Ice Block (Id: 45438)
+		///// </summary>
+		//Hypothermia = 19,
+		HealthAbove75Pct = 23
+	}
+	#endregion
+
+	[Flags]
+	public enum CastFlags : uint
+	{
+		None = 0,
+		Flag_0x1 = 0x1,
+		Flag_0x2 = 0x2,
+		Flag_0x4 = 0x4,
+		Flag_0x8 = 0x8,
+		Flag_0x10 = 0x10,
+		Ranged = 0x20,
+		Flag_0x40 = 0x40,
+		Flag_0x80 = 0x80,
+		Flag_0x100 = 0x100,
+		Flag_0x200 = 0x200,
+		Flag_0x400 = 0x400,
+		Flag_0x800 = 0x800,
+		Flag_0x10000 = 0x10000,
+		Flag_0x20000 = 0x20000,
+		Flag_0x40000 = 0x40000,
+		Flag_0x80000 = 0x80000,
+		Flag_0x100000 = 0x100000,
+		Flag_0x200000 = 0x200000,
+		Flag_0x4000000 = 0x04000000,
+	}
+
+	[Flags]
+	public enum SpellLogFlags
+	{
+		None = 0,
+		SpellLogFlag_0x1 = 0x1,
+		Critical = 0x2,
+		SpellLogFlag_0x4 = 0x4,
+		SpellLogFlag_0x8 = 0x8,
+		SpellLogFlag_0x10 = 0x10,
+		SpellLogFlag_0x20 = 0x20,
+	}
+
+	public enum CastMissReason : byte
+	{
+		None = 0,
+		Miss = 1,
+		Resist = 2,
+		Dodge = 3,
+		Parry = 4,
+		Block = 5,
+		Evade = 6,
+		Immune = 7,
+		Immune_2 = 8,
+		Deflect = 9,
+		Absorb = 10,
+		Reflect = 11,
+	}
+
+	public enum SpellClassSet
+	{
+		Generic = 0,
+		Name_1 = 1,
+		Unused_Name_2 = 2,
+		Mage = 3,
+		Warrior = 4,
+		Warlock = 5,
+		Priest = 6,
+		Druid = 7,
+		Rogue = 8,
+		Hunter = 9,
+		Paladin = 10,
+		Shaman = 11,
+		Unused_Name_12 = 12,
+		Unused_Name_13 = 13,
+		DeathKnight = 15,
+		HunterPets = 17,
+	}
+
+	[Flags]
+	public enum SpellFacingFlags
+	{
+		RequiresInFront = 0x1,
+		Flag_1_0x2 = 0x2,
+		Flag_2_0x4 = 0x4,
+		Flag_3_0x8 = 0x8,
+	}
+
+	public enum SpellDefenseType
+	{
+		None = 0,
+		Magic = 1,
+		Melee = 2,
+		Ranged = 3
+	}
+
+	public enum SpellPreventionType
+	{
+		None = 0,
+		/// <summary>
+		/// Cannot cast spells of this type when Silenced
+		/// </summary>
+		Magic = 1,
+		/// <summary>
+		/// Cannot cast spells of this type when Pacified
+		/// </summary>
+		Melee = 2,
+	}
+
+	public enum DispelType
+	{
+		Trinkets = -1,
+		None = 0,
+		Magic = 1,
+		Curse = 2,
+		Disease = 3,
+		Poison = 4,
+		Stealth = 5,
+		Invisibility = 6,
+		All = 7,
+
+		Frenzy = 9
+	};
+
+	public enum HarmType
+	{
+		/// <summary>
+		/// Neutral spell/effect or spell that has both, beneficial and harmful effects
+		/// </summary>
+		Neutral = 0,
+		Beneficial,
+		Harmful
+	}
+
 	public enum SkinningType
 	{
 		Skinning = 0,
 		Herbalism = 1,
 		Mining = 2,
-		Engineering =3
+		Engineering = 3
 	}
 }

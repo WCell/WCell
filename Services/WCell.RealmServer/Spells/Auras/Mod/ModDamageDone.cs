@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModDamageDoneHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			if (m_aura.Auras.Owner is Character)
 			{
@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (m_aura.Auras.Owner is Character)
 			{

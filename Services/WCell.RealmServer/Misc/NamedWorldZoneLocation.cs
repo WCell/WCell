@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
 			get { return World.GetZoneInfo(ZoneId); }
 		}

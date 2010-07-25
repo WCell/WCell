@@ -44,12 +44,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Seat.Enter(Caster);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (Caster.IsInWorld && Seat.Passenger == Caster)
 			{

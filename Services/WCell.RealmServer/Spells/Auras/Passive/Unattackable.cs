@@ -7,12 +7,12 @@ namespace WCell.RealmServer.Spells.Auras.Passive
 {
 	public class UnattackableHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.Invulnerable++;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.Invulnerable--;
 		}

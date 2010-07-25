@@ -29,7 +29,7 @@ namespace WCell.Core.DBC
 		}
 	}
 
-    public class DBCRecordConverter : IDisposable
+    public abstract class DBCRecordConverter : IDisposable
     {
         private byte[] m_stringTable;
 

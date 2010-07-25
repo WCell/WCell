@@ -7,7 +7,7 @@ namespace WCell.RealmServer.Spells.Auras
 {
 	public class DamagePctAmplifierHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = Owner;
 			if (owner.Auras.DamagePctAmplifiers == null)
@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Spells.Auras
 			owner.Auras.DamagePctAmplifiers.Add(SpellEffect);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = Owner;
 			if (owner.Auras.DamagePctAmplifiers != null)

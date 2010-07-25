@@ -259,6 +259,7 @@
     <Compile Include="Spells\Druid\DruidRestorationFixes.cs" />
     <Compile Include="Spells\Hunter\HunterMarkmanshipFixes.cs" />
     <Compile Include="Spells\Hunter\HunterSurvivalFixes.cs" />
+    <Compile Include="Spells\Mage\MageArcaneFixes.cs" />
     <Compile Include="Spells\Mage\MageFireFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinProtectionFixes.cs" />

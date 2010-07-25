@@ -894,7 +894,7 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, delta);
+				ModBaseResistance(school, -delta);
 			}
 		}
 
@@ -912,13 +912,13 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, delta);
 			}
 		}
 
@@ -1449,7 +1449,7 @@ namespace WCell.RealmServer.Entities
 				//if (PowerType == PowerType.Mana)
 				SetInt32(UnitFields.BASE_MANA, value);
 
-				this.UpdatePower();
+				this.UpdateMaxPower();
 
 				if ((PowerType != PowerType.Rage) && (PowerType != PowerType.Energy))
 				{
@@ -1594,6 +1594,12 @@ namespace WCell.RealmServer.Entities
 		{
 			get;
 			internal set;
+		}
+
+		public int AoEDamageModifierPct
+		{
+			get;
+			set;
 		}
 
 		public virtual uint Defense

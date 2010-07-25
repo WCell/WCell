@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var npc = (NPC)Owner;
 			var caster = m_aura.Caster as Unit;
@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var npc = (NPC)Owner;
 			if (npc.ThreatCollection.Taunter == m_aura.Caster)

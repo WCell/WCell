@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PowerBurnHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var holder = m_aura.Auras.Owner;
 			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&

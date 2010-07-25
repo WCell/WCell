@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var caster = m_aura.Caster as Unit;
 			if (caster == null)
@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var caster = (Unit)m_aura.Caster;
 			var target = m_aura.Auras.Owner;

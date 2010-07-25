@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Skills
 		/// <summary>
 		/// The Skill's "challenge levels"
 		/// </summary>
-		public SkillTier Tier;
+		public SkillTiers Tiers;
 
 		/// <summary>
 		/// The name of this Skill
@@ -74,9 +74,25 @@ namespace WCell.RealmServer.Skills
 		/// </summary>
 		public List<Spell> TeachingSpells = new List<Spell>(1);
 
-		public bool HasTier(uint tier)
+		public bool HasTier(SkillTierId tier)
 		{
-			return Tier.Values != null && tier < Tier.Values.Length;
+			return Tiers.MaxValues != null && (int)tier < Tiers.MaxValues.Length;
+		}
+
+		public SkillTierId GetTier(int value)
+		{
+			if (Tiers.MaxValues != null)
+			{
+				for (var t = 0; t < Tiers.MaxValues.Length; t++)
+				{
+					var max = Tiers.MaxValues[t];
+					if (value < max)
+					{
+						return (SkillTierId)t;
+					}
+				}
+			}
+			return SkillTierId.End;
 		}
 
 		/// <summary>
@@ -86,9 +102,9 @@ namespace WCell.RealmServer.Skills
 		{
 			get
 			{
-				if (Tier.Values != null && Tier.Values.Length == 1)
+				if (Tiers.MaxValues != null && Tiers.MaxValues.Length == 1)
 				{
-					return Tier.Values[0];
+					return Tiers.MaxValues[0];
 				}
 				return 1;
 			}
@@ -101,13 +117,13 @@ namespace WCell.RealmServer.Skills
 		{
 			get
 			{
-				if (Tier.Values == null)
+				if (Tiers.MaxValues == null)
 				{
 					return 1;
 				}
 
 				// The first entry is the first initial limit
-				return Tier.Values[0];
+				return Tiers.MaxValues[0];
 			}
 		}
 
@@ -118,9 +134,9 @@ namespace WCell.RealmServer.Skills
 		{
 			get
 			{
-				if (Tier.Values != null)
+				if (Tiers.MaxValues != null)
 				{
-					return Math.Max(1, Tier.Values[Tier.Values.Length - 1]);
+					return Math.Max(1, Tiers.MaxValues[Tiers.MaxValues.Length - 1]);
 				}
 
 				if(Category == SkillCategory.WeaponProficiency)
@@ -134,7 +150,7 @@ namespace WCell.RealmServer.Skills
 
 		public override string ToString()
 		{
-			return Name + " (" + (uint)Id + ", " + Category + ", Tier: " + Tier + ")";
+			return Name + " (" + (uint)Id + ", " + Category + ", Tier: " + Tiers + ")";
 		}
 	}
 }

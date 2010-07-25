@@ -51,10 +51,10 @@ namespace WCell.RealmServer.Entities
 		{
 			if (!PetMgr.InfinitePetRenames && !chr.GodMode)
 			{
-                if (!PetState.HasFlag(PetState.CanBeRenamed))
-                {
-                    return PetNameInvalidReason.Invalid;
-                }
+				if (!PetState.HasFlag(PetState.CanBeRenamed))
+				{
+					return PetNameInvalidReason.Invalid;
+				}
 			}
 
 			var response = PetMgr.IsPetNameValid(ref name);
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanEat(PetFoodType petFoodType)
 		{
-            return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
+			return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
 		}
 
 		public int GetHappinessGain(ItemTemplate food)
@@ -444,7 +444,7 @@ namespace WCell.RealmServer.Entities
 				var spell = SpellHandler.Get(CreationSpellId);
 				if (spell != null && spell.TotemEffect != null)
 				{
-					var handler = spell.TotemEffect.SummonHandler as SpellSummonTotemHandler;
+					var handler = spell.TotemEffect.SummonEntry.Handler as SpellSummonTotemHandler;
 					if (handler != null)
 					{
 						return handler.Index;

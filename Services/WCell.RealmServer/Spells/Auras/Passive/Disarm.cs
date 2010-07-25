@@ -27,13 +27,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		public abstract InventorySlotType DisarmType { get; }
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.IncMechanicCount(SpellMechanic.Disarmed);
 			Owner.SetDisarmed(DisarmType);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.DecMechanicCount(SpellMechanic.Disarmed);
 			Owner.UnsetDisarmed(DisarmType);

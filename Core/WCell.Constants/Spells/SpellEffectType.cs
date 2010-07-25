@@ -60,8 +60,15 @@ namespace WCell.Constants.Spells
 		Dispel = 38,
 		Language = 39,
 		DualWeild = 40,
-		Unused_SummonWild,
-		Unused_SummonGuardian,
+		/// <summary>
+		/// Former SummonWild.
+		/// Now used in a lot of leaping and pouncing spells
+		/// </summary>
+		Leap2,
+		/// <summary>
+		/// Former SummonGuardian, used similarly to Leap2
+		/// </summary>
+		Leap3,
 		TeleportUnitsFaceCaster,
 		SkillStep,
 		AddHonor,

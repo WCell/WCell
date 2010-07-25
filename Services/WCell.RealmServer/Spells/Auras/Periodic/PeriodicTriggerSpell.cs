@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		protected Spell spell;
 		protected SpellCast cast, origCast;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			if (spell == null)
 			{
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			cast.Start(spell, true);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (cast != null && cast.IsChanneling)
 			{

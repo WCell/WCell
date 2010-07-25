@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class ManaShieldHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			// mutually exclusive
 			var auras = m_aura.Auras;
@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			auras.Owner.SetManaShield(SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.SetManaShield(0, 0);
 		}

@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		Skill skill;
 		
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			if (m_aura.Auras.Owner is Character) {
 				skill = ((Character)m_aura.Auras.Owner).Skills[(SkillId)m_spellEffect.MiscValue];
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (skill != null) {
 				skill.Modifier -= (short)EffectValue;

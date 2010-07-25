@@ -62,11 +62,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var handler = SpellHandler.GetSummonHandler(SummonType);
+			var handler = SpellHandler.GetSummonEntry(SummonType);
 			Summon(handler);
 		}
 
-		protected virtual void Summon(SpellSummonHandler handler)
+		protected virtual void Summon(SpellSummonEntry summonEntry)
 		{
 			var caster = m_cast.CasterUnit;
 
@@ -80,9 +80,25 @@ namespace WCell.RealmServer.Spells.Effects
 				targetLoc = caster.Position;
 			}
 
-			var pet = handler.Summon(m_cast, ref targetLoc, entry);
+			int amount;
+			if (summonEntry.DetermineAmountBySpellEffect)
+			{
+				amount = CalcEffectValue();
+				if (amount < 1)
+				{
+					amount = 1;
+				}
+			}
+			else
+			{
+				amount = 1;
+			}
 
-			pet.CreationSpellId = Effect.Spell.SpellId;
+			for (var i = 0; i < amount; i++)
+			{
+				var pet = summonEntry.Handler.Summon(m_cast, ref targetLoc, entry);
+				pet.CreationSpellId = Effect.Spell.SpellId;
+			}
 		}
 
 		public override ObjectTypes CasterType

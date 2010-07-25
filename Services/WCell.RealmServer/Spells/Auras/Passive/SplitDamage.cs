@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class SplitDamageHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			// DamageTypeMask types = (DamageTypeMask)m_spellEffect.MiscValue;
 			// EffectValue = % of damage to transfer to caster

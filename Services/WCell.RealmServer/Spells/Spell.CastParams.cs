@@ -248,7 +248,15 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Checks whether the given inventory satisfies this Spell's item restrictions
 		/// </summary>
-		public SpellFailedReason CheckItemRestrictionsWithout(Item exclude, PlayerInventory inv)
+		public SpellFailedReason CheckItemRestrictions(PlayerInventory inv)
+		{
+			return CheckItemRestrictionsWithout(inv, null);
+		}
+
+		/// <summary>
+		/// Checks whether the given inventory satisfies this Spell's item restrictions
+		/// </summary>
+		public SpellFailedReason CheckItemRestrictionsWithout(PlayerInventory inv, Item exclude)
 		{
 			if (RequiredItemClass == ItemClass.Armor || RequiredItemClass == ItemClass.Weapon)
 			{

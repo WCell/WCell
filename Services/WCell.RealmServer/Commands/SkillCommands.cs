@@ -153,12 +153,12 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				SkillId id = trigger.Text.NextEnum(SkillId.None);
+				var id = trigger.Text.NextEnum(SkillId.None);
 				if (trigger.Text.HasNext)
 				{
-					var tier = trigger.Text.NextUInt(1);
+					var tier = trigger.Text.NextEnum(SkillTierId.GrandMaster);
 
-					SkillLine skillLine = SkillHandler.Get(id);
+					var skillLine = SkillHandler.Get(id);
 					if (skillLine != null)
 					{
 						var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, tier, true);

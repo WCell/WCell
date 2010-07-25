@@ -21,12 +21,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModTargetResistanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.ModTargetResistanceMod(EffectValue, m_spellEffect.MiscBitSet);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.ModTargetResistanceMod(-EffectValue, m_spellEffect.MiscBitSet);
 		}

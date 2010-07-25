@@ -170,12 +170,12 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// All the ZoneInfos within this region.
 		/// </summary>
-		public readonly IList<ZoneInfo> ZoneInfos = new List<ZoneInfo>();
+		public readonly IList<ZoneTemplate> ZoneInfos = new List<ZoneTemplate>();
 
 		[NotPersistent]
 		public ZoneTileSet ZoneTileSet;
 
-		public ZoneInfo GetZoneInfo(float x, float y)
+		public ZoneTemplate GetZoneInfo(float x, float y)
 		{
 			if (ZoneTileSet != null)
 			{
