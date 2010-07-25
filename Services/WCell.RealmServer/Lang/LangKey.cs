@@ -36,9 +36,32 @@ namespace WCell.RealmServer.Lang
 		LocaleSet,
 		UnableToSetUserLocale,
 
+        CmdSpellDescription,
+        CmdSpellAddDescription,
+        CmdSpellAddParamInfo,
+        CmdSpellAddResponseSpell,
+        CmdSpellAddResponseSpells,
+        CmdSpellAddResponseTalents,
+        CmdSpellRemoveDescription,
+        CmdSpellRemoveParamInfo,
+        CmdSpellRemoveResponse,
+        CmdSpellRemoveError,
+        CmdSpellPurgeDescription,
+        CmdSpellPurgeResponse,
+        CmdSpellPurgeError,
+        CmdSpellTriggerDescription,
+        CmdSpellTriggerParamInfo,
+        CmdSpellTriggerResponse,
+        CmdSpellTriggerError,
 		CmdSpellGetDescription,
 		CmdSpellGetParamInfo,
-
+        CmdSpellClearDescription,
+        CmdSpellClearResponse,
+        CmdSpellClearError,
+        CmdSpellVisualDescription,
+        CmdSpellVisualParamInfo,
+        CmdSpellVisualError,
+        CmdSpellNotExists,
 
 		// ########################################################################
 		// Gossips
@@ -54,7 +77,11 @@ namespace WCell.RealmServer.Lang
 		// ########################################################################
 		// Ingame notifications
 		GodModeIsActivated,
-        FeatureNotYetImplemented
+
+        // ########################################################################
+        // Error notifications
+        FeatureNotYetImplemented,
+        InvalidClass
 	}
 
 	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>
