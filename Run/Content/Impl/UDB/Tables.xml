@@ -134,7 +134,7 @@
     <PrimaryColumn Name="quest"/>
   </Table>
 
-  <Table Name="game_event_gameobject" MainDataHolder="GOTemplate">
+  <Table Name="game_event_gameobject" MainDataHolder="GOSpawn">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 

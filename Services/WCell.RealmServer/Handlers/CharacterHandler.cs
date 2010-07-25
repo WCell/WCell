@@ -729,7 +729,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (healer != null && healer.IsSpiritHealer && chr.IsCorpseReclaimable && healer.CanInteractWith(chr))
 			{
-				chr.ResurrectSH();
+				chr.ResurrectWithConsequences();
 			}
 		}
 

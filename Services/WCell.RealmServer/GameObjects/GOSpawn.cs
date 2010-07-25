@@ -14,13 +14,11 @@ using WCell.Util.Graphics;
 namespace WCell.RealmServer.GameObjects
 {
 	/// <summary>
-	/// Represents a template to create a GameObject.
+	/// Represents a spawn for a GameObject
 	/// </summary>
 	[DataHolder]
-	public class GOTemplate : IDataHolder, IWorldLocation
+	public class GOSpawn : IDataHolder, IWorldLocation
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public uint Id;
 		public GOEntryId EntryId;
 
@@ -72,11 +70,11 @@ namespace WCell.RealmServer.GameObjects
 		[NotPersistent]
 		public LootItemEntry LootEntry;
 
-		public GOTemplate()
+		public GOSpawn()
 		{
 		}
 
-		public GOTemplate(GOEntry entry, GameObjectState state, 
+		public GOSpawn(GOEntry entry, GameObjectState state, 
 			MapId mapId, ref Vector3 pos, float orientation, float scale, float[] rotations)
 		{
 			//Id = id;
@@ -195,9 +193,9 @@ namespace WCell.RealmServer.GameObjects
 		}
 		#endregion
 
-		public static IEnumerable<GOTemplate> GetAllDataHolders()
+		public static IEnumerable<GOSpawn> GetAllDataHolders()
 		{
-			var list = new List<GOTemplate>(10000);
+			var list = new List<GOSpawn>(10000);
 			foreach (var entry in GOMgr.Entries.Values)
 			{
 				if (entry != null)

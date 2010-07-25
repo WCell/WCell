@@ -10,7 +10,10 @@ using WCell.Core.DBC;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Global
-{   
+{
+
+	public delegate Zone ZoneCreator(Region region, ZoneTemplate template);
+
     /// <summary>
     /// Holds information about a zone, an area within a region.
     /// </summary>
@@ -93,6 +96,8 @@ namespace WCell.RealmServer.Global
         public int AreaLevel;
 
 		public string Name;
+
+    	public ZoneCreator Creator;
 
 		/// <summary>
 		/// Whether this is a PvP zone.
@@ -182,6 +187,11 @@ namespace WCell.RealmServer.Global
 		/// </summary>
     	internal void FinalizeZone()
     	{
+			if (Creator == null)
+			{
+				Creator = DefaultCreator;
+			}
+
 			if (ParentZoneId != ZoneId.None)
 			{
 				// WorldStates are currently only supported for major Zones, no sub-areas
@@ -190,6 +200,11 @@ namespace WCell.RealmServer.Global
 
 			WorldStates = Constants.World.WorldStates.GetStates(Id);
     	}
+
+		public Zone DefaultCreator(Region region, ZoneTemplate templ)
+		{
+			return new Zone(region, templ);
+		}
     }
 
     #region AreaTable.dbc

@@ -1,0 +1,3 @@
+- fixed ModTaunt
+- fixed initial rage & energy
+- fixed EquipmentSlot (fixes some combat abilities that require an item)

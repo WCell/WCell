@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_IsActive; }
 			internal set
 			{
-				if (m_IsActive == value ) return;
+				if (m_IsActive == value) return;
 				if ((m_IsActive = value))
 				{
 					Apply();
@@ -106,8 +106,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>		
-		/// /// Check whether this handler can be applied to the given target
-		///  </summary>
+		/// Check whether this handler can be applied to the given target.
+		/// m_aura, as well as some other fields are not set when this method gets called.
+		/// </summary>
 		protected internal virtual void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
 		{
 		}

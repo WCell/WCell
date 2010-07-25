@@ -283,10 +283,8 @@ namespace WCell.RealmServer.Global
 				LoadChatChannelsDBC();
 
 				TerrainMgr.InitTerrain();
-				LoadDefaultRegions();
 			}
 		}
-
 		#endregion
 
 		#region Save
@@ -1064,7 +1062,8 @@ namespace WCell.RealmServer.Global
 			return null;
 		}
 
-		internal static void LoadDefaultRegions()
+		[Initialization(InitializationPass.Fifth, "Initializing World")]
+		public static void LoadDefaultRegions()
 		{
 			foreach (var rgnInfo in s_regionInfos)
 			{

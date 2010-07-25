@@ -15,7 +15,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = target;
 			return portal;
 		}
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}
@@ -52,7 +52,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}

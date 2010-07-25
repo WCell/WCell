@@ -106,19 +106,19 @@ namespace WCell.RealmServer.GameObjects
 		/// All Templates that use this GOEntry
 		/// </summary>
 		[NotPersistent]
-		public readonly List<GOTemplate> Templates = new List<GOTemplate>();
+		public readonly List<GOSpawn> Templates = new List<GOSpawn>();
 
-		public GOTemplate FirstTemplate
+		public GOSpawn FirstSpawn
 		{
 			get { return Templates.Count > 0 ? Templates[0] : null; }
 		}
 
-		public void AddTemplate(GOTemplate template)
+		public void AddTemplate(GOSpawn spawn)
 		{
-			Templates.Add(template);
+			Templates.Add(spawn);
 		}
 
-		public GOTemplate AddTemplate(MapId region, Vector3 pos)
+		public GOSpawn AddTemplate(MapId region, Vector3 pos)
 		{
 			return AddTemplate(region, pos, true);
 		}
@@ -129,9 +129,9 @@ namespace WCell.RealmServer.GameObjects
 		/// <param name="map"></param>
 		/// <param name="pos"></param>
 		/// <param name="autoSpawn">Whether to always spawn this Template when the Region starts</param>
-		public GOTemplate AddTemplate(MapId region, Vector3 pos, bool autoSpawn)
+		public GOSpawn AddTemplate(MapId region, Vector3 pos, bool autoSpawn)
 		{
-			var go = new GOTemplate { MapId = region, Pos = pos, AutoSpawn = autoSpawn };
+			var go = new GOSpawn { MapId = region, Pos = pos, AutoSpawn = autoSpawn };
 			Templates.Add(go);
 			return go;
 		}
@@ -289,7 +289,7 @@ namespace WCell.RealmServer.GameObjects
 
 		public GameObject Create(Unit owner)
 		{
-			var go = GameObject.Create(this, FirstTemplate);
+			var go = GameObject.Create(this, FirstSpawn);
 			go.Owner = owner;
 			return go;
 		}
@@ -374,7 +374,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOTemplate GetClosestTemplate(IWorldLocation pos)
+		public GOSpawn GetClosestTemplate(IWorldLocation pos)
 		{
 			return Templates.GetClosestTemplate(pos);
 		}
@@ -382,7 +382,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOTemplate GetClosestTemplate(MapId rgn, Vector3 pos)
+		public GOSpawn GetClosestTemplate(MapId rgn, Vector3 pos)
 		{
 			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
 		}
@@ -390,7 +390,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOTemplate GetClosestTemplate(Region rgn, Vector3 pos)
+		public GOSpawn GetClosestTemplate(Region rgn, Vector3 pos)
 		{
 			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
 		}

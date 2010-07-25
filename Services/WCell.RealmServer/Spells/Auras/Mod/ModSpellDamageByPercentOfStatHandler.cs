@@ -48,6 +48,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			// TODO: Apply as white bonus, if aura is passive?
 			if (m_aura.Auras.Owner is Character)
 			{
+				// schools are ignored for this effect
 				((Character)m_aura.Auras.Owner).HealingDoneMod += value;
 			}
 		}

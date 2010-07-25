@@ -159,7 +159,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			if (_flag == null)
 			{
-				_flag = FlagStandEntry.FirstTemplate.Spawn(Instance);
+				_flag = FlagStandEntry.FirstSpawn.Spawn(Instance);
 
 				_isFlagHome = true;
 

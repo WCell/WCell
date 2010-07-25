@@ -154,9 +154,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         }
 
 
-        public void RegisterFlagstand(GOTemplate template)
+        public void RegisterFlagstand(GOSpawn spawn)
         {
-            template.Entry.Used += (go, chr) =>
+            spawn.Entry.Used += (go, chr) =>
             {
                 if (go == FlagStand)
                 {

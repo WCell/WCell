@@ -136,6 +136,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool HasCooldown;
 
+		/// <summary>
+		/// Whether this spell has an individual cooldown (unlike a category or "global" cooldown)
+		/// </summary>
 		public bool HasIndividualCooldown;
 
 		/// <summary>
@@ -150,6 +153,11 @@ namespace WCell.RealmServer.Spells
 		/// Tame Beast (Id: 13481) amongst others
 		/// </summary>
 		public bool IsTameEffect;
+
+		/// <summary>
+		/// Whether this spell enchants an Item
+		/// </summary>
+		public bool IsEnchantment;
 
 		/// <summary>
 		/// Fishing spawns a FishingNode which needs to be removed upon canceling
@@ -503,14 +511,15 @@ namespace WCell.RealmServer.Spells
 			}
 			init2 = true;
 
-			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
-				ChannelInterruptFlags > 0;
+			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
+			              // don't use Enum.HasFlag!
+			              ChannelInterruptFlags > 0;
 
 			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
-				// tracking spells are also passive		     
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+			            // tracking spells are also passive		     
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
 
 			foreach (var effect in Effects)
 			{
@@ -544,10 +553,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);	// don't use Enum.HasFlag!
+			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
+				// don't use Enum.HasFlag!
 
 			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-					   AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+			            AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
@@ -562,23 +572,46 @@ namespace WCell.RealmServer.Spells
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
-				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire, ImplicitTargetType.TotemWater));
+				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire,
+				ImplicitTargetType.TotemWater));
 
-			// Required Item slot for weapon abilities
-			if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
+			IsEnchantment = HasEffectWith(effect => effect.IsEnchantmentEffect);
+
+			if (!IsEnchantment)
 			{
-				EquipmentSlot = EquipmentSlot.OffHand;
-			}
-			else
-			{
-				EquipmentSlot =
-					(IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
-					(AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
-					(AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
+				// Required Item slot for weapon abilities
+				EquipmentSlot = EquipmentSlot.End;
+				if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
+				{
+					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
+				{
+					EquipmentSlot = EquipmentSlot.ExtraWeapon;
+				}
+				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon))
+				{
+					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon))
+				{
+					EquipmentSlot = EquipmentSlot.MainHand;
+				}
+				else if (RequiredItemClass == ItemClass.Weapon)
+				{
+					if (RequiredItemSubClassMask == ItemSubClassMask.AnyMeleeWeapon)
+					{
+						EquipmentSlot = EquipmentSlot.MainHand;
+					}
+					else if (RequiredItemSubClassMask == ItemSubClassMask.AnyRangedWeapon)
+					{
+						EquipmentSlot = EquipmentSlot.ExtraWeapon;
+					}
+				}
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-				(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -599,7 +632,7 @@ namespace WCell.RealmServer.Spells
 			IsProfession = !IsRangedAbility && Ability != null && Ability.Skill.Category == SkillCategory.Profession;
 
 			IsEnhancer = SpellClassSet != 0 && !SpellClassMask.Contains(val => val != 0) &&
-				HasEffectWith(effect => effect.AffectMask.Contains(val => val != 0));
+			             HasEffectWith(effect => effect.AffectMask.Contains(val => val != 0));
 
 			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
 
@@ -632,7 +665,8 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+			ReqDeadTarget =
+				TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 
@@ -645,11 +679,15 @@ namespace WCell.RealmServer.Spells
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-					effect.EffectType == SpellEffectType.Attack ||
-					effect.EffectType == SpellEffectType.EnvironmentalDamage ||
-					effect.EffectType == SpellEffectType.InstantKill ||
-					effect.EffectType == SpellEffectType.SchoolDamage ||
-					effect.IsStrikeEffect);
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.Attack ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.EnvironmentalDamage ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.InstantKill ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.SchoolDamage ||
+			                                                                            effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
@@ -659,23 +697,23 @@ namespace WCell.RealmServer.Spells
 			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
 
 			ForeachEffect(effect =>
-			{
-				if (effect.EffectType == SpellEffectType.Skill)
-				{
-					SkillId = (SkillId)effect.MiscValue;
-				}
-			});
+			              	{
+			              		if (effect.EffectType == SpellEffectType.Skill)
+			              		{
+			              			SkillId = (SkillId) effect.MiscValue;
+			              		}
+			              	});
 
-			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
+			Schools = Utility.GetSetIndices<DamageSchool>((uint) SchoolMask);
 			if (Schools.Length == 0)
 			{
-				Schools = new[] { DamageSchool.Physical };
+				Schools = new[] {DamageSchool.Physical};
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-				(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-										AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-										AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -684,21 +722,23 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-					   Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+			          Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasModifierEffects ||
-				HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+			                     HasEffectWith(
+			                     	effect =>
+			                     	effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			// cannot taunt players
 			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
 
 			ForeachEffect(effect =>
-			{
-				for (var i = 0; i < 3; i++)
-				{
-					AllAffectingMasks[i] |= effect.AffectMask[i];
-				}
-			});
+			              	{
+			              		for (var i = 0; i < 3; i++)
+			              		{
+			              			AllAffectingMasks[i] |= effect.AffectMask[i];
+			              		}
+			              	});
 
 			if (Range.MaxDist == 0)
 			{
@@ -718,9 +758,9 @@ namespace WCell.RealmServer.Spells
 				ArrayUtil.PruneVals(ref RequiredToolIds);
 			}
 
-			var skillEffect = GetFirstEffectWith(effect => 
-				effect.EffectType == SpellEffectType.SkillStep || 
-				effect.EffectType == SpellEffectType.Skill);
+			var skillEffect = GetFirstEffectWith(effect =>
+			                                     effect.EffectType == SpellEffectType.SkillStep ||
+			                                     effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
 				SkillTier = (SkillTierId) skillEffect.BasePoints;
@@ -729,12 +769,12 @@ namespace WCell.RealmServer.Spells
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 
 			ForeachEffect(effect =>
-			{
-				if (effect.SpellEffectHandlerCreator != null)
-				{
-					EffectHandlerCount++;
-				}
-			});
+			              	{
+			              		if (effect.SpellEffectHandlerCreator != null)
+			              		{
+			              			EffectHandlerCount++;
+			              		}
+			              	});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
 
 
@@ -743,6 +783,7 @@ namespace WCell.RealmServer.Spells
 				SpellHandler.QuestCompletors.Add(this);
 			}
 		}
+
 		#endregion
 
 		#region Manage Effects

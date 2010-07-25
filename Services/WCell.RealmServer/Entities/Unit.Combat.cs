@@ -345,19 +345,19 @@ namespace WCell.RealmServer.Entities
 				action.Schools = ability.Spell.SchoolMask;
 				action.SpellEffect = ability.Spell.Effects[0];
 
-				if (ability.Targets.Count > 0)
+				if (ability.Spell != null && ability.Spell.IsAreaSpell)
 				{
+					// AoE spell
 					action.IsDot = false;
 
-					// AoE spell
 					foreach (var targ in ability.Targets)
 					{
 						var dmg = GetWeaponDamage(weapon, ability);
-						action.Reset(this, (Unit)targ, weapon, dmg);
+						action.Reset(this, (Unit) targ, weapon, dmg);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
 						{
-							action.Reset(this, (Unit)targ, weapon, Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1));
+							action.Reset(this, (Unit) targ, weapon, Utility.Random((int) MinOffHandDamage, (int) MaxOffHandDamage + 1));
 							action.DoAttack();
 						}
 					}

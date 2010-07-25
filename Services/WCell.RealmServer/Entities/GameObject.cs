@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Entities
 
 		protected GameObjectHandler m_handler;
 		protected bool m_respawns;
-		protected GOTemplate m_template;
+		protected GOSpawn m_template;
 		protected TimerEntry m_decayTimer, m_respawnTimer;
 		protected GameObject m_linkedTrap;
 		protected internal bool m_IsTrap;
@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
-		public GOTemplate Template
+		public GOSpawn Spawn
 		{
 			get { return m_template; }
 		}
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, GOTemplate templ)
+		public static GameObject Create(GOEntryId id, GOSpawn templ)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntry entry, GOTemplate templ)
+		public static GameObject Create(GOEntry entry, GOSpawn templ)
 		{
 			var go = entry.GOCreator();
 			var handlerCreator = entry.HandlerCreator;
@@ -229,7 +229,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="templ"></param>
-		internal virtual void Init(GOEntry entry, GOTemplate templ)
+		internal virtual void Init(GOEntry entry, GOSpawn templ)
 		{
 			EntityId = EntityId.GetGameObjectId((uint)Interlocked.Increment(ref _lastGOUID), entry.GOId);
 			Type |= ObjectTypes.GameObject;

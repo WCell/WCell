@@ -37,7 +37,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura);
 				healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
 				healEffect.Radius = firstEffect.Radius;
-				healEffect.AuraType = AuraType.ModHealingPercent;
+				healEffect.AuraType = AuraType.ModHealingTakenPercent;
 			}, PaladinFixes.PaladinAuras);
 
 
