@@ -299,10 +299,20 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		private int m_Damage;
+
 		public int Damage
 		{
-			get;
-			set;
+			get { return m_Damage; }
+			set
+			{
+				if (value < 0)
+				{
+					// no negative damage
+					value = 0;
+				}
+				m_Damage = value;
+			}
 		}
 
 		public bool IsCritical

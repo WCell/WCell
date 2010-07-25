@@ -1194,6 +1194,64 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region Damage Taken % Mods
+		/// <summary>
+		/// Returns the damage taken modifier for the given DamageSchool
+		/// </summary>
+		public int GetDamageTakenPctMod(DamageSchool school)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				return 0;
+			}
+			return m_damageTakenPctMods[(int)school];
+		}
+
+		public void SetDamageTakenPctMod(DamageSchool school, int value)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(uint)school] = value;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool school, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+			m_damageTakenPctMods[(int)school] += delta;
+		}
+
+		public void ModDamageTakenPctMod(DamageSchool[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[(int)school] += delta;
+			}
+		}
+
+		public void ModDamageTakenPctMod(uint[] schools, int delta)
+		{
+			if (m_damageTakenPctMods == null)
+			{
+				m_damageTakenPctMods = CreateDamageSchoolArr();
+			}
+
+			foreach (var school in schools)
+			{
+				m_damageTakenPctMods[school] += delta;
+			}
+		}
+		#endregion
+
 		#region Threat Mods
 		/// <summary>
 		/// Threat mod in percent
@@ -1955,22 +2013,24 @@ namespace WCell.RealmServer.Entities
 		/// Deactivates the mana shield once its used up.
 		/// </summary>
 		/// <param name="damage"></param>
-		public void DrainManaShield(ref int damage)
+		/// <returns>The amount of damage drained</returns>
+		public int DrainManaShield(int damage)
 		{
 			var power = Power;
-			var amount = damage;
-			if (amount >= m_ManaShieldAmount)
+			if (damage >= m_ManaShieldAmount)
 			{
-				amount = m_ManaShieldAmount;
+				damage = m_ManaShieldAmount;
 				m_auras.RemoveWhere(aura => aura.Spell.HasManaShield);
 			}
 
 			var powerPoints = (int)(power / m_ManaShieldFactor);
-			amount = Math.Min(amount, powerPoints);
 
+			var amount = Math.Min(damage, powerPoints);
 			m_ManaShieldAmount -= powerPoints;
 			Power = power - (int)(amount * m_ManaShieldFactor);
 			damage -= amount;
+
+			return amount;
 		}
 
 		public void SetManaShield(float factor, int amount)

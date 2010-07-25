@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Entities
 
 				if (m_mainWeapon is Item)
 				{
-					((Item) m_mainWeapon).OnUnEquip(InventorySlot.MainHand);
+					((Item)m_mainWeapon).OnUnEquip(InventorySlot.MainHand);
 				}
 
 				m_mainWeapon = value;
@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Entities
 
 				if (value is Item)
 				{
-					((Item) value).OnEquip();
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -484,44 +484,60 @@ namespace WCell.RealmServer.Entities
 			{
 				FirstAttacker = action.Attacker;
 			}
+
+			if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
+			{
+				// deduct mana shield points
+				action.Damage -= action.Victim.DrainManaShield(action.Damage);
+			}
+
+			// damage taken modifiers
+			if (m_damageTakenMods != null)
+			{
+				action.Damage -= m_damageTakenMods[(int)action.UsedSchool];
+			}
+			if (m_damageTakenPctMods != null)
+			{
+				var val = m_damageTakenPctMods[(int)action.UsedSchool];
+				if (val != 0)
+				{
+					action.Damage -= (val * action.Damage + 50) / 100;
+				}
+			}
+
 			action.Victim.OnDamageAction(action);
-
-			// events
-			if (action.Attacker is Character)
-			{
-				Character.NotifyHitDeliver(action);
-			}
-			else if (action.Attacker is NPC)
-			{
-				((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
-			}
-
-			if (action.Victim is Character)
-			{
-				Character.NotifyHitReceive(action);
-			}
-			else if (action.Victim is NPC)
-			{
-				((NPC)action.Victim).Entry.NotifyHitReceive(action);
-			}
-
-			if (action.Attacker != null && action.Attacker.Brain != null)
-			{
-				action.Attacker.Brain.OnDamageDealt(action);
-			}
-
-			if (m_brain != null)
-			{
-				m_brain.OnDamageReceived(action);
-			}
 
 			// deal damage
 			var dmg = action.ActualDamage;
 			if (dmg > 0)
 			{
-				if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
+				// events (changing the DamageAction won't have any effect anymore)
+				if (action.Attacker is Character)
 				{
-					action.Victim.DrainManaShield(ref dmg);
+					Character.NotifyHitDeliver(action);
+				}
+				else if (action.Attacker is NPC)
+				{
+					((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
+				}
+
+				if (action.Victim is Character)
+				{
+					Character.NotifyHitReceive(action);
+				}
+				else if (action.Victim is NPC)
+				{
+					((NPC)action.Victim).Entry.NotifyHitReceive(action);
+				}
+
+				if (action.Attacker != null && action.Attacker.Brain != null)
+				{
+					action.Attacker.Brain.OnDamageDealt(action);
+				}
+
+				if (m_brain != null)
+				{
+					m_brain.OnDamageReceived(action);
 				}
 
 				var health = action.Victim.Health;

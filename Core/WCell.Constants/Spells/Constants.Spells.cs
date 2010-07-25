@@ -249,9 +249,9 @@ namespace WCell.Constants.Spells
         AttrExB_3_0x8 = 0x8,//3
 
 		/// <summary>
-		/// Does not actually make this an Aura but indicates that effects dont stack with other modifiers?
+		/// Can only have one AreaAura with this modifier at a time
 		/// </summary>
-        PaladinAura = 0x10,
+        ExclusiveAreaAura = 0x10,
 
         AutoRepeat = 0x20, // auto shot
 

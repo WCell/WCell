@@ -2309,6 +2309,33 @@ namespace WCell.RealmServer.Items
 
 		#endregion
 
+		#region Item Equipment Handlers
+		internal List<IItemEquipmentEventHandler> m_ItemEquipmentEventHandlers;
+
+		/// <summary>
+		/// Adds a handler to be notified upon equipment changes
+		/// </summary>
+		public void AddEquipmentHandler(IItemEquipmentEventHandler handler)
+		{
+			if (m_ItemEquipmentEventHandlers == null)
+			{
+				m_ItemEquipmentEventHandlers = new List<IItemEquipmentEventHandler>(3);
+			}
+			m_ItemEquipmentEventHandlers.Add(handler);
+		}
+
+		/// <summary>
+		/// Removes the given handler
+		/// </summary>
+		public void RemoveEquipmentHandler(IItemEquipmentEventHandler handler)
+		{
+			if (m_ItemEquipmentEventHandlers != null)
+			{
+				m_ItemEquipmentEventHandlers.Remove(handler);
+			}
+		}
+		#endregion
+
 		#region Misc
 		/// <summary>
 		/// Removes the given percentage of durability from all Items of this Inventory.

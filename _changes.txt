@@ -1,0 +1,3 @@
+- implemented ModDamageTaken & ModDamageTakenPct
+- implemented IItemEquipmentEventHandler & ItemEquipmentEventAuraHandler
+- implmented DruidFeralCombatSurvivalOfTheFittest

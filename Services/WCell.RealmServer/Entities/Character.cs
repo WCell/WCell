@@ -100,6 +100,7 @@ namespace WCell.RealmServer.Entities
 			m_lastPlayTimeUpdate = now;
 		}
 
+		#region Properties
 		/// <summary>
 		/// Check to see if character is in an instance
 		/// </summary>
@@ -182,6 +183,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+		#endregion
 
 		public uint GetInstanceDifficulty(bool isRaid)
 		{
@@ -1987,7 +1989,6 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Barbershops
-
 		/// <summary>
 		/// Calculates the price of a purchase in a berber shop.
 		/// </summary>

@@ -1481,12 +1481,12 @@ namespace WCell.RealmServer.Entities
 			{
 				m_areaAuras = new List<AreaAura>(2);
 			}
-			else if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.PaladinAura))
+			else if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.ExclusiveAreaAura))
 			{
 				// cannot be applied with other AreaAuras of that type
 				foreach (var aaura in m_areaAuras)
 				{
-					if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.PaladinAura))
+					if (aura.Spell.AttributesExB.HasFlag(SpellAttributesExB.ExclusiveAreaAura))
 					{
 						aaura.Remove(true);
 						break;

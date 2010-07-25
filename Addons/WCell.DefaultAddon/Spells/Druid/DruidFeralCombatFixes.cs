@@ -6,6 +6,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
@@ -72,10 +73,19 @@ namespace WCell.Addons.Default.Spells.Druid
 				effect.AuraType = AuraType.ModDamageTakenPercent;		// should reduce damage taken
 			});
 
+			// Survival of the Fittest "increases your armor contribution from cloth and leather items in Bear Form and Dire Bear Form by $s3%"
+			SpellLineId.DruidFeralCombatSurvivalOfTheFittest.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				effect.AuraEffectHandlerCreator = () => new SurvivalOfTheFittestHandler();
+			});
+
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
 		}
 
+		#region FixFeralSwiftness
 		private static void FixFeralSwiftness(SpellId origSpell, SpellId triggerSpell)
 		{
 			// Feral Swiftness should only be applied in Cat Form
@@ -97,5 +107,33 @@ namespace WCell.Addons.Default.Spells.Druid
 			},
 			triggerSpell);
 		}
+		#endregion
 	}
+
+	#region SurvivalOfTheFittestHandler
+	public class SurvivalOfTheFittestHandler : ItemEquipmentEventAuraHandler
+	{
+		public override void OnEquip(Item item)
+		{
+			var templ = item.Template;
+			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
+				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
+			{
+				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
+				Owner.ModBaseResistance(DamageSchool.Physical, bonus);
+			}
+		}
+
+		public override void OnBeforeUnEquip(Item item)
+		{
+			var templ = item.Template;
+			if (templ.Class == ItemClass.Armor &&	// only works on leather and cloth armor
+				(templ.SubClass == ItemSubClass.ArmorCloth || templ.SubClass == ItemSubClass.ArmorLeather))
+			{
+				var bonus = (templ.GetResistance(DamageSchool.Physical) * EffectValue + 50) / 100;
+				Owner.ModBaseResistance(DamageSchool.Physical, -bonus);
+			}
+		}
+	}
+	#endregion
 }

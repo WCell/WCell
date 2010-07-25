@@ -188,6 +188,7 @@
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
+    <Compile Include="Items\IItemEquipmentEventHandler.cs" />
     <Compile Include="Lang\LangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="RealmAccount.cs" />
@@ -235,6 +236,7 @@
     <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />

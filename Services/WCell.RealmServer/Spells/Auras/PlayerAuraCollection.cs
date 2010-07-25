@@ -6,6 +6,7 @@ using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras
 {
@@ -21,35 +22,17 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		List<Aura> shapeshiftRestrictedAuras;
 
+		/// <summary>
+		/// Set of handlers to be updated about equipping/unequipping of Items
+		/// </summary>
+		private List<ItemEquipmentEventAuraHandler> itemEquipmentHandlers;
+
 		public PlayerAuraCollection(Character owner)
 			: base(owner)
 		{
 		}
 
-		List<Aura> ItemRestrictedAuras
-		{
-			get
-			{
-				if (itemRestrictedAuras == null)
-				{
-					itemRestrictedAuras = new List<Aura>(3);
-				}
-				return itemRestrictedAuras;
-			}
-		}
-
-		List<Aura> ShapeshiftRestrictedAuras
-		{
-			get
-			{
-				if (shapeshiftRestrictedAuras == null)
-				{
-					shapeshiftRestrictedAuras = new List<Aura>(3);
-				}
-				return shapeshiftRestrictedAuras;
-			}
-		}
-
+		#region Overrides
 		public override void AddAura(Aura aura, bool update)
 		{
 			base.AddAura(aura, update);
@@ -81,37 +64,69 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 		}
+		#endregion
+
+		#region Item Restrictions
+		List<Aura> ItemRestrictedAuras
+		{
+			get
+			{
+				if (itemRestrictedAuras == null)
+				{
+					itemRestrictedAuras = new List<Aura>(3);
+				}
+				return itemRestrictedAuras;
+			}
+		}
+
+		List<Aura> ShapeshiftRestrictedAuras
+		{
+			get
+			{
+				if (shapeshiftRestrictedAuras == null)
+				{
+					shapeshiftRestrictedAuras = new List<Aura>(3);
+				}
+				return shapeshiftRestrictedAuras;
+			}
+		}
 
 		internal void OnEquip(Item item)
 		{
 			if (itemRestrictedAuras != null)
 			{
-				var plr = (Character)m_owner;
+				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
 				foreach (var aura in itemRestrictedAuras)
 				{
 					if (!aura.IsActive)
 					{
-						aura.IsActive = aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
+						aura.IsActive = 
+							CheckRestrictions(aura, false) &&
+							aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
 					}
 				}
 			}
 		}
 
-		internal void OnUnEquip(Item item)
+		internal void OnBeforeUnEquip(Item item)
 		{
 			if (itemRestrictedAuras != null)
 			{
-				var plr = (Character)m_owner;
+				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
 				foreach (var aura in itemRestrictedAuras)
 				{
 					if (aura.IsActive)
 					{
-						aura.IsActive = aura.Spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
+						aura.IsActive =
+							CheckRestrictions(aura, false) &&
+							aura.Spell.CheckItemRestrictionsWithout(plr.Inventory, item) == SpellFailedReason.Ok;
 					}
 				}
 			}
 		}
+		#endregion
 
+		#region Shapeshift Restrictions
 		internal void OnShapeshiftFormChanged()
 		{
 			if (shapeshiftRestrictedAuras != null)
@@ -121,22 +136,40 @@ namespace WCell.RealmServer.Spells.Auras
 					if (aura.Spell.AllowedShapeshiftMask != 0)
 					{
 						// the entire Aura is toggled
-						if (!aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+						if (CheckRestrictions(aura))
+						{
+							aura.IsActive = true; // Aura is running
+						}
+						else
 						{
 							aura.IsActive = false;	// Aura is off
 							continue;
 						}
-						else
-						{
-							aura.IsActive = true; // Aura is running
-						}
 					}
 					else if (aura.Spell.HasShapeshiftDependentEffects)
 					{
+						// the Aura state itself did not change
 						aura.ReEvaluateNonPeriodicEffects();
 					}
 				}
 			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Check all restrictions on that aura (optionally, exclude item check)
+		/// </summary>
+		private bool CheckRestrictions(Aura aura, bool inclItemCheck = true)
+		{
+			if (!aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+			{
+				return false;
+			}
+			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
+			{
+				return false;
+			}
+			return true;
 		}
 	}
 }
