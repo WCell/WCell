@@ -31,13 +31,12 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var npc = (NPC)target;
 
-			npc.ThreatCollection[(Unit)m_cast.Caster] += 
-				((Unit)m_cast.Caster).GetGeneratedThreat(CalcEffectValue(), Effect.Spell.Schools[0], Effect);
-		}
-
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
+			var caster = m_cast.Caster;
+			if (caster != null)
+			{
+				npc.ThreatCollection[caster] +=
+					caster.GetGeneratedThreat(CalcEffectValue(), Effect.Spell.Schools[0], Effect);
+			}
 		}
 
 		public override ObjectTypes TargetType

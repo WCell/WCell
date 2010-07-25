@@ -524,7 +524,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Formulars
-		public int CalcEffectValue(CasterInfo casterInfo)
+		public int CalcEffectValue(ObjectInfo casterInfo)
 		{
 			var caster = casterInfo.Caster;
 			if (caster is Unit)

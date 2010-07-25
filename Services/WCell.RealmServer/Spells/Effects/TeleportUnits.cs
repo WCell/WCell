@@ -30,14 +30,13 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			var zone = m_cast.Caster.Zone;
-
 			if (!Effect.Spell.IsHearthStoneSpell &&
 				(m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
 
+			//var zone = m_cast.Caster.Zone;
 			//if (zone != null && !zone.Flags.And(ZoneFlags.CanHearthAndResurrectFromArea))
 			//{
 			//    failReason = SpellFailedReason.NotHere;

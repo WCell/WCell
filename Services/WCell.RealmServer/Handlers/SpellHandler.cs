@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Spells
 
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_UNIT_SPELLCAST_START, 28))
             {
-                cast.Caster.EntityId.WritePacked(packet);   // caster pguid
+                cast.CasterObject.EntityId.WritePacked(packet);   // caster pguid
                 target.EntityId.WritePacked(packet);        // target pguid
                 packet.Write(cast.Spell.Id);                // spell id
                 packet.Write(cast.Spell.CastDelay);         // cast time?
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Spells
 
 		public static void SendCastStart(SpellCast cast)
 		{
-			if (!cast.Caster.IsAreaActive) return;
+			if (!cast.CasterObject.IsAreaActive) return;
 
 			// TODO: can len be dynamic?
 			int len = 150;
@@ -215,13 +215,13 @@ namespace WCell.RealmServer.Spells
                     packet.Write((byte)0); // unk 3.3.x?
                 }
 
-			    cast.Caster.SendPacketToArea(packet, true);
+			    cast.CasterObject.SendPacketToArea(packet, true);
 			}
 		}
 
 		static void WriteAmmoInfo(SpellCast cast, RealmPacketOut packet)
 		{
-			var caster = cast.Caster;
+			var caster = cast.CasterObject;
 			if (caster is Character)
 			{
 				var weapon = ((Unit)caster).RangedWeapon as Item;
@@ -272,7 +272,7 @@ namespace WCell.RealmServer.Spells
 				{
 #if DEBUG
 					log.Warn("{0} casted Spell {1} with TargetFlags {2} but with nothing Selected",
-						cast.Caster, cast.Spell, flags);
+						cast.CasterObject, cast.Spell, flags);
 #endif
 					packet.Write((byte)0);
 				}
@@ -348,7 +348,7 @@ namespace WCell.RealmServer.Spells
 		public static void SendSpellGo(ObjectBase caster2, SpellCast cast,
 			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets)
 		{
-			if (!cast.Caster.IsAreaActive) return;
+			if (!cast.CasterObject.IsAreaActive) return;
 
 			// TODO: Dynamic packet length?
 			if (!cast.IsCasting)
@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_GO, len))
 			{
 				//caster1.EntityId.WritePacked(packet);
-				cast.Caster.EntityId.WritePacked(packet);
+				cast.CasterObject.EntityId.WritePacked(packet);
 				caster2.EntityId.WritePacked(packet);
 				packet.Write(cast.Id);
 				packet.Write(cast.Spell.Id);
@@ -384,7 +384,7 @@ namespace WCell.RealmServer.Spells
 
 						if (target is Character)
 						{
-							SendCastSuccess(cast.Caster, cast.Spell.Id, target as Character);
+							SendCastSuccess(cast.CasterObject, cast.Spell.Id, target as Character);
 						}
 					}
 				}
@@ -452,13 +452,13 @@ namespace WCell.RealmServer.Spells
                     packet.Write((byte)0); // unk 3.3.x?
                 }
 
-				cast.Caster.SendPacketToArea(packet, true);
+				cast.CasterObject.SendPacketToArea(packet, true);
 			}
 		}
 
 		private static void WriteCaster(SpellCast cast, RealmPacketOut packet)
 		{
-			if (cast.Caster == null) return;
+			if (cast.CasterObject == null) return;
 
 			if (cast.UsedItem != null)
 			{
@@ -468,11 +468,11 @@ namespace WCell.RealmServer.Spells
 			else
 			{
 				//cast.UsedItem.EntityId.WritePacked(packet);
-				cast.Caster.EntityId.WritePacked(packet);
+				cast.CasterObject.EntityId.WritePacked(packet);
 			}
 
 			//packet.Write(cast.Caster.EntityId);
-			cast.Caster.EntityId.WritePacked(packet);
+			cast.CasterObject.EntityId.WritePacked(packet);
 		}
 
 		/// <summary>
@@ -524,12 +524,12 @@ namespace WCell.RealmServer.Spells
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_FAILURE, 15))
 			{
-				spellCast.Caster.EntityId.WritePacked(packet);
+				spellCast.CasterObject.EntityId.WritePacked(packet);
 				packet.Write(spellCast.Id);
 				packet.Write(spellCast.Spell.Id);
 				packet.Write((byte)reason);
 
-				spellCast.Caster.SendPacketToArea(packet);
+				spellCast.CasterObject.SendPacketToArea(packet);
 			}
 		}
 
@@ -537,12 +537,12 @@ namespace WCell.RealmServer.Spells
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELL_FAILED_OTHER, 15))
 			{
-				spellCast.Caster.EntityId.WritePacked(packet);
+				spellCast.CasterObject.EntityId.WritePacked(packet);
 				packet.Write(spellCast.Id);
 				packet.Write(spellCast.Spell.Id);
 				packet.Write((byte)reason);
 
-				spellCast.Caster.SendPacketToArea(packet);
+				spellCast.CasterObject.SendPacketToArea(packet);
 			}
 		}
 

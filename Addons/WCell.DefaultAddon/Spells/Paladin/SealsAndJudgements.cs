@@ -207,7 +207,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			var seal = m_cast.CasterUnit.Auras[new AuraIndexId(SealsAndJudgements.SealAuraId, true)];
+			var seal = m_cast.Caster.Auras[new AuraIndexId(SealsAndJudgements.SealAuraId, true)];
 			if (seal == null)
 			{
 				failReason = SpellFailedReason.CasterAurastate;
@@ -226,7 +226,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			if (calc != null)
 			{
 				var dmg = calc(m_cast, (Unit)target);
-				((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
+				((Unit)target).DoSpellDamage(m_cast.Caster, Effect, dmg);
 			}
 		}
 

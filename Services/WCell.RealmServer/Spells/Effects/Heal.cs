@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).Heal(m_cast.CasterUnit, CalcDamageValue(), Effect);
+			((Unit)target).Heal(m_cast.Caster, CalcDamageValue(), Effect);
 		}
 
 		public override ObjectTypes TargetType

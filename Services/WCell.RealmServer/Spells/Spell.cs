@@ -1118,7 +1118,7 @@ namespace WCell.RealmServer.Spells
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster)
+		public int GetDuration(ObjectInfo caster)
 		{
 			return GetDuration(caster, null);
 		}
@@ -1127,7 +1127,7 @@ namespace WCell.RealmServer.Spells
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster, Unit target)
+		public int GetDuration(ObjectInfo caster, Unit target)
 		{
 			var millis = Durations.Min;
 			//if (Durations.LevelDelta > 0)
@@ -1590,12 +1590,12 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		public bool IsBeneficialFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsBeneficialFor(ObjectInfo casterInfo, WorldObject target)
 		{
 			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterInfo.Caster == null || !casterInfo.Caster.MayAttack(target)));
 		}
 
-		public bool IsHarmfulFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsHarmfulFor(ObjectInfo casterInfo, WorldObject target)
 		{
 			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterInfo.Caster != null && casterInfo.Caster.MayAttack(target));
 		}

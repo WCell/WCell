@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -152,7 +152,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			var totalSecs = aura.Spell.Durations.Max;
 			var amount = (handler.TotalHeal * secs + totalSecs) / totalSecs;
 
-			((Unit)target).Heal(m_cast.CasterUnit, amount, Effect);
+			((Unit)target).Heal(m_cast.Caster, amount, Effect);
 
 			aura.Cancel();
 		}

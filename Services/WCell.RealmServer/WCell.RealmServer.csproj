@@ -899,7 +899,7 @@
     <Compile Include="Spells\Auras\AuraHandler.cs" />
     <Compile Include="Spells\Auras\AuraIndexId.cs" />
     <Compile Include="Spells\Auras\IAura.cs" />
-    <Compile Include="Spells\CasterInfo.cs" />
+    <Compile Include="Spells\ObjectInfo.cs" />
     <Compile Include="Spells\Auras\Mod\ModAllCooldownDuration.cs">
       <SubType>Code</SubType>
     </Compile>

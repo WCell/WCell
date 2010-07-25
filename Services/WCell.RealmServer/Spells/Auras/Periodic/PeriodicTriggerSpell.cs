@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				}
 			}
 
-			cast = SpellCast.ObtainPooledCast(origCast.Caster);
+			cast = SpellCast.ObtainPooledCast(origCast.CasterObject);
 			cast.TargetLoc = origCast.TargetLoc;
 			cast.Selected = origCast.Selected;
 			//cast.Start(spell, m_spellEffect, true);

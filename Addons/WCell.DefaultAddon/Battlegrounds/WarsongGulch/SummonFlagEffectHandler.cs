@@ -17,7 +17,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		public override void Apply()
 		{
-			var chr = (Character)m_cast.CasterUnit;
+			var chr = (Character)m_cast.Caster;
 			var wsg = chr.Region as WarsongGulch;
 			if (wsg != null)
 			{

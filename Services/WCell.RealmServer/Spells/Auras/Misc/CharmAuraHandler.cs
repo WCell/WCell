@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public class CharmAuraHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(ObjectInfo casterInfo, Unit target, ref SpellFailedReason failReason)
 		{
 			var caster = casterInfo.Caster as Unit;
 			if (caster == null)

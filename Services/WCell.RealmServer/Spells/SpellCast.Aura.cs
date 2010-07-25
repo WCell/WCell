@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells
 			m_auraApplicationInfos = new List<AuraApplicationInfo>(4);
 
 			// check stacking
-			var casterInfo = Caster.CasterInfo;
+			var casterInfo = CasterObject.CasterInfo;
 			SpellEffectHandler lastHandler = null;
 			for (var i = 0; i < m_handlers.Length; i++)
 			{
@@ -95,10 +95,10 @@ namespace WCell.RealmServer.Spells
 			// create AreaAura
 			if (m_spell.IsAreaAura)
 			{
-				if (allowDead || !(Caster is Unit) || ((Unit)Caster).IsAlive)
+				if (allowDead || Caster == null || Caster.IsAlive)
 				{
 					// AreaAura is created at the target location if it is a DynamicObject, else its applied to the caster
-					var areaAura = new AreaAura(dynObj ?? Caster, m_spell);
+					var areaAura = new AreaAura(dynObj as WorldObject ?? Caster, m_spell);
 					auras.Add(areaAura);
 				}
 			}
@@ -144,8 +144,8 @@ namespace WCell.RealmServer.Spells
 
 				// check for immunities and resistances
 				CastMissReason missReason;
-				var hostile = m_spell.IsHarmfulFor(Caster, target);
-				var casterInfo = Caster.CasterInfo;
+				var hostile = m_spell.IsHarmfulFor(CasterObject, target);
+				var casterInfo = CasterObject.CasterInfo;
 
 				if (!IsPassive && !m_spell.IsPreventionDebuff && 
 					(missReason = CheckDebuffResist(target, m_spell, casterInfo.Level, hostile)) != CastMissReason.None)

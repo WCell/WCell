@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Effects
 				log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);
 				failReason = SpellFailedReason.Error;
 			}
-			else if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
+			else if (!enchantEntry.CheckRequirements(m_cast.Caster))
 			{
 				failReason = SpellFailedReason.MinSkill;
 			}

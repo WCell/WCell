@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras
 		float m_radius;
 		ITickTimer m_controller;
 		TimerEntry m_timer;
-		CasterInfo m_casterInfo;
+		ObjectInfo m_casterInfo;
 		float m_duration;
 		float m_elapsed;
 		ISpellParameters m_params;

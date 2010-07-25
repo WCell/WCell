@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Effects
 			portal.State = GameObjectState.Enabled;
 			portal.Flags = 0;
 			portal.Orientation = m_cast.TargetOrientation;
-			portal.Position = m_cast.Caster.Position;
+			portal.Position = m_cast.CasterObject.Position;
 
 			m_cast.TargetRegion.AddObjectLater(portal);
 		}

@@ -3,7 +3,7 @@
  *   file		: Summon.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sÃ¸, 17 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sø, 17 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1198 $
  *
@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected virtual void Summon(SpellSummonEntry summonEntry)
 		{
-			var caster = m_cast.CasterUnit;
+			var caster = m_cast.Caster;
 
 			Vector3 targetLoc;
 			if (m_cast.TargetLoc.X != 0)

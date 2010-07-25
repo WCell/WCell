@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Fields
 		public readonly AuraIndexId Id;
 		protected internal AuraCollection m_auras;
-		protected CasterInfo m_casterInfo;
+		protected ObjectInfo m_casterInfo;
 		protected Spell m_spell;
 		protected List<AuraEffectHandler> m_handlers;
 		protected bool m_beneficial;
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <param name="casterInfo">Information about who casted</param>
 		/// <param name="spell">The spell that this Aura represents</param>
 		/// <param name="handlers">All handlers must have the same AuraUID</param>
-		internal Aura(AuraCollection auras, CasterInfo casterInfo, Spell spell,
+		internal Aura(AuraCollection auras, ObjectInfo casterInfo, Spell spell,
 			List<AuraEffectHandler> handlers, byte index, bool beneficial)
 		{
 			m_auras = auras;
@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Spells.Auras
 			DetermineFlags();
 		}
 
-		internal Aura(AuraCollection auras, CasterInfo caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
+		internal Aura(AuraCollection auras, ObjectInfo caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
 		{
 			m_record = record;
 			m_auras = auras;
@@ -262,7 +262,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Information about the caster
 		/// </summary>
-		public CasterInfo CasterInfo
+		public ObjectInfo CasterInfo
 		{
 			get { return m_casterInfo; }
 		}
@@ -729,7 +729,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Add one more application to the stack
 		/// </summary>
-		public void Stack(CasterInfo caster)
+		public void Stack(ObjectInfo caster)
 		{
 			if (IsAdded)
 			{

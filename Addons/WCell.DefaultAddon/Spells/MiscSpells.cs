@@ -146,7 +146,7 @@ namespace WCell.Addons.Default.Spells
 
             public override void Apply()
             {
-                var caster = m_cast.CasterUnit as Character;
+                var caster = m_cast.Caster as Character;
                 if (caster == null) return;
                 if (_artisanRidingSpell != SpellId.None &&
                     caster.Spells.Contains(SpellId.SecondarySkillArtisanRidingArtisan) && caster.Region.CanFly)

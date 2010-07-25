@@ -16,11 +16,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.Selected.IsInFrontOf(m_cast.Caster))
+			if (!m_cast.Selected.IsInFrontOf(m_cast.CasterObject))
 			{
 				failReason = SpellFailedReason.NotInfront;
 			}
-			else if (m_cast.CasterUnit.IsInCombat)
+			else if (m_cast.Caster.IsInCombat)
 			{
 				failReason = SpellFailedReason.AffectingCombat;
 			}
@@ -32,13 +32,13 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var distance = m_cast.Caster.Position.GetDistance(target.Position) - ((Unit)target).BoundingRadius - 2;
-			var direction = target.Position - m_cast.Caster.Position;
+			var distance = m_cast.CasterObject.Position.GetDistance(target.Position) - ((Unit)target).BoundingRadius - 2;
+			var direction = target.Position - m_cast.CasterObject.Position;
 
 			direction.Normalize();
-			direction = m_cast.Caster.Position + direction * distance;
+			direction = m_cast.CasterObject.Position + direction * distance;
 
-			MovementHandler.SendMoveToPacket(m_cast.CasterUnit, ref direction, m_cast.CasterUnit.Orientation, 3, MonsterMoveFlags.Walk);
+			MovementHandler.SendMoveToPacket(m_cast.Caster, ref direction, m_cast.Caster.Orientation, 3, MonsterMoveFlags.Walk);
 
 			// TODO: Need to put caster and target in combat
 		}

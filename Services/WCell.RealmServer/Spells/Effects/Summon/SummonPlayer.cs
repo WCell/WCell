@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Character) target).StartSummon(m_cast.CasterUnit);
+			((Character) target).StartSummon(m_cast.Caster);
 		}
 
 		public override ObjectTypes CasterType

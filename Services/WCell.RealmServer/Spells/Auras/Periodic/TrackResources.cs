@@ -6,7 +6,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class TrackResourcesHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(ObjectInfo casterInfo, Unit target, ref SpellFailedReason failReason)
 		{
 			if (!(target is Character))
 			{

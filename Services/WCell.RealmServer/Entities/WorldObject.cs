@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Entities
 
 		protected List<AreaAura> m_areaAuras;
 
-		protected CasterInfo m_casterInfo;
+		protected ObjectInfo m_casterInfo;
 
 		protected Unit m_master;
 
@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public CasterInfo CasterInfo
+		public ObjectInfo CasterInfo
 		{
 			get
 			{
@@ -307,9 +307,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new CasterInfo object to represent this WorldObject
 		/// </summary>
-		protected CasterInfo CreateCasterInfo()
+		protected ObjectInfo CreateCasterInfo()
 		{
-			return new CasterInfo(this);
+			return new ObjectInfo(this);
 		}
 
 		protected virtual void InitSpellCast()

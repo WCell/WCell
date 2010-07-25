@@ -17,7 +17,7 @@ namespace WCell.Addons.Default.Spells.Warlock
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
 			var goId = (GOEntryId)Effect.MiscValue;
-			var caster = m_cast.CasterUnit as Character;
+			var caster = m_cast.Caster as Character;
             if (caster != null)
             {
             	go = caster.GetOwnedGO(goId);
@@ -34,7 +34,7 @@ namespace WCell.Addons.Default.Spells.Warlock
 
         public override void Apply()
         {
-            var caster = m_cast.CasterUnit as Character;
+            var caster = m_cast.Caster as Character;
 
             if (caster != null)
             {

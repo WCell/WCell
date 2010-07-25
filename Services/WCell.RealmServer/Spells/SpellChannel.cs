@@ -99,7 +99,7 @@ namespace WCell.RealmServer.Spells
 				else
 				{
 					m_ticks = m_maxTicks - (timeLeft / m_amplitude);
-					SpellHandler.SendChannelUpdate(m_cast.Caster, (uint)timeLeft);
+					SpellHandler.SendChannelUpdate(m_cast.CasterObject, (uint)timeLeft);
 				}
 			}
 		}
@@ -148,7 +148,7 @@ namespace WCell.RealmServer.Spells
 				m_auras = auras;
 
 				var spell = m_cast.Spell;
-				var caster = m_cast.CasterUnit;
+				var caster = m_cast.Caster;
 
 				m_duration = spell.Durations.Max;
 				m_amplitude = spell.ChannelAmplitude;
@@ -282,7 +282,7 @@ namespace WCell.RealmServer.Spells
 				return;
 			}
 
-			if (m_cast.CasterUnit.ChannelObject == owner)
+			if (m_cast.Caster.ChannelObject == owner)
 			{
 				// The Aura on our target has been removed: Cancel Channel
 				m_cast.Cancel(SpellFailedReason.DontReport);
@@ -310,7 +310,7 @@ namespace WCell.RealmServer.Spells
 			}
 			m_channeling = false;
 
-			var caster = m_cast.CasterUnit;
+			var caster = m_cast.Caster;
 			var handlers = m_channelHandlers;
 			foreach (var handler in handlers)
 			{
@@ -379,7 +379,7 @@ namespace WCell.RealmServer.Spells
 		public override string ToString()
 		{
 			if (m_cast != null)
-				return "SpellChannel (Caster: " + m_cast.Caster + ", " + m_cast.Spell + ")";
+				return "SpellChannel (Caster: " + m_cast.CasterObject + ", " + m_cast.Spell + ")";
 
 			return "SpellChannel (Inactive)";
 		}

@@ -215,7 +215,7 @@ namespace WCell.Tools.Domi.Output
 
 			using (var writer = new StreamWriter(ToolConfig.OutputDir + "ChanneledSpells.txt", false))
 			{
-				var caster = new CasterInfo();
+				var caster = new ObjectInfo();
 				foreach (var spell in spells)
 				{
 					writer.WriteLine("Spell: " + spell);

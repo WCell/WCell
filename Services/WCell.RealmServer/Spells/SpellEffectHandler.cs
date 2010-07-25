@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public virtual ObjectTypes CasterType
 		{
-			get { return ObjectTypes.All; }
+			get { return ObjectTypes.None; }
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected internal void CheckCasterType(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.Caster.CheckObjType(CasterType))
+			if (!m_cast.CasterObject.CheckObjType(CasterType))
 			{
 				failReason = SpellFailedReason.Error;
 				log.Warn("Invalid caster type in EffectHandler: " + this);
@@ -187,9 +187,9 @@ namespace WCell.RealmServer.Spells
 			{
 				// chain target damage comes with diminishing returns
 				var dmgMod = m_cast.Spell.DamageMultipliers[0];
-				if (m_cast.Caster is Character)
+				if (m_cast.CasterObject is Character)
 				{
-					dmgMod = ((Character) m_cast.Caster).PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Effect.Spell, dmgMod);
+					dmgMod = ((Character) m_cast.CasterObject).PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Effect.Spell, dmgMod);
 				}
 				return val = ((float)(Math.Pow(dmgMod, CurrentTargetNo) * val)).RoundInt();
 			}
@@ -198,12 +198,12 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue()
 		{
-			return Effect.CalcEffectValue(m_cast.CasterUnit);
+			return Effect.CalcEffectValue(m_cast.Caster);
 		}
 
 		public float GetRadius()
 		{
-			return Effect.GetRadius(m_cast.Caster);
+			return Effect.GetRadius(m_cast.CasterObject);
 		}
 		#endregion
 
@@ -219,7 +219,7 @@ namespace WCell.RealmServer.Spells
 
 		public override string ToString()
 		{
-			return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.Caster) : "");
+			return GetType().Name + " - Spell: " + Effect.Spell.FullName + (m_cast != null ? (", Caster: " + m_cast.CasterObject) : "");
 		}
 	}
 }

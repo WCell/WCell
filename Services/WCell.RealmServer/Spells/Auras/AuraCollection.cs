@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Get an Aura that is incompatible with the one represented by the given spell.
 		/// </summary>
 		/// <returns>Whether or not another Aura may be applied</returns>
-		public Aura GetAura(CasterInfo caster, AuraIndexId id, Spell spell)
+		public Aura GetAura(ObjectInfo caster, AuraIndexId id, Spell spell)
 		{
 			var oldAura = this[id];
 			if (oldAura != null)
@@ -408,7 +408,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo caster, Spell spell, bool noTimeout)
+		public Aura AddAura(ObjectInfo caster, Spell spell, bool noTimeout)
 		{
 			try
 			{
@@ -461,7 +461,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo casterInfo, Spell spell, List<AuraEffectHandler> handlers, bool beneficial)
+		public Aura AddAura(ObjectInfo casterInfo, Spell spell, List<AuraEffectHandler> handlers, bool beneficial)
 		{
 			// create new Aura
 			// Get an index for the aura
@@ -515,7 +515,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns true if there is no incompatible Aura or if it could be removed.
 		/// <param name="err">Ok, if stacked or no incompatible Aura is blocking a new Aura</param>
 		/// </summary>
-		public bool CheckStackOrOverride(CasterInfo caster, AuraIndexId id, Spell spell, ref SpellFailedReason err)
+		public bool CheckStackOrOverride(ObjectInfo caster, AuraIndexId id, Spell spell, ref SpellFailedReason err)
 		{
 			var oldAura = GetAura(caster, id, spell);
 			if (oldAura != null)
@@ -530,7 +530,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns whether the given incompatible Aura was removed or stacked.
 		/// <param name="err">Ok, if stacked or no incompatible Aura was found</param>
 		/// </summary>
-		public static bool CheckStackOrOverride(Aura oldAura, CasterInfo caster, Spell spell, ref SpellFailedReason err)
+		public static bool CheckStackOrOverride(Aura oldAura, ObjectInfo caster, Spell spell, ref SpellFailedReason err)
 		{
 			if (oldAura.Spell.IsPreventionDebuff)
 			{

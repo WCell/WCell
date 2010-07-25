@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,7 +53,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			if (triggerAction != null)					// should always be != null, but let us be safe
 			{
 				// get the current rank of the burnout talent to determine the power cost
-				var caster = m_cast.CasterUnit as Character;
+				var caster = m_cast.Caster as Character;
 				if (caster == null) return;
 
 				var burnoutTalent = caster.Talents.GetTalent(TalentId.MageFireBurnout);

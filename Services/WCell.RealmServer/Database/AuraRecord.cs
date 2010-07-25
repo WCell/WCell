@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public CasterInfo GetCasterInfo(Region region)
+		public ObjectInfo GetCasterInfo(Region region)
 		{
 			var id = new EntityId((ulong)CasterId);
 			var caster = region.GetObject(id);
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Database
 			{
 				return caster.CasterInfo;
 			}
-			return new CasterInfo(id, Level);
+			return new ObjectInfo(id, Level);
 		}
 
 		public override void Delete()

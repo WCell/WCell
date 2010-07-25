@@ -347,10 +347,7 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get
-			{
-				return m_entry.Faction;
-			}
+			get { return m_entry.Faction; }
 		}
 
 		public ThreatCollection ThreatCollection

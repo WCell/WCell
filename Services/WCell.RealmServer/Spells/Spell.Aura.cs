@@ -405,7 +405,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public AuraIndexId GetAuraUID(CasterInfo caster, WorldObject target)
+		public AuraIndexId GetAuraUID(ObjectInfo caster, WorldObject target)
 		{
 			return GetAuraUID(IsBeneficialFor(caster, target));
 		}

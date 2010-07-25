@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var chr = m_cast.Caster as Character;
+			var chr = m_cast.CasterObject as Character;
 			if (chr != null)
 			{
 				if (chr.Totems != null)

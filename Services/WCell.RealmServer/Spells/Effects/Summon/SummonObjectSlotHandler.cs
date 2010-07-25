@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var caster = m_cast.CasterUnit as Character;
+			var caster = m_cast.Caster as Character;
 			if (caster != null)
 			{
 				// Remove previously existing GOs

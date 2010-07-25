@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			Cast.CasterUnit.Health = (int)(Cast.CasterUnit.MaxHealth * CalcEffectValue() / 100);
+			Cast.Caster.Health = (int)(Cast.Caster.MaxHealth * CalcEffectValue() / 100);
 		}
 
 		protected override void Apply(WorldObject target)

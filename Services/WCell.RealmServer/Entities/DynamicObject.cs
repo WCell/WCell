@@ -59,9 +59,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		public DynamicObject(SpellCast cast, float radius)
-			: this(cast.CasterUnit,
+			: this(cast.Caster,
 			cast.Spell.SpellId, radius,
-			cast.Caster.Region,
+			cast.Map,
 			cast.TargetLoc)
 		{
 		}

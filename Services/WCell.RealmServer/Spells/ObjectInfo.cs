@@ -23,16 +23,16 @@ namespace WCell.RealmServer.Spells.Auras
 	/// <summary>
 	/// 
 	/// </summary>
-	public class CasterInfo
+	public class ObjectInfo
 	{
-		public static CasterInfo GetOrCreate(Region rgn, EntityId id)
+		public static ObjectInfo GetOrCreate(Region rgn, EntityId id)
 		{
 			var caster = rgn.GetObject(id);
 			if (caster != null)
 			{
 				return caster.CasterInfo;
 			}
-			return new CasterInfo(id, 1);
+			return new ObjectInfo(id, 1);
 		}
 
 		public readonly EntityId CasterId;
@@ -41,7 +41,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		WorldObject m_caster;
 
-		public CasterInfo(WorldObject caster)
+		public ObjectInfo(WorldObject caster)
 		{
 			CasterId = caster.EntityId;
 			Level = caster.CasterLevel;
@@ -50,18 +50,18 @@ namespace WCell.RealmServer.Spells.Auras
 			//ObjectType = caster.Type;
 		}
 
-		public CasterInfo(EntityId casterId, int level)
+		public ObjectInfo(EntityId casterId, int level)
 		{
 			CasterId = casterId;
 			Level = level;
 		}
 
-		public CasterInfo(int level)
+		public ObjectInfo(int level)
 		{
 			Level = level;
 		}
 
-		public CasterInfo()
+		public ObjectInfo()
 		{
 		}
 

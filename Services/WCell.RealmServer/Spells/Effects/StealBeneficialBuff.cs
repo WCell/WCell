@@ -37,8 +37,8 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override SpellFailedReason CheckValidTarget(WorldObject target)
 		{
-			var caster = m_cast.Caster.CasterInfo;
-			var auras = m_cast.CasterUnit.Auras;
+			var caster = m_cast.CasterObject.CasterInfo;
+			var auras = m_cast.Caster.Auras;
 			foreach (var aura in ((Unit)target).Auras)
 			{
 				// find a stealable positive auras
@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Spells.Effects
 					toSteal.TimeLeft = maxTime;
 				}
 
-				cast.CasterUnit.Auras.AddAura(toSteal);
+				cast.Caster.Auras.AddAura(toSteal);
 			}
 		}
 
