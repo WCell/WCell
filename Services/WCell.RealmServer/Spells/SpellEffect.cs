@@ -177,6 +177,11 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
+		/// Wheter this Effect enchants an Item
+		/// </summary>
+		public bool IsEnchantmentEffect;
+
+		/// <summary>
 		/// All set bits of the MiscValue field. 
 		/// This is useful for all SpellEffects whose MiscValue is a flag field.
 		/// </summary>
@@ -444,6 +449,10 @@ namespace WCell.RealmServer.Spells
 			}
 
 			RepairBrokenTargetPairs();
+
+			IsEnchantmentEffect = EffectType == SpellEffectType.EnchantHeldItem ||
+				EffectType == SpellEffectType.EnchantItem ||
+				EffectType == SpellEffectType.EnchantItemTemporary;
 		}
 
 		/// <summary>

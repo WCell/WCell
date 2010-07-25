@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 				//}
 				//else
 				{
-					var spell = m_aura.Spell;
+					var spell = m_spellEffect.Spell;
 					var hasSingleFriendTarget = spell.HasBeneficialEffects && !spell.IsAreaSpell && spell.HasTargets;
 					if (hasSingleFriendTarget && caster.Target != null && caster.IsFriendlyWith(caster.Target))
 					{

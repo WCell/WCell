@@ -173,7 +173,7 @@ namespace WCell.RealmServer.Entities
 
 				if (PowerType != PowerType.Mana)
 				{
-					BasePower = m_archetype.Class.BasePower;
+					BasePower = m_archetype.Class.GetPowerForLevel(1);
 				}
 				//Power = PowerType == PowerType.Rage ? 0 : MaxPower;
 				//SetInt32(UnitFields.HEALTH, MaxHealth);
