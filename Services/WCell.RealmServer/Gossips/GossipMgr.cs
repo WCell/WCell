@@ -172,7 +172,7 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.InnKeeper))
 						{
-							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Bind, "Bind...", convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bind, LangKey.GossipOptionInnKeeper, convo =>
 							{
 								convo.Character.BindTo((NPC)convo.Speaker);
 							}));
@@ -181,12 +181,12 @@ namespace WCell.RealmServer.Gossips
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Guild, "Guild Bank...", convo =>
 							{
-								convo.Character.SendSystemMessage("Feature Not Yet Implemented");
+								convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
 						{
-							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Resurrect, "Resurrect...", convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Resurrect, LangKey.GossipOptionSpiritHealer, convo =>
 							{
 								convo.Character.ResurrectWithConsequences();
 							}));
@@ -200,9 +200,9 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.TabardDesigner))
 						{
-							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Tabard, "Tabard...", convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Tabard, LangKey.GossipOptionTabardDesigner, convo =>
 							{
-								convo.Character.SendSystemMessage("Feature Not Yet Implemented");
+								convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.FlightMaster))
@@ -212,6 +212,13 @@ namespace WCell.RealmServer.Gossips
 								((NPC)convo.Speaker).TalkToFM(convo.Character);
 							}));
 						}
+                        if (entry.NPCFlags.HasAnyFlag(NPCFlags.StableMaster))
+                        {
+                            menu.AddItem(new LocalizedGossipMenuItem(LangKey.GossipOptionStableMaster, convo =>
+                            {
+                                convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
+                            }));
+                        }
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
 						{
 							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, LangKey.GossipOptionTrainer, convo =>

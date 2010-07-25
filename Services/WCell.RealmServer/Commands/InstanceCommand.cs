@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 
-				var region = World.GetRegionInfo(mapid);
+				var region = World.GetRegionTemplate(mapid);
 
 				if (region != null && region.IsInstance)
 				{

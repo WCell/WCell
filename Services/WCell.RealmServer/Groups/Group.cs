@@ -1555,7 +1555,7 @@ namespace WCell.RealmServer.Groups
 		/// Gets the Instance of the given Region of either the Leader or any member
 		/// if anyone is already in it.
 		/// </summary>
-		public BaseInstance GetActiveInstance(RegionInfo region)
+		public BaseInstance GetActiveInstance(RegionTemplate region)
 		{
 			// Need to be careful, since we are quite probably not in the corresponding Character's context:
 			var leader = m_leader;

@@ -164,9 +164,9 @@ namespace WCell.RealmServer.Instances
 		/// Checks the list of stored Raid and Heroic instances and the list of recently run Normal 
 		/// instances for a reference to the given region.
 		/// </summary>
-		/// <param name="info">The RegionInfo of the Instance in question.</param>
+		/// <param name="template">The RegionInfo of the Instance in question.</param>
 		/// <returns>The Instance if found, else null.</returns>
-		public BaseInstance GetActiveInstance(RegionInfo info)
+		public BaseInstance GetActiveInstance(RegionTemplate template)
 		{
 			var chr = Character;
 			if (chr == null)
@@ -174,7 +174,7 @@ namespace WCell.RealmServer.Instances
 				return null;
 			}
 
-			var binding = GetBinding(info.Id, info.GetDifficulty(chr.GetInstanceDifficulty(info.IsRaid)).BindingType);
+			var binding = GetBinding(template.Id, template.GetDifficulty(chr.GetInstanceDifficulty(template.IsRaid)).BindingType);
 			if (binding != null)
 			{
 				var instance = World.GetInstance(binding);

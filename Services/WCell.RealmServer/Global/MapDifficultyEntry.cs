@@ -5,7 +5,7 @@ namespace WCell.RealmServer.Global
 {
 	public class MapDifficultyEntry : MapDifficultyDBCEntry
 	{
-		public RegionInfo Region;
+		public RegionTemplate Region;
 
 		public bool IsHeroic;
 
@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public BindingType BindingType;
 
-		public void Finalize(RegionInfo region)
+		public void Finalize(RegionTemplate region)
 		{
 			Region = region;
 			if (ResetTime == 0)

@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundCreator Creator;
 
 		[NotPersistent]
-		public RegionInfo RegionInfo;
+		public RegionTemplate RegionTemplate;
 
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
@@ -67,8 +67,8 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			RegionId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			RegionInfo = World.GetRegionInfo(RegionId);
-			if (RegionInfo == null)
+			RegionTemplate = World.GetRegionTemplate(RegionId);
+			if (RegionTemplate == null)
 			{
 				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
 					RegionId, (int)RegionId);
@@ -90,8 +90,8 @@ namespace WCell.RealmServer.Battlegrounds
                     Difficulties[entry.bracketId] = entry;
             }
 
-            RegionInfo.MinLevel = Math.Max(1, MinLevel);
-            RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
+            RegionTemplate.MinLevel = Math.Max(1, MinLevel);
+            RegionTemplate.MaxLevel = Math.Max(MinLevel, MaxLevel);
 
 			BattlegroundMgr.Templates[(int)Id] = this;
 

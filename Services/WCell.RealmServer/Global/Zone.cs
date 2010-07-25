@@ -109,12 +109,12 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The <see cref="Global.RegionInfo">Region</see> to which this Zone belongs.
+		/// The <see cref="RegionTemplate">Region</see> to which this Zone belongs.
 		/// </summary>
-		public RegionInfo RegionInfo
+		public RegionTemplate RegionTemplate
 		{
-			get { return Template.RegionInfo; }
-			set { Template.RegionInfo = value; }
+			get { return Template.RegionTemplate; }
+			set { Template.RegionTemplate = value; }
 		}
 
 		/// <summary>

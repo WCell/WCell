@@ -42,14 +42,14 @@ namespace WCell.RealmServer.Instances
 			set;
 		}
 
-		public RegionInfo RegionInfo
+		public RegionTemplate RegionTemplate
 		{
-			get { return World.GetRegionInfo(RegionId); }
+			get { return World.GetRegionTemplate(RegionId); }
 		}
 
 		public MapDifficultyEntry Difficulty
 		{
-			get { return RegionInfo.Difficulties.Get(DifficultyIndex); }
+			get { return RegionTemplate.Difficulties.Get(DifficultyIndex); }
 		}
 
 		/// <summary>

@@ -38,10 +38,10 @@ namespace WCell.RealmServer.Global
     }
 
 	/// <summary>
-	/// 
+	/// The template of a Zone
 	/// </summary>
 	[DataHolder]
-	public partial class RegionInfo : IDataHolder, IComparable
+	public partial class RegionTemplate : IDataHolder, IComparable
 	{
 		public MapId Id;
 		public string Name;
@@ -340,7 +340,7 @@ namespace WCell.RealmServer.Global
 
 		public int CompareTo(object obj)
 		{
-			var info = obj as RegionInfo;
+			var info = obj as RegionTemplate;
 			if (info != null)
 			{
 				return Id.CompareTo(info.Id);

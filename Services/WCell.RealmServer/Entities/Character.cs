@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Entities
 				var group = Group;
 				if (group != null)
 				{
-					return group.GetActiveInstance(m_region.RegionInfo) != null;
+					return group.GetActiveInstance(m_region.RegionTemplate) != null;
 				}
 				return false;
 			}
@@ -250,7 +250,7 @@ namespace WCell.RealmServer.Entities
 				Health = 1;
 			}
 
-			if (!m_region.RegionInfo.NotifyPlayerBeforeDeath(this))
+			if (!m_region.RegionTemplate.NotifyPlayerBeforeDeath(this))
 			{
 				return false;
 			}
@@ -289,7 +289,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_region != null)
 			{
-				m_region.RegionInfo.NotifyPlayerResurrected(this);
+				m_region.RegionTemplate.NotifyPlayerResurrected(this);
 			}
 		}
 
@@ -382,7 +382,7 @@ namespace WCell.RealmServer.Entities
 					m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
 				}
 
-				m_region.RegionInfo.NotifyPlayerDied(action);
+				m_region.RegionTemplate.NotifyPlayerDied(action);
 			}
 		}
 
@@ -517,9 +517,9 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			if (m_region.RegionInfo.RepopRegion != null)
+			if (m_region.RegionTemplate.RepopRegion != null)
 			{
-				TeleportTo(m_region.RegionInfo.RepopRegion, m_region.RegionInfo.RepopPosition);
+				TeleportTo(m_region.RegionTemplate.RepopRegion, m_region.RegionTemplate.RepopPosition);
 			}
 			else
 			{
@@ -678,7 +678,6 @@ namespace WCell.RealmServer.Entities
 
 			//skills
 			Skills.UpdateSkillsForLevel(level);
-
 		}
 		#endregion
 
@@ -1772,7 +1771,7 @@ namespace WCell.RealmServer.Entities
 			callback(Instances);
 		}
 
-		public BaseInstance GetActiveInstance(RegionInfo regionInfo)
+		public BaseInstance GetActiveInstance(RegionTemplate regionTemplate)
 		{
 			var region = m_region;
 			if (region != null && region.Id == region.Id)
@@ -1780,7 +1779,7 @@ namespace WCell.RealmServer.Entities
 				return region as BaseInstance;
 			}
 			var instances = m_InstanceCollection;
-			return instances != null ? instances.GetActiveInstance(regionInfo) : null;
+			return instances != null ? instances.GetActiveInstance(regionTemplate) : null;
 		}
 		#endregion
 

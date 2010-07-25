@@ -65,6 +65,16 @@ namespace WCell.Addons.Default.Spells.Druid
 				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
 			});
+			// triggered Aura of LotP: 2nd effect is the proc effect for the Improved LotP buff; first effect has invalid radius
+			SpellHandler.Apply(spell =>
+			{
+				spell.ForeachEffect(effect => effect.Radius = 45);	// fix radius
+
+				// make this a special proc
+				var dummy = spell.GetEffect(AuraType.Dummy);
+				dummy.AuraEffectHandlerCreator = () => new ImprovedLeaderOfThePackProcHandler();
+			}, 
+			SpellId.LeaderOfThePack);
 
 			// Primal Tenacity has the wrong effect type: "reduces all damage taken while stunned by $s2% while in Cat Form."
 			SpellLineId.DruidFeralCombatPrimalTenacity.Apply(spell =>
@@ -122,6 +132,16 @@ namespace WCell.Addons.Default.Spells.Druid
 		}
 		#endregion
 	}
+
+	#region ImprovedLeaderOfThePackProcHandler
+	public class ImprovedLeaderOfThePackProcHandler : AuraEffectHandler
+	{
+		protected override void Apply()
+		{
+			
+		}
+	}
+	#endregion
 
 	#region SurvivalOfTheFittestHandler
 	public class SurvivalOfTheFittestHandler : ItemEquipmentEventAuraHandler

@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Global
 
 		protected internal override void InitRegion()
 		{
-			m_InstanceId = m_regionInfo.NextId();
+			m_InstanceId = m_RegionTemplate.NextId();
 
 			base.InitRegion();
 		}
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public bool IsRaid
 		{
-			get { return m_regionInfo.Type == MapType.Raid; }
+			get { return m_RegionTemplate.Type == MapType.Raid; }
 		}
 
 		/// <summary>
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public bool IsPVPArea
 		{
-			get { return m_regionInfo.Type == MapType.Battleground || m_regionInfo.Type == MapType.Arena; }
+			get { return m_RegionTemplate.Type == MapType.Battleground || m_RegionTemplate.Type == MapType.Arena; }
 		}
 
 		public override DateTime CreationTime
@@ -107,12 +107,12 @@ namespace WCell.RealmServer.Global
 
 		public void TeleportInside(Character chr, int entrance)
 		{
-			if ((uint)entrance >= m_regionInfo.EntrancePositions.Length)
+			if ((uint)entrance >= m_RegionTemplate.EntrancePositions.Length)
 			{
 				entrance = 0;
 			}
 
-			TeleportInside(chr, m_regionInfo.EntrancePositions[entrance]);
+			TeleportInside(chr, m_RegionTemplate.EntrancePositions[entrance]);
 		}
 
 		public void TeleportInside(Character chr, Vector3 pos)
@@ -158,7 +158,7 @@ namespace WCell.RealmServer.Global
 			Stop();
 			RemoveAll();
 			IsDisposed = true;
-			m_regionInfo.RecycleId(m_InstanceId);
+			m_RegionTemplate.RecycleId(m_InstanceId);
 		}
 		#endregion
 	}

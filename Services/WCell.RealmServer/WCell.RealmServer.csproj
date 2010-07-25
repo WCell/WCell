@@ -242,6 +242,7 @@
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpeedMountedFlightHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
     <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
@@ -600,7 +601,7 @@
     <Compile Include="GameObjects\Handlers\MailBoxHandler.cs" />
     <Compile Include="GameObjects\Handlers\MiscHandlers.cs" />
     <Compile Include="GameObjects\Handlers\TrapHandler.cs" />
-    <Compile Include="Global\RegionInfo.cs" />
+    <Compile Include="Global\RegionTemplate.cs" />
     <Compile Include="Gossips\GossipEntry.cs" />
     <Compile Include="Guilds\Guild.cs" />
     <Compile Include="Guilds\GuildEventLog.cs" />

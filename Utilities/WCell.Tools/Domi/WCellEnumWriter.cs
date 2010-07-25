@@ -312,7 +312,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteMapEnum()
 		{
-			WriteEnum("MapId", " : uint", "World", World.RegionInfos,
+			WriteEnum("MapId", " : uint", "World", World.RegionTemplates,
 					  (region) => { return true; },
 					  (region) => { return region.Name.Trim().Length > 0 ? region.Name : "Unnamed"; },
 					  (region) => { return ((uint)region.Id).ToString(); });

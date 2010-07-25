@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Instances
 
 		public static readonly Dictionary<uint, InstanceCollection> OfflinePlayers = new Dictionary<uint, InstanceCollection>();
 
-		public static readonly List<RegionInfo> InstanceInfos = new List<RegionInfo>();
+		public static readonly List<RegionTemplate> InstanceInfos = new List<RegionTemplate>();
 
 		[NotVariable]
 		public static GlobalInstanceTimer[] GlobalResetTimers;
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Instances
 
 		public static void SetCreator(MapId id, InstanceCreator creator)
 		{
-			var info = World.GetRegionInfo(id);
+			var info = World.GetRegionTemplate(id);
 			if (info != null && info.InstanceTemplate != null)
 			{
 				info.InstanceTemplate.Creator = creator;
@@ -97,13 +97,13 @@ namespace WCell.RealmServer.Instances
 		{
 			if (instance != null)
 			{
-				instance.m_difficulty = template.RegionInfo.Difficulties.Get(difficultyIndex) ?? template.RegionInfo.Difficulties[0];
+				instance.m_difficulty = template.RegionTemplate.Difficulties.Get(difficultyIndex) ?? template.RegionTemplate.Difficulties[0];
 
 				if (creator != null)
 				{
 					instance.Owner = creator.InstanceLeader;
 				}
-				instance.InitRegion(template.RegionInfo);
+				instance.InitRegion(template.RegionTemplate);
 			}
 
 			return instance;
@@ -112,15 +112,15 @@ namespace WCell.RealmServer.Instances
 		/// <summary>
 		/// This is called when an area trigger causes entering an instance
 		/// </summary>
-		public static bool EnterInstance(Character chr, RegionInfo regionInfo, Vector3 targetPos)
+		public static bool EnterInstance(Character chr, RegionTemplate regionTemplate, Vector3 targetPos)
 		{
-			if (!regionInfo.IsInstance)
+			if (!regionTemplate.IsInstance)
 			{
-				log.Error("Character {0} tried to enter \"{1}\" as Instance.", chr, regionInfo);
+				log.Error("Character {0} tried to enter \"{1}\" as Instance.", chr, regionTemplate);
 				return false;
 			}
 
-			var isRaid = (regionInfo.Type == MapType.Raid);
+			var isRaid = (regionTemplate.Type == MapType.Raid);
 			var group = chr.Group;
             if (isRaid && !chr.Role.IsStaff && !group.Flags.HasFlag(GroupFlags.Raid))
 			{
@@ -128,7 +128,7 @@ namespace WCell.RealmServer.Instances
 				return false;
 			}
 
-			if (!regionInfo.MayEnter(chr))
+			if (!regionTemplate.MayEnter(chr))
 			{
 				return false;
 			}
@@ -137,23 +137,23 @@ namespace WCell.RealmServer.Instances
 
 			// Find out if we've been here before
 			var instances = chr.Instances;
-			var instance = instances.GetActiveInstance(regionInfo);
+			var instance = instances.GetActiveInstance(regionTemplate);
 
 			if (instance == null)
 			{
-				var difficulty = regionInfo.GetDifficulty(chr.GetInstanceDifficulty(isRaid));
+				var difficulty = regionTemplate.GetDifficulty(chr.GetInstanceDifficulty(isRaid));
 
 				// Check whether we were in too many normal dungeons recently
 				if (difficulty.BindingType == BindingType.Soft && !instances.HasFreeInstanceSlot && !chr.GodMode)
 				{
-					MovementHandler.SendTransferFailure(chr.Client, regionInfo.Id, MapTransferError.TRANSFER_ABORT_TOO_MANY_INSTANCES);
+					MovementHandler.SendTransferFailure(chr.Client, regionTemplate.Id, MapTransferError.TRANSFER_ABORT_TOO_MANY_INSTANCES);
 					return false;
 				}
 
 				// Check whether we can join a group-owned instance
 				if (group != null)
 				{
-					instance = group.GetActiveInstance(regionInfo);
+					instance = group.GetActiveInstance(regionTemplate);
 					if (instance != null)
 					{
 						if (!CheckFull(instance, chr))
@@ -166,10 +166,10 @@ namespace WCell.RealmServer.Instances
 				if (instance == null)
 				{
 					// create new instance
-					instance = CreateInstance(chr, regionInfo.InstanceTemplate, chr.GetInstanceDifficulty(isRaid));
+					instance = CreateInstance(chr, regionTemplate.InstanceTemplate, chr.GetInstanceDifficulty(isRaid));
 					if (instance == null)
 					{
-						log.Warn("Could not create Instance \"{0}\" for: {1}", regionInfo, chr);
+						log.Warn("Could not create Instance \"{0}\" for: {1}", regionTemplate, chr);
 						return false;
 					}
 				}
@@ -184,8 +184,8 @@ namespace WCell.RealmServer.Instances
 				// Check that the Raid member has the same instance as the leader
 				if (isRaid)
 				{
-					var leaderRaid = group.InstanceLeaderCollection.GetBinding(regionInfo.Id, BindingType.Hard);
-					var playerRaid = instances.GetBinding(regionInfo.Id, BindingType.Hard);
+					var leaderRaid = group.InstanceLeaderCollection.GetBinding(regionTemplate.Id, BindingType.Hard);
+					var playerRaid = instances.GetBinding(regionTemplate.Id, BindingType.Hard);
 
 					if (playerRaid != null && leaderRaid != playerRaid)
 					{
@@ -216,9 +216,9 @@ namespace WCell.RealmServer.Instances
 		/// TODO: Add associations to raid individuals
 		/// TODO: Implement the 5 instances per hour limit, simple but needs the right spot
 		/// </summary>
-		public static void LeaveInstance(Character player, RegionInfo regionInfo, Vector3 entryInfo)
+		public static void LeaveInstance(Character player, RegionTemplate regionTemplate, Vector3 entryInfo)
 		{
-			var region = World.GetRegion(regionInfo.Id);
+			var region = World.GetRegion(regionTemplate.Id);
 			player.TeleportTo(region, entryInfo);
 		}
 		#endregion
@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Instances
 		#region Resets
 		public static DateTime GetNextResetTime(MapId id, uint difficultyIndex)
 		{
-			var rgn = World.GetRegionInfo(id);
+			var rgn = World.GetRegionTemplate(id);
 			if (rgn != null)
 			{
 				return GetNextResetTime(rgn.GetDifficulty(difficultyIndex));
