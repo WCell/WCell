@@ -505,6 +505,12 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// AoE damage reduction
+			if (AoEDamageModifierPct != 0)
+			{
+				action.Damage -= (action.Damage*AoEDamageModifierPct - 50)/100;
+			}
+
 			action.Victim.OnDamageAction(action);
 
 			// deal damage

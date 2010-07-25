@@ -238,6 +238,7 @@
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModModAOEDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
@@ -461,7 +462,7 @@
     <Compile Include="GameObjects\GOEntries\IGOLootableEntry.cs" />
     <Compile Include="Global\InstancedRegion.cs" />
     <Compile Include="Global\IRegionId.cs" />
-    <Compile Include="Global\ZoneInfo.cs" />
+    <Compile Include="Global\ZoneTemplate.cs" />
     <Compile Include="Gossips\GossipMenuItem.cs" />
     <Compile Include="Handlers\AccountDataHandler.cs" />
     <Compile Include="Guilds\GuildBank.cs" />

@@ -1116,7 +1116,7 @@ namespace WCell.RealmServer.Entities
 			AddPostUpdateMessage(() =>
 			{
 				// Add Honorless Target buff
-				if (m_zone != null && m_zone.Info.IsPvP)
+				if (m_zone != null && m_zone.Template.IsPvP)
 				{
 					SpellCast.TriggerSelf(SpellId.HonorlessTarget);
 				}
@@ -1577,7 +1577,7 @@ namespace WCell.RealmServer.Entities
 				if (client != null)
 				{
 					CharacterHandler.SendSummonRequest(client, summoner,
-						summoner.Zone != null ? summoner.ZoneInfo.Id : ZoneId.None,
+						summoner.Zone != null ? summoner.ZoneTemplate.Id : ZoneId.None,
 						timeoutSeconds * 1000);
 				}
 			}
@@ -1642,7 +1642,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (IsInWorld && Zone == newZone)
 					{
-						SetZoneExplored(m_zone.Info, true);
+						SetZoneExplored(m_zone.Template, true);
 					}
 				});
 			}
@@ -1854,7 +1854,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_zone != null)
 			{
-				m_zone.Info.OnHonorableKill(this, victim);
+				m_zone.Template.OnHonorableKill(this, victim);
 			}
 		}
 
@@ -1921,7 +1921,7 @@ namespace WCell.RealmServer.Entities
 			// Set the timer to turn things off
 			if (Zone != null)
 			{
-				if (!Zone.Info.IsHostileTo(this) && PvPState.HasFlag(PvPState.PVP))
+				if (!Zone.Template.IsHostileTo(this) && PvPState.HasFlag(PvPState.PVP))
 				{
 					SetPvPResetTimer();
 				}

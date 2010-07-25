@@ -1596,6 +1596,12 @@ namespace WCell.RealmServer.Entities
 			internal set;
 		}
 
+		public int AoEDamageModifierPct
+		{
+			get;
+			set;
+		}
+
 		public virtual uint Defense
 		{
 			get

@@ -73,7 +73,7 @@ namespace WCell.Addons.Default.Teleport
 			get { return ZoneId.None; }
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
 			get { return null; }
 		}

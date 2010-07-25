@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Global
 	public class WorldZoneLocation : IDataHolder, INamedWorldZoneLocation
 	{
 		public uint Id;
-		private ZoneInfo m_ZoneInfo;
+		private ZoneTemplate m_ZoneTemplate;
 
 		private string[] m_Names = new string[(int)ClientLocale.End];
 
@@ -89,13 +89,13 @@ namespace WCell.RealmServer.Global
 		/// The Zone to which this Location belongs (if any)
 		/// </summary>
 		[NotPersistent]
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
-			get { return m_ZoneInfo; }
+			get { return m_ZoneTemplate; }
 			set
 			{
-				m_ZoneInfo = value;
-				ZoneId = m_ZoneInfo != null ? m_ZoneInfo.Id : 0;
+				m_ZoneTemplate = value;
+				ZoneId = m_ZoneTemplate != null ? m_ZoneTemplate.Id : 0;
 			}
 		}
 
@@ -122,14 +122,14 @@ namespace WCell.RealmServer.Global
 				if (zone.Site is WorldZoneLocation)
 				{
 					// override
-					((WorldZoneLocation)zone.Site).ZoneInfo = null;
+					((WorldZoneLocation)zone.Site).ZoneTemplate = null;
 				}
 				else if (zone.Site != null)
 				{
 					return;
 				}
 				zone.Site = this;
-				ZoneInfo = zone;
+				ZoneTemplate = zone;
 			}
 		}
 

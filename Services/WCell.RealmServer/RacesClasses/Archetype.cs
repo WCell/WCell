@@ -112,7 +112,7 @@ namespace WCell.RealmServer.RacesClasses
 			}
 			else
 			{
-				if (StartLocation.ZoneInfo == null)
+				if (StartLocation.ZoneTemplate == null)
 				{
 					LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this +
 												 "\" - StartZone \"" + StartZoneId + "\" does not exist in StartMap \"" +

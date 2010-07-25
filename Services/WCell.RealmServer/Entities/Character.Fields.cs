@@ -3,7 +3,7 @@
  *   file		: Owner.Fields.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lÃ¸, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -1406,7 +1406,7 @@ namespace WCell.RealmServer.Entities
 			return zone != null && IsZoneExplored(zone);
 		}
 
-		public bool IsZoneExplored(ZoneInfo zone)
+		public bool IsZoneExplored(ZoneTemplate zone)
 		{
 			return IsZoneExplored(zone.ExplorationBit);
 		}
@@ -1431,7 +1431,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void SetZoneExplored(ZoneInfo zone, bool gainXp)
+		public void SetZoneExplored(ZoneTemplate zone, bool gainXp)
 		{
 			var index = zone.ExplorationBit >> 5;
 			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize * 4)

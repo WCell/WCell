@@ -39,7 +39,10 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		static WarsongGulch()
 		{
-			MaxScoreDefault = 3;
+			if (MaxScoreDefault <= 0)
+			{
+				MaxScoreDefault = 3;
+			}
 		}
 
 		[Variable("WSGFlagRespawnTime")]
@@ -67,8 +70,6 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		public static GOEntryId SilverwingFlagId = GOEntryId.SilverwingFlag;
 		public static GOEntryId WarsongFlagId = GOEntryId.WarsongFlag;
 		#endregion
-
-
 
 		#region Fields
 

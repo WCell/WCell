@@ -211,7 +211,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_zone != null)
 				{
-					SetZoneExplored(m_zone.Info, true);
+					SetZoneExplored(m_zone.Template, true);
 				}
 
 				//m_record.FreeTalentPoints = 0;
@@ -912,7 +912,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				return Role.IsStaff ||
-					(!m_isInCombat && Zone != null && Zone.Info.IsCity) ||
+					(!m_isInCombat && Zone != null && Zone.Template.IsCity) ||
 					IsOnTaxi;
 			}
 		}

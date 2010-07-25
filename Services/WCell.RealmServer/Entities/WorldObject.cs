@@ -152,9 +152,9 @@ namespace WCell.RealmServer.Entities
 			Zone = zone;
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
-			get { return m_zone != null ? m_zone.Info : null; }
+			get { return m_zone != null ? m_zone.Template : null; }
 		}
 
 		public ZoneId ZoneId

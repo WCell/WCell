@@ -14,13 +14,13 @@ namespace WCell.RealmServer.Global
     /// <summary>
     /// Holds information about a zone, an area within a region.
     /// </summary>
-    public partial class ZoneInfo
+    public partial class ZoneTemplate
     {
-        internal ZoneInfo m_ParentZone;
+        internal ZoneTemplate m_ParentZone;
 		internal ZoneId m_parentZoneId;
 		internal RegionInfo m_RegionInfo;
 		internal MapId m_RegionId;
-		public readonly List<ZoneInfo> ChildZones = new List<ZoneInfo>(1);
+		public readonly List<ZoneTemplate> ChildZones = new List<ZoneTemplate>(1);
 
 		public ZoneId Id;
 
@@ -64,7 +64,7 @@ namespace WCell.RealmServer.Global
 			//}
         }
 
-        public ZoneInfo ParentZone
+        public ZoneTemplate ParentZone
         {
             get { return m_ParentZone; }
             internal set
@@ -194,12 +194,12 @@ namespace WCell.RealmServer.Global
 
     #region AreaTable.dbc
 
-	public class AreaTableConverter : AdvancedDBCRecordConverter<ZoneInfo>
+	public class AreaTableConverter : AdvancedDBCRecordConverter<ZoneTemplate>
 	{
-		public override ZoneInfo ConvertTo(byte[] rawData, ref int id)
+		public override ZoneTemplate ConvertTo(byte[] rawData, ref int id)
 		{
 			id = GetInt32(rawData, 0);
-            var area = new ZoneInfo {
+            var area = new ZoneTemplate {
 				Id = (ZoneId)GetUInt32(rawData, 0),
 				m_RegionId = (MapId)GetUInt32(rawData, 1),
 				m_parentZoneId = (ZoneId)GetUInt32(rawData, 2),
