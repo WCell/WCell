@@ -1100,9 +1100,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			m_owningCharacter.PlayerAuras.OnEquip(this);
-			if (m_owningCharacter.m_ItemEquipmentEventHandlers != null)
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
 			{
-				foreach (var handler in m_owningCharacter.m_ItemEquipmentEventHandlers)
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
 				{
 					handler.OnEquip(this);
 				}
@@ -1209,9 +1209,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			m_owningCharacter.PlayerAuras.OnBeforeUnEquip(this);
-			if (m_owningCharacter.m_ItemEquipmentEventHandlers != null)
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
 			{
-				foreach (var handler in m_owningCharacter.m_ItemEquipmentEventHandlers)
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
 				{
 					handler.OnBeforeUnEquip(this);
 				}

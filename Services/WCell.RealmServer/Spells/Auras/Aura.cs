@@ -536,7 +536,7 @@ namespace WCell.RealmServer.Spells.Auras
 			var owner = Owner as Character;
 			if (owner == null ||
 				!m_spell.IsPassive ||
-				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictionsWithout(null, owner.Inventory) == SpellFailedReason.Ok) &&
+				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictions(owner.Inventory) == SpellFailedReason.Ok) &&
 				(!m_spell.IsModalShapeshiftDependentAura ||
 					m_spell.AllowedShapeshiftMask == 0 ||
 					m_spell.AllowedShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
