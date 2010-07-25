@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Global
     {
         internal ZoneTemplate m_ParentZone;
 		internal ZoneId m_parentZoneId;
-		internal RegionInfo m_RegionInfo;
+		internal RegionTemplate m_RegionTemplate;
 		internal MapId m_RegionId;
 		public readonly List<ZoneTemplate> ChildZones = new List<ZoneTemplate>(1);
 
@@ -43,16 +43,16 @@ namespace WCell.RealmServer.Global
     		set
     		{
     		    m_RegionId = value;
-				m_RegionInfo = World.GetRegionInfo(value);
+				m_RegionTemplate = World.GetRegionTemplate(value);
     		}
         }
 
-        public RegionInfo RegionInfo
+        public RegionTemplate RegionTemplate
     	{
-    		get { return m_RegionInfo; }
+    		get { return m_RegionTemplate; }
     		set
     		{
-				m_RegionInfo = value;
+				m_RegionTemplate = value;
 				m_RegionId = value != null ? value.Id : MapId.End;
     		}
     	}

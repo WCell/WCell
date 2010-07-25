@@ -62,7 +62,7 @@ namespace WCell.RealmServer.AreaTriggers
 		/// <returns></returns>
 		public static bool HandleTeleport(Character chr, AreaTrigger trigger)
 		{
-			var regionInfo = World.GetRegionInfo(trigger.Template.TargetMap);
+			var regionInfo = World.GetRegionTemplate(trigger.Template.TargetMap);
 #if DEBUG
 			chr.SendSystemMessage("Target location: {0}", trigger.Template.TargetMap);
 #endif

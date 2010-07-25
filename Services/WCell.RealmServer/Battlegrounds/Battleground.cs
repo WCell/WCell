@@ -662,7 +662,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.RegionInfo.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (Template.RegionTemplate.MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}

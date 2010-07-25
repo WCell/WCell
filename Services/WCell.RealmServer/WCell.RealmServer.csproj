@@ -600,7 +600,7 @@
     <Compile Include="GameObjects\Handlers\MailBoxHandler.cs" />
     <Compile Include="GameObjects\Handlers\MiscHandlers.cs" />
     <Compile Include="GameObjects\Handlers\TrapHandler.cs" />
-    <Compile Include="Global\RegionInfo.cs" />
+    <Compile Include="Global\RegionTemplate.cs" />
     <Compile Include="Gossips\GossipEntry.cs" />
     <Compile Include="Guilds\Guild.cs" />
     <Compile Include="Guilds\GuildEventLog.cs" />

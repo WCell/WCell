@@ -52,12 +52,28 @@ namespace WCell.Addons.Default.Spells.Druid
 				effect.AffectMask = triggerSpellEffect.AffectMask;
 			});
 
-			// Intensity only procs for Enrage
+			// Intensity only procs on Enrage
 			SpellLineId.DruidRestorationIntensity.Apply(spell =>
 			{
 				var proc = spell.GetEffect(AuraType.ProcTriggerSpell);
 				proc.AddToAffectMask(SpellLineId.DruidEnrage);
 			});
+
+			// Natural perfection only procs on crit
+			SpellLineId.DruidRestorationNaturalPerfection.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
+
+				var proc = spell.GetEffect(AuraType.ProcTriggerSpell);
+				proc.ClearAffectMask();									// no spell restrictions for the proc
+			});
+
+			// ToL triggers a passive area aura
+			SpellLineId.DruidRestorationTreeOfLifeShapeshift.Apply(spell =>
+			{
+				spell.AddTriggerSpellEffect(SpellId.TreeOfLifePassive);
+			});
+
 
 			// Swiftmend: Consume & Heal
 			SpellLineId.DruidRestorationSwiftmend.Apply(spell =>
@@ -81,7 +97,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.PeriodicHeal);
 
 				// TODO: Implement <mult> from "${$m1*5*$<mult>}"
-				var ticks = spell.Durations.Max/effect.Amplitude;
+				var ticks = spell.Durations.Max / effect.Amplitude;
 				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicHealHandler(effect.CalcEffectValue() * ticks);
 			});
 		}
