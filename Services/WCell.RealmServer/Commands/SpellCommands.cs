@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("ClearCooldowns");
-			EnglishDescription = "Clears all reamining spell-cooldowns";
+			Description = new TranslatableItem(LangKey.CmdSpellClearDescription);
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -44,11 +44,11 @@ namespace WCell.RealmServer.Commands
 			if (trigger.Args.Target.HasSpells)
 			{
 				trigger.Args.Target.Spells.ClearCooldowns();
-				trigger.Reply("All Cooldowns cleared.");
+				trigger.Reply(LangKey.CmdSpellClearResponse);
 			}
 			else
 			{
-				trigger.Reply("Target has no Cooldowns.");
+				trigger.Reply(LangKey.CmdSpellClearError);
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("GetSpell", "SpellGet");
 			Description = new TranslatableItem(LangKey.CmdSpellGetDescription);
-			Description = new TranslatableItem(LangKey.CmdSpellGetParamInfo);
+			ParamInfo = new TranslatableItem(LangKey.CmdSpellGetParamInfo);
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -172,7 +172,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Spell", "Spells", "Sp");
 			EnglishParamInfo = "";
-			EnglishDescription = "Provides commands to interact with the Spells of the Target.";
+			Description = new TranslatableItem(LangKey.CmdSpellDescription);
 		}
 
 		#region Add
@@ -188,11 +188,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Add", "A");
-				EnglishParamInfo = "[-[r][c [<class>]]] [list of <spell|line|talent>]";
-				EnglishDescription = "Adds the given spell. " +
-									 "-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills). " +
-									 "-c [<class>] adds all spells of the Character's or a given class." +
-									 "-t (talents) adds the highest rank of all spells of all talents";
+				ParamInfo = new TranslatableItem(LangKey.CmdSpellAddParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSpellAddDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -211,7 +208,7 @@ namespace WCell.RealmServer.Commands
 							clss = trigger.Text.NextEnum(ClassId.End);
 							if (clss == ClassId.End)
 							{
-								trigger.Reply("Invalid Class.");
+								trigger.Reply(LangKey.InvalidClass);
 								return;
 							}
 						}
@@ -232,7 +229,7 @@ namespace WCell.RealmServer.Commands
 						}
 						if (count > 0)
 						{
-							trigger.Reply("Added {0} spells.", count);
+							trigger.Reply(LangKey.CmdSpellAddResponseSpells, count);
 						}
 					}
 
@@ -249,7 +246,7 @@ namespace WCell.RealmServer.Commands
 								count++;
 							}
 						}
-						trigger.Reply("Added {0} talents", count);
+						trigger.Reply(LangKey.CmdSpellAddResponseTalents, count);
 					}
 				}
 				else
@@ -258,14 +255,14 @@ namespace WCell.RealmServer.Commands
 					var spells = SpellGetCommand.RetrieveSpells(trigger);
 					if (spells.Length == 0)
 					{
-						trigger.Reply("Spell doesn't exist.");
+						trigger.Reply(LangKey.CmdSpellNotExists);
 					}
 					else
 					{
 						foreach (var spell in spells)
 						{
 							AddSpell(target, spell, mod.Contains("r"));
-							trigger.Reply("Spell added: " + spell);
+							trigger.Reply(LangKey.CmdSpellAddResponseSpell + spell.ToString());
 						}
 					}
 				}
@@ -309,8 +306,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Remove", "R");
-				EnglishParamInfo = "<spell>";
-				EnglishDescription = "Removes the given Spell";
+				ParamInfo = new TranslatableItem(LangKey.CmdSpellRemoveParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSpellRemoveDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -323,12 +320,12 @@ namespace WCell.RealmServer.Commands
 					if (trigger.Args.Target.HasSpells)
 					{
 						trigger.Args.Target.Spells.Remove(spell);
-						trigger.Reply("Spell removed: " + spell);
+						trigger.Reply(LangKey.CmdSpellRemoveResponse + spell.ToString());
 					}
 				}
 				else
 				{
-					trigger.Reply("Spell {0} doesn't exist.", id);
+					trigger.Reply(LangKey.CmdSpellRemoveError, id);
 				}
 			}
 		}
@@ -342,7 +339,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Purge");
-				EnglishDescription = "Removes all spells but the initial ones.";
+				Description = new TranslatableItem(LangKey.CmdSpellPurgeDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -351,11 +348,11 @@ namespace WCell.RealmServer.Commands
 				{
 					trigger.Args.Target.Spells.Clear();
 					trigger.Args.Target.Spells.AddDefaultSpells();
-					trigger.Reply("Purged spells.");
+					trigger.Reply(LangKey.CmdSpellPurgeResponse);
 				}
 				else
 				{
-					trigger.Reply("Target has no Spells.");
+					trigger.Reply(LangKey.CmdSpellPurgeError);
 				}
 			}
 		}
@@ -371,8 +368,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Trigger", "T");
-				EnglishParamInfo = "<spellid>";
-				EnglishDescription = "Triggers the given spell on the target of the command.";
+				ParamInfo = new TranslatableItem(LangKey.CmdSpellTriggerParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSpellTriggerDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -384,11 +381,11 @@ namespace WCell.RealmServer.Commands
 				if (spell != null)
 				{
 					target.SpellCast.TriggerSelf(spell);
-					trigger.Reply("Spell triggered: " + spell);
+					trigger.Reply(LangKey.CmdSpellTriggerResponse + spell.ToString());
 				}
 				else
 				{
-					trigger.Reply("Spell doesn't exist.");
+					trigger.Reply(LangKey.CmdSpellTriggerError);
 				}
 			}
 		}
@@ -408,8 +405,8 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("SpellVisual", "PlaySpellVisual", "SpellAnim");
-			EnglishParamInfo = "<SpellId>";
-			EnglishDescription = "Plays the visual of the given spell";
+			ParamInfo = new TranslatableItem(LangKey.CmdSpellVisualParamInfo);
+			Description = new TranslatableItem(LangKey.CmdSpellVisualDescription);
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -418,7 +415,7 @@ namespace WCell.RealmServer.Commands
 			var spell = SpellHandler.Get(id);
 			if (spell == null)
 			{
-				trigger.Reply("Invalid SpellId: " + id);
+				trigger.Reply(LangKey.CmdSpellVisualError, id);
 			}
 			else
 			{

@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override SpellFailedReason CheckValidTarget(WorldObject target)
 		{
 			var failedReason = SpellFailedReason.Ok;
-			var effectHandler = AuraHandler.CreateEffectHandler(Effect, m_cast.Caster.CasterInfo, (Unit)target, CalcEffectValue(), ref failedReason);
+			var effectHandler = AuraHandler.CreateEffectHandler(Effect, m_cast.Caster.CasterInfo, (Unit)target, ref failedReason);
 
 			if (failedReason == SpellFailedReason.Ok)
 			{

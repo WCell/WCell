@@ -10,17 +10,17 @@ namespace WCell.RealmServer.Instances
 
 	public class InstanceTemplate
 	{
-		private readonly RegionInfo m_regionInfo;
+		private readonly RegionTemplate m_RegionTemplate;
 		public InstanceCreator Creator;
 
-		public InstanceTemplate(RegionInfo info)
+		public InstanceTemplate(RegionTemplate template)
 		{
-			m_regionInfo = info;
+			m_RegionTemplate = template;
 		}
 
-		public RegionInfo RegionInfo
+		public RegionTemplate RegionTemplate
 		{
-			get { return m_regionInfo; }
+			get { return m_RegionTemplate; }
 		}
 
 		internal BaseInstance Create()

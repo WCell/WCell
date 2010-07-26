@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Global
 			entry.ResetTime = GetInt32(rawData, 20);
 			entry.MaxPlayerCount = GetInt32(rawData, 21);
 
-			var map = World.GetRegionInfo(entry.MapId);
+			var map = World.GetRegionTemplate(entry.MapId);
 			if (map != null)
 			{
 				if (entry.Index >= (double) RaidDifficulty.End)
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Global
 	{
 		public override void Convert(byte[] rawData)
 		{
-			var rgn = new RegionInfo();
+			var rgn = new RegionTemplate();
 
 			rgn.Id = (MapId)GetUInt32(rawData, 0);
 
@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Global
 			//rgn.HeroicResetTime = GetUInt32(rawData, 113);
 			//rgn.RaidResetTime = GetUInt32(rawData, 112);
 
-			ArrayUtil.Set(ref World.s_regionInfos, (uint)rgn.Id, rgn);
+			ArrayUtil.Set(ref World.s_RegionTemplates, (uint)rgn.Id, rgn);
 		}
 	}
 }

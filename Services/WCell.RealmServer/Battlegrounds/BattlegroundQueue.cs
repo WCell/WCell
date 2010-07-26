@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public bool CanEnter(Character chr)
 		{
-			return chr.Level.IsBetween(MinLevel, MaxLevel) && m_Template.RegionInfo.MayEnter(chr);
+			return chr.Level.IsBetween(MinLevel, MaxLevel) && m_Template.RegionTemplate.MayEnter(chr);
 		}
 
 		public abstract Battleground Battleground

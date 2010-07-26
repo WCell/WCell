@@ -52,14 +52,88 @@
       <Value>Could not change the current user's locale.</Value>
     </Item>
 
+	<Item Key="CmdSpellDescription">
+	  <Value>Provides commands to interact with the Spells of the Target.</Value>
+	</Item>
+	<Item Key="CmdSpellAddDescription">
+	  <Value>Adds the given spell. 
+				-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills).
+				-c [&lt;class&gt;] adds all spells of the Character's or a given class.
+				-t (talents) adds the highest rank of all spells of all talents</Value>
+	</Item>
+	<Item Key="CmdSpellAddParamInfo">
+	  <Value>[-[r][c [&lt;class&gt;]]] [list of &lt;spell|line|talent&gt;]</Value>
+	</Item>
+	<Item Key="CmdSpellAddResponseSpell">
+	  <Value>Spell added : {0}</Value>
+	</Item>
+	<Item Key="CmdSpellAddResponseSpells">
+	  <Value>Added {0} spells.</Value>
+	</Item>
+	<Item Key="CmdSpellAddResponseTalents">
+	  <Value>Added {0} talents.</Value>
+	</Item>
+	<Item Key="CmdSpellRemoveDescription">
+	  <Value>Removes the given Spell</Value>
+	</Item>
+	<Item Key="CmdSpellRemoveParamInfo">
+	  <Value>&lt;spell&gt;</Value>
+	</Item>
+	<Item Key="CmdSpellRemoveResponse">
+	  <Value>Spell removed: </Value>
+	</Item>
+	<Item Key="CmdSpellRemoveError">
+	  <Value>Spell {0} doesn't exist.</Value>
+	</Item>
+	<Item Key="CmdSpellPurgeDescription">
+	  <Value>Removes all spells but the initial ones.</Value>
+	</Item>
+	<Item Key="CmdSpellPurgeResponse">
+	  <Value>Purged spells.</Value>
+	</Item>
+	<Item Key="CmdSpellPurgeError">
+	  <Value>Target has no Spells.</Value>
+	</Item>
+	<Item Key="CmdSpellTriggerDescription">
+	  <Value>Triggers the given spell on the target of the command.</Value>
+	</Item>
+	<Item Key="CmdSpellTriggerParamInfo">
+	  <Value>&lt;spellid&gt;</Value>
+	</Item>
+	<Item Key="CmdSpellTriggerResponse">
+	  <Value>Spell triggerred : </Value>
+	</Item>
+	<Item Key="CmdSpellTriggerError">
+	  <Value>Spell doesn't exist.</Value>
+	</Item>
     <Item Key="CmdSpellGetDescription">
       <Value>Retrieves information about the given Spell.</Value>
     </Item>
-
     <Item Key="CmdSpellGetParamInfo">
       <Value>&lt;spellid or lineid&gt;</Value>
     </Item>
-
+	<Item Key="CmdSpellClearDescription">
+	  <Value>Clears all reamining spell-cooldowns</Value>
+	</Item>
+	<Item Key="CmdSpellClearResponse">
+	  <Value>All Cooldowns cleared.</Value>
+	</Item>
+	<Item Key="CmdSpellClearError">
+	  <Value>Target has no Cooldowns.</Value>
+	</Item>
+	<Item Key="CmdSpellVisualDescription">
+	  <Value>Plays the visual of the given spell</Value>
+	</Item>
+	<Item Key="CmdSpellVisualParamInfo">
+	  <Value>&lt;SpellId&gt;</Value>
+	</Item>
+	<Item Key="CmdSpellVisualError">
+	  <Value>Invalid SpellId: {0}.</Value>
+	</Item>
+	<Item Key="CmdSpellNotExists">
+	  <Value>Spell doesn't exist.</Value>
+	</Item>
+	
     <Item Key="GossipOptionTrainer">
       <Value>Train me...</Value>
     </Item>
@@ -91,6 +165,9 @@
 	
 	<Item Key="FeatureNotYetImplemented">
 	  <Value>Feature not yet implemented</Value>
+	</Item>
+	<Item Key="InvalidClass">
+	  <Value>Invalid Class.</Value>
 	</Item>
   </Items>
 </Translation>

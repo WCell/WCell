@@ -205,7 +205,6 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();
             EffectHandlers[(int)AuraType.ModSpeedMountedFlight] = () => new ModSpeedMountedFlightHandler();
             EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();
-			
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
@@ -244,9 +243,7 @@ namespace WCell.RealmServer.Spells.Auras
 					var effect = effects[i];
 					if (effect.HarmType == HarmType.Beneficial || !beneficial)
 					{
-						var effectValue = effect.CalcEffectValue(caster);
-
-						var effectHandler = CreateEffectHandler(effect, caster, target, effectValue, ref failReason);
+						var effectHandler = CreateEffectHandler(effect, caster, target, ref failReason);
 						if (failReason != SpellFailedReason.Ok)
 						{
 							return null;
@@ -268,14 +265,12 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		public static AuraEffectHandler CreateEffectHandler(
-			SpellEffect spellEffect, CasterInfo caster, Unit target,
-			int effectValue, ref SpellFailedReason failedReason)
+		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, CasterInfo caster, Unit target, ref SpellFailedReason failedReason)
 		{
 			var handler = spellEffect.AuraEffectHandlerCreator();
 
 			handler.m_spellEffect = spellEffect;
-			handler.BaseEffectValue = effectValue;
+			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster);
 
 			handler.CheckInitialize(caster, target, ref failedReason);
 			return handler;
@@ -331,7 +326,7 @@ namespace WCell.RealmServer.Spells.Auras
 		static bool IsTracker(Spell spell)
 		{
 			return spell.HasEffect(AuraType.TrackCreatures) || spell.HasEffect(AuraType.TrackResources) ||
-			       spell.HasEffect(AuraType.TrackStealthed);
+				   spell.HasEffect(AuraType.TrackStealthed);
 		}
 
 		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)

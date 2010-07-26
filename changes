@@ -1,3 +1,2 @@
-- fixed ModTaunt
-- fixed initial rage & energy
-- fixed EquipmentSlot (fixes some combat abilities that require an item)
+- renamed RegionInfo to RegionTemplate
+- to test: DruidRestorationTreeOfLifeShapeshift

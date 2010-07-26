@@ -99,7 +99,7 @@ namespace WCell.RealmServer.AreaTriggers
 
 			if (TargetPos.IsSet)
 			{
-				var region = World.GetRegionInfo(TargetMap);
+				var region = World.GetRegionTemplate(TargetMap);
 				if (region != null)
 				{
 					Type = AreaTriggerType.Teleport;

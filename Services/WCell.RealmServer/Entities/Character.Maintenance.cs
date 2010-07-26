@@ -169,7 +169,7 @@ namespace WCell.RealmServer.Entities
 			// basic setup
 			if (record.JustCreated)
 			{
-				ModStatsForLevel(1);
+				ModStatsForLevel(m_record.Level);
 
 				if (PowerType != PowerType.Mana)
 				{
@@ -516,6 +516,9 @@ namespace WCell.RealmServer.Entities
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
                     }
+
+					// set initial weapon skill max values
+					Skills.UpdateSkillsForLevel(Level);
 				}
 				else
 				{

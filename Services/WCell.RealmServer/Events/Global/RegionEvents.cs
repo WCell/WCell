@@ -9,13 +9,9 @@ namespace WCell.RealmServer.Global
 {
 	public partial class Region
 	{
-		/// <summary>
-		/// Called after a new Region has been created.
-		/// </summary>
-		public static event Action<Region> Created;
 	}
 
-	public partial class RegionInfo
+	public partial class RegionTemplate
 	{
 		/// <summary>
 		/// Called when a new Region of this RegionInfo has been created.
