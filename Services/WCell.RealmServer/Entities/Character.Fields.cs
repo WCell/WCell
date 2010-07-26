@@ -669,6 +669,8 @@ namespace WCell.RealmServer.Entities
 			get { return FactionMgr.Get(Race); }
 		}
 
+        public int ReputationGainModifierPercent { get; set; }
+
 		#region CombatRatings
 
 		/// <summary>

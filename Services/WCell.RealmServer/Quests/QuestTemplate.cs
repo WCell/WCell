@@ -1010,7 +1010,7 @@ namespace WCell.RealmServer.Quests
 			{
 				if (RewardReputations[i].Value != 0)
 				{
-					receiver.Reputations.ModValue(RewardReputations[i].Faction, RewardReputations[i].Value);
+					receiver.Reputations.GainReputation(RewardReputations[i].Faction, RewardReputations[i].Value);
 				}
 			}
 			//TODO Give RewardTitle
