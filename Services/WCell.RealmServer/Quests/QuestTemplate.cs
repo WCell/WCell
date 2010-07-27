@@ -1006,17 +1006,26 @@ namespace WCell.RealmServer.Quests
 				receiver.Money = (uint)(receiver.Money + RewMoney);
 			}
 
-			for (var i = 0; i < 2; i++)
+			for (var i = 0; i < QuestConstants.MaxReputations; i++)
 			{
-				if (RewardReputations[i].Value != 0)
+				if (RewardReputations[i].Faction != 0)
 				{
-					receiver.Reputations.GainReputation(RewardReputations[i].Faction, RewardReputations[i].Value);
+				    int value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
+					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
 			//TODO Give RewardTitle
 			//chr.Titles.Add(RewardTitle);
 			return true;
 		}
+
+        public int CalcRewRep(int valueId, int value)
+        {
+            if (value != 0)
+                return value*100;
+            var index = (valueId > 0) ? 0 : 1; 
+            return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
+        }
 
         public int CalcRewardXp(int playerLevel)
         {
@@ -1306,6 +1315,7 @@ namespace WCell.RealmServer.Quests
 	{
 		//public FactionReputationIndex Faction;
 		public FactionId Faction;
-		public int Value;
+		public int ValueId;
+	    public int Value;
 	}
 }
