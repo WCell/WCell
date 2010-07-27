@@ -52,9 +52,12 @@
       <Value>Could not change the current user's locale.</Value>
     </Item>
 
+	<!-- 	Spell Commands		--
+	------------------------------->
 	<Item Key="CmdSpellDescription">
 	  <Value>Provides commands to interact with the Spells of the Target.</Value>
 	</Item>
+	
 	<Item Key="CmdSpellAddDescription">
 	  <Value>Adds the given spell. 
 				-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills).
@@ -73,6 +76,7 @@
 	<Item Key="CmdSpellAddResponseTalents">
 	  <Value>Added {0} talents.</Value>
 	</Item>
+	
 	<Item Key="CmdSpellRemoveDescription">
 	  <Value>Removes the given Spell</Value>
 	</Item>
@@ -85,6 +89,7 @@
 	<Item Key="CmdSpellRemoveError">
 	  <Value>Spell {0} doesn't exist.</Value>
 	</Item>
+	
 	<Item Key="CmdSpellPurgeDescription">
 	  <Value>Removes all spells but the initial ones.</Value>
 	</Item>
@@ -94,6 +99,7 @@
 	<Item Key="CmdSpellPurgeError">
 	  <Value>Target has no Spells.</Value>
 	</Item>
+	
 	<Item Key="CmdSpellTriggerDescription">
 	  <Value>Triggers the given spell on the target of the command.</Value>
 	</Item>
@@ -106,12 +112,14 @@
 	<Item Key="CmdSpellTriggerError">
 	  <Value>Spell doesn't exist.</Value>
 	</Item>
+	
     <Item Key="CmdSpellGetDescription">
       <Value>Retrieves information about the given Spell.</Value>
     </Item>
     <Item Key="CmdSpellGetParamInfo">
       <Value>&lt;spellid or lineid&gt;</Value>
     </Item>
+	
 	<Item Key="CmdSpellClearDescription">
 	  <Value>Clears all reamining spell-cooldowns</Value>
 	</Item>
@@ -121,6 +129,7 @@
 	<Item Key="CmdSpellClearError">
 	  <Value>Target has no Cooldowns.</Value>
 	</Item>
+	
 	<Item Key="CmdSpellVisualDescription">
 	  <Value>Plays the visual of the given spell</Value>
 	</Item>
@@ -133,6 +142,59 @@
 	<Item Key="CmdSpellNotExists">
 	  <Value>Spell doesn't exist.</Value>
 	</Item>
+	
+	<!-- End of Spell Commands --
+	------------------------------->
+	
+	<!-- 	Skill Commands		--
+	------------------------------->
+	<Item Key="CmdSkillDescription">
+	  <Value>Used for manipulation of Skills.</Value>
+	</Item>
+	
+	<Item Key="CmdSkillSetParamInfo">
+	  <Value>&lt;skill&gt; [&lt;value&gt; [&lt;maxValue&gt;]]</Value>
+	</Item>
+	<Item Key="CmdSkillSetDescription">
+	  <Value>Sets the given Skill to the given values (or uses 1 by default)</Value>
+	</Item>
+	<Item Key="CmdSkillSetResponse">
+	  <Value>"Skill {0} set to {1} (Max: {2}).</Value>
+	</Item>
+	<Item Key="CmdSkillSetError">
+	  <Value>Skill {0} doesn't exist.</Value>
+	</Item>
+	
+	<Item Key="CmdSkillLearnParamInfo">
+	  <Value>[-r] &lt;skill&gt; [&lt;amount&gt;]</Value>
+	</Item>
+	<Item Key="CmdSkillLearnDescription">
+	  <Value>Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.</Value>
+	</Item>
+	<Item Key="CmdSkillLearnResponse">
+	  <Value>Skill {0} set to {1}.</Value>
+	</Item>
+	<Item Key="CmdSkillLearnError">
+	  <Value>Skill {0} doesn't exist.</Value>
+	</Item>
+	
+	<Item Key="CmdSkillTierParamInfo">
+	  <Value>&lt;kill&gt; &lt;tier&gt;</Value>
+	</Item>
+	<Item Key="CmdSkillTierDescription">
+	  <Value>Set the given Skill to the given Tier</Value>
+	</Item>
+	<Item Key="CmdSkillTierResponse">
+	  <Value>Skill {0} set to {1} (Max: {2}).</Value>
+	</Item>
+	<Item Key="CmdSkillTierError1">
+	  <Value>Skill {0} doesn't exist.</Value>
+	</Item>
+	<Item Key="CmdSkillTierError2">
+	  <Value>Invalid Tier-number</Value>
+	</Item>
+	<!-- End of Skill Commands   --
+	------------------------------->	
 	
     <Item Key="GossipOptionTrainer">
       <Value>Train me...</Value>

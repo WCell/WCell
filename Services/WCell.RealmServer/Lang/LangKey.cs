@@ -36,6 +36,8 @@ namespace WCell.RealmServer.Lang
 		LocaleSet,
 		UnableToSetUserLocale,
 
+        // #######################################################################
+        // Spell Commands
         CmdSpellDescription,
         CmdSpellAddDescription,
         CmdSpellAddParamInfo,
@@ -63,6 +65,22 @@ namespace WCell.RealmServer.Lang
         CmdSpellVisualError,
         CmdSpellNotExists,
 
+        // ########################################################################
+        // Skill Commands
+        CmdSkillDescription,
+        CmdSkillSetParamInfo,
+        CmdSkillSetDescription,
+        CmdSkillSetResponse,
+        CmdSkillSetError,
+        CmdSkillLearnParamInfo,
+        CmdSkillLearnDescription,
+        CmdSkillLearnResponse,
+        CmdSkillLearnError,
+        CmdSkillTierParamInfo,
+        CmdSkillTierDescription,
+        CmdSkillTierResponse,
+        CmdSkillTierError1,
+        CmdSkillTierError2,
 		// ########################################################################
 		// Gossips
 		GossipOptionBanker,
