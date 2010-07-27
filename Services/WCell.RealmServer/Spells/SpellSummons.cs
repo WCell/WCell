@@ -26,10 +26,24 @@ namespace WCell.RealmServer.Spells
 		public virtual NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var caster = cast.CasterUnit;
-			var pet = caster.SpawnMinion(entry, ref targetLoc, cast.Spell.GetDuration(caster.CasterInfo));
-			pet.Summoner = caster;
-			pet.Creator = caster.EntityId;
-			return pet;
+			var duration = cast.Spell.GetDuration(cast.CasterReference);
+			NPC minion;
+			if (caster != null)
+			{
+				minion = caster.SpawnMinion(entry, ref targetLoc, duration);
+			}
+			else
+			{
+				minion = entry.Create();
+
+				minion.Position = targetLoc;
+				minion.Brain.IsRunning = true;
+				minion.Phase = cast.Phase;
+				cast.Map.AddObject(minion);
+			}
+			minion.Summoner = caster;
+			minion.Creator = cast.CasterReference.EntityId;
+			return minion;
 		}
 	}
 
@@ -65,8 +79,15 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var caster = cast.CasterUnit;
-			var pet = ((Character)caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.CasterInfo));
-			return pet;
+			if (caster != null)
+			{
+				var pet = ((Character) caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.SharedReference));
+				return pet;
+			}
+			else
+			{
+				return base.Summon(cast, ref targetLoc, entry);
+			}
 		}
 	}
 
@@ -98,9 +119,9 @@ namespace WCell.RealmServer.Spells
 	{
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
-			var npc = entry.Create(cast.CasterUnit.Region, targetLoc);
-			npc.RemainingDecayDelay = cast.Spell.GetDuration(cast.Caster.CasterInfo);
-			npc.Creator = cast.Caster.EntityId;	// should be right
+			var npc = entry.Create(cast.Map, targetLoc);
+			npc.RemainingDecayDelay = cast.Spell.GetDuration(cast.CasterReference);
+			npc.Creator = cast.CasterReference.EntityId;	// should be right
 			return npc;
 		}
 	}

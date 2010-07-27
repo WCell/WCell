@@ -524,16 +524,16 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Formulars
-		public int CalcEffectValue(CasterInfo casterInfo)
+		public int CalcEffectValue(ObjectReference casterReference)
 		{
-			var caster = casterInfo.Caster;
-			if (caster is Unit)
+			var caster = casterReference.UnitMaster;
+			if (caster != null)
 			{
-				return CalcEffectValue((Unit)caster);
+				return CalcEffectValue(caster);
 			}
 			else
 			{
-				return CalcEffectValue(casterInfo.Level, 0);
+				return CalcEffectValue(casterReference.Level, 0);
 			}
 		}
 
@@ -613,19 +613,13 @@ namespace WCell.RealmServer.Spells
 			return value;
 		}
 
-		public float GetRadius(WorldObject caster)
+		public float GetRadius(ObjectReference caster)
 		{
 			var radius = Radius;
-			if (caster != null)
+			var chr = caster.UnitMaster as Character;
+			if (chr != null)
 			{
-				if (!(caster is Character))
-				{
-					caster = caster.Master;
-				}
-				if (caster is Character)
-				{
-					radius = ((Character)caster).PlayerSpells.GetModifiedFloat(SpellModifierType.Radius, Spell, radius);
-				}
+				radius = chr.PlayerSpells.GetModifiedFloat(SpellModifierType.Radius, Spell, radius);
 			}
 			if (radius < 5)
 			{

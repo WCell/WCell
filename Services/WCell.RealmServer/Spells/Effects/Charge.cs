@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.Selected.IsInFrontOf(m_cast.Caster))
+			if (!m_cast.Selected.IsInFrontOf(m_cast.CasterObject))
 			{
 				failReason = SpellFailedReason.NotInfront;
 			}
@@ -32,11 +32,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var distance = m_cast.Caster.Position.GetDistance(target.Position) - ((Unit)target).BoundingRadius - 2;
-			var direction = target.Position - m_cast.Caster.Position;
+			var distance = m_cast.CasterObject.Position.GetDistance(target.Position) - ((Unit)target).BoundingRadius - 2;
+			var direction = target.Position - m_cast.CasterObject.Position;
 
 			direction.Normalize();
-			direction = m_cast.Caster.Position + direction * distance;
+			direction = m_cast.CasterObject.Position + direction * distance;
 
 			MovementHandler.SendMoveToPacket(m_cast.CasterUnit, ref direction, m_cast.CasterUnit.Orientation, 3, MonsterMoveFlags.Walk);
 
@@ -44,6 +44,11 @@ namespace WCell.RealmServer.Spells.Effects
 		}
 
 		public override ObjectTypes TargetType
+		{
+			get { return ObjectTypes.Unit; }
+		}
+
+		public override ObjectTypes CasterType
 		{
 			get { return ObjectTypes.Unit; }
 		}

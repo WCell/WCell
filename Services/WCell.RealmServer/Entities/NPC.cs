@@ -347,10 +347,7 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get
-			{
-				return m_entry.Faction;
-			}
+			get { return m_entry.Faction; }
 		}
 
 		public ThreatCollection ThreatCollection
@@ -923,12 +920,12 @@ namespace WCell.RealmServer.Entities
 			{
 				foreach (var aura in m_entry.Auras)
 				{
-					m_auras.AddSelf(aura, true);
+					m_auras.CreateSelf(aura, true);
 				}
 
 				foreach (var aura in m_spawnPoint.SpawnEntry.Auras)
 				{
-					m_auras.AddSelf(aura, true);
+					m_auras.CreateSelf(aura, true);
 				}
 			}
 
@@ -1119,13 +1116,10 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnEnterCombat();
 
-			// target is aggro'ed and will also enter combat
-			if (m_target != null && !m_target.IsInCombat)
+			if (m_target != null)
 			{
-				// client won't accept enforced Target but will select it automatically
-				// m_target.Target = this
-
-				m_target.IsInCombat = true;
+				// add Target into threat collection
+				m_threatCollection.AddNewIfNotExisted(m_target);
 			}
 
 		}

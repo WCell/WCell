@@ -36,7 +36,6 @@ namespace WCell.RealmServer.Spells.Auras
 	public class AuraCollection : IEnumerable<Aura>
 	{
 		public const byte InvalidIndex = 0xFF;
-		private static Logger log = LogManager.GetCurrentClassLogger();
 
 		protected Unit m_owner;
 		protected Dictionary<AuraIndexId, Aura> m_auras;
@@ -307,7 +306,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Get an Aura that is incompatible with the one represented by the given spell.
 		/// </summary>
 		/// <returns>Whether or not another Aura may be applied</returns>
-		public Aura GetAura(CasterInfo caster, AuraIndexId id, Spell spell)
+		public Aura GetAura(ObjectReference caster, AuraIndexId id, Spell spell)
 		{
 			var oldAura = this[id];
 			if (oldAura != null)
@@ -323,7 +322,7 @@ namespace WCell.RealmServer.Spells.Auras
 					var count = 0;
 					foreach (var aura in m_AuraArray)
 					{
-						if (aura.CasterInfo.CasterId == caster.CasterId && spell.AuraCasterGroup == aura.Spell.AuraCasterGroup)
+						if (aura.CasterReference.EntityId == caster.EntityId && spell.AuraCasterGroup == aura.Spell.AuraCasterGroup)
 						{
 							count++;
 							if (count >= spell.AuraCasterGroup.MaxCount)
@@ -374,33 +373,33 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region Add
 		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
+		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(SpellId id)
+		public Aura CreateSelf(SpellId id)
 		{
-			return AddSelf(id, false);
+			return CreateSelf(id, false);
 		}
 
 		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
+		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(SpellId id, bool noTimeout)
+		public Aura CreateSelf(SpellId id, bool noTimeout)
 		{
-			return AddAura(m_owner.CasterInfo, SpellHandler.Get(id), noTimeout);
+			return CreateAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
 		}
 
 		/// <summary>
-		/// Applies the given spell as a buff or debuff (the owner being the caster).
+		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddSelf(Spell spell, bool noTimeout)
+		public Aura CreateSelf(Spell spell, bool noTimeout)
 		{
-			return AddAura(m_owner.CasterInfo, spell, noTimeout);
+			return CreateAura(m_owner.SharedReference, spell, noTimeout);
 		}
 
 		/// <summary>
@@ -408,7 +407,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo caster, Spell spell, bool noTimeout)
+		public Aura CreateAura(ObjectReference caster, Spell spell, bool noTimeout, Item usedItem = null)
 		{
 			try
 			{
@@ -427,9 +426,9 @@ namespace WCell.RealmServer.Spells.Auras
 							// Stacked
 							return oldAura;
 						}
-						if (caster.Caster is Character)
+						if (caster.Object is Character)
 						{
-							SpellHandler.SendCastFailed((Character)caster.Caster, 0, spell, err);
+							SpellHandler.SendCastFailed((Character)caster.Object, 0, spell, err);
 						}
 						return null;
 					}
@@ -439,7 +438,7 @@ namespace WCell.RealmServer.Spells.Auras
 				var handlers = AuraHandler.CreateEffectHandlers(spell, caster, m_owner, beneficial);
 				if (handlers != null)
 				{
-					var aura = AddAura(caster, spell, handlers, beneficial);
+					var aura = CreateAura(caster, spell, handlers, usedItem, beneficial);
 					if (aura != null)
 					{
 						aura.Start(null, noTimeout);
@@ -449,7 +448,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			catch (Exception ex)
 			{
-				LogUtil.ErrorException(ex, "Unable to Add Aura {0} to {1}", spell, m_owner);
+				LogUtil.ErrorException(ex, "Unable to Add new Aura {0} to {1}", spell, m_owner);
 			}
 			return null;
 		}
@@ -457,11 +456,11 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Adds a new Aura with the given information to the Owner. 
 		/// Does not initialize the new Aura.
-		/// If you use this method, make sure to call <c>Start()</c> on the newly created Aura.
+		/// If you use this method, make sure to call <see cref="Aura.Start"/> on the newly created Aura.
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura AddAura(CasterInfo casterInfo, Spell spell, List<AuraEffectHandler> handlers, bool beneficial)
+		public Aura CreateAura(ObjectReference casterReference, Spell spell, List<AuraEffectHandler> handlers, Item usedItem, bool beneficial)
 		{
 			// create new Aura
 			// Get an index for the aura
@@ -473,7 +472,8 @@ namespace WCell.RealmServer.Spells.Auras
 				return null;
 			}
 
-			var aura = new Aura(this, casterInfo, spell, handlers, index, beneficial);
+			var aura = new Aura(this, casterReference, spell, handlers, index, beneficial);
+			aura.UsedItem = usedItem;
 			AddAura(aura, false);
 			return aura;
 		}
@@ -515,7 +515,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns true if there is no incompatible Aura or if it could be removed.
 		/// <param name="err">Ok, if stacked or no incompatible Aura is blocking a new Aura</param>
 		/// </summary>
-		public bool CheckStackOrOverride(CasterInfo caster, AuraIndexId id, Spell spell, ref SpellFailedReason err)
+		public bool CheckStackOrOverride(ObjectReference caster, AuraIndexId id, Spell spell, ref SpellFailedReason err)
 		{
 			var oldAura = GetAura(caster, id, spell);
 			if (oldAura != null)
@@ -530,7 +530,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns whether the given incompatible Aura was removed or stacked.
 		/// <param name="err">Ok, if stacked or no incompatible Aura was found</param>
 		/// </summary>
-		public static bool CheckStackOrOverride(Aura oldAura, CasterInfo caster, Spell spell, ref SpellFailedReason err)
+		public static bool CheckStackOrOverride(Aura oldAura, ObjectReference caster, Spell spell, ref SpellFailedReason err)
 		{
 			if (oldAura.Spell.IsPreventionDebuff)
 			{
@@ -545,7 +545,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			else
 			{
-				if (caster == oldAura.CasterInfo)
+				if (caster == oldAura.CasterReference)
 				{
 					if (spell != oldAura.Spell &&
 						spell.AuraCasterGroup != null &&
@@ -932,7 +932,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura != null &&
 					aura != GhostAura &&
 					!aura.Spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-					!aura.CasterInfo.IsItem &&
+					aura.UsedItem == null &&
 					(!aura.HasTimeout || aura.TimeLeft > 10000)
 					)
 				{

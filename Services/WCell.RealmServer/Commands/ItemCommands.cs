@@ -443,7 +443,7 @@ namespace WCell.RealmServer.Commands
 			}
 
             public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
-            {
+			{
                 var slot = trigger.Text.NextEnum(InventorySlot.Invalid);
                 if (slot != InventorySlot.Invalid)
                 {

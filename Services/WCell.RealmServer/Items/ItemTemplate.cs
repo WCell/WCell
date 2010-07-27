@@ -13,6 +13,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items.Enchanting;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Skills;
@@ -34,7 +35,7 @@ namespace WCell.RealmServer.Items
 		[NotPersistent]
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)
@@ -126,7 +127,7 @@ namespace WCell.RealmServer.Items
 		[NotPersistent]
 		public string DefaultDescription
 		{
-			get { return Descriptions[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Descriptions.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)

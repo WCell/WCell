@@ -160,7 +160,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 			protected override void Apply(WorldObject target)
 			{
-				var chr = m_cast.Caster as Character;
+				var chr = m_cast.CasterUnit as Character;
 				if (chr != null)
 				{
 					if (chr.MayAttack(target))
@@ -184,7 +184,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 			}
 
-			protected override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+			protected override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 			{
 				if (target is Character)
 				{

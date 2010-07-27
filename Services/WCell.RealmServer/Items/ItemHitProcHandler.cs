@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Items
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
-			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, triggerer);
+			m_Item.Owner.SpellCast.ValidateAndTriggerNew(m_Spell, Owner, triggerer);
 		}
 
 		public void Dispose()

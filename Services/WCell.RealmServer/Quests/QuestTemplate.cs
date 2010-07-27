@@ -31,6 +31,7 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Constants.NPCs;
@@ -222,7 +223,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Title
 		{
-			get { return Titles != null ? Titles[(int)RealmServerConfiguration.DefaultLocale] : "[unknown]"; }
+			get { return Titles != null ? Titles.LocalizeWithDefaultLocale() : "[unknown]"; }
 		}
 
 		/// <summary>
@@ -234,7 +235,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Objective
 		{
-			get { return Instructions[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Instructions.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -246,7 +247,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Detail
 		{
-			get { return Details[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Details.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string EndText
 		{
-			get { return EndTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return EndTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -327,7 +328,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string OfferRewardText
 		{
-			get { return OfferRewardTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return OfferRewardTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -340,7 +341,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string ProgressText
 		{
-			get { return ProgressTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return ProgressTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>

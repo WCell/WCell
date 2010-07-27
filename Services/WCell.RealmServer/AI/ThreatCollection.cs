@@ -181,7 +181,7 @@ namespace WCell.RealmServer.AI
 		/// Call this method when encountering a new Unit
 		/// </summary>
 		/// <param name="unit"></param>
-		public void AddNew(Unit unit)
+		public void AddNewIfNotExisted(Unit unit)
 		{
 			this[unit] += 0;
 		}

@@ -135,7 +135,7 @@ namespace WCell.RealmServer.Spells
 					SpellHandler.SendLearnedSpell(OwnerChar.Client, spell.Id);
 					if (!spell.IsPassive)
 					{
-						SpellHandler.SendVisual(Owner, 362);
+						SpellHandler.SendVisual(Owner, 362);	// ouchy: Unnamed constants 
 					}
 				}
 				OwnerChar.m_record.AddSpell(spell.Id);

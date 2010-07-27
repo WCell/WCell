@@ -14,20 +14,32 @@ namespace WCell.RealmServer.Lang
 			return texts.Localize(client.Info.Locale);
 		}
 
+		/// <summary>
+		/// Returns the entry at the index that equals the numeric value of locale
+		/// </summary>
 		public static string Localize(this string[] texts, ClientLocale locale)
 		{
 			var text = texts[(int)locale];
 			if (string.IsNullOrEmpty(text))
 			{
-				text = texts[(int)RealmServerConfiguration.DefaultLocale];
-				if (string.IsNullOrEmpty(text) && RealmServerConfiguration.DefaultLocale != ClientLocale.English)
-				{
-					text = texts[(int)ClientLocale.English];
-				}
-				if (text == null)
-				{
-					text = "";
-				}
+				return LocalizeWithDefaultLocale(texts);
+			}
+			return text;
+		}
+
+		/// <summary>
+		/// Returns the entry at the index that equals the numeric value of locale
+		/// </summary>
+		public static string LocalizeWithDefaultLocale(this string[] texts)
+		{
+			var text = texts[(int) RealmServerConfiguration.DefaultLocale];
+			if (string.IsNullOrEmpty(text) && RealmServerConfiguration.DefaultLocale != ClientLocale.English)
+			{
+				text = texts[(int) ClientLocale.English];
+			}
+			if (text == null)
+			{
+				text = "";
 			}
 			return text;
 		}

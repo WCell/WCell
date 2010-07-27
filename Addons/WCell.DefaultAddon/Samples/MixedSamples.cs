@@ -41,6 +41,7 @@ namespace WCell.Addons.Default.Samples
 			// default settings
 			GrizzlyBear = new NPCEntry
 			{
+				Id = BearId,
 				DefaultName = "Sample Grizzly",
 				EntryFlags = NPCEntryFlags.Tamable,
 				Type = CreatureType.Humanoid,

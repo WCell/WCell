@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		public override void OnProc(Unit target, IUnitAction action)
 		{
-			var val = m_spellEffect.CalcEffectValue(m_aura.CasterInfo);
+			var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
 
 			//if (action is IDamageAction)
 			//{

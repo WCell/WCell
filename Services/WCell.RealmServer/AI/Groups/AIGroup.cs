@@ -61,7 +61,7 @@ namespace WCell.RealmServer.AI.Groups
 			for (var i = 0; i < m_Mobs.Count; i++)
 			{
 				var mob = m_Mobs[i];
-				mob.ThreatCollection.AddNew(unit);
+				mob.ThreatCollection.AddNewIfNotExisted(unit);
 			}
 		}
 	}

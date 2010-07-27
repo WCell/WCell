@@ -187,7 +187,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			FlagCarrier = chr;
 
 			// Shows the flag on the character. Does all kinds of stuff in the handler.
-			chr.Auras.AddSelf(_flagSpell, true);
+			chr.Auras.CreateSelf(_flagSpell, true);
 			_debuffUpdate = chr.CallDelayed(60 * (int)_flagRespawn * 1000, obj => ApplyFlagCarrierDebuff());
 
 			if (_flag != null)
@@ -254,7 +254,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			if (FlagCarrier != null && FlagCarrier.IsInWorld)
 			{
 				FlagCarrier.SpellCast.Trigger(_flagDropSpell);
-				FlagCarrier.Auras.AddSelf(_flagDropDebuff, false); // confirmed from logs
+				FlagCarrier.Auras.CreateSelf(_flagDropDebuff, false); // confirmed from logs
 
 				var msg = FlagCarrier.Name + " has dropped the " + Name + " flag!";
 				ChatMgr.SendSystemMessage(Instance.Characters, msg);
@@ -338,7 +338,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			if (FlagCarrier != null && FlagCarrier.IsInWorld)
 			{
-				FlagCarrier.Auras.AddSelf(_flagCarrierDebuffSpell, false);
+				FlagCarrier.Auras.CreateSelf(_flagCarrierDebuffSpell, false);
 			}
 		}
 

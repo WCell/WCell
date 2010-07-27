@@ -12,23 +12,25 @@
     </FlatArray>
     <FlatArray Name="Names">
       <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_creature" />
       <Column Name="name_loc2" Table="locales_creature" />
       <Column Name="name_loc3" Table="locales_creature" />
       <Column Name="name_loc4" Table="locales_creature" />
       <Column Name="name_loc5" Table="locales_creature" />
       <Column Name="name_loc6" Table="locales_creature" />
       <Column Name="name_loc7" Table="locales_creature" />
-      <Column Name="name_loc8" Table="locales_creature" />
+      <!--<Column Name="name_loc8" Table="locales_creature" />-->
     </FlatArray>
     <FlatArray Name="Titles">
       <Column Name="subname" />
+      <Column Name="subname_loc1" Table="locales_creature" />
       <Column Name="subname_loc2" Table="locales_creature" />
       <Column Name="subname_loc3" Table="locales_creature" />
       <Column Name="subname_loc4" Table="locales_creature" />
       <Column Name="subname_loc5" Table="locales_creature" />
       <Column Name="subname_loc6" Table="locales_creature" />
       <Column Name="subname_loc7" Table="locales_creature" />
-      <Column Name="subname_loc8" Table="locales_creature" />
+      <!--<Column Name="subname_loc8" Table="locales_creature" />-->
     </FlatArray>
     <Flat Name="InfoString" Column="IconName" />
     <Flat Name="MinLevel" Column="minlevel" />

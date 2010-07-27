@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras
 		float m_radius;
 		ITickTimer m_controller;
 		TimerEntry m_timer;
-		CasterInfo m_casterInfo;
+		ObjectReference m_CasterReference;
 		float m_duration;
 		float m_elapsed;
 		ISpellParameters m_params;
@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public AreaAura(WorldObject holder, Spell spell)
 		{
 			Init(holder, spell);
-			m_radius = spell.Effects[0].GetRadius(holder);
+			m_radius = spell.Effects[0].GetRadius(holder.SharedReference);
 		}
 
 		/// <summary>
@@ -70,11 +70,11 @@ namespace WCell.RealmServer.Spells.Auras
 			m_holder = holder;
 			if (holder is DynamicObject)
 			{
-				m_casterInfo = holder.Master.CasterInfo;
+				m_CasterReference = holder.Master.SharedReference;
 			}
 			else
 			{
-				m_casterInfo = holder.CasterInfo;
+				m_CasterReference = holder.SharedReference;
 			}
 
 			m_spell = spell;
@@ -213,7 +213,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 				else
 				{
-					m_duration = m_spell.GetDuration(m_casterInfo) / 1000f;
+					m_duration = m_spell.GetDuration(m_CasterReference) / 1000f;
 					if (m_duration < 1)
 					{
 						m_duration = int.MaxValue;
@@ -345,10 +345,10 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		protected void ApplyAuraEffects(Unit target)
 		{
-			var beneficial = m_spell.IsBeneficialFor(m_casterInfo, target);
+			var beneficial = m_spell.IsBeneficialFor(m_CasterReference, target);
 
 			// checks
-			var missReason = SpellCast.CheckDebuffResist(target, m_spell, m_casterInfo.Level, !beneficial);
+			var missReason = SpellCast.CheckDebuffResist(target, m_spell, m_CasterReference.Level, !beneficial);
 			if (missReason != CastMissReason.None)
 			{
 				// TODO: Flash message ontop of the head
@@ -356,7 +356,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			// try to stack/apply aura
-			var aura = target.Auras.AddAura(m_casterInfo, m_spell, false);
+			var aura = target.Auras.CreateAura(m_CasterReference, m_spell, false);
 			if (aura != null)
 			{
 				m_targets.Add(target, aura);

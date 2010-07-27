@@ -1204,7 +1204,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (Attacker != null && Victim is NPC)
 			{
-				((NPC)(Victim)).ThreatCollection.AddNew(Attacker);
+				((NPC)(Victim)).ThreatCollection.AddNewIfNotExisted(Attacker);
 			}
 			ReferenceCount--;
 			SpellEffect = null;

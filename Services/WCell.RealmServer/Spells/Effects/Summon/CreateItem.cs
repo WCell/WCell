@@ -3,7 +3,7 @@
  *   file		: CreateItem.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-24 17:50:44 +0100 (sÃ¸, 24 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-24 17:50:44 +0100 (sø, 24 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1216 $
  *
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var templId = Effect.ItemId;
 			templ = ItemMgr.GetTemplate(templId);

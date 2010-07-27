@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

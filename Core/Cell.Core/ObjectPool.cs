@@ -136,7 +136,8 @@ namespace Cell.Core
 		/// Constructor
 		/// </summary>
 		/// <param name="func">Function pointer to the allocation function.</param>
-		public ObjectPool(Func<T> func) : this(func, false)
+		public ObjectPool(Func<T> func)
+			: this(func, false)
 		{
 		}
 
@@ -242,9 +243,9 @@ namespace Cell.Core
 
 				if (obj is WeakReference)
 				{
-				    var robj = ((WeakReference)obj).Target;
-                    if (robj != null)
-                        return robj as T;
+					var robj = ((WeakReference)obj).Target;
+					if (robj != null)
+						return robj as T;
 
 					goto DequeueObj;
 				}
@@ -277,9 +278,9 @@ namespace Cell.Core
 				var robj = obj as WeakReference;
 				if (robj != null)
 				{
-				    var robj2 = robj.Target;
-                    if (robj2 != null)
-                        return robj2;
+					var robj2 = robj.Target;
+					if (robj2 != null)
+						return robj2;
 
 					goto DequeueObj;
 				}

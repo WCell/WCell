@@ -7,9 +7,9 @@ namespace WCell.RealmServer.Spells.Effects
 		public NotImplementedEffect(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
-			if (cast.Caster is Character)
+			if (cast.CasterObject is Character)
 			{
-				(cast.Caster as Character).SendSystemMessage(
+				(cast.CasterObject as Character).SendSystemMessage(
 					"Spell {0} ({1}) has not implemented Effect {2}. Please report this to the developers",
 					cast.Spell.Name, cast.Spell.Id, effect.EffectType);
 			}

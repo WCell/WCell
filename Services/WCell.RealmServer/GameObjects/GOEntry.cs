@@ -4,6 +4,7 @@ using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.Util;
@@ -88,7 +89,7 @@ namespace WCell.RealmServer.GameObjects
 		[NotPersistent]
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)

@@ -102,40 +102,6 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-		#region SendSpellMiss
-		public class SendSpellMissCommand : SubCommand
-		{
-			protected SendSpellMissCommand() { }
-
-			protected override void Initialize()
-			{
-				Init("SpellMiss", "SM");
-				EnglishParamInfo = "<spellId> <0/1> <defaultReason>";
-				EnglishDescription = "Sends a SpellMissLog packet to everyone in the area where you are the caster and everyone within 10y radius is the targets.";
-			}
-
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var spell = trigger.Text.NextEnum(SpellId.None);
-				var doIt = trigger.Text.NextBool();
-				var reason = trigger.Text.NextEnum(CastMissReason.None);
-
-				var objs = trigger.Args.Target.GetObjectsInRadius(10f, ObjectTypes.All, false, 0);
-
-				var misses = new List<CastMiss>();
-				foreach (var obj in objs)
-				{
-					if (obj != trigger.Args.Character)
-					{
-						misses.Add(new CastMiss(obj, reason));
-					}
-				}
-
-				CombatLogHandler.SendSpellMiss(spell, trigger.Args.Character, doIt, misses);
-			}
-		}
-		#endregion
-
 		#region SendBGError
 		public class SendBGErrorCommand : SubCommand
 		{
@@ -286,7 +252,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

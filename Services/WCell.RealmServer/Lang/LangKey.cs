@@ -125,11 +125,4 @@ namespace WCell.RealmServer.Lang
         FeatureNotYetImplemented,
         InvalidClass
 	}
-
-	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>
-	{
-		public TranslatableItem(LangKey key, params object[] args) : base(key, args)
-		{
-		}
-	}
 }

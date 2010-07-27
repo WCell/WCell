@@ -56,20 +56,20 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Correct 3.0.9
 		/// </summary>
-		public static void SendSpellMiss(SpellId spell, WorldObject caster, bool doIt, ICollection<CastMiss> missedTargets)
+		public static void SendSpellMiss(SpellCast cast, bool display, ICollection<CastMiss> missedTargets)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SPELLLOGMISS, 34))
 			{
-				packet.Write((uint)spell);
-				packet.Write(caster.EntityId);
-				packet.Write(doIt);// TODO: test this value. Its a bool that seems to determine whether to display this packet in the combat log
+				packet.Write(cast.Spell.Id);
+				packet.Write(cast.CasterReference.EntityId);
+				packet.Write(display);// TODO: test this value. Its a bool that seems to determine whether to display this packet in the combat log
 				packet.Write(missedTargets.Count);
 				foreach (var miss in missedTargets)
 				{
 					packet.Write(miss.Target.EntityId);
 					packet.Write((byte)miss.Reason);
 				}
-				caster.SendPacketToArea(packet);
+				cast.SendPacketToArea(packet);
 			}
 		}
 
