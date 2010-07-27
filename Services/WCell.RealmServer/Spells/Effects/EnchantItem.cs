@@ -17,6 +17,7 @@
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Items.Enchanting;
 
 namespace WCell.RealmServer.Spells.Effects
@@ -44,7 +45,7 @@ namespace WCell.RealmServer.Spells.Effects
 				log.Error("Spell {0} refers to invalid EnchantmentEntry {1}", Effect.Spell, Effect.MiscValue);
 				failReason = SpellFailedReason.Error;
 			}
-			else if (!enchantEntry.CheckRequirements(m_cast.Caster))
+			else if (!enchantEntry.CheckRequirements(m_cast.CasterUnit))
 			{
 				failReason = SpellFailedReason.MinSkill;
 			}
@@ -69,6 +70,11 @@ namespace WCell.RealmServer.Spells.Effects
 		public override bool HasOwnTargets
 		{
 			get { return false; }
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var goId = (GOEntryId)Effect.MiscValue;
 			var goEntry = GOMgr.GetEntry(goId);
-			var caster = m_cast.Caster;
+			var caster = m_cast.CasterUnit;
 			if (goEntry != null)
 			{
 				GO = goEntry.Spawn(caster, caster);
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 				if (m_cast.IsChanneling)
 				{
-					m_cast.Caster.ChannelObject = GO;
+					m_cast.CasterUnit.ChannelObject = GO;
 				}
 				else if (Effect.Spell.Durations.Min > 0)
 				{

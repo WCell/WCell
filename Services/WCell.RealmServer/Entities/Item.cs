@@ -15,10 +15,11 @@ using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Entities
 {
-	public partial class Item : ObjectBase, IOwned, IWeapon, INamed, ILockable, IQuestHolder, IMountableItem
+	public partial class Item : ObjectBase, IOwned, IWeapon, INamed, ILockable, IQuestHolder, IMountableItem, IContextHandler
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -46,7 +47,7 @@ namespace WCell.RealmServer.Entities
 		protected IProcHandler m_hitProc;
 		protected ItemRecord m_record;
 
-
+		#region CreateItem
 		public static Item CreateItem(uint templateId, Character owner, int amount)
 		{
 			var template = ItemMgr.GetTemplate(templateId);
@@ -101,11 +102,13 @@ namespace WCell.RealmServer.Entities
 			item.LoadItem(record, template);
 			return item;
 		}
+		#endregion
 
 		protected internal Item()
 		{
 		}
 
+		#region Init & Load
 		/// <summary>
 		/// Initializes a new Item
 		/// </summary>
@@ -233,7 +236,9 @@ namespace WCell.RealmServer.Entities
 		protected virtual void OnLoad()
 		{
 		}
+		#endregion
 
+		#region Properties
 		public ItemTemplate Template
 		{
 			get { return m_template; }
@@ -263,7 +268,6 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Checks whether this Item can currently be used
-		/// TODO: Disarm
 		/// </summary>
 		public bool CanBeUsed
 		{
@@ -380,6 +384,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_template.InventorySlotMask; }
 		}
+		#endregion
 
 		/// <summary>
 		/// Called when this Item was added to someone's inventory
@@ -1134,11 +1139,11 @@ namespace WCell.RealmServer.Entities
 				{
 					if (spell.IsAura)
 					{
-						chr.Auras.Cancel(spell);	
+						chr.Auras.Cancel(spell);
 					}
 				}
 			}
-			
+
 			// remove procs
 			if (m_template.HitSpells != null)
 			{
@@ -1221,6 +1226,7 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region Using
 		/// <summary>
 		/// Called whenever an item is used.
 		/// Make sure to only call on Items whose Template has a UseSpell.
@@ -1255,6 +1261,7 @@ namespace WCell.RealmServer.Entities
 				m_template.NotifyUsed(this);
 			}
 		}
+		#endregion
 
 		#region Destroy / Remove
 		/// <summary>
@@ -1339,6 +1346,60 @@ namespace WCell.RealmServer.Entities
 		public override string ToString()
 		{
 			return string.Format("{0}{1} (Templ: {2}, Id: {3})", Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId);
+		}
+
+		public bool IsInContext
+		{
+			get
+			{
+				var owner = Owner;
+				if (owner != null)
+				{
+					var context = owner.ContextHandler;
+					if (context != null)
+					{
+						return context.IsInContext;
+					}
+				}
+				return false;
+			}
+		}
+
+		public void AddMessage(IMessage message)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.AddMessage(message);
+			}
+		}
+
+		public void AddMessage(Action action)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.AddMessage(action);
+			}
+		}
+
+		public bool ExecuteInContext(Action action)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				return owner.ExecuteInContext(action);
+			}
+			return false;
+		}
+
+		public void EnsureContext()
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.EnsureContext();
+			}
 		}
 	}
 }

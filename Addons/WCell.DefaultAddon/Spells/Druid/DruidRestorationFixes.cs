@@ -113,7 +113,7 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var auras = ((Unit)target).Auras;
 			aura = auras[SpellLineId.DruidRejuvenation];
@@ -125,7 +125,7 @@ namespace WCell.Addons.Default.Spells.Druid
 					return SpellFailedReason.TargetAurastate;
 				}
 			}
-			return base.CheckValidTarget(target);
+			return base.InitializeTarget(target);
 		}
 
 		protected override void Apply(WorldObject target)
@@ -152,7 +152,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			var totalSecs = aura.Spell.Durations.Max;
 			var amount = (handler.TotalHeal * secs + totalSecs) / totalSecs;
 
-			((Unit)target).Heal(m_cast.Caster, amount, Effect);
+			((Unit)target).Heal(m_cast.CasterUnit, amount, Effect);
 
 			aura.Cancel();
 		}

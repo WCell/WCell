@@ -82,7 +82,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                 {
                     Effect.BasePoints += Effect.BasePoints / 4;
                 }
-                ((Unit)target).DoSpellDamage(m_cast.Caster, Effect, CalcEffectValue());
+                ((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
                 Effect.BasePoints = oldVal;
             }
 
@@ -111,7 +111,7 @@ namespace WCell.Addons.Default.Spells.Warlock
 
             public override void Apply()
             {
-                var chr = Cast.Caster as Character;
+                var chr = Cast.CasterUnit as Character;
 
                 if(chr != null)
                 {
@@ -126,7 +126,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                 }
             }
 
-            public override SpellFailedReason CheckValidTarget(WorldObject target)
+            public override SpellFailedReason InitializeTarget(WorldObject target)
             {
                 var chr = target as Character;
                 if (chr != null)
@@ -138,7 +138,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                         return SpellFailedReason.CantDoThatRightNow;
                     }
                 }
-                return base.CheckValidTarget(target);
+                return base.InitializeTarget(target);
             }
         }
     }

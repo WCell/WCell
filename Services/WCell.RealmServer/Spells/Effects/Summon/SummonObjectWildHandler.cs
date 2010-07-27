@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Handlers
         {
             var goId = (GOEntryId)Effect.MiscValue;
             var goEntry = GOMgr.GetEntry(goId);
-            var caster = m_cast.Caster;
+            var caster = m_cast.CasterUnit;
             if (goEntry != null)
             {
                 if (Cast.TargetLoc.X != 0)

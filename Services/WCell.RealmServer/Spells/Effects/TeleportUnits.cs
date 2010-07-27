@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Spells.Effects
 			//}
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (!((Unit)target).MayTeleport)
 			{
@@ -63,7 +63,7 @@ namespace WCell.RealmServer.Spells.Effects
 			else
 			{
 				// teleport to given target location
-				var region = m_cast.TargetRegion;
+				var region = m_cast.TargetMap;
 				var pos = m_cast.TargetLoc;
 				var ori = m_cast.TargetOrientation;
 				target.AddMessage(() => ((Unit)target).TeleportTo(region, pos, ori));

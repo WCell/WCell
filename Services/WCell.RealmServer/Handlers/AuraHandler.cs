@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Spells.Auras
 			// If the target was not the caster
 			if (!aura.Flags.HasFlag(AuraFlags.TargetIsCaster))
 			{
-				aura.CasterInfo.CasterId.WritePacked(packet);
+				aura.CasterReference.EntityId.WritePacked(packet);
 			}
 
             if (aura.Flags.HasFlag(AuraFlags.HasDuration))

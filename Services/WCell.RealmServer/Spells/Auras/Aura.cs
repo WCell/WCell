@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Fields
 		public readonly AuraIndexId Id;
 		protected internal AuraCollection m_auras;
-		protected ObjectInfo m_casterInfo;
+		protected ObjectReference m_CasterReference;
 		protected Spell m_spell;
 		protected List<AuraEffectHandler> m_handlers;
 		protected bool m_beneficial;
@@ -67,6 +67,8 @@ namespace WCell.RealmServer.Spells.Auras
 		protected byte m_auraLevel;
 
 		protected AuraRecord m_record;
+
+		private Item m_UsedItem;
 		#endregion
 
 		#region Creation & Init
@@ -78,10 +80,10 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Creates a new Aura
 		/// </summary>
 		/// <param name="auras"></param>
-		/// <param name="casterInfo">Information about who casted</param>
+		/// <param name="casterReference">Information about who casted</param>
 		/// <param name="spell">The spell that this Aura represents</param>
 		/// <param name="handlers">All handlers must have the same AuraUID</param>
-		internal Aura(AuraCollection auras, ObjectInfo casterInfo, Spell spell,
+		internal Aura(AuraCollection auras, ObjectReference casterReference, Spell spell,
 			List<AuraEffectHandler> handlers, byte index, bool beneficial)
 		{
 			m_auras = auras;
@@ -91,9 +93,9 @@ namespace WCell.RealmServer.Spells.Auras
 			Id = spell.GetAuraUID(beneficial);
 
 			m_handlers = handlers;
-			m_casterInfo = casterInfo;
+			m_CasterReference = casterReference;
 			m_index = index;
-			m_auraLevel = (byte)casterInfo.Level;
+			m_auraLevel = (byte)casterReference.Level;
 
 			m_stackCount = (byte)m_spell.StackCount;
 			if (m_stackCount > 0 && Caster is Character)
@@ -105,7 +107,7 @@ namespace WCell.RealmServer.Spells.Auras
 			DetermineFlags();
 		}
 
-		internal Aura(AuraCollection auras, ObjectInfo caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
+		internal Aura(AuraCollection auras, ObjectReference caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
 		{
 			m_record = record;
 			m_auras = auras;
@@ -115,7 +117,7 @@ namespace WCell.RealmServer.Spells.Auras
 			Id = m_spell.GetAuraUID(m_beneficial);
 
 			m_handlers = handlers;
-			m_casterInfo = caster;
+			m_CasterReference = caster;
 			m_index = index;
 			m_auraLevel = (byte)record.Level;
 
@@ -171,7 +173,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			m_auraFlags = m_spell.DefaultAuraFlags;
 
-			if (m_auras.Owner.EntityId == m_casterInfo.CasterId)
+			if (m_auras.Owner.EntityId == m_CasterReference.EntityId)
 			{
 				m_auraFlags |= AuraFlags.TargetIsCaster;
 			}
@@ -262,9 +264,9 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Information about the caster
 		/// </summary>
-		public ObjectInfo CasterInfo
+		public ObjectReference CasterReference
 		{
-			get { return m_casterInfo; }
+			get { return m_CasterReference; }
 		}
 
 		/// <summary>
@@ -274,7 +276,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get
 			{
-				var caster = m_casterInfo.CasterUnit;
+				var caster = m_CasterReference.UnitMaster;
 				if (caster != null && caster.ContextHandler == Owner.ContextHandler)
 				{
 					return caster;
@@ -286,6 +288,19 @@ namespace WCell.RealmServer.Spells.Auras
 		public Unit Owner
 		{
 			get { return m_auras.Owner; }
+		}
+
+		public Item UsedItem
+		{
+			get
+			{
+				if (m_UsedItem != null && m_UsedItem.IsInWorld && m_UsedItem.IsInContext)
+				{
+					return m_UsedItem;
+				}
+				return null;
+			}
+			internal set { m_UsedItem = value; }
 		}
 
 		/// <summary>
@@ -305,7 +320,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				return !m_spell.IsPassive ||
 					m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative) ||
-					m_casterInfo.Caster != m_auras.Owner;
+					m_CasterReference.Object != m_auras.Owner;
 			}
 		}
 
@@ -456,7 +471,6 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get { return m_auraFlags; }
 		}
-
 		#endregion
 
 		#region Start
@@ -474,7 +488,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			else
 			{
-				m_duration = Spell.GetDuration(m_casterInfo, m_auras.Owner);
+				m_duration = Spell.GetDuration(m_CasterReference, m_auras.Owner);
 			}
 
 			SetupTimer();
@@ -650,7 +664,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if (!handler.IsActive)
 						{
 							if (handler.SpellEffect.RequiredShapeshiftMask == 0 ||
-							    (handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
+								(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
 							{
 								handler.IsActive = true;
 							}
@@ -722,21 +736,21 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (m_spell.IsFood || m_spell.IsDrink)
 			{
-				CasterInfo.CasterUnit.Emote(EmoteType.SimpleEat);
+				CasterReference.UnitMaster.Emote(EmoteType.SimpleEat);
 			}
 		}
 
 		/// <summary>
 		/// Add one more application to the stack
 		/// </summary>
-		public void Stack(ObjectInfo caster)
+		public void Stack(ObjectReference caster)
 		{
 			if (IsAdded)
 			{
 				// remove non-periodic effects:
 				RemoveNonPeriodicEffects();
 
-				m_casterInfo = caster;
+				m_CasterReference = caster;
 				if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
@@ -788,7 +802,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				// can only cancel AreaAuras if you are the one causing it or if it can time-out
 				var owner = m_auras.Owner;
-				if (owner.EntityId.Low == CasterInfo.CasterId || Caster == null || Caster.UnitMaster == owner)
+				if (owner.EntityId.Low == CasterReference.EntityId || Caster == null || Caster.UnitMaster == owner)
 				{
 					return owner.CancelAreaAura(m_spell);
 				}
@@ -857,7 +871,7 @@ namespace WCell.RealmServer.Spells.Auras
 				owner.StandState = StandState.Stand;
 			}
 
-			if (owner.EntityId == m_casterInfo.CasterId &&
+			if (owner.EntityId == m_CasterReference.EntityId &&
 				m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade))
 			{
 				if (owner is Character)

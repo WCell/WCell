@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class RegenPercentOfTotalManaHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(ObjectInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 			//if (target.PowerType != WCell.Core.PowerType.Mana) {
 			//    failReason = SpellFailedReason.AlreadyAtFullPower;

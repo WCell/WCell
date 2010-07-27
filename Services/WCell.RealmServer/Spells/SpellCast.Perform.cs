@@ -143,7 +143,7 @@ namespace WCell.RealmServer.Spells
 					var target = m_initialTargets[j];
 					if (target.IsInWorld)
 					{
-						var err = handler.CheckValidTarget(target);
+						var err = handler.InitializeTarget(target);
 						if (err != SpellFailedReason.Ok)
 						{
 							if (!IsAoE)
@@ -191,20 +191,13 @@ namespace WCell.RealmServer.Spells
 		#region Perform
 		private void Perform(float elapsed)
 		{
-			if (!CasterObject.IsInWorld)
-			{
-				Cleanup(true);
-			}
-			else
-			{
-				Perform();
-			}
+			CheckCasterValidity();
+			Perform();
 		}
 
 		/// <summary>
-		/// Does some last checks right before the performing the Cast.
+		/// Does some sanity checks and adjustments right before perform
 		/// </summary>
-		/// <returns></returns>
 		protected SpellFailedReason PrePerform()
 		{
 			// Make sure that there is an Item for Spells that require an Item target
@@ -253,16 +246,18 @@ namespace WCell.RealmServer.Spells
 						((Unit)CasterObject).StandState = StandState.Kneeling;
 					}
 				}
-
-				if (IsInstant && !m_spell.IsPhysicalAbility)
-				{
-					SendCastStart();
-				}
 			}
 
+			if (IsInstant && !m_spell.IsPhysicalAbility)
+			{
+				// send start packet (the logic for this is rather complicated)
+				SendCastStart();
+			}
+
+			// check immunities
 			if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
 			{
-				var hostile = m_spell.IsHarmfulFor(CasterObject, Selected);
+				var hostile = m_spell.IsHarmfulFor(CasterReference, Selected);
 				if (!CheckImmune((Unit)Selected, m_spell, hostile))
 				{
 					Cancel(SpellFailedReason.Immune);
@@ -270,9 +265,9 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
+			// check aura requirements
 			if (m_spell.IsAura)
 			{
-				// check aura requirements
 				if (m_targets.Count == 0 && !IsAoE && !m_spell.IsAreaAura)
 				{
 					return SpellFailedReason.NoValidTargets;
@@ -292,39 +287,47 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// toggle autoshot
-			if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
+			if (CasterUnit != null)
 			{
-				if (Caster.Target == null)
+				if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
 				{
-					Caster.Target = Selected as Unit;
-					if (Caster.Target == null)
+					if (CasterUnit.Target == null)
 					{
-						return SpellFailedReason.BadTargets;
+						CasterUnit.Target = Selected as Unit;
+						if (CasterUnit.Target == null)
+						{
+							return SpellFailedReason.BadTargets;
+						}
 					}
+
+					if (CasterUnit.AutorepeatSpell == m_spell)
+					{
+						// deactivate
+						CasterUnit.AutorepeatSpell = null;
+					}
+					else
+					{
+						// activate
+						CasterUnit.AutorepeatSpell = m_spell;
+						SendCastStart();
+					}
+					CasterUnit.IsFighting = true;
+					CasterUnit.IsInCombat = true;
+					return SpellFailedReason.DontReport;
 				}
 
-				if (Caster.AutorepeatSpell == m_spell)
+				else if (m_spell.Attributes.HasFlag(SpellAttributes.StopsAutoAttack))
 				{
-					// deactivate
-					Caster.AutorepeatSpell = null;
+					CasterUnit.AutorepeatSpell = null;
+					CasterUnit.IsFighting = false;
 				}
-				else
-				{
-					// activate
-					Caster.AutorepeatSpell = m_spell;
-					SendCastStart();
-				}
-				Caster.IsFighting = true;
-				Caster.IsInCombat = true;
-				return SpellFailedReason.DontReport;
 			}
-
-			if (m_spell.Attributes.HasFlag(SpellAttributes.StopsAutoAttack))
+			else if (m_spell.IsChanneled)
 			{
-				// deactivate
-				Caster.AutorepeatSpell = null;
-				Caster.IsFighting = false;
+				// Channel requires CasterUnit
+				return SpellFailedReason.CasterAurastate;
 			}
+
 			return SpellFailedReason.Ok;
 		}
 
@@ -365,9 +368,21 @@ namespace WCell.RealmServer.Spells
 				int delay;
 				if (spell.ProjectileSpeed > 0 && m_targets.Count > 0)
 				{
-					var target = m_targets.First();
-					//var distance = target.GetDistance(Caster) + 10;
-					var distance = target.GetDistance(CasterObject);
+					float distance;
+					if (TriggerAction != null)
+					{
+						distance = TriggerAction.Attacker.GetDist(TriggerAction.Victim);
+					}
+					else if (CasterObject != null)
+					{
+						var target = m_targets.First();
+						//var distance = target.GetDistance(Caster) + 10;
+						distance = target.GetDistance(CasterObject);
+					}
+					else
+					{
+						distance = 0;
+					}
 					delay = (int)((distance * 1000) / spell.ProjectileSpeed);
 				}
 				else
@@ -375,20 +390,20 @@ namespace WCell.RealmServer.Spells
 					delay = 0;
 				}
 
-				var delayedImpact = delay > CasterObject.Region.UpdateDelay / 1000f; // only delay if its noticable
+				var delayedImpact = delay > Map.UpdateDelay / 1000f; // only delay if its noticable
 
 				SpellFailedReason err;
-				if (m_spell.IsPhysicalAbility && !m_spell.IsRangedAbility && CasterObject is Unit)
+				if (m_spell.IsPhysicalAbility && !m_spell.IsRangedAbility && CasterUnit != null)
 				{
 					// will be triggered during the next strike
-					Caster.m_pendingCombatAbility = this;
+					CasterUnit.m_pendingCombatAbility = this;
 
 					// reset SpellCast so it cannot be cancelled anymore
-					Caster.SpellCast = null;
+					CasterUnit.SpellCast = null;
 					if (!m_spell.IsOnNextStrike)
 					{
 						// strike instantly
-						Caster.Strike(GetWeapon());
+						CasterUnit.Strike(GetWeapon());
 					}
 					err = SpellFailedReason.Ok;
 				}
@@ -398,21 +413,18 @@ namespace WCell.RealmServer.Spells
 					if (delayedImpact)
 					{
 						// delayed impact
-						CasterObject.CallDelayed(delay, caster =>
+						if (CasterObject != null)
 						{
-							try
+							CasterObject.CallDelayed(delay, DoDelayedImpact);
+							if (!m_spell.IsChanneled && this == CasterObject.SpellCast)
 							{
-								Impact(true);
+								// reset SpellCast so it cannot be cancelled anymore
+								CasterObject.SpellCast = null;
 							}
-							catch (Exception e)
-							{
-								OnException(e);
-							}
-						});
-						if (!m_spell.IsChanneled && this == CasterObject.SpellCast)
+						}
+						else
 						{
-							// reset SpellCast so it cannot be cancelled anymore
-							CasterObject.SpellCast = null;
+							Map.CallDelayed(delay, () => DoDelayedImpact(null));
 						}
 						err = SpellFailedReason.Ok;
 					}
@@ -426,7 +438,7 @@ namespace WCell.RealmServer.Spells
 				if (m_casting && !spell.IsPhysicalAbility)
 				{
 					// weapon abilities will call this after execution
-					if (CasterObject is Unit)
+					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
@@ -444,6 +456,26 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.Error;
 			}
 		}
+
+		private void DoDelayedImpact(WorldObject obj)
+		{
+			try
+			{
+				var caster = CasterObject;
+				Impact(true);
+				if (caster != null && caster.SpellCast == null && !m_passiveCast)
+				{
+					// recycle spell cast
+					// TODO: Improve spellcast recycling
+					caster.SpellCast = this;
+				}
+			}
+			catch (Exception e)
+			{
+				OnException(e);
+			}
+		}
+
 		#endregion
 
 		#region Impact
@@ -452,7 +484,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason Impact(bool delayed)
 		{
-			if (!m_casting || !CasterObject.IsInWorld)
+			if (!m_casting)
 			{
 				return SpellFailedReason.Ok;
 			}
@@ -461,6 +493,7 @@ namespace WCell.RealmServer.Spells
 			List<CastMiss> missedTargets;
 			if (delayed)
 			{
+				CheckCasterValidity();
 				missedTargets = CheckHit(m_spell);
 			}
 			else
@@ -489,7 +522,7 @@ namespace WCell.RealmServer.Spells
 			DynamicObject dynObj = null;
 			if (m_spell.DOEffect != null)
 			{
-				dynObj = new DynamicObject(this, m_spell.DOEffect.GetRadius(CasterObject));
+				dynObj = new DynamicObject(this, m_spell.DOEffect.GetRadius(CasterReference));
 			}
 
 			if (!m_casting)
@@ -510,15 +543,15 @@ namespace WCell.RealmServer.Spells
 				if (missedTargets.Count > 0)
 				{
 					// TODO: Flash message ontop of missed heads when impact is delayed
-					CombatLogHandler.SendSpellMiss(m_spell.SpellId, CasterObject, true, missedTargets);
+					CombatLogHandler.SendSpellMiss(this, true, missedTargets);
 				}
 
 				missedTargets.Clear();
 				CastMissListPool.Recycle(missedTargets);
 			}
 
-			// channeling
-			if (m_spell.IsChanneled)
+			// open channel
+			if (m_spell.IsChanneled && CasterObject != null)
 			{
 				m_channel = SpellChannel.SpellChannelPool.Obtain();
 				m_channel.m_cast = this;
@@ -527,11 +560,11 @@ namespace WCell.RealmServer.Spells
 				{
 					if (dynObj != null)
 					{
-						Caster.ChannelObject = dynObj;
+						CasterUnit.ChannelObject = dynObj;
 					}
 					else if (Selected != null)
 					{
-						Caster.ChannelObject = Selected;
+						CasterUnit.ChannelObject = Selected;
 						if (Selected is NPC && m_spell.IsTame)
 						{
 							((NPC)Selected).CurrentTamer = CasterObject as Character;
@@ -574,7 +607,7 @@ namespace WCell.RealmServer.Spells
 			{
 				foreach (var target in m_targets)
 				{
-					if (target is Unit && m_spell.IsHarmfulFor(CasterObject, target))
+					if (target is Unit && m_spell.IsHarmfulFor(CasterReference, target))
 					{
 						((Unit)target).Auras.RemoveByFlag(AuraInterruptFlags.OnHostileSpellInflicted);
 					}
@@ -589,9 +622,9 @@ namespace WCell.RealmServer.Spells
 					if (m_spell.IsRangedAbility)
 					{
 						// reset SpellCast so it cannot be cancelled anymore
-						Caster.SpellCast = null;
-						Caster.m_pendingCombatAbility = this;
-						Caster.Strike(GetWeapon());
+						CasterUnit.SpellCast = null;
+						CasterUnit.m_pendingCombatAbility = this;
+						CasterUnit.Strike(GetWeapon());
 					}
 
 					if (!IsChanneling)
@@ -624,7 +657,7 @@ namespace WCell.RealmServer.Spells
 			//var sw1 = Stopwatch.StartNew();
 			TargetCount = m_targets.Count;
 
-			var caster = (Unit)CasterObject;
+			var caster = CasterUnit;
 
 			// consume combopoints
 			if (m_spell.IsFinishingMove)
@@ -645,10 +678,10 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 
-				// gain skill
-				if (CasterObject is Character)
+				if (caster is Character)
 				{
-					var chr = (Character)CasterObject;
+					// gain skill
+					var chr = (Character)caster;
 					if (m_spell.Ability != null && m_spell.Ability.CanGainSkill)
 					{
 						var skill = chr.Skills[m_spell.Ability.Skill.Id];
@@ -658,6 +691,25 @@ namespace WCell.RealmServer.Spells
 						{
 							skillVal += (ushort)m_spell.Ability.Gain(skillVal);
 							skill.CurrentValue = skillVal <= max ? skillVal : max;
+						}
+					}
+
+					// Using a combat ability
+					if (m_spell.IsPhysicalAbility && m_spell.IsRangedAbility)
+					{
+						if (m_spell.IsThrow)
+						{
+							// Each throw reduces Durability by one
+							var item = chr.RangedWeapon as Item;
+							if (item != null)
+							{
+								item.Durability--;
+							}
+						}
+						else
+						{
+							// Firing ranged weapons (still) consumes Ammo
+							chr.Inventory.ConsumeAmmo();
 						}
 					}
 				}
@@ -691,25 +743,6 @@ namespace WCell.RealmServer.Spells
 				UsedItem.OnUse();
 			}
 
-			// Using a combat ability
-			if (m_spell.IsPhysicalAbility && m_spell.IsRangedAbility && CasterObject is Character)
-			{
-				if (m_spell.IsThrow)
-				{
-					// Each throw reduces Durability by one
-					var item = ((Character)CasterObject).RangedWeapon as Item;
-					if (item != null)
-					{
-						item.Durability--;
-					}
-				}
-				else
-				{
-					// Firing ranged weapons (still) consumes Ammo
-					((Character)CasterObject).Inventory.ConsumeAmmo();
-				}
-			}
-
 			if (m_spell.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
 			{
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
@@ -735,7 +768,7 @@ namespace WCell.RealmServer.Spells
 				// consume power (might cancel the cast due to dying)
 				var powerCost = m_spell.CalcPowerCost(caster,
 													  Selected is Unit
-														? ((Unit)Selected).GetLeastResistant(m_spell)
+														? ((Unit)Selected).GetLeastResistantSchool(m_spell)
 														: m_spell.Schools[0]);
 				if (m_spell.PowerType != PowerType.Health)
 				{
@@ -750,11 +783,10 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 			}
-			// here SpellCast might already be cleaned up
-			else if (!m_passiveCast && GodMode && CasterObject is Character)
+			else if (!m_passiveCast && caster is Character)
 			{
 				// clear cooldowns
-				var spells = ((Character)CasterObject).PlayerSpells;
+				var spells = ((Character)caster).PlayerSpells;
 				if (spells != null)
 				{
 					spells.ClearCooldown(m_spell);

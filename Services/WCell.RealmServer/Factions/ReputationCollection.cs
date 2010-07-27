@@ -27,8 +27,6 @@ namespace WCell.RealmServer.Factions
 {
 	/// <summary>
 	/// Represents the Reputation between a Player and all his known factions
-	/// 
-	/// TODO: Load data from DB
 	/// </summary>
 	public class ReputationCollection
 	{

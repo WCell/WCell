@@ -2,21 +2,22 @@
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <DataHolder Name="NpcAiText">
     <DefaultTable>creature_ai_texts</DefaultTable>
-    <Flat Name="Id" Column="entry" Type = "Int32" />    
-	<FlatArray Name="Texts">		
-		<Column Name="content_default"/>
-		<Column Name="content_loc2"/>
-		<Column Name="content_loc3"/>
-		<Column Name="content_loc4"/>
-		<Column Name="content_loc5"/>
-		<Column Name="content_loc6"/>
-		<Column Name="content_loc7"/>    
-		<Column Name="content_loc8"/>    		
+    <Flat Name="Id" Column="entry" Type = "Int32" />
+    <FlatArray Name="Texts">
+      <Column Name="content_default"/>
+      <Column Name="content_loc1"/>
+      <Column Name="content_loc2"/>
+      <Column Name="content_loc3"/>
+      <Column Name="content_loc4"/>
+      <Column Name="content_loc5"/>
+      <Column Name="content_loc6"/>
+      <Column Name="content_loc7"/>
+      <!--<Column Name="content_loc8"/>-->
     </FlatArray>
     <Flat Name="Sound" Column="sound" />
     <Flat Name="Type" Column="type" />
-	<Flat Name="Language" Column="language" />
-	<Flat Name="Emote" Column="emote" />
-	<Flat Name="Comment" Column="comment" Type = "String"/>     
+    <Flat Name="Language" Column="language" />
+    <Flat Name="Emote" Column="emote" />
+    <Flat Name="Comment" Column="comment" Type = "String"/>
   </DataHolder>
 </DataHolders>

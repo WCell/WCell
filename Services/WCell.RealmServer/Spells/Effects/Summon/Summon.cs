@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected virtual void Summon(SpellSummonEntry summonEntry)
 		{
-			var caster = m_cast.Caster;
+			var caster = m_cast.CasterUnit;
 
 			Vector3 targetLoc;
 			if (m_cast.TargetLoc.X != 0)

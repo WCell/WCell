@@ -355,7 +355,7 @@ namespace WCell.RealmServer.Entities
 				m_activePet != null &&
 				m_activePet.CanBeAggroedBy(action.Attacker))
 			{
-				m_activePet.ThreatCollection.AddNew(action.Attacker);
+				m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
 			}
 
 			if (pvp && chr.IsInBattleground)

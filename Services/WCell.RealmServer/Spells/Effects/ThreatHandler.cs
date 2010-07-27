@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (!(target is NPC))
 			{
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var npc = (NPC)target;
 
-			var caster = m_cast.Caster;
+			var caster = m_cast.CasterUnit;
 			if (caster != null)
 			{
 				npc.ThreatCollection[caster] +=

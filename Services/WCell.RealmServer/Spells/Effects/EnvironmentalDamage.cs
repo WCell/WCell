@@ -37,17 +37,14 @@ namespace WCell.RealmServer.Spells.Effects
 			if (dmg < 100)
 			{
 				// percentage
-				dmg = Math.Min(1, (dmg * (int)target.MaxHealth)/100);
+				dmg = Math.Min(1, (dmg * target.MaxHealth) / 100);
 			}
-			target.DoSpellDamage(m_cast.Caster, Effect, dmg);
+			target.DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
 		}
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

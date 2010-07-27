@@ -443,7 +443,7 @@ namespace WCell.RealmServer.AI.Brains
 					// add this constraint, so NPCs don't randomly attack weak neutrals
 					(!(unit is NPC) || ((NPC)unit).ThreatCollection.CurrentAggressor != null || unit.IsHostileWith(owner)))
 				{
-					owner.ThreatCollection.AddNew(unit);
+					owner.ThreatCollection.AddNewIfNotExisted(unit);
 					if (owner.CanReachForCombat(unit))
 					{
 						return false;

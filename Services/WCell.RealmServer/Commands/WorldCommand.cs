@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

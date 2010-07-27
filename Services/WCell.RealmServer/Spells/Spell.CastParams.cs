@@ -415,7 +415,7 @@ namespace WCell.RealmServer.Spells
 				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && caster != null && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -437,7 +437,7 @@ namespace WCell.RealmServer.Spells
 			// Rogues do it from behind
 			if (AttributesExB.HasFlag(SpellAttributesExB.RequiresBehindTarget))
 			{
-				if (!caster.IsBehind(target))
+				if (caster != null && !caster.IsBehind(target))
 				{
 					return SpellFailedReason.NotBehind;
 				}
@@ -451,7 +451,7 @@ namespace WCell.RealmServer.Spells
 			//    }
 			//}
 
-			if (Range.MinDist > 0 &&
+			if (Range.MinDist > 0 && caster != null && 
 				//caster.IsInRadius(target, caster.GetSpellMinRange(Range.MinDist, target)))
 				caster.IsInRadius(target, Range.MinDist))
 			{

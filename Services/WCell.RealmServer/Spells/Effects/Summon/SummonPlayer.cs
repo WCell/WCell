@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var chr = (Character) target;
 			if (chr.SummonRequest != null)
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Character) target).StartSummon(m_cast.Caster);
+			((Character) target).StartSummon(m_cast.CasterUnit);
 		}
 
 		public override ObjectTypes CasterType

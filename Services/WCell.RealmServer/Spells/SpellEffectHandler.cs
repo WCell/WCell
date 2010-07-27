@@ -95,7 +95,7 @@ namespace WCell.RealmServer.Spells
 		/// Invalid targets either lead to Spell-Fail or the target being removed from Target-List.
 		/// </summary>
 		/// <returns>whether the given target is valid.</returns>
-		public virtual SpellFailedReason CheckValidTarget(WorldObject target)
+		public virtual SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			return SpellFailedReason.Ok;
 		}
@@ -111,7 +111,7 @@ namespace WCell.RealmServer.Spells
 				for (CurrentTargetNo = 0; CurrentTargetNo < Targets.Count; CurrentTargetNo++)
 				{
 					var target = Targets[CurrentTargetNo];
-					if (!target.IsInWorld)
+					if (!target.IsInContext)
 					{
 						continue;
 					}
@@ -170,10 +170,10 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected internal void CheckCasterType(ref SpellFailedReason failReason)
 		{
-			if (!m_cast.CasterObject.CheckObjType(CasterType))
+			if (CasterType != ObjectTypes.None && (m_cast.CasterObject == null || !m_cast.CasterObject.CheckObjType(CasterType)))
 			{
 				failReason = SpellFailedReason.Error;
-				log.Warn("Invalid caster type in EffectHandler: " + this);
+				log.Warn("Invalid caster {0} for spell {1} in EffectHandler: {2}", Effect.Spell, m_cast.CasterObject, this);
 			}
 		}
 
@@ -187,9 +187,9 @@ namespace WCell.RealmServer.Spells
 			{
 				// chain target damage comes with diminishing returns
 				var dmgMod = m_cast.Spell.DamageMultipliers[0];
-				if (m_cast.CasterObject is Character)
+				if (m_cast.CasterUnit is Character)
 				{
-					dmgMod = ((Character) m_cast.CasterObject).PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Effect.Spell, dmgMod);
+					dmgMod = ((Character)m_cast.CasterUnit).PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Effect.Spell, dmgMod);
 				}
 				return val = ((float)(Math.Pow(dmgMod, CurrentTargetNo) * val)).RoundInt();
 			}
@@ -198,12 +198,12 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue()
 		{
-			return Effect.CalcEffectValue(m_cast.Caster);
+			return Effect.CalcEffectValue(m_cast.CasterReference);
 		}
 
 		public float GetRadius()
 		{
-			return Effect.GetRadius(m_cast.CasterObject);
+			return Effect.GetRadius(m_cast.CasterReference);
 		}
 		#endregion
 

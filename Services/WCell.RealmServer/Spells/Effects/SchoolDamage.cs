@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).DoSpellDamage(m_cast.Caster, Effect, CalcDamageValue());
+			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue());
 		}
 
 		public override ObjectTypes TargetType
@@ -49,9 +49,19 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var value = ((m_cast.Caster.TotalMeleeAP * CalcDamageValue()) + 50) / 100;
+			var value = ((m_cast.CasterUnit.TotalMeleeAP * CalcDamageValue()) + 50) / 100;
 
-			((Unit)target).DoSpellDamage(m_cast.Caster, Effect, value);
+			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, value);
+		}
+
+		public override ObjectTypes TargetType
+		{
+			get{return ObjectTypes.Unit;}
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

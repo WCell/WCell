@@ -415,7 +415,7 @@ namespace WCell.Addons.Default.Instances
 					m_owner.PlaySound(5779);
 					m_owner.Yell("D'ah! Now you're making me angry!");
 					m_owner.SpellCast.Trigger(smiteStomp);		// aoe spell finds targets automatically
-					m_owner.Auras.AddSelf(smiteBuff, true);		// apply buff to self
+					m_owner.Auras.CreateSelf(smiteBuff, true);		// apply buff to self
 					MoveToChest();
 					phase = 2;
 					return;

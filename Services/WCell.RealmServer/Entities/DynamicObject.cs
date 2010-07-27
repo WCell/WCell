@@ -47,19 +47,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		internal static uint lastId;
-		internal Unit m_creator;
-
-		public Unit Caster
-		{
-			get { return m_creator; }
-		}
 
 		internal DynamicObject()
 		{
 		}
 
 		public DynamicObject(SpellCast cast, float radius)
-			: this(cast.Caster,
+			: this(cast.CasterUnit,
 			cast.Spell.SpellId, radius,
 			cast.Map,
 			cast.TargetLoc)
@@ -71,10 +65,10 @@ namespace WCell.RealmServer.Entities
 			if (creator == null)
 				throw new ArgumentNullException("creator", "creator must not be null");
 
-			Master = m_creator = creator;
+			Master = creator;
 			EntityId = EntityId.GetDynamicObjectId(++lastId);
 			Type |= ObjectTypes.DynamicObject;
-			SetEntityId(DynamicObjectFields.CASTER, Caster.EntityId);
+			SetEntityId(DynamicObjectFields.CASTER, creator.EntityId);
 			SpellId = spellId;
 			Radius = radius;
 			Bytes = 0x01EEEEEE;
@@ -86,12 +80,12 @@ namespace WCell.RealmServer.Entities
 
 		public override int CasterLevel
 		{
-			get { return m_creator.Level; }
+			get { return m_master.Level; }
 		}
 
 		public override string Name
 		{
-			get { return m_creator + "'s " + SpellId + " - Effect"; }
+			get { return m_master + "'s " + SpellId + " - Object"; }
 			set
 			{
 				// does nothing
@@ -103,7 +97,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_creator.Faction;
+				return m_master.Faction;
 			}
 			set
 			{
@@ -115,7 +109,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_creator.Faction != null ? m_creator.Faction.Id : FactionId.None;
+				return m_master.Faction != null ? m_master.Faction.Id : FactionId.None;
 			}
 			set
 			{
@@ -125,17 +119,17 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			return m_creator.IsHostileWith(opponent);
+			return m_master.IsHostileWith(opponent);
 		}
 
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			return m_creator.IsAlliedWith(opponent);
+			return m_master.IsAlliedWith(opponent);
 		}
 
 		public override bool IsFriendlyWith(IFactionMember opponent)
 		{
-			return m_creator.IsFriendlyWith(opponent);
+			return m_master.IsFriendlyWith(opponent);
 		}
 		#endregion
 

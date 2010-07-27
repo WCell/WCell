@@ -1441,12 +1441,12 @@ namespace WCell.RealmServer.Entities
 			}
 			if (selected is Unit)
 			{
-				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistant(spell));
+				return Power >= spell.CalcPowerCost(this, ((Unit)selected).GetLeastResistantSchool(spell));
 			}
 			return Power >= spell.CalcPowerCost(this, spell.Schools[0]);
 		}
 
-		public DamageSchool GetLeastResistant(Spell spell)
+		public DamageSchool GetLeastResistantSchool(Spell spell)
 		{
 			if (spell.Schools.Length == 1)
 			{

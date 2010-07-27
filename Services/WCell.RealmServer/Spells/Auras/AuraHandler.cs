@@ -219,14 +219,14 @@ namespace WCell.RealmServer.Spells.Auras
 		#region EffectHandlers
 
 		public static List<AuraEffectHandler> CreateEffectHandlers(Spell spell,
-			ObjectInfo caster,
+			ObjectReference caster,
 			Unit target,
 			bool beneficial)
 		{
 			return CreateEffectHandlers(spell.AuraEffects, caster, target, beneficial);
 		}
 
-		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, ObjectInfo caster,
+		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, ObjectReference caster,
 			Unit target, bool beneficial)
 		{
 			if (effects == null)
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectInfo caster, Unit target, ref SpellFailedReason failedReason)
+		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, Unit target, ref SpellFailedReason failedReason)
 		{
 			var handler = spellEffect.AuraEffectHandlerCreator();
 

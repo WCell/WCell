@@ -8,13 +8,14 @@
     <!--locales_* tables are mostly empty in UDB -->
     <FlatArray Name="Names">
       <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_gameobject" />
       <Column Name="name_loc2" Table="locales_gameobject" />
       <Column Name="name_loc3" Table="locales_gameobject" />
       <Column Name="name_loc4" Table="locales_gameobject" />
       <Column Name="name_loc5" Table="locales_gameobject" />
       <Column Name="name_loc6" Table="locales_gameobject" />
       <Column Name="name_loc7" Table="locales_gameobject" />
-      <Column Name="name_loc8" Table="locales_gameobject" />
+      <!--<Column Name="name_loc8" Table="locales_gameobject" />-->
     </FlatArray>
     <Flat Name="DefaultScale" Column="size" />
     <Flat Name="Flags" Column="flags" />

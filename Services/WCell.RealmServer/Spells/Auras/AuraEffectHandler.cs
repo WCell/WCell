@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Check whether this handler can be applied to the given target.
 		/// m_aura, as well as some other fields are not set when this method gets called.
 		/// </summary>
-		protected internal virtual void CheckInitialize(ObjectInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal virtual void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 		}
 

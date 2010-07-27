@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		protected override void Apply()
 		{
 			// add aura
-			activeToggleAura = Owner.Auras.AddAura(m_aura.CasterInfo, ToggleAuraSpell, true);
+			activeToggleAura = Owner.Auras.CreateAura(m_aura.CasterReference, ToggleAuraSpell, true);
 		}
 
 		protected override void Remove(bool cancelled)

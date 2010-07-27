@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			((Unit)target).Kill(m_cast.Caster);
+			((Unit)target).Kill(m_cast.CasterUnit);
 		}
 
 		public override ObjectTypes TargetType

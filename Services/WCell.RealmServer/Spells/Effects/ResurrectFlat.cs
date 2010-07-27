@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells.Effects
 				((Unit)target).Health = CalcEffectValue();
 				if (((Unit)target).PowerType == PowerType.Mana)
 				{
-					((Unit)target).Energize(m_cast.Caster, Effect.MiscValue, Effect);
+					((Unit)target).Energize(m_cast.CasterUnit, Effect.MiscValue, Effect);
 				}
 			}
 			else if (target is Corpse)

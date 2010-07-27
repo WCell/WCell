@@ -56,11 +56,4 @@ namespace WCell.RealmServer.Lang
 		GodModeIsActivated,
         FeatureNotYetImplemented
 	}
-
-	public class TranslatableItem : Util.Lang.TranslatableItem<LangKey>
-	{
-		public TranslatableItem(LangKey key, params object[] args) : base(key, args)
-		{
-		}
-	}
 }

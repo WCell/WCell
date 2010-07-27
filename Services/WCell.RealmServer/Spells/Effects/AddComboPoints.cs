@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 		/// </summary>
 		protected override void Apply(WorldObject target)
 		{
-			m_cast.Caster.ModComboState((Unit)target, CalcEffectValue());
+			m_cast.CasterUnit.ModComboState((Unit)target, CalcEffectValue());
 		}
 
 		public override ObjectTypes TargetType

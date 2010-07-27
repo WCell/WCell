@@ -99,7 +99,7 @@ namespace WCell.RealmServer.Spells
 				else
 				{
 					m_ticks = m_maxTicks - (timeLeft / m_amplitude);
-					SpellHandler.SendChannelUpdate(m_cast.CasterObject, (uint)timeLeft);
+					SpellHandler.SendChannelUpdate(m_cast, (uint)timeLeft);
 				}
 			}
 		}
@@ -136,6 +136,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Opens this SpellChannel. 
 		/// Will be called by SpellCast class.
+		/// Requires an active Caster.
 		/// </summary>
 		internal void Open(List<SpellEffectHandler> channelHandlers, List<IAura> auras)
 		{
@@ -148,7 +149,7 @@ namespace WCell.RealmServer.Spells
 				m_auras = auras;
 
 				var spell = m_cast.Spell;
-				var caster = m_cast.Caster;
+				var caster = m_cast.CasterUnit;
 
 				m_duration = spell.Durations.Max;
 				m_amplitude = spell.ChannelAmplitude;
@@ -167,7 +168,7 @@ namespace WCell.RealmServer.Spells
 				m_channelHandlers = channelHandlers;
 
 				// get duration again, this time with modifiers
-				m_duration = spell.GetDuration(caster.CasterInfo);
+				m_duration = spell.GetDuration(caster.SharedReference);
 				if (m_amplitude < 1)
 				{
 					// only one tick
@@ -175,7 +176,7 @@ namespace WCell.RealmServer.Spells
 				}
 
 				m_until = now + m_duration;
-				SpellHandler.SendChannelStart(caster, spell.SpellId, m_duration);
+				SpellHandler.SendChannelStart(m_cast, spell.SpellId, m_duration);
 
 
 				if (m_channeling)
@@ -282,7 +283,7 @@ namespace WCell.RealmServer.Spells
 				return;
 			}
 
-			if (m_cast.Caster.ChannelObject == owner)
+			if (m_cast.CasterUnit.ChannelObject == owner)
 			{
 				// The Aura on our target has been removed: Cancel Channel
 				m_cast.Cancel(SpellFailedReason.DontReport);
@@ -310,7 +311,7 @@ namespace WCell.RealmServer.Spells
 			}
 			m_channeling = false;
 
-			var caster = m_cast.Caster;
+			var caster = m_cast.CasterUnit;
 			var handlers = m_channelHandlers;
 			foreach (var handler in handlers)
 			{
@@ -337,7 +338,7 @@ namespace WCell.RealmServer.Spells
 
 			if (cancelled)
 			{
-				SpellHandler.SendChannelUpdate(caster, 0);
+				SpellHandler.SendChannelUpdate(m_cast, 0);
 			}
 
 			var obj = caster.ChannelObject;
