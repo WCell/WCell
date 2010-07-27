@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Commands
 						if (!region.IsSpawned)
 						{
 							region.SpawnRegion();
-							trigger.Reply(LangKey.CmdRegionSpawnResponse + region.ToString());
+							trigger.Reply(LangKey.CmdRegionSpawnResponse, region.ToString());
 						}
 					});
 				}
@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Commands
 					region.AddMessage(() =>
 					{
 						region.SpawnRegion();
-						trigger.Reply(LangKey.CmdRegionSpawnResponse3 + region.ToString());
+						trigger.Reply(LangKey.CmdRegionSpawnResponse3, region);
 					});
 				}
 			}
@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Commands
 				region.AddMessage(() =>
 				{
 					region.RemoveObjects();
-					trigger.Reply(LangKey.CmdRegionClearResponse + region.ToString());
+					trigger.Reply(LangKey.CmdRegionClearResponse, region.ToString());
 				});
 			}
 		}

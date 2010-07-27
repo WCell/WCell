@@ -331,8 +331,8 @@ namespace WCell.RealmServer.Commands
 						if (rgn == null)
 						{
 							trigger.Reply("Invalid Destination: " + destName);
+							return;
 						}
-						return;
 					}
 					else
 					{
