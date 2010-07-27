@@ -19,6 +19,7 @@ using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Skills;
 using WCell.Util.Commands;
 
@@ -31,7 +32,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("Skill", "Skills", "Sk");
-			EnglishDescription = "Used for manipulation of Skills.";
+			Description = new TranslatableItem(LangKey.CmdSkillDescription);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -50,8 +51,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				EnglishParamInfo = "<skill> [<value> [<maxValue>]]";
-				EnglishDescription = "Sets the given Skill to the given values (or uses 1 by default)";
+				ParamInfo = new TranslatableItem(LangKey.CmdSkillSetParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSkillSetDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -66,24 +67,24 @@ namespace WCell.RealmServer.Commands
 					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
 					skill.CurrentValue = (ushort)amount;
 					skill.MaxValue = (ushort)max;
-					trigger.Reply("Skill {0} set to {1} (Max: {2}).", skillLine, amount, max);
+					trigger.Reply(LangKey.CmdSkillSetResponse, skillLine, amount, max);
 				}
 				else
 				{
-					trigger.Reply("Skill {0} doesn't exist.", id);
+					trigger.Reply(LangKey.CmdSkillSetError, id);
 				}
 			}
 		}
 
-		public class LeanCommand : SubCommand
+		public class LearnCommand : SubCommand
 		{
-			protected LeanCommand() { }
+			protected LearnCommand() { }
 
 			protected override void Initialize()
 			{
 				Init("Learn", "L");
-				EnglishParamInfo = "[-r] <skill> [<amount>]";
-				EnglishDescription = "Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.";
+				ParamInfo = new TranslatableItem(LangKey.CmdSkillLearnParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSkillLearnDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -100,7 +101,7 @@ namespace WCell.RealmServer.Commands
 					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
 					skill.CurrentValue = amount > 0 ? (ushort)amount : (ushort)skillLine.MaxValue;
 					skill.MaxValue = (ushort)skillLine.MaxValue;
-					trigger.Reply("Skill {0} set to {1}.", skillLine, amount > 0 ? amount : skillLine.MaxValue);
+					trigger.Reply(LangKey.CmdSkillLearnResponse, skillLine, amount > 0 ? amount : skillLine.MaxValue);
 					if (mod == "r")
 					{
 						// add bags
@@ -134,7 +135,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					trigger.Reply("Skill {0} doesn't exist.", id);
+					trigger.Reply(LangKey.CmdSkillLearnError, id);
 				}
 			}
 		}
@@ -147,8 +148,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Tier", "SetTier", "ST");
-				EnglishParamInfo = "<skill> <tier>";
-				EnglishDescription = "Set the given Skill to the given Tier";
+				ParamInfo = new TranslatableItem(LangKey.CmdSkillTierParamInfo);
+				Description = new TranslatableItem(LangKey.CmdSkillTierDescription);;
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -162,16 +163,16 @@ namespace WCell.RealmServer.Commands
 					if (skillLine != null)
 					{
 						var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, tier, true);
-						trigger.Reply("Skill {0} set to {1} (Max: {2}).", skill, skill.CurrentValue, skill.MaxValue);
+						trigger.Reply(LangKey.CmdSkillTierResponse, skill, skill.CurrentValue, skill.MaxValue);
 					}
 					else
 					{
-						trigger.Reply("Skill {0} doesn't exist.", id);
+						trigger.Reply(LangKey.CmdSkillTierError1, id);
 					}
 				}
 				else
 				{
-					trigger.Reply("Invalid Tier-number");
+					trigger.Reply(LangKey.CmdSkillTierError2);
 				}
 			}
 		}

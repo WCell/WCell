@@ -22,11 +22,6 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		List<Aura> shapeshiftRestrictedAuras;
 
-		/// <summary>
-		/// Set of handlers to be updated about equipping/unequipping of Items
-		/// </summary>
-		private List<ItemEquipmentEventAuraHandler> itemEquipmentHandlers;
-
 		public PlayerAuraCollection(Character owner)
 			: base(owner)
 		{

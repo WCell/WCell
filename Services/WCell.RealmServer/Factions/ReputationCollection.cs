@@ -393,5 +393,17 @@ namespace WCell.RealmServer.Factions
                 FactionHandler.SendVisible(m_owner.Client, reputationIndex);
             }
         }
+
+        /// <summary>
+        /// Increases or Decreases reputation with the given faction.
+        /// </summary>
+        /// <param name="factionId">Faction Id.</param>
+        /// <param name="value">Amount to add or decrease</param>
+        /// <returns></returns>
+        public Reputation GainReputation(FactionId factionId, int value)
+        {
+            value = value + (int)Math.Round(value * m_owner.ReputationGainModifierPercent / 100.0);
+            return ModValue(factionId, value);
+        }
 	} 
 }

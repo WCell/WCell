@@ -192,6 +192,7 @@
     <Compile Include="Lang\LangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />
@@ -244,6 +245,7 @@
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModReputationGainHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpeedMountedFlightHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
     <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />

@@ -53,7 +53,8 @@
     </NestedArray>
     <NestedArray Name="RewardReputations">
       <Flat Name="Faction" Pattern="RewRepFaction{#}" Offset="1" />
-      <Flat Name="Value" Pattern="RewRepValue{#}" Offset="1" />
+      <Flat Name="ValueId" Pattern="RewRepValueId{#}" Offset="1" />
+	  <Flat Name="Value" Pattern="RewRepValue{#}" Offset="1" />
     </NestedArray>
     <!--http://wiki.udbforums.org/index.php/Quest_template#RewOrReqMoney-->
     <Flat Name="RewMoney" Column="RewOrReqMoney" />
