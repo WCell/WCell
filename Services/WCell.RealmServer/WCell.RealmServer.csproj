@@ -191,6 +191,7 @@
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
     <Compile Include="Lang\LangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
+    <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />

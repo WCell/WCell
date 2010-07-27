@@ -58,6 +58,11 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public static readonly QuestXPInfo[] QuestXpInfos = new QuestXPInfo[200];
 
+        /// <summary>
+        /// The Reputation level that is used to deteminate the reputation reward upon quest completion.
+        /// </summary>
+        public static readonly QuestRewRepInfo[] QuestRewRepInfos = new QuestRewRepInfo[2];
+
 		/// <summary>
 		/// Amount of levels above the Character level at which a player is not allowed to do the Quest
 		/// </summary>
@@ -139,7 +144,8 @@ namespace WCell.RealmServer.Quests
 		{
 			if (!Loaded)
 			{
-				new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile("QuestXP.dbc"));
+                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile("QuestXP.dbc"));
+                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile("QuestFactionReward.dbc"));
 
 				Templates = new QuestTemplate[30000];
 

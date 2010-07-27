@@ -36,6 +36,8 @@ namespace WCell.RealmServer.Lang
 		LocaleSet,
 		UnableToSetUserLocale,
 
+        // #######################################################################
+        // Spell Commands
         CmdSpellDescription,
         CmdSpellAddDescription,
         CmdSpellAddParamInfo,
@@ -62,6 +64,46 @@ namespace WCell.RealmServer.Lang
         CmdSpellVisualParamInfo,
         CmdSpellVisualError,
         CmdSpellNotExists,
+
+        // ########################################################################
+        // Skill Commands
+        CmdSkillDescription,
+        CmdSkillSetParamInfo,
+        CmdSkillSetDescription,
+        CmdSkillSetResponse,
+        CmdSkillSetError,
+        CmdSkillLearnParamInfo,
+        CmdSkillLearnDescription,
+        CmdSkillLearnResponse,
+        CmdSkillLearnError,
+        CmdSkillTierParamInfo,
+        CmdSkillTierDescription,
+        CmdSkillTierResponse,
+        CmdSkillTierError1,
+        CmdSkillTierError2,
+
+        // ########################################################################
+        // Region Commands
+        CmdRegionDescription,
+        CmdRegionSpawnParamInfo,
+        CmdRegionSpawnDescription,
+        CmdRegionSpawnResponse,
+        CmdRegionSpawnResponse1,
+        CmdRegionSpawnError1,
+        CmdRegionSpawnError2,
+        CmdRegionSpawnError3,
+        CmdRegionSpawnResponse2,
+        CmdRegionSpawnError4,
+        CmdRegionSpawnError5,
+        CmdRegionSpawnResponse3,
+        CmdRegionClearParamInfo,
+        CmdRegionClearDescription,
+        CmdRegionClearError1,
+        CmdRegionClearError2,
+        CmdRegionClearResponse,
+        CmdRegionUpdateDescription,
+        CmdRegionListDescription,
+        CmdRegionListResponse,
 
 		// ########################################################################
 		// Gossips
