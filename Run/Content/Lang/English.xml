@@ -196,6 +196,77 @@
 	<!-- End of Skill Commands   --
 	------------------------------->	
 	
+	<!-- 	Region Commands		--
+	------------------------------->
+	<Item Key="CmdRegionDescription">
+	  <Value>Provides Commands to manipulate Regions and their content.</Value>
+	</Item>
+	
+	<Item Key="CmdRegionSpawnParamInfo">
+	  <Value>[-a|&lt;name&gt;]</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnDescription">
+	  <Value>Spawns GOs and NPCs in the current (or specified) region. 
+		-a switch spawns all active Regions.
+		(Only used for development purposes where the regions arent spawned automatically.)</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnResponse">
+	  <Value>Spawned region </Value>
+	</Item>
+	<Item Key="CmdRegionSpawnResponse1">
+	  <Value>All regions spawned.</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnError1">
+	  <Value>Invalid Region.</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnError2">
+	  <Value>You did not specify the Region to be spawned.</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnError3">
+	  <Value>Region is already spawned.</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnResponse2">
+	  <Value>Spawning {0}...</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnError4">
+	  <Value>No GOs will be spawned (Use 'Load GOs' before spawning)</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnError5">
+	  <Value>No NPCs will be spawned (Use 'Load NPCs' before spawning)</Value>
+	</Item>
+	<Item Key="CmdRegionSpawnResponse3">
+	  <Value>Spawned region </Value>
+	</Item>
+	
+	<Item Key="CmdRegionClearParamInfo">
+	  <Value>[&lt;name&gt;]</Value>
+	</Item>
+	<Item Key="CmdRegionClearDescription">
+	  <Value>Removes all objects from the current or given Region.</Value>
+	</Item>
+	<Item Key="CmdRegionClearError1">
+	  <Value>Invalid Region.</Value>
+	</Item>
+	<Item Key="CmdRegionClearError2">
+	  <Value>You did not specify a Region to be cleared.</Value>
+	</Item>
+	<Item Key="CmdRegionClearResponse">
+	  <Value>Cleared Region </Value>
+	</Item>
+	
+	<Item Key="CmdRegionUpdateDescription">
+	  <Value>Toggles region updates in all Regions on or off</Value>
+	</Item>
+	
+	<!-- End of Region Commands   --
+	------------------------------->	
+	
+	<Item Key="CmdRegionListDescription">
+	  <Value>Lists active regions</Value>
+	</Item>
+	<Item Key="CmdRegionListResponse">
+	  <Value>Active Regions: </Value>
+	</Item>
     <Item Key="GossipOptionTrainer">
       <Value>Train me...</Value>
     </Item>
