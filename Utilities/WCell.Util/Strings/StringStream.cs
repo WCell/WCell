@@ -238,6 +238,15 @@ namespace WCell.Util.Strings
 			return defaultVal;
 		}
 
+		public char PeekChar()
+		{
+			if (!HasNext)
+			{
+				return '\0';
+			}
+			return str[pos];
+		}
+
 		public char NextChar()
 		{
 			if (!HasNext)

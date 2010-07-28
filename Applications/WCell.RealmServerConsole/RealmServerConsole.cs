@@ -129,9 +129,13 @@ namespace WCell.RealmServerConsole
 							}
 							else
 							{
-								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger, true,
-									OnExecuted,
-									OnFail);
+								bool dbl;
+								RealmCommandHandler.ConsumeCommandPrefix(text, out dbl);
+								DefaultTrigger.Args.Double = dbl;
+
+								RealmCommandHandler.Instance.ExecuteInContext(DefaultTrigger,
+								                                              OnExecuted,
+								                                              OnFail);
 							}
 						}
 					}
