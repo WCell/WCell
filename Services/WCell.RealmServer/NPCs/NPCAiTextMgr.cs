@@ -78,7 +78,7 @@ namespace WCell.RealmServer.NPCs
         {
             if (_entriesLoaded)
             {
-                RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCAiTextMgr));
+                //RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCAiTextMgr));
             }
         }
 

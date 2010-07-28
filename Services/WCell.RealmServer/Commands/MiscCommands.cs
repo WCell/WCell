@@ -179,14 +179,17 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public override bool RequiresContext
-		{
-			get { return true; }
-		}
-
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			GetAndReply(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => GetAndReply(trigger, obj));
+			}
+			else
+			{
+				GetAndReply(trigger, obj);
+			}
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -244,11 +247,6 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public override bool RequiresContext
-		{
-			get { return true; }
-		}
-
 		protected override void Initialize()
 		{
 			Init("Mod", "M");
@@ -258,7 +256,15 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			ModProp(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => ModProp(trigger, obj));
+			}
+			else
+			{
+				ModProp(trigger, obj);
+			}
 		}
 
 		public static void ModProp(CmdTrigger<RealmServerCmdArgs> trigger, object target)
@@ -351,11 +357,6 @@ namespace WCell.RealmServer.Commands
 		public override RoleStatus RequiredStatusDefault
 		{
 			get { return RoleStatus.Admin; }
-		}
-
-		public override bool RequiresContext
-		{
-			get { return true; }
 		}
 
 		protected override void Initialize()
