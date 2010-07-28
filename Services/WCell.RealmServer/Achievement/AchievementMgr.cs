@@ -10,5 +10,9 @@ namespace WCell.RealmServer.Achievement
 	/// </summary>
 	public static class AchievementMgr
 	{
+        public static Dictionary<uint, AchievementEntry> AchievementEntries = new Dictionary<uint, AchievementEntry>();
+
+        public static Dictionary<uint, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<uint, AchievementCategoryEntry>();
+
 	}
 }

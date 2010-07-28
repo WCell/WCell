@@ -184,6 +184,10 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Achievement\AchievementCategoryEntry.cs" />
+    <Compile Include="Achievement\AchievementCollection.cs" />
+    <Compile Include="Achievement\AchievementProgressRecord.cs" />
+    <Compile Include="Achievement\AchievementRecord.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
@@ -243,6 +247,7 @@
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDeflectChanceHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
     <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModQuestXpPctHandler.cs" />

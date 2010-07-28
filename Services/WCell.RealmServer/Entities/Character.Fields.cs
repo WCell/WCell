@@ -57,6 +57,7 @@ using WCell.Core;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
+using WCell.RealmServer.Achievement;
 
 namespace WCell.RealmServer.Entities
 {
@@ -107,6 +108,8 @@ namespace WCell.RealmServer.Entities
 		/// All talents of this Character
 		/// </summary>
 		protected TalentCollection m_talents;
+
+	    protected AchievementCollection m_achievements;
 
 		protected PlayerInventory m_inventory;
 
