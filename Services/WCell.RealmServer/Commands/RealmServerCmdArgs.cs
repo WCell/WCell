@@ -190,13 +190,16 @@ namespace WCell.RealmServer.Commands
 
 		private void SetTarget()
 		{
-			if (Double && Character != null)
+			if (Character != null)
 			{
-				m_target = Character.Target;
-			}
-			else
-			{
-				m_target = Character;
+				if (Double)
+				{
+					m_target = Character.Target;
+				}
+				else
+				{
+					m_target = Character;
+				}
 			}
 		}
 

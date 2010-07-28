@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Commands
 			else if (trigger.Text.HasNext)
 			{
 				object propHolder;
-				var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, trigger.Text.NextWord(),
+				var prop = ReflectUtil.Instance.GetProp(trigger.Args.Role, target, trigger.Text.NextWord(),
 					target.GetType(), out propHolder);
 
 				SetProp(propHolder, prop, trigger);
@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Commands
 
 		public static void SetProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.Role))
 			{
 				var expr = trigger.Text.Remainder.Trim();
 				if (expr.Length == 0)
@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Commands
 				var propName = trigger.Text.NextWord();
 				object val;
 
-				if (ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val))
+				if (ReflectUtil.Instance.GetPropValue(trigger.Args.Role, target, ref propName, out val))
 				{
 					trigger.Reply("{0} is: {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
 				}
@@ -228,7 +228,7 @@ namespace WCell.RealmServer.Commands
 			var propName = trigger.Text.NextWord();
 			object val;
 
-			ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val);
+			ReflectUtil.Instance.GetPropValue(trigger.Args.Role, target, ref propName, out val);
 			return val;
 		}
 	}
@@ -265,7 +265,7 @@ namespace WCell.RealmServer.Commands
 		{
 			var accessName = trigger.Text.NextWord();
 			object propHolder;
-			var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, accessName,
+			var prop = ReflectUtil.Instance.GetProp(trigger.Args.Role, target, accessName,
 													 target.GetType(), out propHolder);
 
 			ModProp(propHolder, prop, trigger);
@@ -273,7 +273,7 @@ namespace WCell.RealmServer.Commands
 
 		public static void ModProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.Role))
 			{
 				var exprType = prop.GetVariableType();
 				if (!exprType.IsInteger())
