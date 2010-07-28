@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(qt.ObjectiveMaxReputation.Value);				//  (#10)
 
 				pckt.Write(qt.FollowupQuestId);
-                pckt.Write(qt.CalcRewardXp(chr.Level));										// since 3.3
+                pckt.Write(qt.CalcRewardXp(chr));										// since 3.3
 
 				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
@@ -759,7 +759,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				pckt.Write(qt.Id);
 
-				pckt.Write(qt.CalcRewardXp(chr.Level));
+				pckt.Write(qt.CalcRewardXp(chr));
 				pckt.Write(qt.RewMoney); // maybe fix up with max level
 				pckt.Write(qt.BonusHonor);
 				pckt.Write(qt.RewardTalents);

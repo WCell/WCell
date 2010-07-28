@@ -323,7 +323,7 @@ namespace WCell.Constants.Spells
 		/// Used exactly like ModSpellHitChance
 		/// </summary>
 		ModSpellHitChance2 = 199,
-		ModXpPct = 200,
+		ModKillXpPct = 200,
 		Fly = 201,
 		/// <summary>
 		/// Misc = 2: Finishing moves
@@ -530,7 +530,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Always with ModXpPct (no apparent effect)
 		/// </summary>
-		Aura_291_Unused = 291,
+		ModQuestXpPct = 291,
 		Aura_292 = 292,
 		Aura_293 = 293,
         Aura_294 = 294,

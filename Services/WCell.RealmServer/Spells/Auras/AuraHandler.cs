@@ -205,6 +205,9 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();
             EffectHandlers[(int)AuraType.ModSpeedMountedFlight] = () => new ModSpeedMountedFlightHandler();
             EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();
+            EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();
+            EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();
+            
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

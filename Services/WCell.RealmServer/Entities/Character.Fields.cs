@@ -671,6 +671,10 @@ namespace WCell.RealmServer.Entities
 
         public int ReputationGainModifierPercent { get; set; }
 
+        public int KillExperienceGainModifierPercent { get; set; }
+
+        public int QuestExperienceGainModifierPercent { get; set; }
+
 		#region CombatRatings
 
 		/// <summary>

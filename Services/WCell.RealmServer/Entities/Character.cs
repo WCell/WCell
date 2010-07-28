@@ -555,7 +555,7 @@ namespace WCell.RealmServer.Entities
 			// Generate the message to send
 			var message = string.Format("{0} dies, you gain {1} experience.", killed.Name, experience);
 
-			XP += experience;
+			XP += experience + (experience*KillExperienceGainModifierPercent/100);
 			if (gainRest && RestXp > 0)
 			{
 				var bonus = Math.Min(RestXp, experience);
@@ -586,7 +586,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="gainRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
 		public void GainXp(int experience, bool gainRest)
 		{
-			XP += experience;
+            XP += experience + (experience * KillExperienceGainModifierPercent / 100);
 			if (gainRest && RestXp > 0)
 			{
 				var bonus = Math.Min(RestXp, experience);
