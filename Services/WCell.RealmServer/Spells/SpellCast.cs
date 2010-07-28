@@ -623,8 +623,11 @@ namespace WCell.RealmServer.Spells
 			if (TargetFlags.HasAnyFlag(SpellTargetFlags.SourceLocation))
 			{
 				Map.GetObject(packet.ReadPackedEntityId());		// since 3.2.0
-				SourceLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+				//SourceLoc = new Vector3(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
 			}
+
+			SourceLoc = CasterObject.Position;
+
 			// 0x40
 			if (TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
 			{
@@ -1456,21 +1459,27 @@ namespace WCell.RealmServer.Spells
 				TriggerAction = action;
 			}
 
-			ValidateAndTrigger(spell, triggerOwner, action);
+			ValidateAndTrigger(spell, triggerOwner, null, action);
 		}
 
 		public void ValidateAndTrigger(Spell spell, WorldObject triggerOwner, WorldObject target, IUnitAction action = null)
 		{
 			WorldObject[] targets;
 
+			if (triggerOwner == null)
+			{
+				LogManager.GetCurrentClassLogger().Warn("triggerOwner is null when trying to proc spell: {0} (target: {1})", spell, target);
+				return;
+			}
+
+			SourceLoc = triggerOwner.Position;
 			if (spell.CasterIsTarget || !spell.HasTargets)
 			{
 				targets = new[] { triggerOwner };
 			}
 			else if (target != null)
 			{
-			// TODO: Correct target handling
-				if (spell.IsAreaSpell || 
+				if (spell.IsAreaSpell ||
 					(spell.IsHarmfulFor(CasterReference, target)))
 				{
 					targets = null;

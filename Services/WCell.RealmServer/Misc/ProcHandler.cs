@@ -297,7 +297,7 @@ namespace WCell.RealmServer.Misc
 		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
 		{
 			//if (triggerer != null)
-			creator.SpellCast.ValidateAndTrigger(Spell, triggerer, action);
+			creator.SpellCast.ValidateAndTrigger(Spell, creator, triggerer, action);
 			return false;
 		}
 	}

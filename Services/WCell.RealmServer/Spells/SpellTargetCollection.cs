@@ -284,7 +284,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.AllEnemiesAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.AllEnemiesInArea] = new TargetDefinition(
@@ -302,7 +302,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.AllPartyAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 
 			// Seems to be bogus: Often used together with AllEnemiesAroundCaster
@@ -317,11 +317,11 @@ namespace WCell.RealmServer.Spells
 			// Odd: Mostly in combination with LocationToSummon and TeleportLocation
 			// The only spell that has this with a negative effect is: Goblin Mortar (Id: 13238, Target: Default)
 			targetHandlers[(int)ImplicitTargetType.AllTargetableAroundLocationInRadiusOverTime] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.AreaEffectPartyAndClass] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsSamePartyAndClass);
 
 			//targetHandlers.Add(ImplicitTargetType.BehindTargetLocation,
@@ -379,15 +379,15 @@ namespace WCell.RealmServer.Spells
 			// ImplicitTargetType.HeartstoneLocation
 
 			targetHandlers[(int)ImplicitTargetType.InFrontOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			targetHandlers[(int)ImplicitTargetType.ConeInFrontOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			targetHandlers[(int)ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					null);
 
 			//targetHandlers[(int)ImplicitTargetType.LocationInFrontCaster] = new TargetDefinition(
@@ -446,7 +446,7 @@ namespace WCell.RealmServer.Spells
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.PartyAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.ScriptedOrSingleTarget] = new TargetDefinition(
@@ -482,7 +482,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.TargetAtOrientationOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			// ImplicitTargetType.TargetForVisualEffect
@@ -507,7 +507,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.Tranquility] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 		}
 		#endregion
@@ -711,26 +711,19 @@ namespace WCell.RealmServer.Spells.Extensions
 		/// <param name="targets"></param>
 		/// <param name="filter"></param>
 		/// <param name="failReason"></param>
-		public static void AddAreaCaster(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
+		public static void AddAreaSource(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			AddAreaCaster(targets, filter, ref failReason, targets.FirstHandler.GetRadius());
+			AddAreaSource(targets, filter, ref failReason, targets.FirstHandler.GetRadius());
 		}
 
-		public static void AddAreaCaster(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason, float radius)
+		public static void AddAreaSource(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason, float radius)
 		{
-			var caster = targets.Cast.CasterObject;
-			if (caster == null)
-			{
-				log.Warn("Invalid SpellCast - Tried to add objects in area around caster, but no Caster present: {0}", targets.Cast);
-				failReason = SpellFailedReason.Error;
-				return;
-			}
-			targets.AddTargetsInArea(caster.Position, filter, radius);
+			targets.AddTargetsInArea(targets.Cast.SourceLoc, filter, radius);
 		}
 
 		public static void AddAreaSrc(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			AddAreaCaster(targets, filter, ref failReason);
+			AddAreaSource(targets, filter, ref failReason);
 		}
 
 		public static void AddAreaDest(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
@@ -777,7 +770,7 @@ namespace WCell.RealmServer.Spells.Extensions
 					// For NPCs: Add all friendly minions around (radius 30 if no radius is set?)
 					radius = 30;
 				}
-				targets.AddAreaCaster(IsFriendly, ref failReason, radius);
+				targets.AddAreaSource(IsFriendly, ref failReason, radius);
 			}
 		}
 
