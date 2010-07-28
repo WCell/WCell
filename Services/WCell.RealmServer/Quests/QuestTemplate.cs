@@ -997,7 +997,7 @@ namespace WCell.RealmServer.Quests
 				}
 				else
 				{
-					receiver.GainXp(CalcRewardXp(receiver.Level), false);
+					receiver.GainXp(CalcRewardXp(receiver), false);
 				}
 			}
 
@@ -1027,10 +1027,12 @@ namespace WCell.RealmServer.Quests
             return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
         }
 
-        public int CalcRewardXp(int playerLevel)
+        public int CalcRewardXp(Character character)
         {
             var fullxp = QuestMgr.QuestXpInfos[Level].RewXP[RewXPId-1];
-        	//float fullxp = playerLevel*1000;
+            fullxp = fullxp + (fullxp*character.QuestExperienceGainModifierPercent/100);
+
+            int playerLevel = character.Level;
             
             if (playerLevel <= Level + 5)
             {

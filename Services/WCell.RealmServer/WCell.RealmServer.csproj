@@ -258,6 +258,7 @@
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
     <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModXpPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
     <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
