@@ -9,11 +9,8 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs
 {
-    [GlobalMgr]
     public static class NPCAiTextMgr
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
-        
         #region Global Containers & Get Methods
         [NotVariable]
         /// <summary>

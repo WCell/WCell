@@ -458,7 +458,7 @@ namespace WCell.RealmServer.Entities
 			DamageSchool school;
 			if (effect != null)
 			{
-				school = GetLeastResistant(effect.Spell);
+				school = GetLeastResistantSchool(effect.Spell);
 				if (effect.Spell.DamageIncreasedByAP)
 				{
 					int ap;

@@ -9,11 +9,11 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 	/// <summary>
 	/// TODO: Replaces a spell with an alternate version of the spell that works differently
 	/// </summary>
-	public class AddExtraEffectsHandler : AuraEffectHandler
+	public class ReplaceSpellHandler : AuraEffectHandler
 	{
 		public Spell SpellAlternateVersion { get; set; }
 
-		public AddExtraEffectsHandler(Spell spellAlternateVersion)
+		public ReplaceSpellHandler(Spell spellAlternateVersion)
 		{
 			SpellAlternateVersion = spellAlternateVersion;
 		}

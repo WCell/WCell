@@ -30,21 +30,20 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			var zone = m_cast.Caster.Zone;
-
 			if (!Effect.Spell.IsHearthStoneSpell &&
 				(m_cast.TargetLoc.X == 0 || m_cast.TargetLoc.Y == 0))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
 
+			//var zone = m_cast.Caster.Zone;
 			//if (zone != null && !zone.Flags.And(ZoneFlags.CanHearthAndResurrectFromArea))
 			//{
 			//    failReason = SpellFailedReason.NotHere;
 			//}
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (!((Unit)target).MayTeleport)
 			{
@@ -64,7 +63,7 @@ namespace WCell.RealmServer.Spells.Effects
 			else
 			{
 				// teleport to given target location
-				var region = m_cast.TargetRegion;
+				var region = m_cast.TargetMap;
 				var pos = m_cast.TargetLoc;
 				var ori = m_cast.TargetOrientation;
 				target.AddMessage(() => ((Unit)target).TeleportTo(region, pos, ori));

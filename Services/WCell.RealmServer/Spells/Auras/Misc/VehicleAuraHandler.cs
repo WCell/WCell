@@ -18,9 +18,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		private Vehicle Vehicle;
 		private VehicleSeat Seat;
 
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
-			Caster = casterInfo.Caster as Unit;
+			Caster = casterReference.Object as Unit;
 			if (Caster == null || Caster is Vehicle)
 			{
 				log.Warn("Invalid SpellCaster \"{0}\" for Spell: {1}", Caster, SpellEffect.Spell);

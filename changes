@@ -1,2 +1,3 @@
-- renamed RegionInfo to RegionTemplate
-- to test: DruidRestorationTreeOfLifeShapeshift
+- added TriggerDelayedEffectHandler
+- improved & fixed select commands to also set the context correctly
+- big SpellCast refactoring chunk (#2)

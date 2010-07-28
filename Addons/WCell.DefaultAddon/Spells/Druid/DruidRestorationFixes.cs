@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -113,7 +113,7 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var auras = ((Unit)target).Auras;
 			aura = auras[SpellLineId.DruidRejuvenation];
@@ -125,7 +125,7 @@ namespace WCell.Addons.Default.Spells.Druid
 					return SpellFailedReason.TargetAurastate;
 				}
 			}
-			return base.CheckValidTarget(target);
+			return base.InitializeTarget(target);
 		}
 
 		protected override void Apply(WorldObject target)

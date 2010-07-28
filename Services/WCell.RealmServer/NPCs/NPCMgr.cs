@@ -303,7 +303,7 @@ namespace WCell.RealmServer.NPCs
 
 		#endregion
 
-		#region Fixing
+		#region Apply
 		public static void Apply(this Action<NPCEntry> cb, params NPCId[] ids)
 		{
 			foreach (var id in ids)

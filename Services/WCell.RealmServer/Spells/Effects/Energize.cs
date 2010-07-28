@@ -31,13 +31,13 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (((Unit)target).Power == ((Unit)target).MaxPower)
 			{
 				return ((Unit)target).PowerType == PowerType.Mana ? SpellFailedReason.AlreadyAtFullMana : SpellFailedReason.AlreadyAtFullPower;
 			}
-			return base.CheckValidTarget(target);
+			return base.InitializeTarget(target);
 		}
 
 		protected override void Apply(WorldObject target)
@@ -68,6 +68,11 @@ namespace WCell.RealmServer.Spells.Effects
 				var val = (m_cast.CasterUnit.MaxPower * CalcEffectValue() + 50) / 100;
 				((Unit)target).Energize(m_cast.CasterUnit, val, Effect);
 			}
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Object; }
 		}
 	}
 }

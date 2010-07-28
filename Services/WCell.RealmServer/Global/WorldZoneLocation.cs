@@ -1,5 +1,6 @@
 using System;
 using WCell.Constants.World;
+using WCell.RealmServer.Lang;
 using WCell.Util.Data;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
@@ -50,13 +51,13 @@ namespace WCell.RealmServer.Global
 
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set { Names[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
 		public string EnglishName
 		{
-			get { return Names[(int)ClientLocale.English]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set { Names[(int)ClientLocale.English] = value; }
 		}
 

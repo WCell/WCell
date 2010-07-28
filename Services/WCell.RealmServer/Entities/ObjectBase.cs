@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CheckObjType(ObjectTypes type)
 		{
-			return Type.HasAnyFlag(type);
+			return type == ObjectTypes.None || Type.HasAnyFlag(type);
 		}
 
     	public virtual bool UseGroupLoot

@@ -53,5 +53,15 @@ namespace WCell.RealmServer.Spells.Effects
 
 			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, value);
 		}
+
+		public override ObjectTypes TargetType
+		{
+			get{return ObjectTypes.Unit;}
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Unit; }
+		}
 	}
 }

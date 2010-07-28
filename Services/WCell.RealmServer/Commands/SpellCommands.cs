@@ -262,7 +262,7 @@ namespace WCell.RealmServer.Commands
 						foreach (var spell in spells)
 						{
 							AddSpell(target, spell, mod.Contains("r"));
-							trigger.Reply(LangKey.CmdSpellAddResponseSpell + spell.ToString());
+							trigger.Reply(LangKey.CmdSpellAddResponseSpell, spell);
 						}
 					}
 				}
@@ -320,7 +320,7 @@ namespace WCell.RealmServer.Commands
 					if (trigger.Args.Target.HasSpells)
 					{
 						trigger.Args.Target.Spells.Remove(spell);
-						trigger.Reply(LangKey.CmdSpellRemoveResponse + spell.ToString());
+						trigger.Reply(LangKey.CmdSpellRemoveResponse, spell);
 					}
 				}
 				else
@@ -381,7 +381,7 @@ namespace WCell.RealmServer.Commands
 				if (spell != null)
 				{
 					target.SpellCast.TriggerSelf(spell);
-					trigger.Reply(LangKey.CmdSpellTriggerResponse + spell.ToString());
+					trigger.Reply(LangKey.CmdSpellTriggerResponse, spell);
 				}
 				else
 				{

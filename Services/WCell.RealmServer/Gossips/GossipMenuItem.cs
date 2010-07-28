@@ -187,13 +187,13 @@ namespace WCell.RealmServer.Gossips
 
 		public string DefaultText
 		{
-			get { return Texts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Texts.LocalizeWithDefaultLocale(); }
 			set { Texts[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
 		public string DefaultConfirmText
 		{
-			get { return ConfirmTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return ConfirmTexts.LocalizeWithDefaultLocale(); }
 			set { ConfirmTexts[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 

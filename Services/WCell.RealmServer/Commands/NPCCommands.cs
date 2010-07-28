@@ -288,14 +288,13 @@ namespace WCell.RealmServer.Commands
 		}
 		#endregion
 
-
 		#region Select
 		public class SelectNPCCommand : SubCommand
 		{
 			protected override void Initialize()
 			{
 				Init("Select", "Sel");
-				EnglishParamInfo = "[-[n][d] [<name>][[<destination>]]]";
+				EnglishParamInfo = "[-[n][d] [<name>][<destination>]]";
 				EnglishDescription = "Selects the NPC whose name matches the given name and is closest to the given location. " +
 					"All arguments are optional. If no arguments are supplied, the first available NPC will be selected. " +
 					"If the destination is not given, it will search, starting at the current Target or oneself.";
@@ -305,7 +304,6 @@ namespace WCell.RealmServer.Commands
 			{
 				var mod = trigger.Text.NextModifiers();
 				var name = "";
-				IWorldLocation dest;
 				uint phase;
 
 				if (mod.Contains("n"))
@@ -313,45 +311,60 @@ namespace WCell.RealmServer.Commands
 					name = trigger.Text.NextWord();
 				}
 
+				Region rgn;
 				if (mod.Contains("d"))
 				{
 					var destName = trigger.Text.NextWord();
-					dest = WorldLocationMgr.Get(destName);
+					var dest = WorldLocationMgr.Get(destName);
 					if (dest == null)
 					{
-						trigger.Reply("Invalid Destination: " + destName);
-						return;
+						MapId mapId;
+						if (EnumUtil.TryParse(destName, out mapId))
+						{
+							rgn = World.GetRegion(mapId);
+						}
+						else
+						{
+							rgn = null;
+						}
+
+						if (rgn == null)
+						{
+							trigger.Reply("Invalid Destination: " + destName);
+							return;
+						}
+					}
+					else
+					{
+						rgn = dest.Region;
 					}
 					phase = uint.MaxValue;
 				}
 				else
 				{
-					dest = trigger.Args.Target;
+					rgn = trigger.Args.Target.Region;
 					phase = trigger.Args.Target.Phase;
 				}
 
-				var rgn = dest.Region;
 				if (rgn == null)
 				{
 					trigger.Reply("Instance-destinations are currently not supported.");
 					return;
 				}
 
-				var pos = dest.Position;
 				NPC npc = null;
 
 				// add message to iterate and then reply
-				rgn.AddMessage(() =>
+				rgn.ExecuteInContext(() =>
 				{
-					rgn.IterateObjects(ref pos, 10000000, obj =>
+					foreach (var obj in rgn)
 					{
 						if (obj is NPC && (name == "" || obj.Name.ContainsIgnoreCase(name)))
 						{
 							npc = (NPC)obj;
-							return false;
+							break;
 						}
-						return true;
-					}, phase);
+					}
 
 					if (npc == null)
 					{
@@ -360,14 +373,16 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						var chr = trigger.Args.Character;
-						if (chr != null && chr.IsInWorld)
+						if (trigger.Args.HasCharacter)
 						{
 							chr.Target = npc;
 						}
 						else
 						{
 							trigger.Args.Target = npc;
+							trigger.Args.Context = npc;
 						}
+						trigger.Reply("Selected: {0}", npc);
 					}
 				}
 				);
@@ -560,7 +575,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -600,7 +615,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

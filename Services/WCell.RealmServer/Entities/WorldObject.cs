@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Entities
 
 		protected List<AreaAura> m_areaAuras;
 
-		protected CasterInfo m_casterInfo;
+		protected ObjectReference m_CasterReference;
 
 		protected Unit m_master;
 
@@ -212,7 +212,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_spellCast == null)
 				{
-					m_spellCast = new SpellCast(this);
+					m_spellCast = SpellCast.ObtainPooledCast(this);
 					InitSpellCast();
 				}
 
@@ -277,19 +277,17 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public CasterInfo CasterInfo
+		public ObjectReference SharedReference
 		{
 			get
 			{
-				if (m_casterInfo == null)
+				if (m_CasterReference == null)
 				{
-					m_casterInfo = CreateCasterInfo();
+					m_CasterReference = CreateCasterInfo();
 				}
-				else if (m_casterInfo.Level != CasterLevel)
-				{
-					m_casterInfo.Level = CasterLevel;
-				}
-				return m_casterInfo;
+
+				m_CasterReference.Level = CasterLevel;
+				return m_CasterReference;
 			}
 		}
 
@@ -307,9 +305,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new CasterInfo object to represent this WorldObject
 		/// </summary>
-		protected CasterInfo CreateCasterInfo()
+		protected ObjectReference CreateCasterInfo()
 		{
-			return new CasterInfo(this);
+			return new ObjectReference(this);
 		}
 
 		protected virtual void InitSpellCast()
@@ -375,7 +373,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public Unit Master
 		{
-			get { return m_master ?? this as Unit; }
+			get { return m_master != null && m_master.IsInWorld ? m_master : this as Unit; }
 			protected internal set
 			{
 				if (value != m_master)
@@ -444,7 +442,7 @@ namespace WCell.RealmServer.Entities
 				{
 					return (Unit)this;
 				}
-				return m_master as Unit;
+				return m_master;
 			}
 		}
 		#endregion
@@ -458,7 +456,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns>Whether Iteration should continue (usually indicating that we did not find what we were looking for).</returns>
 		public bool IterateEnvironment(float radius, Func<WorldObject, bool> predicate)
 		{
-			return m_region.IterateObjects(ref m_position, radius, predicate, m_Phase);
+			return m_region.IterateObjects(ref m_position, radius, m_Phase, predicate);
 		}
 		/// <summary>
 		/// Iterates over all objects of the given Type within the given radius around this object.
@@ -469,7 +467,7 @@ namespace WCell.RealmServer.Entities
 		public bool IterateEnvironment<O>(float radius, Func<O, bool> predicate)
 			where O : WorldObject
 		{
-			return m_region.IterateObjects(ref m_position, radius, obj => !(obj is O) || predicate((O)obj), m_Phase);
+			return m_region.IterateObjects(ref m_position, radius, m_Phase, obj => !(obj is O) || predicate((O)obj));
 		}
 
 		/// <summary>

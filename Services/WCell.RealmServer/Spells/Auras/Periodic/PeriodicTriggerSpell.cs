@@ -57,12 +57,8 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					return;
 				}
 			}
-
-			cast = SpellCast.ObtainPooledCast(origCast.Caster);
-			cast.TargetLoc = origCast.TargetLoc;
-			cast.Selected = origCast.Selected;
-			//cast.Start(spell, m_spellEffect, true);
-			cast.Start(spell, true);
+			// TODO fixxxx
+			SpellCast.ValidateAndTriggerNew(spell, origCast.CasterReference, Owner, Owner, origCast.UsedItem);
 		}
 
 		protected override void Remove(bool cancelled)

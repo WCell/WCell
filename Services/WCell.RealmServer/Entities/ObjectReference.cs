@@ -14,60 +14,63 @@
  *
  *************************************************************************/
 
+using System;
 using WCell.Core;
-using WCell.RealmServer.Entities;
+using WCell.RealmServer.Factions;
 using WCell.RealmServer.Global;
 
-namespace WCell.RealmServer.Spells.Auras
+namespace WCell.RealmServer.Entities
 {
 	/// <summary>
-	/// 
+	/// Wraps a WorldObject.
+	/// This is primarily used for Auras and other things that are allowed to persist after
+	/// a Character or object might be gone, but still require basic information about the original
+	/// object.
 	/// </summary>
-	public class CasterInfo
+	public class ObjectReference : IEntity
 	{
-		public static CasterInfo GetOrCreate(Region rgn, EntityId id)
+		public static ObjectReference GetOrCreate(Region rgn, EntityId id)
 		{
 			var caster = rgn.GetObject(id);
 			if (caster != null)
 			{
-				return caster.CasterInfo;
+				return caster.SharedReference;
 			}
-			return new CasterInfo(id, 1);
+			return new ObjectReference(id, 1);
 		}
 
-		public readonly EntityId CasterId;
+		public EntityId EntityId
+		{
+			get;
+			private set;
+		}
 		//public readonly ObjectTypes ObjectType;
 		//public readonly Faction Faction;
 
-		WorldObject m_caster;
+		WorldObject m_Object;
 
-		public CasterInfo(WorldObject caster)
+		public ObjectReference(WorldObject obj)
 		{
-			CasterId = caster.EntityId;
-			Level = caster.CasterLevel;
-			m_caster = caster;
+			EntityId = obj.EntityId;
+			Level = obj.CasterLevel;
+			m_Object = obj;
 			//Faction = caster.Faction;
 			//ObjectType = caster.Type;
 		}
 
-		public CasterInfo(EntityId casterId, int level)
+		public ObjectReference(EntityId entityId, int level)
 		{
-			CasterId = casterId;
+			EntityId = entityId;
 			Level = level;
 		}
 
-		public CasterInfo(int level)
+		public ObjectReference(int level)
 		{
 			Level = level;
 		}
 
-		public CasterInfo()
+		public ObjectReference()
 		{
-		}
-
-		public bool IsItem
-		{
-			get { return CasterId.IsItem; }
 		}
 
 		public int Level
@@ -76,18 +79,18 @@ namespace WCell.RealmServer.Spells.Auras
 			internal set;
 		}
 
-		public WorldObject Caster
+		public WorldObject Object
 		{
-			get { return (m_caster != null && m_caster.IsInWorld) ? m_caster : null; }
-			internal set { m_caster = value; }
+			get { return (m_Object != null && m_Object.IsInWorld) ? m_Object : null; }
+			internal set { m_Object = value; }
 		}
 
 		/// <summary>
-		/// Returns the Caster as a Unit (if exists)
+		/// Returns the Unit behind this object (if exists)
 		/// </summary>
-		public Unit CasterUnit
+		public Unit UnitMaster
 		{
-			get { return m_caster != null ? m_caster.UnitMaster : null; }
+			get { return m_Object != null ? m_Object.UnitMaster : null; }
 		}
 
 		//public DynamicObject CasterObject

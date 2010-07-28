@@ -21,6 +21,7 @@ using System.Text;
 using System.IO;
 using WCell.RealmServer;
 using WCell.RealmServer.Addons;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells;
@@ -215,7 +216,7 @@ namespace WCell.Tools.Domi.Output
 
 			using (var writer = new StreamWriter(ToolConfig.OutputDir + "ChanneledSpells.txt", false))
 			{
-				var caster = new CasterInfo();
+				var caster = new ObjectReference();
 				foreach (var spell in spells)
 				{
 					writer.WriteLine("Spell: " + spell);

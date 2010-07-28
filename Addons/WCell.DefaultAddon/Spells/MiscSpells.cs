@@ -148,6 +148,7 @@ namespace WCell.Addons.Default.Spells
             {
                 var caster = m_cast.CasterUnit as Character;
                 if (caster == null) return;
+
                 if (_artisanRidingSpell != SpellId.None &&
                     caster.Spells.Contains(SpellId.SecondarySkillArtisanRidingArtisan) && caster.Region.CanFly)
                 {

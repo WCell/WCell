@@ -670,7 +670,7 @@ namespace WCell.RealmServer.Spells
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 
-			HasTargets = !HasEffectWith(effect => effect.HasTargets);
+			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
 			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.Self));
 
@@ -1118,7 +1118,7 @@ namespace WCell.RealmServer.Spells
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster)
+		public int GetDuration(ObjectReference caster)
 		{
 			return GetDuration(caster, null);
 		}
@@ -1127,7 +1127,7 @@ namespace WCell.RealmServer.Spells
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster, Unit target)
+		public int GetDuration(ObjectReference caster, Unit target)
 		{
 			var millis = Durations.Min;
 			//if (Durations.LevelDelta > 0)
@@ -1139,10 +1139,10 @@ namespace WCell.RealmServer.Spells
 			//	}
 			//}
 
-			if (Durations.Max > Durations.Min && IsFinishingMove && caster.CasterUnit != null)
+			if (Durations.Max > Durations.Min && IsFinishingMove && caster.UnitMaster != null)
 			{
 				// For some finishing moves, Duration depends on Combopoints
-				millis += caster.CasterUnit.ComboPoints * ((Durations.Max - Durations.Min) / 5);
+				millis += caster.UnitMaster.ComboPoints * ((Durations.Max - Durations.Min) / 5);
 			}
 
 			if (target != null && Mechanic != SpellMechanic.None)
@@ -1154,7 +1154,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			var chr = caster.Caster as Character;
+			var chr = caster.Object as Character;
 			if (chr != null)
 			{
 				millis = chr.PlayerSpells.GetModifiedInt(SpellModifierType.Duration, this, millis);
@@ -1590,19 +1590,14 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		public bool IsBeneficialFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsBeneficialFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterInfo.Caster == null || !casterInfo.Caster.MayAttack(target)));
+			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterReference.Object == null || !casterReference.Object.MayAttack(target)));
 		}
 
-		public bool IsHarmfulFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsHarmfulFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterInfo.Caster != null && casterInfo.Caster.MayAttack(target));
-		}
-
-		public bool IsHarmfulFor(WorldObject caster, WorldObject target)
-		{
-			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && caster.MayAttack(target));
+			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterReference.Object != null && casterReference.Object.MayAttack(target));
 		}
 
 		public override bool Equals(object obj)

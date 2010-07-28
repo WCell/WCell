@@ -1461,7 +1461,9 @@ namespace WCell.RealmServer.Global
 			//return DefaultZone;
 			return null;
 		}
+		#endregion
 
+		#region GetObjectsInRadius
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
@@ -1560,34 +1562,6 @@ namespace WCell.RealmServer.Global
 
 			return entities;
 		}
-
-		/// <summary>
-		/// Iterates over all objects in all phases in the given radius around the given origin.
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateObjects(ref Vector3 origin, float radius, Func<WorldObject, bool> predicate)
-		{
-			return IterateObjects(ref origin, radius, predicate, uint.MaxValue);
-		}
-
-		/// <summary>
-		/// Iterates over all objects in the given radius around the given origin.
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateObjects(ref Vector3 origin, float radius, Func<WorldObject, bool> predicate, uint phase)
-		{
-			EnsureContext();
-
-			var sphere = new BoundingSphere(origin, radius);
-			return m_root.Iterate(ref sphere, predicate, phase);
-		}
-
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
@@ -1676,6 +1650,40 @@ namespace WCell.RealmServer.Global
 			}
 
 			return entities;
+		}
+		#endregion
+
+		#region IterateObjects
+		/// <summary>
+		/// Iterates over all objects in the given radius around the given origin.
+		/// </summary>
+		/// <param name="origin"></param>
+		/// <param name="radius"></param>
+		/// <param name="predicate">Returns whether to continue iteration.</param>
+		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
+		public bool IterateObjects(ref Vector3 origin, float radius, uint phase, Func<WorldObject, bool> predicate)
+		{
+			EnsureContext();
+
+			var sphere = new BoundingSphere(origin, radius);
+			return m_root.Iterate(ref sphere, predicate, phase);
+		}
+
+		/// <summary>
+		/// Sends a packet to all nearby characters.
+		/// </summary>
+		/// <param name="packet">the packet to send</param>
+		/// <param name="includeSelf">whether or not to send the packet to ourselves (if we're a character)</param>
+		public void SendPacketToArea(RealmPacketOut packet, ref Vector3 center, uint phase)
+		{
+			IterateObjects(ref center, WorldObject.BroadcastRange, phase, obj =>
+			{
+				if (obj is Character)
+				{
+					((Character)obj).Send(packet.GetFinalizedPacket());
+				}
+				return true;
+			});
 		}
 		#endregion
 
@@ -2465,7 +2473,7 @@ namespace WCell.RealmServer.Global
 				{
 					// distribute XP
 					// TODO: Consider reductions if someone else killed the mob
-					var chr = (Character) looter;
+					var chr = (Character)looter;
 					var baseXp = XpCalculator(looter.Level, npc);
 					XpGenerator.CombatXpDistributer(chr, npc, baseXp);
 

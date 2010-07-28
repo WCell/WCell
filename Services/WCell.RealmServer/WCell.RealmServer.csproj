@@ -191,6 +191,7 @@
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
     <Compile Include="Lang\LangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -239,6 +240,7 @@
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
@@ -903,7 +905,7 @@
     <Compile Include="Spells\Auras\AuraHandler.cs" />
     <Compile Include="Spells\Auras\AuraIndexId.cs" />
     <Compile Include="Spells\Auras\IAura.cs" />
-    <Compile Include="Spells\CasterInfo.cs" />
+    <Compile Include="Entities\ObjectReference.cs" />
     <Compile Include="Spells\Auras\Mod\ModAllCooldownDuration.cs">
       <SubType>Code</SubType>
     </Compile>

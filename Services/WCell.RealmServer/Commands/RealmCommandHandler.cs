@@ -274,12 +274,12 @@ namespace WCell.RealmServer.Commands
 		public override bool Execute(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
 		{
 			// verify context
-			if (trigger.Args.Context != null &&
-				!trigger.Args.Context.IsInContext &&
-				cmd.RootCmd.GetRequiresContext())
+			if (cmd.RootCmd.GetRequiresContext() &&
+				(trigger.Args.Context == null ||
+				!trigger.Args.Context.IsInContext))
 			{
-				// will throw Exception
-				trigger.Args.Context.EnsureContext();
+				trigger.Reply("Command requires different context: {0}", cmd.RootCmd);
+				return false;
 			}
 
 			return base.Execute(trigger, cmd, silentFail);
@@ -288,12 +288,12 @@ namespace WCell.RealmServer.Commands
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
 		{
 			// verify context
-			if (trigger.Args.Context != null &&
-				!trigger.Args.Context.IsInContext &&
-				cmd.RootCmd.GetRequiresContext())
+			if (cmd.RootCmd.GetRequiresContext() &&
+				(trigger.Args.Context == null ||
+				!trigger.Args.Context.IsInContext))
 			{
-				// will throw Exception
-				trigger.Args.Context.EnsureContext();
+				trigger.Reply("Command requires different context: {0}", cmd.RootCmd);
+				return null;
 			}
 
 			return base.Eval(trigger, cmd, silentFail);
@@ -360,7 +360,21 @@ namespace WCell.RealmServer.Commands
 
 					if (trigger.InitTrigger())
 					{
-						trigger.Args.Context.ExecuteInContext(() =>
+						if (trigger.Args.Context != null) 
+						{
+							trigger.Args.Context.ExecuteInContext(() =>
+							{
+								if (!isCall)
+								{
+									Instance.Execute(trigger, false);
+								}
+								else
+								{
+									Call(trigger);
+								}
+							});
+						}
+						else
 						{
 							if (!isCall)
 							{
@@ -370,7 +384,7 @@ namespace WCell.RealmServer.Commands
 							{
 								Call(trigger);
 							}
-						});
+						}
 					}
 					return true;
 				}

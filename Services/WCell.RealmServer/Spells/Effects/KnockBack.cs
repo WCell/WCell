@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			MovementHandler.SendKnockBack(m_cast.Caster, target, Effect.MiscValue / 10f, CalcEffectValue() / 10f);
+			MovementHandler.SendKnockBack(m_cast.CasterObject, target, Effect.MiscValue / 10f, CalcEffectValue() / 10f);
 		}
 
 		public override ObjectTypes TargetType

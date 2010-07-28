@@ -17,6 +17,7 @@
 using NLog;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Items.Enchanting;
 
 namespace WCell.RealmServer.Spells.Effects
@@ -69,6 +70,11 @@ namespace WCell.RealmServer.Spells.Effects
 		public override bool HasOwnTargets
 		{
 			get { return false; }
+		}
+
+		public override ObjectTypes CasterType
+		{
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

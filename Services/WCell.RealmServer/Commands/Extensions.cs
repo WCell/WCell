@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Commands
 {
@@ -33,8 +34,18 @@ namespace WCell.RealmServer.Commands
 		public static ClientLocale GetLocale(this CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			return trigger != null && trigger.Args.User != null
-			       	? trigger.Args.User.Locale
-			       	: RealmServerConfiguration.DefaultLocale;
+					? trigger.Args.User.Locale
+					: RealmServerConfiguration.DefaultLocale;
+		}
+
+		public static bool CheckPossibleContext(this CmdTrigger<RealmServerCmdArgs> trigger, object obj)
+		{
+			if (obj is IContextHandler && !((IContextHandler)obj).IsInContext)
+			{
+				trigger.Reply("Object requires different context: {0}", obj);
+				return false;
+			}
+			return true;
 		}
 	}
 }

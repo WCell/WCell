@@ -1314,12 +1314,6 @@ namespace WCell.RealmServer.Entities
 
 			m_InstanceCollection = null;
 
-			if (m_spellCast != null)
-			{
-				m_spellCast.Cancel();
-				m_spellCast = null;
-			}
-
 			if (m_activePet != null)
 			{
 				m_activePet.Delete();
@@ -1354,10 +1348,10 @@ namespace WCell.RealmServer.Entities
 				m_InstanceCollection.Dispose();
 			}
 
-			if (m_casterInfo != null)
+			if (m_CasterReference != null)
 			{
-				m_casterInfo.Caster = null;
-				m_casterInfo = null;
+				m_CasterReference.Object = null;
+				m_CasterReference = null;
 			}
 
 			if (m_looterEntry != null)

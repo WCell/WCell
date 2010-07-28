@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Commands
 			target.Kill(trigger.Args.Character);
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

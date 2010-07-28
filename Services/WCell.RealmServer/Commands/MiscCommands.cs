@@ -30,6 +30,7 @@ using WCell.Intercommunication.DataTypes;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Commands
 {
@@ -178,6 +179,11 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
+		public override bool RequiresContext
+		{
+			get { return true; }
+		}
+
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			GetAndReply(trigger, trigger.EvalNextOrTargetOrUser());
@@ -214,6 +220,11 @@ namespace WCell.RealmServer.Commands
 
 		public static object Eval(CmdTrigger<RealmServerCmdArgs> trigger, object target)
 		{
+			if (!trigger.CheckPossibleContext(target))
+			{
+				// TODO: Come up with a more complete solution
+				return null;
+			}
 			var propName = trigger.Text.NextWord();
 			object val;
 
@@ -230,10 +241,12 @@ namespace WCell.RealmServer.Commands
 
 		public override RoleStatus RequiredStatusDefault
 		{
-			get
-			{
-				return RoleStatus.Admin;
-			}
+			get { return RoleStatus.Admin; }
+		}
+
+		public override bool RequiresContext
+		{
+			get { return true; }
 		}
 
 		protected override void Initialize()
@@ -320,8 +333,7 @@ namespace WCell.RealmServer.Commands
 
 	#region Call
 	/// <summary>
-	/// Calls methods! :D
-	/// Should be for developers (and Admins) only
+	/// Calls public methods.
 	/// </summary>
 	public class CallCommand : RealmServerCommand
 	{
@@ -338,10 +350,12 @@ namespace WCell.RealmServer.Commands
 
 		public override RoleStatus RequiredStatusDefault
 		{
-			get
-			{
-				return RoleStatus.Admin;
-			}
+			get { return RoleStatus.Admin; }
+		}
+
+		public override bool RequiresContext
+		{
+			get { return true; }
 		}
 
 		protected override void Initialize()
@@ -353,45 +367,36 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			Call(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => Call(trigger, obj, true));
+			}
+			else
+			{
+				Call(trigger, obj, true);
+			}
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			return Eval(trigger, trigger.EvalNextOrTargetOrUser());
+			return Eval(trigger, false);
 		}
 
-		public static void Call(CmdTrigger<RealmServerCmdArgs> trigger, Object obj)
+		public object Eval(CmdTrigger<RealmServerCmdArgs> trigger, bool replySuccess)
 		{
-			if (trigger.Text.HasNext)
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (!trigger.CheckPossibleContext(obj))
 			{
-				var accessName = trigger.Text.NextWord();
-				var args = trigger.Text.Remainder.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				for (var i = 0; i < args.Length; i++)
-				{
-					args[i] = args[i].Trim();
-				}
-
-				try
-				{
-					object result;
-					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
-						ref accessName, args, out result))
-					{
-						trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
-						return;
-					}
-				}
-				catch (Exception ex)
-				{
-					trigger.Reply("Exception thrown: " + ex);
-					return;
-				}
+				// TODO: Come up with a more complete solution
+				//((IContextHandler)obj).ExecuteInContext(() => Call(trigger, obj, replySuccess));
+				return null;
 			}
-			trigger.Reply("Invalid method, parameter count or parameters.");
+
+			return Call(trigger, obj, replySuccess);
 		}
 
-		public static object Eval(CmdTrigger<RealmServerCmdArgs> trigger, Object obj)
+		public static object Call(CmdTrigger<RealmServerCmdArgs> trigger, Object obj, bool replySuccess = true)
 		{
 			if (trigger.Text.HasNext)
 			{
@@ -401,20 +406,25 @@ namespace WCell.RealmServer.Commands
 				{
 					args[i] = args[i].Trim();
 				}
+
 				try
 				{
 					object result;
 					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
 						ref accessName, args, out result))
 					{
+						if (replySuccess)
+						{
+							trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
+						}
 						return result;
 					}
 				}
 				catch (Exception ex)
 				{
 					trigger.Reply("Exception thrown: " + ex);
-					return null;
 				}
+				return null;
 			}
 			trigger.Reply("Invalid method, parameter count or parameters.");
 			return null;
@@ -612,7 +622,7 @@ namespace WCell.RealmServer.Commands
 			caster.ChannelObject = target;
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

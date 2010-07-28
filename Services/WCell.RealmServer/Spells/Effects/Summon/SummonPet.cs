@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Effects
 			_ownedPet = Effect.MiscValue == 0;
 			if (_ownedPet)
 			{
-				if (((Character)m_cast.Caster).ActivePet == null)
+				if (((Character)m_cast.CasterObject).ActivePet == null)
 				{
 					failReason = SpellFailedReason.NoPet;
 				}
@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Spells.Effects
 			if (_ownedPet)
 			{
 				// Call Pet
-				((Character)m_cast.Caster).IsPetActive = true;
+				((Character)m_cast.CasterObject).IsPetActive = true;
 			}
 			else
 			{

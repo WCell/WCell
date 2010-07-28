@@ -9,6 +9,7 @@ using WCell.Constants.NPCs;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Trainers;
@@ -55,7 +56,7 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)
@@ -72,7 +73,7 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public string DefaultTitle
 		{
-			get { return Titles[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Titles.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Titles == null)

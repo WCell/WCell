@@ -52,8 +52,7 @@
       <Value>Could not change the current user's locale.</Value>
     </Item>
 
-	<!-- 	Spell Commands		--
-	------------------------------->
+	<!-- 	Spell Commands		  -->
 	<Item Key="CmdSpellDescription">
 	  <Value>Provides commands to interact with the Spells of the Target.</Value>
 	</Item>
@@ -143,11 +142,9 @@
 	  <Value>Spell doesn't exist.</Value>
 	</Item>
 	
-	<!-- End of Spell Commands --
-	------------------------------->
+	<!-- End of Spell Commands -->
 	
-	<!-- 	Skill Commands		--
-	------------------------------->
+	<!-- 	Skill Commands		-->
 	<Item Key="CmdSkillDescription">
 	  <Value>Used for manipulation of Skills.</Value>
 	</Item>
@@ -193,11 +190,9 @@
 	<Item Key="CmdSkillTierError2">
 	  <Value>Invalid Tier-number</Value>
 	</Item>
-	<!-- End of Skill Commands   --
-	------------------------------->	
+	<!-- End of Skill Commands   -->
 	
-	<!-- 	Region Commands		--
-	------------------------------->
+	<!-- 	Region Commands		-->
 	<Item Key="CmdRegionDescription">
 	  <Value>Provides Commands to manipulate Regions and their content.</Value>
 	</Item>
@@ -258,8 +253,7 @@
 	  <Value>Toggles region updates in all Regions on or off</Value>
 	</Item>
 	
-	<!-- End of Region Commands   --
-	------------------------------->	
+	<!-- End of Region Commands -->
 	
 	<Item Key="CmdRegionListDescription">
 	  <Value>Lists active regions</Value>

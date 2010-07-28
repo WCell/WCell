@@ -31,11 +31,11 @@ namespace WCell.RealmServer.Tests.AI
 			var npc2 = CreateDummy(2);
 			var npc3 = CreateDummy(3);
 
-			collection.AddNew(npc1);
+			collection.AddNewIfNotExisted(npc1);
 
 			Assert.AreEqual(npc1, collection.CurrentAggressor);
 
-			collection.AddNew(npc2);
+			collection.AddNewIfNotExisted(npc2);
 
 			Assert.AreEqual(npc1, collection.CurrentAggressor);
 

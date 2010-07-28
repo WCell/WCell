@@ -160,9 +160,9 @@ namespace WCell.RealmServer.Tests.Spells
 
 				Assert.IsNotNull(aura);
 
-				Assert.AreEqual(spell.GetDuration(chr.CasterInfo, chr), (uint)aura.Duration);
-				Assert.AreNotEqual(0, spell.GetDuration(chr.CasterInfo, chr));
-				Asser.GreaterOrEqual(spell.GetDuration(chr.CasterInfo, chr), (uint)aura.TimeLeft);
+				Assert.AreEqual(spell.GetDuration(chr.SharedReference, chr), (uint)aura.Duration);
+				Assert.AreNotEqual(0, spell.GetDuration(chr.SharedReference, chr));
+				Asser.GreaterOrEqual(spell.GetDuration(chr.SharedReference, chr), (uint)aura.TimeLeft);
 
 				aura.Cancel();
 

@@ -32,14 +32,14 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var portal = Portal.Create(new WorldLocation(m_cast.TargetRegion, m_cast.TargetLoc));
+			var portal = Portal.Create(new WorldLocation(m_cast.TargetMap, m_cast.TargetLoc));
 			//portal.IsWalkInPortal = false;
 			portal.State = GameObjectState.Enabled;
 			portal.Flags = 0;
 			portal.Orientation = m_cast.TargetOrientation;
-			portal.Position = m_cast.Caster.Position;
+			portal.Position = m_cast.CasterObject.Position;
 
-			m_cast.TargetRegion.AddObjectLater(portal);
+			m_cast.TargetMap.AddObjectLater(portal);
 		}
 
 		public override ObjectTypes TargetType

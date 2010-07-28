@@ -3,7 +3,7 @@
  *   file		: TameCreature.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-16 21:33:51 +0100 (lÃ¸, 16 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-16 21:33:51 +0100 (lø, 16 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1197 $
  *
@@ -31,14 +31,14 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (!(target is NPC))
 			{
 				return SpellFailedReason.BadTargets;
 			}
 
-			if (SpellCast.CheckTame(m_cast.Caster as Character, (NPC)target) != TameFailReason.Ok)
+			if (SpellCast.CheckTame(m_cast.CasterObject as Character, (NPC)target) != TameFailReason.Ok)
 			{
 				return SpellFailedReason.DontReport;
 			}
@@ -47,7 +47,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var caster = (Unit)m_cast.Caster;
+			var caster = (Unit)m_cast.CasterObject;
 			if (caster is Character)
 			{
 				((Character)caster).MakePet((NPC)target);

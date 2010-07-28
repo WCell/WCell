@@ -7,23 +7,25 @@
     <Flat Name="SubClass" Column="subclass" />
     <FlatArray Name="Names">
       <Column Name="name" />
+      <Column Name="name_loc1" Table="locales_item" />
       <Column Name="name_loc2" Table="locales_item" />
       <Column Name="name_loc3" Table="locales_item" />
       <Column Name="name_loc4" Table="locales_item" />
       <Column Name="name_loc5" Table="locales_item" />
       <Column Name="name_loc6" Table="locales_item" />
       <Column Name="name_loc7" Table="locales_item" />
-      <Column Name="name_loc8" Table="locales_item" />
+      <!--<Column Name="name_loc8" Table="locales_item" />-->
     </FlatArray>
     <FlatArray Name="Description">
       <Column Name="description" />
+      <Column Name="description_loc1" Table="locales_item" />
       <Column Name="description_loc2" Table="locales_item" />
       <Column Name="description_loc3" Table="locales_item" />
       <Column Name="description_loc4" Table="locales_item" />
       <Column Name="description_loc5" Table="locales_item" />
       <Column Name="description_loc6" Table="locales_item" />
       <Column Name="description_loc7" Table="locales_item" />
-      <Column Name="description_loc8" Table="locales_item" />
+      <!--<Column Name="description_loc8" Table="locales_item" />-->
     </FlatArray>
     <Flat Name="DisplayId" Column="displayid" />
     <Flat Name="Quality" Column="Quality" />    

@@ -102,111 +102,121 @@
 -->
     <FlatArray Name="Titles">
       <Column Name="Title" />
+      <Column Name="Title_loc1" Table="locales_quest" />
       <Column Name="Title_loc2" Table="locales_quest" />
       <Column Name="Title_loc3" Table="locales_quest" />
       <Column Name="Title_loc4" Table="locales_quest" />
       <Column Name="Title_loc5" Table="locales_quest" />
       <Column Name="Title_loc6" Table="locales_quest" />
       <Column Name="Title_loc7" Table="locales_quest" />
-      <Column Name="Title_loc8" Table="locales_quest" />
+      <!--<Column Name="Title_loc8" Table="locales_quest" />-->
     </FlatArray>
 
 
     <FlatArray Name="Details">
       <Column Name="Details" />
+      <Column Name="Details_loc1" Table="locales_quest" />
       <Column Name="Details_loc2" Table="locales_quest" />
       <Column Name="Details_loc3" Table="locales_quest" />
       <Column Name="Details_loc4" Table="locales_quest" />
       <Column Name="Details_loc5" Table="locales_quest" />
       <Column Name="Details_loc6" Table="locales_quest" />
       <Column Name="Details_loc7" Table="locales_quest" />
-      <Column Name="Details_loc8" Table="locales_quest" />
+      <!--<Column Name="Details_loc8" Table="locales_quest" />-->
     </FlatArray>
 
     <FlatArray Name="Instructions">
       <Column Name="Objectives" />
+      <Column Name="Objectives_loc1" Table="locales_quest" />
       <Column Name="Objectives_loc2" Table="locales_quest" />
       <Column Name="Objectives_loc3" Table="locales_quest" />
       <Column Name="Objectives_loc4" Table="locales_quest" />
       <Column Name="Objectives_loc5" Table="locales_quest" />
       <Column Name="Objectives_loc6" Table="locales_quest" />
       <Column Name="Objectives_loc7" Table="locales_quest" />
-      <Column Name="Objectives_loc8" Table="locales_quest" />
+      <!--<Column Name="Objectives_loc8" Table="locales_quest" />-->
     </FlatArray>
 
     <FlatArray Name="OfferRewardTexts">
       <Column Name="OfferRewardText" />
+      <Column Name="OfferRewardText_loc1" Table="locales_quest" />
       <Column Name="OfferRewardText_loc2" Table="locales_quest" />
       <Column Name="OfferRewardText_loc3" Table="locales_quest" />
       <Column Name="OfferRewardText_loc4" Table="locales_quest" />
       <Column Name="OfferRewardText_loc5" Table="locales_quest" />
       <Column Name="OfferRewardText_loc6" Table="locales_quest" />
       <Column Name="OfferRewardText_loc7" Table="locales_quest" />
-      <Column Name="OfferRewardText_loc8" Table="locales_quest" />
+      <!--<Column Name="OfferRewardText_loc8" Table="locales_quest" />-->
     </FlatArray>
 
     <FlatArray Name="ProgressTexts">
       <Column Name="RequestItemsText" />
+      <Column Name="RequestItemsText_loc1" Table="locales_quest" />
       <Column Name="RequestItemsText_loc2" Table="locales_quest" />
       <Column Name="RequestItemsText_loc3" Table="locales_quest" />
       <Column Name="RequestItemsText_loc4" Table="locales_quest" />
       <Column Name="RequestItemsText_loc5" Table="locales_quest" />
       <Column Name="RequestItemsText_loc6" Table="locales_quest" />
       <Column Name="RequestItemsText_loc7" Table="locales_quest" />
-      <Column Name="RequestItemsText_loc8" Table="locales_quest" />
+      <!--<Column Name="RequestItemsText_loc8" Table="locales_quest" />-->
     </FlatArray>
 
     <FlatArray Name="EndTexts">
       <Column Name="EndText" />
+      <Column Name="EndText_loc1" Table="locales_quest" />
       <Column Name="EndText_loc2" Table="locales_quest" />
       <Column Name="EndText_loc3" Table="locales_quest" />
       <Column Name="EndText_loc4" Table="locales_quest" />
       <Column Name="EndText_loc5" Table="locales_quest" />
       <Column Name="EndText_loc6" Table="locales_quest" />
       <Column Name="EndText_loc7" Table="locales_quest" />
-      <Column Name="EndText_loc8" Table="locales_quest" />
+      <!--<Column Name="EndText_loc8" Table="locales_quest" />-->
     </FlatArray>
 
     <NestedArray Name="ObjectiveTexts">
       <Flat Name="Text1">
         <Column Name="ObjectiveText1" />
+        <Column Name="ObjectiveText1_loc1" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc2" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc3" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc4" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc5" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc6" Table="locales_quest" />
         <Column Name="ObjectiveText1_loc7" Table="locales_quest" />
-        <Column Name="ObjectiveText1_loc8" Table="locales_quest" />
+        <!--<Column Name="ObjectiveText1_loc8" Table="locales_quest" />-->
       </Flat>
       <Flat Name="Text2">
         <Column Name="ObjectiveText2" />
+        <Column Name="ObjectiveText2_loc1" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc2" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc3" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc4" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc5" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc6" Table="locales_quest" />
         <Column Name="ObjectiveText2_loc7" Table="locales_quest" />
-        <Column Name="ObjectiveText2_loc8" Table="locales_quest" />
+        <!--<Column Name="ObjectiveText2_loc8" Table="locales_quest" />-->
       </Flat>
       <Flat Name="Text3">
         <Column Name="ObjectiveText3" />
+        <Column Name="ObjectiveText3_loc1" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc2" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc3" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc4" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc5" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc6" Table="locales_quest" />
         <Column Name="ObjectiveText3_loc7" Table="locales_quest" />
-        <Column Name="ObjectiveText3_loc8" Table="locales_quest" />
+        <!--<Column Name="ObjectiveText3_loc8" Table="locales_quest" />-->
       </Flat>
       <Flat Name="Text4">
         <Column Name="ObjectiveText4" />
+        <Column Name="ObjectiveText4_loc1" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc2" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc3" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc4" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc5" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc6" Table="locales_quest" />
         <Column Name="ObjectiveText4_loc7" Table="locales_quest" />
-        <Column Name="ObjectiveText4_loc8" Table="locales_quest" />
+        <!--<Column Name="ObjectiveText4_loc8" Table="locales_quest" />-->
       </Flat>
     </NestedArray>
     

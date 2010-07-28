@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Entities
 		internal void TryPetLevelUp()
 		{
 			// reset casterinfo
-			m_casterInfo = null;
+			m_CasterReference = null;
 
 			var nextLevelXp = PetNextLevelExp;
 			var level = Level;

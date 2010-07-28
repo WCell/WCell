@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			if (((Unit)target).MaxPower == 0 || ((Unit)target).PowerType != (PowerType)Effect.MiscValue)
 			{

@@ -29,12 +29,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			if (m_spellEffect.TriggerSpell == null)
 			{
-				log.Warn("Tried to trigger invalid Spell \"{0}\" from Aura {1}", 
+				log.Warn("Tried to trigger invalid Spell \"{0}\" from Aura {1}",
 					SpellEffect.TriggerSpellId, m_spellEffect.Spell);
 			}
 			else
 			{
-				Owner.SpellCast.ValidateAndTrigger(m_spellEffect.TriggerSpell, target, action);
+				SpellCast.ValidateAndTriggerNew(m_spellEffect.TriggerSpell, m_aura.CasterReference, Owner, target, m_aura.UsedItem, action);
 			}
 		}
 	}
