@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				var value = EffectValue;
 				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
 				{
-					var bonus = GetBleedBonus();
+					var bonus = GetBleedBonusPercent();
 					value = ((value*bonus) + 50)/100;
 				}
 
@@ -41,7 +41,10 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		private int GetBleedBonus()
+		/// <summary>
+		/// Extra damage to be applied against a bleeding target
+		/// </summary>
+		private int GetBleedBonusPercent()
 		{
 			var bonus = 0;
 			{

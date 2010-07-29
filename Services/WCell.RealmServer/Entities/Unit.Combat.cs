@@ -350,9 +350,10 @@ namespace WCell.RealmServer.Entities
 					// AoE spell
 					action.IsDot = false;
 
+					var i = 0;
 					foreach (var targ in ability.Targets)
 					{
-						var dmg = GetWeaponDamage(weapon, ability);
+						var dmg = GetWeaponDamage(weapon, ability, i++);
 						action.Reset(this, (Unit) targ, weapon, dmg);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
@@ -369,6 +370,7 @@ namespace WCell.RealmServer.Entities
 					// calc damage
 					action.Damage = GetWeaponDamage(weapon, m_pendingCombatAbility);
 					if (!action.DoAttack() &&
+						ability.Spell != null &&
 						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
 					{
 						// missed and is not attacking with both weapons -> don't trigger spell
@@ -378,7 +380,7 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// Impact and trigger remaining effects (if not cancelled)
-				if (!ability.Spell.IsRangedAbility)
+				if (ability.Spell != null && ability.Spell.IsRangedAbility)
 				{
 					ability.Impact(ability.Spell.IsOnNextStrike);
 				}
@@ -408,7 +410,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns random damage for the given weapon
 		/// </summary>
-		public int GetWeaponDamage(IWeapon weapon, SpellCast pendingAbility)
+		public int GetWeaponDamage(IWeapon weapon, SpellCast pendingAbility, int targetNo = 0)
 		{
 			int damage;
 			if (weapon == m_offhandWeapon)
@@ -429,18 +431,18 @@ namespace WCell.RealmServer.Entities
 
 			if (pendingAbility != null && pendingAbility.IsCasting)
 			{
-				// get boni, damage and let the Spell impact
+				// get bonuses, damage and let the Spell impact
 				var multiplier = 100;
 
 				foreach (var effectHandler in pendingAbility.Handlers)
 				{
 					if (effectHandler.Effect.IsStrikeEffectFlat)
 					{
-						damage += effectHandler.CalcEffectValue();
+						damage += effectHandler.CalcDamageValue(targetNo);
 					}
 					else if (effectHandler.Effect.IsStrikeEffectPct)
 					{
-						multiplier += effectHandler.CalcEffectValue();
+						multiplier += effectHandler.CalcDamageValue(targetNo);
 					}
 				}
 				damage = (damage * multiplier + 50) / 100;

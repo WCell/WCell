@@ -523,6 +523,12 @@ namespace WCell.RealmServer.Spells
 			return targets.FirstOrDefault(HasTarget) != 0;
 		}
 
+		public void CopyValuesTo(SpellEffect effect)
+		{
+			effect.BasePoints = BasePoints;
+			effect.DiceSides = DiceSides;
+		}
+
 		#region Formulars
 		public int CalcEffectValue(ObjectReference casterReference)
 		{
@@ -632,9 +638,6 @@ namespace WCell.RealmServer.Spells
 		#region Dump
 		public void DumpInfo(TextWriter writer, string indent)
 		{
-			if (EffectType == SpellEffectType.None)
-				return;
-
 			writer.WriteLine(indent + "Effect: " + this);
 
 			indent += "\t";
@@ -956,6 +959,25 @@ namespace WCell.RealmServer.Spells
 		public bool MatchesSpell(Spell spell)
 		{
 			return spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask);
+		}
+
+		public int GetMultipliedValue(Character charCaster, int val, int currentTargetNo)
+		{
+			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
+			{
+				return val;
+			}
+
+			var dmgMod = Spell.DamageMultipliers[EffectIndex];
+			if (charCaster != null)
+			{
+				dmgMod = charCaster.PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
+			}
+			if (dmgMod != 1)
+			{
+				return val = ((float) (Math.Pow(dmgMod, currentTargetNo)*val)).RoundInt();
+			}
+			return val;
 		}
 	}
 }

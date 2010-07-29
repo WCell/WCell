@@ -219,7 +219,7 @@ namespace WCell.RealmServer.Spells
                     spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
                     spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
                     spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.AllowedShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
+                    spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
                     spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
                     spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
                     spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
@@ -327,11 +327,17 @@ namespace WCell.RealmServer.Spells
 
 					var effects = new List<SpellEffect>(3);     // 71 - 127
 					int effectStart = currentIndex;
+
 					for (int i = 0; i < 3; i++)
 					{
-						SpellEffect effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
-						if (effect != null && effect.EffectType != SpellEffectType.None)
+						var effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
+						if (effect != null && 
+							(effect.EffectType != SpellEffectType.None || 
+								effect.BasePoints > 0 ||
+								effect.AuraType != 0 ||
+								effect.TriggerSpellId != 0))
 						{
+
 							effects.Add(effect);
 						}
 					}

@@ -567,8 +567,8 @@ namespace WCell.RealmServer.Spells.Auras
 				!m_spell.IsPassive ||
 				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictions(owner.Inventory) == SpellFailedReason.Ok) &&
 				(!m_spell.IsModalShapeshiftDependentAura ||
-					m_spell.AllowedShapeshiftMask == 0 ||
-					m_spell.AllowedShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
+					m_spell.RequiredShapeshiftMask == 0 ||
+					m_spell.RequiredShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
 			{
 				IsActivated = true;
 			}
@@ -1025,10 +1025,11 @@ namespace WCell.RealmServer.Spells.Auras
 					if (handler.SpellEffect.IsProc)
 					{
 						// only trigger proc effects or all effects, if there arent any proc-specific effects
-						if ((!handler.SpellEffect.HasAffectMask ||
-							(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
+						if (!handler.SpellEffect.HasAffectMask ||
+							action.Spell == null || 
+							action.Spell.MatchesMask(handler.SpellEffect.AffectMask))
 						{
-							// only trigger if no AffectMask is set or the triggerer matches the proc mask
+							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							canProc = true;
 							break;
 						}
@@ -1064,10 +1065,11 @@ namespace WCell.RealmServer.Spells.Auras
 					if (handler.SpellEffect.IsProc)
 					{
 						// only trigger proc effects or all effects, if there arent any proc-specific effects
-						if ((!handler.SpellEffect.HasAffectMask ||
-							(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
+						if (!handler.SpellEffect.HasAffectMask ||
+							action.Spell == null ||
+							action.Spell.MatchesMask(handler.SpellEffect.AffectMask))
 						{
-							// only trigger if no AffectMask is set or the trigger matches the proc mask
+							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							handler.OnProc(triggerer, action);
 							proced = true;
 						}

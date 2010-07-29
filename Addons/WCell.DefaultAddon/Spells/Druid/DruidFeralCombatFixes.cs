@@ -30,14 +30,14 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Sharpened Claws only works "while in Bear, Dire Bear or Cat Form"
 			SpellLineId.DruidFeralCombatSharpenedClaws.Apply(spell =>
 			{
-				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
 			});
 
 			// Primal Fury is triggered by critical hits and only active in "in Bear and Dire Bear Form"
 			SpellLineId.DruidFeralCombatPrimalFury.Apply(spell =>
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
-				spell.AllowedShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 
 			// Heart of the wild: "while in Bear or Dire Bear Form your Stamina is increased by $s3% and while in Cat Form your attack power is increased by $s2%."
@@ -61,7 +61,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Leader of the Pack toggles an Aura "While in Cat, Bear or Dire Bear Form"
 			SpellLineId.DruidFeralCombatLeaderOfThePack.Apply(spell =>
 			{
-				spell.AllowedShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 
 				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
@@ -124,7 +124,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				// only as cat
 				// triggers the dodge effect spell
-				spell.AllowedShapeshiftMask = ShapeshiftMask.Cat;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 				spell.AddTriggerSpellEffect(triggerSpell);
 			},
 			origSpell);
@@ -134,7 +134,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// "increases your chance to dodge while in Cat Form, Bear Form and Dire Bear Form"
 				// must be passive
 				spell.Attributes |= SpellAttributes.Passive;
-				spell.AllowedShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat | ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			},
 			triggerSpell);
 		}

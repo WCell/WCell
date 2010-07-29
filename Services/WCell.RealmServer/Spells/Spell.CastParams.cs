@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Spells
 					return SpellFailedReason.NotShapeshift;
 				}
 			}
-			else if (!AllowedShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			else if (!RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
 			{
 				// our mask did not pass -> do the default checks
 				var shapeshiftEntry = caster.ShapeshiftEntry;
@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Spells
 
 				if (shapeshifted)
 				{
-					if (AllowedShapeshiftMask != 0)
+					if (RequiredShapeshiftMask != 0)
 					{
 						// When shapeshifted, can only use spells that allow this form
 						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))

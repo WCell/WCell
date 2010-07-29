@@ -1288,9 +1288,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "AttributesExD: " + AttributesExD);
 			}
-			if ((int)AllowedShapeshiftMask != 0)
+			if ((int)RequiredShapeshiftMask != 0)
 			{
-				writer.WriteLine(indent + "ShapeshiftMask: " + AllowedShapeshiftMask);
+				writer.WriteLine(indent + "ShapeshiftMask: " + RequiredShapeshiftMask);
 			}
 			if ((int)ExcludeShapeshiftMask != 0)
 			{
@@ -1526,7 +1526,7 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "PreventionType: " + PreventionType);
 			}
 
-			if (DamageMultipliers.Where(mult => mult != 1).Count() > 0)
+			if (DamageMultipliers.Any(mult => mult != 1))
 			{
 				writer.WriteLine(indent + "DamageMultipliers: " + DamageMultipliers.ToString(", "));
 			}

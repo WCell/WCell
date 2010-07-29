@@ -234,7 +234,7 @@ namespace WCell.RealmServer.Spells
 									Skill == null && Talent == null;
 
 			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
-			IsModalShapeshiftDependentAura = IsPassive && (AllowedShapeshiftMask != 0 || HasShapeshiftDependentEffects);
+			IsModalShapeshiftDependentAura = IsPassive && (RequiredShapeshiftMask != 0 || HasShapeshiftDependentEffects);
 
 			// procs
 			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
