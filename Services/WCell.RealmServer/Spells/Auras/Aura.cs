@@ -751,7 +751,7 @@ namespace WCell.RealmServer.Spells.Auras
 				(handler.SpellEffect.RequiredShapeshiftMask == 0 ||
 						(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))))
 				{
-					handler.IsActive = true;
+					handler.DoApply();
 				}
 
 				if (!IsAdded)

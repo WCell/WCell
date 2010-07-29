@@ -81,7 +81,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var dummy = spell.GetEffect(AuraType.Dummy);
 				dummy.IsProc = true;
 				dummy.AuraEffectHandlerCreator = () => new ImprovedLeaderOfThePackProcHandler();
-			}, 
+			},
 			SpellId.LeaderOfThePack);
 
 			// Primal Tenacity has the wrong effect type: "reduces all damage taken while stunned by $s2% while in Cat Form."
@@ -111,7 +111,31 @@ namespace WCell.Addons.Default.Spells.Druid
 			},
 			SpellId.DruidFeralCombatNurturingInstinctRank2);
 
+			// Infected Wounds: "Your Shred, Maul, and Mangle attacks cause an Infected Wound in the target"
+			SpellLineId.DruidFeralCombatInfectedWounds.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
+				// can only be proc'ed by a certain set of spells:
+				effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidFeralCombatMangleBear, SpellLineId.DruidMangleCat);
+			});
+
+			// King of the Jungle has 2 dummies for shapeshift-restricted aura effects
+			SpellLineId.DruidFeralCombatKingOfTheJungle.Apply(spell =>
+			{
+				// "While using your Enrage ability in Bear Form or Dire Bear Form, your damage is increased by $s1%"
+				var effect1 = spell.Effects[0];
+				effect1.EffectType = SpellEffectType.ApplyAura;
+				effect1.AuraType = AuraType.ModDamageDonePercent;
+				effect1.AddToAffectMask(SpellLineId.DruidEnrage);
+				effect1.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+
+				// "your Tiger's Fury ability also instantly restores $s2 energy"
+				var effect2 = spell.Effects[1];
+				effect2.EffectType = SpellEffectType.Energize;
+				effect2.AddToAffectMask(SpellLineId.DruidTigersFury);
+			});
+			
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
 		}
