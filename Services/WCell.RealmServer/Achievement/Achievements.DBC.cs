@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Achievements;
+using WCell.Constants.World;
 using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Achievement
@@ -15,7 +16,7 @@ namespace WCell.RealmServer.Achievement
             var achievementEntry = new AchievementEntry();
             achievementEntry.ID = (AchievementEntryId)GetUInt32(rawData, 0);
             achievementEntry.FactionFlag = GetUInt32(rawData, 1);
-            achievementEntry.MapID = GetUInt32(rawData, 2);
+            achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
             achievementEntry.Name = new string[16];
             for (int i = 0; i < 16; i++)
                 achievementEntry.Name[i] = GetString(rawData, i + 4);
