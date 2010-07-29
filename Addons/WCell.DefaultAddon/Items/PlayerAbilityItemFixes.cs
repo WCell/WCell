@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Items;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 
 namespace WCell.Addons.Default.Items
@@ -22,8 +23,12 @@ namespace WCell.Addons.Default.Items
 			// some mana gems are not consumables, like they should be:
 			ItemMgr.Apply(item =>
 			{
+				var spell = item.GetSpell(ItemSpellTrigger.Use);
+				spell.ConsumesCharges = true;
+				spell.Charges = 3;
 				item.Class = ItemClass.Consumable;
-			}, ItemId.ManaAgate);
+				item.UniqueCount = 1;
+			}, ItemId.ManaAgate, ItemId.ManaSapphire, ItemId.ManaRuby, ItemId.ManaJade, ItemId.ManaEmerald, ItemId.ManaCitrine);
 		}
 	}
 }
