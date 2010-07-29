@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Commands
 					{
 						if (!silent)
 						{
-							trigger.Reply(LangKey.MustNotUseCommand, cmd.Name);
+							trigger.Reply(RealmLangKey.MustNotUseCommand, cmd.Name);
 						}
 						return false;
 					}

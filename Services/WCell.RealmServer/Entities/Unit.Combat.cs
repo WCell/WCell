@@ -725,7 +725,7 @@ namespace WCell.RealmServer.Entities
 			var multiplier = 200;
 			multiplier -= (int)victim.GetResiliencePct();
 			multiplier += victim.GetIntMod(StatModifierInt.CritDamageBonusPct);
-			return (dmg * multiplier + 100) / 200;
+			return (dmg * multiplier + 50) / 100;
 		}
 
 		/// <summary>

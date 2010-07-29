@@ -184,12 +184,13 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Achievement\AchievementCriteria.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
-    <Compile Include="Lang\LangKey.cs" />
+    <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />

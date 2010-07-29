@@ -1064,7 +1064,7 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, message);
 		}
 
-		public void Say(LangKey key, params object[] args)
+		public void Say(RealmLangKey key, params object[] args)
 		{
 			Say(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
@@ -1074,7 +1074,7 @@ namespace WCell.RealmServer.Entities
 			Say(string.Format(message, args));
 		}
 
-		public void Yell(LangKey key, params object[] args)
+		public void Yell(RealmLangKey key, params object[] args)
 		{
 			Yell(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
@@ -1089,7 +1089,7 @@ namespace WCell.RealmServer.Entities
 			Yell(string.Format(message, args));
 		}
 
-		public void Emote(LangKey key, params object[] args)
+		public void Emote(RealmLangKey key, params object[] args)
 		{
 			Emote(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
@@ -1513,7 +1513,7 @@ namespace WCell.RealmServer.Entities
 		public bool CancelAreaAura(Spell spell)
 		{
 			var aura = GetAreaAura(spell);
-			if (spell != null)
+			if (aura != null)
 			{
 				return CancelAreaAura(aura);
 			}

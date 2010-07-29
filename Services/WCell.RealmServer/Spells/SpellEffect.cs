@@ -267,7 +267,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// All specific SpellLines that are affected by this SpellEffect
 		/// </summary>
-		public List<SpellLine> AffectedLines
+		public IEnumerable<SpellLine> AffectedLines
 		{
 			get
 			{
@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Spells
 				{
 					return SpellHandler.GetAffectedSpellLines(Spell.ClassId, AffectMask);
 				}
-				return new List<SpellLine>(0);
+				return new SpellLine[0];
 			}
 		}
 
@@ -660,7 +660,7 @@ namespace WCell.RealmServer.Spells
 			if (AffectMask[0] != 0 || AffectMask[1] != 0 || AffectMask[2] != 0)
 			{
 				var lines = AffectedLines;
-				writer.WriteLine(indent + "Affects: {0} ({1}{2}{3})", lines.Count > 0 ? lines.ToString(", ") : "<Nothing>",
+				writer.WriteLine(indent + "Affects: {0} ({1}{2}{3})", lines.Count() > 0 ? lines.ToString(", ") : "<Nothing>",
 					AffectMask[0].ToString("X8"), AffectMask[1].ToString("X8"), AffectMask[2].ToString("X8"));
 			}
 
@@ -952,5 +952,10 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#endregion
+
+		public bool MatchesSpell(Spell spell)
+		{
+			return spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask);
+		}
 	}
 }

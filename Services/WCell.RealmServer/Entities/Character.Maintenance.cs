@@ -240,7 +240,7 @@ namespace WCell.RealmServer.Entities
 					m_reputations.Load();
 					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
-					AddPostUpdateMessage(() => m_auras.PlayerInitialize(auras));
+					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
 
 					if (QuestMgr.Loaded)
 					{
@@ -594,7 +594,7 @@ namespace WCell.RealmServer.Entities
 					if (GodMode)
 					{
 						//Notify("Your GodMode is " + (GodMode ? "ON" : "OFF") + "!");
-						Notify(LangKey.GodModeIsActivated);
+						Notify(RealmLangKey.GodModeIsActivated);
 					}
 
 					var login = LoggedIn;

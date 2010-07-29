@@ -56,7 +56,7 @@ namespace WCell.RealmServer
 
 		public override string FilePath
 		{
-			get { return RealmServer.Instance.Configuration.GetFullPath(ConfigFilename); }
+			get { return GetFullPath(ConfigFilename); }
 			set
 			{// cannot modify Filename
 				throw new InvalidOperationException("Cannot modify Filename");
@@ -412,7 +412,7 @@ namespace WCell.RealmServer
 			set { contentDirName = value; }
 		}
 
-		public string ContentDir
+		public static string ContentDir
 		{
 			get { return GetFullPath(contentDirName); }
 		}
@@ -454,17 +454,16 @@ namespace WCell.RealmServer
 			return path;
 		}
 
-
 		public static string GetContentPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{
-				return Path.Combine(s_instance.ContentDir, file);
+				return Path.Combine(GetFullPath(ContentDir), file);
 			}
 			return file;
 		}
 
-		public string GetFullPath(string file)
+		public static string GetFullPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{

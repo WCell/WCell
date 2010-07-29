@@ -1,3 +1,4 @@
-- added TriggerDelayedEffectHandler
-- improved & fixed select commands to also set the context correctly
-- big SpellCast refactoring chunk (#2)
+- passive Auras are now re-applied when modifiers that affect them, change
+- added localization to AuthServer / more to Achievements
+- fixed crit bonus calculation / passive pulsing auras / loading/toggling of areaauras / more
+- implemented lotp/improved lotp (fixed many more implicitely)

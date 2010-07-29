@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Region", "Rgn");
 			EnglishParamInfo = "";
-			Description = new TranslatableItem(LangKey.CmdRegionDescription);
+			Description = new TranslatableItem(RealmLangKey.CmdRegionDescription);
 		}
 
 		#region SpawnRegion
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Commands
 						if (!region.IsSpawned)
 						{
 							region.SpawnRegion();
-							trigger.Reply(LangKey.CmdRegionSpawnResponse, region.ToString());
+							trigger.Reply(RealmLangKey.CmdRegionSpawnResponse, region.ToString());
 						}
 					});
 				}
@@ -60,8 +60,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Spawn", "S");
-				ParamInfo = new TranslatableItem(LangKey.CmdRegionSpawnParamInfo);
-				Description = new TranslatableItem(LangKey.CmdRegionSpawnDescription);
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdRegionSpawnParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionSpawnDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Commands
 					{
 						// spawn all
 						SpawnAllRegions(trigger);
-						trigger.Reply(LangKey.CmdRegionSpawnResponse1);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnResponse1);
 						return;
 					}
 					else
@@ -83,7 +83,7 @@ namespace WCell.RealmServer.Commands
 						region = World.GetRegion(regionId);
 						if (region == null)
 						{
-							trigger.Reply(LangKey.CmdRegionSpawnError1);
+							trigger.Reply(RealmLangKey.CmdRegionSpawnError1);
 							return;
 						}
 					}
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (trigger.Args.Target == null)
 					{
-						trigger.Reply(LangKey.CmdRegionSpawnError2);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError2);
 						return;
 					}
 					region = trigger.Args.Target.Region;
@@ -100,25 +100,25 @@ namespace WCell.RealmServer.Commands
 
 				if (region.IsSpawned)
 				{
-					trigger.Reply(LangKey.CmdRegionSpawnError3);
+					trigger.Reply(RealmLangKey.CmdRegionSpawnError3);
 				}
 				else
 				{
-					trigger.Reply(LangKey.CmdRegionSpawnResponse2, region.Name);
+					trigger.Reply(RealmLangKey.CmdRegionSpawnResponse2, region.Name);
 					if (!GOMgr.Loaded)
 					{
-						trigger.Reply(LangKey.CmdRegionSpawnError4);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError4);
 					}
 
 					if (!NPCMgr.Loaded)
 					{
-						trigger.Reply(LangKey.CmdRegionSpawnError5);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError5);
 					}
 
 					region.AddMessage(() =>
 					{
 						region.SpawnRegion();
-						trigger.Reply(LangKey.CmdRegionSpawnResponse3, region);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnResponse3, region);
 					});
 				}
 			}
@@ -133,8 +133,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Clear");
-				ParamInfo = new TranslatableItem(LangKey.CmdRegionClearParamInfo);
-				Description = new TranslatableItem(LangKey.CmdRegionClearDescription);
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdRegionClearParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionClearDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Commands
 					region = World.GetRegion(regionId);
 					if (region == null)
 					{
-						trigger.Reply(LangKey.CmdRegionClearError1);
+						trigger.Reply(RealmLangKey.CmdRegionClearError1);
 						return;
 					}
 				}
@@ -154,7 +154,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (trigger.Args.Character == null)
 					{
-						trigger.Reply(LangKey.CmdRegionClearError2);
+						trigger.Reply(RealmLangKey.CmdRegionClearError2);
 						return;
 					}
 					region = trigger.Args.Character.Region;
@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Commands
 				region.AddMessage(() =>
 				{
 					region.RemoveObjects();
-					trigger.Reply(LangKey.CmdRegionClearResponse, region.ToString());
+					trigger.Reply(RealmLangKey.CmdRegionClearResponse, region.ToString());
 				});
 			}
 		}
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Commands
 			{
 				Init("Updates", "Upd");
 				EnglishParamInfo = "0|1";
-				Description = new TranslatableItem(LangKey.CmdRegionUpdateDescription);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionUpdateDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Commands
 						}
 					}
 				}
-				trigger.Reply(LangKey.Done);
+				trigger.Reply(RealmLangKey.Done);
 			}
 		}
 		#endregion
@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Commands
 			{
 				Init("List", "L");
 				EnglishParamInfo = "";
-				Description = new TranslatableItem(LangKey.CmdRegionListDescription);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionListDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -222,7 +222,7 @@ namespace WCell.RealmServer.Commands
 				var regions = World.GetAllRegions();
 				if (regions != null)
 				{
-					trigger.Reply(LangKey.CmdRegionListResponse);
+					trigger.Reply(RealmLangKey.CmdRegionListResponse);
 					foreach (var rgn in regions)
 					{
 						if (rgn.IsRunning)

@@ -630,14 +630,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsProfession = !IsRangedAbility && Ability != null && Ability.Skill.Category == SkillCategory.Profession;
-
-			IsEnhancer = SpellClassSet != 0 && !SpellClassMask.Contains(val => val != 0) &&
-			             HasEffectWith(effect => effect.AffectMask.Contains(val => val != 0));
-
+			IsEnhancer = HasEffectWith(effect => effect.IsEnhancer);
 			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
-
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
-
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
 			if (Id == 18425)

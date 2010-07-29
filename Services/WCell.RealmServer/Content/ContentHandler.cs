@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Content
 
 		public static void Initialize(Assembly asm)
 		{
-			s_implementationRoot = Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Impl");
+			s_implementationRoot = Path.Combine(RealmServerConfiguration.ContentDir, "Impl");
 			s_implementationFolder = Path.Combine(s_implementationRoot, ContentProviderName);
 
 			var defs = DataHolderMgr.CreateDataHolderDefinitionArray(asm);

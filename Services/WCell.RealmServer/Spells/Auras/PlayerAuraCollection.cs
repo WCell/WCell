@@ -28,9 +28,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		#region Overrides
-		public override void AddAura(Aura aura, bool update)
+		public override void AddAura(Aura aura, bool start)
 		{
-			base.AddAura(aura, update);
+			base.AddAura(aura, start);
 			if (aura.Spell.IsPassive)
 			{
 				if (aura.Spell.HasItemRequirements)
@@ -93,9 +93,9 @@ namespace WCell.RealmServer.Spells.Auras
 				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
 				foreach (var aura in itemRestrictedAuras)
 				{
-					if (!aura.IsActive)
+					if (!aura.IsActivated)
 					{
-						aura.IsActive = 
+						aura.IsActivated = 
 							CheckRestrictions(aura, false) &&
 							aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
 					}
@@ -110,9 +110,9 @@ namespace WCell.RealmServer.Spells.Auras
 				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
 				foreach (var aura in itemRestrictedAuras)
 				{
-					if (aura.IsActive)
+					if (aura.IsActivated)
 					{
-						aura.IsActive =
+						aura.IsActivated =
 							CheckRestrictions(aura, false) &&
 							aura.Spell.CheckItemRestrictionsWithout(plr.Inventory, item) == SpellFailedReason.Ok;
 					}
@@ -133,11 +133,11 @@ namespace WCell.RealmServer.Spells.Auras
 						// the entire Aura is toggled
 						if (CheckRestrictions(aura))
 						{
-							aura.IsActive = true; // Aura is running
+							aura.IsActivated = true; // Aura is running
 						}
 						else
 						{
-							aura.IsActive = false;	// Aura is off
+							aura.IsActivated = false;	// Aura is off
 							continue;
 						}
 					}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NLog;
 using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
@@ -22,7 +23,18 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		protected override void Apply()
 		{
 			// add aura
-			activeToggleAura = Owner.Auras.CreateAura(m_aura.CasterReference, ToggleAuraSpell, true);
+			// first check, if Aura already exists (eg. because it was loaded from DB)
+			activeToggleAura = Owner.Auras[ToggleAuraSpell];
+			if (activeToggleAura == null)
+			{
+				activeToggleAura = Owner.Auras.CreateAura(m_aura.CasterReference, ToggleAuraSpell, true);
+				activeToggleAura.CanBeSaved = false;
+			}
+			else
+			{
+				LogManager.GetCurrentClassLogger().Warn("Tried to toggle on already created Aura \"{0}\" on {1}", activeToggleAura, Owner);
+				activeToggleAura.IsActivated = true;
+			}
 		}
 
 		protected override void Remove(bool cancelled)

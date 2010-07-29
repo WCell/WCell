@@ -26,12 +26,11 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
-			var holder = m_aura.Auras.Owner;
+			var holder = Owner;
 			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
-				m_aura.CasterReference.UnitMaster != null)
+				m_aura.Caster != null)
 			{
-				m_aura.Auras.Owner.BurnPower(m_aura.CasterReference.UnitMaster, m_spellEffect,
-					holder.GetLeastResistantSchool(m_spellEffect.Spell), EffectValue, m_spellEffect.ProcValue);
+				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.Caster, m_spellEffect);
 			}
 		}
 

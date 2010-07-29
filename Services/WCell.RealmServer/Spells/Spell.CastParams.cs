@@ -466,10 +466,10 @@ namespace WCell.RealmServer.Spells
 		#region Check Proc
 		public bool CanProcBeTriggeredBy(Unit owner, IUnitAction action, bool active)
 		{
-			if (CheckCasterConstraints(owner) != SpellFailedReason.Ok)
-			{
-				return false;
-			}
+			//if (CheckCasterConstraints(owner) != SpellFailedReason.Ok)
+			//{
+			//    return false;
+			//}
 
 			if (action.Spell != null)
 			{

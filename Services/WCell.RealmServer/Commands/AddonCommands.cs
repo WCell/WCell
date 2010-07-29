@@ -32,11 +32,11 @@ namespace WCell.RealmServer.Commands
                     ++i;
                     if (context.Addon != null)
                     {
-						trigger.Reply(i + ". " + trigger.Translate(LangKey.Addon) + " " + context.Addon);
+						trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Addon) + " " + context.Addon);
                     }
                     else if (lib)
                     {
-						trigger.Reply(i + ". " + trigger.Translate(LangKey.Library) + " " + context.Assembly);
+						trigger.Reply(i + ". " + trigger.Translate(RealmLangKey.Library) + " " + context.Assembly);
                     }
                 }
             }

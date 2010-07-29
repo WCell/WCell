@@ -128,7 +128,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				var haction = (HealAction)action;
 				var value = (haction.Value * EffectValue + 50) / 100;
-				Owner.Energize(action.Attacker, value, SpellEffect);
+				Owner.Energize(value, action.Attacker, SpellEffect);
 			}
 		}
 	}

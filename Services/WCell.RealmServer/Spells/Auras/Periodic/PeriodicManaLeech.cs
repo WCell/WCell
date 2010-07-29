@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				// ugly fix around
 				val = target.BasePower * val / 100;
 			}
-			target.LeechPower(m_aura.Caster, val, 1f, m_spellEffect);
+			target.LeechPower(val, 1f, m_aura.Caster, m_spellEffect);
 		}
 	}
 };

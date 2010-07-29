@@ -83,6 +83,7 @@ namespace WCell.RealmServer.Spells
 			get { return Owner as Character; }
 		}
 
+		#region Add
 		public void AddNew(Spell spell)
 		{
 			AddSpell(spell, true);
@@ -143,21 +144,9 @@ namespace WCell.RealmServer.Spells
 				base.AddSpell(spell);
 			}
 		}
+		#endregion
 
-		public override void Clear()
-		{
-			foreach (var spell in m_byId.Values.ToArray())
-			{
-				OnRemove(spell);
-				if (m_sendPackets)
-				{
-					SpellHandler.SendSpellRemoved(OwnerChar, spell.Id);
-				}
-			}
-
-			m_byId.Clear();
-		}
-
+		#region Remove/Replace/Clear
 		/// <summary>
 		/// Replaces or (if newSpell == null) removes oldSpell.
 		/// </summary>
@@ -239,6 +228,22 @@ namespace WCell.RealmServer.Spells
 			Owner = owner;
 		}
 
+		public override void Clear()
+		{
+			foreach (var spell in m_byId.Values.ToArray())
+			{
+				OnRemove(spell);
+				if (m_sendPackets)
+				{
+					SpellHandler.SendSpellRemoved(OwnerChar, spell.Id);
+				}
+			}
+
+			m_byId.Clear();
+		}
+		#endregion
+
+		#region Init
 		internal void PlayerInitialize()
 		{
 			// re-apply passive effects
@@ -277,11 +282,44 @@ namespace WCell.RealmServer.Spells
 			//    }
 			//}
 		}
+		#endregion
 
 		#region Enhancers
-		public void RemoveEnhancer(SpellEffect effect)
-		{
 
+		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		private void OnModifierChange(AddModifierEffectHandler modifier)
+		{
+			foreach (var aura in Owner.Auras)
+			{
+				if (aura.IsActivated && !aura.Spell.IsEnhancer && modifier.SpellEffect.MatchesSpell(aura.Spell))
+				{
+					// activated, passive Aura, affected by this modifier -> Needs to re-apply
+					aura.ReApplyNonPeriodicEffects();
+				}
+			}
 		}
 
 		/// <summary>
@@ -324,8 +362,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var modifier = SpellModifiersPct[i];
 				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
+					modifier.SpellEffect.MatchesSpell(spell))
 				{
 					amount += modifier.SpellEffect.ValueMin;
 				}
@@ -343,8 +380,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var modifier = SpellModifiersFlat[i];
 				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
+					modifier.SpellEffect.MatchesSpell(spell))
 				{
 					amount += modifier.SpellEffect.ValueMin;
 				}
@@ -361,8 +397,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < SpellModifiersFlat.Count; i++)
 				{
 					var modifier = SpellModifiersFlat[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
+					if (modifier.SpellEffect.MatchesSpell(spell))
 					{
 						if (modifier.Charges > 0)
 						{
@@ -377,8 +412,7 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < SpellModifiersPct.Count; i++)
 				{
 					var modifier = SpellModifiersPct[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
+					if (modifier.SpellEffect.MatchesSpell(spell))
 					{
 						if (modifier.Charges > 0)
 						{

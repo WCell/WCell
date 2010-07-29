@@ -206,7 +206,7 @@ namespace WCell.Util.Lang
 
 		public string Translate(Key key, params object[] args)
 		{
-			return Translate(DefaultLocale, key);
+			return Translate(DefaultLocale, key, args);
 		}
 
 		public string Translate(Locale locale, Key key, params object[] args)

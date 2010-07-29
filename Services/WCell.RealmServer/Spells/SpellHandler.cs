@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Spells
 			{
 				Id = id,
 				SpellId = (SpellId)id,
-				Name = "[" +RealmLocalizer.Instance.Translate(LangKey.Custom).ToUpper() + "] " + name,
+				Name = "[" +RealmLocalizer.Instance.Translate(RealmLangKey.Custom).ToUpper() + "] " + name,
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};
@@ -255,10 +255,10 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Returns a list of all SpellLines that are affected by the given spell family set (very long bit field)
 		/// </summary>
-		public static List<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
+		public static IEnumerable<SpellLine> GetAffectedSpellLines(ClassId clss, uint[] mask)
 		{
 			var lines = SpellLines.GetLines(clss);
-			var affected = new List<SpellLine>();
+			var affected = new HashSet<SpellLine>();
 			if (lines != null)
 			{
 				foreach (var line in lines)
@@ -272,6 +272,17 @@ namespace WCell.RealmServer.Spells
 						}
 					}
 				}
+				//foreach (var spell in ById)
+				//{
+				//    if (spell != null && spell.ClassId == clss && spell.MatchesMask(mask))
+				//    {
+				//        if (spell.Line != null)
+				//        {
+				//            affected.Add(line);
+				//        }
+				//        break;
+				//    }
+				//}
 			}
 			return affected;
 		}

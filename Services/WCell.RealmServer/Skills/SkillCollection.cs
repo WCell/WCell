@@ -88,16 +88,13 @@ namespace WCell.RealmServer.Skills
 			if (chance > 100) chance = 100;
 
 			return chance;
-
 		}
 
 
 		public void GainWeaponSkill(int targetLevel, IWeapon weapon)
 		{
 			Skill skill;
-			m_skills.TryGetValue(weapon.Skill, out skill);
-
-			if (skill != null)
+			if (m_skills.TryGetValue(weapon.Skill, out skill))
 			{
 				int chance = GetSkillGainChance(targetLevel, skill);
 

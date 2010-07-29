@@ -22,10 +22,10 @@ namespace WCell.AuthServer.Commands
 
 			public override void Process(CmdTrigger<AuthServerCmdArgs> trigger)
 			{
-				if (AuthenticationServer.Realms.Count > 0)
+				if (AuthenticationServer.RealmCount > 0)
 				{
 					int i = 1;
-					foreach (var realm in AuthenticationServer.Realms.Values)
+					foreach (var realm in AuthenticationServer.Realms)
 					{
 						trigger.Reply("{0}. {1}", i++, realm);
 					}
@@ -65,7 +65,7 @@ namespace WCell.AuthServer.Commands
 		{
 			var arg = trigger.Text.Remainder;
 			uint no;
-			var count = AuthenticationServer.Realms.Count;
+			var count = AuthenticationServer.RealmCount;
 			if (count > 0)
 			{
 				if (uint.TryParse(arg, out no))

@@ -577,10 +577,52 @@ namespace WCell.RealmServer.Commands
 
 		public override bool RequiresCharacter
 		{
-			get
+			get { return true; }
+		}
+	}
+	#endregion
+
+	#region MakeWild
+	public class MakeWildCommand : RealmServerCommand
+	{
+
+		protected override void Initialize()
+		{
+			Init("MakeWild");
+			EnglishParamInfo = "";
+			EnglishDescription = "Makes the current Target wild (i.e. removes it from it's owner).";
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var target = trigger.Args.Target;
+			var chr = trigger.Args.Character;
+			if (target == chr)
 			{
-				return true;
+				target = chr.Target;
 			}
+
+			if (!(target is NPC))
+			{
+				trigger.Reply("Invalid target - Need to target an NPC.");
+			}
+			else
+			{
+				var npc = (NPC)target;
+				if (trigger.Text.NextModifiers() == "p")
+				{
+					chr.MakePet(npc, 0);
+				}
+				else
+				{
+					chr.Enslave(npc, 0);
+				}
+			}
+		}
+
+		public override bool RequiresCharacter
+		{
+			get { return true; }
 		}
 	}
 	#endregion

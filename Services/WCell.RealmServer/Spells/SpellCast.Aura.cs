@@ -98,8 +98,13 @@ namespace WCell.RealmServer.Spells
 				if (dynObj != null || (CasterObject != null && (allowDead || !(CasterObject is Unit) || ((Unit)CasterObject).IsAlive)))
 				{
 					// AreaAura is created at the target location if it is a DynamicObject, else its applied to the caster
-					var areaAura = new AreaAura(dynObj ?? CasterObject, m_spell);
-					auras.Add(areaAura);
+					var aaura = new AreaAura(dynObj ?? CasterObject, m_spell);
+					if (dynObj != null)
+					{
+						// also start the area aura
+						auras.Add(aaura);
+					}
+					// else: Is coupled to an Aura instance
 				}
 				else
 				{

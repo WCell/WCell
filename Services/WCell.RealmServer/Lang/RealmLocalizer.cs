@@ -9,7 +9,7 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Lang
 {
-	public class RealmLocalizer : Localizer<ClientLocale, LangKey>
+	public class RealmLocalizer : Localizer<ClientLocale, RealmLangKey>
 	{
 		private static RealmLocalizer instance;
 

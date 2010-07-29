@@ -90,7 +90,7 @@ namespace WCell.AuthServer.IPC
 
     	private RealmEntry GetRealmByChannel(IContextChannel chan)
     	{
-    		foreach (var realm in AuthenticationServer.Realms.Values)
+    		foreach (var realm in AuthenticationServer.Realms)
     		{
     			if (realm.Channel == chan)
     			{
@@ -366,7 +366,7 @@ namespace WCell.AuthServer.IPC
                 {
                 	lock (AuthenticationServer.Realms)
 					{
-						AuthenticationServer.Realms.RemoveFirst(pair => pair.Value.Name.Equals(realmName, StringComparison.InvariantCultureIgnoreCase) );
+						AuthenticationServer.RemoveRealmByName(realmName);
                 	}
                 }
             }
@@ -399,7 +399,7 @@ namespace WCell.AuthServer.IPC
                 // register after setting all infos
                 lock (AuthenticationServer.Realms)
                 {
-                    AuthenticationServer.Realms.Add(id, realm);
+                    AuthenticationServer.AddRealm(realm);
                 }
             }
 			log.Info(resources.RealmRegistered, realm); //realm.ChannelAddress);

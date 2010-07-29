@@ -1,3 +1,4 @@
+using System;
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
@@ -72,20 +73,14 @@ namespace WCell.RealmServer.AI.Actions.Movement
 
 		public override void Update()
 		{
-			if (m_target == null)
-			{
-				log.Error(GetType().Name + " is being updated without a Target set: " + m_owner);
-				Stop();
-				m_owner.Brain.EnterDefaultState();
-				return;
-			}
-
-			if (!m_target.IsInWorld)
+			if (m_target == null || !m_target.IsInWorld)
 			{
 				// lost target
-				Stop();
-				m_owner.Brain.EnterDefaultState();
-				return;
+				OnLostTarget();
+				if (m_target == null)
+				{
+					return;
+				}
 			}
 
 			if (!m_owner.Movement.Update() && !m_owner.MayMove)
@@ -109,6 +104,13 @@ namespace WCell.RealmServer.AI.Actions.Movement
 		    {
 		        MoveToTargetPoint();
 		    }
+		}
+
+		protected virtual void OnLostTarget()
+		{
+			log.Warn(GetType().Name + " is being updated without a Target set: " + m_owner);
+			Stop();
+			m_owner.Brain.EnterDefaultState();
 		}
 
 		protected virtual void OnArrived()

@@ -1005,10 +1005,7 @@ namespace WCell.RealmServer.Misc
 					weaponSkill = (uint)Attacker.Level * 5;
 				}
 				var chance = (10 + (int)(Victim.Level * 5 - weaponSkill)) * 100;
-				if (chance > 10000)
-					return 10000;
-
-				return chance;
+				return MathUtil.ClampMinMax(chance, 0, 10000);
 			}
 			return 0;
 		}
