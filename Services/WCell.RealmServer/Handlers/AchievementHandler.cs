@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Handlers
         private static Logger log = LogManager.GetCurrentClassLogger();
 
         //SMSG_ALL_ACHIEVEMENT_DATA
-        public static void SendAchievementData(Character chr)
+       /* public static void SendAchievementData(Character chr)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ALL_ACHIEVEMENT_DATA, ))
             {
@@ -29,6 +29,6 @@ namespace WCell.RealmServer.Handlers
                 chr.Client.Send(packet);
             }
             throw new NotImplementedException();
-        }
+        }*/
 	}
 }
