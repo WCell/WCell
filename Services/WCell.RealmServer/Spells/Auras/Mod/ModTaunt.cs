@@ -12,16 +12,16 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	/// </summary>
 	public class ModTauntAuraHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterRef, Unit target, ref SpellFailedReason failReason)
 		{
 			if (!(target is NPC))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}
 
-			if (casterReference != null && casterReference.Object is Unit)
+			if (casterRef != null && casterRef.Object is Unit)
 			{
-				var caster = (Unit)casterReference.Object;
+				var caster = (Unit)casterRef.Object;
 				//if (target.Target == caster)
 				//{
 				//    failReason = SpellFailedReason.NoValidTargets;

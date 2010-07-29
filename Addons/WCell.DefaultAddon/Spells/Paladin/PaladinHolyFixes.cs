@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
@@ -86,20 +87,18 @@ namespace WCell.Addons.Default.Spells.Paladin
 			});
 		}
 
-		public class IlluminationHandler : AuraEffectHandler
+		public class IlluminationHandler : ProcTriggerSpellOnCritHandler
 		{
 			public override void OnProc(Unit target, IUnitAction action)
 			{
-				if (action is HealAction && action.Spell != null)
+				if (!(action is HealAction))
 				{
-					var haction = (HealAction)action;
-					if (haction.IsCritical)
-					{
-						var caster = action.Attacker;
-						var cost = (haction.Spell.CalcBasePowerCost(caster) * EffectValue + 50) / 100;
-						caster.Energize(cost, caster, SpellEffect);
-					}
+					LogManager.GetCurrentClassLogger().Warn("Illumination was proc'ed by non-heal action: {0}, on {1}", action, Owner);
+					return;
 				}
+				var caster = action.Attacker;
+				var cost = (((HealAction)action).Spell.CalcBasePowerCost(caster) * EffectValue + 50) / 100;
+				caster.Energize(cost, caster, SpellEffect);
 			}
 		}
 	}

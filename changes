@@ -1,2 +1,3 @@
 - fixed periodic auras again (they cannot be "activated")
-- to test: DruidFeralCombatInfectedWounds, DruidFeralCombatKingOfTheJungle
+- added ProcTriggerSpellOnCritHandler
+- to test: DruidFeralCombatInfectedWounds, DruidFeralCombatKingOfTheJungle, DruidRestorationLivingSeed

@@ -13,9 +13,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public class CharmAuraHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterRef, Unit target, ref SpellFailedReason failReason)
 		{
-			var caster = casterReference.Object as Unit;
+			var caster = creatingCast.CasterReference.Object as Unit;
 			if (caster == null)
 			{
 				failReason = SpellFailedReason.BadTargets;
@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 
 		protected override void Apply()
 		{
-			var caster = m_aura.Caster as Unit;
+			var caster = m_aura.Caster;
 			if (caster == null)
 			{
 				return;

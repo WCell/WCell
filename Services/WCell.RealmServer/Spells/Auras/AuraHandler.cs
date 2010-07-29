@@ -268,14 +268,15 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, Unit target, ref SpellFailedReason failedReason)
+		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, 
+			Unit target, ref SpellFailedReason failedReason, SpellCast triggeringCast = null)
 		{
 			var handler = spellEffect.AuraEffectHandlerCreator();
 
 			handler.m_spellEffect = spellEffect;
 			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster);
 
-			handler.CheckInitialize(caster, target, ref failedReason);
+			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
 			return handler;
 		}
 		#endregion

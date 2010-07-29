@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Check whether this handler can be applied to the given target.
 		/// m_aura, as well as some other fields are not set when this method gets called.
 		/// </summary>
-		protected internal virtual void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		protected internal virtual void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 		}
 
@@ -133,6 +133,14 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		protected virtual void Remove(bool cancelled)
 		{
+		}
+
+		/// <summary>
+		/// Whether this proc handler can be triggered by the given action
+		/// </summary>
+		public virtual bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			return true;
 		}
 
 		/// <summary>

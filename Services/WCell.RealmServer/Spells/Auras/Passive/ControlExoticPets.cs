@@ -10,7 +10,7 @@ namespace WCell.RealmServer.Spells.Auras.Passive
 {
     public class ControlExoticPetsHandler : AuraEffectHandler
     {
-        protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
             if (!(target is Character)) return;
             var chr = (Character)target;

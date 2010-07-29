@@ -168,14 +168,14 @@ namespace WCell.Addons.Default.Spells.Druid
 	#region ImprovedLeaderOfThePackProcHandler
 	public class ImprovedLeaderOfThePackProcHandler : AuraEffectHandler
 	{
+		public override bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			// Check whether Improved LotP has been activated yet
+			return EffectValue > 0;
+		}
+
 		public override void OnProc(Unit target, IUnitAction action)
 		{
-			if (EffectValue == 0)
-			{
-				// Improved LotP has not been activated yet
-				return;
-			}
-
 			// "causes affected targets to heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack."
 			action.Attacker.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
 

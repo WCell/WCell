@@ -100,7 +100,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		SpellHit = 0x20000,
 		/// <summary>
-		/// Usually crit hit by spell
+		/// We get critically hit by spell
 		/// </summary>
 		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,
