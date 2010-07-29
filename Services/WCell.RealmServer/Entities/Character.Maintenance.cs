@@ -5,6 +5,7 @@ using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.Achievement;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Graphics;
@@ -136,6 +137,10 @@ namespace WCell.RealmServer.Entities
 
 			// talents
 			m_talents = new TalentCollection(this);
+
+            // achievements
+
+            m_achievements = new AchievementCollection(this);
 
 			// Items
 			m_inventory = new PlayerInventory(this);

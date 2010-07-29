@@ -36,6 +36,12 @@ namespace WCell.Core
 
 		public const string SCRIPT_DIR = "scripts";
 
+        public const string DBC_ACHIEVEMENTS = "Achievement.dbc";
+
+        public const string DBC_ACHIEVEMENT_CATEGORIES = "Achievement_Category.dbc";
+
+        public const string DBC_ACHIEVEMENT_CRITERIAS = "Achievement_Criteria.dbc";
+
         public const string DBC_MAPS = "Map.dbc";
 
         public const string DBC_SPELLFOCUSOBJECT = "SpellFocusObject.dbc";
