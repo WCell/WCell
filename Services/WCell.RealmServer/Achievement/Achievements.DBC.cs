@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Achievements;
+using WCell.Constants.World;
 using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Achievement
@@ -13,9 +14,9 @@ namespace WCell.RealmServer.Achievement
         public override void Convert(byte[] rawData)
         {
             var achievementEntry = new AchievementEntry();
-            achievementEntry.ID = GetUInt32(rawData, 0);
+            achievementEntry.ID = (AchievementEntryId)GetUInt32(rawData, 0);
             achievementEntry.FactionFlag = GetUInt32(rawData, 1);
-            achievementEntry.MapID = GetUInt32(rawData, 2);
+            achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
             achievementEntry.Name = new string[16];
             for (int i = 0; i < 16; i++)
                 achievementEntry.Name[i] = GetString(rawData, i + 4);
@@ -34,8 +35,8 @@ namespace WCell.RealmServer.Achievement
         public override void Convert(byte[] rawData)
         {
             var achievementCategoryEntry = new AchievementCategoryEntry();
-            achievementCategoryEntry.ID = GetUInt32(rawData, 0);
-            achievementCategoryEntry.ParentCategory = GetUInt32(rawData, 1);
+            achievementCategoryEntry.ID = (AchievementCategoryEntryId)GetUInt32(rawData, 0);
+            achievementCategoryEntry.ParentCategory = (AchievementCategoryEntryId)GetUInt32(rawData, 1);
 
             AchievementMgr.AchievementCategoryEntries[achievementCategoryEntry.ID] = achievementCategoryEntry;
         }
@@ -45,11 +46,11 @@ namespace WCell.RealmServer.Achievement
     {
         public override void Convert(byte[] rawData)
 		{
-			var criteria = (AchievementCriteria)GetUInt32(rawData, 0);
+			var criteria = (AchievementCriteriaType)GetUInt32(rawData, 0);
 			var entry = AchievementMgr.GetCriteriaEntryCreator(criteria)();
 
 			// TODO: Finish
-			//Copy(rawData, 1, count, entry);
+			Copy(rawData, 1, 2, entry);
 			//AchievementMgr.AddCriteriaEntry(entry);
         }
     }

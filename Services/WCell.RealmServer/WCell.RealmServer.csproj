@@ -187,8 +187,8 @@
     <Compile Include="Achievement\AchievementCriteria.cs" />
     <Compile Include="Achievement\AchievementCategoryEntry.cs" />
     <Compile Include="Achievement\AchievementCollection.cs" />
-    <Compile Include="Achievement\AchievementProgressRecord.cs" />
     <Compile Include="Achievement\AchievementRecord.cs" />
+    <Compile Include="Achievement\AchievementProgressRecord.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />

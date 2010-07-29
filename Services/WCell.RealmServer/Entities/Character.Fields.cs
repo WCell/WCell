@@ -1963,6 +1963,14 @@ namespace WCell.RealmServer.Entities
 			get { return m_talents; }
 		}
 
+        /// <summary>
+        /// Collection of all this Character's Achievements
+        /// </summary>
+	    public AchievementCollection Achievements
+	    {
+            get { return m_achievements; }
+	    }
+
 		/// <summary>
 		/// Unused talent-points for this Character
 		/// </summary>
