@@ -8,9 +8,11 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.Util;
 using WCell.Util.NLog;
 
@@ -123,12 +125,30 @@ namespace WCell.Addons.Default.Spells.Druid
 				// bump up the amount healed, so it averages out over time to still give the correct amount:
 				// sum(x / 1.1^i, i = 0 to ticks-1) = ticks * val <=> x = ticks * val / sum(1/1.1^i, i = 0 to ticks-1)
 				var divisor = 0f;
-				for (var i = 0; i < ticks; i++) divisor += 1 / (float)Math.Pow(WildGrowthHandler.TickPercentReduction/100f, i);
-				healEffect.BasePoints = MathUtil.RoundInt(ticks*healEffect.BasePoints / divisor);
+				for (var i = 0; i < ticks; i++) divisor += 1 / (float)Math.Pow(WildGrowthHandler.TickPercentReduction / 100f, i);
+				healEffect.BasePoints = MathUtil.RoundInt(ticks * healEffect.BasePoints / divisor);
 
 				// set the special aura handler
 				healEffect.AuraEffectHandlerCreator = () => new WildGrowthHandler();
 			});
+
+			// Living Seed applies a proc aura on crit hit that heals the target when he/she gets attacked the next time
+			SpellLineId.DruidRestorationLivingSeed.Apply(spell =>
+			{
+				// trigger proc spell on heal crit
+				var dummy = spell.GetEffect(AuraType.Dummy);
+				dummy.IsProc = true;
+				dummy.TriggerSpellId = SpellId.LivingSeed_2;
+				dummy.AuraEffectHandlerCreator = () => new ProcTriggerSpellOnCritHandler();
+			});
+			SpellHandler.Apply(spell =>
+			{
+				var dummy = spell.GetEffect(AuraType.Dummy);
+				dummy.IsProc = true;
+
+				// need a custom proc handler to heal for a percentage of the trigger heal
+				dummy.AuraEffectHandlerCreator = () => new LivingSeedHandler();
+			}, SpellId.LivingSeed_2);
 
 			// Swiftmend: Consume & Heal
 			SpellLineId.DruidRestorationSwiftmend.Apply(spell =>
@@ -158,6 +178,32 @@ namespace WCell.Addons.Default.Spells.Druid
 		}
 	}
 
+	public class LivingSeedHandler : AuraEffectHandler
+	{
+		private int damageAmount;
+
+		protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		{
+			// remember the damageAmount from the TriggerAction
+			if (creatingCast != null && creatingCast.TriggerAction is HealAction)
+			{
+				damageAmount = ((HealAction)creatingCast.TriggerAction).Value;
+			}
+			else
+			{
+				failReason = SpellFailedReason.Error;
+			}
+		}
+
+		public override void OnProc(Unit target, IUnitAction action)
+		{
+			// heal (and dispose automatically, since the single ProcCharge is used up)
+			// "30% of the amount healed"
+			Owner.Heal((damageAmount + 3 + 5) / 10, m_aura.Caster, m_spellEffect);
+		}
+	}
+
+	#region WildGrowth
 	public class WildGrowthHandler : PeriodicHealHandler
 	{
 		/// <summary>
@@ -171,6 +217,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			base.Apply();
 		}
 	}
+	#endregion
 
 	#region Regrowth & Rejuvenation & Swifmend
 	public class SwiftmendHandler : SpellEffectHandler

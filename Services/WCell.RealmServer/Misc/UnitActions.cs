@@ -15,7 +15,7 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Misc
 {
-	#region Action Interfaces
+	#region IUnitAction
 	/// <summary>
 	/// Any kind of Action a Unit can perform
 	/// </summary>
@@ -32,6 +32,13 @@ namespace WCell.RealmServer.Misc
 		Unit Victim { get; }
 
 		/// <summary>
+		/// Whether this was a critical action (might be meaningless for some actions)
+		/// </summary>
+		bool IsCritical { get; }
+
+		Spell Spell { get; }
+
+		/// <summary>
 		/// Reference count is used to support pooling
 		/// </summary>
 		int ReferenceCount
@@ -39,13 +46,10 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
-
-		Spell Spell
-		{
-			get;
-		}
 	}
+	#endregion
 
+	#region IDamageAction
 	public interface IDamageAction : IUnitAction
 	{
 		SpellEffect SpellEffect
@@ -65,11 +69,6 @@ namespace WCell.RealmServer.Misc
 		}
 
 		bool IsDot
-		{
-			get;
-		}
-
-		bool IsCritical
 		{
 			get;
 		}
@@ -111,6 +110,12 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		public bool IsCritical
+		{
+			get;
+			set;
+		}
+
 		public Spell Spell
 		{
 			get;
@@ -123,7 +128,7 @@ namespace WCell.RealmServer.Misc
 		public int ReferenceCount
 		{
 			get { return 0; }
-			set {  }
+			set { }
 		}
 	}
 	#endregion
@@ -166,9 +171,14 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		public bool IsCritical
+		{
+			get { return false; }
+		}
+
 		public Aura Aura
 		{
-			get; 
+			get;
 			set;
 		}
 
@@ -269,8 +279,6 @@ namespace WCell.RealmServer.Misc
 	/// </summary>
 	public class DamageAction : IDamageAction
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// During Combat: The default delay in milliseconds between CombatTicks
 		/// </summary>
@@ -447,7 +455,7 @@ namespace WCell.RealmServer.Misc
 				if (SpellEffect != null)
 				{
 					if (SpellEffect.IsProc)
-					{	
+					{
 						// procs can't trigger procs
 						return ProcTriggerFlags.None;
 					}
@@ -535,7 +543,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (Victim == null)
 			{
-				log.Error("{0} tried to attack with no Target selected.", Attacker);
+				LogManager.GetCurrentClassLogger().Error("{0} tried to attack with no Target selected.", Attacker);
 				return false;
 			}
 
@@ -949,9 +957,9 @@ namespace WCell.RealmServer.Misc
 
 			if (Attacker is Character)
 			{
-				
+
 				var atk = Attacker as Character;
-				hitchance += IsRangedAttack ? (int)atk.RangedHitChance*100 : (int)atk.HitChance*100;
+				hitchance += IsRangedAttack ? (int)atk.RangedHitChance * 100 : (int)atk.HitChance * 100;
 				skillBonus -= (int)atk.Skills.GetValue(Weapon.Skill);
 			}
 			else
@@ -1058,7 +1066,7 @@ namespace WCell.RealmServer.Misc
 		/// <returns>The crit chance after taking into account the defense/weapon skill</returns>
 		public int CalcCritChance()
 		{
-			var chance = (int)Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon)*100;
+			var chance = (int)Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon) * 100;
 
 			if (Attacker is NPC && Victim is Character)
 			{
@@ -1083,7 +1091,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
-			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance]*100;
+			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance] * 100;
 			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
 
 			if (chance > 10000)

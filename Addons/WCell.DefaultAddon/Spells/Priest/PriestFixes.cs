@@ -77,6 +77,7 @@ namespace WCell.Addons.Default.Spells.Priest
 		}
 	}
 
+	#region AuraVampiricEmbracerHandler
 	public class AuraVampiricEmbracerHandler : AuraEffectHandler
 	{
 		public override void OnProc(Unit target, IUnitAction action)
@@ -106,4 +107,5 @@ namespace WCell.Addons.Default.Spells.Priest
 			}
 		}
 	}
+	#endregion
 }

@@ -17,7 +17,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
         /// <summary>
         /// Ensure that the constraints are correct for the Flag aura to be applied
         /// </summary>
-        protected override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+        protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
         {
 			if (!(target is Character))
 			{

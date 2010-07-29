@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PeriodicManaLeechHandler : AuraEffectHandler
 	{
 
-		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 			if (target.MaxPower == 0 || target.PowerType != (PowerType)m_spellEffect.MiscValue)
 			{

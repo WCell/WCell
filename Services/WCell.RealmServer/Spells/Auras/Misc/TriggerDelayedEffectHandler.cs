@@ -1,4 +1,4 @@
-﻿using NLog;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
@@ -13,8 +13,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 
 		private OneShotUpdateObjectAction timer;
 
-		protected internal override void CheckInitialize(ObjectReference casterReference, Unit target,
-			ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 			if (m_spellEffect.TriggerSpell == null)
 			{

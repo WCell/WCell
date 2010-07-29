@@ -184,7 +184,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 			}
 
-			protected override void CheckInitialize(ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+			protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 			{
 				if (target is Character)
 				{
