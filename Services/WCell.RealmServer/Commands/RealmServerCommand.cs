@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else
 			{
-				trigger.Reply(LangKey.SubCommandNotFound, subAlias);
+				trigger.Reply(RealmLangKey.SubCommandNotFound, subAlias);
 				trigger.Text.Skip(trigger.Text.Length);
 				mgr.DisplayCmd(trigger, this);
 			}
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else if (!silent)
 			{
-				trigger.Reply(LangKey.MustNotUseCommand, cmd.Name);
+				trigger.Reply(RealmLangKey.MustNotUseCommand, cmd.Name);
 			}
 			return false;
 		}

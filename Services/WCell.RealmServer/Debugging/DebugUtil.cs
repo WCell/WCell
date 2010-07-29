@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Debugging
 		{
 			if (!m_initialized)
 			{
-				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Packets"));
+				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServerConfiguration.ContentDir, "Packets"));
 
 				var paAsm = typeof(PacketParser).Assembly;
 				if (mgr == null)
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Debugging
 		{
 			if (DefinitionDir == null)
 			{
-				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Packets"));
+				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServerConfiguration.ContentDir, "Packets"));
 			}
 			PacketAnalyzer.LoadDefinitions(DefinitionDir);
 		}

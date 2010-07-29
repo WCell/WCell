@@ -728,7 +728,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sends a message to the client.
 		/// </summary>
-		public void SendSystemMessage(LangKey key, params object[] args)
+		public void SendSystemMessage(RealmLangKey key, params object[] args)
 		{
 			ChatMgr.SendSystemMessage(this, RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
@@ -741,7 +741,7 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendSystemMessage(this, string.Format(msg, args));
 		}
 
-		public void Notify(LangKey key, params object[] args)
+		public void Notify(RealmLangKey key, params object[] args)
 		{
 			Notify(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}

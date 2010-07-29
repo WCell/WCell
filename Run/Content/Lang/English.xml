@@ -52,215 +52,219 @@
       <Value>Could not change the current user's locale.</Value>
     </Item>
 
-	<!-- 	Spell Commands		  -->
-	<Item Key="CmdSpellDescription">
-	  <Value>Provides commands to interact with the Spells of the Target.</Value>
-	</Item>
-	
-	<Item Key="CmdSpellAddDescription">
-	  <Value>Adds the given spell. 
-				-r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills).
-				-c [&lt;class&gt;] adds all spells of the Character's or a given class.
-				-t (talents) adds the highest rank of all spells of all talents</Value>
-	</Item>
-	<Item Key="CmdSpellAddParamInfo">
-	  <Value>[-[r][c [&lt;class&gt;]]] [list of &lt;spell|line|talent&gt;]</Value>
-	</Item>
-	<Item Key="CmdSpellAddResponseSpell">
-	  <Value>Spell added : {0}</Value>
-	</Item>
-	<Item Key="CmdSpellAddResponseSpells">
-	  <Value>Added {0} spells.</Value>
-	</Item>
-	<Item Key="CmdSpellAddResponseTalents">
-	  <Value>Added {0} talents.</Value>
-	</Item>
-	
-	<Item Key="CmdSpellRemoveDescription">
-	  <Value>Removes the given Spell</Value>
-	</Item>
-	<Item Key="CmdSpellRemoveParamInfo">
-	  <Value>&lt;spell&gt;</Value>
-	</Item>
-	<Item Key="CmdSpellRemoveResponse">
-	  <Value>Spell removed: </Value>
-	</Item>
-	<Item Key="CmdSpellRemoveError">
-	  <Value>Spell {0} doesn't exist.</Value>
-	</Item>
-	
-	<Item Key="CmdSpellPurgeDescription">
-	  <Value>Removes all spells but the initial ones.</Value>
-	</Item>
-	<Item Key="CmdSpellPurgeResponse">
-	  <Value>Purged spells.</Value>
-	</Item>
-	<Item Key="CmdSpellPurgeError">
-	  <Value>Target has no Spells.</Value>
-	</Item>
-	
-	<Item Key="CmdSpellTriggerDescription">
-	  <Value>Triggers the given spell on the target of the command.</Value>
-	</Item>
-	<Item Key="CmdSpellTriggerParamInfo">
-	  <Value>&lt;spellid&gt;</Value>
-	</Item>
-	<Item Key="CmdSpellTriggerResponse">
-	  <Value>Spell triggerred : </Value>
-	</Item>
-	<Item Key="CmdSpellTriggerError">
-	  <Value>Spell doesn't exist.</Value>
-	</Item>
-	
+    <!-- 	Spell Commands		  -->
+    <Item Key="CmdSpellDescription">
+      <Value>Provides commands to interact with the Spells of the Target.</Value>
+    </Item>
+
+    <Item Key="CmdSpellAddDescription">
+      <Value>
+        Adds the given spell.
+        -r (Reagents) switch also adds all constraints required by the Spell (Tools, Reagents, Objects, Skills).
+        -c [&lt;class&gt;] adds all spells of the Character's or a given class.
+        -t (talents) adds the highest rank of all spells of all talents
+      </Value>
+    </Item>
+    <Item Key="CmdSpellAddParamInfo">
+      <Value>[-[r][c [&lt;class&gt;]]] [list of &lt;spell|line|talent&gt;]</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseSpell">
+      <Value>Spell added : {0}</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseSpells">
+      <Value>Added {0} spells.</Value>
+    </Item>
+    <Item Key="CmdSpellAddResponseTalents">
+      <Value>Added {0} talents.</Value>
+    </Item>
+
+    <Item Key="CmdSpellRemoveDescription">
+      <Value>Removes the given Spell</Value>
+    </Item>
+    <Item Key="CmdSpellRemoveParamInfo">
+      <Value>&lt;spell&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellRemoveResponse">
+      <Value>Spell removed: </Value>
+    </Item>
+    <Item Key="CmdSpellRemoveError">
+      <Value>Spell {0} doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdSpellPurgeDescription">
+      <Value>Removes all spells but the initial ones.</Value>
+    </Item>
+    <Item Key="CmdSpellPurgeResponse">
+      <Value>Purged spells.</Value>
+    </Item>
+    <Item Key="CmdSpellPurgeError">
+      <Value>Target has no Spells.</Value>
+    </Item>
+
+    <Item Key="CmdSpellTriggerDescription">
+      <Value>Triggers the given spell on the target of the command.</Value>
+    </Item>
+    <Item Key="CmdSpellTriggerParamInfo">
+      <Value>&lt;spellid&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellTriggerResponse">
+      <Value>Spell triggerred : </Value>
+    </Item>
+    <Item Key="CmdSpellTriggerError">
+      <Value>Spell doesn't exist.</Value>
+    </Item>
+
     <Item Key="CmdSpellGetDescription">
       <Value>Retrieves information about the given Spell.</Value>
     </Item>
     <Item Key="CmdSpellGetParamInfo">
       <Value>&lt;spellid or lineid&gt;</Value>
     </Item>
-	
-	<Item Key="CmdSpellClearDescription">
-	  <Value>Clears all reamining spell-cooldowns</Value>
-	</Item>
-	<Item Key="CmdSpellClearResponse">
-	  <Value>All Cooldowns cleared.</Value>
-	</Item>
-	<Item Key="CmdSpellClearError">
-	  <Value>Target has no Cooldowns.</Value>
-	</Item>
-	
-	<Item Key="CmdSpellVisualDescription">
-	  <Value>Plays the visual of the given spell</Value>
-	</Item>
-	<Item Key="CmdSpellVisualParamInfo">
-	  <Value>&lt;SpellId&gt;</Value>
-	</Item>
-	<Item Key="CmdSpellVisualError">
-	  <Value>Invalid SpellId: {0}.</Value>
-	</Item>
-	<Item Key="CmdSpellNotExists">
-	  <Value>Spell doesn't exist.</Value>
-	</Item>
-	
-	<!-- End of Spell Commands -->
-	
-	<!-- 	Skill Commands		-->
-	<Item Key="CmdSkillDescription">
-	  <Value>Used for manipulation of Skills.</Value>
-	</Item>
-	
-	<Item Key="CmdSkillSetParamInfo">
-	  <Value>&lt;skill&gt; [&lt;value&gt; [&lt;maxValue&gt;]]</Value>
-	</Item>
-	<Item Key="CmdSkillSetDescription">
-	  <Value>Sets the given Skill to the given values (or uses 1 by default)</Value>
-	</Item>
-	<Item Key="CmdSkillSetResponse">
-	  <Value>"Skill {0} set to {1} (Max: {2}).</Value>
-	</Item>
-	<Item Key="CmdSkillSetError">
-	  <Value>Skill {0} doesn't exist.</Value>
-	</Item>
-	
-	<Item Key="CmdSkillLearnParamInfo">
-	  <Value>[-r] &lt;skill&gt; [&lt;amount&gt;]</Value>
-	</Item>
-	<Item Key="CmdSkillLearnDescription">
-	  <Value>Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.</Value>
-	</Item>
-	<Item Key="CmdSkillLearnResponse">
-	  <Value>Skill {0} set to {1}.</Value>
-	</Item>
-	<Item Key="CmdSkillLearnError">
-	  <Value>Skill {0} doesn't exist.</Value>
-	</Item>
-	
-	<Item Key="CmdSkillTierParamInfo">
-	  <Value>&lt;kill&gt; &lt;tier&gt;</Value>
-	</Item>
-	<Item Key="CmdSkillTierDescription">
-	  <Value>Set the given Skill to the given Tier</Value>
-	</Item>
-	<Item Key="CmdSkillTierResponse">
-	  <Value>Skill {0} set to {1} (Max: {2}).</Value>
-	</Item>
-	<Item Key="CmdSkillTierError1">
-	  <Value>Skill {0} doesn't exist.</Value>
-	</Item>
-	<Item Key="CmdSkillTierError2">
-	  <Value>Invalid Tier-number</Value>
-	</Item>
-	<!-- End of Skill Commands   -->
-	
-	<!-- 	Region Commands		-->
-	<Item Key="CmdRegionDescription">
-	  <Value>Provides Commands to manipulate Regions and their content.</Value>
-	</Item>
-	
-	<Item Key="CmdRegionSpawnParamInfo">
-	  <Value>[-a|&lt;name&gt;]</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnDescription">
-	  <Value>Spawns GOs and NPCs in the current (or specified) region. 
-		-a switch spawns all active Regions.
-		(Only used for development purposes where the regions arent spawned automatically.)</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnResponse">
-	  <Value>Spawned region </Value>
-	</Item>
-	<Item Key="CmdRegionSpawnResponse1">
-	  <Value>All regions spawned.</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnError1">
-	  <Value>Invalid Region.</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnError2">
-	  <Value>You did not specify the Region to be spawned.</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnError3">
-	  <Value>Region is already spawned.</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnResponse2">
-	  <Value>Spawning {0}...</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnError4">
-	  <Value>No GOs will be spawned (Use 'Load GOs' before spawning)</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnError5">
-	  <Value>No NPCs will be spawned (Use 'Load NPCs' before spawning)</Value>
-	</Item>
-	<Item Key="CmdRegionSpawnResponse3">
-	  <Value>Spawned region </Value>
-	</Item>
-	
-	<Item Key="CmdRegionClearParamInfo">
-	  <Value>[&lt;name&gt;]</Value>
-	</Item>
-	<Item Key="CmdRegionClearDescription">
-	  <Value>Removes all objects from the current or given Region.</Value>
-	</Item>
-	<Item Key="CmdRegionClearError1">
-	  <Value>Invalid Region.</Value>
-	</Item>
-	<Item Key="CmdRegionClearError2">
-	  <Value>You did not specify a Region to be cleared.</Value>
-	</Item>
-	<Item Key="CmdRegionClearResponse">
-	  <Value>Cleared Region </Value>
-	</Item>
-	
-	<Item Key="CmdRegionUpdateDescription">
-	  <Value>Toggles region updates in all Regions on or off</Value>
-	</Item>
-	
-	<!-- End of Region Commands -->
-	
-	<Item Key="CmdRegionListDescription">
-	  <Value>Lists active regions</Value>
-	</Item>
-	<Item Key="CmdRegionListResponse">
-	  <Value>Active Regions: </Value>
-	</Item>
+
+    <Item Key="CmdSpellClearDescription">
+      <Value>Clears all reamining spell-cooldowns</Value>
+    </Item>
+    <Item Key="CmdSpellClearResponse">
+      <Value>All Cooldowns cleared.</Value>
+    </Item>
+    <Item Key="CmdSpellClearError">
+      <Value>Target has no Cooldowns.</Value>
+    </Item>
+
+    <Item Key="CmdSpellVisualDescription">
+      <Value>Plays the visual of the given spell</Value>
+    </Item>
+    <Item Key="CmdSpellVisualParamInfo">
+      <Value>&lt;SpellId&gt;</Value>
+    </Item>
+    <Item Key="CmdSpellVisualError">
+      <Value>Invalid SpellId: {0}.</Value>
+    </Item>
+    <Item Key="CmdSpellNotExists">
+      <Value>Spell doesn't exist.</Value>
+    </Item>
+
+    <!-- End of Spell Commands -->
+
+    <!-- 	Skill Commands		-->
+    <Item Key="CmdSkillDescription">
+      <Value>Used for manipulation of Skills.</Value>
+    </Item>
+
+    <Item Key="CmdSkillSetParamInfo">
+      <Value>&lt;skill&gt; [&lt;value&gt; [&lt;maxValue&gt;]]</Value>
+    </Item>
+    <Item Key="CmdSkillSetDescription">
+      <Value>Sets the given Skill to the given values (or uses 1 by default)</Value>
+    </Item>
+    <Item Key="CmdSkillSetResponse">
+      <Value>"Skill {0} set to {1} (Max: {2}).</Value>
+    </Item>
+    <Item Key="CmdSkillSetError">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdSkillLearnParamInfo">
+      <Value>[-r] &lt;skill&gt; [&lt;amount&gt;]</Value>
+    </Item>
+    <Item Key="CmdSkillLearnDescription">
+      <Value>Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.</Value>
+    </Item>
+    <Item Key="CmdSkillLearnResponse">
+      <Value>Skill {0} set to {1}.</Value>
+    </Item>
+    <Item Key="CmdSkillLearnError">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdSkillTierParamInfo">
+      <Value>&lt;kill&gt; &lt;tier&gt;</Value>
+    </Item>
+    <Item Key="CmdSkillTierDescription">
+      <Value>Set the given Skill to the given Tier</Value>
+    </Item>
+    <Item Key="CmdSkillTierResponse">
+      <Value>Skill {0} set to {1} (Max: {2}).</Value>
+    </Item>
+    <Item Key="CmdSkillTierError1">
+      <Value>Skill {0} doesn't exist.</Value>
+    </Item>
+    <Item Key="CmdSkillTierError2">
+      <Value>Invalid Tier-number</Value>
+    </Item>
+    <!-- End of Skill Commands   -->
+
+    <!-- 	Region Commands		-->
+    <Item Key="CmdRegionDescription">
+      <Value>Provides Commands to manipulate Regions and their content.</Value>
+    </Item>
+
+    <Item Key="CmdRegionSpawnParamInfo">
+      <Value>[-a|&lt;name&gt;]</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnDescription">
+      <Value>
+        Spawns GOs and NPCs in the current (or specified) region.
+        -a switch spawns all active Regions.
+        (Only used for development purposes where the regions arent spawned automatically.)
+      </Value>
+    </Item>
+    <Item Key="CmdRegionSpawnResponse">
+      <Value>Spawned region </Value>
+    </Item>
+    <Item Key="CmdRegionSpawnResponse1">
+      <Value>All regions spawned.</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnError1">
+      <Value>Invalid Region.</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnError2">
+      <Value>You did not specify the Region to be spawned.</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnError3">
+      <Value>Region is already spawned.</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnResponse2">
+      <Value>Spawning {0}...</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnError4">
+      <Value>No GOs will be spawned (Use 'Load GOs' before spawning)</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnError5">
+      <Value>No NPCs will be spawned (Use 'Load NPCs' before spawning)</Value>
+    </Item>
+    <Item Key="CmdRegionSpawnResponse3">
+      <Value>Spawned region </Value>
+    </Item>
+
+    <Item Key="CmdRegionClearParamInfo">
+      <Value>[&lt;name&gt;]</Value>
+    </Item>
+    <Item Key="CmdRegionClearDescription">
+      <Value>Removes all objects from the current or given Region.</Value>
+    </Item>
+    <Item Key="CmdRegionClearError1">
+      <Value>Invalid Region.</Value>
+    </Item>
+    <Item Key="CmdRegionClearError2">
+      <Value>You did not specify a Region to be cleared.</Value>
+    </Item>
+    <Item Key="CmdRegionClearResponse">
+      <Value>Cleared Region </Value>
+    </Item>
+
+    <Item Key="CmdRegionUpdateDescription">
+      <Value>Toggles region updates in all Regions on or off</Value>
+    </Item>
+
+    <!-- End of Region Commands -->
+
+    <Item Key="CmdRegionListDescription">
+      <Value>Lists active regions</Value>
+    </Item>
+    <Item Key="CmdRegionListResponse">
+      <Value>Active Regions: </Value>
+    </Item>
     <Item Key="GossipOptionTrainer">
       <Value>Train me...</Value>
     </Item>
@@ -273,28 +277,28 @@
     <Item Key="GossipOptionVendor">
       <Value>Let me see your wares...</Value>
     </Item>
-	<Item Key="GossipOptionInnKeeper">
-	  <Value>Make this inn your home.</Value>
-	</Item>
-	<Item Key="GossipOptionSpiritHealer">
-	  <Value>Return me to life.</Value>
-	</Item>
-	<Item Key="GossipOptionTabardDesigner">
-	  <Value>I want to create a guild crest.</Value>
-	</Item>
-	<Item Key="GossipOptionStableMaster">
-	  <Value>I'd like to stable my pet here.</Value>
-	</Item>
-	
+    <Item Key="GossipOptionInnKeeper">
+      <Value>Make this inn your home.</Value>
+    </Item>
+    <Item Key="GossipOptionSpiritHealer">
+      <Value>Return me to life.</Value>
+    </Item>
+    <Item Key="GossipOptionTabardDesigner">
+      <Value>I want to create a guild crest.</Value>
+    </Item>
+    <Item Key="GossipOptionStableMaster">
+      <Value>I'd like to stable my pet here.</Value>
+    </Item>
+
     <Item Key="GodModeIsActivated">
       <Value>GodMode is Activated!</Value>
     </Item>
-	
-	<Item Key="FeatureNotYetImplemented">
-	  <Value>Feature not yet implemented</Value>
-	</Item>
-	<Item Key="InvalidClass">
-	  <Value>Invalid Class.</Value>
-	</Item>
+
+    <Item Key="FeatureNotYetImplemented">
+      <Value>Feature not yet implemented</Value>
+    </Item>
+    <Item Key="InvalidClass">
+      <Value>Invalid Class.</Value>
+    </Item>
   </Items>
 </Translation>

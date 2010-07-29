@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -43,7 +44,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					owner.PlayerSpells.ModifiersWithCharges++;
 				}
-				owner.PlayerSpells.SpellModifiersFlat.Add(this);
+				owner.PlayerSpells.AddSpellModifierFlat(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
 			}
 		}
@@ -57,7 +58,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					owner.PlayerSpells.ModifiersWithCharges--;
 				}
-				owner.PlayerSpells.SpellModifiersFlat.Remove(this);
+				owner.PlayerSpells.RemoveSpellModifierFlat(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
 			}
 		}
@@ -75,7 +76,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					owner.PlayerSpells.ModifiersWithCharges += 1;
 				}
-				owner.PlayerSpells.SpellModifiersPct.Add(this);
+				owner.PlayerSpells.AddSpellModifierPercent(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
 			}
 		}
@@ -89,7 +90,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					owner.PlayerSpells.ModifiersWithCharges -= 1;
 				}
-				owner.PlayerSpells.SpellModifiersPct.Remove(this);
+				owner.PlayerSpells.RemoveSpellModifierPercent(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
 			}
 		}

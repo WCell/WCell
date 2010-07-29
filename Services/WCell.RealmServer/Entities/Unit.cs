@@ -807,20 +807,23 @@ namespace WCell.RealmServer.Entities
 
 		#region Healing & Leeching & Burning
 		/// <summary>
-		/// Heals and sends the corresponding animation
-		/// </summary>
-		public void Heal(int value)
-		{
-			Heal(null, value, null);
-		}
-
-		/// <summary>
 		/// Heals this unit and sends the corresponding animation (healer might be null)
 		/// </summary>
 		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
 		/// <param name="healer">The object that heals this Unit (or null)</param>
 		/// <param name="value">The amount to be healed</param>
-		public void Heal(Unit healer, int value, SpellEffect effect)
+		public void HealPercent(int value, Unit healer = null, SpellEffect effect = null)
+		{
+			Heal((value * MaxHealth + 50) / 100, healer, effect);
+		}
+
+		/// <summary>
+		/// Heals this unit and sends the corresponding animation (healer might be null)
+		/// </summary>
+		/// <param name="value">The amount to be healed</param>
+		/// <param name="healer">The object that heals this Unit (or null)</param>
+		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
+		public void Heal(int value, Unit healer = null, SpellEffect effect = null)
 		{
 			var critChance = 0f;
 			var crit = false;
@@ -935,20 +938,24 @@ namespace WCell.RealmServer.Entities
 
 			if (receiver != null)
 			{
-				receiver.Heal(this, amount, effect);
+				receiver.Heal(amount, this, effect);
 			}
 		}
-
 
 		/// <summary>
 		/// Restores Power and sends the corresponding Packet
 		/// </summary>
-		/// <param name="energizer"></param>
-		/// <param name="value"></param>
-		/// <param name="effect"></param>
-		public void Energize(Unit energizer, int value, SpellEffect effect)
+		public void EnergizePercent(int value, Unit energizer = null, SpellEffect effect = null)
 		{
-			if (value > 0)
+			Energize((value * MaxPower + 50) / 100, energizer, effect);
+		}
+
+		/// <summary>
+		/// Restores Power and sends the corresponding Packet
+		/// </summary>
+		public void Energize(int value, Unit energizer = null, SpellEffect effect = null)
+		{
+			if (value != 0)
 			{
 				var power = Power;
 				var max = MaxPower;
@@ -969,7 +976,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Leeches the given amount of power from this Unit and adds it to the receiver (if receiver != null and is Unit).
 		/// </summary>
-		public void LeechPower(Unit receiver, int amount, float factor, SpellEffect effect)
+		public void LeechPower(int amount, float factor = 1, Unit receiver = null, SpellEffect effect = null)
 		{
 			var currentPower = Power;
 
@@ -982,7 +989,7 @@ namespace WCell.RealmServer.Entities
 			Power = currentPower - amount;
 			if (receiver != null)
 			{
-				receiver.Energize(this, amount, effect);
+				receiver.Energize(amount, this, effect);
 			}
 		}
 
@@ -991,7 +998,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="dmgTyp">The type of the damage applied</param>
 		/// <param name="dmgFactor">The factor to be applied to amount for the damage to be received by this unit</param>
-		public void BurnPower(Unit attacker, SpellEffect effect, DamageSchool dmgTyp, int amount, float dmgFactor)
+		public void BurnPower(int amount, float dmgFactor = 1, Unit attacker = null, SpellEffect effect = null)
 		{
 			int currentPower = Power;
 

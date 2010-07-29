@@ -425,7 +425,7 @@ namespace WCell.RealmServer.Commands
 				{
 					trigger.Reply("Exception thrown: " + ex);
 				}
-				return null;
+				//return null;
 			}
 			trigger.Reply("Invalid method, parameter count or parameters.");
 			return null;

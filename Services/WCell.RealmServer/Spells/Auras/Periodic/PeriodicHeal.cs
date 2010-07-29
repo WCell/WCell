@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			Owner.Heal(m_aura.Caster, EffectValue, m_spellEffect);
+			Owner.Heal(EffectValue, m_aura.Caster, m_spellEffect);
 		}
 	}
 

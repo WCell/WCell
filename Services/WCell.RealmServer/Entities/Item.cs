@@ -1233,6 +1233,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal void OnUse()
 		{
+			m_template.NotifyUsed(this);
+
 			if (m_template.BondType == ItemBondType.OnUse)
 			{
 				Flags |= ItemFlags.Soulbound;
@@ -1255,12 +1257,8 @@ namespace WCell.RealmServer.Entities
 					SetSpellCharges(m_template.UseSpell.Index, charges - 1);
 				}
 			}
-
-			if (IsInWorld)
-			{
-				m_template.NotifyUsed(this);
-			}
 		}
+
 		#endregion
 
 		#region Destroy / Remove

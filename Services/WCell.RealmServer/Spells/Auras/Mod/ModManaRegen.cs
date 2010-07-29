@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			var stat = (StatType)m_spellEffect.MiscValue;
 			var power = (int)Math.Round(m_aura.Auras.Owner.GetStatValue(stat) * (EffectValue / 100f));
-			m_aura.Auras.Owner.Energize(m_aura.Caster, power, m_spellEffect);
+			m_aura.Auras.Owner.Energize(power, m_aura.Caster, m_spellEffect);
 		}
 	}
 };

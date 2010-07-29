@@ -439,6 +439,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (handlers != null)
 				{
 					var aura = CreateAura(caster, spell, handlers, usedItem, beneficial);
+					OnCreated(aura);
 					if (aura != null)
 					{
 						aura.Start(null, noTimeout);
@@ -451,6 +452,19 @@ namespace WCell.RealmServer.Spells.Auras
 				LogUtil.ErrorException(ex, "Unable to Add new Aura {0} to {1}", spell, m_owner);
 			}
 			return null;
+		}
+
+		/// <summary>
+		/// Called when an Aura has been dynamically created (not called, when applying via SpellCast)
+		/// </summary>
+		private void OnCreated(Aura aura)
+		{
+			// create AreaAura
+			if (aura.Spell.IsAreaAura && Owner.EntityId == aura.CasterReference.EntityId)
+			{
+				// AreaAura is created at the target location if it is a DynamicObject, else its applied to the caster
+				new AreaAura(Owner, aura.Spell);
+			}
 		}
 
 		/// <summary>
@@ -489,9 +503,14 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Adds an already created Aura
 		/// </summary>
-		public virtual void AddAura(Aura aura, bool update)
+		public virtual void AddAura(Aura aura, bool start)
 		{
 			var id = aura.Id;
+			if (m_auras.ContainsKey(aura.Id))
+			{
+				LogManager.GetCurrentClassLogger().Warn("Tried to add Aura \"{0}\" when it was already added, to {1}", aura, Owner);
+				return;
+			}
 			m_auras.Add(id, aura);
 			if (!aura.Spell.IsPassive)
 			{
@@ -502,7 +521,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			aura.IsAdded = true;
 
-			if (update)
+			if (start)
 			{
 				aura.Start();
 			}
@@ -894,9 +913,9 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region Persistence
 		/// <summary>
-		/// Called after Character entered world
+		/// Called after Character entered world to load all it's active Auras
 		/// </summary>
-		internal void PlayerInitialize(AuraRecord[] records)
+		internal void InitializeAuras(AuraRecord[] records)
 		{
 			foreach (var record in records)
 			{
@@ -918,6 +937,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 
 				var aura = new Aura(this, caster, record, handlers, index);
+				OnCreated(aura);
 				AddAura(aura);
 			}
 		}
@@ -929,12 +949,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null &&
-					aura != GhostAura &&
-					!aura.Spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-					aura.UsedItem == null &&
-					(!aura.HasTimeout || aura.TimeLeft > 10000)
-					)
+				if (aura.CanBeSaved)
 				{
 					aura.SaveNow();
 				}

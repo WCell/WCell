@@ -97,7 +97,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 					{
 						var caster = action.Attacker;
 						var cost = (haction.Spell.CalcBasePowerCost(caster) * EffectValue + 50) / 100;
-						caster.Energize(caster, cost, SpellEffect);
+						caster.Energize(cost, caster, SpellEffect);
 					}
 				}
 			}

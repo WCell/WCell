@@ -885,6 +885,10 @@ namespace WCell.RealmServer.Items
 
 		#region Apply changes when loading
 		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();
+
+		/// <summary>
+		/// Adds a callback to be called on the given set of ItemTemplates after load and before Item initialization
+		/// </summary>
 		public static void Apply(Action<ItemTemplate> cb, params ItemId[] ids)
 		{
 			foreach (var id in ids)

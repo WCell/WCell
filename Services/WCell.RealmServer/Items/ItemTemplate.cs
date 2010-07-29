@@ -222,8 +222,13 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
-		[Persistent(5)]
+		[Persistent(ItemConstants.MaxSpellCount)]
 		public ItemSpell[] Spells;
+
+		public ItemSpell GetSpell(ItemSpellTrigger trigger)
+		{
+			return Spells.Where(itemSpell => itemSpell != null && itemSpell.Trigger == ItemSpellTrigger.Use && itemSpell.Spell != null).FirstOrDefault();
+		}
 
 		public int GetResistance(DamageSchool school)
 		{

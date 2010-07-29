@@ -94,7 +94,7 @@ namespace WCell.Tools
 			RealmServerConfiguration.Initialize();
 			RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
 
-			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServ.Instance.Configuration.ContentDir).FullName);
+			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
 
 			if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
 				!InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))

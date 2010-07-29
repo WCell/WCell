@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (!mod.Contains("n") || !trigger.Text.HasNext)
 					{
-						trigger.Reply(LangKey.CmdKickMustProvideName);
+						trigger.Reply(RealmLangKey.CmdKickMustProvideName);
 						return;
 					}
 					else
@@ -114,7 +114,7 @@ namespace WCell.RealmServer.Commands
 						chr = World.GetCharacter(name, false);
 						if (chr == null)
 						{
-							trigger.Reply(LangKey.PlayerNotOnline, name);
+							trigger.Reply(RealmLangKey.PlayerNotOnline, name);
 							return;
 						}
 					}

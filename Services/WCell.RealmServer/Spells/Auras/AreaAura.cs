@@ -24,6 +24,7 @@ namespace WCell.RealmServer.Spells.Auras
 		[Variable("DefaultAreaAuraAmplitude")]
 		public static int DefaultAmplitude = 1000;
 
+		#region Fields
 		WorldObject m_holder;
 		Spell m_spell;
 		Dictionary<Unit, Aura> m_targets;
@@ -35,7 +36,10 @@ namespace WCell.RealmServer.Spells.Auras
 		float m_elapsed;
 		ISpellParameters m_params;
 		private int m_remainingCharges;
+		private bool m_IsActivated;
+		#endregion
 
+		#region C-tor & Init
 		///// <summary>
 		///// The two filters for the two target types of a SpellEffect (assuming all area aura effects share the same target type)
 		///// </summary>
@@ -85,6 +89,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			holder.AddAreaAura(this);
 		}
+		#endregion
 
 		#region Properties
 		/// <summary>
@@ -143,11 +148,95 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// Whether this AreaAura is currently activated and applies it's effects to the area
+		/// </summary>
+		public bool IsActivated
+		{
+			get { return m_IsActivated; }
+			set
+			{
+				if (m_IsActivated != value)
+				{
+					m_IsActivated = value;
+					if (value)
+					{
+						if (m_timer != null)
+						{
+							m_timer.Start();
+						}
+					}
+					else
+					{
+						if (m_timer != null)
+						{
+							m_timer.Stop();
+						}
+						if (m_targets != null)
+						{
+							RemoveEffects(m_targets);
+							m_targets.Clear();
+						}
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Apply & Start & Remove
+		/// <summary>
 		/// Called by a SpellChannel when channeling
 		/// </summary>
 		public void Apply()
 		{
 			RevalidateTargetsAndApply(0);
+		}
+
+		/// <summary>
+		/// Initializes this AreaAura with the given controller. 
+		/// If no controller is given, the AreaAura controls timing and disposal itself.
+		/// </summary>
+		/// <param name="controller">A controller controls timing and disposal of this AreaAura</param>
+		/// <param name="noTimeout">whether the Aura should not expire (ignore the Spell's duration).</param>
+		public void Start(ITickTimer controller, bool noTimeout)
+		{
+			if (m_IsActivated)
+			{
+				return;
+			}
+
+			if (m_radius == 0)
+			{
+				m_radius = 5;
+			}
+
+			m_controller = controller;
+
+			if (m_controller == null)
+			{
+				if (m_params != null)
+				{
+					m_timer = new TimerEntry(m_params.StartDelay,
+					                         m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
+				}
+				else
+				{
+					m_timer = new TimerEntry(DefaultAmplitude, DefaultAmplitude, RevalidateTargetsAndApply);
+				}
+			}
+
+			if (noTimeout)
+			{
+				m_duration = int.MaxValue;
+			}
+			else
+			{
+				m_duration = m_spell.GetDuration(m_CasterReference)/1000f;
+				if (m_duration < 1)
+				{
+					m_duration = int.MaxValue;
+				}
+			}
+			IsActivated = true;
 		}
 
 		public void TryRemove(bool cancelled)
@@ -160,68 +249,21 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public void Remove(bool cancelled)
 		{
+			IsActivated = false;
+
 			m_holder.CancelAreaAura(this);
 			m_holder = null;
-			m_remainingCharges = 0;		// make sure Remove will not be called again
+			m_remainingCharges = 0; // make sure Remove will not be called again
 
 			if (m_timer != null)
 			{
 				m_timer.Dispose();
 			}
-
-			if (m_targets != null)
-			{
-				RemoveEffects(m_targets);
-				m_targets.Clear();
-			}
 		}
+
 		#endregion
 
-		/// <summary>
-		/// Initializes this AreaAura with the given controller. 
-		/// If no controller is given, the AreaAura controls timing and disposal itself.
-		/// </summary>
-		/// <param name="controller">A controller controls timing and disposal of this AreaAura</param>
-		/// <param name="noTimeout">whether the Aura should not expire (ignore the Spell's duration).</param>
-		public void Start(ITickTimer controller, bool noTimeout)
-		{
-			if (m_radius == 0)
-			{
-				m_radius = 5;
-			}
-			if (m_timer == null)
-			{
-				m_controller = controller;
-
-				if (m_controller == null)
-				{
-					if (m_params != null)
-					{
-						m_timer = new TimerEntry(m_params.StartDelay,
-							m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
-					}
-					else
-					{
-						m_timer = new TimerEntry(DefaultAmplitude, DefaultAmplitude, RevalidateTargetsAndApply);
-					}
-					m_timer.Start();
-				}
-
-				if (noTimeout)
-				{
-					m_duration = int.MaxValue;
-				}
-				else
-				{
-					m_duration = m_spell.GetDuration(m_CasterReference) / 1000f;
-					if (m_duration < 1)
-					{
-						m_duration = int.MaxValue;
-					}
-				}
-			}
-		}
-
+		#region Update Logic
 		/// <summary>
 		/// Check for all targets in radius, kick out invalid ones and add new ones
 		/// </summary>
@@ -373,6 +415,7 @@ namespace WCell.RealmServer.Spells.Auras
 				pair.Value.Remove(false);
 			}
 		}
+		#endregion
 
 		#region IUpdatable
 

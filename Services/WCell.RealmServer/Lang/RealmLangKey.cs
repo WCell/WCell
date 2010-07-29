@@ -6,9 +6,9 @@ using System.Text;
 namespace WCell.RealmServer.Lang
 {
 	/// <summary>
-	/// Keys for strings used in commands
+	/// Keys for localizable strings
 	/// </summary>
-	public enum LangKey
+	public enum RealmLangKey
 	{
 		// ########################################################################
 		// Misc

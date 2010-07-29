@@ -209,7 +209,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				val += EffectValue;
 
-				Owner.Heal(m_aura.Caster, val, m_spellEffect);
+				Owner.Heal(val, m_aura.Caster, m_spellEffect);
 			}
 		}
 		#endregion

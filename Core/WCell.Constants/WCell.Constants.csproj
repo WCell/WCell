@@ -137,6 +137,7 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Achievements\AchievementCriteria.cs" />
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="Battlegrounds.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />

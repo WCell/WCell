@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Achievements;
 using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Achievement
 {
 
-    public class AchievementEntryMapper : DBCRecordConverter
+    public class AchievementEntryConverter : DBCRecordConverter
     {
         public override void Convert(byte[] rawData)
         {
@@ -28,7 +29,7 @@ namespace WCell.RealmServer.Achievement
         }
     }
 
-    public class AchievementCategoryEntryMapper : DBCRecordConverter
+    public class AchievementCategoryEntryConverter : DBCRecordConverter
     {
         public override void Convert(byte[] rawData)
         {
@@ -43,8 +44,13 @@ namespace WCell.RealmServer.Achievement
     public class AchievementCriteriaEntryMapper : DBCRecordConverter
     {
         public override void Convert(byte[] rawData)
-        {
-            throw new NotImplementedException();
+		{
+			var criteria = (AchievementCriteria)GetUInt32(rawData, 0);
+			var entry = AchievementMgr.GetCriteriaEntryCreator(criteria)();
+
+			// TODO: Finish
+			//Copy(rawData, 1, count, entry);
+			//AchievementMgr.AddCriteriaEntry(entry);
         }
     }
 }

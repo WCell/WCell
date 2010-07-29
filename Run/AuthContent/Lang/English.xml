@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Items>
+    <Item Key="Done">
+      <Value>Done.</Value>
+    </Item>
+
+    <Item Key="Addon">
+      <Value>Addon</Value>
+    </Item>
+
+    <Item Key="Custom">
+      <Value>Custom</Value>
+    </Item>
+
+    <Item Key="Library">
+      <Value>Library</Value>
+    </Item>
+
+    <Item Key="PlayerNotOnline">
+      <Value>Player is not online: {0}</Value>
+    </Item>
+
+    <Item Key="SubCommandNotFound">
+      <Value>SubCommand not found: {0}</Value>
+    </Item>
+
+    <Item Key="MustNotUseCommand">
+      <Value>You are not allowed to use the {0}-Command!</Value>
+    </Item>
+
+    <Item Key="XRealmsConnected">
+      <Value>{0} Realms connected</Value>
+    </Item>
+
+    <Item Key="FeatureNotYetImplemented">
+      <Value>Feature not yet implemented</Value>
+    </Item>
+    
+    <Item Key="InvalidClass">
+      <Value>Invalid Class.</Value>
+    </Item>
+  </Items>
+</Translation>

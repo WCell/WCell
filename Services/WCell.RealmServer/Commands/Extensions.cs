@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Commands
 {
 	public static class Extensions
 	{
-		public static string Translate(this CmdTrigger<RealmServerCmdArgs> trigger, LangKey key, params object[] args)
+		public static string Translate(this CmdTrigger<RealmServerCmdArgs> trigger, RealmLangKey key, params object[] args)
 		{
 			return RealmLocalizer.Instance.Translate(trigger.GetLocale(), key, args);
 		}
@@ -21,12 +21,12 @@ namespace WCell.RealmServer.Commands
 			return RealmLocalizer.Instance.Translate(trigger.GetLocale(), item);
 		}
 
-		public static void Reply(this CmdTrigger<RealmServerCmdArgs> trigger, LangKey key, params object[] args)
+		public static void Reply(this CmdTrigger<RealmServerCmdArgs> trigger, RealmLangKey key, params object[] args)
 		{
 			trigger.Reply(RealmLocalizer.Instance.Translate(trigger.GetLocale(), key, args));
 		}
 
-		public static void ReplyFormat(this CmdTrigger<RealmServerCmdArgs> trigger, LangKey key, params object[] args)
+		public static void ReplyFormat(this CmdTrigger<RealmServerCmdArgs> trigger, RealmLangKey key, params object[] args)
 		{
 			trigger.ReplyFormat(RealmLocalizer.Instance.Translate(trigger.GetLocale(), key, args));
 		}

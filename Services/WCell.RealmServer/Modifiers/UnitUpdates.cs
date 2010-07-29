@@ -77,7 +77,6 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
-			MultiModHandlers[(int)StatModifierFloat.CritChance] = UpdateCritChance;
 			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 			MultiModHandlers[(int)StatModifierFloat.PowerRegen] = UpdatePowerRegen;
@@ -604,11 +603,9 @@ namespace WCell.RealmServer.Modifiers
 				// Crit chance from agility
 				rangedCritChance += ((Character)unit).Archetype.Class.CalculateRangedCritChance(unit.Level, unit.Agility);
 				rangedCritChance += unit.IntMods[(int)StatModifierInt.RangedCritChance];
-				rangedCritChance = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.CritChance], rangedCritChance);
 
 				critChance += ((Character)unit).Archetype.Class.CalculateMeleeCritChance(unit.Level, unit.Agility);
 				critChance += unit.IntMods[(int)StatModifierInt.CritChance];
-				critChance = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.CritChance], critChance);
 
 				chr.CritChanceMeleePct = critChance;
 				chr.CritChanceRangedPct = rangedCritChance;

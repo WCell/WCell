@@ -155,7 +155,7 @@ namespace WCell.RealmServer.Gossips
 						// NPC professions
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.Banker))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bank, LangKey.GossipOptionBanker, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bank, RealmLangKey.GossipOptionBanker, convo =>
 							{
 								convo.Character.OpenBank(convo.Speaker);
 							}));
@@ -172,7 +172,7 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.InnKeeper))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bind, LangKey.GossipOptionInnKeeper, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bind, RealmLangKey.GossipOptionInnKeeper, convo =>
 							{
 								convo.Character.BindTo((NPC)convo.Speaker);
 							}));
@@ -181,12 +181,12 @@ namespace WCell.RealmServer.Gossips
 						{
 							menu.AddItem(new GossipMenuItem(GossipMenuIcon.Guild, "Guild Bank...", convo =>
 							{
-								convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
+								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Resurrect, LangKey.GossipOptionSpiritHealer, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Resurrect, RealmLangKey.GossipOptionSpiritHealer, convo =>
 							{
 								convo.Character.ResurrectWithConsequences();
 							}));
@@ -200,35 +200,35 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.TabardDesigner))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Tabard, LangKey.GossipOptionTabardDesigner, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Tabard, RealmLangKey.GossipOptionTabardDesigner, convo =>
 							{
-								convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
+								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.FlightMaster))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Taxi, LangKey.GossipOptionFlightMaster, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Taxi, RealmLangKey.GossipOptionFlightMaster, convo =>
 							{
 								((NPC)convo.Speaker).TalkToFM(convo.Character);
 							}));
 						}
                         if (entry.NPCFlags.HasAnyFlag(NPCFlags.StableMaster))
                         {
-                            menu.AddItem(new LocalizedGossipMenuItem(LangKey.GossipOptionStableMaster, convo =>
+                            menu.AddItem(new LocalizedGossipMenuItem(RealmLangKey.GossipOptionStableMaster, convo =>
                             {
-                                convo.Character.SendSystemMessage(LangKey.FeatureNotYetImplemented);
+                                convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
                             }));
                         }
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, LangKey.GossipOptionTrainer, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, RealmLangKey.GossipOptionTrainer, convo =>
 							{
 								((NPC)convo.Speaker).TalkToTrainer(convo.Character);
 							}));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyVendor))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Trade, LangKey.GossipOptionVendor, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Trade, RealmLangKey.GossipOptionVendor, convo =>
 							{
 								if (((NPC)convo.Speaker).VendorEntry != null)
 								{

@@ -446,7 +446,6 @@ namespace WCell.Constants
 		AttackTime,
 		PowerRegen,
 		HealthRegen,
-		CritChance,
 	}
 
 	public enum StatModifierInt

@@ -75,6 +75,11 @@ namespace WCell.Core
 			m_lastUpdate = 0;
 		}
 
+		protected void UpdateTitle()
+		{
+			SetTitle(ToString());
+		}
+
 		public void SetTitle(string title)
 		{
 			if (ConsoleActive)
@@ -492,7 +497,7 @@ namespace WCell.Core
 					return;
 				}
 				//GC.Collect(2, GCCollectionMode.Optimized);
-				SetTitle(ToString());
+				UpdateTitle();
 			}
 			else
 			{

@@ -7,6 +7,7 @@ using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
@@ -65,13 +66,20 @@ namespace WCell.Addons.Default.Spells.Druid
 				// toggle the party aura, whenever the druid shifts into cat bear or dire bear form:
 				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new ToggleAuraHandler(SpellId.LeaderOfThePack);
 			});
-			// triggered Aura of LotP: 2nd effect is the proc effect for the Improved LotP buff; first effect has invalid radius
+			// triggered Aura of LotP: First effect has invalid radius; 2nd effect is the proc effect for the Improved LotP buff
 			SpellHandler.Apply(spell =>
 			{
 				spell.ForeachEffect(effect => effect.Radius = 45);	// fix radius
 
+				// "heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack"
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit;
+
+				// "The healing effect cannot occur more than once every 6 sec"
+				spell.ProcDelay = 6000;
+
 				// make this a special proc
 				var dummy = spell.GetEffect(AuraType.Dummy);
+				dummy.IsProc = true;
 				dummy.AuraEffectHandlerCreator = () => new ImprovedLeaderOfThePackProcHandler();
 			}, 
 			SpellId.LeaderOfThePack);
@@ -136,9 +144,22 @@ namespace WCell.Addons.Default.Spells.Druid
 	#region ImprovedLeaderOfThePackProcHandler
 	public class ImprovedLeaderOfThePackProcHandler : AuraEffectHandler
 	{
-		protected override void Apply()
+		public override void OnProc(Unit target, IUnitAction action)
 		{
-			
+			if (EffectValue == 0)
+			{
+				// Improved LotP has not been activated yet
+				return;
+			}
+
+			// "causes affected targets to heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack."
+			action.Attacker.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
+
+			if (action.Attacker == m_aura.Caster)
+			{
+				// "In addition, you gain $s2% of your maximum mana when you benefit from this heal."
+				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.Caster, m_spellEffect);
+			}
 		}
 	}
 	#endregion

@@ -283,7 +283,7 @@ namespace WCell.RealmServer.Server
 
 		void AddDisconnectWarningToTitle()
 		{
-			m_warnInfo = " - ######### " + RealmLocalizer.Instance.Translate(LangKey.NotConnectedToAuthServer).ToUpper() + " #########";
+			m_warnInfo = " - ######### " + RealmLocalizer.Instance.Translate(RealmLangKey.NotConnectedToAuthServer).ToUpper() + " #########";
 			Console.Title += m_warnInfo;
 		}
 

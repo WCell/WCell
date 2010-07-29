@@ -24,17 +24,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModCritPercentHandler : AuraEffectHandler
 	{
-		float value;
-
 		protected override void Apply()
 		{
-			value = EffectValue / 100f;
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, value);
+			Owner.ChangeModifier(StatModifierInt.CritChance, EffectValue);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.CritChance, -value);
+			Owner.ChangeModifier(StatModifierInt.CritChance, -EffectValue);
 		}
 	}
 };

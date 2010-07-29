@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 						if (spell != null)
 						{
 							var spellCost = spell.PowerCost / 4;
-							chr.Energize(chr, spellCost, Effect);
+							chr.Energize(spellCost, chr, Effect);
 						}
 					}
 				}
