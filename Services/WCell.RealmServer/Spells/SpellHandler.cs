@@ -308,7 +308,7 @@ namespace WCell.RealmServer.Spells
 			{
 				loaded = true;
 				Spell.InitDbcs();
-				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile("Spell.dbc"));
+				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
 				ContentHandler.Load<SpellLearnRelation>();
 			}

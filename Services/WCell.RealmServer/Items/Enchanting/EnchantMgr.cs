@@ -2,6 +2,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Modifiers;
@@ -48,13 +49,13 @@ namespace WCell.RealmServer.Items.Enchanting
 			RemoveEnchantHandlers[(uint)ItemEnchantmentType.Totem] = RemoveTotem;
 
 			EnchantmentConditionReader = new MappedDBCReader<ItemEnchantmentCondition, ItemEnchantmentConditionConverter>(
-				RealmServerConfiguration.GetDBCFile("SpellItemEnchantmentCondition.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENTCONDITION));
 
 			EnchantmentEntryReader = new MappedDBCReader<ItemEnchantmentEntry, ItemEnchantmentConverter>(
-				RealmServerConfiguration.GetDBCFile("SpellItemEnchantment.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENT));
 
 			GemPropertiesReader = new MappedDBCReader<GemProperties, GemPropertiesConverter>(
-				RealmServerConfiguration.GetDBCFile("GemProperties.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_GEMPROPERTIES));
 		}
 
 		public static ItemEnchantmentEntry GetEnchantmentEntry(uint id)

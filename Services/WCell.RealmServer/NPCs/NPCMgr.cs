@@ -393,7 +393,7 @@ namespace WCell.RealmServer.NPCs
 		public static void InitDefault()
 		{
 			var npcSpells = new MappedDBCReader<Spell[], DBCCreatureSpellConverter>(
-				RealmServerConfiguration.GetDBCFile("CreatureSpellData.dbc")).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CREATURESPELLDATA)).Entries;
 
 			PetSpells = new Spell[10000][];
 			foreach (var pair in npcSpells)
@@ -403,18 +403,18 @@ namespace WCell.RealmServer.NPCs
 			ArrayUtil.Prune(ref PetSpells);
 
 			CreatureFamilies = new MappedDBCReader<CreatureFamily, DBCCreatureFamilyConverter>(
-				RealmServerConfiguration.GetDBCFile("CreatureFamily.dbc")).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CREATUREFAMILIES)).Entries;
 
 			BankBagSlotPrices = new ListDBCReader<uint, DBCBankBagSlotConverter>(
-				RealmServerConfiguration.GetDBCFile("BankBagSlotPrices.dbc")).EntryList.ToArray();
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BANKBAGSLOTPRICES)).EntryList.ToArray();
 
 			DefaultFaction = FactionMgr.ById[(uint)FactionId.Creature];
 
 			VehicleSeatEntries = new MappedDBCReader<VehicleSeatEntry, DBCVehicleSeatConverter>(
-				RealmServerConfiguration.GetDBCFile("VehicleSeat.dbc")).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_VEHICLESEATS)).Entries;
 
 			VehicleEntries = new MappedDBCReader<VehicleEntry, DBCVehicleConverter>(
-				RealmServerConfiguration.GetDBCFile("Vehicle.dbc")).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_VEHICLES)).Entries;
 
 			BarberShopStyles = new MappedDBCReader<BarberShopStyleEntry, BarberShopStyleConverter>(
 				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BARBERSHOPSTYLE)).Entries;
@@ -708,7 +708,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadItemExtendedCostEntries()
 		{
 			var reader = new MappedDBCReader<ItemExtendedCostEntry, DBCItemExtendedCostConverter>(
-				RealmServerConfiguration.GetDBCFile("ItemExtendedCost.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMEXTENDEDCOST));
 
 			ItemExtendedCostEntries = reader.Entries;
 			ItemExtendedCostEntries.Add(0, ItemExtendedCostEntry.NullEntry);

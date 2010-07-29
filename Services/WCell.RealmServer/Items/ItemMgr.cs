@@ -620,7 +620,7 @@ namespace WCell.RealmServer.Items
 		private static void LoadDBCs()
 		{
 			RandomPropPointReader = new MappedDBCReader<ItemLevelInfo, ItemRandPropPointConverter>(
-				RealmServerConfiguration.GetDBCFile("RandPropPoints.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_RANDPROPPOINTS));
 
 			EnchantMgr.Init();
 
@@ -751,7 +751,7 @@ namespace WCell.RealmServer.Items
 		public static void LoadSets()
 		{
 			var reader = new MappedDBCReader<ItemSet, ItemSet.ItemSetDBCConverter>(
-				RealmServerConfiguration.GetDBCFile("ItemSet.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMSET));
 
 			foreach (var set in reader.Entries.Values)
 			{
@@ -825,7 +825,7 @@ namespace WCell.RealmServer.Items
 		public static Dictionary<int, TotemCategoryInfo> ReadTotemCategories()
 		{
 			var reader = new MappedDBCReader<TotemCategoryInfo, TotemCatConverter>(RealmServerConfiguration.GetDBCFile(
-																					"TotemCategory.dbc"));
+                                                                                    WCellDef.DBC_TOTEMCATEGORY));
 			return reader.Entries;
 		}
 

@@ -371,7 +371,7 @@ namespace WCell.RealmServer.Global
 			Instance.WorldStates = new WorldStateCollection(Instance, Constants.World.WorldStates.GlobalStates);
 
 			new DBCReader<MapConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
-			new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile("MapDifficulty.dbc"));
+            new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPDIFFICULTY));
 
 			// add existing RegionTemplate objects to mapper
 			var mapper = ContentHandler.GetMapper<RegionTemplate>();

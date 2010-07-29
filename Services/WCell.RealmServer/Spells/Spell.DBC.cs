@@ -27,6 +27,7 @@ using WCell.RealmServer.Items;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Misc;
+using WCell.Core;
 
 namespace WCell.RealmServer.Spells
 {
@@ -50,13 +51,13 @@ namespace WCell.RealmServer.Spells
 
 		internal static void InitDbcs()
 		{
-			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile("SpellDuration.dbc"));
-			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile("SpellRadius.dbc"));
-			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile("SpellCastTimes.dbc"));
-			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile("SpellRange.dbc"));
-			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile("SpellMechanic.dbc"));
-			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile("SpellMechanic.dbc"));
-		    mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile("SpellRuneCost.dbc"));
+			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLDURATION));
+			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRADIUS));
+			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLCASTTIMES));
+			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
+            //DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
+			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
+		    mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRUNECOST));
 		}
 
 		#region SpellDuration.dbc

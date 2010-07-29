@@ -36,7 +36,9 @@ namespace WCell.Core
 
 		public const string SCRIPT_DIR = "scripts";
 
-		public const string DBC_MAPS = "Map.dbc";
+        public const string DBC_MAPS = "Map.dbc";
+
+        public const string DBC_SPELLFOCUSOBJECT = "SpellFocusObject.dbc";
 
 		public const string DBC_AREATABLE = "AreaTable.dbc";
 
@@ -72,7 +74,13 @@ namespace WCell.Core
 
 		public const string DBC_FACTION_TEMPLATES = "FactionTemplate.dbc";
 
-		public const string DBC_TALENTS = "Talent.dbc";
+        public const string DBC_TAXINODES = "TaxiNodes.dbc";
+
+        public const string DBC_TAXIPATHES = "TaxiPath.dbc";
+
+        public const string DBC_TAXIPATHNODES = "TaxiPathNode.dbc";
+
+        public const string DBC_TALENTS = "Talent.dbc";
 
 		public const string DBC_TALENTTREES = "TalentTab.dbc";
 
@@ -80,7 +88,79 @@ namespace WCell.Core
 
 		public const string DBC_ITEMRANDOMSUFFIX = "ItemRandomSuffix.dbc";
 
-		public const string DBC_EMOTESTEXT = "EmotesText.dbc";
+        public const string DBC_MAPDIFFICULTY = "MapDifficulty.dbc";
+
+        public const string DBC_PVPDIFFICULTY = "PvpDifficulty.dbc";
+
+        public const string DBC_BATTLEMASTERLIST = "BattlemasterList.dbc";
+
+        public const string DBC_WORLDSAFELOCATION = "WorldSafeLocs.dbc";
+
+        public const string DBC_SPELLITEMENCHANTMENTCONDITION = "SpellItemEnchantmentCondition.dbc";
+
+        public const string DBC_RANDPROPPOINTS = "RandPropPoints.dbc";
+
+        public const string DBC_ITEMSET = "ItemSet.dbc";
+
+        public const string DBC_CFGCATEGORIES = "Cfg_Categories.dbc";
+
+        public const string DBC_LOCKS = "Lock.dbc";
+
+        public const string DBC_DURABILITYCOSTS = "DurabilityCosts.dbc";
+
+        public const string DBC_DURABILITYQUALITY = "DurabilityQuality.dbc";
+
+        public const string DBC_CREATURESPELLDATA = "CreatureSpellData.dbc";
+
+        public const string DBC_CREATUREFAMILIES = "CreatureFamily.dbc";
+
+        public const string DBC_BANKBAGSLOTPRICES = "BankBagSlotPrices.dbc";
+
+        public const string DBC_VEHICLESEATS = "VehicleSeat.dbc";
+
+        public const string DBC_VEHICLES = "Vehicle.dbc";
+
+        public const string DBC_ITEMEXTENDEDCOST = "ItemExtendedCost.dbc";
+
+        public const string DBC_STABLESLOTPRICES = "StableSlotPrices.dbc";
+
+        public const string DBC_QUESTXP = "QuestXP.dbc";
+
+        public const string DBC_QUESTFACTIONREWARD = "QuestFactionReward.dbc";
+
+        public const string DBC_CHARSTARTOUTFIT = "CharStartOutfit.dbc";
+
+        public const string DBC_SKILLTIERS = "SkillTiers.dbc";
+
+        public const string DBC_SKILLLINE = "SkillLine.dbc";
+
+        public const string DBC_SKILLRACECLASSINFO = "SkillRaceClassInfo.dbc";
+
+        public const string DBC_SKILLLINEABILITY = "SkillLineAbility.dbc";
+
+        public const string DBC_TOTEMCATEGORY = "TotemCategory.dbc";
+        
+        public const string DBC_SPELLITEMENCHANTMENT = "SpellItemEnchantment.dbc";
+
+        public const string DBC_GEMPROPERTIES = "GemProperties.dbc";
+
+        public const string DBC_AREATRIGGER = "AreaTrigger.dbc";
+
+        public const string DBC_EMOTESTEXT = "EmotesText.dbc";
+
+        public const string DBC_SPELL = "Spell.dbc";
+
+        public const string DBC_SPELLDURATION = "SpellDuration.dbc";
+
+        public const string DBC_SPELLRADIUS = "SpellRadius.dbc";
+
+        public const string DBC_SPELLCASTTIMES = "SpellCastTimes.dbc";
+
+        public const string DBC_SPELLRANGE = "SpellRange.dbc";
+
+        public const string DBC_SPELLMECHANIC = "SpellMechanic.dbc";
+
+        public const string DBC_SPELLRUNECOST = "SpellRuneCost.dbc";
 
 		public const int SERVER_UPDATE_INTERVAL = 50;
 
