@@ -1,3 +1,2 @@
-- to test: DruidBalanceImprovedMoonkinForm, DruidBalanceOwlkinFrenzy, DruidRestorationMasterShapeshifter, DruidRestorationWildGrowth
-- fixed spell dump to also show effects with none-effect, if they are relevant
-- implemented spell damage multipliers correctly
+- fixed periodic auras again (they cannot be "activated")
+- to test: DruidFeralCombatInfectedWounds, DruidFeralCombatKingOfTheJungle
