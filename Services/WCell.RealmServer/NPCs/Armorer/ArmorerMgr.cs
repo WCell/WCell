@@ -164,11 +164,11 @@ namespace WCell.RealmServer.NPCs.Armorer
 		public static void Initialize()
 		{
 			var durabilityCostsReader = new ListDBCReader<DurabilityCost, DBCDurabilityCostsConverter>(
-				RealmServerConfiguration.GetDBCFile("DurabilityCosts.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_DURABILITYCOSTS));
 
 
 			var durabilityQualityReader = new ListDBCReader<DurabilityQuality, DBCDurabilityQualityConverter>(
-				RealmServerConfiguration.GetDBCFile("DurabilityQuality.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_DURABILITYQUALITY));
 
 
 			itemClassRepairModifiers = durabilityCostsReader.EntryList.ToArray();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using NLog;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer;
 
@@ -17,7 +18,7 @@ namespace WCell.Tools.Maps.Structures
 			if (reader == null)
 			{
 				reader = new ListDBCReader<DBCMapEntry, DBCMapConverter>(
-					RealmServerConfiguration.GetDBCFile("Map.dbc"));
+					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
 			}
 
 			return reader.EntryList;

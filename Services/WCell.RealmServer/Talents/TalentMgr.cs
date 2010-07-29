@@ -16,6 +16,7 @@
 
 using WCell.Constants;
 using WCell.Constants.Talents;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.Util;
@@ -75,7 +76,7 @@ namespace WCell.RealmServer.Talents
 		internal static void Initialize()
 		{
 			var treeReader = new MappedDBCReader<TalentTree, TalentTreeConverter>(
-				RealmServerConfiguration.GetDBCFile("TalentTab.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TALENTTREES));
 
 			foreach (var tree in treeReader.Entries.Values)
 			{
@@ -92,7 +93,7 @@ namespace WCell.RealmServer.Talents
 
 
 			var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
-				RealmServerConfiguration.GetDBCFile("Talent.dbc"));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TALENTS));
 
 			foreach (var talent in talentReader.EntryList)
 			{

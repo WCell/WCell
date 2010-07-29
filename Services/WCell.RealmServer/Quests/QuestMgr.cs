@@ -144,8 +144,8 @@ namespace WCell.RealmServer.Quests
 		{
 			if (!Loaded)
 			{
-                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile("QuestXP.dbc"));
-                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile("QuestFactionReward.dbc"));
+                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTXP));
+                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTFACTIONREWARD));
 
 				Templates = new QuestTemplate[30000];
 
