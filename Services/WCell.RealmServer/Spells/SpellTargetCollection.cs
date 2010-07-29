@@ -179,7 +179,17 @@ namespace WCell.RealmServer.Spells
 
 		public void AddTargetsInArea(Vector3 pos, TargetFilter targetFilter, float radius)
 		{
-			var limit = (int)FirstHandler.Effect.Spell.MaxTargets;
+			var spell = FirstHandler.Effect.Spell;
+			int limit;
+			if (spell.MaxTargetEffect != null)
+			{
+				limit = spell.MaxTargetEffect.CalcEffectValue(Cast.CasterReference);
+			}
+			else
+			{
+				limit = (int) spell.MaxTargets;
+			}
+
 			if (limit < 1)
 			{
 				limit = int.MaxValue;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NLog;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
@@ -10,6 +11,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.Util;
 using WCell.Util.NLog;
 
 namespace WCell.Addons.Default.Spells.Druid
@@ -74,6 +76,59 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.AddTriggerSpellEffect(SpellId.TreeOfLifePassive);
 			});
 
+			// Master Shapeshifter "Grants an effect which lasts while the Druid is within the respective shapeshift form."
+			SpellLineId.DruidRestorationMasterShapeshifter.Apply(spell =>
+			{
+				var bearEffect = spell.GetEffect(AuraType.Dummy);
+
+				// Bear Form - Increases physical damage by $s1%.
+				bearEffect.AuraType = AuraType.ModDamageDonePercent;
+				bearEffect.RequiredShapeshiftMask = ShapeshiftMask.Bear;
+				bearEffect.MiscValue = (int)DamageSchoolMask.Physical;
+
+				// Cat Form - Increases critical strike chance by $s1%.
+				var catEffect = spell.AddAuraEffect(AuraType.ModCritPercent);
+				catEffect.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+
+				// Moonkin Form - Increases spell damage by $s1%.
+				var moonEffect = spell.AddAuraEffect(AuraType.ModDamageDonePercent);
+				catEffect.RequiredShapeshiftMask = ShapeshiftMask.Moonkin;
+				catEffect.MiscValue = (int)DamageSchoolMask.MagicSchools;
+
+				// Tree of Life Form - Increases healing by $s1%.
+				var treeForm = spell.AddAuraEffect(AuraType.ModHealingDonePct);
+				catEffect.RequiredShapeshiftMask = ShapeshiftMask.TreeOfLife;
+
+				// copy the values
+				bearEffect.CopyValuesTo(catEffect);
+				bearEffect.CopyValuesTo(moonEffect);
+				bearEffect.CopyValuesTo(treeForm);
+			});
+
+			// Wild Growth: "The amount healed is applied quickly at first, and slows down"
+			// see http://www.wowhead.com/spell=53251#comments
+			SpellLineId.DruidRestorationWildGrowth.Apply(spell =>
+			{
+				// set max target effect
+				spell.MaxTargetEffect = spell.GetEffect(SpellEffectType.None);
+
+				// fix target types of all effects
+				spell.ForeachEffect(effect => effect.ImplicitTargetA = ImplicitTargetType.PartyAroundCaster);
+
+				// customize the healing process
+				var healEffect = spell.GetEffect(AuraType.PeriodicHeal);
+
+				var ticks = spell.Durations.Max / healEffect.Amplitude;			// amount of ticks
+
+				// bump up the amount healed, so it averages out over time to still give the correct amount:
+				// sum(x / 1.1^i, i = 0 to ticks-1) = ticks * val <=> x = ticks * val / sum(1/1.1^i, i = 0 to ticks-1)
+				var divisor = 0f;
+				for (var i = 0; i < ticks; i++) divisor += 1 / (float)Math.Pow(WildGrowthHandler.TickPercentReduction/100f, i);
+				healEffect.BasePoints = MathUtil.RoundInt(ticks*healEffect.BasePoints / divisor);
+
+				// set the special aura handler
+				healEffect.AuraEffectHandlerCreator = () => new WildGrowthHandler();
+			});
 
 			// Swiftmend: Consume & Heal
 			SpellLineId.DruidRestorationSwiftmend.Apply(spell =>
@@ -100,6 +155,20 @@ namespace WCell.Addons.Default.Spells.Druid
 				var ticks = spell.Durations.Max / effect.Amplitude;
 				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicHealHandler(effect.CalcEffectValue() * ticks);
 			});
+		}
+	}
+
+	public class WildGrowthHandler : PeriodicHealHandler
+	{
+		/// <summary>
+		/// divide by 1.1 per tick: Heal in one instance went from 390 to 290 - that is 6 ticks
+		/// </summary>
+		public const int TickPercentReduction = 110;
+
+		protected override void Apply()
+		{
+			BaseEffectValue = (BaseEffectValue * TickPercentReduction + 5) / 100;
+			base.Apply();
 		}
 	}
 

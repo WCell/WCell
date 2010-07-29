@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					ItemRestrictedAuras.Remove(aura);
 				}
-				if (aura.Spell.AllowedShapeshiftMask != 0)
+				if (aura.Spell.RequiredShapeshiftMask != 0)
 				{
 					ShapeshiftRestrictedAuras.Add(aura);
 				}
@@ -128,7 +128,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				foreach (var aura in shapeshiftRestrictedAuras)
 				{
-					if (aura.Spell.AllowedShapeshiftMask != 0)
+					if (aura.Spell.RequiredShapeshiftMask != 0)
 					{
 						// the entire Aura is toggled
 						if (CheckRestrictions(aura))
@@ -156,7 +156,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		private bool CheckRestrictions(Aura aura, bool inclItemCheck = true)
 		{
-			if (!aura.Spell.AllowedShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
 				return false;
 			}

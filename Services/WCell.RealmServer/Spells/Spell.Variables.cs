@@ -76,6 +76,13 @@ namespace WCell.RealmServer.Spells
 		/// Whether this Spell's spell damage is increased by AP
 		/// </summary>
 		public bool DamageIncreasedByAP;
+
+		/// <summary>
+		/// The effect whose value represents the max amount of targets to be selected.
+		/// This is a way to boost the max target amount with a simple EffectValue modifier.
+		/// (Of course one could just have added a new modifier for this, but well.)
+		/// </summary>
+		public SpellEffect MaxTargetEffect;
 		#endregion
 
 		#region Spell Targets

@@ -81,7 +81,9 @@ namespace WCell.Constants
 		Nature = 8,
 		Frost = 0x10,
 		Shadow = 0x20,
-		Arcane = 0x40
+		Arcane = 0x40,
+
+		MagicSchools = Holy | Fire | Nature | Frost | Shadow | Arcane
 	}
 
 	public enum DamageSchool : uint

@@ -38,8 +38,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (type == Owner.PowerType)
 			{
-				var val = (Owner.MaxPower * EffectValue + 50) / 100;
-				m_aura.Auras.Owner.Energize(val, m_aura.Caster, m_spellEffect);
+				m_aura.Auras.Owner.EnergizePercent(EffectValue, m_aura.Caster, m_spellEffect);
 			}
 		}
 	}

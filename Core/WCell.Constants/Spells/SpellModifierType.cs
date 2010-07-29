@@ -76,8 +76,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		TargetResistance = 16,
 		/// <summary>
-		/// Only in: Chain Healing Wave (Id: 23573)
-		/// Seems to add additional ChainTargets
+		/// Adds additional ChainTargets
 		/// </summary>
 		ChainTargets = 17,
 		/// <summary>
@@ -118,8 +117,14 @@ namespace WCell.Constants.Spells
 		DispelResistance = 28,
 
 		/// <summary>
+		/// Only used in DruidFeralCombatPrimalPrecision:
+		/// "you are refunded $s2% of the energy cost of a finishing move if it fails to land."
+		/// </summary>
+		RefundFailedFinishingMoveEnergy = 30,
+
+		/// <summary>
 		/// CUSTOM: To hack around the DBC hack-arounds
 		/// </summary>
-		EffectValue4AndBeyond = 30
+		EffectValue4AndBeyond = 100
 	}
 }
