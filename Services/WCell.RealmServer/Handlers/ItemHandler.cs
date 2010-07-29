@@ -306,7 +306,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.PropertySeed);
 				packet.Write(item.RandomPropertiesId);
 				packet.Write(item.Amount);
-				packet.Write(item.Amount);
+				packet.Write(item.Amount); //item.SpellCharges?
 
 				owner.Send(packet);
 			}

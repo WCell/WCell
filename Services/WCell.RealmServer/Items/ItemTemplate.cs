@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemSpell GetSpell(ItemSpellTrigger trigger)
 		{
-			return Spells.Where(itemSpell => itemSpell != null && itemSpell.Trigger == ItemSpellTrigger.Use && itemSpell.Spell != null).FirstOrDefault();
+			return Spells.Where(itemSpell => itemSpell != null && itemSpell.Trigger == trigger && itemSpell.Id != 0).FirstOrDefault();
 		}
 
 		public int GetResistance(DamageSchool school)
@@ -542,9 +542,10 @@ namespace WCell.RealmServer.Items
 			if (Spells != null)
 			{
 				ArrayUtil.Prune(ref Spells);
-				foreach (var spell in Spells)
+				for (int i = 0; i < 5; i++ )
 				{
-					spell.FinalizeAfterLoad();
+					Spells[i].Index = (uint)i;
+					Spells[i].FinalizeAfterLoad();
 				}
 			}
 			else
