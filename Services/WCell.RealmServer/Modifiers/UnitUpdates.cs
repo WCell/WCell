@@ -66,7 +66,6 @@ namespace WCell.RealmServer.Modifiers
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
-			FlatIntModHandlers[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] = UpdateRangedAttackPower;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockValue] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
@@ -147,6 +146,14 @@ namespace WCell.RealmServer.Modifiers
 			//}
 
 			//unit.BaseHealth += healthBonus;
+			if (unit is Character)
+			{
+				var chr = (Character)unit;
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
+			}
 			UpdateHealth(unit);
 		}
 
@@ -167,13 +174,13 @@ namespace WCell.RealmServer.Modifiers
 				// TODO Update spell power: AddDamageMod & HealingDoneMod
 
 				UpdatePowerRegen(unit);
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
 			}
 
 			UpdateMaxPower(unit);
-			if (unit.IntMods[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] > 0)
-			{
-				unit.UpdateRangedAttackPower();
-			}
 		}
 
 		internal static void UpdateSpirit(this Unit unit)
@@ -188,6 +195,15 @@ namespace WCell.RealmServer.Modifiers
 			if (unit.Intellect != 0)
 			{
 				UpdatePowerRegen(unit);
+			}
+
+			if (unit is Character)
+			{
+				var chr = (Character)unit;
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
 			}
 		}
 
@@ -310,6 +326,7 @@ namespace WCell.RealmServer.Modifiers
 		}
 		#endregion
 
+		#region Attack Power
 		internal static void UpdateAllAttackPower(this Unit unit)
 		{
 			UpdateMeleeAttackPower(unit);
@@ -326,7 +343,15 @@ namespace WCell.RealmServer.Modifiers
 				var agil = chr.Agility;
 				var str = unit.Strength;
 
-				chr.MeleeAttackPower = clss.CalculateMeleeAP(lvl, str, agil);
+				var ap = clss.CalculateMeleeAP(lvl, str, agil);
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					for (var stat = StatType.Strength; stat < StatType.End; stat++)
+					{
+						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+					}
+				}
+				chr.MeleeAttackPower = ap;
 			}
 
 			unit.UpdateMainDamage();
@@ -343,17 +368,19 @@ namespace WCell.RealmServer.Modifiers
 				var agil = chr.Agility;
 				var str = unit.Strength;
 
-				var val = clss.CalculateRangedAP(lvl, str, agil);
-
-				var apBonus = unit.IntMods[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect];
-				if (apBonus > 0)
+				var ap = clss.CalculateRangedAP(lvl, str, agil);
+				if (chr.m_MeleeAPModByStat != null)
 				{
-					val += (apBonus * unit.Intellect + 50) / 100;
+					for (var stat = StatType.Strength; stat < StatType.End; stat++)
+					{
+						ap += (chr.GetRangedAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+					}
 				}
-				chr.RangedAttackPower = val;
+				chr.RangedAttackPower = ap;
 			}
 			unit.UpdateRangedDamage();
 		}
+		#endregion
 
 		internal static void UpdateBlockChance(this Unit unit)
 		{

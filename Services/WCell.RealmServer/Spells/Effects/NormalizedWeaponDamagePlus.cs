@@ -22,26 +22,11 @@ namespace WCell.RealmServer.Spells.Effects
 	/// <summary>
 	/// Adds flat melee damage to the attack
 	/// </summary>
-	public class NormalizedWeaponDamagePlusEffectHandler : SpellEffectHandler
+	public class NormalizedWeaponDamagePlusEffectHandler : WeaponDamageEffectHandler
 	{
 		public NormalizedWeaponDamagePlusEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
-		}
-
-		protected override void Apply(WorldObject target)
-		{
-			// does nothing, extra damage is applied on Hit
-		}
-
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Unit; }
-		}
-
-		public override ObjectTypes CasterType
-		{
-			get { return ObjectTypes.Unit; }
 		}
 	}
 }

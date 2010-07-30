@@ -122,6 +122,14 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoRemove(bool cancelled)
+		{
+			Remove(cancelled);
+		}
+
+		/// <summary>
 		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
 		protected virtual void Apply()

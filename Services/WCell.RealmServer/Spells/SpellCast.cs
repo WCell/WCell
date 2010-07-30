@@ -1410,7 +1410,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// 
 		/// </summary>
-		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Region map, WorldObject triggerOwner, uint phase, Item usedItem = null, IUnitAction action = null)
+		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Region map, Unit triggerOwner, uint phase,
+			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, map, phase);
@@ -1422,12 +1423,20 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// 
 		/// </summary>
-		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, WorldObject triggerOwner, WorldObject target, Item usedItem = null, IUnitAction action = null)
+		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Unit triggerOwner, WorldObject target, 
+			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, target.Region, target.Phase);
 			cast.Selected = target;
-			cast.TargetLoc = target.Position;
+			if (usedChannel != null && usedChannel.Cast.CasterUnit == triggerOwner)
+			{
+				cast.TargetLoc = triggerOwner.ChannelObject.Position;
+			}
+			else
+			{
+				cast.TargetLoc = target.Position;
+			}
 			cast.UsedItem = cast.CasterItem = usedItem;
 
 			cast.ValidateAndTrigger(spell, triggerOwner, target, action);
@@ -1444,14 +1453,14 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="spell"></param>
 		/// <param name="target"></param>
-		public void ValidateAndTriggerNew(Spell spell, WorldObject triggerOwner, WorldObject target, IUnitAction action = null)
+		public void ValidateAndTriggerNew(Spell spell, Unit triggerOwner, WorldObject target, IUnitAction action = null)
 		{
 			var passiveCast = InheritSpellCast();
 
 			passiveCast.ValidateAndTrigger(spell, triggerOwner, target, action);
 		}
 
-		public void ValidateAndTrigger(Spell spell, WorldObject triggerOwner, IUnitAction action = null)
+		public void ValidateAndTrigger(Spell spell, Unit triggerOwner, IUnitAction action = null)
 		{
 			if (action != null)
 			{
@@ -1462,7 +1471,7 @@ namespace WCell.RealmServer.Spells
 			ValidateAndTrigger(spell, triggerOwner, null, action);
 		}
 
-		public void ValidateAndTrigger(Spell spell, WorldObject triggerOwner, WorldObject target, IUnitAction action = null)
+		public void ValidateAndTrigger(Spell spell, Unit triggerOwner, WorldObject target, IUnitAction action = null)
 		{
 			WorldObject[] targets;
 

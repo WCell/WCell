@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Entities
 
 		protected Unit m_target;
 		protected Unit m_charm;
-		protected ObjectBase m_channeled;
+		protected WorldObject m_channeled;
 
 		protected Transport m_transport;
 		protected Vector3 m_transportPosition;
@@ -175,7 +175,7 @@ namespace WCell.RealmServer.Entities
 			internal set;
 		}
 
-		public ObjectBase ChannelObject
+		public WorldObject ChannelObject
 		{
 			get { return m_channeled; }
 			set
@@ -1623,6 +1623,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Amount of additional yards to be allowed to jump without having any damage inflicted.
+		/// TODO: Implement correctly (needs client packets)
 		/// </summary>
 		public int SafeFall
 		{

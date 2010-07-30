@@ -932,7 +932,8 @@ namespace WCell.RealmServer.Spells
 						ImplicitTargetType.ConeInFrontOfCaster,
 						ImplicitTargetType.AreaEffectPartyAndClass,
 						ImplicitTargetType.NatureSummonLocation,
-						ImplicitTargetType.TargetAtOrientationOfCaster});
+						ImplicitTargetType.TargetAtOrientationOfCaster,
+						ImplicitTargetType.Tranquility});
 		}
 		#endregion
 

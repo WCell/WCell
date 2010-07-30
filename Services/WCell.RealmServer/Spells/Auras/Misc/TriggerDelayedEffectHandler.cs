@@ -38,7 +38,8 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		private void TriggerSpell(WorldObject owner)
 		{
 			timer = null;
-			SpellCast.ValidateAndTriggerNew(m_spellEffect.TriggerSpell, m_aura.CasterReference, Owner, Owner, m_aura.UsedItem);
+			SpellCast.ValidateAndTriggerNew(m_spellEffect.TriggerSpell, m_aura.CasterReference, Owner, Owner,
+				m_aura.Controller as SpellChannel, m_aura.UsedItem);
 		}
 	}
 }

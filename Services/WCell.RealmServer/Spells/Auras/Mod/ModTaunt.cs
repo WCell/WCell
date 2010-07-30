@@ -46,7 +46,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 		protected override void Apply()
 		{
 			var npc = (NPC)Owner;
-			var caster = m_aura.Caster as Unit;
+			var caster = m_aura.Caster;
 			if (caster != null)
 			{
 				npc.ThreatCollection.Taunter = caster;

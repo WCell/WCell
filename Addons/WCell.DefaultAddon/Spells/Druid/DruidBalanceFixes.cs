@@ -120,8 +120,29 @@ namespace WCell.Addons.Default.Spells.Druid
 				effect2.SetAffectMask(SpellLineId.DruidStarfire);
 				effect2.AuraEffectHandlerCreator = () => new ISStarfireHandler();
 			});
+
+			// Innervate should "regenerate mana equal to $s1% of the casting Druid's base mana pool over $d."
+			SpellLineId.DruidInnervate.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.PeriodicEnergize).AuraEffectHandlerCreator = () => new InnervateHandler();
+			});
 		}
 	}
+
+	#region Innervate
+	public class InnervateHandler : PeriodicEnergizeHandler
+	{
+		protected override void Apply()
+		{
+			var caster = m_aura.Caster;
+			if (caster != null)
+			{
+				BaseEffectValue = (caster.BasePower * EffectValue + 50) / 100;
+			}
+			base.Apply();
+		}
+	}
+	#endregion
 
 	#region Improved Insect Swarm
 	public class ISWrathHandler : AuraEffectHandler

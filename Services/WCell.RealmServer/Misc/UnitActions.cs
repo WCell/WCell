@@ -1220,12 +1220,11 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
-		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
+		internal void Reset(Unit attacker, Unit target, IWeapon weapon)
 		{
 			Attacker = attacker;
 			Victim = target;
 			Weapon = weapon;
-			Damage = totalDamage;
 		}
 
 		internal void OnFinished()

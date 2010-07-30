@@ -1,2 +1,5 @@
-- implemented AuraType.EnableCritical
-- to test: DruidBalanceImprovedInsectSwarm, DruidFeralCombatProtectorOfThePack, DruidFeralCombatNaturalReaction, DruidFeralCombatSurvivalInstincts, DruidFeralCombatPrimalGore, DruidRip, DruidRebirth
+- fixed and moved around some mechanic-related stuff
+- enabled Weapon damage spell effects to modify the attack action
+- to test: DruidTranquility, DruidMoonfire, DruidRake, DruidShred, DruidBash, DruidFrenziedRegeneration, DruidSavageRoar, DruidFerociousBite, DruidCatFormShapeshift, DruidSwiftFlightFormShapeshift
+- to test: DruidHurricane, DruidNourish, DruidLifebloom, DruidInnervate, DruidMangleCat, DruidDireBearFormShapeshift, DruidTravelFormShapeshift (but still usable outdoors), DruidSavageDefensePassive
+- to test: DruidFlightFormShapeshift

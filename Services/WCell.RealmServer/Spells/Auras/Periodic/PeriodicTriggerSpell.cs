@@ -30,9 +30,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
+			var channel = m_aura.Controller as SpellChannel;
 			if (spell == null)
 			{
-				var channel = m_aura.Controller as SpellChannel;
 				if (channel != null)
 				{
 					origCast = channel.Cast;
@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				}
 			}
 
-			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, origCast != null ? origCast.UsedItem : null);
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, channel, origCast != null ? origCast.UsedItem : null);
 		}
 
 		protected override void Remove(bool cancelled)

@@ -10,6 +10,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.Util.NLog;
@@ -167,16 +168,8 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public void OnAttack(DamageAction action)
+		public virtual void OnAttack(DamageAction action)
 		{
-			if (action.Victim is NPC && m_dmgBonusVsCreatureTypePct != null)
-			{
-				var bonus = m_dmgBonusVsCreatureTypePct[(int)((NPC)action.Victim).Entry.Type];
-				if (bonus != 0)
-				{
-					action.Damage += (bonus * action.Damage + 50) / 100;
-				}
-			}
 			foreach (var mod in AttackEventHandlers)
 			{
 				mod.OnAttack(action);
@@ -353,12 +346,13 @@ namespace WCell.RealmServer.Entities
 					var i = 0;
 					foreach (var targ in ability.Targets)
 					{
-						var dmg = GetWeaponDamage(weapon, ability, i++);
-						action.Reset(this, (Unit)targ, weapon, dmg);
+						GetWeaponDamage(action, weapon, ability, i++);
+						action.Reset(this, (Unit)targ, weapon);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
 						{
-							action.Reset(this, (Unit)targ, weapon, Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1));
+							action.Damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
+							action.Reset(this, (Unit)targ, weapon);
 							action.DoAttack();
 						}
 					}
@@ -368,7 +362,7 @@ namespace WCell.RealmServer.Entities
 					// single target
 
 					// calc damage
-					action.Damage = GetWeaponDamage(weapon, m_pendingCombatAbility);
+					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
 					if (!action.DoAttack() &&
 						ability.Spell != null &&
 						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
@@ -392,7 +386,7 @@ namespace WCell.RealmServer.Entities
 				do
 				{
 					// calc damage
-					action.Damage = GetWeaponDamage(weapon, m_pendingCombatAbility);
+					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
 
 					action.Schools = weapon.Damages.AllSchools();
 					if (action.Schools == DamageSchoolMask.None)
@@ -410,7 +404,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns random damage for the given weapon
 		/// </summary>
-		public int GetWeaponDamage(IWeapon weapon, SpellCast pendingAbility, int targetNo = 0)
+		public void GetWeaponDamage(DamageAction action, IWeapon weapon, SpellCast pendingAbility, int targetNo = 0)
 		{
 			int damage;
 			if (weapon == m_offhandWeapon)
@@ -432,7 +426,7 @@ namespace WCell.RealmServer.Entities
 			if (pendingAbility != null && pendingAbility.IsCasting)
 			{
 				// get bonuses, damage and let the Spell impact
-				var multiplier = 100;
+				var multiplier = 0;
 
 				foreach (var effectHandler in pendingAbility.Handlers)
 				{
@@ -445,9 +439,27 @@ namespace WCell.RealmServer.Entities
 						multiplier += effectHandler.CalcDamageValue(targetNo);
 					}
 				}
-				damage = (damage * multiplier + 50) / 100;
+				if (multiplier > 0)
+				{
+					action.Damage = (damage * multiplier + 50) / 100;
+				}
+				else
+				{
+					action.Damage = damage;
+				}
+
+				foreach (var effectHandler in pendingAbility.Handlers)
+				{
+					if (effectHandler is WeaponDamageEffectHandler)
+					{
+						((WeaponDamageEffectHandler)effectHandler).OnHit(action);
+					}
+				}
 			}
-			return damage;
+			else
+			{
+				action.Damage = damage;
+			}
 		}
 		#endregion
 

@@ -27,7 +27,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Omen of Clarity: "has a chance"
 			SpellLineId.DruidRestorationOmenOfClarity.Apply(spell =>
 			{
-				// TODO: Fix proc chance (100 by default)
+				// Fix proc chance (100 by default)
 				spell.ProcChance = 5;
 				spell.ProcDelay = 5000;
 
@@ -189,8 +189,26 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				// fix the amount
 				var lbEffect = spell.GetEffect(AuraType.AddModifierFlat);
-				lbEffect.MiscValue = (int) SpellModifierType.CooldownTime;
-				lbEffect.BasePoints = -((lbEffect.BasePoints + 1)/15 - 1);
+				lbEffect.MiscValue = (int)SpellModifierType.CooldownTime;
+				lbEffect.BasePoints = -((lbEffect.BasePoints + 1) / 15 - 1);
+			});
+
+			// Nourish "Heals for an additional 20% if you have a Rejuvenation, Regrowth, Lifebloom, or Wild Growth effect active on the target."
+			SpellLineId.DruidNourish.Apply(spell =>
+			{
+				spell.GetEffect(SpellEffectType.Heal).SpellEffectHandlerCreator = (cast, effct) => new NourishHandler(cast, effct);
+			});
+
+			// Lifebloom: "When Lifebloom completes its duration or is dispelled, the target instantly heals themself for $s2 and the Druid regains half the cost of the spell."
+			SpellLineId.DruidLifebloom.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.Dummy).AuraEffectHandlerCreator = () => new LifebloomHandler();
+			});
+
+			// Dash: Cat form only
+			SpellLineId.DruidDash.Apply(spell =>
+			{
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 			});
 		}
 
@@ -209,6 +227,70 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 		}
 	}
+
+	#region Lifebloom
+	public class LifebloomHandler : AuraEffectHandler
+	{
+		protected override void Remove(bool cancelled)
+		{
+			if (!cancelled)
+			{
+				// "When Lifebloom completes its duration or is dispelled, the target instantly heals themself for $s2 and the Druid regains half the cost of the spell."
+				var caster = m_aura.Caster;
+				Owner.Heal(EffectValue, caster, m_spellEffect);
+				if (caster != null)
+				{
+					caster.Energize((m_spellEffect.Spell.CalcBasePowerCost(caster) + 1) / 2, caster, m_spellEffect);
+				}
+			}
+		}
+	}
+	#endregion
+
+	#region Nourish
+	public class NourishHandler : HealEffectHandler
+	{
+		public NourishHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var unit = (Unit)target;
+
+			// Heals for an additional 20% if you have a Rejuvenation, Regrowth, Lifebloom, or Wild Growth effect active on the target.
+			if (CheckBonus(unit, SpellLineId.DruidRejuvenation) ||
+				CheckBonus(unit, SpellLineId.DruidRegrowth) ||
+				CheckBonus(unit, SpellLineId.DruidLifebloom) ||
+				CheckBonus(unit, SpellLineId.DruidRestorationWildGrowth))
+			{
+				var val = CalcDamageValue();
+				val += (val * 20 + 50) / 100;
+				((Unit)target).Heal(val, m_cast.CasterUnit, Effect);
+			}
+			else
+			{
+				base.Apply(target);
+			}
+		}
+
+		bool CheckBonus(Unit unit, SpellLineId line)
+		{
+			var bonus = unit.Auras[line];
+			if (bonus == null || bonus.CasterReference != Cast.CasterReference)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		public override ObjectTypes TargetType
+		{
+			get { return ObjectTypes.Unit; }
+		}
+	}
+	#endregion
 
 	#region Revitalize
 	public class RevitalizeHandler : AuraEffectHandler

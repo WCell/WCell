@@ -49,6 +49,11 @@ namespace WCell.RealmServer.Spells
 		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
+		/// Mask of spells that are allowed to crit hit, although they are not allowed to, by default
+		/// </summary>
+		internal readonly uint[] CriticalStrikeEnabledMask = new uint[SpellConstants.SpellClassMaskSize];
+
+		/// <summary>
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
@@ -58,11 +63,6 @@ namespace WCell.RealmServer.Spells
 		/// Each category has an expiry time associated with it
 		/// </summary>
 		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
-
-		/// <summary>
-		/// Mask of spells that are allowed to crit hit, although they are not allowed to, by default
-		/// </summary>
-		internal uint[] CriticalStrikeEnabledMask = new uint[SpellConstants.SpellClassMaskSize];
 
 		public PlayerSpellCollection(Character owner)
 			: base(owner)

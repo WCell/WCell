@@ -107,7 +107,6 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_TargetResMods;
 		protected int[] m_spellInterruptProt;
 		protected int[] m_threatMods;
-		protected int[] m_dmgBonusVsCreatureTypePct;
 		protected int[] m_attackerSpellHitChance;
 		protected int[] m_SpellHitChance;
 		protected int[] m_spellCritMods;
@@ -1292,33 +1291,6 @@ namespace WCell.RealmServer.Entities
 				return dmg;
 			}
 			return dmg + ((dmg * m_threatMods[(int)school]) / 100);
-		}
-		#endregion
-
-		#region Creature Type Damage
-
-		/// <summary>
-		/// Damage bonus vs creature type in %
-		/// </summary>
-		public void ModDmgBonusVsCreatureTypePct(CreatureType type, int delta)
-		{
-			if (m_dmgBonusVsCreatureTypePct == null)
-			{
-				m_dmgBonusVsCreatureTypePct = new int[(int)CreatureType.End];
-			}
-			var val = m_dmgBonusVsCreatureTypePct[(int)type] + delta;
-			m_dmgBonusVsCreatureTypePct[(int)type] = val;
-		}
-
-		/// <summary>
-		/// Damage bonus vs creature type in %
-		/// </summary>
-		public void ModDmgBonusVsCreatureTypePct(uint[] creatureTypes, int delta)
-		{
-			foreach (var type in creatureTypes)
-			{
-				ModDmgBonusVsCreatureTypePct((CreatureType)type, delta);
-			}
 		}
 		#endregion
 

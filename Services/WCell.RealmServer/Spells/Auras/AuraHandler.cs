@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Ghost] = () => new GhostHandler();
 			EffectHandlers[(int)AuraType.ManaShield] = () => new ManaShieldHandler();
 			EffectHandlers[(int)AuraType.ModSkillTalent] = () => new ModSkillTalentHandler();
-			EffectHandlers[(int)AuraType.ModAttackPower] = () => new ModMeleeAttackPowerHandler();
+			EffectHandlers[(int)AuraType.ModMeleeAttackPower] = () => new ModMeleeAttackPowerHandler();
 			EffectHandlers[(int)AuraType.ModAttackPowerPercent] = () => new ModMeleeAttackPowerPercentHandler();
 			EffectHandlers[(int)AuraType.ModRangedAttackPower] = () => new ModRangedAttackPowerHandler();
 			EffectHandlers[(int)AuraType.ModRangedAttackPowerPercent] = () => new ModRangedAttackPowerPercentHandler();
@@ -156,8 +156,10 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();
 			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();
 			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();
-			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfIntellect] =
-				() => new ModRangedAttackPowerByPercentOfIntellectHandler();
+			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfStat] =
+				() => new ModRangedAttackPowerByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModMeleeAttackPowerByPercentOfStat] =
+				() => new ModMeleeAttackPowerByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.ModSpellHastePercent] = () => new ModSpellHastePercentHandler();
 			EffectHandlers[(int)AuraType.ModManaRegen] = () => new ModManaRegenHandler();
 			EffectHandlers[(int)AuraType.ModMaxHealth] = () => new ModMaxHealthHandler();
@@ -208,8 +210,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();
 			EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();
 			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
-			
-            
+			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
+			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

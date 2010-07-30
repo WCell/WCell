@@ -637,7 +637,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
 			}
 		}
@@ -655,7 +655,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 					if (count >= max)
 					{
 						break;
@@ -676,7 +676,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 					break;
 				}
 			}
@@ -693,7 +693,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && (aura.Spell.AuraInterruptFlags & interruptFlags) != 0)
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
 			}
 		}
@@ -1045,7 +1045,28 @@ namespace WCell.RealmServer.Spells.Auras
 			return false;
 		}
 
+		/// <summary>
+		/// Extra damage to be applied against a bleeding target
+		/// </summary>
+		public int GetBleedBonusPercent()
+		{
+			var bonus = 0;
+			{
+				foreach (var aura in m_AuraArray)
+				{
+					foreach (var handler in aura.Handlers)
+					{
+						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
+						{
+							bonus += handler.EffectValue;
+						}
+					}
+				}
+			}
+			return bonus;
+		}
 
+		#region Enumerators
 		/// <summary>
 		/// We need a second method because yield return and return statements cannot
 		/// co-exist in one method.
@@ -1072,5 +1093,6 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			return GetEnumerator();
 		}
+		#endregion
 	}
 }

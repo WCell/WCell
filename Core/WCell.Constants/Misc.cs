@@ -466,7 +466,7 @@ namespace WCell.Constants
 		/// HealthRegen while not in Combat
 		/// </summary>
 		HealthRegenNoCombat,
-
+		
 		PowerRegen,
 		CritChance,
 		BlockChance,
@@ -474,8 +474,6 @@ namespace WCell.Constants
         ParryChance,
         RangedCritChance,
 		HitChance,
-
-		RangedAttackPowerByPercentOfIntellect,
 
 		DodgeChance,
 
