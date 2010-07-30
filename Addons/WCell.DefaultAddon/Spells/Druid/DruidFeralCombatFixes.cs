@@ -222,7 +222,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// FR: "Converts up to 10 rage per second into health for $d.  Each point of rage is converted into ${$m2/10}.1% of max health."
 			SpellLineId.DruidFrenziedRegeneration.Apply(spell =>
 			{
-				var dummy = spell.GetEffect(AuraType.Dummy);
+				var dummy = spell.GetEffect(SpellEffectType.Dummy);
 				dummy.Amplitude = 1000;
 				dummy.AuraEffectHandlerCreator = () => new FrenziedGenerationHandler();
 			});
