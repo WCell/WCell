@@ -42,12 +42,6 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					origCast = m_aura.Auras.Owner.SpellCast;
 				}
 
-				if (origCast == null)
-				{
-					return;
-					//throw new Exception("Cannot apply a Periodic Trigger Spell Aura on anyone but the Caster");
-				}
-
 				spell = m_spellEffect.TriggerSpell;
 				if (spell == null)
 				{
@@ -57,8 +51,8 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					return;
 				}
 			}
-			// TODO fixxxx
-			SpellCast.ValidateAndTriggerNew(spell, origCast.CasterReference, Owner, Owner, origCast.UsedItem);
+
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, origCast != null ? origCast.UsedItem : null);
 		}
 
 		protected override void Remove(bool cancelled)

@@ -518,18 +518,6 @@ namespace WCell.RealmServer.Spells
 
 		#endregion
 
-		public SpellEffect GetAuraEffect(AuraType aura)
-		{
-			foreach (SpellEffect effect in Effects)
-			{
-				if (effect.AuraType == aura)
-				{
-					return effect;
-				}
-			}
-			return null;
-		}
-
 		#region Verbose / Debug
 		public void PrintEffects(TextWriter writer)
 		{

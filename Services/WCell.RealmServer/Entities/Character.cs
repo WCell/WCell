@@ -953,8 +953,6 @@ namespace WCell.RealmServer.Entities
 				m_currentRitual.Remove(this);
 			}
 
-			// TODO: Change speedhack detection
-			// TODO: Check whether the character is really in Taxi
 			var now = Environment.TickCount;
 			if (m_fallStart > 0 && now - m_fallStart > 3000 && m_position.Z == LastPosition.Z)
 			{
@@ -970,6 +968,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// TODO: Change speedhack detection
+			// TODO: Check whether the character is really in Taxi
 			if (SpeedHackCheck)
 			{
 				var msg = "You have been identified as a SpeedHacker. - Byebye!";

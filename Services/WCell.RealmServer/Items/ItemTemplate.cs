@@ -830,7 +830,7 @@ namespace WCell.RealmServer.Items
 			if (IsCharter)
 			{
 				PetitionRecord charter;
-				if (!record.IsNew)
+				if (!record.New)
 				{
 					// this is executed in the IO-context
 					charter = PetitionRecord.LoadRecord(record.EntityLowId);

@@ -8,7 +8,10 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Effects;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Druid
@@ -47,6 +50,84 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.ClearAffectMask();
 			});
+
+			// Starfall triggers a lot of spells in a chain - The first trigger spell effect is a dummy that limits the accumulated amount of triggers to 20
+			SpellLineId.DruidBalanceStarfall.Apply(spell =>
+			{
+				// cancels on move
+				spell.AuraInterruptFlags |= AuraInterruptFlags.OnMovement;
+
+				// all triggered Spells are instant casts - so we need to use the Aura effect handler to remember the total amount of stars
+
+				// use Aura handler for accumulating
+				var periodicTriggerEffect = spell.GetEffect(AuraType.PeriodicTriggerSpell);
+				periodicTriggerEffect.AuraEffectHandlerCreator = () => new StarfallAuraHandler();
+
+				// use triggered spell handler for updating the accumulator in the Aura
+				var triggeredDummySpell = periodicTriggerEffect.GetTriggerSpell();
+				var triggeredDummyEffect = triggeredDummySpell.GetEffect(SpellEffectType.Dummy);
+				triggeredDummyEffect.TriggerSpellId = (SpellId)triggeredDummyEffect.CalcEffectValue();		// trigger spell is set as effect value
+				triggeredDummyEffect.SpellEffectHandlerCreator = (cast, effct) => new StarfallCountTriggerHandler(cast, effct, spell);
+			});
 		}
 	}
+
+	#region Starfall
+	/// <summary>
+	/// The aura needs to keep track of the star count
+	/// </summary>
+	public class StarfallAuraHandler : PeriodicTriggerSpellHandler
+	{
+		public int FallenStars;
+	}
+
+	/// <summary>
+	/// This effect needs to count the amount of stars casted
+	/// </summary>
+	public class StarfallCountTriggerHandler : TriggerSpellEffectHandler
+	{
+		public static int MaxStars = 20;
+		public Spell StarFallAuraSpell { get; private set; }
+
+		public StarfallCountTriggerHandler(SpellCast cast, SpellEffect effect, Spell starFallAuraSpell)
+			: base(cast, effect)
+		{
+			StarFallAuraSpell = starFallAuraSpell;
+		}
+
+		public override void Apply()
+		{
+			if (Targets == null) return;					// must have targets
+
+			var caster = m_cast.CasterUnit;
+			if (caster == null) return;
+
+			var aura = caster.Auras[StarFallAuraSpell];
+			if (aura == null) return;
+
+			var handler = aura.Handlers.First(handlr => handlr is StarfallAuraHandler) as StarfallAuraHandler;
+			if (handler == null) return;					// we need the handler for counting
+
+			if (handler.FallenStars + Targets.Count >= MaxStars)
+			{
+				// reached the max amount of stars
+				var amount = MaxStars - handler.FallenStars;
+				if (amount > 0)
+				{
+					var spellTargets = new WorldObject[amount];
+					Targets.CopyTo(0, spellTargets, 0, amount);
+
+					m_cast.Trigger(Effect.TriggerSpell, spellTargets);
+				}
+				aura.Remove(false);			// remove Aura
+			}
+			else
+			{
+				// we can still keep going
+				handler.FallenStars += Targets.Count;
+				m_cast.Trigger(Effect.TriggerSpell, Targets.ToArray());
+			}
+		}
+	}
+	#endregion
 }
