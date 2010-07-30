@@ -514,7 +514,10 @@ namespace WCell.Constants.Spells
 		/// Always comes together with a Dummy effect
 		/// </summary>
 		ModAPByArmor = 285,
-		Aura_286 = 286,
+		/// <summary>
+		/// Enables critical strikes for the spells affected by AffectMask
+		/// </summary>
+		EnableCritical = 286,
 		/// <summary>
 		/// "chance to deflect spells cast by targets in front of you"
 		/// </summary>

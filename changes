@@ -1,2 +1,2 @@
-- fixed powertype when shapeshifting; moved power calculation to Formulas/
-- to test: DruidBalanceEarthAndMoon, DruidBalanceEclipse, DruidRestorationImprovedTreeOfLife, DruidRestorationRevitalize, DruidFeralCombatBerserk, DruidRestorationGiftOfTheEarthmother
+- implemented AuraType.EnableCritical
+- to test: DruidBalanceImprovedInsectSwarm, DruidFeralCombatProtectorOfThePack, DruidFeralCombatNaturalReaction, DruidFeralCombatSurvivalInstincts, DruidFeralCombatPrimalGore, DruidRip, DruidRebirth

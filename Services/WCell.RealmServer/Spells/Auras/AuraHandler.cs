@@ -207,6 +207,8 @@ namespace WCell.RealmServer.Spells.Auras
             EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();
 			EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();
 			EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();
+			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
+			
             
 
 			// make sure, there are no missing handlers

@@ -1391,27 +1391,6 @@ namespace WCell.RealmServer.Entities
 			}
 			return dmg;
 		}
-
-		public override float CalcCritChanceBase(Unit victim, SpellEffect effect, IWeapon weapon)
-		{
-			float chance;
-
-			if (weapon.IsRanged)
-			{
-				chance = CritChanceRangedPct;
-			}
-			else
-			{
-				chance = CritChanceMeleePct;
-			}
-
-			if (effect != null)
-			{
-				chance = PlayerSpells.GetModifiedFloat(SpellModifierType.CritChance, effect.Spell, chance);
-			}
-
-			return chance;
-		}
 		#endregion
 
 		#region Looting

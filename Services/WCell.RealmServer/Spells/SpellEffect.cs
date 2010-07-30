@@ -942,6 +942,12 @@ namespace WCell.RealmServer.Spells
 			AffectMask = new uint[3];
 		}
 
+		public void SetAffectMask(params SpellLineId[] abilities)
+		{
+			ClearAffectMask();
+			AddToAffectMask(abilities);
+		}
+
 		public void AddToAffectMask(params SpellLineId[] abilities)
 		{
 			foreach (var ability in abilities)
@@ -951,6 +957,22 @@ namespace WCell.RealmServer.Spells
 				{
 					AffectMask[i] |= spell.SpellClassMask[i];
 				}
+			}
+		}
+
+		public void CopyAffectMaskTo(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] |= AffectMask[i];
+			}
+		}
+
+		public void RemoveAffectMaskFrom(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] ^= AffectMask[i];
 			}
 		}
 

@@ -248,6 +248,7 @@
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\EnableCriticalHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
     <Compile Include="Spells\Auras\Mod\ModDeflectChanceHandler.cs" />

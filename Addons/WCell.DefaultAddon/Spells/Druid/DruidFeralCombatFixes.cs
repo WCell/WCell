@@ -148,6 +148,45 @@ namespace WCell.Addons.Default.Spells.Druid
 
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
+
+			// PotP only works in Bear or Dire Bear form
+			SpellLineId.DruidFeralCombatProtectorOfThePack.Apply(spell =>
+			{
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+			});
+
+			// NR only works in Bear or Dire Bear form, procs only on dodge
+			SpellLineId.DruidFeralCombatNaturalReaction.Apply(spell =>
+			{
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
+
+				// only proc the trigger spell on dodge
+				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
+				spell.AddProcHandler(new TriggerSpellProcHandler(
+					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
+					ProcHandler.DodgeValidator,
+					SpellHandler.Get(triggerSpellEffect.TriggerSpellId)
+					));
+
+			});
+
+			// SI only has a dummy
+			SpellLineId.DruidFeralCombatSurvivalInstincts.Apply(spell =>
+			{
+				// "grants you $s1% of your maximum health"
+				var dummy = spell.GetEffect(AuraType.Dummy);
+				dummy.AuraType = AuraType.ModIncreaseHealthPercent;
+
+				// "while in Bear Form, Cat Form, or Dire Bear Form"
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear | ShapeshiftMask.Cat;
+			});
+
+			// Rip: Also does damage based on APs and CPs
+			SpellLineId.DruidRip.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.PeriodicDamage);
+				effect.APPerComboPointValueFactor = 0.01f;
+			});
 		}
 
 		#region FixFeralSwiftness

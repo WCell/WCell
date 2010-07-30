@@ -354,11 +354,11 @@ namespace WCell.RealmServer.Entities
 					foreach (var targ in ability.Targets)
 					{
 						var dmg = GetWeaponDamage(weapon, ability, i++);
-						action.Reset(this, (Unit) targ, weapon, dmg);
+						action.Reset(this, (Unit)targ, weapon, dmg);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
 						{
-							action.Reset(this, (Unit) targ, weapon, Utility.Random((int) MinOffHandDamage, (int) MaxOffHandDamage + 1));
+							action.Reset(this, (Unit)targ, weapon, Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1));
 							action.DoAttack();
 						}
 					}
@@ -473,7 +473,7 @@ namespace WCell.RealmServer.Entities
 						ap = TotalMeleeAP;
 					}
 
-					dmg += (ap + 7)/14; // round
+					dmg += (ap + 7) / 14; // round
 				}
 			}
 			else
@@ -513,6 +513,7 @@ namespace WCell.RealmServer.Entities
 			action.Damage = dmg;
 			action.ResistPct = GetResistChancePct(this, action.UsedSchool);
 			action.Absorbed = 0;
+			action.SpellEffect = effect;
 
 			action.Victim = this;
 
@@ -521,8 +522,7 @@ namespace WCell.RealmServer.Entities
 				// the damage is caused by someone else (i.e. not environmental damage etc)
 
 				// critical hits
-				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
-				    attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
+				if (action.CalcCritChance() > Utility.Random(0, 10000))
 				{
 					action.IsCritical = true;
 					action.SetCriticalDamage();
@@ -538,16 +538,13 @@ namespace WCell.RealmServer.Entities
 
 				if (addDamageBonuses && attacker is Character)
 				{
-					((Character) attacker).AddDamageModsToAction(action);
+					((Character)attacker).AddDamageModsToAction(action);
 				}
 			}
 
-
 			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
-			action.Resisted = (int) Math.Round(action.Damage*action.ResistPct/100);
+			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
 			action.Blocked = 0; // TODO: Deflect
-			action.SpellEffect = effect;
-
 
 			DoRawDamage(action);
 
@@ -587,13 +584,26 @@ namespace WCell.RealmServer.Entities
 			return res;
 		}
 
-		public float CalcSpellCritChance(Unit defender, DamageSchool dmgSchool, float resistPct, Spell spell)
+		public float CalcCritChance(Unit defender, DamageSchool dmgSchool, Spell spell, IWeapon weapon)
 		{
 			var chance = GetSpellCritChance(dmgSchool);
 			if (this is Character)
 			{
 				var chr = (Character)this;
 				chance += chr.PlayerSpells.GetModifierFlat(SpellModifierType.CritChance, spell);
+
+				if (weapon.IsRanged)
+				{
+					chance = chr.CritChanceRangedPct;
+				}
+				else
+				{
+					chance = chr.CritChanceMeleePct;
+				}
+			}
+			else
+			{
+				chance += 5;	// mobs got 5% by default
 			}
 			chance -= defender.GetResiliencePct();
 			return chance;
@@ -728,15 +738,6 @@ namespace WCell.RealmServer.Entities
 			multiplier -= (int)victim.GetResiliencePct();
 			multiplier += victim.GetIntMod(StatModifierInt.CritDamageBonusPct);
 			return (dmg * multiplier + 50) / 100;
-		}
-
-		/// <summary>
-		/// Crit chance from 0 to 100
-		/// </summary>
-		/// <returns></returns>
-		public virtual float CalcCritChanceBase(Unit victim, SpellEffect effect, IWeapon weapon)
-		{
-			return 5;		// mobs got 5% by default
 		}
 
 		/// <summary>

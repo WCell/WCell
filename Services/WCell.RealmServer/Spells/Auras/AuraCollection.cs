@@ -181,6 +181,7 @@ namespace WCell.RealmServer.Spells.Auras
 				return null;
 			}
 		}
+
 		public Aura this[SpellLineId id, bool positive]
 		{
 			get
@@ -204,7 +205,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					return aura;
 				}
-				return aura;
+				return null;
 			}
 		}
 
@@ -335,7 +336,9 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			return null;
 		}
+		#endregion
 
+		#region Contains
 		public bool Contains(AuraIndexId id)
 		{
 			return this[id] != null;
@@ -356,6 +359,28 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Returns the first visible Aura with the given SpellId
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool Contains(SpellLineId id)
+		{
+			var line = SpellLines.GetLine(id);
+			if (line != null)
+			{
+				return this[line] != null;
+			}
+			return false;
+		}
+
+		public bool Contains(SpellLine line)
+		{
+			Aura aura;
+			m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
+			return aura != null && aura.Spell.Line == line;
 		}
 
 		public bool Contains(uint id)

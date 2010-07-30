@@ -99,12 +99,63 @@ namespace WCell.Addons.Default.Spells.Druid
 				// and do a second chance check for the other proc when proc'ing
 				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;
 				effect1.IsProc = true;
-				effect1.ClearAffectMask();
-				effect1.AddToAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
+				effect1.SetAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
 				effect1.AuraEffectHandlerCreator = () => new DruidEclipseHandler();
+			});
+
+			// Improved IS: Two different kinds of procs, dependent on spell being cast
+			SpellLineId.DruidBalanceImprovedInsectSwarm.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				// "Increases your damage done by your Wrath spell to targets afflicted by your Insect Swarm by $s1%"
+				var effect1 = spell.Effects[0];
+				effect1.IsProc = true;
+				effect1.SetAffectMask(SpellLineId.DruidWrath);
+				effect1.AuraEffectHandlerCreator = () => new ISWrathHandler();
+
+				// "increases the critical strike chance of your Starfire spell by $s2% on targets afflicted by your Moonfire spell."
+				var effect2 = spell.Effects[1];
+				effect2.IsProc = true;
+				effect2.SetAffectMask(SpellLineId.DruidStarfire);
+				effect2.AuraEffectHandlerCreator = () => new ISStarfireHandler();
 			});
 		}
 	}
+
+	#region Improved Insect Swarm
+	public class ISWrathHandler : AuraEffectHandler
+	{
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			// "Increases your damage done by your Wrath spell to targets afflicted by your Insect Swarm by $s1%"
+			if (triggerer.Auras.Contains(SpellLineId.DruidBalanceInsectSwarm))
+			{
+				var daction = action as DamageAction;
+				if (daction != null)
+				{
+					daction.IncreaseDamagePercent(EffectValue);
+				}
+			}
+		}
+	}
+
+	public class ISStarfireHandler : AuraEffectHandler
+	{
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			// "increases the critical strike chance of your Starfire spell by $s2% on targets afflicted by your Moonfire spell."
+			if (triggerer.Auras.Contains(SpellLineId.DruidMoonfire))
+			{
+				var daction = action as DamageAction;
+				if (daction != null)
+				{
+					daction.AddBonusCritChance(EffectValue);
+				}
+			}
+		}
+	}
+	#endregion
 
 	#region Eclipse
 	public class DruidEclipseHandler : AuraEffectHandler
