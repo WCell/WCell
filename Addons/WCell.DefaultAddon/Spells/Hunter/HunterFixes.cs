@@ -11,9 +11,10 @@ namespace WCell.Addons.Default.Spells.Hunter
 		public static void FixHunter()
 		{
 			// taming has an invalid target
-			SpellHandler.Apply(
-				spell => { spell.GetAuraEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitTargetType.SingleEnemy; },
-				SpellId.ClassSkillTameBeast);
+			SpellHandler.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitTargetType.SingleEnemy;
+			}, SpellId.ClassSkillTameBeast);
 
 			// Only one Aspect can be active at a time
 			AuraHandler.AddAuraGroup(SpellLineId.HunterAspectOfTheBeast, SpellLineId.HunterAspectOfTheCheetah,
@@ -30,5 +31,5 @@ namespace WCell.Addons.Default.Spells.Hunter
 			//SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.SingleEnemy,
 			//                   SpellId.ExposeWeakness_2);
 		}
-    }
+	}
 }

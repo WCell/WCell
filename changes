@@ -1,3 +1,2 @@
-- fixed periodic auras again (they cannot be "activated")
-- added ProcTriggerSpellOnCritHandler
-- to test: DruidFeralCombatInfectedWounds, DruidFeralCombatKingOfTheJungle, DruidRestorationLivingSeed
+- fixed Starfall
+- fixed compilation (woopsi)

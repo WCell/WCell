@@ -395,26 +395,14 @@ namespace WCell.RealmServer.Database
 
 		public int WatchedFaction
 		{
-			get
-			{
-				return _watchedFaction;
-			}
-			set
-			{
-				_watchedFaction = value;
-			}
+			get { return _watchedFaction; }
+			set { _watchedFaction = value; }
 		}
 
 		public uint DisplayId
 		{
-			get
-			{
-				return (uint)_displayId;
-			}
-			set
-			{
-				_displayId = (int)value;
-			}
+			get { return (uint)_displayId; }
+			set { _displayId = (int)value; }
 		}
 
 		[Property(NotNull = true)]

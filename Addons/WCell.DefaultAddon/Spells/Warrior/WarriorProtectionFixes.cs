@@ -33,7 +33,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionGagOrder.Apply(spell =>
 			{
 				spell.AddCasterProcSpells(SpellLineId.WarriorShieldBash, SpellLineId.WarriorHeroicThrow);
-				var effect = spell.GetAuraEffect(AuraType.Dummy);
+				var effect = spell.GetEffect(AuraType.Dummy);
 				if (effect != null)
 				{
 					effect.AuraType = AuraType.ProcTriggerSpell;

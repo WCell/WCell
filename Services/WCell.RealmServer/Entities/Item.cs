@@ -1279,7 +1279,7 @@ namespace WCell.RealmServer.Entities
 			{
 				RealmServer.Instance.AddMessage(() =>
 				{
-					if (!record.IsNew)
+					if (!record.New)
 					{
 						record.Delete();
 					}
