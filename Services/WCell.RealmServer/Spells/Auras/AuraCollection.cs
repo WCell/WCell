@@ -407,6 +407,16 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
+		public Aura CreateAura(ObjectReference caster, SpellId spell, bool noTimeout, Item usedItem = null)
+		{
+			return CreateAura(caster, SpellHandler.Get(spell), noTimeout, usedItem);
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Also initializes the new Aura.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura</returns>
 		public Aura CreateAura(ObjectReference caster, Spell spell, bool noTimeout, Item usedItem = null)
 		{
 			try

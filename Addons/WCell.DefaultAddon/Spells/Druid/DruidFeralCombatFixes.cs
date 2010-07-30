@@ -135,7 +135,17 @@ namespace WCell.Addons.Default.Spells.Druid
 				effect2.EffectType = SpellEffectType.Energize;
 				effect2.AddToAffectMask(SpellLineId.DruidTigersFury);
 			});
-			
+
+			// "You cannot use Tiger's Fury while Berserk is active."
+			AuraHandler.AddAuraGroup(SpellLineId.DruidTigersFury, SpellLineId.DruidFeralCombatBerserk);
+
+			// Berserk triggers another spell
+			SpellLineId.DruidFeralCombatBerserk.Apply(spell =>
+			{
+				// "causes your Mangle (Bear) ability to hit up to $58923s1 targets"
+				spell.AddTriggerSpellEffect(SpellId.Berserk_14);
+			});
+
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness, SpellId.FeralSwiftnessPassive1a);
 			FixFeralSwiftness(SpellId.DruidFeralCombatFeralSwiftness_2, SpellId.FeralSwiftnessPassive2a);
 		}
@@ -174,7 +184,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			return EffectValue > 0;
 		}
 
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			// "causes affected targets to heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack."
 			action.Attacker.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);

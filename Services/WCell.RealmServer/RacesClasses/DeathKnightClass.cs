@@ -19,7 +19,7 @@ namespace WCell.RealmServer.RacesClasses
 			}
 		}
 
-		public override PowerType PowerType
+		public override PowerType DefaultPowerType
 		{
 			get
 			{
@@ -60,15 +60,5 @@ namespace WCell.RealmServer.RacesClasses
         {
             return base.CalculateParry(level, (int)(parryRating + str*0.25), str);
         }
-		/// <summary>
-		/// Calculates the amount of power regeneration for the class at a specific level and Spirit.
-		/// </summary>
-		/// <param name="level">the player's level</param>
-		/// <param name="spirit">the player's Spirit</param>
-		/// <returns>the total power regeneration amount</returns>
-        public override int CalculatePowerRegen(Character chr)
-		{
-			return 4 + (chr.Spirit / 5);
-		}
 	}
 }

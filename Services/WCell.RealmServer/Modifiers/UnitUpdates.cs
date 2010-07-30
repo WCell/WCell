@@ -21,6 +21,7 @@ using WCell.Constants.Misc;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Formulas;
 using WCell.RealmServer.RacesClasses;
 using WCell.Util;
 using System.Collections;
@@ -293,11 +294,7 @@ namespace WCell.RealmServer.Modifiers
 			{
 				if (unit is Character)
 				{
-					regen = ((Character)unit).Archetype.Class.CalculatePowerRegen((Character)unit);
-				}
-				else if (unit.IsMinion && unit.PowerType == PowerType.Focus)
-				{
-					regen = 5;
+					regen = PowerFormulas.GetPowerRegen(unit);
 				}
 				else
 				{

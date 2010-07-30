@@ -450,6 +450,9 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_controller == null ? m_maxTicks : m_controller.MaxTicks; }
 		}
 
+		/// <summary>
+		/// Duration in millis
+		/// </summary>
 		public int Duration
 		{
 			get { return m_controller == null ? m_duration : m_controller.Duration; }

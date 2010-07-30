@@ -1,2 +1,2 @@
-- fixed Starfall
-- fixed compilation (woopsi)
+- fixed powertype when shapeshifting; moved power calculation to Formulas/
+- to test: DruidBalanceEarthAndMoon, DruidBalanceEclipse, DruidRestorationImprovedTreeOfLife, DruidRestorationRevitalize, DruidFeralCombatBerserk, DruidRestorationGiftOfTheEarthmother

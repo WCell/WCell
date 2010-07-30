@@ -6,12 +6,14 @@ using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Druid
@@ -68,9 +70,141 @@ namespace WCell.Addons.Default.Spells.Druid
 				var triggeredDummyEffect = triggeredDummySpell.GetEffect(SpellEffectType.Dummy);
 				triggeredDummyEffect.TriggerSpellId = (SpellId)triggeredDummyEffect.CalcEffectValue();		// trigger spell is set as effect value
 				triggeredDummyEffect.SpellEffectHandlerCreator = (cast, effct) => new StarfallCountTriggerHandler(cast, effct, spell);
+
+				// the impact should cause more damage to targets around the first target
+				//var triggeredImpactSpell = triggeredDummyEffect.GetTriggerSpell();
+				//var scatterEffect = triggeredImpactSpell.GetEffect(SpellEffectType.TriggerSpell);
+			});
+
+			// Earth and Moon: "Your Wrath and Starfire spells have a $h% chance to apply the Earth and Moon effect"
+			SpellLineId.DruidBalanceEarthAndMoon.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+
+				// retricted to Wrath and Starfire
+				effect.AddToAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
+			});
+
+			// Eclipse has a special proc effect
+			// "When you critically hit with Starfire, you have a $h1% chance of increasing damage done by Wrath by $48517s1%. 
+			// When you critically hit with Wrath, you have a ${$h*0.6}% chance of increasing your critical strike chance with Starfire by $48518s1%. 
+			// Each effect lasts $48518d and each has a separate $s1 sec cooldown.  Both effects cannot occur simultaneously."
+			SpellLineId.DruidBalanceEclipse.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCastCritical;
+				var effect1 = spell.Effects[0];
+
+				// We set the original proc chance to that of of the more often occuring effect (Wrath) 
+				// and do a second chance check for the other proc when proc'ing
+				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;
+				effect1.IsProc = true;
+				effect1.ClearAffectMask();
+				effect1.AddToAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
+				effect1.AuraEffectHandlerCreator = () => new DruidEclipseHandler();
 			});
 		}
 	}
+
+	#region Eclipse
+	public class DruidEclipseHandler : AuraEffectHandler
+	{
+		private static readonly SpellId[] StarFallRanks = new[]
+		{
+			SpellId.StarfallRank1,
+			SpellId.StarfallRank2,
+			SpellId.StarfallRank3,
+			SpellId.StarfallRank4
+		};
+
+		static bool IsStarFireDamageSpell(Spell spell)
+		{
+			return StarFallRanks.Contains(spell.SpellId);
+		}
+
+		static bool IsWrath(Spell spell)
+		{
+			return spell.Line != null && spell.Line.LineId == SpellLineId.DruidWrath;
+		}
+
+		public Aura CurrentlyActiveAura;
+
+		/// <summary>
+		/// "Each effect lasts $48518d and each has a separate $s1 sec cooldown"
+		/// </summary>
+		public DateTime NextSFProcTime, NextWrathProcTime;
+
+		public override bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			if (CurrentlyActiveAura != null)
+			{
+				// "Both effects cannot occur simultaneously."
+				return false;
+			}
+
+			if (action.Spell == null) return false;
+			if (IsStarFireDamageSpell(action.Spell))
+			{
+				// SF
+				if (DateTime.Now < NextSFProcTime)
+				{
+					return false;
+				}
+
+				// starfire has less of a chance than wrath, so we need to make a second proc chance check here:
+				var wrathChance = m_spellEffect.Spell.ProcChance;
+				var starfireChance = m_spellEffect.MiscValue;
+				var sfToWrathProportion = starfireChance / wrathChance;
+
+				// if SF had 25% of the chance of wrath, this would succeed with 25% and fail with 75%
+				if (Utility.RandomFloat() < sfToWrathProportion)
+				{
+					return false;
+				}
+				return base.CanProcBeTriggeredBy(action);
+			}
+			else if (IsWrath(action.Spell))
+			{
+				// Wrath
+				if (DateTime.Now < NextWrathProcTime)
+				{
+					return false;
+				}
+				return base.CanProcBeTriggeredBy(action);
+			}
+			return false;		// must be wrath or SF
+		}
+
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			SpellId spellId;
+			if (IsWrath(action.Spell))
+			{
+				// Wrath
+				// "increasing your critical strike chance with Starfire by $48518s1%"
+				spellId = SpellId.EclipseLunar;
+				CurrentlyActiveAura = Owner.Auras.CreateAura(m_aura.CasterReference, spellId, true);
+				if (CurrentlyActiveAura != null)
+				{
+					// "$s1 sec cooldown"
+					NextWrathProcTime = DateTime.Now.AddMilliseconds(CurrentlyActiveAura.Duration + EffectValue * 1000);
+				}
+			}
+			else
+			{
+				// SF
+				// "chance of increasing damage done by Wrath by $48517s1%"
+				spellId = SpellId.EclipseSolar;
+				CurrentlyActiveAura = Owner.Auras.CreateAura(m_aura.CasterReference, spellId, true);
+				if (CurrentlyActiveAura != null)
+				{
+					// "$s1 sec cooldown"
+					NextSFProcTime = DateTime.Now.AddMilliseconds(CurrentlyActiveAura.Duration + EffectValue * 1000);
+				}
+			}
+		}
+	}
+	#endregion
 
 	#region Starfall
 	/// <summary>

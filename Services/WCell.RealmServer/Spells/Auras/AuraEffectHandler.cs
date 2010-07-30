@@ -146,8 +146,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Triggers a proc on this EffectHandler with the given target.
 		/// </summary>
-		/// <param name="target"></param>
-		public virtual void OnProc(Unit target, IUnitAction action)
+		/// <param name="triggerer"></param>
+		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}
 	}

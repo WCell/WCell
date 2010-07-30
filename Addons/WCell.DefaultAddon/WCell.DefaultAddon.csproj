@@ -211,6 +211,7 @@
     <Compile Include="Instances\VaultOfArchavon.cs" />
     <Compile Include="Instances\VioletHold.cs" />
     <Compile Include="Items\PlayerAbilityItemFixes.cs" />
+    <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />
     <Compile Include="Instances\AhnQirajTemple.cs" />
