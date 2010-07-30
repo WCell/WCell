@@ -47,6 +47,10 @@ namespace WCell.RealmServer.Spells
 		{
 			get { return UnitMgr.GetModelInfo(ModelIdHorde); }
 		}
+
+		#region Custom Settings
+		public PowerType PowerType = PowerType.End;
+		#endregion
 	}
 
 	public class ShapeshiftEntryConverter : DBCRecordConverter

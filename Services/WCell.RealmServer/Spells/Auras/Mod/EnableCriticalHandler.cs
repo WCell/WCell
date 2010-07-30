@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,14 +6,14 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Mod
 {
-	public class ModDamageDoneVersusCreatureTypeHandler : AuraEffectHandler
+	public class EnableCriticalHandler : AuraEffectHandler
 	{
 		protected override void Apply()
 		{
 			var chr = Owner as Character;
 			if (chr != null)
 			{
-				chr.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, EffectValue);
+				m_spellEffect.CopyAffectMaskTo(chr.PlayerSpells.CriticalStrikeEnabledMask);
 			}
 		}
 
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			var chr = Owner as Character;
 			if (chr != null)
 			{
-				chr.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, -EffectValue);
+				m_spellEffect.RemoveAffectMaskFrom(chr.PlayerSpells.CriticalStrikeEnabledMask);
 			}
 		}
 	}

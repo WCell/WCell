@@ -33,33 +33,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				var value = EffectValue;
 				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
 				{
-					var bonus = GetBleedBonusPercent();
+					var bonus = m_aura.Auras.GetBleedBonusPercent();
 					value = ((value*bonus) + 50)/100;
 				}
 
 				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value);
 			}
-		}
-
-		/// <summary>
-		/// Extra damage to be applied against a bleeding target
-		/// </summary>
-		private int GetBleedBonusPercent()
-		{
-			var bonus = 0;
-			{
-				foreach (var aura in m_aura.Auras.ActiveAuras)
-				{
-					foreach (var handler in aura.Handlers)
-					{
-						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
-						{
-							bonus += handler.EffectValue;
-						}
-					}
-				}
-			}
-			return bonus;
 		}
 	}
 

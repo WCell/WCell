@@ -29,7 +29,7 @@ namespace WCell.RealmServer.RacesClasses
 			get { return ClassId.Rogue; }
 		}
 
-		public override PowerType PowerType
+		public override PowerType DefaultPowerType
 		{
 			get
 			{
@@ -81,21 +81,5 @@ namespace WCell.RealmServer.RacesClasses
         {
             return 0;
         }
-
-        /// <summary>
-        /// Calculates the amount of power regeneration for the class at a specific level and Spirit.
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <param name="spirit">the player's Spirit</param>
-        /// <returns>the total power regeneration amount</returns>
-        public override int CalculatePowerRegen(Character chr)
-        {
-            return 20;
-        }
-
-		public override int GetPowerForLevel(int level)
-		{
-			return 100;
-		}
     }
 }

@@ -181,6 +181,7 @@ namespace WCell.RealmServer.Spells.Auras
 				return null;
 			}
 		}
+
 		public Aura this[SpellLineId id, bool positive]
 		{
 			get
@@ -204,7 +205,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					return aura;
 				}
-				return aura;
+				return null;
 			}
 		}
 
@@ -335,7 +336,9 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			return null;
 		}
+		#endregion
 
+		#region Contains
 		public bool Contains(AuraIndexId id)
 		{
 			return this[id] != null;
@@ -356,6 +359,28 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 			return false;
+		}
+
+		/// <summary>
+		/// Returns the first visible Aura with the given SpellId
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public bool Contains(SpellLineId id)
+		{
+			var line = SpellLines.GetLine(id);
+			if (line != null)
+			{
+				return this[line] != null;
+			}
+			return false;
+		}
+
+		public bool Contains(SpellLine line)
+		{
+			Aura aura;
+			m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
+			return aura != null && aura.Spell.Line == line;
 		}
 
 		public bool Contains(uint id)
@@ -400,6 +425,16 @@ namespace WCell.RealmServer.Spells.Auras
 		public Aura CreateSelf(Spell spell, bool noTimeout)
 		{
 			return CreateAura(m_owner.SharedReference, spell, noTimeout);
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Also initializes the new Aura.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura</returns>
+		public Aura CreateAura(ObjectReference caster, SpellId spell, bool noTimeout, Item usedItem = null)
+		{
+			return CreateAura(caster, SpellHandler.Get(spell), noTimeout, usedItem);
 		}
 
 		/// <summary>
@@ -602,7 +637,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
 			}
 		}
@@ -620,7 +655,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 					if (count >= max)
 					{
 						break;
@@ -641,7 +676,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && predicate(aura))
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 					break;
 				}
 			}
@@ -658,7 +693,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (aura != null && (aura.Spell.AuraInterruptFlags & interruptFlags) != 0)
 				{
-					aura.Remove(true);
+					aura.Remove(false);
 				}
 			}
 		}
@@ -1010,7 +1045,28 @@ namespace WCell.RealmServer.Spells.Auras
 			return false;
 		}
 
+		/// <summary>
+		/// Extra damage to be applied against a bleeding target
+		/// </summary>
+		public int GetBleedBonusPercent()
+		{
+			var bonus = 0;
+			{
+				foreach (var aura in m_AuraArray)
+				{
+					foreach (var handler in aura.Handlers)
+					{
+						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
+						{
+							bonus += handler.EffectValue;
+						}
+					}
+				}
+			}
+			return bonus;
+		}
 
+		#region Enumerators
 		/// <summary>
 		/// We need a second method because yield return and return statements cannot
 		/// co-exist in one method.
@@ -1037,5 +1093,6 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			return GetEnumerator();
 		}
+		#endregion
 	}
 }

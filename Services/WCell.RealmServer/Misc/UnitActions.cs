@@ -141,12 +141,6 @@ namespace WCell.RealmServer.Misc
 			get;
 			set;
 		}
-
-		public bool IsCritical
-		{
-			get;
-			set;
-		}
 	}
 	#endregion
 
@@ -307,6 +301,11 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		public void IncreaseDamagePercent(int pct)
+		{
+			m_Damage = (m_Damage * pct + 50) / 100;
+		}
+
 		private int m_Damage;
 
 		public int Damage
@@ -432,17 +431,24 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
+		/// <summary>
+		/// An action can crit if there is no spell involved,
+		/// the given spell is allowed to crit by default,
+		/// or the Attacker has a modifier that allows the spell to crit.
+		/// </summary>
 		public bool CanCrit
 		{
-			get { return (SpellEffect == null || !Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit)); }
+			get
+			{
+				return (SpellEffect == null ||
+						((!Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && !IsDot)) ||
+						(Attacker is Character && ((Character)Attacker).PlayerSpells.CanSpellCrit(SpellEffect.Spell)));
+			}
 		}
 
 		public int ActualDamage
 		{
-			get
-			{
-				return Damage - Absorbed - Resisted - Blocked;
-			}
+			get { return Damage - Absorbed - Resisted - Blocked; }
 		}
 		#endregion
 
@@ -618,26 +624,15 @@ namespace WCell.RealmServer.Misc
 				else
 				{
 					var crushingblow = CalcCrushingBlowChance();
-					var critChance = CalcCritChance();
+					var critical = CalcCritChance();
 
-					critChance -= (int)(Victim.GetResiliencePct() * 100); //resilience
-					int critical;
-
-					if (critChance < 0)
-					{
-						critical = 0;
-					}
-					else
-					{
-						critical = critChance;
-					}
 					if (random > (hitChance - dodgeParry - glancingblow - crushingblow))
 					{
 						//crushing blow
 						StrikeCrushing();
 						return true;
 					}
-					else if (CanCrit && random > (hitChance - dodgeParry - glancingblow - crushingblow - critical))
+					else if (random > (hitChance - dodgeParry - glancingblow - crushingblow - critical))
 					{
 						// critical hit
 						StrikeCritical();
@@ -1061,44 +1056,72 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// Calculates the crit chance between 1-10000
+		/// After we already know that we did not crit, we want to check
+		/// again against a bonus crit chance. We use basic laws of probability:
+		/// P(CritWithBonus | NoCrit) = P(CritWithBonus) / P(NoCrit) =
+		/// critBonus / (1 - origCritChance)
 		/// </summary>
-		/// <returns>The crit chance after taking into account the defense/weapon skill</returns>
+		public void AddBonusCritChance(int critBonusPct)
+		{
+			if (IsCritical) return;
+
+			var origCritChance = CalcCritChance();	// 0-10000
+			var critChance = (critBonusPct * 100) / (1 - origCritChance);
+
+			IsCritical = Utility.Random(0, 10000) < critChance;
+			if (IsCritical)
+			{
+				SetCriticalDamage();
+			}
+		}
+
+		/// <summary>
+		/// Calculates the crit chance between 0-10000
+		/// </summary>
+		/// <returns>The crit chance after taking into account defense, weapon skills, resilience etc</returns>
 		public int CalcCritChance()
 		{
-			var chance = (int)Attacker.CalcCritChanceBase(Victim, SpellEffect, Weapon) * 100;
-
-			if (Attacker is NPC && Victim is Character)
+			if (!CanCrit)
 			{
-				var chr = Victim as Character;
-				var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
-				var defSkill = chr.Skills.GetValue(SkillId.Defense);
-
-				chance += (int)(4 * (weaponSkill - defSkill));
+				return 0;
 			}
 
-			if (Attacker is Character && Victim is NPC)
-			{
-				var chr = Attacker as Character;
-				var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
-				var defSkill = Victim.Level * 5;
+			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, SpellEffect.Spell, Weapon) * 100;
 
-				if (defSkill > weaponSkill)
+			if (Weapon != null)
+			{
+				if (Attacker is NPC && Victim is Character)
 				{
-					chance -= (int)(20 * (defSkill - weaponSkill));
+					// NPC attacks Player
+					var chr = Victim as Character;
+					var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
+					var defSkill = chr.Skills.GetValue(SkillId.Defense);
+
+					chance += (int)(4 * (weaponSkill - defSkill));
 				}
-				// else: no change (mobs def is smaller than player's weapon skill)
+
+				if (Attacker is Character && Victim is NPC)
+				{
+					// Player attacks NPC
+					var chr = Attacker as Character;
+					var weaponSkill = chr.Skills.GetValue(Weapon.Skill);
+					var defSkill = Victim.Level * 5;
+
+					if (defSkill > weaponSkill)
+					{
+						chance -= (int)(20 * (defSkill - weaponSkill));
+					}
+					// else: no change (mobs def is smaller than player's weapon skill)
+				}
 			}
 
 			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
 			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance] * 100;
 			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
 
-			if (chance > 10000)
-			{
-				return 10000;
-			}
-			return chance;
+			chance -= (int)(Victim.GetResiliencePct() * 100); //resilience
+
+			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
 
 		/// <summary>
@@ -1197,12 +1220,11 @@ namespace WCell.RealmServer.Misc
 
 		#endregion
 
-		internal void Reset(Unit attacker, Unit target, IWeapon weapon, int totalDamage)
+		internal void Reset(Unit attacker, Unit target, IWeapon weapon)
 		{
 			Attacker = attacker;
 			Victim = target;
 			Weapon = weapon;
-			Damage = totalDamage;
 		}
 
 		internal void OnFinished()

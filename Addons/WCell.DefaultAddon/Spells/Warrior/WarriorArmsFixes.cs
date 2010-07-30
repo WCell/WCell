@@ -109,7 +109,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 	public class ProcStrikeAdditionalTargetHandler : AuraEffectHandler
 	{
-		public override void OnProc(RealmServer.Entities.Unit target, IUnitAction action)
+		public override void OnProc(RealmServer.Entities.Unit triggerer, IUnitAction action)
 		{
 			var dmgAction = action as DamageAction;
 			if (dmgAction == null) return;
@@ -117,12 +117,12 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			Owner.AddMessage(() =>
 			{
-				var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != target);
+				var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != triggerer);
 				if (nextTarget != null)
 				{
 					dmgAction.Victim = nextTarget;
 					dmgAction.SpellEffect = m_spellEffect;
-					target.DoRawDamage(dmgAction);
+					triggerer.DoRawDamage(dmgAction);
 				}
 				// TODO: To ensure correct pooling, must ensure that reference count gets counted down
 				// But object messages don't get executed if the object gets removed before execution

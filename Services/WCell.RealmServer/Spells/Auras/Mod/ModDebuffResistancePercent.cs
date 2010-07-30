@@ -22,13 +22,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			DamageSchool type = (DamageSchool)m_spellEffect.MiscValue;
+			var type = (DamageSchool)m_spellEffect.MiscValue;
 			m_aura.Auras.Owner.ModDebuffResistance(type, EffectValue);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			DamageSchool type = (DamageSchool)m_spellEffect.MiscValue;
+			var type = (DamageSchool)m_spellEffect.MiscValue;
 			m_aura.Auras.Owner.ModDebuffResistance(type, -EffectValue);
 		}
 	}

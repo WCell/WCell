@@ -66,10 +66,14 @@ namespace WCell.RealmServer.Spells
 		public AuraType AuraType;
 
 		/// <summary>
-		/// $o1/2/3
 		/// Interval-delay in milliseconds
 		/// </summary>
 		public int Amplitude;
+
+		public int GetMaxTicks()
+		{
+			return Spell.Durations.Max/Amplitude;
+		}
 
 		/// <summary>
 		/// $e1/2/3 in Description

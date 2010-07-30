@@ -269,6 +269,7 @@ namespace WCell.Constants
         BerserkerStance = 19,
         EpicFlightForm = 27,
         Shadow = 28,
+		FlightForm = 29,
         Stealth = 30,
         Moonkin = 31,
         SpiritOfRedemption = 32,

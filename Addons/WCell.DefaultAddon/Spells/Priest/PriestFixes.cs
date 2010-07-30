@@ -80,7 +80,7 @@ namespace WCell.Addons.Default.Spells.Priest
 	#region AuraVampiricEmbracerHandler
 	public class AuraVampiricEmbracerHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			if (action is IDamageAction)
 			{

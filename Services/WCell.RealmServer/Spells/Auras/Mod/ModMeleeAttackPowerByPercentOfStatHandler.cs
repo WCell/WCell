@@ -1,11 +1,11 @@
 /*************************************************************************
  *
- *   file		: ModResistance.cs
+ *   file		: ModRangedAttackPowerByPercentOfIntellect.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-11 17:46:10 +0100 (ma, 11 jan 2010) $
+ *   last changed	: $LastChangedDate: 2009-12-23 20:07:17 +0100 (on, 23 dec 2009) $
  *   last author	: $LastChangedBy: dominikseifert $
- *   revision		: $Rev: 1190 $
+ *   revision		: $Rev: 1151 $
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -15,29 +15,28 @@
  *************************************************************************/
 
 using WCell.Constants;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	/// <summary>
-	/// 
-	/// </summary>
-	public class ModResistancePctHandler : AuraEffectHandler
+	public class ModMeleeAttackPowerByPercentOfStatHandler : AuraEffectHandler
 	{
 		protected override void Apply()
 		{
-			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
+			var chr = Owner as Character;
+			if (chr != null)
 			{
-				var flag = m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.AddResistanceBuff((DamageSchool) flag, EffectValue);
+				chr.ModMeleeAPModByStat((StatType)m_spellEffect.MiscValue, EffectValue);
 			}
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
+			var chr = Owner as Character;
+			if (chr != null)
 			{
-				var flag = m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.RemoveResistanceBuff((DamageSchool) flag, EffectValue);
+				chr.ModMeleeAPModByStat((StatType)m_spellEffect.MiscValue, -EffectValue);
 			}
 		}
 	}

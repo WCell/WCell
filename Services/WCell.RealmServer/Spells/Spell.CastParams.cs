@@ -32,9 +32,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Power Type			
-			if (CostsMana && PowerType != caster.PowerType && PowerType != PowerType.Health)
+			if (CostsMana && 
+				PowerType != caster.PowerType && 
+				PowerType != PowerType.Health &&
+				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
 			{
-				return SpellFailedReason.NoPower;
+				return SpellFailedReason.OnlyShapeshift;
 			}
 
 			// Stealth Required			

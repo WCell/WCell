@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Entities
 
 			Archetype = ArchetypeMgr.GetArchetype(record.Race, record.Class);
 			MainWeapon = GenericWeapon.Fists;
-			PowerType = m_archetype.Class.PowerType;
+			PowerType = m_archetype.Class.DefaultPowerType;
 
 			StandState = StandState.Sit;
 
@@ -175,13 +175,7 @@ namespace WCell.RealmServer.Entities
 			if (record.JustCreated)
 			{
 				ModStatsForLevel(m_record.Level);
-
-				if (PowerType != PowerType.Mana)
-				{
-					BasePower = m_archetype.Class.GetPowerForLevel(1);
-				}
-				//Power = PowerType == PowerType.Rage ? 0 : MaxPower;
-				//SetInt32(UnitFields.HEALTH, MaxHealth);
+				BasePower = PowerFormulas.GetPowerForLevel(this);
 			}
 			else
 			{

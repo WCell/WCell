@@ -450,6 +450,9 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_controller == null ? m_maxTicks : m_controller.MaxTicks; }
 		}
 
+		/// <summary>
+		/// Duration in millis
+		/// </summary>
 		public int Duration
 		{
 			get { return m_controller == null ? m_duration : m_controller.Duration; }
@@ -545,13 +548,11 @@ namespace WCell.RealmServer.Spells.Auras
 					if (m_IsActivated = value)
 					{
 						Activate();
-						SendToClient();
 					}
 					else
 					{
 						// remove all aura-related effects
 						Deactivate(false);
-						RemoveFromClient();
 					}
 				}
 			}
@@ -602,6 +603,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			// apply all aura-related effects
 			ApplyNonPeriodicEffects();
+			SendToClient();
 		}
 
 		/// <summary>
@@ -634,7 +636,8 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 
-			CallAllHandlers(handler => handler.IsActive = false);
+			CallAllHandlers(handler => handler.DoRemove(cancelled));
+			RemoveFromClient();
 		}
 		#endregion
 
@@ -842,7 +845,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			else
 			{
-				Remove(true);
+				Remove(cancelled);
 				return true;
 			}
 			return false;
@@ -868,8 +871,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 				var auras = m_auras;
 
-				IsActivated = false;
-
+				Deactivate(cancelled);
 				RemoveVisibleEffects(cancelled);
 
 				auras.Cancel(this);
@@ -896,8 +898,6 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		protected void RemoveVisibleEffects(bool cancelled)
 		{
-			RemoveFromClient();
-
 			var owner = m_auras.Owner;
 			if (m_spell.IsFood)
 			{
@@ -1037,21 +1037,13 @@ namespace WCell.RealmServer.Spells.Auras
 					}
 				}
 			}
-			else
+			else if (action.Spell == null || action.Spell != Spell)
 			{
 				// Simply count down stack count and remove aura eventually
 				canProc = true;
 			}
-			if (!canProc)
-			{
-				return false;
-			}
 
-			if (m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active))
-			{
-				return true;
-			}
-			return false;
+			return canProc && m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)

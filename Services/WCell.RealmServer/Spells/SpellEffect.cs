@@ -932,7 +932,8 @@ namespace WCell.RealmServer.Spells
 						ImplicitTargetType.ConeInFrontOfCaster,
 						ImplicitTargetType.AreaEffectPartyAndClass,
 						ImplicitTargetType.NatureSummonLocation,
-						ImplicitTargetType.TargetAtOrientationOfCaster});
+						ImplicitTargetType.TargetAtOrientationOfCaster,
+						ImplicitTargetType.Tranquility});
 		}
 		#endregion
 
@@ -940,6 +941,12 @@ namespace WCell.RealmServer.Spells
 		public void ClearAffectMask()
 		{
 			AffectMask = new uint[3];
+		}
+
+		public void SetAffectMask(params SpellLineId[] abilities)
+		{
+			ClearAffectMask();
+			AddToAffectMask(abilities);
 		}
 
 		public void AddToAffectMask(params SpellLineId[] abilities)
@@ -951,6 +958,22 @@ namespace WCell.RealmServer.Spells
 				{
 					AffectMask[i] |= spell.SpellClassMask[i];
 				}
+			}
+		}
+
+		public void CopyAffectMaskTo(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] |= AffectMask[i];
+			}
+		}
+
+		public void RemoveAffectMaskFrom(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] ^= AffectMask[i];
 			}
 		}
 

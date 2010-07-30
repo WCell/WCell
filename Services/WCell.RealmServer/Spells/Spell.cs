@@ -512,14 +512,14 @@ namespace WCell.RealmServer.Spells
 			init2 = true;
 
 			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
-			              // don't use Enum.HasFlag!
-			              ChannelInterruptFlags > 0;
+				// don't use Enum.HasFlag!
+						  ChannelInterruptFlags > 0;
 
 			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
-			            // tracking spells are also passive		     
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+				// tracking spells are also passive		     
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
 
 			foreach (var effect in Effects)
 			{
@@ -554,10 +554,10 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
-				// don't use Enum.HasFlag!
+			// don't use Enum.HasFlag!
 
 			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-			            AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+						AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
@@ -611,7 +611,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+									(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -674,15 +674,15 @@ namespace WCell.RealmServer.Spells
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.Attack ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.EnvironmentalDamage ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.InstantKill ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.SchoolDamage ||
-			                                                                            effect.IsStrikeEffect);
+																						effect.EffectType ==
+																						SpellEffectType.Attack ||
+																						effect.EffectType ==
+																						SpellEffectType.EnvironmentalDamage ||
+																						effect.EffectType ==
+																						SpellEffectType.InstantKill ||
+																						effect.EffectType ==
+																						SpellEffectType.SchoolDamage ||
+																						effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
@@ -692,23 +692,32 @@ namespace WCell.RealmServer.Spells
 			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
 
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.EffectType == SpellEffectType.Skill)
-			              		{
-			              			SkillId = (SkillId) effect.MiscValue;
-			              		}
-			              	});
+			{
+				if (effect.EffectType == SpellEffectType.Skill)
+				{
+					SkillId = (SkillId)effect.MiscValue;
+				}
+			});
 
-			Schools = Utility.GetSetIndices<DamageSchool>((uint) SchoolMask);
+			// ResurrectFlat usually has no target type set
+			ForeachEffect(effect =>
+			{
+				if (effect.ImplicitTargetA == ImplicitTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
+				{
+					effect.ImplicitTargetA = ImplicitTargetType.SingleFriend;
+				}
+			});
+
+			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
 			if (Schools.Length == 0)
 			{
-				Schools = new[] {DamageSchool.Physical};
+				Schools = new[] { DamageSchool.Physical };
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+										(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+										 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+										 AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -717,23 +726,23 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-			          Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+					  Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasModifierEffects ||
-			                     HasEffectWith(
-			                     	effect =>
-			                     	effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+								 HasEffectWith(
+									effect =>
+									effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			// cannot taunt players
 			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
 
 			ForeachEffect(effect =>
-			              	{
-			              		for (var i = 0; i < 3; i++)
-			              		{
-			              			AllAffectingMasks[i] |= effect.AffectMask[i];
-			              		}
-			              	});
+							{
+								for (var i = 0; i < 3; i++)
+								{
+									AllAffectingMasks[i] |= effect.AffectMask[i];
+								}
+							});
 
 			if (Range.MaxDist == 0)
 			{
@@ -754,22 +763,22 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var skillEffect = GetFirstEffectWith(effect =>
-			                                     effect.EffectType == SpellEffectType.SkillStep ||
-			                                     effect.EffectType == SpellEffectType.Skill);
+												 effect.EffectType == SpellEffectType.SkillStep ||
+												 effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
-				SkillTier = (SkillTierId) skillEffect.BasePoints;
+				SkillTier = (SkillTierId)skillEffect.BasePoints;
 			}
 
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.SpellEffectHandlerCreator != null)
-			              		{
-			              			EffectHandlerCount++;
-			              		}
-			              	});
+							{
+								if (effect.SpellEffectHandlerCreator != null)
+								{
+									EffectHandlerCount++;
+								}
+							});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
 
 
@@ -1038,14 +1047,18 @@ namespace WCell.RealmServer.Spells
 			Effects = new SpellEffect[0];
 		}
 
-		public void RemoveEffect(AuraType type)
+		public SpellEffect RemoveEffect(AuraType type)
 		{
-			RemoveEffect(GetEffect(type));
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
 		}
 
-		public void RemoveEffect(SpellEffectType type)
+		public SpellEffect RemoveEffect(SpellEffectType type)
 		{
-			RemoveEffect(GetEffect(type));
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
 		}
 
 		public void RemoveEffect(SpellEffect toRemove)

@@ -27,6 +27,7 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
@@ -49,7 +50,7 @@ namespace WCell.RealmServer.Entities
 
 		protected Unit m_target;
 		protected Unit m_charm;
-		protected ObjectBase m_channeled;
+		protected WorldObject m_channeled;
 
 		protected Transport m_transport;
 		protected Vector3 m_transportPosition;
@@ -174,7 +175,7 @@ namespace WCell.RealmServer.Entities
 			internal set;
 		}
 
-		public ObjectBase ChannelObject
+		public WorldObject ChannelObject
 		{
 			get { return m_channeled; }
 			set
@@ -1026,6 +1027,11 @@ namespace WCell.RealmServer.Entities
 			set { SetByte(UnitFields.BYTES_0, 1, (byte)value); }
 		}
 
+		public BaseClass GetBaseClass()
+		{
+			return ArchetypeMgr.GetClass(Class);
+		}
+
 		/// <summary>
 		/// Race of the character.
 		/// </summary>
@@ -1072,7 +1078,7 @@ namespace WCell.RealmServer.Entities
 			get { return (PowerType)GetByte(UnitFields.BYTES_0, 3); }
 			set
 			{
-				SetByte(UnitFields.BYTES_0, 3, (byte)((byte)value % (byte)PowerType.Count));
+				SetByte(UnitFields.BYTES_0, 3, (byte)((byte)value % (byte)PowerType.End));
 			}
 		}
 
@@ -1169,7 +1175,7 @@ namespace WCell.RealmServer.Entities
 					var oldEntry = SpellHandler.ShapeshiftEntries.Get((uint)value);
 					if (oldEntry != null)
 					{
-						// remove old shapeshift effects
+						// remove old shapeshift spells
 						if (HasSpells)
 						{
 							foreach (var spell in oldEntry.DefaultActionBarSpells)
@@ -1203,11 +1209,23 @@ namespace WCell.RealmServer.Entities
 							}
 						}
 					}
+					if (entry.PowerType != PowerType.End)
+					{
+						PowerType = entry.PowerType;
+					}
+					else
+					{
+						SetDefaultPowerType();
+					}
 				}
-				else if (oldForm != 0)
+				else
 				{
-					// reset Model
-					DisplayId = NativeDisplayId;
+					if (oldForm != 0)
+					{
+						// reset Model
+						DisplayId = NativeDisplayId;
+					}
+					SetDefaultPowerType();
 				}
 
 				SetByte(UnitFields.BYTES_2, 3, (byte)value);
@@ -1216,6 +1234,22 @@ namespace WCell.RealmServer.Entities
 				{
 					((PlayerAuraCollection)m_auras).OnShapeshiftFormChanged();
 				}
+			}
+		}
+
+		/// <summary>
+		/// Sets this Unit's default PowerType
+		/// </summary>
+		public void SetDefaultPowerType()
+		{
+			var clss = GetBaseClass();
+			if (clss != null)
+			{
+				PowerType = clss.DefaultPowerType;
+			}
+			else
+			{
+				PowerType = PowerType.Mana;
 			}
 		}
 
@@ -1451,7 +1485,7 @@ namespace WCell.RealmServer.Entities
 
 				this.UpdateMaxPower();
 
-				if ((PowerType != PowerType.Rage) && (PowerType != PowerType.Energy))
+				if (PowerType != PowerType.Rage && PowerType != PowerType.Energy)
 				{
 					Power = MaxPower;
 				}
@@ -1589,6 +1623,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Amount of additional yards to be allowed to jump without having any damage inflicted.
+		/// TODO: Implement correctly (needs client packets)
 		/// </summary>
 		public int SafeFall
 		{
