@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
-		public static AchievementRecord CreateNewAchievementRecord(Character chr, uint achievementEntryId)
+		public static AchievementRecord CreateNewAchievementRecord(Character chr, AchievementEntryId achievementEntryId)
 		{
 			AchievementRecord record;
 

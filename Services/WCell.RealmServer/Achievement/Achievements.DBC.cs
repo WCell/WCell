@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants.Achievements;
 using WCell.Constants.World;
 using WCell.Core.DBC;
+using WCell.Util;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -42,16 +43,17 @@ namespace WCell.RealmServer.Achievement
         }
     }
 
-    public class AchievementCriteriaEntryMapper : DBCRecordConverter
-    {
-        public override void Convert(byte[] rawData)
+	public class AchievementCriteriaEntryMapper : DBCRecordConverter
+	{
+		public override void Convert(byte[] rawData)
 		{
-			var criteria = (AchievementCriteriaType)GetUInt32(rawData, 0);
-			var entry = AchievementMgr.GetCriteriaEntryCreator(criteria)();
+			var criteriaType = (AchievementCriteriaType)GetUInt32(rawData, 2);
+			var entry = AchievementMgr.GetCriteriaEntryCreator(criteriaType)();
+			entry.AchievementCriteriaId = (AchievementCriteriaId)GetUInt32(rawData, 0);
+			entry.AchievementEntryId = (AchievementEntryId)GetUInt32(rawData, 1);
 
-			// TODO: Finish
-			//Copy(rawData, 1, 2, entry);
-			//AchievementMgr.AddCriteriaEntry(entry);
-        }
-    }
+			Copy(rawData, 3, entry);
+			ArrayUtil.Set(ref AchievementMgr.CriteriaEntries, (uint)entry.AchievementCriteriaId,entry);
+		}
+	}
 }

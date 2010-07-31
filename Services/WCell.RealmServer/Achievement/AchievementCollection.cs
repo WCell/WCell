@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Achievement
         #region Add / Set
 
 		/// <summary>
-		/// Adds a new achievement to the list, from the database.
+		/// Adds a new achievement to the list.
 		/// </summary>
 		/// <param name="achievementRecord"></param>
 		public void Add(AchievementRecord achievementRecord)
@@ -89,9 +89,9 @@ namespace WCell.RealmServer.Achievement
 		/// Adds a new achievement to the list, when achievement is earned.
 		/// </summary>
 		/// <param name="achievementEntry"></param>
-		public void Add(AchievementEntryId achievementEntryId)
+		public void EarnAchievement(AchievementEntryId achievementEntryId)
 		{
-			m_completedAchievements.Add(achievementEntryId,AchievementRecord.CreateNewAchievementRecord(m_owner,(uint)achievementEntryId));
+			Add(AchievementRecord.CreateNewAchievementRecord(m_owner,achievementEntryId));
 			AchievementHandler.SendAchievementEarned(achievementEntryId,m_owner);
 		}
 
@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Achievement
 					}
 					else
 					{
-						m_completedAchievements.Add(achievement.ID, mCompletedAchievement);
+						Add(mCompletedAchievement);
 					}
 				}
 				else
