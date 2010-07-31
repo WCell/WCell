@@ -91,7 +91,7 @@ namespace TerrainDisplay
 
     public static class MathExtensions
     {
-        public static float Epsilon = 0.0001f;
+        public const float Epsilon = 0.0001f;
 
         public static bool NearlyZero(this float val)
         {

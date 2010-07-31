@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Util.Graphics;
+using WCell.Util.Variables;
 
 namespace TerrainDisplay.Recast
 {
@@ -78,12 +79,13 @@ namespace TerrainDisplay.Recast
 
 		public const int MaxVertsPerPolygon = 6;
 
-		private static bool _addHooks = true;
+        private static bool _addHooks = true;
 
 		/// <summary>
 		/// Whether to register hooks to recast, to be notified upon new meshes and tiles
 		/// </summary>
-		public static bool AddHooks
+		[NotVariable]
+        public static bool AddHooks
 		{
 			get { return _addHooks; }
 			set

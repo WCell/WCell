@@ -37,7 +37,7 @@ namespace TerrainDisplay
         /// <summary>
         /// Memory size for a VertexPositionNormalColored
         /// </summary>
-        public static int SizeInBytes = 7 * 4;
+        public static readonly int SizeInBytes = 7 * 4;
         /// <summary>
         /// VertexElement array (used for rendering)
         /// </summary>

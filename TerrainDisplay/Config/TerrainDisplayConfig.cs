@@ -6,14 +6,17 @@ using System.Text;
 using System.Xml.Serialization;
 using NLog;
 using WCell.Util;
+using WCell.Util.NLog;
+using WCell.Util.Variables;
+
 //using WCell.MPQTool;
 
 namespace TerrainDisplay
 {
-    public class Config : XmlFile<Config>
+    public class TerrainDisplayConfig : VariableConfiguration<TerrainDisplayConfig, TypeVariableDefinition>
     {
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
-        public static readonly string ConfigFile = "TerrainDisplay.Config.xml";
+        public static readonly string ConfigFileName = "TerrainDisplay.Config.xml";
 
         public static string TerrainDisplayRoot = "../../";
         public static string RunDir = TerrainDisplayRoot + "bin/";
@@ -29,46 +32,90 @@ namespace TerrainDisplay
         public static string MpqPath = @"D:\Games\MPQFiles";
         public static TileIdentifier DefaultTileIdentifier = TileIdentifier.Redridge;
         
-
-        //public string wowDir;
-        //public string GetWoWDir()
-        //{
-        //    return wowDir ?? (wowDir = DBCTool.FindWowDir());
-        //}
-
-        //public string WoWFileLocation
-        //{
-        //    get { return Path.Combine(GetWoWDir(), "wow.exe"); }
-        //}
-
-        
-        [XmlElement]
         public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
 
-        private static Config s_instance;
 
-        public static Config Instance
+        public TerrainDisplayConfig(Action<string> onError)
+            : base(onError)
+        {
+        }
+
+        public TerrainDisplayConfig() : base(OnError)
+        {
+            RootNodeName = "TerrainDisplayConfig";
+            s_instance = this;
+        }
+
+        private static TerrainDisplayConfig s_instance;
+        public static TerrainDisplayConfig Instance
         {
             get
             {
-                if (s_instance == null)
+               return s_instance;
+            }
+        }
+
+        public override string FilePath
+        {
+            get { return GetFullPath(ConfigFileName); }
+            set { throw new InvalidOperationException("Cannot change the config's filename!");}
+        }
+
+        public override bool AutoSave { get; set; }
+
+        [NotVariable]
+        public static bool Loaded { get; private set; }
+
+        public static bool Initialize()
+        {
+            if (!Loaded)
+            {
+                Loaded = true;
+                s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(TerrainDisplayConfig).Assembly);
+                
+                try
                 {
-                    if (File.Exists(ConfigFile))
+                    if (!s_instance.Load())
                     {
-                        log.Info("Loading ToolConfig from {0}...", Path.GetFullPath(ConfigFile));
-                        s_instance = Load(ConfigFile);
+                        s_instance.Save(true, false);
+                        log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.FilePath);
+                        log.Warn("Please take a little time to configure your server and then restart the Application.");
+                        log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
+                        return false;
                     }
                     else
                     {
-                        s_instance = new Config {
-                                                    m_filename = ConfigFile
-                                                };
+                        if (s_instance.AutoSave)
+                        {
+                            //s_instance.Save(true, true);
+                        }
                     }
-                    
-                    s_instance.Save();
                 }
-                return s_instance;
+                catch (Exception e)
+                {
+                    LogUtil.ErrorException(e, "Unable to load Configuration.");
+                    log.Error("Please correct the invalid values in your configuration file and restart the Applicaton.");
+                    return false;
+                }
             }
+            return true;
+        }
+
+        internal static void OnError(string msg)
+        {
+            log.Warn("<Config>" + msg);
+        }
+
+        internal static void OnError(string msg, params object[] args)
+        {
+            log.Warn("<Config>" + String.Format(msg, args));
+        }
+
+        public static string GetFullPath(string fileName)
+        {
+            return Path.IsPathRooted(fileName) 
+                ? fileName 
+                : Path.Combine(Environment.CurrentDirectory, fileName);
         }
     }
 }

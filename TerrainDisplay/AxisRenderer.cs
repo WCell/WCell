@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -66,7 +66,7 @@ namespace TerrainDisplay
 
         private void BuildVerticiesAndIndicies()
         {
-            var tileId = Config.DefaultTileIdentifier;
+            var tileId = TerrainDisplayConfig.DefaultTileIdentifier;
             var tempVertices = new List<VertexPositionNormalColored>();
             var tempIndices = new List<int>();
             var offset = 0;

@@ -3,75 +3,73 @@ using System.IO;
 
 namespace TerrainDisplay.MPQ
 {
-
-
     static class Signatures
     {
-        public static uint MAIN = ToBin("MAIN");
-        public static uint MAOF = ToBin("MAOF");
-        public static uint MARE = ToBin("MARE");
-        public static uint MCAL = ToBin("MCAL");
-        public static uint MCIN = ToBin("MCIN");
-        public static uint MCLQ = ToBin("MCLQ");
-        public static uint MCLY = ToBin("MCLY");
-        public static uint MCNK = ToBin("MCNK");
+        public static readonly uint MAIN = ToBin("MAIN");
+        public static readonly uint MAOF = ToBin("MAOF");
+        public static readonly uint MARE = ToBin("MARE");
+        public static readonly uint MCAL = ToBin("MCAL");
+        public static readonly uint MCIN = ToBin("MCIN");
+        public static readonly uint MCLQ = ToBin("MCLQ");
+        public static readonly uint MCLY = ToBin("MCLY");
+        public static readonly uint MCNK = ToBin("MCNK");
 
-        public static uint MCNR = ToBin("MCNR");
-        public static uint MCRF = ToBin("MCRF");
-        public static uint MCSE = ToBin("MCSE");
-        public static uint MCSH = ToBin("MCSH");
-        public static uint MCVT = ToBin("MCVT");
-        public static uint MCCV = ToBin("MCCV");
-        public static uint MDDF = ToBin("MDDF");
-        public static uint MFOG = ToBin("MFOG");
-        public static uint MH2O = ToBin("MH2O");
-        public static uint MHDR = ToBin("MHDR");
-        public static uint MLIQ = ToBin("MLIQ");
-        public static uint MMDX = ToBin("MMDX");
-        public static uint MOBA = ToBin("MOBA");
-        public static uint MOBN = ToBin("MOBN");
-        public static uint MOBR = ToBin("MOBR");
-        public static uint MOCV = ToBin("MOCV");
-        public static uint MODD = ToBin("MODD");
-        public static uint MODF = ToBin("MODF");
-        public static uint MODN = ToBin("MODN");
-        public static uint MODR = ToBin("MODR");
-        public static uint MODS = ToBin("MODS");
-        public static uint MOGI = ToBin("MOGI");
-        public static uint MOGN = ToBin("MOGN");
-        public static uint MOGP = ToBin("MOGP");
-        public static uint MOHD = ToBin("MOHD");
-        public static uint MOLR = ToBin("MOLR");
-        public static uint MOLT = ToBin("MOLT");
-        public static uint MOMT = ToBin("MOMT");
-        public static uint MONR = ToBin("MONR");
-        public static uint MOTV = ToBin("MOTV");
-        public static uint MOPR = ToBin("MOPR");
-        public static uint MOPT = ToBin("MOPT");
-        public static uint MOPV = ToBin("MOPV");
-        public static uint MOPY = ToBin("MOPY");
-        public static uint MOSB = ToBin("MOSB");
-        public static uint MOTX = ToBin("MOTX");
-        public static uint MOVI = ToBin("MOVI");
-        public static uint MOVT = ToBin("MOVT");
-        public static uint MPHD = ToBin("MPHD");
-        public static uint MTEX = ToBin("MTEX");
-        public static uint MVER = ToBin("MVER");
-        public static uint MWMO = ToBin("MWMO");
-        public static uint MOVV = ToBin("MOVV");
-        public static uint MOVB = ToBin("MOVB");
-        public static uint MCVP = ToBin("MCVP");
+        public static readonly uint MCNR = ToBin("MCNR");
+        public static readonly uint MCRF = ToBin("MCRF");
+        public static readonly uint MCSE = ToBin("MCSE");
+        public static readonly uint MCSH = ToBin("MCSH");
+        public static readonly uint MCVT = ToBin("MCVT");
+        public static readonly uint MCCV = ToBin("MCCV");
+        public static readonly uint MDDF = ToBin("MDDF");
+        public static readonly uint MFOG = ToBin("MFOG");
+        public static readonly uint MH2O = ToBin("MH2O");
+        public static readonly uint MHDR = ToBin("MHDR");
+        public static readonly uint MLIQ = ToBin("MLIQ");
+        public static readonly uint MMDX = ToBin("MMDX");
+        public static readonly uint MOBA = ToBin("MOBA");
+        public static readonly uint MOBN = ToBin("MOBN");
+        public static readonly uint MOBR = ToBin("MOBR");
+        public static readonly uint MOCV = ToBin("MOCV");
+        public static readonly uint MODD = ToBin("MODD");
+        public static readonly uint MODF = ToBin("MODF");
+        public static readonly uint MODN = ToBin("MODN");
+        public static readonly uint MODR = ToBin("MODR");
+        public static readonly uint MODS = ToBin("MODS");
+        public static readonly uint MOGI = ToBin("MOGI");
+        public static readonly uint MOGN = ToBin("MOGN");
+        public static readonly uint MOGP = ToBin("MOGP");
+        public static readonly uint MOHD = ToBin("MOHD");
+        public static readonly uint MOLR = ToBin("MOLR");
+        public static readonly uint MOLT = ToBin("MOLT");
+        public static readonly uint MOMT = ToBin("MOMT");
+        public static readonly uint MONR = ToBin("MONR");
+        public static readonly uint MOTV = ToBin("MOTV");
+        public static readonly uint MOPR = ToBin("MOPR");
+        public static readonly uint MOPT = ToBin("MOPT");
+        public static readonly uint MOPV = ToBin("MOPV");
+        public static readonly uint MOPY = ToBin("MOPY");
+        public static readonly uint MOSB = ToBin("MOSB");
+        public static readonly uint MOTX = ToBin("MOTX");
+        public static readonly uint MOVI = ToBin("MOVI");
+        public static readonly uint MOVT = ToBin("MOVT");
+        public static readonly uint MPHD = ToBin("MPHD");
+        public static readonly uint MTEX = ToBin("MTEX");
+        public static readonly uint MVER = ToBin("MVER");
+        public static readonly uint MWMO = ToBin("MWMO");
+        public static readonly uint MOVV = ToBin("MOVV");
+        public static readonly uint MOVB = ToBin("MOVB");
+        public static readonly uint MCVP = ToBin("MCVP");
 
 
-        public static uint MPBV = ToBin("MPBV");
-        public static uint MPBP = ToBin("MPBP");
-        public static uint MPBI = ToBin("MPBI");
-        public static uint MPBG = ToBin("MPBG");
+        public static readonly uint MPBV = ToBin("MPBV");
+        public static readonly uint MPBP = ToBin("MPBP");
+        public static readonly uint MPBI = ToBin("MPBI");
+        public static readonly uint MPBG = ToBin("MPBG");
 
-        public static uint MORI = ToBin("MORI");
-        public static uint MORB = ToBin("MORB");
+        public static readonly uint MORI = ToBin("MORI");
+        public static readonly uint MORB = ToBin("MORB");
 
-        public static uint WDBC = ToBin("WDBC");
+        public static readonly uint WDBC = ToBin("WDBC");
 
         private static uint ToBin(String s)
         {

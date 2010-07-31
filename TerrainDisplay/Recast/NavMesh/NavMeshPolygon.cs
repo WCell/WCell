@@ -10,7 +10,7 @@ namespace TerrainDisplay.Recast
 	/// </summary>
 	public class NavMeshPolygon
 	{
-		public static int VERTS_PER_POLYGON = 6;
+		public static readonly int VERTS_PER_POLYGON = 6;
 	    
 
 		public uint FirstLink;												// Index to first link in linked list.

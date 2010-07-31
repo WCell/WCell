@@ -27,7 +27,7 @@ namespace XnaConsole
     //defines standard character mappings
     class KeyboardHelper
     {
-        static public KeyBinding[] ItalianBindings = new KeyBinding[]
+        static public readonly KeyBinding[] ItalianBindings = new KeyBinding[]
         {
             new KeyBinding( Keys.OemPipe, "\\", "|", "", ""),
             new KeyBinding( Keys.OemBackslash, "<", ">", "", ""),
@@ -91,7 +91,7 @@ namespace XnaConsole
             new KeyBinding( Keys.Z, "z", "Z", "", "")
         };
 
-        static public KeyBinding[] SwedishBindings = new KeyBinding[]
+        static public readonly KeyBinding[] SwedishBindings = new KeyBinding[]
         {
             new KeyBinding( Keys.OemPipe, "\\", "|", "", ""),
             new KeyBinding( Keys.OemBackslash, "\\", "|", "", ""),
@@ -155,7 +155,7 @@ namespace XnaConsole
             new KeyBinding( Keys.Z, "z", "Z", "", "")
         };
 
-        static public KeyBinding[] AmericanBindings = new KeyBinding[]
+        static public readonly KeyBinding[] AmericanBindings = new KeyBinding[]
         {
             new KeyBinding( Keys.OemPipe, "\\", "|", "", ""),
             new KeyBinding( Keys.OemBackslash, "\\", "|", "", ""),
