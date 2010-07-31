@@ -1,0 +1,3 @@
+- fixed DamagePctAmplifierHandler
+- changed it, so pets and minions also do spell modifier checks
+- started work on rune system

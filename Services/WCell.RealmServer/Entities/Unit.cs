@@ -832,16 +832,13 @@ namespace WCell.RealmServer.Entities
 			if (effect != null)
 			{
 				var oldVal = value;
-				
+
 				if (healer != null)
 				{
 					if (effect.IsPeriodic)
 					{
 						// add periodic boni
-						if (healer is Character)
-						{
-							value = ((Character)healer).PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, effect.Spell, value);
-						}
+						value = healer.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, effect.Spell, value);
 					}
 					else
 					{
@@ -852,10 +849,10 @@ namespace WCell.RealmServer.Entities
 
 				if (this is Character)
 				{
-					value += (int) ((oldVal*((Character) this).HealingTakenModPct)/100);
+					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
 				}
 
-				critChance = GetSpellCritChance((DamageSchool) effect.Spell.SchoolMask)*100;
+				critChance = GetCritChance((DamageSchool)effect.Spell.Schools[0]) * 100;
 
 				// do a critcheck
 				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
@@ -864,7 +861,7 @@ namespace WCell.RealmServer.Entities
 
 					if (roll <= critChance)
 					{
-						value = (int) (value*(SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
+						value = (int)(value * (SpellHandler.SpellCritBaseFactor + GetIntMod(StatModifierInt.CriticalHealValuePct)));
 						crit = true;
 					}
 				}
@@ -1716,9 +1713,9 @@ namespace WCell.RealmServer.Entities
 					proc.CanBeTriggeredBy(triggerer, action, active))
 				{
 					var chance = (int)proc.ProcChance;
-					if (chance > 0 && this is Character && action.Spell != null)
+					if (chance > 0 && action.Spell != null)
 					{
-						chance = ((Character)this).PlayerSpells.GetModifiedInt(SpellModifierType.ProcChance, action.Spell, chance);
+						chance = Auras.GetModifiedInt(SpellModifierType.ProcChance, action.Spell, chance);
 					}
 
 					if (proc.ProcChance <= 0 || Utility.Random(0, 101) <= chance)

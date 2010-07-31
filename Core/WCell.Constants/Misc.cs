@@ -468,7 +468,6 @@ namespace WCell.Constants
 		HealthRegenNoCombat,
 		
 		PowerRegen,
-		CritChance,
 		BlockChance,
 		BlockValue,
         ParryChance,

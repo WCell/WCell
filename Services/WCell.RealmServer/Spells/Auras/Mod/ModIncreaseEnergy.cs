@@ -26,6 +26,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
+			//var powerType = (PowerType)m_spellEffect.MiscValue;
 			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, EffectValue);
 		}
 

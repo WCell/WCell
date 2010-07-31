@@ -1162,10 +1162,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			var chr = caster.Object as Character;
-			if (chr != null)
+			var unit = caster.UnitMaster;
+			if (unit != null)
 			{
-				millis = chr.PlayerSpells.GetModifiedInt(SpellModifierType.Duration, this, millis);
+				millis = unit.Auras.GetModifiedInt(SpellModifierType.Duration, this, millis);
 			}
 			return millis;
 		}
@@ -1560,9 +1560,9 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "SchoolMask: " + SchoolMask);
 			}
 
-			if (RuneCostId != 0)
+			if (RuneCostEntry != null)
 			{
-				writer.WriteLine(indent + "RuneCostId: " + RuneCostId);
+				writer.WriteLine(indent + "RuneCostId: " + RuneCostEntry);
 			}
 			if (MissileId != 0)
 			{

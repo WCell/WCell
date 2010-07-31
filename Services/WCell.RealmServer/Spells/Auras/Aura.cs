@@ -96,9 +96,9 @@ namespace WCell.RealmServer.Spells.Auras
 			m_auraLevel = (byte)casterReference.Level;
 
 			m_stackCount = (byte)m_spell.StackCount;
-			if (m_stackCount > 0 && Caster is Character)
+			if (m_stackCount > 0 && casterReference.UnitMaster != null)
 			{
-				m_stackCount = ((Character)Caster).PlayerSpells.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
+				m_stackCount = casterReference.UnitMaster.Auras.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
 			}
 
 			SetAmplitude();

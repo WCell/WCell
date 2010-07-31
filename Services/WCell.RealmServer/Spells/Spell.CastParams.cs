@@ -543,9 +543,9 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 			}
-			else if (unit is Character)
+			else
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

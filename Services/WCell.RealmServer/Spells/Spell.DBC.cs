@@ -169,15 +169,6 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
         #region SpellRuneCost.dbc
-        public class RuneCostEntry
-        {
-            public uint Id;                                                                              
-            public uint BloodCost;
-            public uint FrostCost;
-            public uint UnholyCost;
-            public uint PowerGain;                                  
-        }
-
         public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
         {
             public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
@@ -388,7 +379,11 @@ namespace WCell.RealmServer.Spells
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);                     // 147
 					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);    // 148
 
-                    spell.RuneCostId = GetUInt32(rawData, currentIndex++);          // 149
+					var runeCostId = GetInt32(rawData, currentIndex++);
+					if (runeCostId != 0)
+					{
+						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);// 149
+					}
 					spell.MissileId = GetUInt32(rawData, currentIndex++);           // 150
 
                     // New 3.1.0. Id from PowerDisplay.dbc

@@ -681,15 +681,15 @@ namespace WCell.RealmServer.Spells
 				if (caster is Character)
 				{
 					// gain skill
-					var chr = (Character)caster;
+					var chr = (Character) caster;
 					if (m_spell.Ability != null && m_spell.Ability.CanGainSkill)
 					{
 						var skill = chr.Skills[m_spell.Ability.Skill.Id];
 						var skillVal = skill.CurrentValue;
-						var max = (ushort)skill.ActualMax;
+						var max = (ushort) skill.ActualMax;
 						if (skillVal < max)
 						{
-							skillVal += (ushort)m_spell.Ability.Gain(skillVal);
+							skillVal += (ushort) m_spell.Ability.Gain(skillVal);
 							skill.CurrentValue = skillVal <= max ? skillVal : max;
 						}
 					}
@@ -719,7 +719,7 @@ namespace WCell.RealmServer.Spells
 				{
 					foreach (var target in m_targets)
 					{
-						if (target is Unit && ((Unit)target).IsInCombat)
+						if (target is Unit && ((Unit) target).IsInCombat)
 						{
 							caster.IsInCombat = true;
 							break;
@@ -759,7 +759,7 @@ namespace WCell.RealmServer.Spells
 				if (Client != null)
 				{
 					if (!m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade) &&
-						CasterItem != null)
+					    CasterItem != null)
 					{
 						SpellHandler.SendItemCooldown(Client, m_spell.Id, CasterItem);
 					}
@@ -767,9 +767,9 @@ namespace WCell.RealmServer.Spells
 
 				// consume power (might cancel the cast due to dying)
 				var powerCost = m_spell.CalcPowerCost(caster,
-													  Selected is Unit
-														? ((Unit)Selected).GetLeastResistantSchool(m_spell)
-														: m_spell.Schools[0]);
+				                                      Selected is Unit
+				                                      	? ((Unit) Selected).GetLeastResistantSchool(m_spell)
+				                                      	: m_spell.Schools[0]);
 				if (m_spell.PowerType != PowerType.Health)
 				{
 					caster.Power -= powerCost;
@@ -786,7 +786,7 @@ namespace WCell.RealmServer.Spells
 			else if (!m_passiveCast && caster is Character)
 			{
 				// clear cooldowns
-				var spells = ((Character)caster).PlayerSpells;
+				var spells = ((Character) caster).PlayerSpells;
 				if (spells != null)
 				{
 					spells.ClearCooldown(m_spell);
@@ -821,14 +821,12 @@ namespace WCell.RealmServer.Spells
 
 			// trigger dynamic post-cast spells, eg Shadow Weaving etc
 			caster.Spells.TriggerSpellsFor(this);
-			if (caster is Character)
+
+			// consumes spell modifiers (if required)
+			caster.Auras.OnCasted(this);
+			if (!m_casting)
 			{
-				// consumes spell modifiers (if required)
-				((Character)caster).PlayerSpells.OnCasted(this);
-				if (!m_casting)
-				{
-					return; // should not happen (but might)
-				}
+				return; // should not happen (but might)
 			}
 
 			// Casted event

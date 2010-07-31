@@ -1097,7 +1097,7 @@ namespace WCell.RealmServer.Entities
 			else if (action.SpellEffect != null)
 			{
 				// periodic damage mod
-				action.Damage = PlayerSpells.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
+				action.Damage = Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
 			}
 		}
 
@@ -1107,7 +1107,7 @@ namespace WCell.RealmServer.Entities
 			healValue += HealingDoneMod;
 			if (effect != null)
 			{
-				healValue = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, healValue);
+				healValue = Auras.GetModifiedInt(SpellModifierType.SpellPower, effect.Spell, healValue);
 			}
 
 			return healValue;
@@ -1118,7 +1118,7 @@ namespace WCell.RealmServer.Entities
 			var threat = base.GetGeneratedThreat(dmg, school, effect);
 			if (effect != null)
 			{
-				threat = PlayerSpells.GetModifiedInt(SpellModifierType.Threat, effect.Spell, threat);
+				threat = Auras.GetModifiedInt(SpellModifierType.Threat, effect.Spell, threat);
 			}
 			return threat;
 		}
@@ -1128,7 +1128,7 @@ namespace WCell.RealmServer.Entities
 			dmg = base.CalcCritDamage(dmg, victim, effect);
 			if (effect != null)
 			{
-				return PlayerSpells.GetModifiedFloat(SpellModifierType.CritDamage, effect.Spell, dmg);
+				return Auras.GetModifiedFloat(SpellModifierType.CritDamage, effect.Spell, dmg);
 			}
 			return dmg;
 		}
@@ -1315,7 +1315,7 @@ namespace WCell.RealmServer.Entities
 		public override int GetPowerCost(DamageSchool school, Spell spell, int cost)
 		{
 			cost = base.GetPowerCost(school, spell, cost);
-			cost = PlayerSpells.GetModifiedInt(SpellModifierType.PowerCost, spell, cost);
+			cost = Auras.GetModifiedInt(SpellModifierType.PowerCost, spell, cost);
 			return cost;
 		}
 		#endregion

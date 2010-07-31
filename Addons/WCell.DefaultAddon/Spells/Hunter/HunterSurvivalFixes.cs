@@ -20,7 +20,8 @@ namespace WCell.Addons.Default.Spells.Hunter
             // Black Arrow does incorrect damage ($RAP*0.1 + $m1)
             SpellLineId.HunterSurvivalBlackArrow.Apply(spell =>
                 {
-                    spell.Effects[0].APValueFactor = 0.1f;
+                	var effect = spell.GetEffect(AuraType.PeriodicDamage);
+					effect.APValueFactor = 0.1f / effect.GetMaxTicks();
                 });
         }
     }

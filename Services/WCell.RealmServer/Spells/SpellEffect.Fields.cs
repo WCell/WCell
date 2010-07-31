@@ -70,8 +70,12 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int Amplitude;
 
+		/// <summary>
+		/// Returns the max amount of ticks of this Effect
+		/// </summary>
 		public int GetMaxTicks()
 		{
+			if (Amplitude == 0) return 0;
 			return Spell.Durations.Max/Amplitude;
 		}
 

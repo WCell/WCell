@@ -300,7 +300,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellRuneCost.dbc
 		/// </summary>
-		public uint RuneCostId;
+		public RuneCostEntry RuneCostEntry;
+
 		/// <summary>
 		/// SpellMissile.dbc
 		/// </summary>

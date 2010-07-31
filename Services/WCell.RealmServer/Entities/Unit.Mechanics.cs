@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_threatMods;
 		protected int[] m_attackerSpellHitChance;
 		protected int[] m_SpellHitChance;
-		protected int[] m_spellCritMods;
+		protected int[] m_CritMods;
 		protected int[] m_damageTakenMods;
 		protected int[] m_damageTakenPctMods;
 
@@ -1059,40 +1059,40 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType
 		/// </summary>
-		public virtual float GetSpellCritChance(DamageSchool school)
+		public virtual float GetCritChance(DamageSchool school)
 		{
-			return GetSpellCritMod(school);
+			return GetCritMod(school);
 		}
 
-		public int GetSpellCritMod(DamageSchool school)
+		public int GetCritMod(DamageSchool school)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
 				return 0;
 			}
-			return m_spellCritMods[(int)school];
+			return m_CritMods[(int)school];
 		}
 
-		public void SetSpellCritMod(DamageSchool school, int value)
+		public void SetCritMod(DamageSchool school, int value)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
-			m_spellCritMods[(uint)school] = value;
+			m_CritMods[(uint)school] = value;
 			if (this is Character)
 			{
 				((Character)this).UpdateSpellCritChance();
 			}
 		}
 
-		public void ModSpellCritMod(DamageSchool school, int delta)
+		public void ModCritMod(DamageSchool school, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
-			m_spellCritMods[(int)school] += delta;
+			m_CritMods[(int)school] += delta;
 
 			if (this is Character)
 			{
@@ -1100,16 +1100,16 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void ModSpellCritMod(DamageSchool[] schools, int delta)
+		public void ModCritMod(DamageSchool[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[(int)school] += delta;
+				m_CritMods[(int)school] += delta;
 			}
 			if (this is Character)
 			{
@@ -1117,16 +1117,16 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void ModSpellCritMod(uint[] schools, int delta)
+		public void ModCritMod(uint[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[school] += delta;
+				m_CritMods[school] += delta;
 			}
 			if (this is Character)
 			{

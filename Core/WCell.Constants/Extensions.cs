@@ -70,16 +70,6 @@ namespace WCell.Constants
 			return (flags & otherFlags) != 0;
 		}
 
-		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchoolMask otherFlags)
-		{
-			return (flags & otherFlags) != 0;
-		}
-
-		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchool school)
-		{
-			return (flags & (DamageSchoolMask)(1 << (int) school)) != 0;
-		}
-
 		public static bool HasAnyFlag(this GroupMemberFlags flags, GroupMemberFlags otherFlags)
 		{
 			return (flags & otherFlags) != 0;

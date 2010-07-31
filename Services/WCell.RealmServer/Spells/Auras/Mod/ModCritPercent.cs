@@ -26,12 +26,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			Owner.ChangeModifier(StatModifierInt.CritChance, EffectValue);
+			Owner.ModCritMod(DamageSchool.Physical, EffectValue);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			Owner.ChangeModifier(StatModifierInt.CritChance, -EffectValue);
+			Owner.ModCritMod(DamageSchool.Physical, -EffectValue);
 		}
 	}
 };
