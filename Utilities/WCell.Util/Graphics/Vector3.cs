@@ -438,6 +438,16 @@ namespace WCell.Util.Graphics
             return vector;
         }
 
+        public static void TransformNormal(ref Vector3 normal, ref Matrix matrix, out Vector3 newVector)
+        {
+            float num3 = ((normal.X * matrix.M11) + (normal.Y * matrix.M21)) + (normal.Z * matrix.M31);
+            float num2 = ((normal.X * matrix.M12) + (normal.Y * matrix.M22)) + (normal.Z * matrix.M32);
+            float num = ((normal.X * matrix.M13) + (normal.Y * matrix.M23)) + (normal.Z * matrix.M33);
+            newVector.X = num3;
+            newVector.Y = num2;
+            newVector.Z = num;
+        }
+
         public static Vector3 Transform(Vector3 position, Matrix matrix)
         {
             Vector3 vector;

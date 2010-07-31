@@ -206,6 +206,7 @@
     <Compile Include="DynamicAccess\IExecutable.cs" />
     <Compile Include="DynamicAccess\IGenericPropertyAccessor.cs" />
     <Compile Include="Collections\IdQueue.cs" />
+    <Compile Include="Graphics\MathHelper.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
