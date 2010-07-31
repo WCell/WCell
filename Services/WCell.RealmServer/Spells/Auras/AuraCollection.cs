@@ -56,12 +56,6 @@ namespace WCell.RealmServer.Spells.Auras
 
 		protected int m_visAuraCount;
 
-		/// <summary>
-		/// TODO: 
-		/// </summary>
-		protected internal List<SpellEffect> DamagePctAmplifiers;
-
-
 		public AuraCollection(Unit owner)
 		{
 			m_auras = new Dictionary<AuraIndexId, Aura>();
@@ -96,7 +90,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_auras.Count; }
 		}
 
-		#region Get & Contains
+		#region Get
 		public Aura this[SpellId spellId, bool positive]
 		{
 			get
@@ -936,6 +930,48 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 		#endregion
 
+		#region Spell Modifiers
+		/// <summary>
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
+		/// </summary>
+		public virtual int GetModifiedInt(SpellModifierType type, Spell spell, int value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character) Owner.Master).PlayerAuras.GetModifiedInt(type, spell, value);
+			}
+			return value;
+		}
+
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public virtual int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedIntNegative(type, spell, value);
+			}
+			return value;
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
+		/// </summary>
+		public virtual float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedFloat(type, spell, value);
+			}
+			return value;
+		}
+
+		public virtual void OnCasted(SpellCast cast)
+		{
+		}
+		#endregion
+
 		/// <summary>
 		/// Returns whether there are any harmful Auras on the Unit.
 		/// Unit cannot leave combat mode while under the influence of harmful Auras.
@@ -984,7 +1020,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura.CanBeSaved)
+				if (aura != null && aura.CanBeSaved)
 				{
 					aura.SaveNow();
 				}

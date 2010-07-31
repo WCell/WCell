@@ -442,7 +442,7 @@ namespace WCell.RealmServer.Misc
 			{
 				return (SpellEffect == null ||
 						((!Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && !IsDot)) ||
-						(Attacker is Character && ((Character)Attacker).PlayerSpells.CanSpellCrit(SpellEffect.Spell)));
+						(Attacker is Character && ((Character)Attacker).PlayerAuras.CanSpellCrit(SpellEffect.Spell)));
 			}
 		}
 

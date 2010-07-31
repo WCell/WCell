@@ -186,7 +186,7 @@ namespace WCell.RealmServer.Spells
 			if (CurrentTargetNo > 0)
 			{
 				// chain target damage comes with diminishing returns
-				return Effect.GetMultipliedValue(m_cast.CasterChar, val, CurrentTargetNo);
+				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, CurrentTargetNo);
 			}
 			return val;
 		}
@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Spells
 			if (targetNo > 0)
 			{
 				// chain target damage comes with diminishing returns
-				return Effect.GetMultipliedValue(m_cast.CasterChar, val, targetNo);
+				return Effect.GetMultipliedValue(m_cast.CasterUnit, val, targetNo);
 			}
 			return val;
 		}

@@ -142,7 +142,6 @@ namespace WCell.Util.Strings
 		}
 		#endregion
 
-
 		#region Add/Remove Children
 		public StringNode<V> AddChild(string key, V value)
 		{
@@ -251,7 +250,7 @@ namespace WCell.Util.Strings
 		}
 		#endregion
 
-		#region XML Serializing
+		#region Read
 		public void ReadXml(XmlReader reader)
 		{
 			if (Value != null)
@@ -364,7 +363,9 @@ namespace WCell.Util.Strings
 
 			//reader.SkipEmptyNodes();
 		}
+		#endregion
 
+		#region Write
 		public void WriteXml(XmlWriter writer)
 		{
 			if (Value != null)

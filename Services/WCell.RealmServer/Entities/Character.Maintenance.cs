@@ -886,6 +886,7 @@ namespace WCell.RealmServer.Entities
 			}
 			catch (Exception ex)
 			{
+				OnSaveFailed(ex);
 				try
 				{
 					m_record.Save();
@@ -893,7 +894,7 @@ namespace WCell.RealmServer.Entities
 				}
 				catch //(Exception ex2)
 				{
-					OnSaveFailed(ex);
+					//OnSaveFailed(ex);
 				}
 				return false;
 			}

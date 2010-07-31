@@ -1531,7 +1531,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private int UpdatePower()
+		internal int UpdatePower()
 		{
 			var val = GetInt32(UnitFields.POWER1 + (int)PowerType) +
 					  (m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0);

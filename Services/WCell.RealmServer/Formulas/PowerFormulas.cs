@@ -9,6 +9,9 @@ namespace WCell.RealmServer.Formulas
 {
 	public delegate int PowerCalculator(Unit unit);
 
+	/// <summary>
+	/// Determines the amount of base power per level and regenaration speed of all powers
+	/// </summary>
 	public static class PowerFormulas
 	{
 		public static readonly PowerCalculator[] PowerRegenCalculators = new PowerCalculator[(int)PowerType.End];
@@ -26,18 +29,20 @@ namespace WCell.RealmServer.Formulas
 
 		static PowerFormulas()
 		{
-			// TODO: Focus, RunicPower, Runes
+			// TODO: Focus, Happiness
 			SetPowerRegenCalculator(PowerType.Mana, CalculateManaRegen);
 			SetPowerRegenCalculator(PowerType.Rage, CalculateRageRegen);
 			SetPowerRegenCalculator(PowerType.Energy, CalculateEnergyRegen);
 			SetPowerRegenCalculator(PowerType.Focus, CalculateFocusRegen);
 			SetPowerRegenCalculator(PowerType.RunicPower, CalculateRunicPowerRegen);
-			SetPowerRegenCalculator(PowerType.Runes, GetZero);
+			SetPowerRegenCalculator(PowerType.Runes, CalculateRuneRegen);
 
 			SetBasePowerCalculator(PowerType.Mana, GetPowerForLevelDefault);
 			SetBasePowerCalculator(PowerType.Rage, GetRageForLevel);
 			SetBasePowerCalculator(PowerType.Energy, GetEnergyForLevel);
-			SetBasePowerCalculator(PowerType.Focus, CalculateFocusRegen);
+			SetBasePowerCalculator(PowerType.Focus, GetFocusForLevel);
+			SetBasePowerCalculator(PowerType.RunicPower, GetRunicPowerForLevel);
+			SetBasePowerCalculator(PowerType.Runes, GetRunesForLevel);
 		}
 
 		#region Standard Regen Formulas
@@ -82,12 +87,17 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalculateEnergyRegen(Unit unit)
 		{
-			return 20;
+			return 50;
 		}
 
 		public static int CalculateRunicPowerRegen(Unit unit)
 		{
-			return 4 + (unit.Spirit / 5);
+			return -50;
+		}
+
+		private static int CalculateRuneRegen(Unit unit)
+		{
+			return 0;
 		}
 
 		public static int CalculateFocusRegen(Unit unit)
@@ -113,9 +123,19 @@ namespace WCell.RealmServer.Formulas
 			return unit.GetBaseClass().GetLevelSetting(unit.Level).Mana;
 		}
 
-		private static int GetRageForLevel(Unit unit)
+		public static int GetRageForLevel(Unit unit)
 		{
 			return 1000;
+		}
+
+		public static int GetRunicPowerForLevel(Unit unit)
+		{
+			return 1000;
+		}
+
+		public static int GetRunesForLevel(Unit unit)
+		{
+			return 6;
 		}
 
 		public static int GetFocusForLevel(Unit unit)

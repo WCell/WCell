@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Spells
 
 		#region Auto generated Spell Fields
 		/// <summary>
-		/// whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
+		/// Whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
 		/// </summary>
 		public bool IsOnNextStrike;
 
@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsFinishingMove;
 
-		public bool ReqDeadTarget;
+		public bool RequiresDeadTarget;
 
 		/// <summary>
 		/// whether this is a channel-spell
@@ -323,7 +323,15 @@ namespace WCell.RealmServer.Spells
 
 		public bool RequiresCasterOutOfCombat;
 
-		public bool CostsMana;
+		/// <summary>
+		/// Whether this spell costs default power (does not include Runes)
+		/// </summary>
+		public bool CostsPower;
+
+		/// <summary>
+		/// Whether this Spell has any Rune costs
+		/// </summary>
+		public bool CostsRunes;
 
 		/// <summary>
 		/// Auras with modifier effects require existing Auras to be re-evaluated
@@ -660,10 +668,12 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			ReqDeadTarget =
+			RequiresDeadTarget =
 				TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
-			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
+			CostsPower = PowerCost > 0 || PowerCostPercentage > 0;
+
+			CostsRunes = RuneCostEntry != null && RuneCostEntry.CostsRunes;
 
 			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
@@ -1162,10 +1172,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			var chr = caster.Object as Character;
-			if (chr != null)
+			var unit = caster.UnitMaster;
+			if (unit != null)
 			{
-				millis = chr.PlayerSpells.GetModifiedInt(SpellModifierType.Duration, this, millis);
+				millis = unit.Auras.GetModifiedInt(SpellModifierType.Duration, this, millis);
 			}
 			return millis;
 		}
@@ -1560,9 +1570,19 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "SchoolMask: " + SchoolMask);
 			}
 
-			if (RuneCostId != 0)
+			if (RuneCostEntry != null)
 			{
-				writer.WriteLine(indent + "RuneCostId: " + RuneCostId);
+				writer.WriteLine(indent + "RuneCostId: " + RuneCostEntry.Id);
+				var ind = indent + "\t";
+				var rcosts = new List<String>(3);
+				if (RuneCostEntry.BloodCost != 0)
+					rcosts.Add(string.Format("Blood: {0}", RuneCostEntry.BloodCost));
+				if (RuneCostEntry.FrostCost != 0)
+					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.FrostCost));
+				if (RuneCostEntry.UnholyCost != 0)
+					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.UnholyCost));
+				writer.WriteLine(ind + "RuneCosts - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(" "));
+				writer.WriteLine(ind + "RunePowerGain: {0}", RuneCostEntry.RunicPowerGain);
 			}
 			if (MissileId != 0)
 			{

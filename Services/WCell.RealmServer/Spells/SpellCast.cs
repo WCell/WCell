@@ -846,11 +846,8 @@ namespace WCell.RealmServer.Spells
 				// calc exact cast delay
 				if (CasterUnit != null)
 				{
-					m_castDelay = (CasterUnit.CastSpeedFactor * m_castDelay).RoundInt();
-					if (CasterChar != null)
-					{
-						m_castDelay = CasterChar.PlayerSpells.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
-					}
+					m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
+					m_castDelay = CasterChar.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
 				}
 			}
 
@@ -1247,18 +1244,16 @@ namespace WCell.RealmServer.Spells
 		{
 			if (CasterObject is Unit)
 			{
-				var pct = ((Unit)CasterObject).GetSpellInterruptProt(m_spell);
+				var pct = ((Unit) CasterObject).GetSpellInterruptProt(m_spell);
 				if (pct >= 100)
 				{
 					return 0;
 				}
 
-				time -= (pct * time) / 100; // reduce by protection %
-				if (CasterObject is Character)
-				{
-					// pushback reduction is a positive value
-					time = ((Character)CasterObject).PlayerSpells.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
-				}
+				time -= (pct*time)/100; // reduce by protection %
+
+				// pushback reduction is a positive value, but we want it to be reduced, so we need to use GetModifiedIntNegative
+				time = ((Character) CasterObject).Auras.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
 			}
 			return Math.Max(0, time);
 		}

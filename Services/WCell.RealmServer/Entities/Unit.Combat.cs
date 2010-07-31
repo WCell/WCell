@@ -598,24 +598,29 @@ namespace WCell.RealmServer.Entities
 
 		public float CalcCritChance(Unit defender, DamageSchool dmgSchool, Spell spell, IWeapon weapon)
 		{
-			var chance = GetSpellCritChance(dmgSchool);
+			float chance;
 			if (this is Character)
 			{
 				var chr = (Character)this;
-				chance += chr.PlayerSpells.GetModifierFlat(SpellModifierType.CritChance, spell);
-
-				if (weapon.IsRanged)
+				if (weapon != null)
 				{
-					chance = chr.CritChanceRangedPct;
+					if (weapon.IsRanged)
+					{
+						chance = chr.CritChanceRangedPct;
+					}
+					else
+					{
+						chance = chr.CritChanceMeleePct;
+					}
 				}
 				else
 				{
-					chance = chr.CritChanceMeleePct;
+					chance = GetCritChance(dmgSchool);
 				}
 			}
 			else
 			{
-				chance += 5;	// mobs got 5% by default
+				chance = GetCritChance(dmgSchool);
 			}
 			chance -= defender.GetResiliencePct();
 			return chance;
