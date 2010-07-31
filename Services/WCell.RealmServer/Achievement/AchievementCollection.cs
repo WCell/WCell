@@ -117,9 +117,28 @@ namespace WCell.RealmServer.Achievement
 
         #endregion
 
+		public void Update(AchievementCriteriaType type, uint value1, uint value2, ObjectBase involved)
+		{
+			// TODO: Do something
+			AchievementUpdateMgr.GetUpdater(type)(type, Owner, value1, value2, involved);
+			// TODO: Finish
+		}
+
+		public void SaveNow()
+		{
+			foreach (var mCompletedAchievement in m_completedAchievements.Values)
+			{
+				mCompletedAchievement.Save();
+			}
+			foreach (var value in m_achivement_progress.Values)
+			{
+				value.Save();
+			}
+		}
+
 		public void Load()
 		{
-			foreach (var mCompletedAchievement in AchievementRecord.Load(Owner.EntityId.Low))
+			foreach (var mCompletedAchievement in AchievementRecord.Load((int)Owner.EntityId.Low))
 			{
 				var achievement = AchievementMgr.Get(mCompletedAchievement.AchievementEntryId);
 				if(achievement!= null)

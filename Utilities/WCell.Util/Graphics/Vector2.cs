@@ -139,6 +139,13 @@ namespace WCell.Util.Graphics
 			return (X.GetHashCode() + Y.GetHashCode());
 		}
 
+		public static Vector2 operator -(Vector2 a, Vector2 b)
+		{
+			Vector2 result;
+			Subtract(ref a, ref b, out result);
+			return result;
+		}
+
 		public static bool operator ==(Vector2 a, Vector2 b)
 		{
 			return a.Equals(b);

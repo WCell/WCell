@@ -45,13 +45,13 @@ namespace WCell.RealmServer.Achievement
 			try
 			{
 				record = new AchievementRecord
-				         	{
-				         		RecordId = _idGenerator.Next(),
-				         		_achievementEntryId = (int) achievementEntryId,
-				         		_characterGuid = (int) chr.EntityId.Low,
-				         		CompleteDate = DateTime.Now,
-				         		New = true
-							};
+				{
+					RecordId = _idGenerator.Next(),
+					_achievementEntryId = (int)achievementEntryId,
+					_characterGuid = (int)chr.EntityId.Low,
+					CompleteDate = DateTime.Now,
+					New = true
+				};
 			}
 			catch (Exception ex)
 			{
@@ -65,10 +65,7 @@ namespace WCell.RealmServer.Achievement
 
 		#endregion
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long RecordId { get; set; }
-
-		[Field("Guid", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterGuid;
 
 		[Field("Achievement", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -76,6 +73,23 @@ namespace WCell.RealmServer.Achievement
 
 		[Property]
 		public DateTime CompleteDate { get; set; }
+
+		/// <summary>
+		/// Encode char id and achievement id into RecordId
+		/// </summary>
+		[PrimaryKey(PrimaryKeyType.Assigned)]
+		public long RecordId
+		{
+			get
+			{
+				return _characterGuid | (_achievementEntryId << 32);
+			}
+			set
+			{
+				_characterGuid = (int)value;
+				_achievementEntryId = (int)(value >> 32);
+			}
+		}
 
 		public uint CharacterGuid
 		{
@@ -89,9 +103,9 @@ namespace WCell.RealmServer.Achievement
 			set { _achievementEntryId = (int)value; }
 		}
 
-		public static AchievementRecord[] Load(long chrRecordId)
+		public static AchievementRecord[] Load(int chrId)
 		{
-			return FindAllByProperty("Guid", chrRecordId);
+			return FindAll(Restrictions.Eq("_characterGuid", chrId));
 		}
 	}
 }

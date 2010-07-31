@@ -47,12 +47,17 @@ namespace WCell.Core.DBC
 		/// Copies the next count fields into obj, starting from offset.
 		/// Keep in mind, that one field has a length of 4 bytes.
 		/// </summary>
-		protected static void Copy(byte[] bytes, int offset, int count, object obj)
+		protected static void Copy(byte[] bytes, int offset, object obj)
 		{
+			var size = Marshal.SizeOf(obj.GetType());
+			if (size % 4 != 0)
+			{
+				throw new Exception("Cannot copy to object " + obj + " because it's size is not a multiple of 4.");
+			}
 			var handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
 			try
 			{
-				Marshal.Copy(bytes, offset * 4, handle.AddrOfPinnedObject(), count * 4);
+				Marshal.Copy(bytes, offset * 4, handle.AddrOfPinnedObject(), size);
 			}
 			finally
 			{
