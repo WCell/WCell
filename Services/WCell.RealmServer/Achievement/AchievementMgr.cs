@@ -11,7 +11,7 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
 {
-	internal delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
+	public delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
 
 	/// <summary>
 	/// Global container for Achievement-related data
@@ -21,20 +21,46 @@ namespace WCell.RealmServer.Achievement
 		private static readonly AchievementCriteriaEntryCreator[] AchievementEntryCreators =
 			new AchievementCriteriaEntryCreator[(int)AchievementCriteriaType.End];
 
-		public static AchievementCriteriaEntry[] CriteriaEntries = new AchievementCriteriaEntry[13000];
+		//public static AchievementCriteriaEntry[] CriteriaEntries = new AchievementCriteriaEntry[13000];
+
+		public static readonly List<AchievementCriteriaEntry>[] EntriesByCriterion = new List<AchievementCriteriaEntry>[(int)AchievementCriteriaType.End];
 
 		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
-
 		public static readonly Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry>();
+
 
 		[Initialization(InitializationPass.Fifth)]
 		public static void InitAchievements()
 		{
-			LoadCriteria();
+			InitCriteria();
+			LoadDBCs();
 		}
 
-		public static void LoadCriteria()
+		public static List<AchievementCriteriaEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)
 		{
+			return EntriesByCriterion[(int)criterion];
+		}
+
+		#region Dynamic Criteria Creation
+		public static AchievementCriteriaEntryCreator GetCriteriaEntryCreator(AchievementCriteriaType criteria)
+		{
+			return AchievementEntryCreators[(int)criteria];
+		}
+
+		public static void SetEntryCreator(AchievementCriteriaType criteria, AchievementCriteriaEntryCreator creator)
+		{
+			AchievementEntryCreators[(int)criteria] = creator;
+		}
+
+		public static void InitCriteria()
+		{
+			// initialize criteria lists
+			for (var i = 0; i < EntriesByCriterion.Length; i++)
+			{
+				EntriesByCriterion[i] = new List<AchievementCriteriaEntry>();
+			}
+
+			// initialize creator map
 			SetEntryCreator(AchievementCriteriaType.KillCreature, () => new KillCreatureAchievementCriteriaEntry());                            // 0
 			SetEntryCreator(AchievementCriteriaType.WinBg, () => new WinBattleGroundAchievementCriteriaEntry());                                // 1
 			SetEntryCreator(AchievementCriteriaType.ReachLevel, () => new ReachLevelAchievementCriteriaEntry());                                // 5
@@ -66,51 +92,24 @@ namespace WCell.RealmServer.Achievement
 			SetEntryCreator(AchievementCriteriaType.ReachTeamRating, () => new ReachTeamRatingAchievementCriteriaEntry());                      // 39
 			SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
 			//TODO: Add more types.
+		}
 
-
+		static void LoadDBCs()
+		{
 			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENTS));
 			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CATEGORIES));
-			//new DBCReader<AchievementCriteriaEntryMapper>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CRITERIAS));
+			new DBCReader<AchievementCriteriaConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CRITERIAS));
 		}
+		#endregion
 
-		internal static AchievementCriteriaEntryCreator GetCriteriaEntryCreator(AchievementCriteriaType criteria)
-		{
-			return AchievementEntryCreators[(int)criteria];
-		}
-
-		internal static void SetEntryCreator(AchievementCriteriaType criteria, AchievementCriteriaEntryCreator creator)
-		{
-			AchievementEntryCreators[(int)criteria] = creator;
-		}
-
-		public static AchievementEntry Get(AchievementEntryId achievementEntryId)
+		public static AchievementEntry GetAchievementEntry(AchievementEntryId achievementEntryId)
 		{
 			return AchievementEntries[achievementEntryId];
 		}
 
-		public static AchievementCategoryEntry Get(AchievementCategoryEntryId achievementCategoryEntryId)
+		public static AchievementCategoryEntry GetCategoryEntry(AchievementCategoryEntryId achievementCategoryEntryId)
 		{
 			return AchievementCategoryEntries[achievementCategoryEntryId];
-		}
-
-		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1)
-		{
-			UpdateAchievementCriteria(criteria, value1, 0, null);
-		}
-
-		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, Unit unit)
-		{
-			UpdateAchievementCriteria(criteria, value1, 0, unit);
-			
-		}
-		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, uint value2)
-		{
-			UpdateAchievementCriteria(criteria, value1, value2, null);
-		}
-
-		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, uint value2, Unit unit)
-		{
-			
 		}
 	}
 }

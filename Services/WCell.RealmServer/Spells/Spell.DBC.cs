@@ -46,8 +46,8 @@ namespace WCell.RealmServer.Spells
 		public static MappedDBCReader<SimpleRange, DBCRangeConverter> mappeddbcRangeReader;
 		[NotPersistent]
 		public static MappedDBCReader<string, DBCMechanicConverter> mappeddbcMechanicReader;
-        [NotPersistent]
-        public static MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter> mappeddbcRuneCostReader;
+		[NotPersistent]
+		public static MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter> mappeddbcRuneCostReader;
 
 		internal static void InitDbcs()
 		{
@@ -55,9 +55,9 @@ namespace WCell.RealmServer.Spells
 			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRADIUS));
 			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLCASTTIMES));
 			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
-            //DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
+			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
 			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
-		    mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRUNECOST));
+			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRUNECOST));
 		}
 
 		#region SpellDuration.dbc
@@ -123,12 +123,12 @@ namespace WCell.RealmServer.Spells
 
 				id = GetInt32(rawData, 0);
 				range.MinDist = (uint)GetFloat(rawData, 1);
-                // min range friendly
+				// min range friendly
 				range.MaxDist = (uint)GetFloat(rawData, 3);
 				// max range friendly
-                // flags (uint32)
-                // char* ???
-                // char* ???
+				// flags (uint32)
+				// char* ???
+				// char* ???
 
 				return range;
 			}
@@ -157,34 +157,37 @@ namespace WCell.RealmServer.Spells
 		{
 			public override SpellFocusEntry ConvertTo(byte[] rawData, ref int id)
 			{
-			    var entry = new SpellFocusEntry
-			                    {
-			                        Id = (uint) (id = GetInt32(rawData, 0)),
-			                        Name = GetString(rawData, 1)
-			                    };
+				var entry = new SpellFocusEntry
+								{
+									Id = (uint)(id = GetInt32(rawData, 0)),
+									Name = GetString(rawData, 1)
+								};
 
-			    return entry;
+				return entry;
 			}
 		}
 		#endregion
 
-        #region SpellRuneCost.dbc
-        public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
-        {
-            public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
-            {
-                var entry = new RuneCostEntry
-                                {
-                                    Id = (uint)(id = GetInt32(rawData, 0)),
-									BloodCost = GetInt32(rawData, 1),
-									UnholyCost = GetInt32(rawData, 2),
-                                    FrostCost = GetInt32(rawData, 3),
-                                    RunicPowerGain = GetInt32(rawData, 4)
-                                };
-                return entry;
-            }
-        }
-        #endregion
+		#region SpellRuneCost.dbc
+		public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
+		{
+			public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
+			{
+				var entry = new RuneCostEntry
+				{
+					Id = (uint)(id = GetInt32(rawData, 0)),
+					RunicPowerGain = GetInt32(rawData, 4)
+				};
+
+				for (var r = 0; r < SpellConstants.StandardRuneTypeCount; r++)
+				{
+					entry.RequiredRuneAmount += entry.CostPerType[r] = GetInt32(rawData, r+1);
+				}
+
+				return entry;
+			}
+		}
+		#endregion
 
 		#region Spell.DBC
 		public class SpellDBCConverter : DBCRecordConverter
@@ -194,7 +197,8 @@ namespace WCell.RealmServer.Spells
 				#region Parsing
 				int currentIndex = 0;
 
-				var spell = new Spell {
+				var spell = new Spell
+				{
 					Id = GetUInt32(rawData, currentIndex++),
 					SpellId = (SpellId)GetInt32(rawData, 0)
 				};
@@ -208,25 +212,25 @@ namespace WCell.RealmServer.Spells
 					spell.AttributesEx = (SpellAttributesEx)GetUInt32(rawData, currentIndex++);            // 5
 					spell.AttributesExB = (SpellAttributesExB)GetUInt32(rawData, currentIndex++);          // 6
 					spell.AttributesExC = (SpellAttributesExC)GetUInt32(rawData, currentIndex++);          // 7
-                    spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
-                    spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
-                    spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
-                    spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
-                    spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
-                    spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
-                    spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
-                    spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
-                    spell.CreatureMask = (CreatureMask)GetUInt32(rawData, currentIndex++);    // 17
+					spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
+					spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
+					spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
+					spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
+					spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
+					spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
+					spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
+					spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
+					spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
+					spell.CreatureMask = (CreatureMask)GetUInt32(rawData, currentIndex++);    // 17
 					spell.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, currentIndex++);              // 18
 					spell.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, currentIndex++);               // 19
 					spell.RequiredCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 20
 					spell.RequiredTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 21
 					spell.ExcludeCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 22
 					spell.ExcludeTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 23
-                    spell.RequiredCasterAuraId = GetUInt32(rawData, currentIndex++);                        // 24
+					spell.RequiredCasterAuraId = GetUInt32(rawData, currentIndex++);                        // 24
 					spell.RequiredTargetAuraId = GetUInt32(rawData, currentIndex++);                        // 25
-                    spell.ExcludeCasterAuraId = GetUInt32(rawData, currentIndex++);                         // 26
+					spell.ExcludeCasterAuraId = GetUInt32(rawData, currentIndex++);                         // 26
 					spell.ExcludeTargetAuraId = GetUInt32(rawData, currentIndex++);                         // 27
 
 					int castTimeIndex = GetInt32(rawData, currentIndex++);                                  // 28
@@ -246,11 +250,11 @@ namespace WCell.RealmServer.Spells
 					spell.ProcTriggerFlags = (ProcTriggerFlags)GetUInt32(rawData, currentIndex++);                  // 34
 					spell.ProcChance = GetUInt32(rawData, currentIndex++);                                          // 35
 					spell.ProcCharges = GetInt32(rawData, currentIndex++);                                          // 36
-                    spell.MaxLevel = GetInt32(rawData, currentIndex++);                                             // 37
-                    spell.BaseLevel = GetInt32(rawData, currentIndex++);                                            // 38
-                    spell.Level = GetInt32(rawData, currentIndex++);                                                // 30
+					spell.MaxLevel = GetInt32(rawData, currentIndex++);                                             // 37
+					spell.BaseLevel = GetInt32(rawData, currentIndex++);                                            // 38
+					spell.Level = GetInt32(rawData, currentIndex++);                                                // 30
 
-                    var durationIndex = GetInt32(rawData, currentIndex++);                                          // 40
+					var durationIndex = GetInt32(rawData, currentIndex++);                                          // 40
 					if (durationIndex > 0)
 					{
 						if (!mappeddbcDurationReader.Entries.TryGetValue(durationIndex, out spell.Durations))
@@ -299,7 +303,7 @@ namespace WCell.RealmServer.Spells
 					{
 						spell.Reagents = ItemStackDescription.EmptyArray;
 					}
-                    spell.RequiredItemClass = (ItemClass)GetUInt32(rawData, currentIndex++);   //68
+					spell.RequiredItemClass = (ItemClass)GetUInt32(rawData, currentIndex++);   //68
 					if (spell.RequiredItemClass < 0)
 					{
 						spell.RequiredItemClass = ItemClass.None;
@@ -323,8 +327,8 @@ namespace WCell.RealmServer.Spells
 					for (int i = 0; i < 3; i++)
 					{
 						var effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
-						if (effect != null && 
-							(effect.EffectType != SpellEffectType.None || 
+						if (effect != null &&
+							(effect.EffectType != SpellEffectType.None ||
 								effect.BasePoints > 0 ||
 								effect.AuraType != 0 ||
 								effect.TriggerSpellId != 0))
@@ -341,13 +345,13 @@ namespace WCell.RealmServer.Spells
 					spell.BuffIconId = GetUInt32(rawData, currentIndex++);          // 131
 					spell.Priority = GetUInt32(rawData, currentIndex++);            // 132
 
-				    spell.Name = GetString(rawData, ref currentIndex);              // 133
-				    spell.RankDesc = GetString(rawData, ref currentIndex);          // 124
-                    spell.Description = GetString(rawData, ref currentIndex);       // 125
-                    spell.BuffDescription = GetString(rawData, ref currentIndex);   // 126
+					spell.Name = GetString(rawData, ref currentIndex);              // 133
+					spell.RankDesc = GetString(rawData, ref currentIndex);          // 124
+					spell.Description = GetString(rawData, ref currentIndex);       // 125
+					spell.BuffDescription = GetString(rawData, ref currentIndex);   // 126
 
 					spell.PowerCostPercentage = GetInt32(rawData, currentIndex++);  // 127
-                    spell.StartRecoveryTime = GetInt32(rawData, currentIndex++);    // 128
+					spell.StartRecoveryTime = GetInt32(rawData, currentIndex++);    // 128
 					spell.StartRecoveryCategory = GetInt32(rawData, currentIndex++);    // 129
 					spell.MaxTargetLevel = GetUInt32(rawData, currentIndex++);          // 130
 					spell.SpellClassSet = (SpellClassSet)GetUInt32(rawData, currentIndex++);    // 131
@@ -386,16 +390,16 @@ namespace WCell.RealmServer.Spells
 					}
 					spell.MissileId = GetUInt32(rawData, currentIndex++);           // 150
 
-                    // New 3.1.0. Id from PowerDisplay.dbc
-				    spell.PowerDisplayId = GetInt32(rawData, currentIndex++);       // 151
+					// New 3.1.0. Id from PowerDisplay.dbc
+					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);       // 151
 
-                    // 3.2.2 unk float (array?)
-                    spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);         // 152
-                    spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);         // 153
-                    spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);         // 154
+					// 3.2.2 unk float (array?)
+					spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);         // 152
+					spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);         // 153
+					spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);         // 154
 
-                    // 3.2.2
-                    spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);
+					// 3.2.2
+					spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);
 				}
 				catch (Exception e)
 				{
@@ -420,8 +424,8 @@ namespace WCell.RealmServer.Spells
 					{
 						list = new List<ItemStackDescription>();
 					}
-					var reagent = new ItemStackDescription {ItemId = id, Amount = count};
-				    list.Add(reagent);
+					var reagent = new ItemStackDescription { ItemId = id, Amount = count };
+					list.Add(reagent);
 				}
 			}
 
@@ -434,8 +438,8 @@ namespace WCell.RealmServer.Spells
 				effect.EffectType = (SpellEffectType)GetUInt32(rawData, currentIndex);  // 71
 				currentIndex += 3;
 
-                effect.DiceSides = GetInt32(rawData, currentIndex);                    // 80
-                currentIndex += 3;
+				effect.DiceSides = GetInt32(rawData, currentIndex);                    // 80
+				currentIndex += 3;
 
 				effect.RealPointsPerLevel = GetFloat(rawData, currentIndex);            // 77
 				currentIndex += 3;
@@ -490,8 +494,8 @@ namespace WCell.RealmServer.Spells
 				effect.MiscValueB = GetInt32(rawData, currentIndex);    // 113
 				currentIndex += 3;
 
-                effect.TriggerSpellId = (SpellId)GetUInt32(rawData, currentIndex);      // 116
-                currentIndex += 3;
+				effect.TriggerSpellId = (SpellId)GetUInt32(rawData, currentIndex);      // 116
+				currentIndex += 3;
 
 				effect.PointsPerComboPoint = GetFloat(rawData, currentIndex);       // 119
 				currentIndex += 3 - effectNum;

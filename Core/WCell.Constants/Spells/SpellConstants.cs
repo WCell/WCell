@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Util;
 
 namespace WCell.Constants.Spells
 {
@@ -79,6 +80,8 @@ namespace WCell.Constants.Spells
 					NegativeMechanics[(int)mech] = true;
 				}
 			}
+
+			InitRunes();
 		}
 
 		public static bool IsNegative(this SpellMechanic mech)
@@ -88,18 +91,40 @@ namespace WCell.Constants.Spells
 		#endregion
 
 		#region Runes
-		public const int RuneCount = 6;
 
+		/// <summary>
+		/// Amount of different types of runes (3)
+		/// </summary>
+		public const int StandardRuneTypeCount = 3;
+		public const int MaxRuneCount = 6;
 
-		public static readonly RuneType[] RuneSlots = new []
+		/// <summary>
+		/// Amount of runes per type (usually 2)
+		/// </summary>
+		public const int MaxRuneCountPerType = MaxRuneCount / StandardRuneTypeCount;
+
+		public static readonly int BitsPerRune = (int)(Math.Log((int)RuneType.End, 2) + 0.99999);	// always round up
+
+		public static readonly uint[,] IndicesPerType = new [,]
 		{
-			RuneType.Blood,
-			RuneType.Blood,
-			RuneType.Unholy,
-			RuneType.Unholy,
-			RuneType.Frost,
-			RuneType.Frost,
+			{0u, 1u},
+			{2u, 3u},
+			{4u, 5u}
+		};
+
+		/// <summary>
+		/// Default rune layout, 2 of every kind, in this order
+		/// </summary>
+		public static readonly RuneType[] DefaultRuneSet = new[]
+		{
+			RuneType.Blood, RuneType.Blood,
+			RuneType.Unholy, RuneType.Unholy,
+			RuneType.Frost, RuneType.Frost
 		};
 		#endregion
+
+		static void InitRunes()
+		{
+		}
 	}
 }

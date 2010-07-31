@@ -1575,12 +1575,12 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "RuneCostId: " + RuneCostEntry.Id);
 				var ind = indent + "\t";
 				var rcosts = new List<String>(3);
-				if (RuneCostEntry.BloodCost != 0)
-					rcosts.Add(string.Format("Blood: {0}", RuneCostEntry.BloodCost));
-				if (RuneCostEntry.FrostCost != 0)
-					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.FrostCost));
-				if (RuneCostEntry.UnholyCost != 0)
-					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.UnholyCost));
+				if (RuneCostEntry.CostPerType[(int)RuneType.Blood] != 0)
+					rcosts.Add(string.Format("Blood: {0}", RuneCostEntry.CostPerType[(int)RuneType.Blood]));
+				if (RuneCostEntry.CostPerType[(int)RuneType.Unholy] != 0)
+					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.CostPerType[(int)RuneType.Unholy]));
+				if (RuneCostEntry.CostPerType[(int)RuneType.Frost] != 0)
+					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.CostPerType[(int)RuneType.Frost]));
 				writer.WriteLine(ind + "RuneCosts - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(" "));
 				writer.WriteLine(ind + "RunePowerGain: {0}", RuneCostEntry.RunicPowerGain);
 			}

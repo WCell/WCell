@@ -48,6 +48,10 @@ namespace WCell.RealmServer.Spells
 			: base(owner)
 		{
 			m_sendPackets = false;
+			if (owner.Class == Constants.ClassId.DeathKnight)
+			{
+				m_runes = new RuneSet(owner, owner.Record.RuneSetMask, owner.Record.RuneCooldowns);
+			}
 		}
 
 		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
@@ -61,11 +65,19 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// If this is a player's 
+		/// Owner as Character
 		/// </summary>
 		public Character OwnerChar
 		{
-			get { return Owner as Character; }
+			get { return (Character)Owner; }
+		}
+
+		/// <summary>
+		/// The set of runes of this Character (if any)
+		/// </summary>
+		public RuneSet Runes
+		{
+			get { return m_runes; }
 		}
 
 		#region Add
@@ -310,7 +322,7 @@ namespace WCell.RealmServer.Spells
 			// Profession
 			if (spell.Skill != null)
 			{
-			    chr.Skills.TryLearn(spell.SkillId);
+				chr.Skills.TryLearn(spell.SkillId);
 			}
 
 
@@ -670,16 +682,27 @@ namespace WCell.RealmServer.Spells
 					}
 
 					var cd = cooldown.AsConsistent();
-					if (cd.CharId != m_ownerId)
-					{
-						cd.CharId = m_ownerId;
-					}
-					cd.SaveAndFlush();		// update or create
-					newCooldowns.Add(cd.Identifier, (T)cd);
+					//if (cd.CharId != m_ownerId)
+					cd.CharId = m_ownerId;
+					cd.SaveAndFlush(); // update or create
+					newCooldowns.Add(cd.Identifier, (T) cd);
 				}
 			}
 			cooldowns = newCooldowns;
 		}
 		#endregion
+
+		/// <summary>
+		/// Called to save runes (cds & spells are saved in another way)
+		/// </summary>
+		internal void OnSave()
+		{
+			if (m_runes != null)
+			{
+				var record = OwnerChar.Record;
+				record.RuneSetMask = m_runes.PackRuneSetMask();
+				record.RuneCooldowns = m_runes.Cooldowns;
+			}
+		}
 	}
 }

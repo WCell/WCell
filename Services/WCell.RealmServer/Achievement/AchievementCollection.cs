@@ -72,7 +72,6 @@ namespace WCell.RealmServer.Achievement
         #endregion
 
         #region Add / Set
-
 		/// <summary>
 		/// Adds a new achievement to the list.
 		/// </summary>
@@ -85,14 +84,23 @@ namespace WCell.RealmServer.Achievement
 			//AchievementHandler.SendAchievementEarned(achievementRecord.AchievementEntryId,m_owner);
 		}
 
-		/// <summary>
+    	/// <summary>
+    	/// Adds a new achievement to the list, when achievement is earned.
+    	/// </summary>
+    	/// <param name="achievementEntry"></param>
+		public void EarnAchievement(AchievementEntryId achievementEntryId)
+    	{
+    		EarnAchievement(AchievementMgr.GetAchievementEntry(achievementEntryId));
+    	}
+
+    	/// <summary>
 		/// Adds a new achievement to the list, when achievement is earned.
 		/// </summary>
 		/// <param name="achievementEntry"></param>
-		public void EarnAchievement(AchievementEntryId achievementEntryId)
+		public void EarnAchievement(AchievementEntry achievement)
 		{
-			Add(AchievementRecord.CreateNewAchievementRecord(m_owner,achievementEntryId));
-			AchievementHandler.SendAchievementEarned(achievementEntryId,m_owner);
+			Add(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
+			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
 		}
 
         #endregion
@@ -117,13 +125,21 @@ namespace WCell.RealmServer.Achievement
 
         #endregion
 
-		public void Update(AchievementCriteriaType type, uint value1, uint value2, ObjectBase involved)
+		public void Update(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
 		{
-			// TODO: Do something
-			AchievementUpdateMgr.GetUpdater(type)(type, Owner, value1, value2, involved);
-			// TODO: Finish
+			var list = AchievementMgr.GetEntriesByCriterion(type);
+			if (list != null)
+			{
+				foreach (var entry in list)
+				{
+					// TODO: Add preliminary checks, if necessary
+					AchievementUpdateMgr.GetUpdater(type)(entry, Owner, value1, value2, involved);
+				}
+				// TODO: Anything to do after running over all entries?
+			}
 		}
 
+		#region Save & Load
 		public void SaveNow()
 		{
 			foreach (var mCompletedAchievement in m_completedAchievements.Values)
@@ -140,7 +156,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			foreach (var mCompletedAchievement in AchievementRecord.Load((int)Owner.EntityId.Low))
 			{
-				var achievement = AchievementMgr.Get(mCompletedAchievement.AchievementEntryId);
+				var achievement = AchievementMgr.GetAchievementEntry(mCompletedAchievement.AchievementEntryId);
 				if(achievement!= null)
 				{
 					if (m_completedAchievements.ContainsKey(achievement.ID))
@@ -158,5 +174,6 @@ namespace WCell.RealmServer.Achievement
 				}
 			}
 		}
+		#endregion
     }
 }

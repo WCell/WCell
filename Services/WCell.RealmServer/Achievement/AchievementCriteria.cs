@@ -16,9 +16,10 @@ namespace WCell.RealmServer.Achievement
     [StructLayout(LayoutKind.Sequential)]
     public abstract class AchievementCriteriaEntry
     {
-    	public AchievementCriteriaId AchievementCriteriaId;
-    	public AchievementEntryId AchievementEntryId;
-        public AchievementCriteriaType Criteria;
+		public AchievementCriteriaType Criteria;
+		public AchievementCriteriaId AchievementCriteriaId;
+    	public AchievementEntry AchievementEntry;
+
     	public int CompletionFlag;
     	public int GroupFlag;
     	public int TimeLimit;
@@ -64,7 +65,7 @@ namespace WCell.RealmServer.Achievement
     public class CompleteAchievementAchievementCriteriaEntry : AchievementCriteriaEntry
     {
         // 8
-        public AchievementEntry AchievementEntry;
+        public AchievementEntryId AchievementToCompleteId;
     }
 
     [StructLayout(LayoutKind.Sequential)]
