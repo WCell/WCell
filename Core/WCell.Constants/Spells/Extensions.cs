@@ -38,6 +38,21 @@ namespace WCell.Constants.Spells
 		{
 			return (flags & (DamageSchoolMask)(1 << (int)school)) != 0;
 		}
+
+		public static RuneMask ToMask(this RuneType type)
+		{
+			return (RuneMask)(1 << (int)type);
+		}
+
+		public static bool HasAnyFlag(this RuneMask mask, RuneMask mask2)
+		{
+			return (mask & mask2) != 0;
+		}
+
+		public static bool HasAnyFlag(this RuneMask mask, RuneType type)
+		{
+			return (mask & type.ToMask()) != 0;
+		}
 		#endregion
 	}
 }

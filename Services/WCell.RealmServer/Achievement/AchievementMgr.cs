@@ -10,7 +10,7 @@ using WCell.Core.Initialization;
 
 namespace WCell.RealmServer.Achievement
 {
-	internal delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
+	public delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
 
 	/// <summary>
 	/// Global container for Achievement-related data
@@ -20,14 +20,31 @@ namespace WCell.RealmServer.Achievement
 		private static readonly AchievementCriteriaEntryCreator[] AchievementEntryCreators =
 			new AchievementCriteriaEntryCreator[(int)AchievementCriteriaType.End];
 
-		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
 
+		public static readonly List<AchievementEntry>[] EntriesByCriterion = new List<AchievementEntry>[(int)AchievementCriteriaType.End];
+		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
 		public static readonly Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry>();
+
 
 		[Initialization(InitializationPass.Fifth)]
 		public static void InitAchievements()
 		{
 			LoadCriteria();
+		}
+
+		public static AchievementCriteriaEntryCreator GetCriteriaEntryCreator(AchievementCriteriaType criteria)
+		{
+			return AchievementEntryCreators[(int)criteria];
+		}
+
+		public static void SetEntryCreator(AchievementCriteriaType criteria, AchievementCriteriaEntryCreator creator)
+		{
+			AchievementEntryCreators[(int)criteria] = creator;
+		}
+
+		public static List<AchievementEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)
+		{
+			return EntriesByCriterion[(int)criterion];
 		}
 
 		public static void LoadCriteria()
@@ -68,16 +85,6 @@ namespace WCell.RealmServer.Achievement
 			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENTS));
 			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CATEGORIES));
 			//new DBCReader<AchievementCriteriaEntryMapper>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CRITERIAS));
-		}
-
-		internal static AchievementCriteriaEntryCreator GetCriteriaEntryCreator(AchievementCriteriaType criteria)
-		{
-			return AchievementEntryCreators[(int)criteria];
-		}
-
-		internal static void SetEntryCreator(AchievementCriteriaType criteria, AchievementCriteriaEntryCreator creator)
-		{
-			AchievementEntryCreators[(int)criteria] = creator;
 		}
 
 		public static AchievementEntry Get(AchievementEntryId achievementEntryId)

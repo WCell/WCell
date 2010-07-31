@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Achievement
 	/// <param name="value1"></param>
 	/// <param name="value2"></param>
 	/// <param name="involved">The object that is involved in this achievement (e.g. a slain creature or acquired Item etc)</param>
-	public delegate void AchievementUpdater(AchievementCriteriaType type, Character chr, uint value1, uint value2, ObjectBase involved);
+	public delegate void AchievementUpdater(AchievementEntry entry, Character chr, uint value1, uint value2, ObjectBase involved);
 
 	/// <summary>
 	/// Hook to InitializationPass.Seven to customize the Updater delegates.
@@ -42,12 +42,12 @@ namespace WCell.RealmServer.Achievement
 			// ...
 		}
 
-		private static void OnKillCreature(AchievementCriteriaType type, Character chr, uint value1, uint value2, ObjectBase involved)
+		private static void OnKillCreature(AchievementEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
 			// TODO
 		}
 
-		private static void OnReachLevel(AchievementCriteriaType type, Character chr, uint value1, uint value2, ObjectBase involved)
+		private static void OnReachLevel(AchievementEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
 			// TODO
 		}

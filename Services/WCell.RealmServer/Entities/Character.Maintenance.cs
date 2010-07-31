@@ -823,11 +823,17 @@ namespace WCell.RealmServer.Entities
 				{
 					m_record.NextTaxiVertexId = 0;
 				}
+
+				// spells & runes
+				PlayerSpells.OnSave();
+
+				// taxi mask
 				m_record.TaxiMask = m_taxiNodeMask.Mask;
 
 				if (m_record.Level > 1 &&
 					m_record.Level > Account.HighestCharLevel)
 				{
+					// tell auth server about the new highest level
 					Account.HighestCharLevel = m_record.Level;
 				}
 			}

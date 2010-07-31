@@ -790,5 +790,18 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
+
+		#region Runes
+		public static void SendConvertRune(IRealmClient client, uint index, RuneType type)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CONVERT_RUNE, 2))
+			{
+				packet.Write((byte)index);
+				packet.Write((byte)type);
+
+				client.Send(packet);
+			}
+		}
+		#endregion
 	}
 }
