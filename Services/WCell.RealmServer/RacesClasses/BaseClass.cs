@@ -35,7 +35,6 @@ namespace WCell.RealmServer.RacesClasses
     /// </summary>
     public abstract class BaseClass
     {
-
         public static int DefaultStartLevel = 1;
 
         #region Fields
@@ -71,7 +70,7 @@ namespace WCell.RealmServer.RacesClasses
         /// <summary>
         /// The PowerType this class uses.
         /// </summary>
-        public virtual PowerType PowerType
+        public virtual PowerType DefaultPowerType
         {
             get { return PowerType.Mana; }
         }
@@ -223,25 +222,6 @@ namespace WCell.RealmServer.RacesClasses
         }
 
         /// <summary>
-        /// Calculates the amount of power regeneration for the class at a specific level, Intellect and Spirit.
-        /// Changed in 3.1, overrides for casters are redundant.
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <param name="spirit">the player's Spirit</param>
-        /// <returns>The total power regeneration amount per RegenTick. Scales with RegenTickDelay (mana/5s will stay the same even if you change TickDelay).</returns>
-        public virtual int CalculatePowerRegen(Character chr)
-        {
-			// default mana generation
-            //return (10f + (spirit / 7f));
-            var regen = (float)(0.001f + (float)Math.Sqrt(chr.Intellect) * chr.Spirit * GameTables.BaseRegen[chr.Level]) * Unit.RegenTickMultiplier;
-			if (chr.IsInCombat)
-			{
-				regen = (regen * chr.ManaRegenPerTickInterruptedPct) / 100;
-			}
-			return (int)regen;
-        }
-
-        /// <summary>
         /// Calculates ranged attack power for the class at a specific level, Strength and Agility.
         /// </summary>
         /// <param name="level">the player's level</param>
@@ -264,16 +244,6 @@ namespace WCell.RealmServer.RacesClasses
         }
 
         /// <summary>
-        /// Gets the total power gained for the class at a specific level. 
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <returns>the total power gained up until the given level</returns>
-        public virtual int GetPowerForLevel(int level)
-        {
-            return GetLevelSetting(level).Mana;
-        }
-
-        /// <summary>
         /// Runs any needed initialization for a player that has just been created.
         /// </summary>
         /// <param name="character">the <see cref="Character">Character</see> that needs to be initialized</param>
@@ -292,5 +262,10 @@ namespace WCell.RealmServer.RacesClasses
         {
             ArchetypeMgr.BaseClasses[(uint)Id] = this;
         }
+
+    	protected internal virtual void UpdatePower(Unit unit)
+    	{
+			unit.UpdatePower();
+    	}
     }
 }

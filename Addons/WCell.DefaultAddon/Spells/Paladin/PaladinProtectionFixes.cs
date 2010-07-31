@@ -122,7 +122,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 	public class SpiritualAttunementHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			if (action is HealAction)
 			{

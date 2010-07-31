@@ -169,26 +169,17 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
         #region SpellRuneCost.dbc
-        public class RuneCostEntry
-        {
-            public uint Id;                                                                              
-            public uint BloodCost;
-            public uint FrostCost;
-            public uint UnholyCost;
-            public uint PowerGain;                                  
-        }
-
         public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
         {
             public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
             {
                 var entry = new RuneCostEntry
                                 {
-                                    Id = (uint) (id = GetInt32(rawData, 0)),
-                                    BloodCost = (uint) (GetInt32(rawData, 1)),
-                                    FrostCost = (uint) (GetInt32(rawData, 2)),
-                                    UnholyCost = (uint) (GetInt32(rawData, 3)),
-                                    PowerGain = (uint) (GetInt32(rawData, 4))
+                                    Id = (uint)(id = GetInt32(rawData, 0)),
+									BloodCost = GetInt32(rawData, 1),
+									UnholyCost = GetInt32(rawData, 2),
+                                    FrostCost = GetInt32(rawData, 3),
+                                    RunicPowerGain = GetInt32(rawData, 4)
                                 };
                 return entry;
             }
@@ -388,7 +379,11 @@ namespace WCell.RealmServer.Spells
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);                     // 147
 					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);    // 148
 
-                    spell.RuneCostId = GetUInt32(rawData, currentIndex++);          // 149
+					var runeCostId = GetInt32(rawData, currentIndex++);
+					if (runeCostId != 0)
+					{
+						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);// 149
+					}
 					spell.MissileId = GetUInt32(rawData, currentIndex++);           // 150
 
                     // New 3.1.0. Id from PowerDisplay.dbc

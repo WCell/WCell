@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Mod
 {
@@ -9,12 +10,20 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 	{
 		protected override void Apply()
 		{
-			Owner.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, EffectValue);
+			var chr = Owner as Character;
+			if (chr != null)
+			{
+				chr.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, EffectValue);
+			}
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			Owner.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, -EffectValue);
+			var chr = Owner as Character;
+			if (chr != null)
+			{
+				chr.ModDmgBonusVsCreatureTypePct(m_spellEffect.MiscBitSet, -EffectValue);
+			}
 		}
 	}
 }

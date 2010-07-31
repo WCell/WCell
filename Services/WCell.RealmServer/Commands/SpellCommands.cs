@@ -369,9 +369,9 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Trigger
-		public class TriggerpellCommand : SubCommand
+		public class TriggerSpellCommand : SubCommand
 		{
-			protected TriggerpellCommand()
+			protected TriggerSpellCommand()
 			{
 			}
 

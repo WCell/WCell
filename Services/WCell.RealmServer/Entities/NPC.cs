@@ -766,12 +766,12 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override float GetSpellCritChance(DamageSchool school)
+		public override float GetCritChance(DamageSchool school)
 		{
 			var value = m_entry.Rank > CreatureRank.Normal ? BossSpellCritChance : 0;
-			if (m_spellCritMods != null)
+			if (m_CritMods != null)
 			{
-				value += m_spellCritMods[(int)school];
+				value += m_CritMods[(int)school];
 			}
 			return value;
 		}

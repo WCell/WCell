@@ -12,6 +12,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	/// <summary>
 	/// Increases your attack power by $s2 for every ${$m1*$m2} armor value you have.
+	/// TODO: Update when armor changes
 	/// </summary>
 	public class ModAPByArmorHandler : AuraEffectHandler
 	{
@@ -25,9 +26,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			//    LogManager.GetCurrentClassLogger().Error("ModAPByArmorHandler is missing dummy mod effect in Spell {0}", SpellEffect.Spell);
 			//    return;
 			//}
-			//var apFactor = modEffect.CalcEffectValue();
 
-			//var armorStep = apFactor*EffectValue;
+			//var apFactor = modEffect.CalcEffectValue();
+			//var armorStep = apFactor * EffectValue;
 
 			amt = (Owner.Armor + EffectValue - 1) / EffectValue;
 			if (amt > 0)

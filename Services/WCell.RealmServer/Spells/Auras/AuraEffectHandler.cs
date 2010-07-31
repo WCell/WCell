@@ -122,6 +122,14 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoRemove(bool cancelled)
+		{
+			Remove(cancelled);
+		}
+
+		/// <summary>
 		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
 		protected virtual void Apply()
@@ -146,8 +154,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Triggers a proc on this EffectHandler with the given target.
 		/// </summary>
-		/// <param name="target"></param>
-		public virtual void OnProc(Unit target, IUnitAction action)
+		/// <param name="triggerer"></param>
+		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}
 	}

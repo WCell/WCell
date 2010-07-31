@@ -85,6 +85,17 @@ namespace WCell.RealmServer.Misc
 				aaction.Blocked > 0;
 		};
 
+		public static ProcValidator DodgeValidator = (target, action) =>
+		{
+			var aaction = action as DamageAction;
+			if (aaction == null)
+			{
+				return false;
+			}
+
+			return aaction.VictimState == VictimState.Dodge;
+		};
+
 		public static ProcValidator StunValidator = (target, action) =>
 		{
 			var aaction = action as DamageAction;

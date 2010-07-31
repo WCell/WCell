@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ProcTriggerDamageHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
 
@@ -34,9 +34,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			//}
 			//else
 			{
-				if (Owner.MayAttack(target))
+				if (Owner.MayAttack(triggerer))
 				{
-					Owner.DoSpellDamage(target, m_spellEffect, val);
+					Owner.DoSpellDamage(triggerer, m_spellEffect, val);
 				}
 			}
 		}

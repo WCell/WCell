@@ -211,6 +211,7 @@
     <Compile Include="Instances\VaultOfArchavon.cs" />
     <Compile Include="Instances\VioletHold.cs" />
     <Compile Include="Items\PlayerAbilityItemFixes.cs" />
+    <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />
     <Compile Include="Instances\AhnQirajTemple.cs" />
@@ -254,6 +255,9 @@
     <Compile Include="Instances\ZulAman.cs" />
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightFrostFixes.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightBloodFixes.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightUnholyFixes.cs" />
     <Compile Include="Spells\Druid\DruidBalanceFixes.cs" />
     <Compile Include="Spells\Druid\DruidFeralCombatFixes.cs" />
     <Compile Include="Spells\Druid\DruidRestorationFixes.cs" />

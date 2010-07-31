@@ -6,12 +6,38 @@ using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras
 {
 	public class PlayerAuraCollection : AuraCollection
 	{
+		/// <summary>
+		/// Amount of currently added modifiers that require charges.
+		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
+		/// </summary>
+		public int ModifiersWithCharges
+		{
+			get;
+			protected internal set;
+		}
+
+		/// <summary>
+		/// Flat modifiers of spells
+		/// </summary>
+		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
+
+		/// <summary>
+		/// Percent modifiers of spells
+		/// </summary>
+		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
+
+		/// <summary>
+		/// Mask of spells that are allowed to crit hit, although they are not allowed to, by default
+		/// </summary>
+		internal readonly uint[] CriticalStrikeEnabledMask = new uint[SpellConstants.SpellClassMaskSize];
+
 		/// <summary>
 		/// Set of Auras that are only applied when certain items are equipped
 		/// </summary>
@@ -25,6 +51,165 @@ namespace WCell.RealmServer.Spells.Auras
 		public PlayerAuraCollection(Character owner)
 			: base(owner)
 		{
+		}
+		#region Enhancers
+
+		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+		}
+
+		private void OnModifierChange(AddModifierEffectHandler modifier)
+		{
+			foreach (var aura in Owner.Auras)
+			{
+				if (aura.IsActivated && !aura.Spell.IsEnhancer && modifier.SpellEffect.MatchesSpell(aura.Spell))
+				{
+					// activated, passive Aura, affected by this modifier -> Needs to re-apply
+					aura.ReApplyNonPeriodicEffects();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
+		/// </summary>
+		public override int GetModifiedInt(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
+		}
+
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public override int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
+		/// </summary>
+		public override float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (value + flatMod) * (1 + (percentMod / 100f));
+		}
+
+		/// <summary>
+		/// Returns the percent modifier (through certain talents) of the given type for the given spell
+		/// </summary>
+		public int GetModifierPercent(SpellModifierType type, Spell spell)
+		{
+			var amount = 0;
+			for (var i = 0; i < SpellModifiersPct.Count; i++)
+			{
+				var modifier = SpellModifiersPct[i];
+				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
+					modifier.SpellEffect.MatchesSpell(spell))
+				{
+					amount += modifier.SpellEffect.ValueMin;
+				}
+			}
+			return amount;
+		}
+
+		/// <summary>
+		/// Returns the flat modifier (through certain talents) of the given type for the given spell
+		/// </summary>
+		public int GetModifierFlat(SpellModifierType type, Spell spell)
+		{
+			var amount = 0;
+			for (var i = 0; i < SpellModifiersFlat.Count; i++)
+			{
+				var modifier = SpellModifiersFlat[i];
+				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
+					modifier.SpellEffect.MatchesSpell(spell))
+				{
+					amount += modifier.SpellEffect.ValueMin;
+				}
+			}
+			return amount;
+		}
+		#endregion
+
+		#region OnCasted
+		public override void OnCasted(SpellCast cast)
+		{
+			var spell = cast.Spell;
+			if (ModifiersWithCharges > 0)
+			{
+				var toRemove = new List<Aura>(3);
+				for (var i = 0; i < SpellModifiersFlat.Count; i++)
+				{
+					var modifier = SpellModifiersFlat[i];
+					if (modifier.SpellEffect.MatchesSpell(spell))
+					{
+						if (modifier.Charges > 0)
+						{
+							modifier.Charges--;
+							if (modifier.Charges < 1)
+							{
+								toRemove.Add(modifier.Aura);
+							}
+						}
+					}
+				}
+				for (var i = 0; i < SpellModifiersPct.Count; i++)
+				{
+					var modifier = SpellModifiersPct[i];
+					if (modifier.SpellEffect.MatchesSpell(spell))
+					{
+						if (modifier.Charges > 0)
+						{
+							modifier.Charges--;
+							if (modifier.Charges < 1)
+							{
+								toRemove.Add(modifier.Aura);
+							}
+						}
+					}
+				}
+
+				foreach (var aura in toRemove)
+				{
+					aura.Remove(false);
+				}
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Returns wehther the given spell is allowed to crit, if it was not
+		/// allowed to crit by default. (Due to Talents that override Spell behavior)
+		/// </summary>
+		public bool CanSpellCrit(Spell spell)
+		{
+			return spell.MatchesMask(CriticalStrikeEnabledMask);
 		}
 
 		#region Overrides

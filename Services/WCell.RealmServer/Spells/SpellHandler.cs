@@ -95,7 +95,7 @@ namespace WCell.RealmServer.Spells
 		public static readonly Dictionary<uint, Dictionary<uint, Spell>> NPCSpells =
 			new Dictionary<uint, Dictionary<uint, Spell>>(1000);
 
-		public static readonly ShapeshiftEntry[] ShapeshiftEntries = new ShapeshiftEntry[(int) (ShapeshiftForm.End + 10)];
+		public static readonly ShapeshiftEntry[] ShapeshiftEntries = new ShapeshiftEntry[(int)(ShapeshiftForm.End + 10)];
 
 		/// <summary>
 		/// Returns the spell with the given spellId or null if it doesn't exist
@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Spells
 			{
 				Id = id,
 				SpellId = (SpellId)id,
-				Name = "[" +RealmLocalizer.Instance.Translate(RealmLangKey.Custom).ToUpper() + "] " + name,
+				Name = "[" + RealmLocalizer.Instance.Translate(RealmLangKey.Custom).ToUpper() + "] " + name,
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};
@@ -501,6 +501,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// useless effects
+			UnsetHandler(SpellEffectType.None);
 			UnsetHandler(SpellEffectType.Dodge);
 			UnsetHandler(SpellEffectType.Defense);
 			UnsetHandler(SpellEffectType.SpellDefense);
@@ -582,6 +583,13 @@ namespace WCell.RealmServer.Spells
 				return SummonEntries[SummonType.SummonPet];
 			}
 			return entry;
+		}
+		#endregion
+
+		#region Shapeshifting
+		public static ShapeshiftEntry GetShapeshiftEntry(ShapeshiftForm form)
+		{
+			return ShapeshiftEntries[(int)form];
 		}
 		#endregion
 

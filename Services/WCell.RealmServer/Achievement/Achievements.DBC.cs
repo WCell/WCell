@@ -20,11 +20,11 @@ namespace WCell.RealmServer.Achievement
             achievementEntry.Name = new string[16];
             for (int i = 0; i < 16; i++)
                 achievementEntry.Name[i] = GetString(rawData, i + 4);
-            achievementEntry.CategoryId = GetUInt32(rawData, 38);
+            achievementEntry.CategoryId = (AchievementCategoryEntryId)GetUInt32(rawData, 38);
             achievementEntry.Points = GetUInt32(rawData, 39);
             achievementEntry.Flags = GetUInt32(rawData, 41);
             achievementEntry.Count = GetUInt32(rawData, 60);
-            achievementEntry.RefAchievement = GetUInt32(rawData, 61);
+			achievementEntry.RefAchievement = (AchievementEntryId)GetUInt32(rawData, 61);
 
             AchievementMgr.AchievementEntries[achievementEntry.ID] = achievementEntry;
         }
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Achievement
 			var entry = AchievementMgr.GetCriteriaEntryCreator(criteria)();
 
 			// TODO: Finish
-			Copy(rawData, 1, 2, entry);
+			//Copy(rawData, 1, 2, entry);
 			//AchievementMgr.AddCriteriaEntry(entry);
         }
     }

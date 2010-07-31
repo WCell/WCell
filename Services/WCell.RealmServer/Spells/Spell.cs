@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Spells
 
 		#region Auto generated Spell Fields
 		/// <summary>
-		/// whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
+		/// Whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
 		/// </summary>
 		public bool IsOnNextStrike;
 
@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsFinishingMove;
 
-		public bool ReqDeadTarget;
+		public bool RequiresDeadTarget;
 
 		/// <summary>
 		/// whether this is a channel-spell
@@ -323,7 +323,15 @@ namespace WCell.RealmServer.Spells
 
 		public bool RequiresCasterOutOfCombat;
 
-		public bool CostsMana;
+		/// <summary>
+		/// Whether this spell costs default power (does not include Runes)
+		/// </summary>
+		public bool CostsPower;
+
+		/// <summary>
+		/// Whether this Spell has any Rune costs
+		/// </summary>
+		public bool CostsRunes;
 
 		/// <summary>
 		/// Auras with modifier effects require existing Auras to be re-evaluated
@@ -512,14 +520,14 @@ namespace WCell.RealmServer.Spells
 			init2 = true;
 
 			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
-			              // don't use Enum.HasFlag!
-			              ChannelInterruptFlags > 0;
+				// don't use Enum.HasFlag!
+						  ChannelInterruptFlags > 0;
 
 			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
-			            // tracking spells are also passive		     
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+				// tracking spells are also passive		     
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
+						HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
 
 			foreach (var effect in Effects)
 			{
@@ -554,10 +562,10 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
-				// don't use Enum.HasFlag!
+			// don't use Enum.HasFlag!
 
 			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-			            AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+						AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
@@ -611,7 +619,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+									(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -660,10 +668,12 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			ReqDeadTarget =
+			RequiresDeadTarget =
 				TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
-			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
+			CostsPower = PowerCost > 0 || PowerCostPercentage > 0;
+
+			CostsRunes = RuneCostEntry != null && RuneCostEntry.CostsRunes;
 
 			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
@@ -674,15 +684,15 @@ namespace WCell.RealmServer.Spells
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.Attack ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.EnvironmentalDamage ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.InstantKill ||
-			                                                                            effect.EffectType ==
-			                                                                            SpellEffectType.SchoolDamage ||
-			                                                                            effect.IsStrikeEffect);
+																						effect.EffectType ==
+																						SpellEffectType.Attack ||
+																						effect.EffectType ==
+																						SpellEffectType.EnvironmentalDamage ||
+																						effect.EffectType ==
+																						SpellEffectType.InstantKill ||
+																						effect.EffectType ==
+																						SpellEffectType.SchoolDamage ||
+																						effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
@@ -692,23 +702,32 @@ namespace WCell.RealmServer.Spells
 			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
 
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.EffectType == SpellEffectType.Skill)
-			              		{
-			              			SkillId = (SkillId) effect.MiscValue;
-			              		}
-			              	});
+			{
+				if (effect.EffectType == SpellEffectType.Skill)
+				{
+					SkillId = (SkillId)effect.MiscValue;
+				}
+			});
 
-			Schools = Utility.GetSetIndices<DamageSchool>((uint) SchoolMask);
+			// ResurrectFlat usually has no target type set
+			ForeachEffect(effect =>
+			{
+				if (effect.ImplicitTargetA == ImplicitTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
+				{
+					effect.ImplicitTargetA = ImplicitTargetType.SingleFriend;
+				}
+			});
+
+			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
 			if (Schools.Length == 0)
 			{
-				Schools = new[] {DamageSchool.Physical};
+				Schools = new[] { DamageSchool.Physical };
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+										(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+										 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+										 AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -717,23 +736,23 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-			          Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+					  Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasModifierEffects ||
-			                     HasEffectWith(
-			                     	effect =>
-			                     	effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+								 HasEffectWith(
+									effect =>
+									effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			// cannot taunt players
 			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
 
 			ForeachEffect(effect =>
-			              	{
-			              		for (var i = 0; i < 3; i++)
-			              		{
-			              			AllAffectingMasks[i] |= effect.AffectMask[i];
-			              		}
-			              	});
+							{
+								for (var i = 0; i < 3; i++)
+								{
+									AllAffectingMasks[i] |= effect.AffectMask[i];
+								}
+							});
 
 			if (Range.MaxDist == 0)
 			{
@@ -754,22 +773,22 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var skillEffect = GetFirstEffectWith(effect =>
-			                                     effect.EffectType == SpellEffectType.SkillStep ||
-			                                     effect.EffectType == SpellEffectType.Skill);
+												 effect.EffectType == SpellEffectType.SkillStep ||
+												 effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
-				SkillTier = (SkillTierId) skillEffect.BasePoints;
+				SkillTier = (SkillTierId)skillEffect.BasePoints;
 			}
 
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 
 			ForeachEffect(effect =>
-			              	{
-			              		if (effect.SpellEffectHandlerCreator != null)
-			              		{
-			              			EffectHandlerCount++;
-			              		}
-			              	});
+							{
+								if (effect.SpellEffectHandlerCreator != null)
+								{
+									EffectHandlerCount++;
+								}
+							});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
 
 
@@ -1038,14 +1057,18 @@ namespace WCell.RealmServer.Spells
 			Effects = new SpellEffect[0];
 		}
 
-		public void RemoveEffect(AuraType type)
+		public SpellEffect RemoveEffect(AuraType type)
 		{
-			RemoveEffect(GetEffect(type));
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
 		}
 
-		public void RemoveEffect(SpellEffectType type)
+		public SpellEffect RemoveEffect(SpellEffectType type)
 		{
-			RemoveEffect(GetEffect(type));
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
 		}
 
 		public void RemoveEffect(SpellEffect toRemove)
@@ -1149,10 +1172,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			var chr = caster.Object as Character;
-			if (chr != null)
+			var unit = caster.UnitMaster;
+			if (unit != null)
 			{
-				millis = chr.PlayerSpells.GetModifiedInt(SpellModifierType.Duration, this, millis);
+				millis = unit.Auras.GetModifiedInt(SpellModifierType.Duration, this, millis);
 			}
 			return millis;
 		}
@@ -1547,9 +1570,19 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "SchoolMask: " + SchoolMask);
 			}
 
-			if (RuneCostId != 0)
+			if (RuneCostEntry != null)
 			{
-				writer.WriteLine(indent + "RuneCostId: " + RuneCostId);
+				writer.WriteLine(indent + "RuneCostId: " + RuneCostEntry.Id);
+				var ind = indent + "\t";
+				var rcosts = new List<String>(3);
+				if (RuneCostEntry.BloodCost != 0)
+					rcosts.Add(string.Format("Blood: {0}", RuneCostEntry.BloodCost));
+				if (RuneCostEntry.FrostCost != 0)
+					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.FrostCost));
+				if (RuneCostEntry.UnholyCost != 0)
+					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.UnholyCost));
+				writer.WriteLine(ind + "RuneCosts - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(" "));
+				writer.WriteLine(ind + "RunePowerGain: {0}", RuneCostEntry.RunicPowerGain);
 			}
 			if (MissileId != 0)
 			{

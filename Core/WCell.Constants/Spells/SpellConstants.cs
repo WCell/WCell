@@ -7,6 +7,7 @@ namespace WCell.Constants.Spells
 {
 	public static class SpellConstants
 	{
+		public const int SpellClassMaskSize = 3;
 
 		#region Mechanic Influences
 

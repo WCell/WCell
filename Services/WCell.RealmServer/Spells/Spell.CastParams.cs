@@ -32,9 +32,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Power Type			
-			if (CostsMana && PowerType != caster.PowerType && PowerType != PowerType.Health)
+			if (CostsPower && 
+				PowerType != caster.PowerType && 
+				PowerType != PowerType.Health &&
+				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
 			{
-				return SpellFailedReason.NoPower;
+				return SpellFailedReason.OnlyShapeshift;
 			}
 
 			// Stealth Required			
@@ -410,7 +413,7 @@ namespace WCell.RealmServer.Spells
 
 
 			// Corpse target
-			if (ReqDeadTarget)
+			if (RequiresDeadTarget)
 			{
 				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
@@ -540,9 +543,9 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 			}
-			else if (unit is Character)
+			else
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

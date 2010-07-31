@@ -229,6 +229,7 @@
     <Compile Include="Spells\Extensions.cs" />
     <Compile Include="Spells\ProcTriggerFlags.cs" />
     <Compile Include="Spells\Range.cs" />
+    <Compile Include="Spells\RuneType.cs" />
     <Compile Include="Spells\SpellConstants.cs" />
     <Compile Include="Spells\SpellEffectType.cs" />
     <Compile Include="Spells\SpellModifierType.cs" />

@@ -1,2 +1,2 @@
-- fixed Starfall
-- fixed compilation (woopsi)
+- fixed RuneCostEntry reading
+- enabled config entries to be anything that is IXmlSerializable

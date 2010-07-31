@@ -703,13 +703,13 @@ namespace WCell.RealmServer.Spells.Extensions
 					// add target and look for more if we have a chain effect
 					targets.Add(selected);
 					var chainCount = effect.ChainTargets;
-					if (caster is Character)
+					if (caster != null)
 					{
-						chainCount = ((Character)caster).PlayerSpells.GetModifiedInt(SpellModifierType.ChainTargets, spell, chainCount);
+						chainCount = caster.Auras.GetModifiedInt(SpellModifierType.ChainTargets, spell, chainCount);
 					}
 					if (chainCount > 1 && selected is Unit)
 					{
-						targets.FindChain((Unit)selected, filter, true, chainCount);
+						targets.FindChain((Unit) selected, filter, true, chainCount);
 					}
 				}
 			}

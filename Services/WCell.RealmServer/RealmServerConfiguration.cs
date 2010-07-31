@@ -84,10 +84,7 @@ namespace WCell.RealmServer
 
 		public static string LangDir
 		{
-			get
-			{
-				return GetContentPath(LangDirName) + "/";
-			}
+			get { return GetContentPath(LangDirName) + "/"; }
 		}
 
 		private static ClientLocale defaultLocale = ClientLocale.English;
@@ -426,7 +423,7 @@ namespace WCell.RealmServer
 		{
 			get
 			{
-			    var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
+				var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
 				if (!Directory.Exists(dir))
 				{
 					var msg = String.Format(WCell_RealmServer.NotFound, "DBC Directory", new DirectoryInfo(dir).FullName + " (Please export the DBC files of the correct version, using the MPQTool)");

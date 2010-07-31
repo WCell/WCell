@@ -846,11 +846,8 @@ namespace WCell.RealmServer.Spells
 				// calc exact cast delay
 				if (CasterUnit != null)
 				{
-					m_castDelay = (CasterUnit.CastSpeedFactor * m_castDelay).RoundInt();
-					if (CasterChar != null)
-					{
-						m_castDelay = CasterChar.PlayerSpells.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
-					}
+					m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
+					m_castDelay = CasterChar.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
 				}
 			}
 
@@ -1247,18 +1244,16 @@ namespace WCell.RealmServer.Spells
 		{
 			if (CasterObject is Unit)
 			{
-				var pct = ((Unit)CasterObject).GetSpellInterruptProt(m_spell);
+				var pct = ((Unit) CasterObject).GetSpellInterruptProt(m_spell);
 				if (pct >= 100)
 				{
 					return 0;
 				}
 
-				time -= (pct * time) / 100; // reduce by protection %
-				if (CasterObject is Character)
-				{
-					// pushback reduction is a positive value
-					time = ((Character)CasterObject).PlayerSpells.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
-				}
+				time -= (pct*time)/100; // reduce by protection %
+
+				// pushback reduction is a positive value, but we want it to be reduced, so we need to use GetModifiedIntNegative
+				time = ((Character) CasterObject).Auras.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);
 			}
 			return Math.Max(0, time);
 		}
@@ -1410,7 +1405,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// 
 		/// </summary>
-		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Region map, WorldObject triggerOwner, uint phase, Item usedItem = null, IUnitAction action = null)
+		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Region map, Unit triggerOwner, uint phase,
+			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, map, phase);
@@ -1422,12 +1418,20 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// 
 		/// </summary>
-		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, WorldObject triggerOwner, WorldObject target, Item usedItem = null, IUnitAction action = null)
+		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Unit triggerOwner, WorldObject target, 
+			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, target.Region, target.Phase);
 			cast.Selected = target;
-			cast.TargetLoc = target.Position;
+			if (usedChannel != null && usedChannel.Cast.CasterUnit == triggerOwner)
+			{
+				cast.TargetLoc = triggerOwner.ChannelObject.Position;
+			}
+			else
+			{
+				cast.TargetLoc = target.Position;
+			}
 			cast.UsedItem = cast.CasterItem = usedItem;
 
 			cast.ValidateAndTrigger(spell, triggerOwner, target, action);
@@ -1444,14 +1448,14 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="spell"></param>
 		/// <param name="target"></param>
-		public void ValidateAndTriggerNew(Spell spell, WorldObject triggerOwner, WorldObject target, IUnitAction action = null)
+		public void ValidateAndTriggerNew(Spell spell, Unit triggerOwner, WorldObject target, IUnitAction action = null)
 		{
 			var passiveCast = InheritSpellCast();
 
 			passiveCast.ValidateAndTrigger(spell, triggerOwner, target, action);
 		}
 
-		public void ValidateAndTrigger(Spell spell, WorldObject triggerOwner, IUnitAction action = null)
+		public void ValidateAndTrigger(Spell spell, Unit triggerOwner, IUnitAction action = null)
 		{
 			if (action != null)
 			{
@@ -1462,7 +1466,7 @@ namespace WCell.RealmServer.Spells
 			ValidateAndTrigger(spell, triggerOwner, null, action);
 		}
 
-		public void ValidateAndTrigger(Spell spell, WorldObject triggerOwner, WorldObject target, IUnitAction action = null)
+		public void ValidateAndTrigger(Spell spell, Unit triggerOwner, WorldObject target, IUnitAction action = null)
 		{
 			WorldObject[] targets;
 

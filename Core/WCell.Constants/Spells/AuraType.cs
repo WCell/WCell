@@ -142,7 +142,7 @@ namespace WCell.Constants.Spells
 		SpellMagnet = 96,
 		ManaShield = 97,
 		ModSkillTalent = 98,
-		ModAttackPower = 99,
+		ModMeleeAttackPower = 99,
 		/// <summary>
 		/// Shows beneficial spells to all, like Detect Magic
 		/// </summary>
@@ -345,7 +345,7 @@ namespace WCell.Constants.Spells
 		/// Seems to be the same as AuraModPartySpeedMounted (increases mount speed)
 		/// </summary>
 		Aura_211 = 211,
-		ModRangedAttackPowerByPercentOfIntellect = 212,
+		ModRangedAttackPowerByPercentOfStat = 212,
 		ModRageFromDamageDealtPercent = 213,
 		Aura_214 = 214,
 		/// <summary>
@@ -483,7 +483,7 @@ namespace WCell.Constants.Spells
 		Unused_265 = 265,
 		Unused_266 = 266,
 		Aura_267 = 267,
-		Aura_268 = 268,
+		ModMeleeAttackPowerByPercentOfStat = 268,
 		Aura_269 = 269,
 		Aura_270 = 270,
 		/// <summary>
@@ -514,7 +514,10 @@ namespace WCell.Constants.Spells
 		/// Always comes together with a Dummy effect
 		/// </summary>
 		ModAPByArmor = 285,
-		Aura_286 = 286,
+		/// <summary>
+		/// Enables critical strikes for the spells affected by AffectMask
+		/// </summary>
+		EnableCritical = 286,
 		/// <summary>
 		/// "chance to deflect spells cast by targets in front of you"
 		/// </summary>

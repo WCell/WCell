@@ -265,7 +265,7 @@ namespace WCell.RealmServer.Spells
 		public ClassId ClassId;
 
 		[Persistent(3)]
-		public uint[] SpellClassMask = new uint[3];
+		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
 		public uint MaxTargets;                      //199 
 		public SpellDefenseType DefenseType;
 		public SpellPreventionType PreventionType;
@@ -300,7 +300,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellRuneCost.dbc
 		/// </summary>
-		public uint RuneCostId;
+		public RuneCostEntry RuneCostEntry;
+
 		/// <summary>
 		/// SpellMissile.dbc
 		/// </summary>

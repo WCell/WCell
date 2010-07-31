@@ -28,10 +28,6 @@ namespace WCell.RealmServer.Battlegrounds
 		private BattlegroundStats _stats;
 		#endregion
 
-		/// <summary>
-		/// Contains all battlegrounds-related information about a character.
-		/// </summary>
-		/// <param name="chr"></param>
 		public BattlegroundInfo(Character chr)
 		{
 			_chr = chr;
@@ -171,7 +167,7 @@ namespace WCell.RealmServer.Battlegrounds
 		#endregion
 
 		/// <summary>
-		/// Returns the character to their original location prior to entering the battlegrounds.
+		/// Returns the character to their original location prior to entering the Battleground.
 		/// </summary>
 		public void TeleportBack()
 		{
