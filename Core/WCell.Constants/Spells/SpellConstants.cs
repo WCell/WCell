@@ -125,10 +125,6 @@ namespace WCell.Constants.Spells
 
 		static void InitRunes()
 		{
-			for (var i = 0; i < (int)RuneType.End; i++)
-			{
-				IndicesPerType[i] = new uint[MaxRuneCountPerType];
-			}
 		}
 	}
 }

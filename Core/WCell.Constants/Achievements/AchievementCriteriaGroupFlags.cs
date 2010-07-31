@@ -5,10 +5,8 @@ using System.Text;
 
 namespace WCell.Constants.Achievements
 {
-	public enum AchievementCategoryEntryId : uint
+	public enum AchievementCriteriaGroupFlags : uint 
 	{
-		None = 0,
-
-		End
+		AchievementCriteriaGroupNotInGroup = 2;
 	}
 }

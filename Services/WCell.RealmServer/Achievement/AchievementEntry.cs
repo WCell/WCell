@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Achievement
         //public uint NameFlags;                                    // 20
         //public string Description[16];                                // 21-36
         //public uint DescFlags;                                    // 37
-        public AchievementCategoryEntryId CategoryId;                                   // 38
+        public AchievementCategoryEntry Category;                                   // 38
         public uint Points;                                       // 39 reward points
         //public uint OrderInCategory;                               // 40
         public uint Flags;                                        // 41
@@ -26,5 +26,10 @@ namespace WCell.RealmServer.Achievement
         //public string TitleRewardFlags;                             // 59
         public uint Count;                                           // 60 - need this count of completed criterias (own or referenced achievement criterias)
 		public AchievementEntryId RefAchievement;                                  // 61 - referenced achievement (counting of all completed criterias)
+
+		/// <summary>
+		/// List of criteria that needs to be satisfied to achieve this achievement
+		/// </summary>
+    	public readonly List<AchievementCriteriaEntry> Criteria = new List<AchievementCriteriaEntry>();
     }
 }

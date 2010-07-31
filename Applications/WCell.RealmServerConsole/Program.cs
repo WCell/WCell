@@ -14,9 +14,11 @@
  *
  *************************************************************************/
 
+using System.Runtime.InteropServices;
 using NLog;
 using System.Runtime;
 using System.Threading;
+using WCell.Core.DBC;
 using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole
@@ -26,7 +28,7 @@ namespace WCell.RealmServerConsole
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
         private static void Main(string[] args)
-		{
+		{	
         	if (GCSettings.IsServerGC)
         	{
         		GCSettings.LatencyMode = GCLatencyMode.Batch;
@@ -41,6 +43,6 @@ namespace WCell.RealmServerConsole
 			ContentHandler.ForceDataPresence = true;
         	RealmServer.Program.Start();
         	RealmServerConsole.Run();
-        }
+		}
     }
 }

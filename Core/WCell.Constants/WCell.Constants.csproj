@@ -139,6 +139,7 @@
     </Compile>
     <Compile Include="Achievements\AchievementCategoryEntryId.cs" />
     <Compile Include="Achievements\AchievementCriteria.cs" />
+    <Compile Include="Achievements\AchievementCriteriaId.cs" />
     <Compile Include="Achievements\AchievementEntryId.cs" />
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="Battlegrounds.cs" />

@@ -18,19 +18,6 @@ namespace WCell.RealmServer.Achievement
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
-
-		/// <summary>
-		/// Character will not have Ids below this threshold. 
-		/// You can use those unused ids for self-implemented mechanisms, eg to fake participants in chat-channels etc.
-		/// </summary>
-		/// <remarks>
-		/// Do not change this value once the first Character exists.
-		/// If you want to change this value to reserve more (or less) ids for other use, make sure
-		/// that none of the ids below this threshold are in the DB.
-		/// </remarks>
-
-		protected static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(AchievementRecord), "RecordId");
 
 		/// <summary>
 		/// Creates a new AchievementRecord row in the database with the given information.
@@ -46,7 +33,6 @@ namespace WCell.RealmServer.Achievement
 			{
 				record = new AchievementRecord
 				{
-					RecordId = _idGenerator.Next(),
 					_achievementEntryId = (int)achievementEntryId,
 					_characterGuid = (int)chr.EntityId.Low,
 					CompleteDate = DateTime.Now,
@@ -55,7 +41,7 @@ namespace WCell.RealmServer.Achievement
 			}
 			catch (Exception ex)
 			{
-				s_log.Error("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
+				s_log.ErrorException("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
 				record = null;
 			}
 

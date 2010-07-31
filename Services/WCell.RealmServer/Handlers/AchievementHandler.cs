@@ -50,5 +50,22 @@ namespace WCell.RealmServer.Handlers
 				chr.Client.Send(packet);
 			}
 		}
+
+		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 30))
+			{
+				packet.WriteUInt((uint)achievementCriteriaId);
+				packet.WriteByte(1);
+				packet.WriteByte(1); //this is some ID or something maybe merge with previous value ? Maybe it is value for criteria ?
+				chr.EntityId.WritePacked(packet);
+				packet.WriteUInt(0);
+				packet.WriteDateTime(DateTime.Now);
+				packet.WriteUInt(0); // Duration
+				packet.WriteUInt(0); // Duration left
+
+				chr.Client.Send(packet);
+			}
+		}
 	}
 }
