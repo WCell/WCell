@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WCell.Constants.Achievements
 {
-	public enum AchievementCategoryEntryId : uint
+	public enum AchievementCriteriaId : uint
 	{
 		None = 0,
 

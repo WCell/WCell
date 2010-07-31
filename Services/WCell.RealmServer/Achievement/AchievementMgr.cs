@@ -7,6 +7,7 @@ using WCell.Constants.Achievements;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -19,6 +20,8 @@ namespace WCell.RealmServer.Achievement
 	{
 		private static readonly AchievementCriteriaEntryCreator[] AchievementEntryCreators =
 			new AchievementCriteriaEntryCreator[(int)AchievementCriteriaType.End];
+
+		public static AchievementCriteriaEntry[] CriteriaEntries = new AchievementCriteriaEntry[13000];
 
 		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
 
@@ -88,6 +91,26 @@ namespace WCell.RealmServer.Achievement
 		public static AchievementCategoryEntry Get(AchievementCategoryEntryId achievementCategoryEntryId)
 		{
 			return AchievementCategoryEntries[achievementCategoryEntryId];
+		}
+
+		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1)
+		{
+			UpdateAchievementCriteria(criteria, value1, 0, null);
+		}
+
+		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, Unit unit)
+		{
+			UpdateAchievementCriteria(criteria, value1, 0, unit);
+			
+		}
+		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, uint value2)
+		{
+			UpdateAchievementCriteria(criteria, value1, value2, null);
+		}
+
+		public static void UpdateAchievementCriteria(AchievementCriteriaType criteria, uint value1, uint value2, Unit unit)
+		{
+			
 		}
 	}
 }
