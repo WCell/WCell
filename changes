@@ -1,3 +1,2 @@
-- fixed DamagePctAmplifierHandler
-- changed it, so pets and minions also do spell modifier checks
-- started work on rune system
+- fixed RuneCostEntry reading
+- enabled config entries to be anything that is IXmlSerializable

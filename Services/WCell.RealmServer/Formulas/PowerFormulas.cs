@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Formulas
 
 		static PowerFormulas()
 		{
-			// TODO: Focus, RunicPower, Runes
+			// TODO: Focus, Happiness
 			SetPowerRegenCalculator(PowerType.Mana, CalculateManaRegen);
 			SetPowerRegenCalculator(PowerType.Rage, CalculateRageRegen);
 			SetPowerRegenCalculator(PowerType.Energy, CalculateEnergyRegen);
@@ -87,12 +87,12 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalculateEnergyRegen(Unit unit)
 		{
-			return 20;
+			return 50;
 		}
 
 		public static int CalculateRunicPowerRegen(Unit unit)
 		{
-			return 4 + (unit.Spirit / 5);
+			return -50;
 		}
 
 		private static int CalculateRuneRegen(Unit unit)
