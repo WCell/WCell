@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Achievement
 
 		public void Load()
 		{
-			foreach (var mCompletedAchievement in AchievementRecord.Load(Owner.EntityId.Low))
+			foreach (var mCompletedAchievement in AchievementRecord.Load((int)Owner.EntityId.Low))
 			{
 				var achievement = AchievementMgr.Get(mCompletedAchievement.AchievementEntryId);
 				if(achievement!= null)

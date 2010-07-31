@@ -237,6 +237,7 @@ namespace WCell.RealmServer.Entities
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
+					m_achievements.Load();
 					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));

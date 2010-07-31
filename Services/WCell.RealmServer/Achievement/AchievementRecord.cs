@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Achievement
 				         	{
 				         		RecordId = _idGenerator.Next(),
 				         		_achievementEntryId = (int) achievementEntryId,
-				         		_characterGuid = (int) chr.EntityId.Low,
+				         		_characterGuid = (int)chr.EntityId.Low,
 				         		CompleteDate = DateTime.Now,
 				         		New = true
 							};
@@ -89,9 +89,9 @@ namespace WCell.RealmServer.Achievement
 			set { _achievementEntryId = (int)value; }
 		}
 
-		public static AchievementRecord[] Load(long chrRecordId)
+		public static AchievementRecord[] Load(int chrId)
 		{
-			return FindAllByProperty("Guid", chrRecordId);
+			return FindAll(Restrictions.Eq("Guid", chrId));
 		}
 	}
 }
