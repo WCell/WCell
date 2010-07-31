@@ -39,6 +39,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
 
+		/// <summary>
+		/// The runes of this Player (if any)
+		/// </summary>
+		private RuneSet m_runes;
+
 		public PlayerSpellCollection(Character owner)
 			: base(owner)
 		{

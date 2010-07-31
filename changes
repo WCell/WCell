@@ -1,2 +1,2 @@
-- fixed RuneCostEntry reading
-- enabled config entries to be anything that is IXmlSerializable
+- more work on runes
+- fixed error reporting when saving Characters

@@ -86,5 +86,20 @@ namespace WCell.Constants.Spells
 			return NegativeMechanics[(int)mech];
 		}
 		#endregion
+
+		#region Runes
+		public const int RuneCount = 6;
+
+
+		public static readonly RuneType[] RuneSlots = new []
+		{
+			RuneType.Blood,
+			RuneType.Blood,
+			RuneType.Unholy,
+			RuneType.Unholy,
+			RuneType.Frost,
+			RuneType.Frost,
+		};
+		#endregion
 	}
 }
