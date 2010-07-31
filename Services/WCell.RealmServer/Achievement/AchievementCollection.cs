@@ -6,6 +6,7 @@ using System.Text;
 using NLog;
 using WCell.Constants.Achievements;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -41,7 +42,7 @@ namespace WCell.RealmServer.Achievement
         }
 
         /// <summary>
-        /// Returns the amount of achievements in the list.
+        /// Returns the amount of completed achievements.
         /// </summary>
         public int AchievementsCount
         {
@@ -72,9 +73,26 @@ namespace WCell.RealmServer.Achievement
 
         #region Add / Set
 
-		public void Add(AchievementRecord achievementEntryId)
+		/// <summary>
+		/// Adds a new achievement to the list, from the database.
+		/// </summary>
+		/// <param name="achievementRecord"></param>
+		public void Add(AchievementRecord achievementRecord)
 		{
-			m_completedAchievements.Add(achievementEntryId.AchievementEntryId, achievementEntryId);
+			m_completedAchievements.Add(achievementRecord.AchievementEntryId, achievementRecord);
+			
+			// No need bercause here we load achievements
+			//AchievementHandler.SendAchievementEarned(achievementRecord.AchievementEntryId,m_owner);
+		}
+
+		/// <summary>
+		/// Adds a new achievement to the list, when achievement is earned.
+		/// </summary>
+		/// <param name="achievementEntry"></param>
+		public void Add(AchievementEntryId achievementEntryId)
+		{
+			m_completedAchievements.Add(achievementEntryId,AchievementRecord.CreateNewAchievementRecord(m_owner,(uint)achievementEntryId));
+			AchievementHandler.SendAchievementEarned(achievementEntryId,m_owner);
 		}
 
         #endregion

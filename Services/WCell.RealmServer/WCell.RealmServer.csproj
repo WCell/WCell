@@ -190,6 +190,7 @@
     <Compile Include="Achievement\AchievementRecord.cs" />
     <Compile Include="Achievement\AchievementProgressRecord.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
+    <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />

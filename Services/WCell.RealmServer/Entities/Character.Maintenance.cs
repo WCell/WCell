@@ -675,7 +675,7 @@ namespace WCell.RealmServer.Entities
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
 			// SMSG_EQUIPMENT_SET_LIST
-            // SMSG_ALL_ACHIEVEMENT_DATA SendAchievementData
+            AchievementHandler.SendAchievementData(this);
 			// SMSG_EXPLORATION_EXPERIENCE
 			CharacterHandler.SendTimeSpeed(this);
 			TalentHandler.SendTalentGroupList(this);
