@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using WCell.Core;
 using WCell.Core.DBC;
 
 namespace WCell.RealmServer.Misc
@@ -7,7 +8,7 @@ namespace WCell.RealmServer.Misc
 	{
 		public static Dictionary<int, string> ReadCategories()
 		{
-			var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile("Cfg_Categories.dbc"));
+			var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CFGCATEGORIES));
 			return reader.Entries;
 		}
 	}

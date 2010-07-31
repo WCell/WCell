@@ -227,7 +227,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(ProjectDir)\StormLib\StormLib.dll $(OutDir)</PostBuildEvent>
+    <PostBuildEvent>copy "$(ProjectDir)\StormLib\StormLib.dll" "$(OutDir)"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -75,9 +75,9 @@ namespace WCell.RealmServer.Global
 		private static int m_pauseThreadId;
 		private static bool m_saving;
 
-		internal static RegionInfo[] s_regionInfos = new RegionInfo[(int)MapId.End];
+		internal static RegionTemplate[] s_RegionTemplates = new RegionTemplate[(int)MapId.End];
 		internal static Region[] s_Regions = new Region[(int)MapId.End];
-		internal static ZoneInfo[] s_ZoneInfos = new ZoneInfo[(int)ZoneId.End];
+		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
 
 		internal static InstancedRegion[][] s_instances = new InstancedRegion[(int)MapId.End][];
 
@@ -90,17 +90,17 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets the collection of regions.
 		/// </summary>
-		public static RegionInfo[] RegionInfos
+		public static RegionTemplate[] RegionTemplates
 		{
-			get { return s_regionInfos; }
+			get { return s_RegionTemplates; }
 		}
 
 		/// <summary>
 		/// Gets the collection of zones.
 		/// </summary>
-		public static ZoneInfo[] ZoneInfos
+		public static ZoneTemplate[] ZoneTemplates
 		{
-			get { return s_ZoneInfos; }
+			get { return s_ZoneTemplates; }
 		}
 
 		/// <summary>
@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Global
 		[Initialization(InitializationPass.Third, "Initializing World")]
 		public static void InitializeWorld()
 		{
-			if (s_regionInfos[(uint)MapId.Kalimdor] == null)
+			if (s_RegionTemplates[(uint)MapId.Kalimdor] == null)
 			{
 				LoadMapData();
 				LoadZoneInfos();
@@ -283,10 +283,8 @@ namespace WCell.RealmServer.Global
 				LoadChatChannelsDBC();
 
 				TerrainMgr.InitTerrain();
-				LoadDefaultRegions();
 			}
 		}
-
 		#endregion
 
 		#region Save
@@ -373,17 +371,17 @@ namespace WCell.RealmServer.Global
 			Instance.WorldStates = new WorldStateCollection(Instance, Constants.World.WorldStates.GlobalStates);
 
 			new DBCReader<MapConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
-			new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile("MapDifficulty.dbc"));
+            new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPDIFFICULTY));
 
-			// add existing RegionInfo objects to mapper
-			var mapper = ContentHandler.GetMapper<RegionInfo>();
-			mapper.AddObjectsUInt(s_regionInfos);
+			// add existing RegionTemplate objects to mapper
+			var mapper = ContentHandler.GetMapper<RegionTemplate>();
+			mapper.AddObjectsUInt(s_RegionTemplates);
 
 			// Add additional data from DB
-			ContentHandler.Load<RegionInfo>();
+			ContentHandler.Load<RegionTemplate>();
 
 			// when only updating, it won't call FinalizeAfterLoad automatically:
-			foreach (var rgn in s_regionInfos)
+			foreach (var rgn in s_RegionTemplates)
 			{
 				if (rgn != null)
 				{
@@ -399,9 +397,9 @@ namespace WCell.RealmServer.Global
 			var regionBounds = RegionBoundaries.GetRegionBoundaries();
 			var zoneTileSets = ZoneBoundaries.GetZoneTileSets();
 
-			for (var i = 0; i < s_regionInfos.Length; i++)
+			for (var i = 0; i < s_RegionTemplates.Length; i++)
 			{
-				var regionInfo = s_regionInfos[i];
+				var regionInfo = s_RegionTemplates[i];
 				if (regionInfo != null)
 				{
 					if (regionBounds != null && regionBounds.Length > i)
@@ -419,30 +417,30 @@ namespace WCell.RealmServer.Global
 		private static void LoadZoneInfos()
 		{
 			var atDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_AREATABLE);
-			var dbcRdr = new MappedDBCReader<ZoneInfo, AreaTableConverter>(atDbcPath);
+			var dbcRdr = new MappedDBCReader<ZoneTemplate, AreaTableConverter>(atDbcPath);
 
 			foreach (var zone in dbcRdr.Entries.Values)
 			{
-				ArrayUtil.Set(ref s_ZoneInfos, (uint)zone.Id, zone);
+				ArrayUtil.Set(ref s_ZoneTemplates, (uint)zone.Id, zone);
 
-				var region = s_regionInfos.Get((uint)zone.RegionId);
+				var region = s_RegionTemplates.Get((uint)zone.RegionId);
 				if (region != null)
 				{
-					zone.RegionInfo = region;
+					zone.RegionTemplate = region;
 					region.ZoneInfos.Add(zone);
 				}
 			}
 
 			// Set ParentZone and ChildZones
-			foreach (var zone in s_ZoneInfos)
+			foreach (var zone in s_ZoneTemplates)
 			{
 				if (zone != null)
 				{
-					zone.ParentZone = s_ZoneInfos.Get((uint)zone.ParentZoneId);
+					zone.ParentZone = s_ZoneTemplates.Get((uint)zone.ParentZoneId);
 				}
 			}
 
-			foreach (var zone in s_ZoneInfos)
+			foreach (var zone in s_ZoneTemplates)
 			{
 				if (zone != null)
 				{
@@ -1014,40 +1012,25 @@ namespace WCell.RealmServer.Global
 		/// Gets region info by ID.
 		/// </summary>
 		/// <param name="regionID">the ID to the region to get</param>
-		/// <returns>the <see cref="RegionInfo" /> object for the given region ID</returns>
-		public static RegionInfo GetRegionInfo(MapId regionID)
+		/// <returns>the <see cref="RegionTemplate" /> object for the given region ID</returns>
+		public static RegionTemplate GetRegionTemplate(MapId regionID)
 		{
-			if (s_ZoneInfos == null)
+			if (s_ZoneTemplates == null)
 			{
 				LoadMapData();
 			}
-			return s_regionInfos.Get((uint)regionID);
+			return s_RegionTemplates.Get((uint)regionID);
 		}
 
 		/// <summary>
-		/// Gets zone info by ID.
+		/// Gets zone template by ID.
 		/// </summary>
 		/// <param name="zoneID">the ID to the zone to get</param>
 		/// <returns>the <see cref="Zone" /> object for the given zone ID</returns>
-		public static ZoneInfo GetZoneInfo(ZoneId zoneID)
+		public static ZoneTemplate GetZoneInfo(ZoneId zoneID)
 		{
-			return s_ZoneInfos.Get((uint)zoneID);
+			return s_ZoneTemplates.Get((uint)zoneID);
 		}
-
-		/// <summary>
-		/// Gets ZoneInfo by Name
-		/// </summary>
-		/// <returns>the <see cref="Zone" /> object for the given zone ID</returns>
-		//public static ZoneInfo GetZoneInfo(string name)
-		//{
-		//    name = name.Replace(" ", "");
-		//    ZoneId id;
-		//    if (EnumUtil.TryParse(name, out id))
-		//    {
-		//        return s_zoneInfos.Get((uint)id);
-		//    }
-		//    return null;
-		//}
 
 		/// <summary>
 		/// Gets the first significant location within the Zone with the given Id
@@ -1064,9 +1047,10 @@ namespace WCell.RealmServer.Global
 			return null;
 		}
 
-		internal static void LoadDefaultRegions()
+		[Initialization(InitializationPass.Fifth, "Initializing World")]
+		public static void LoadDefaultRegions()
 		{
-			foreach (var rgnInfo in s_regionInfos)
+			foreach (var rgnInfo in s_RegionTemplates)
 			{
 				if (rgnInfo != null && rgnInfo.Type == MapType.Normal)
 				{

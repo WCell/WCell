@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,9 +13,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 {
 	public class CharmAuraHandler : AuraEffectHandler
 	{
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterRef, Unit target, ref SpellFailedReason failReason)
 		{
-			var caster = casterInfo.Caster as Unit;
+			var caster = creatingCast.CasterReference.Object as Unit;
 			if (caster == null)
 			{
 				failReason = SpellFailedReason.BadTargets;
@@ -53,9 +53,9 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var caster = m_aura.Caster as Unit;
+			var caster = m_aura.Caster;
 			if (caster == null)
 			{
 				return;
@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var caster = (Unit)m_aura.Caster;
 			var target = m_aura.Auras.Owner;

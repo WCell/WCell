@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
@@ -16,7 +17,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
         /// <summary>
         /// Ensure that the constraints are correct for the Flag aura to be applied
         /// </summary>
-        protected override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+        protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
         {
 			if (!(target is Character))
 			{

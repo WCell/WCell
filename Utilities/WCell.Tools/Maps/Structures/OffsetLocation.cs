@@ -1,4 +1,4 @@
-﻿namespace WCell.Tools.Maps.Structures
+namespace WCell.Tools.Maps.Structures
 {
     public struct OffsetLocation
     {

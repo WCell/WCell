@@ -7,12 +7,12 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
 	public class GOTrapEntry : GOEntry, ISpellParameters
 	{
-	    public uint Open
+	    public int Open
 	    {
             get { return Fields[0]; }
 	    }
 
-	    public uint Level
+	    public int Level
 	    {
             get { return Fields[1]; }
 	    }
@@ -20,7 +20,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The explosion radius of this Trap in yards (Assume default if 0)
 		/// </summary>
-		public uint Radius
+		public int Radius
 		{
 			get
 			{
@@ -43,7 +43,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Probably maximum charges (trap disappears after all charges have been used)
 		/// </summary>
-		public uint MaxCharges
+		public int MaxCharges
 		{
             get { return Fields[4]; }
 		}
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 			set { }
 		}
 
-        public uint AutoClose
+        public int AutoClose
         {
             get { return Fields[6]; }
         }
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// Trigger-delay in seconds
 		/// </summary>
-		public uint StartDelay
+		public int StartDelay
 		{
 			get
 			{
@@ -76,7 +76,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 			set { }
 		}
 
-        public uint ServerOnly
+        public int ServerOnly
         {
             get { return Fields[8]; }
         }
@@ -87,24 +87,24 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[9] > 0; }
         }
-        public uint Large
+        public int Large
         {
             get { return Fields[10]; }
         }
-        public uint StealthAffected
+        public int StealthAffected
         {
             get { return Fields[11]; }
         }
-	    public uint OpenTextID
+	    public int OpenTextID
 	    {
             get { return Fields[12]; }
 	    }
-	    public uint CloseTextID
+	    public int CloseTextID
 	    {
             get { return Fields[13]; }
 	    }
 
-	    public uint IgnoreTotems
+	    public int IgnoreTotems
 	    {
             get { return Fields[14]; }
 	    }
@@ -129,13 +129,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		protected internal override void InitGO(GameObject trap)
 		{
 			// init Trap
-			if (trap.AreaAura == null)
+			if (!trap.HasAreaAuras)
 			{
 				if (Spell != null)
 				{
 					new AreaAura(trap, Spell, this);
 				}
-				trap.IsTrap = true;
+				trap.m_IsTrap = true;
 			}
 		}
 	}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
@@ -31,9 +32,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Power Type			
-			if (CostsMana && PowerType != caster.PowerType && PowerType != PowerType.Health)
+			if (CostsMana && 
+				PowerType != caster.PowerType && 
+				PowerType != PowerType.Health &&
+				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
 			{
-				return SpellFailedReason.NoPower;
+				return SpellFailedReason.OnlyShapeshift;
 			}
 
 			// Stealth Required			
@@ -70,36 +74,23 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.RequiresSpellFocus;
 			}
 
-			// shapeshift
-			if (Attributes.HasFlag(SpellAttributes.NotWhileShapeshifted) &&
-				caster.ShapeshiftForm != ShapeshiftForm.Normal)
-			{
-				//return SpellFailedReason.NotShapeshift;
-			}
-
-			// Stealth Required			
-			else if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
-			{
-				return SpellFailedReason.OnlyStealthed;
-			}
-
 			// Not while silenced		
-			else if (InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
-					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))
+			else if (!caster.CanCastSpells &&
+					(!IsPhysicalAbility ||
+					(InterruptFlags.HasFlag(InterruptFlags.OnSilence) &&
+					 caster.IsUnderInfluenceOf(SpellMechanic.Silenced))))
 			{
 				return SpellFailedReason.Silenced;
 			}
-			else if (!caster.CanDoHarm && HasHarmfulEffects)
+			// cannot use physical ability or not do harm at all
+			else if ((!caster.CanDoPhysicalActivity && IsPhysicalAbility) ||
+					(!caster.CanDoHarm && HasHarmfulEffects))
 			{
 				return SpellFailedReason.Pacified;
 			}
 			else if (!AttributesExD.HasFlag(SpellAttributesExD.UsableWhileStunned) && !caster.CanInteract)
 			{
 				return SpellFailedReason.Stunned;
-			}
-			else if (!caster.CanCastSpells)
-			{
-				return SpellFailedReason.Interrupted;
 			}
 			// Combo points			
 			else if (IsFinishingMove && caster.ComboPoints == 0)
@@ -111,11 +102,6 @@ namespace WCell.RealmServer.Spells
 			if (!CheckSpellFocus(caster))
 			{
 				return SpellFailedReason.RequiresSpellFocus;
-			}
-			// shapeshift			
-			//if (Attributes.Has(SpellAttributes.NotWhileShapeshifted) && caster.ShapeShiftForm != ShapeShiftForm.Normal)
-			{
-				//return SpellFailedReason.NotShapeshift;			
 			}
 
 			// AuraStates
@@ -135,6 +121,52 @@ namespace WCell.RealmServer.Spells
 				(RequiredCasterAuraId != 0 && !caster.Auras.Contains(RequiredCasterAuraId)))
 			{
 				return SpellFailedReason.CasterAurastate;
+			}
+
+			// Shapeshift
+			var shapeshiftMask = caster.ShapeshiftMask;
+			bool ignoreShapeshiftRequirement = false;	// use this to allow for lazy requirement lookup
+			if (ExcludeShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			{
+				if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+				{
+					return SpellFailedReason.NotShapeshift;
+				}
+			}
+			else if (!RequiredShapeshiftMask.HasAnyFlag(shapeshiftMask))
+			{
+				// our mask did not pass -> do the default checks
+				var shapeshiftEntry = caster.ShapeshiftEntry;
+				var shapeshifted = shapeshiftEntry != null && (shapeshiftEntry.Flags & ShapeshiftInfoFlags.NotActualShapeshift) == 0;
+
+				if (shapeshifted)
+				{
+					if (RequiredShapeshiftMask != 0)
+					{
+						// When shapeshifted, can only use spells that allow this form
+						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+						{
+							return SpellFailedReason.OnlyShapeshift;
+						}
+					}
+					else if (Attributes.HasAnyFlag(SpellAttributes.NotWhileShapeshifted))
+					{
+						if (!(ignoreShapeshiftRequirement = caster.Auras.IsShapeshiftRequirementIgnored(this)))
+						{
+							// cannot cast this spell when shapeshifted
+							return SpellFailedReason.NotShapeshift;
+						}
+					}
+				}
+
+				if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
+				{
+					if (ignoreShapeshiftRequirement || caster.Auras.IsShapeshiftRequirementIgnored(this))
+					{
+						// Stealth Required, but not stealthed
+						return SpellFailedReason.OnlyStealthed;
+					}
+				}
 			}
 
 			var spells = caster.Spells as PlayerSpellCollection;
@@ -219,7 +251,15 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Checks whether the given inventory satisfies this Spell's item restrictions
 		/// </summary>
-		public SpellFailedReason CheckItemRestrictionsWithout(Item exclude, PlayerInventory inv)
+		public SpellFailedReason CheckItemRestrictions(PlayerInventory inv)
+		{
+			return CheckItemRestrictionsWithout(inv, null);
+		}
+
+		/// <summary>
+		/// Checks whether the given inventory satisfies this Spell's item restrictions
+		/// </summary>
+		public SpellFailedReason CheckItemRestrictionsWithout(PlayerInventory inv, Item exclude)
 		{
 			if (RequiredItemClass == ItemClass.Armor || RequiredItemClass == ItemClass.Weapon)
 			{
@@ -328,6 +368,10 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason CheckValidTarget(WorldObject caster, WorldObject target)
 		{
+			if (AttributesEx.HasAnyFlag(SpellAttributesEx.CannotTargetSelf) && target == caster)
+			{
+				return SpellFailedReason.NoValidTargets;
+			}
 			if (target is Unit)
 			{
 				// AuraState
@@ -357,8 +401,8 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// CreatureTypes
-			if (TargetCreatureTypes != TargetCreatureMask.None &&
-				(!(target is NPC) || !((NPC)target).CheckCreatureType(TargetCreatureTypes)))
+			if (CreatureMask != CreatureMask.None &&
+				(!(target is NPC) || !((NPC)target).CheckCreatureType(CreatureMask)))
 			{
 				return SpellFailedReason.BadImplicitTargets;
 			}
@@ -374,7 +418,7 @@ namespace WCell.RealmServer.Spells
 				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{
 					if (!(target is Corpse) ||
-						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && !caster.IsHostileWith(target)))
+						(TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse) && caster != null && !caster.IsHostileWith(target)))
 					{
 						return SpellFailedReason.BadImplicitTargets;
 					}
@@ -396,21 +440,21 @@ namespace WCell.RealmServer.Spells
 			// Rogues do it from behind
 			if (AttributesExB.HasFlag(SpellAttributesExB.RequiresBehindTarget))
 			{
-				if (!caster.IsBehind(target))
+				if (caster != null && !caster.IsBehind(target))
 				{
 					return SpellFailedReason.NotBehind;
 				}
 			}
 
-			if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
-			{
-				if (target is Unit && ((Unit)target).IsInCombat)
-				{
-					return SpellFailedReason.TargetAffectingCombat;
-				}
-			}
+			//if (AttributesExC.HasFlag(SpellAttributesExC.NoInitialAggro))
+			//{
+			//    if (target is Unit && ((Unit)target).IsInCombat)
+			//    {
+			//        return SpellFailedReason.TargetAffectingCombat;
+			//    }
+			//}
 
-			if (Range.MinDist > 0 &&
+			if (Range.MinDist > 0 && caster != null && 
 				//caster.IsInRadius(target, caster.GetSpellMinRange(Range.MinDist, target)))
 				caster.IsInRadius(target, Range.MinDist))
 			{
@@ -425,14 +469,14 @@ namespace WCell.RealmServer.Spells
 		#region Check Proc
 		public bool CanProcBeTriggeredBy(Unit owner, IUnitAction action, bool active)
 		{
-			if (CheckCasterConstraints(owner) != SpellFailedReason.Ok)
-			{
-				return false;
-			}
+			//if (CheckCasterConstraints(owner) != SpellFailedReason.Ok)
+			//{
+			//    return false;
+			//}
 
 			if (action.Spell != null)
 			{
-				if (active)	
+				if (active)
 				{
 					// owner == attacker
 					if (CasterProcSpells != null)
@@ -440,7 +484,7 @@ namespace WCell.RealmServer.Spells
 						return CasterProcSpells.Contains(action.Spell);
 					}
 				}
-				else if (TargetProcSpells != null)	
+				else if (TargetProcSpells != null)
 				{
 					// owner == victim
 					return TargetProcSpells.Contains(action.Spell);
@@ -499,9 +543,9 @@ namespace WCell.RealmServer.Spells
 					}
 				}
 			}
-			else if (unit is Character)
+			else
 			{
-				cd = ((Character)unit).PlayerSpells.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
 			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
 			return cd;

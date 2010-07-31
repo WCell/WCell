@@ -119,7 +119,7 @@ namespace WCell.Constants.NPCs
 		FinalFacingAngle = 4,
 	}
 
-	public enum NPCType
+	public enum CreatureType
 	{
 		None = 0,
 		Beast = 1,
@@ -134,7 +134,30 @@ namespace WCell.Constants.NPCs
 		NotSpecified = 10,
 		Totem = 11,
 		NonCombatPet = 12,
-		GasCloud = 13
+		GasCloud = 13,
+		End
+	}
+
+	/// <summary>
+	/// Mask from CreatureType.dbc
+	/// </summary>
+	[Flags]
+	public enum CreatureMask
+	{
+		None = 0x0,
+		Beast = 0x1,
+		Dragonkin = 0x2,
+		Demon = 0x4,
+		Elemental = 0x8,
+		Giant = 0x10,
+		Undead = 0x20,
+		Humanoid = 0x40,
+		Critter = 0x80,
+		Mechanical = 0x100,
+		NotSpecified = 0x200,
+		Totem = 0x400,
+		NonCombatPet = 0x800,
+		GasCloud = 0x1000,
 	}
 
 	public enum CreatureRank

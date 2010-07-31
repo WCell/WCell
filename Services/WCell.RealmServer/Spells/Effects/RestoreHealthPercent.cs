@@ -28,8 +28,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var healvalue = (((Unit)target).MaxHealth * CalcDamageValue()  + 50) / 100;	 // rounding
-			((Unit)target).Heal(m_cast.Caster, healvalue, Effect);
+			((Unit)target).HealPercent(CalcDamageValue(), m_cast.CasterUnit, Effect);
 		}
 
 		public override ObjectTypes TargetType

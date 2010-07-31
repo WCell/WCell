@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Runtime.InteropServices;
 using System.Text;
 using WCell.Constants;
 
@@ -29,7 +30,7 @@ namespace WCell.Core.DBC
 		}
 	}
 
-    public class DBCRecordConverter : IDisposable
+    public abstract class DBCRecordConverter : IDisposable
     {
         private byte[] m_stringTable;
 
@@ -40,6 +41,23 @@ namespace WCell.Core.DBC
 
 		public virtual void Convert(byte[] rawData)
 		{
+		}
+
+		/// <summary>
+		/// Copies the next count fields into obj, starting from offset.
+		/// Keep in mind, that one field has a length of 4 bytes.
+		/// </summary>
+		protected static void Copy(byte[] bytes, int offset, int count, object obj)
+		{
+			var handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
+			try
+			{
+				Marshal.Copy(bytes, offset * 4, handle.AddrOfPinnedObject(), count * 4);
+			}
+			finally
+			{
+				handle.Free();
+			}
 		}
 
         protected static uint GetUInt32(byte[] data, int field)

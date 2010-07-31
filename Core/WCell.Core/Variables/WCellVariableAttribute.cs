@@ -1,4 +1,4 @@
-﻿using WCell.Util.Variables;
+using WCell.Util.Variables;
 
 namespace WCell.Core.Variables
 {

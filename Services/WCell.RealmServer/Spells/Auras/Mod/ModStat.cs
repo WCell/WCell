@@ -20,12 +20,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModStatHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			Owner.AddStatMod((StatType)m_spellEffect.MiscValue, EffectValue, SpellEffect.Spell.IsPassive);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			Owner.RemoveStatMod((StatType)m_spellEffect.MiscValue, EffectValue, SpellEffect.Spell.IsPassive);
 		}

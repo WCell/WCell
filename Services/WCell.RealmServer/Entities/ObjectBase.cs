@@ -21,16 +21,16 @@ using WCell.RealmServer.UpdateFields;
 
 namespace WCell.RealmServer.Entities
 {
-    /// <summary>
-    /// The base class for all in-game Objects
-    /// </summary>
+	/// <summary>
+	/// The base class for all in-game Objects
+	/// </summary>
 	public abstract partial class ObjectBase : IDisposable, ILootable, IEntity
-    {
+	{
 		protected readonly CompoundType[] m_updateValues;
 
-        protected ObjectBase()
+		protected ObjectBase()
 		{
-            int updateFieldInfoLen = _UpdateFieldInfos.Fields.Length;
+			int updateFieldInfoLen = _UpdateFieldInfos.Fields.Length;
 
 			m_privateUpdateMask = new UpdateMask(updateFieldInfoLen);
 
@@ -46,11 +46,11 @@ namespace WCell.RealmServer.Entities
 
 			m_updateValues = new CompoundType[updateFieldInfoLen];
 
-            Type = ObjectTypes.Object;
-            SetFloat(ObjectFields.SCALE_X, 1.0f);
+			Type = ObjectTypes.Object;
+			SetFloat(ObjectFields.SCALE_X, 1.0f);
 		}
 
-        protected abstract UpdateFieldCollection _UpdateFieldInfos
+		protected abstract UpdateFieldCollection _UpdateFieldInfos
 		{
 			get;
 		}
@@ -86,39 +86,65 @@ namespace WCell.RealmServer.Entities
 			get;
 		}
 
-        public abstract void Dispose(bool disposing);
+		public abstract void Dispose(bool disposing);
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-            Dispose(true);
-        }
+		public void Dispose()
+		{
+			GC.SuppressFinalize(this);
+			Dispose(true);
+		}
 
 		public bool CheckObjType(ObjectTypes type)
 		{
-			return Type.HasAnyFlag(type);
+			return type == ObjectTypes.None || Type.HasAnyFlag(type);
 		}
 
-    	public virtual bool UseGroupLoot
-    	{
+		public virtual bool UseGroupLoot
+		{
 			get { return false; }
-    	}
+		}
 
-    	/// <summary>
+		/// <summary>
 		/// Called whenever everything has been looted off this object.
 		/// </summary>
 		public virtual void OnFinishedLooting()
 		{
 		}
 
-    	public virtual UpdatePriority UpdatePriority
-    	{
+		public virtual UpdatePriority UpdatePriority
+		{
 			get { return UpdatePriority.LowPriority; }
-    	}
+		}
 
-        public override string ToString()
-        {
-            return GetType().Name + " (ID: " + EntityId + ")";
-        }
-    }
+		public static bool operator ==(ObjectBase o1, ObjectBase o2)
+		{
+			return (o1 as Object == null) != (o2 as Object == null) ? false : 
+				(o1 as Object == o2 as Object ? true : (o2.EntityId == o1.EntityId));
+		}
+
+		public static bool operator !=(ObjectBase o1, ObjectBase o2)
+		{
+			return !(o1 == o2);
+		}
+
+		public bool Equals(ObjectBase obj)
+		{
+			return obj.EntityId == EntityId;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is ObjectBase && ((ObjectBase)obj).EntityId == EntityId;
+		}
+
+		public override int GetHashCode()
+		{
+			return EntityId.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return GetType().Name + " (ID: " + EntityId + ")";
+		}
+	}
 }

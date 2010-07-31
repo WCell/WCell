@@ -3,7 +3,7 @@
  *   file		: AuraHandler.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (sø, 31 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-31 03:46:31 +0100 (s�, 31 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1238 $
  *
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModDecreaseSpeed] = () => new ModDecreaseSpeedHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseEnergy] = () => new ModIncreaseEnergyHandler();
 			EffectHandlers[(int)AuraType.ModShapeshift] = () => new ShapeshiftHandler();
-			EffectHandlers[(int)AuraType.ModHealingPercent] = () => new ModHealingPercentHandler();
+			EffectHandlers[(int)AuraType.ModHealingTakenPercent] = () => new ModHealingTakenPctHandler();
 			EffectHandlers[(int)AuraType.ModHealingDone] = () => new ModHealingDoneHandler();
 			EffectHandlers[(int)AuraType.SchoolImmunity] = () => new SchoolImmunityHandler();
 			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();
 			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();
 			EffectHandlers[(int)AuraType.ModDodgePercent] = () => new ModDodgePercentHandler();
-			EffectHandlers[(int)AuraType.ModBlockSkill] = () => new ModBlockSkillHandler();
+			EffectHandlers[(int)AuraType.ModCritHealValuePct] = () => new ModCritHealValuePctHandler();
 			EffectHandlers[(int)AuraType.ModBlockPercent] = () => new ModBlockPercentHandler();
 			EffectHandlers[(int)AuraType.ModParryPercent] = () => new ModParryPercentHandler();
 			EffectHandlers[(int)AuraType.ModShieldBlockvaluePct] = () => new ModShieldBlockValuePercentHandler();
@@ -104,7 +104,6 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.PeriodicHealthFunnel] = () => new PeriodicHealthFunnelHandler();
 			EffectHandlers[(int)AuraType.PeriodicManaLeech] = () => new PeriodicManaLeechHandler();
 			EffectHandlers[(int)AuraType.ModCastingSpeed] = () => new ModCastingSpeedHandler();
-			EffectHandlers[(int)AuraType.ModDisarm] = () => new DisarmHandler();
 			EffectHandlers[(int)AuraType.SchoolAbsorb] = () => new SchoolAbsorbHandler();
 			EffectHandlers[(int)AuraType.ModSpellCritChanceForSchool] = () => new ModSpellCritChanceForSchoolHandler();
 			EffectHandlers[(int)AuraType.ModPowerCost] = () => new ModPowerCostHandler();
@@ -121,7 +120,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Ghost] = () => new GhostHandler();
 			EffectHandlers[(int)AuraType.ManaShield] = () => new ManaShieldHandler();
 			EffectHandlers[(int)AuraType.ModSkillTalent] = () => new ModSkillTalentHandler();
-			EffectHandlers[(int)AuraType.ModAttackPower] = () => new ModMeleeAttackPowerHandler();
+			EffectHandlers[(int)AuraType.ModMeleeAttackPower] = () => new ModMeleeAttackPowerHandler();
 			EffectHandlers[(int)AuraType.ModAttackPowerPercent] = () => new ModMeleeAttackPowerPercentHandler();
 			EffectHandlers[(int)AuraType.ModRangedAttackPower] = () => new ModRangedAttackPowerHandler();
 			EffectHandlers[(int)AuraType.ModRangedAttackPowerPercent] = () => new ModRangedAttackPowerPercentHandler();
@@ -139,8 +138,9 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModMountedSpeedAlways] = () => new ModMountedSpeedAlwaysHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseEnergyPercent] = () => new ModIncreaseEnergyPercentHandler();
 			EffectHandlers[(int)AuraType.ModIncreaseHealthPercent] = () => new ModIncreaseHealthPercentHandler();
+			EffectHandlers[(int)AuraType.ModIncreaseHealth] = () => new ModIncreaseHealthHandler();
 			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();
-			EffectHandlers[(int)AuraType.ModHealingTaken] = () => new ModHealingTakenHandler();
+			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();
 			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();
 			EffectHandlers[(int)AuraType.ModSpecificCombatRating] = () => new ModCombatRatingStat();
 			EffectHandlers[(int)AuraType.ModBaseResistancePercent] = () => new ModBaseResistancePercentHandler();
@@ -152,12 +152,14 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.PowerBurn] = () => new PowerBurnHandler();
 			EffectHandlers[(int)AuraType.ModDebuffResistancePercent] = () => new ModDebuffResistancePercentHandler();
 			EffectHandlers[(int)AuraType.ModRating] = () => new ModRatingHandler();
-			EffectHandlers[(int)AuraType.ModTimeBetweenAttacks] = () => new ModTimeBetweenAttacksHandler();
+			EffectHandlers[(int)AuraType.ModHastePct] = () => new ModHastePctHandler();
 			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();
 			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();
 			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();
-			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfIntellect] =
-				() => new ModRangedAttackPowerByPercentOfIntellectHandler();
+			EffectHandlers[(int)AuraType.ModRangedAttackPowerByPercentOfStat] =
+				() => new ModRangedAttackPowerByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModMeleeAttackPowerByPercentOfStat] =
+				() => new ModMeleeAttackPowerByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.ModSpellHastePercent] = () => new ModSpellHastePercentHandler();
 			EffectHandlers[(int)AuraType.ModManaRegen] = () => new ModManaRegenHandler();
 			EffectHandlers[(int)AuraType.ModMaxHealth] = () => new ModMaxHealthHandler();
@@ -173,8 +175,10 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Charm] = () => new CharmAuraHandler();
 			EffectHandlers[(int)AuraType.ModTaunt] = () => new ModTauntAuraHandler();
 			EffectHandlers[(int)AuraType.ModPacify] = () => new ModPacifyHandler();
-			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifyHandler();
-			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfSpirit] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModSilence] = () => new ModSilenceHandler();
+			EffectHandlers[(int)AuraType.ModPacifySilence] = () => new ModPacifySilenceHandler();
+			EffectHandlers[(int)AuraType.ModSpellDamageByPercentOfStat] = () => new ModSpellDamageByPercentOfStatHandler();
+			EffectHandlers[(int)AuraType.ModSpellHealingByPercentOfStat] = () => new ModHealingByPercentOfStatHandler();
 			EffectHandlers[(int)AuraType.DamagePctAmplifier] = () => new DamagePctAmplifierHandler();
 			EffectHandlers[(int)AuraType.ModArmorPenetration] = () => new ModArmorPenetrationHandler();
 			EffectHandlers[(int)AuraType.PeriodicTriggerSpell2] = () => new PeriodicTriggerSpellHandler();
@@ -184,7 +188,30 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.Expertise] = () => new ModExpertiseHandler();
 			EffectHandlers[(int)AuraType.ModHitChance] = () => new ModHitChanceHandler();
 			EffectHandlers[(int)AuraType.ModRageFromDamageDealtPercent] = () => new ModRageFromDamageDealtPercentHandler();
-			
+			EffectHandlers[(int)AuraType.CriticalBlockPct] = () => new CriticalBlockPctHandler();
+			EffectHandlers[(int)AuraType.ModAPByArmor] = () => new ModAPByArmorHandler();
+			EffectHandlers[(int)AuraType.DisarmMainHand] = () => new DisarmMainHandHandler();
+			EffectHandlers[(int)AuraType.DisarmOffhandAndShield] = () => new DisarmOffHandHandler();
+			EffectHandlers[(int)AuraType.DisarmRanged] = () => new DisarmRangedHandler();
+			EffectHandlers[(int)AuraType.ModDamageDoneVersusCreatureType] = () => new ModDamageDoneVersusCreatureTypeHandler();
+			EffectHandlers[(int)AuraType.ModAttackerSpellHitChance] = () => new ModAttackerSpellHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModAttackerMeleeHitChance] = () => new ModAttackerMeleeHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModAttackerRangedHitChance] = () => new ModAttackerRangedHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModSpellPowerByAPPct] = () => new ModSpellPowerByAPPctHandler();
+			EffectHandlers[(int)AuraType.ModSpellHitChance] = () => new ModSpellHitChanceHandler();
+			EffectHandlers[(int)AuraType.ModSpellHitChance2] = () => new ModSpellHitChanceHandler();
+			EffectHandlers[(int)AuraType.DamageShield] = () => new DamageShieldEffectHandler();
+			EffectHandlers[(int)AuraType.Unattackable] = () => new UnattackableHandler();
+			EffectHandlers[(int)AuraType.ModDamageTaken] = () => new ModDamageTakenHandler();
+			EffectHandlers[(int)AuraType.ModDamageTakenPercent] = () => new ModDamageTakenPercentHandler();
+			EffectHandlers[(int)AuraType.ModAOEDamagePercent] = () => new ModAOEDamagePercentHandler();
+            EffectHandlers[(int)AuraType.ModSpeedMountedFlight] = () => new ModSpeedMountedFlightHandler();
+            EffectHandlers[(int)AuraType.ModReputationGain] = () => new ModReputationGainHandler();
+			EffectHandlers[(int)AuraType.ModKillXpPct] = () => new ModKillXpPctHandler();
+			EffectHandlers[(int)AuraType.ModQuestXpPct] = () => new ModQuestXpPctHandler();
+			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
+			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
+			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
@@ -200,14 +227,14 @@ namespace WCell.RealmServer.Spells.Auras
 		#region EffectHandlers
 
 		public static List<AuraEffectHandler> CreateEffectHandlers(Spell spell,
-			CasterInfo caster,
+			ObjectReference caster,
 			Unit target,
 			bool beneficial)
 		{
 			return CreateEffectHandlers(spell.AuraEffects, caster, target, beneficial);
 		}
 
-		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, CasterInfo caster,
+		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, ObjectReference caster,
 			Unit target, bool beneficial)
 		{
 			if (effects == null)
@@ -223,9 +250,7 @@ namespace WCell.RealmServer.Spells.Auras
 					var effect = effects[i];
 					if (effect.HarmType == HarmType.Beneficial || !beneficial)
 					{
-						var effectValue = effect.CalcEffectValue(caster);
-
-						var effectHandler = CreateEffectHandler(effect, caster, target, effectValue, ref failReason);
+						var effectHandler = CreateEffectHandler(effect, caster, target, ref failReason);
 						if (failReason != SpellFailedReason.Ok)
 						{
 							return null;
@@ -247,16 +272,15 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		public static AuraEffectHandler CreateEffectHandler(
-			SpellEffect spellEffect, CasterInfo caster, Unit target,
-			int effectValue, ref SpellFailedReason failedReason)
+		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, 
+			Unit target, ref SpellFailedReason failedReason, SpellCast triggeringCast = null)
 		{
 			var handler = spellEffect.AuraEffectHandlerCreator();
 
 			handler.m_spellEffect = spellEffect;
-			handler.BaseEffectValue = effectValue;
+			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster);
 
-			handler.CheckInitialize(caster, target, ref failedReason);
+			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
 			return handler;
 		}
 		#endregion
@@ -288,6 +312,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			AddAuraGroupEvaluator(IsTransform);
 			AddAuraGroupEvaluator(IsStealth);
+			AddAuraGroupEvaluator(IsTracker);
 		}
 
 		/// <summary>
@@ -306,9 +331,15 @@ namespace WCell.RealmServer.Spells.Auras
 									   effect.AuraType == AuraType.ModStealth);
 		}
 
+		static bool IsTracker(Spell spell)
+		{
+			return spell.HasEffect(AuraType.TrackCreatures) || spell.HasEffect(AuraType.TrackResources) ||
+				   spell.HasEffect(AuraType.TrackStealthed);
+		}
+
 		public static void AddAuraGroupEvaluator(AuraIdEvaluator eval)
 		{
-			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0 )
+			if (RealmServer.Instance.IsRunning && RealmServer.Instance.ClientCount > 0)
 			{
 				throw new InvalidOperationException("Cannot set an Aura Group Evaluator at runtime because Aura Group IDs cannot be re-evaluated at this time. " +
 					"Please register the evaluator during startup.");

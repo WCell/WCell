@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Items;
 using WCell.Util.Data;
@@ -70,18 +71,17 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ShapeshiftMask;//13
+		public ShapeshiftMask RequiredShapeshiftMask;//13
 		/// <summary>
 		/// SpellShapeshiftForm.dbc
 		/// </summary>
-		public ShapeShiftMask ExcludeShapeshiftMask;//14
+		public ShapeshiftMask ExcludeShapeshiftMask;//14
 
 		public SpellTargetFlags TargetFlags;
 		/// <summary>
 		/// CreatureType.dbc
 		/// </summary>
-		//public uint TargetCreatureTypeMask;//16
-		public TargetCreatureMask TargetCreatureTypes;
+		public CreatureMask CreatureMask;
 		/// <summary>
 		/// SpellFocusObject.dbc
 		/// </summary>
@@ -265,7 +265,7 @@ namespace WCell.RealmServer.Spells
 		public ClassId ClassId;
 
 		[Persistent(3)]
-		public uint[] SpellClassMask = new uint[3];
+		public uint[] SpellClassMask = new uint[SpellConstants.SpellClassMaskSize];
 		public uint MaxTargets;                      //199 
 		public SpellDefenseType DefenseType;
 		public SpellPreventionType PreventionType;
@@ -300,7 +300,8 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// SpellRuneCost.dbc
 		/// </summary>
-		public uint RuneCostId;
+		public RuneCostEntry RuneCostEntry;
+
 		/// <summary>
 		/// SpellMissile.dbc
 		/// </summary>

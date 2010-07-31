@@ -31,10 +31,10 @@ namespace WCell.RealmServer.RacesClasses
 {
     /// <summary>
     /// Defines the basics of a class.
+    /// NOTE that all equations don't take boni from combat ratings into account
     /// </summary>
     public abstract class BaseClass
     {
-
         public static int DefaultStartLevel = 1;
 
         #region Fields
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.RacesClasses
         /// <summary>
         /// The PowerType this class uses.
         /// </summary>
-        public virtual PowerType PowerType
+        public virtual PowerType DefaultPowerType
         {
             get { return PowerType.Mana; }
         }
@@ -187,32 +187,25 @@ namespace WCell.RealmServer.RacesClasses
             //    return (float) (((intellect / 166.6667) + classConstant) + (critRating/45.91));
             //}
             //return (intellect/80f);
-            var critBase = GameTables.BaseSpellCritChance[(int)Id-1];
+            var critBase = GameTables.BaseSpellCritChance[(int)Id-1]*100;
             var critMod = GameTables.GetClassSpellCritChanceValue(level, Id);
 
-            // Crit from crit rating.
-            var critRating = 0;
-            return 1f / critBase + intellect * critMod + critRating;
+        	return critBase + intellect/critMod;
         }
 
         /// <summary>
         /// Calculates the melee critical chance for the class at a specific level, base Agility and added Agility.
-        /// TODO: Figure out BaseMeleeCritChance and implement diminishing returns
+        /// TODO: Implement diminishing returns
         /// </summary>
         /// <param name="level">the player's level</param>
-        /// <param name="baseAgi">the player's base Agility</param>
-        /// <returns>the total magic critical chance</returns>
+        /// <param name="agility">the player's Agility</param>
+        /// <returns>the total melee critical chance</returns>
         public float CalculateMeleeCritChance(int level, int agility)
         {
-            //level = MathUtil.ClampMinMax(level, 1, 100);
-
-            //return
-            //    ((GameTables.BaseMeleeCritChance[((int)Id) - 1] +
-            //      (GameTables.GetClassMeleeCritChanceValue(level, Id) *
-            //       baseAgi)));
-            var crit = agility/GameTables.GetClassMeleeCritChanceValue(level, Id);
-            var baseCrit = GameTables.BaseMeleeCritChance[(int) Id-1];
-            return crit + baseCrit;
+			var baseCrit = GameTables.BaseMeleeCritChance[((int)Id) - 1] * 100;
+			var critFromAgi = agility / (GameTables.GetClassMeleeCritChanceValue(level, Id));
+			var crit = baseCrit + critFromAgi;
+			return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>
@@ -220,33 +213,12 @@ namespace WCell.RealmServer.RacesClasses
         /// http://www.wowwiki.com/Formulas:Critical_hit_chance
         /// http://www.wowwiki.com/Formulas:Agility
         /// </summary>
-        public float CalculateRangedCritChance(int level, int baseAgi)
+        public float CalculateRangedCritChance(int level, int agility)
         {
-            level = MathUtil.ClampMinMax(level, 1, 100);
-
-            return
-                ((GameTables.BaseMeleeCritChance[((int)Id)-1] +
-                  (GameTables.GetClassMeleeCritChanceValue(level, Id) *
-                   baseAgi))) * 100f;
-        }
-
-        /// <summary>
-        /// Calculates the amount of power regeneration for the class at a specific level, Intellect and Spirit.
-        /// Changed in 3.1, overrides for casters are redundant.
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <param name="spirit">the player's Spirit</param>
-        /// <returns>The total power regeneration amount per RegenTick. Scales with RegenTickDelay (mana/5s will stay the same even if you change TickDelay).</returns>
-        public virtual int CalculatePowerRegen(Character chr)
-        {
-			// default mana generation
-            //return (10f + (spirit / 7f));
-			var regen = (0.001 + Math.Pow(chr.Intellect, 0.5) * chr.Spirit * GameTables.BaseRegen[chr.Level]) * Unit.RegenTickSeconds;
-			if (chr.IsInCombat)
-			{
-				regen = (regen * chr.ManaRegenPerTickInterruptedPct) / 100;
-			}
-			return (int)regen;
+        	var baseCrit = GameTables.BaseMeleeCritChance[((int) Id) - 1]* 100;
+        	var critFromAgi = agility/(GameTables.GetClassMeleeCritChanceValue(level, Id));
+        	var crit = baseCrit + critFromAgi;
+        	return crit > 5 ? crit : 5; // Naked crit is always at least 5%
         }
 
         /// <summary>
@@ -269,16 +241,6 @@ namespace WCell.RealmServer.RacesClasses
         public int GetHealthForLevel(int level)
         {
             return GetLevelSetting(level).Health;
-        }
-
-        /// <summary>
-        /// Gets the total power gained for the class at a specific level. 
-        /// </summary>
-        /// <param name="level">the player's level</param>
-        /// <returns>the total power gained up until the given level</returns>
-        public virtual int GetPowerForLevel(int level)
-        {
-            return GetLevelSetting(level).Mana;
         }
 
         /// <summary>

@@ -36,8 +36,6 @@ namespace WCell.RealmServer.Spells.Auras
 	/// </summary>
 	public class Aura : IAura, IUpdatable, IProcHandler, ITickTimer
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public static readonly Aura[] EmptyArray = new Aura[0];
 
 		public static readonly IEnumerator<Aura> EmptyEnumerator = new AuraEnumerator();
@@ -45,7 +43,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Fields
 		public readonly AuraIndexId Id;
 		protected internal AuraCollection m_auras;
-		protected CasterInfo m_casterInfo;
+		protected ObjectReference m_CasterReference;
 		protected Spell m_spell;
 		protected List<AuraEffectHandler> m_handlers;
 		protected bool m_beneficial;
@@ -67,10 +65,12 @@ namespace WCell.RealmServer.Spells.Auras
 		protected byte m_auraLevel;
 
 		protected AuraRecord m_record;
+
+		private Item m_UsedItem;
 		#endregion
 
 		#region Creation & Init
-		public Aura()
+		private Aura()
 		{
 		}
 
@@ -78,10 +78,10 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Creates a new Aura
 		/// </summary>
 		/// <param name="auras"></param>
-		/// <param name="casterInfo">Information about who casted</param>
+		/// <param name="casterReference">Information about who casted</param>
 		/// <param name="spell">The spell that this Aura represents</param>
 		/// <param name="handlers">All handlers must have the same AuraUID</param>
-		internal Aura(AuraCollection auras, CasterInfo casterInfo, Spell spell,
+		internal Aura(AuraCollection auras, ObjectReference casterReference, Spell spell,
 			List<AuraEffectHandler> handlers, byte index, bool beneficial)
 		{
 			m_auras = auras;
@@ -91,21 +91,21 @@ namespace WCell.RealmServer.Spells.Auras
 			Id = spell.GetAuraUID(beneficial);
 
 			m_handlers = handlers;
-			m_casterInfo = casterInfo;
+			m_CasterReference = casterReference;
 			m_index = index;
-			m_auraLevel = (byte)casterInfo.Level;
+			m_auraLevel = (byte)casterReference.Level;
 
 			m_stackCount = (byte)m_spell.StackCount;
-			if (m_stackCount > 0 && Caster is Character)
+			if (m_stackCount > 0 && casterReference.UnitMaster != null)
 			{
-				m_stackCount = ((Character)Caster).PlayerSpells.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
+				m_stackCount = casterReference.UnitMaster.Auras.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
 			}
 
 			SetAmplitude();
 			DetermineFlags();
 		}
 
-		internal Aura(AuraCollection auras, CasterInfo caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
+		internal Aura(AuraCollection auras, ObjectReference caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
 		{
 			m_record = record;
 			m_auras = auras;
@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Spells.Auras
 			Id = m_spell.GetAuraUID(m_beneficial);
 
 			m_handlers = handlers;
-			m_casterInfo = caster;
+			m_CasterReference = caster;
 			m_index = index;
 			m_auraLevel = (byte)record.Level;
 
@@ -127,12 +127,6 @@ namespace WCell.RealmServer.Spells.Auras
 			// figure out amplitude and duration
 			m_duration = record.MillisLeft;
 			SetupTimer();
-
-			if (m_spell.IsAreaAura)
-			{
-				var areaAura = new AreaAura(m_auras.Owner, m_spell);
-				areaAura.Start(null, false);
-			}
 		}
 
 		private void SetupTimer()
@@ -171,7 +165,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			m_auraFlags = m_spell.DefaultAuraFlags;
 
-			if (m_auras.Owner.EntityId == m_casterInfo.CasterId)
+			if (m_auras.Owner.EntityId == m_CasterReference.EntityId)
 			{
 				m_auraFlags |= AuraFlags.TargetIsCaster;
 			}
@@ -262,22 +256,43 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Information about the caster
 		/// </summary>
-		public CasterInfo CasterInfo
+		public ObjectReference CasterReference
 		{
-			get { return m_casterInfo; }
+			get { return m_CasterReference; }
 		}
 
 		/// <summary>
-		/// The actual Caster (returns null if caster went offline)
+		/// The actual Caster (returns null if caster went offline or disappeared for some other reason)
 		/// </summary>
-		public WorldObject Caster
+		public Unit Caster
 		{
-			get { return m_casterInfo.Caster; }
+			get
+			{
+				var caster = m_CasterReference.UnitMaster;
+				if (caster != null && caster.ContextHandler == Owner.ContextHandler)
+				{
+					return caster;
+				}
+				return null;
+			}
 		}
 
 		public Unit Owner
 		{
 			get { return m_auras.Owner; }
+		}
+
+		public Item UsedItem
+		{
+			get
+			{
+				if (m_UsedItem != null && m_UsedItem.IsInWorld && m_UsedItem.IsInContext)
+				{
+					return m_UsedItem;
+				}
+				return null;
+			}
+			internal set { m_UsedItem = value; }
 		}
 
 		/// <summary>
@@ -297,7 +312,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				return !m_spell.IsPassive ||
 					m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative) ||
-					m_casterInfo.Caster != m_auras.Owner;
+					m_CasterReference.Object != m_auras.Owner;
 			}
 		}
 
@@ -347,20 +362,28 @@ namespace WCell.RealmServer.Spells.Auras
 					m_startTime = Environment.TickCount;
 
 					int time;
-					if (m_amplitude > 0)
+					if (value < 0)
 					{
-						m_maxTicks = value / m_amplitude;
+						m_maxTicks = int.MaxValue;
 						time = value % (m_amplitude + 1);
 					}
 					else
 					{
-						time = value;
-					}
+						if (m_amplitude > 0)
+						{
+							m_maxTicks = value / m_amplitude;
+							time = value % (m_amplitude + 1);
+						}
+						else
+						{
+							time = value;
+						}
 
-					if (m_maxTicks < 1)
-					{
-						m_amplitude = value;
-						m_maxTicks = 1;
+						if (m_maxTicks < 1)
+						{
+							m_amplitude = value;
+							m_maxTicks = 1;
+						}
 					}
 
 					m_ticks = 0;
@@ -371,7 +394,16 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Whether it is save and legal to steal this Aura (only temporary Auras that are not controlled by a channel or similar)
+		/// Wheter this Aura can be saved
+		/// </summary>
+		public bool CanBeSaved
+		{
+			get;
+			internal set;
+		}
+
+		/// <summary>
+		/// Whether it is safe and legal to steal this Aura (only temporary Auras that are not controlled by a channel or similar)
 		/// </summary>
 		public bool CanBeStolen
 		{
@@ -418,6 +450,9 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_controller == null ? m_maxTicks : m_controller.MaxTicks; }
 		}
 
+		/// <summary>
+		/// Duration in millis
+		/// </summary>
 		public int Duration
 		{
 			get { return m_controller == null ? m_duration : m_controller.Duration; }
@@ -448,7 +483,6 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get { return m_auraFlags; }
 		}
-
 		#endregion
 
 		#region Start
@@ -466,7 +500,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			else
 			{
-				m_duration = Spell.GetDuration(m_casterInfo, m_auras.Owner);
+				m_duration = Spell.GetDuration(m_CasterReference, m_auras.Owner);
 			}
 
 			SetupTimer();
@@ -485,74 +519,125 @@ namespace WCell.RealmServer.Spells.Auras
 				handler.Init(this);
 			}
 
-
-
-
 			CheckActivation();
+
+			CanBeSaved = this != m_auras.GhostAura &&
+			             !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
+			             UsedItem == null &&
+			             (!HasTimeout || TimeLeft > 10000);
+					
 
 			m_auras.OnAuraChange(this);
 		}
 
 		#endregion
 
-		#region Active
-
-		private bool m_IsActive;
+		#region Active & Enable & Disable
+		private bool m_IsActivated;
 
 		/// <summary>
 		/// Disables the Aura without removing it's effects
 		/// </summary>
-		public bool IsActive
+		public bool IsActivated
 		{
-			get { return m_IsActive; }
+			get { return m_IsActivated; }
 			set
 			{
-				if (m_IsActive != value)
+				if (m_IsActivated != value)
 				{
-					if (m_IsActive = value)
+					if (m_IsActivated = value)
 					{
-						Enable();
-						SendToClient();
+						Activate();
 					}
 					else
 					{
 						// remove all aura-related effects
-						Disable(false);
-						RemoveFromClient();
+						Deactivate(false);
 					}
 				}
 			}
 		}
 
+		/// <summary>
+		/// These checks coincide with the checks in <see cref="PlayerAuraCollection"/>
+		/// </summary>
 		internal void CheckActivation()
 		{
 			var owner = Owner as Character;
 			if (owner == null ||
 				!m_spell.IsPassive ||
-				!m_spell.HasItemRequirements ||
-				m_spell.CheckItemRestrictionsWithout(null, owner.Inventory) == SpellFailedReason.Ok)
+				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictions(owner.Inventory) == SpellFailedReason.Ok) &&
+				(!m_spell.IsModalShapeshiftDependentAura ||
+					m_spell.RequiredShapeshiftMask == 0 ||
+					m_spell.RequiredShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
 			{
-				IsActive = true;
+				IsActivated = true;
 			}
 		}
 
-		internal void EvalActive(Item item, bool equip)
+		private void Activate()
 		{
-			if (m_spell.IsPassive && m_spell.HasItemRequirements)
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.IsProc && Caster != null && m_spell.ProcHandlers != null)
 			{
-				// is only called for Characters
-				var plr = (Character)m_auras.Owner;
-				if (equip && !m_IsActive)
+				foreach (var templ in m_spell.ProcHandlers)
 				{
-					// check if new item satisfys conditions
-					IsActive = Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
-				}
-				else if (!equip && m_IsActive)
-				{
-					// check if the conditions are still met
-					IsActive = m_spell.CheckItemRestrictionsWithout(item, plr.Inventory) == SpellFailedReason.Ok;
+					Owner.AddProcHandler(new ProcHandler(Caster, Owner, templ));
 				}
 			}
+
+			if (m_spell.DoesAuraHandleProc)
+			{
+				// only add proc if there is not a custom handler for it
+				m_auras.Owner.AddProcHandler(this);
+			}
+			if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId)
+			{
+				// activate AreaAura
+				var aaura = m_auras.Owner.GetAreaAura(m_spell);
+				if (aaura != null)
+				{
+					aaura.Start(m_controller, !HasTimeout);
+				}
+			}
+
+			// apply all aura-related effects
+			ApplyNonPeriodicEffects();
+			SendToClient();
+		}
+
+		/// <summary>
+		/// Called when the Aura gets deactivated
+		/// </summary>
+		/// <param name="cancelled"></param>
+		private void Deactivate(bool cancelled)
+		{
+			// custom prochandlers to be applied when spell is casted
+			if (m_spell.ProcHandlers != null && Caster != null)
+			{
+				foreach (var templ in m_spell.ProcHandlers)
+				{
+					Owner.RemoveProcHandler(templ);
+				}
+			}
+
+			if (m_spell.DoesAuraHandleProc)
+			{
+				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
+				m_auras.Owner.RemoveProcHandler(this);
+			}
+			if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId)
+			{
+				// deactivate AreaAura
+				var aaura = m_auras.Owner.GetAreaAura(m_spell);
+				if (aaura != null)
+				{
+					aaura.IsActivated = false;
+				}
+			}
+
+			CallAllHandlers(handler => handler.DoRemove(cancelled));
+			RemoveFromClient();
 		}
 		#endregion
 
@@ -575,13 +660,13 @@ namespace WCell.RealmServer.Spells.Auras
 			// if controlled, the Controller decides when the Aura expires
 			var expired = (!m_spell.HasPeriodicAuraEffects || m_ticks >= m_maxTicks) && m_controller == null;
 
-			if (m_IsActive)
+			if (m_IsActivated)
 			{
 				OnApply();
 
 				if (!expired || m_spell.HasPeriodicAuraEffects)
 				{
-					ApplyHandlersTick();
+					ApplyPeriodicEffects();
 					if (!IsAdded)
 					{
 						return;
@@ -601,29 +686,75 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes and then re-applies all non-perodic Aura-effects
+		/// Toggles all effects that need to be toggled
+		/// (currently only based on Shapeshift mask)
 		/// </summary>
-		void ApplyNonPeriodicEffects()
+		internal void ReEvaluateNonPeriodicEffects()
 		{
 			if (m_spell.HasNonPeriodicAuraEffects)
 			{
-				foreach (var handler in m_handlers)
+				foreach (var handler in Handlers)
 				{
 					if (!handler.SpellEffect.IsPeriodic)
 					{
-						handler.Apply();
+						if (!handler.IsActive)
+						{
+							if (handler.SpellEffect.RequiredShapeshiftMask == 0 ||
+								(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
+							{
+								handler.IsActive = true;
+							}
+						}
+						else
+						{
+							if (handler.SpellEffect.RequiredShapeshiftMask != 0 &&
+								(!handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
+							{
+								handler.IsActive = false;
+							}
+						}
 					}
 				}
 			}
 		}
 
-		private void ApplyHandlersTick()
+		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		public void ReApplyNonPeriodicEffects()
+		{
+			RemoveNonPeriodicEffects();
+			ApplyPeriodicEffects();
+		}
+
+		/// <summary>
+		/// Applies all non-perodic Aura-effects
+		/// </summary>
+		internal void ApplyNonPeriodicEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in Handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic &&
+						(handler.SpellEffect.RequiredShapeshiftMask == 0 ||
+						(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))))
+					{
+						handler.IsActive = true;
+					}
+				}
+			}
+		}
+
+		internal void ApplyPeriodicEffects()
 		{
 			foreach (var handler in m_handlers)
 			{
-				if (m_ticks < 1 || handler.SpellEffect.IsPeriodicAura) // initial tick or periodic handler
+				if (handler.SpellEffect.IsPeriodic &&
+				(handler.SpellEffect.RequiredShapeshiftMask == 0 ||
+						(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))))
 				{
-					handler.Apply();
+					handler.DoApply();
 				}
 
 				if (!IsAdded)
@@ -635,62 +766,27 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes and then re-applies all non-perodic Aura-effects
-		/// </summary>
-		public void ReApplyEffects()
-		{
-			if (m_spell.HasNonPeriodicAuraEffects)
-			{
-				foreach (var handler in m_handlers)
-				{
-					if (!handler.SpellEffect.IsPeriodic)
-					{
-						handler.Remove(false);
-						handler.Apply();
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Removes and then re-applies all non-perodic Aura-effects
-		/// </summary>
-		void RemoveNonPeriodicEffects()
-		{
-			if (m_spell.HasNonPeriodicAuraEffects)
-			{
-				foreach (var handler in m_handlers)
-				{
-					if (!handler.SpellEffect.IsPeriodic)
-					{
-						handler.Remove(false);
-					}
-				}
-			}
-		}
-
-		/// <summary>
 		/// Do certain special behavior everytime Aura is applied
 		/// </summary>
 		private void OnApply()
 		{
 			if (m_spell.IsFood || m_spell.IsDrink)
 			{
-				CasterInfo.CasterUnit.Emote(EmoteType.SimpleEat);
+				CasterReference.UnitMaster.Emote(EmoteType.SimpleEat);
 			}
 		}
 
 		/// <summary>
 		/// Add one more application to the stack
 		/// </summary>
-		public void Stack(CasterInfo caster)
+		public void Stack(ObjectReference caster)
 		{
 			if (IsAdded)
 			{
 				// remove non-periodic effects:
 				RemoveNonPeriodicEffects();
 
-				m_casterInfo = caster;
+				m_CasterReference = caster;
 				if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
@@ -711,6 +807,26 @@ namespace WCell.RealmServer.Spells.Auras
 		#endregion
 
 		#region Remove & Cancel
+		/// <summary>
+		/// Removes and then re-applies all non-perodic Aura-effects
+		/// </summary>
+		void RemoveNonPeriodicEffects()
+		{
+			if (m_spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.IsActive = false;
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Cancels and removes this Aura
+		/// </summary>
 		public void Cancel()
 		{
 			Remove(true);
@@ -721,22 +837,15 @@ namespace WCell.RealmServer.Spells.Auras
 			if (m_spell.IsAreaAura)
 			{
 				// can only cancel AreaAuras if you are the one causing it or if it can time-out
-
 				var owner = m_auras.Owner;
-				if (owner.AreaAura != null && owner.AreaAura.Spell == m_spell)
+				if (owner.EntityId.Low == CasterReference.EntityId || Caster == null || Caster.UnitMaster == owner)
 				{
-					owner.AreaAura.Remove(true);
-					return true;
-				}
-				else if (HasTimeout)
-				{
-					Remove(true);
-					return true;
+					return owner.CancelAreaAura(m_spell);
 				}
 			}
 			else
 			{
-				Remove(true);
+				Remove(cancelled);
 				return true;
 			}
 			return false;
@@ -752,22 +861,34 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				IsAdded = false;
 
+				var owner = m_auras.Owner;
+				var caster = Caster;
+				if (caster != null)
+				{
+					owner.Proc(ProcTriggerFlags.AuraRemoved, owner,
+						new AuraRemovedAction { Attacker = caster, Victim = owner, Aura = this }, true);
+				}
+
 				var auras = m_auras;
 
-				IsActive = false;
-
+				Deactivate(cancelled);
 				RemoveVisibleEffects(cancelled);
 
 				auras.Cancel(this);
 				if (m_controller != null)
 				{
-					m_controller.OnRemove(auras.Owner, this);
+					m_controller.OnRemove(owner, this);
 				}
 
 				if (m_record != null)
 				{
 					m_record.DeleteLater();
 					m_record = null;
+				}
+
+				if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId && owner.CancelAreaAura(m_spell))
+				{
+					//return;
 				}
 			}
 		}
@@ -777,15 +898,13 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		protected void RemoveVisibleEffects(bool cancelled)
 		{
-			RemoveFromClient();
-
 			var owner = m_auras.Owner;
 			if (m_spell.IsFood)
 			{
 				owner.StandState = StandState.Stand;
 			}
 
-			if (owner.EntityId == m_casterInfo.CasterId &&
+			if (owner.EntityId == m_CasterReference.EntityId &&
 				m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade))
 			{
 				if (owner is Character)
@@ -802,7 +921,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void Cleanup()
 		{
-			IsActive = false;
+			IsActivated = false;
 			if (m_record != null)
 			{
 				var record = m_record;
@@ -817,36 +936,6 @@ namespace WCell.RealmServer.Spells.Auras
 		public void OnRemove(Unit owner, Aura aura)
 		{
 			throw new NotImplementedException();
-		}
-		#endregion
-
-		#region Enable & Disable
-		private void Enable()
-		{
-
-			// apply all aura-related effects
-			ApplyNonPeriodicEffects();
-
-			if (m_spell.DoesAuraHandleProc)
-			{
-				// only add proc if there is not a custom handler for it
-				m_auras.Owner.AddProcHandler(this);
-			}
-		}
-
-		/// <summary>
-		/// Guaranteed Cleanup
-		/// </summary>
-		/// <param name="cancelled"></param>
-		internal void Disable(bool cancelled)
-		{
-			if (m_spell.DoesAuraHandleProc)
-			{
-				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
-				m_auras.Owner.RemoveProcHandler(this);
-			}
-
-			CallAllHandlers(handler => handler.Remove(cancelled));
 		}
 		#endregion
 
@@ -924,50 +1013,67 @@ namespace WCell.RealmServer.Spells.Auras
 			set;
 		}
 
-		public bool CanBeTriggeredBy(Unit target, IUnitAction action, bool active)
+		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			if (m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active))
+			var hasProcEffects = m_spell.ProcTriggerEffects != null;
+			var canProc = false;
+
+			if (hasProcEffects)
 			{
-				return true;
+				foreach (var handler in m_handlers)
+				{
+					if (handler.SpellEffect.IsProc)
+					{
+						// only trigger proc effects or all effects, if there arent any proc-specific effects
+						if (handler.CanProcBeTriggeredBy(action) && 
+								(!handler.SpellEffect.HasAffectMask ||
+								action.Spell == null || 
+								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
+						{
+							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
+							canProc = true;
+							break;
+						}
+					}
+				}
 			}
-			return false;
+			else if (action.Spell == null || action.Spell != Spell)
+			{
+				// Simply count down stack count and remove aura eventually
+				canProc = true;
+			}
+
+			return canProc && m_spell.CanProcBeTriggeredBy(m_auras.Owner, action, active);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
 		{
 			var proced = false;
-			if (!m_spell.Attributes.HasFlag(SpellAttributes.MovementImpairing) &&
-				!m_spell.AttributesEx.HasFlag(SpellAttributesEx.Negative))
+
+			var hasProcEffects = m_spell.ProcTriggerEffects != null;
+			if (hasProcEffects)
 			{
-				// normal proc trigger
-				var hasProcEffects = m_spell.ProcTriggerEffects != null;
-				if (!m_spell.IsPassive || hasProcEffects)
+				foreach (var handler in m_handlers)
 				{
-					foreach (var handler in m_handlers)
+					if (handler.SpellEffect.IsProc)
 					{
-						if (!hasProcEffects || handler.SpellEffect.IsProc)
+						// only trigger proc effects or all effects, if there arent any proc-specific effects
+						if (handler.CanProcBeTriggeredBy(action) && 
+								(!handler.SpellEffect.HasAffectMask ||
+								action.Spell == null ||
+								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
 						{
-							// only trigger proc effects or all effects, if there arent any proc-specific effects
-							if ((!handler.SpellEffect.HasAffectMask ||
-								(action.Spell != null && action.Spell.MatchesMask(handler.SpellEffect.AffectMask))))
-							{
-								// only trigger if no AffectMask is set or the triggerer matches the proc mask
-								handler.OnProc(triggerer, action);
-								proced = true;
-							}
+							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
+							handler.OnProc(triggerer, action);
+							proced = true;
 						}
 					}
 				}
 			}
 			else
 			{
-				// proc simply breaks movement impairing or negative effect
+				// Simply reduce stack count and remove aura eventually
 				proced = true;
-				if (m_stackCount == 0)
-				{
-					Remove(true);
-					return;
-				}
 			}
 
 			if (proced && m_spell.MaxStackCount > 1)
@@ -994,17 +1100,17 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Persistance
 		public void Save()
 		{
-			RealmServer.Instance.AddMessage(() => SaveNow());
+			RealmServer.Instance.AddMessage(SaveNow);
 		}
 
 		internal void SaveNow()
 		{
 			if (m_record == null)
 			{
-				// We currently only support Aura saving for chars
 				var owner = m_auras.Owner;
 				if (!(owner is Character))
 				{
+					// We currently only support Aura saving for Characters
 					throw new InvalidOperationException(string.Format("Tried to save non-Player Aura {0} on: {1}", this, owner));
 				}
 				m_record = AuraRecord.ObtainAuraRecord(this);

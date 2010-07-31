@@ -473,7 +473,7 @@ namespace WCell.RealmServer.Commands
 
 				if (chr == null)
 				{
-					trigger.Reply(LangKey.CmdSummonPlayerNotOnline, name);
+					trigger.Reply(RealmLangKey.CmdSummonPlayerNotOnline, name);
 				}
 				else
 				{
@@ -490,7 +490,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

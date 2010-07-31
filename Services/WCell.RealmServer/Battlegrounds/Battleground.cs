@@ -662,7 +662,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.RegionInfo.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (Template.RegionTemplate.MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}
@@ -717,7 +717,7 @@ namespace WCell.RealmServer.Battlegrounds
 				if (IsActive && !chr.Role.IsStaff)
 				{
 					// flag as deserter
-					chr.Auras.AddSelf(BattlegroundMgr.DeserterSpell, false);
+					chr.Auras.CreateSelf(BattlegroundMgr.DeserterSpell, false);
 				}
 
 				// check if the BG is too empty to continue

@@ -22,13 +22,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class RegenPercentOfTotalHealthHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner;
 			if (!owner.IsAlive)
 				return;
 
-			owner.HealthPct += EffectValue;
+			owner.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
 		}
 
 	}

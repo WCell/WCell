@@ -1,4 +1,4 @@
-﻿namespace WCell.Tools.Maps.Parsing.WMO.Components
+namespace WCell.Tools.Maps.Parsing.WMO.Components
 {
     /// <summary>
     /// MOBA 24 bytes

@@ -3,7 +3,7 @@
  *   file		: QuestMgr.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (út, 08 IV 2008) $
+ *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (ï¿½t, 08 IV 2008) $
  *   last author	: $LastChangedBy: domiii $
  *   revision		: $Rev: 244 $
  *
@@ -57,6 +57,11 @@ namespace WCell.RealmServer.Quests
 		/// The Xp Reward Level that is used to determine the Xp reward upon completion.
 		/// </summary>
 		public static readonly QuestXPInfo[] QuestXpInfos = new QuestXPInfo[200];
+
+        /// <summary>
+        /// The Reputation level that is used to deteminate the reputation reward upon quest completion.
+        /// </summary>
+        public static readonly QuestRewRepInfo[] QuestRewRepInfos = new QuestRewRepInfo[2];
 
 		/// <summary>
 		/// Amount of levels above the Character level at which a player is not allowed to do the Quest
@@ -139,7 +144,8 @@ namespace WCell.RealmServer.Quests
 		{
 			if (!Loaded)
 			{
-				new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile("QuestXP.dbc"));
+                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTXP));
+                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTFACTIONREWARD));
 
 				Templates = new QuestTemplate[30000];
 
@@ -357,6 +363,8 @@ namespace WCell.RealmServer.Quests
 				{
 					// start a single quest if there is only one and the user did not start it yet
 					QuestHandler.SendDetails(qHolder, list[0], chr, true);
+                    if (list[0].Flags.HasFlag(QuestFlags.AutoAccept))
+                        chr.QuestLog.TryAddQuest(list[0], qHolder);
 				}
 				else
 				{

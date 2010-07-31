@@ -187,7 +187,8 @@ namespace WCell.RealmServer.Handlers
 				var spline = packet.ReadFloat();
 			}
 
-			var onlyOrientation = !moveFlags.HasAnyFlag(MovementFlags.PitchDown | MovementFlags.PitchUp | MovementFlags.Left | MovementFlags.Right) &&
+			// it is only orientation if it is none of the packets below, and has no flags but orientation flags
+			var onlyOrientation = !moveFlags.HasAnyFlag(MovementFlags.Orientation ^ MovementFlags.All) &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_HEARTBEAT &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP &&
 				packet.PacketId.RawId != (int)RealmServerOpCode.MSG_MOVE_STOP_ASCEND &&

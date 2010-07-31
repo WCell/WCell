@@ -23,12 +23,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicDamagePercentHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var holder = m_aura.Auras.Owner;
 			if (m_aura.Caster != null)
 			{
-				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, (int)(holder.MaxHealth * (EffectValue / 100f)));
+				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, (int)(holder.MaxHealth * (EffectValue / 100f)));
 			}
 		}
 

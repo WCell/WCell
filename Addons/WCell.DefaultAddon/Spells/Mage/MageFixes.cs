@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Effects;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Mage
@@ -66,6 +67,16 @@ namespace WCell.Addons.Default.Spells.Mage
 
 			// These spells cancel eachother
 			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageArmor);
+
+			// Mana gems don't have a limit
+			SpellHandler.Apply(spell =>
+			                   	{
+			                   		spell.RemoveEffect(SpellEffectType.CreateItem);
+			                   		var efct = spell.GetEffect(SpellEffectType.Dummy);
+			                   		efct.SpellEffectHandlerCreator =
+			                   			(cast, effect) => new TriggerSpellEffectHandler(cast, effect);
+			                   		efct.TriggerSpellId = (SpellId) efct.CalcEffectValue();
+			                   	}, SpellLineId.MageConjureManaGem);
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler

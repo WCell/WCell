@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Formulas
 			return Math.Max(0, xp);
 		}
 
-		public static int GetExplorationXp(ZoneInfo zone, Character character)
+		public static int GetExplorationXp(ZoneTemplate zone, Character character)
 		{
 			return ExplorationXpFactor * (zone.AreaLevel * 20);
 		}

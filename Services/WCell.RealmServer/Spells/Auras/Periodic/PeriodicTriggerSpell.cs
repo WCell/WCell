@@ -28,11 +28,11 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		protected Spell spell;
 		protected SpellCast cast, origCast;
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
+			var channel = m_aura.Controller as SpellChannel;
 			if (spell == null)
 			{
-				var channel = m_aura.Controller as SpellChannel;
 				if (channel != null)
 				{
 					origCast = channel.Cast;
@@ -40,12 +40,6 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				else
 				{
 					origCast = m_aura.Auras.Owner.SpellCast;
-				}
-
-				if (origCast == null)
-				{
-					return;
-					//throw new Exception("Cannot apply a Periodic Trigger Spell Aura on anyone but the Caster");
 				}
 
 				spell = m_spellEffect.TriggerSpell;
@@ -58,14 +52,10 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				}
 			}
 
-			cast = SpellCast.ObtainPooledCast(origCast.Caster);
-			cast.TargetLoc = origCast.TargetLoc;
-			cast.Selected = origCast.Selected;
-			//cast.Start(spell, m_spellEffect, true);
-			cast.Start(spell, true);
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, channel, origCast != null ? origCast.UsedItem : null);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (cast != null && cast.IsChanneling)
 			{

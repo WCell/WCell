@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Misc
 			{
 				return SpellFailedReason.CantDuelWhileStealthed;
 			}
-			if (challenger.Zone != null && challenger.Zone.Info.IsSanctuary)
+			if (challenger.Zone != null && challenger.Zone.Template.IsSanctuary)
 			{
 				return SpellFailedReason.NotHere;
 			}
@@ -314,8 +314,8 @@ namespace WCell.RealmServer.Misc
 				// remove all debuffs
 				m_challenger.FirstAttacker = null;
 				m_rival.FirstAttacker = null;
-				m_challenger.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterInfo.CasterId == m_rival.EntityId);
-				m_rival.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterInfo.CasterId == m_challenger.EntityId);
+				m_challenger.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterReference.EntityId == m_rival.EntityId);
+				m_rival.Auras.RemoveWhere(aura => !aura.IsBeneficial && aura.CasterReference.EntityId == m_challenger.EntityId);
 				if (m_rival.ComboTarget == m_challenger)
 				{
 					m_rival.ResetComboPoints();

@@ -1,4 +1,4 @@
-﻿// IScanFilter.cs
+// IScanFilter.cs
 //
 // Copyright 2006 John Reilly
 //

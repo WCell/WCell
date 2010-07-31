@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.World;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
@@ -22,7 +23,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Region", "Rgn");
 			EnglishParamInfo = "";
-			EnglishDescription = "Provides Commands to manipulate Regions and their content.";
+			Description = new TranslatableItem(RealmLangKey.CmdRegionDescription);
 		}
 
 		#region SpawnRegion
@@ -49,7 +50,7 @@ namespace WCell.RealmServer.Commands
 						if (!region.IsSpawned)
 						{
 							region.SpawnRegion();
-							trigger.Reply("Spawned region " + region);
+							trigger.Reply(RealmLangKey.CmdRegionSpawnResponse, region.ToString());
 						}
 					});
 				}
@@ -59,10 +60,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Spawn", "S");
-				EnglishParamInfo = "[-a|<name>]";
-				EnglishDescription = "Spawns GOs and NPCs in the current (or specified) region. " +
-					"-a switch spawns all active Regions." +
-					"(Only used for development purposes where the regions arent spawned automatically.)";
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdRegionSpawnParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionSpawnDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -75,7 +74,7 @@ namespace WCell.RealmServer.Commands
 					{
 						// spawn all
 						SpawnAllRegions(trigger);
-						trigger.Reply("All regions spawned.");
+						trigger.Reply(RealmLangKey.CmdRegionSpawnResponse1);
 						return;
 					}
 					else
@@ -84,7 +83,7 @@ namespace WCell.RealmServer.Commands
 						region = World.GetRegion(regionId);
 						if (region == null)
 						{
-							trigger.Reply("Invalid Region.");
+							trigger.Reply(RealmLangKey.CmdRegionSpawnError1);
 							return;
 						}
 					}
@@ -93,7 +92,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (trigger.Args.Target == null)
 					{
-						trigger.Reply("You did not specify the Region to be spawned.");
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError2);
 						return;
 					}
 					region = trigger.Args.Target.Region;
@@ -101,25 +100,25 @@ namespace WCell.RealmServer.Commands
 
 				if (region.IsSpawned)
 				{
-					trigger.Reply("Region " + region + " is already spawned.");
+					trigger.Reply(RealmLangKey.CmdRegionSpawnError3);
 				}
 				else
 				{
-					trigger.Reply("Spawning {0}...", region.Name);
+					trigger.Reply(RealmLangKey.CmdRegionSpawnResponse2, region.Name);
 					if (!GOMgr.Loaded)
 					{
-						trigger.Reply("No GOs will be spawned (Use 'Load GOs' before spawning)");
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError4);
 					}
 
 					if (!NPCMgr.Loaded)
 					{
-						trigger.Reply("No NPCs will be spawned (Use 'Load NPCs' before spawning)");
+						trigger.Reply(RealmLangKey.CmdRegionSpawnError5);
 					}
 
 					region.AddMessage(() =>
 					{
 						region.SpawnRegion();
-						trigger.Reply("Spawned region " + region);
+						trigger.Reply(RealmLangKey.CmdRegionSpawnResponse3, region);
 					});
 				}
 			}
@@ -134,8 +133,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Clear");
-				EnglishParamInfo = "[<name>]";
-				EnglishDescription = "Removes all objects from the current or given Region.";
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdRegionClearParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdRegionClearDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -147,7 +146,7 @@ namespace WCell.RealmServer.Commands
 					region = World.GetRegion(regionId);
 					if (region == null)
 					{
-						trigger.Reply("Invalid Region.");
+						trigger.Reply(RealmLangKey.CmdRegionClearError1);
 						return;
 					}
 				}
@@ -155,7 +154,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (trigger.Args.Character == null)
 					{
-						trigger.Reply("You did not specify a Region to be cleared.");
+						trigger.Reply(RealmLangKey.CmdRegionClearError2);
 						return;
 					}
 					region = trigger.Args.Character.Region;
@@ -164,7 +163,7 @@ namespace WCell.RealmServer.Commands
 				region.AddMessage(() =>
 				{
 					region.RemoveObjects();
-					trigger.Reply("Cleared Region " + region);
+					trigger.Reply(RealmLangKey.CmdRegionClearResponse, region.ToString());
 				});
 			}
 		}
@@ -179,7 +178,7 @@ namespace WCell.RealmServer.Commands
 			{
 				Init("Updates", "Upd");
 				EnglishParamInfo = "0|1";
-				EnglishDescription = "Toggles region updates in all Regions on or off";
+				Description = new TranslatableItem(RealmLangKey.CmdRegionUpdateDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -201,7 +200,7 @@ namespace WCell.RealmServer.Commands
 						}
 					}
 				}
-				trigger.Reply("Done.");
+				trigger.Reply(RealmLangKey.Done);
 			}
 		}
 		#endregion
@@ -215,7 +214,7 @@ namespace WCell.RealmServer.Commands
 			{
 				Init("List", "L");
 				EnglishParamInfo = "";
-				EnglishDescription = "Lists active regions";
+				Description = new TranslatableItem(RealmLangKey.CmdRegionListDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -223,7 +222,7 @@ namespace WCell.RealmServer.Commands
 				var regions = World.GetAllRegions();
 				if (regions != null)
 				{
-					trigger.Reply("Active Regions:");
+					trigger.Reply(RealmLangKey.CmdRegionListResponse);
 					foreach (var rgn in regions)
 					{
 						if (rgn.IsRunning)

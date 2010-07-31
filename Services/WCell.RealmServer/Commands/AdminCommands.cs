@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Commands
 				{
 					if (!mod.Contains("n") || !trigger.Text.HasNext)
 					{
-						trigger.Reply(LangKey.CmdKickMustProvideName);
+						trigger.Reply(RealmLangKey.CmdKickMustProvideName);
 						return;
 					}
 					else
@@ -114,7 +114,7 @@ namespace WCell.RealmServer.Commands
 						chr = World.GetCharacter(name, false);
 						if (chr == null)
 						{
-							trigger.Reply(LangKey.PlayerNotOnline, name);
+							trigger.Reply(RealmLangKey.PlayerNotOnline, name);
 							return;
 						}
 					}
@@ -695,7 +695,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -750,7 +750,7 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get { return false; }
 		}
@@ -815,7 +815,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -863,7 +863,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

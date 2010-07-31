@@ -3,7 +3,7 @@
  *   file		: QuestHandler.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (út, 08 IV 2008) $
+ *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (ï¿½t, 08 IV 2008) $
  *   last author	: $LastChangedBy: domiii $
  *   revision		: $Rev: 244 $
  *
@@ -335,13 +335,13 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(qt.Category);			// questsort
 				pckt.Write((uint)qt.QuestType);
 				pckt.Write(qt.SuggestedPlayers);
-				pckt.Write((uint)qt.MinReqReputation.ReputationIndex);
-				pckt.Write(qt.MinReqReputation.Value);
-				pckt.Write((uint)qt.MaxReqReputation.ReputationIndex);
-				pckt.Write(qt.MaxReqReputation.Value);				//  (#10)
+				pckt.Write((uint)qt.ObjectiveMinReputation.ReputationIndex);
+				pckt.Write(qt.ObjectiveMinReputation.Value);
+				pckt.Write((uint)qt.ObjectiveMaxReputation.ReputationIndex);
+				pckt.Write(qt.ObjectiveMaxReputation.Value);				//  (#10)
 
 				pckt.Write(qt.FollowupQuestId);
-				pckt.Write(0);										// since 3.3
+                pckt.Write(qt.CalcRewardXp(chr));										// since 3.3
 
 				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
@@ -460,6 +460,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="acceptable">if set to <c>true</c> [acceptable].</param>
 		public static void SendDetails(IEntity questGiver, QuestTemplate qt, Character chr, bool acceptable)
 		{
+
 			var locale = chr.Locale;
 			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTGIVER_QUEST_DETAILS))
 			{
@@ -758,7 +759,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				pckt.Write(qt.Id);
 
-				pckt.Write(qt.CalcRewardXp(chr.Level));
+				pckt.Write(qt.CalcRewardXp(chr));
 				pckt.Write(qt.RewMoney); // maybe fix up with max level
 				pckt.Write(qt.BonusHonor);
 				pckt.Write(qt.RewardTalents);
@@ -920,6 +921,8 @@ namespace WCell.RealmServer.Handlers
 				if (!chr.QuestLog.HasActiveQuest(questid))
 				{
 					SendDetails(qHolder, qt, chr, true);
+                    if (qt.Flags.HasFlag(QuestFlags.AutoAccept))
+                        chr.QuestLog.TryAddQuest(qt, qHolder);
 				}
 				else
 				{

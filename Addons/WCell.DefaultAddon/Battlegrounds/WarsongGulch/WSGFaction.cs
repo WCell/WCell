@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,7 +61,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		// TODO: check this. it's always null, so...?
 #pragma warning disable 0649
-		private SimpleObjectUpdateAction _debuffUpdate;
+		private OneShotUpdateObjectAction _debuffUpdate;
 #pragma warning restore 0649
 
 		#endregion
@@ -159,7 +159,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			if (_flag == null)
 			{
-				_flag = FlagStandEntry.FirstTemplate.Spawn(Instance);
+				_flag = FlagStandEntry.FirstSpawn.Spawn(Instance);
 
 				_isFlagHome = true;
 
@@ -187,9 +187,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			FlagCarrier = chr;
 
 			// Shows the flag on the character. Does all kinds of stuff in the handler.
-			chr.Auras.AddSelf(_flagSpell, true);
-			/*_debuffUpdate = */
-			chr.CallDelayed(60 * (int)_flagRespawn * 1000, obj => ApplyFlagCarrierDebuff());
+			chr.Auras.CreateSelf(_flagSpell, true);
+			_debuffUpdate = chr.CallDelayed(60 * (int)_flagRespawn * 1000, obj => ApplyFlagCarrierDebuff());
 
 			if (_flag != null)
 			{
@@ -255,7 +254,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			if (FlagCarrier != null && FlagCarrier.IsInWorld)
 			{
 				FlagCarrier.SpellCast.Trigger(_flagDropSpell);
-				FlagCarrier.Auras.AddSelf(_flagDropDebuff, false); // confirmed from logs
+				FlagCarrier.Auras.CreateSelf(_flagDropDebuff, false); // confirmed from logs
 
 				var msg = FlagCarrier.Name + " has dropped the " + Name + " flag!";
 				ChatMgr.SendSystemMessage(Instance.Characters, msg);
@@ -339,7 +338,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			if (FlagCarrier != null && FlagCarrier.IsInWorld)
 			{
-				FlagCarrier.Auras.AddSelf(_flagCarrierDebuffSpell, false);
+				FlagCarrier.Auras.CreateSelf(_flagCarrierDebuffSpell, false);
 			}
 		}
 

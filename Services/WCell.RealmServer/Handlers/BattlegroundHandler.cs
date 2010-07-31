@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using WCell.Core.Network;
 using WCell.Constants;
 using WCell.RealmServer.Battlegrounds;
@@ -199,7 +199,7 @@ namespace WCell.RealmServer.Handlers
                 packet.Write((long)0);
                 packet.Write(fromGUI);							// since 3.1.1
 				packet.Write((uint)queue.Template.Id);
-				packet.Write((byte)queue.LevelBracket);			// Level range
+				packet.Write((byte)queue.BracketId);			// BracketId
 				packet.Write((byte)0);							// since 3.3
 
                 var pos = packet.Position;

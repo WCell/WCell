@@ -34,9 +34,10 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (_ownedPet = Effect.MiscValue == 0)
+			_ownedPet = Effect.MiscValue == 0;
+			if (_ownedPet)
 			{
-				if (((Character)m_cast.Caster).ActivePet == null)
+				if (((Character)m_cast.CasterObject).ActivePet == null)
 				{
 					failReason = SpellFailedReason.NoPet;
 				}
@@ -50,7 +51,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override SummonType SummonType
 		{
-			get { return SummonType.Summon; }
+			get { return SummonType.SummonPet; }
 		}
 
 		public override void Apply()
@@ -58,21 +59,17 @@ namespace WCell.RealmServer.Spells.Effects
 			if (_ownedPet)
 			{
 				// Call Pet
-				((Character)m_cast.Caster).IsPetActive = true;
+				((Character)m_cast.CasterObject).IsPetActive = true;
 			}
 			else
 			{
-				var handler = SpellHandler.PetSummonHandler;
-				Summon(handler);
+				Summon(SpellHandler.GetSummonEntry(SummonType));
 			}
 		}
 
 		public override ObjectTypes CasterType
 		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
+			get { return ObjectTypes.Player; }
 		}
 	}
 }

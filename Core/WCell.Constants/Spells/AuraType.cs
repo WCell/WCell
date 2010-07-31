@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,7 +74,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Aura_48 = 48,
 		ModDodgePercent = 49,
-		ModBlockSkill = 50,
+		ModCritHealValuePct = 50,
 		ModBlockPercent = 51,
 		ModCritPercent = 52,
 		PeriodicLeech = 53,
@@ -94,7 +94,7 @@ namespace WCell.Constants.Spells
 		PeriodicManaLeech = 64,
 		ModCastingSpeed = 65,
 		FeignDeath = 66,
-		ModDisarm = 67,
+		DisarmMainHand = 67,
 		ModStalked = 68,
 		SchoolAbsorb = 69,
 		ExtraAttacks = 70,
@@ -142,7 +142,7 @@ namespace WCell.Constants.Spells
 		SpellMagnet = 96,
 		ManaShield = 97,
 		ModSkillTalent = 98,
-		ModAttackPower = 99,
+		ModMeleeAttackPower = 99,
 		/// <summary>
 		/// Shows beneficial spells to all, like Detect Magic
 		/// </summary>
@@ -174,7 +174,7 @@ namespace WCell.Constants.Spells
 		ModHealing = 115,
 		ModRegenInCombat = 116,
 		ModMechanicResistance = 117,
-		ModHealingPercent = 118,
+		ModHealingTakenPercent = 118,
 		Unused_SharePetTracking = 119,
 		Untrackable = 120,
 		Empathy = 121,
@@ -192,7 +192,7 @@ namespace WCell.Constants.Spells
 		ModIncreaseHealthPercent = 133,
 		ModManaRegenInterrupt = 134,
 		ModHealingDone = 135,
-		ModHealingTaken = 136,
+		ModHealingDonePct = 136,
 		ModTotalStatPercent = 137,
 		ModHaste = 138,
 		ForceReaction = 139,
@@ -263,8 +263,8 @@ namespace WCell.Constants.Spells
 		ModPartySpeed = 171,
 		ModPartySpeedMounted = 172,
 		Unused_AllowChampionSpells = 173,
-		ModSpellDamageByPercentOfSpirit = 174,
-		ModSpellHealingByPercentOfSpirit = 175,
+		ModSpellDamageByPercentOfStat = 174,
+		ModSpellHealingByPercentOfStat = 175,
 		SpiritOfRedemption = 176,
 		AoeCharm = 177,
 		ModDebuffResistancePercent = 178,
@@ -300,7 +300,7 @@ namespace WCell.Constants.Spells
 		ModFactionReputationGainPercent = 190,
 		UseNormalMovementSpeed = 191,
 		ModMeleeHastePercent = 192,
-		ModTimeBetweenAttacks = 193,
+		ModHastePct = 193,
 		/// <summary>
 		/// No longer unused as of 3.0.2
 		/// Function may have changed though
@@ -320,10 +320,10 @@ namespace WCell.Constants.Spells
 		ModAttackerCritChancePercent = 197,
 		Unused_ModAllWeaponSkills = 198,
 		/// <summary>
-		/// What is this?
+		/// Used exactly like ModSpellHitChance
 		/// </summary>
 		ModSpellHitChance2 = 199,
-		ModXpPct = 200,
+		ModKillXpPct = 200,
 		Fly = 201,
 		/// <summary>
 		/// Misc = 2: Finishing moves
@@ -337,12 +337,15 @@ namespace WCell.Constants.Spells
 		ModSpeedMountedFlight = 207,
 		ModSpeedFlight = 208,
 		Aura_209 = 209,
-		Aura_210 = 210,
 		/// <summary>
-		/// Seems to be a copy of AuraModPartySpeedMounted
+		/// Modifies flight speed in %
+		/// </summary>
+		ModFlightSpeed = 210,
+		/// <summary>
+		/// Seems to be the same as AuraModPartySpeedMounted (increases mount speed)
 		/// </summary>
 		Aura_211 = 211,
-		ModRangedAttackPowerByPercentOfIntellect = 212,
+		ModRangedAttackPowerByPercentOfStat = 212,
 		ModRageFromDamageDealtPercent = 213,
 		Aura_214 = 214,
 		/// <summary>
@@ -408,13 +411,13 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Vehicle = 236,
 		/// <summary>
-		/// Increases your spell power by an amount equal to X% of your attack power.
+		/// Increases your spell power by an amount equal to a percentage of your attack power.
 		/// </summary>
 		ModSpellPowerByAPPct = 237,
 		/// <summary>
-		/// Always in combo with Aura_237, unnecessary (adding this would add spell power twice)
+		/// Always in combo with ModSpellPowerByAPPct -> unnecessary (adding this would add spell power twice)
 		/// </summary>
-		Aura_238 = 238,
+		ModHealingPowerByAPPct = 238,
 		/// <summary>
 		/// Noggenfogger Elixir (Id: 16595)
 		/// </summary>
@@ -440,29 +443,47 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		ComprehendLanguage = 244,
 		ModMagicEffectDurationPercent = 245,
-		Aura_246 = 246,
+		/// <summary>
+		/// Used in Pure of Heart and Master Poisoner
+		/// </summary>
+		ModPoisonDurationPct = 246,
 		Aura_247 = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
 		Aura_249 = 249,
 		Aura_250 = 250,
 		Aura_251 = 251,
 		Aura_252 = 252,
-		Aura_253 = 253,
-		Aura_254 = 254,
-		Aura_255 = 255,
+		/// <summary>
+		/// Gives a % chance to "block double the normal amount".
+		/// See: WarriorProtectionCriticalBlock
+		/// </summary>
+		CriticalBlockPct = 253,
+
+		/// <summary>
+		/// Disarms offhand and/or shield (same slot)
+		/// </summary>
+		DisarmOffhandAndShield = 254,
+		/// <summary>
+		/// Increases damage taken from bleed in %
+		/// </summary>
+		IncreaseBleedEffectPct = 255,
 		Aura_256 = 256,
 		Aura_257 = 257,
 		Aura_258 = 258,
 		Aura_259 = 259,
 		Aura_260 = 260,
 		Phase = 261, // Highest as of 2.4.3.8606
-		Aura_262 = 262,
+		/// <summary>
+		/// Enables the abilities that match the effect's AffectMask, despite
+		/// certain constraints (eg. enables use of abilities in combat etc).
+		/// </summary>
+		EnableAbilityMask = 262,
 		Aura_263 = 263,
 		Unused_264 = 264,
 		Unused_265 = 265,
 		Unused_266 = 266,
 		Aura_267 = 267,
-		Aura_268 = 268,
+		ModMeleeAttackPowerByPercentOfStat = 268,
 		Aura_269 = 269,
 		Aura_270 = 270,
 		/// <summary>
@@ -472,10 +493,16 @@ namespace WCell.Constants.Spells
 		Aura_272 = 272,
 		Aura_273 = 273,
 		Aura_274 = 274,
-		Aura_275 = 275,
+		/// <summary>
+		/// Removes any shapeshift requirements, spells become usable when using any shapeshift form
+		/// </summary>
+		IgnoreShapeshiftRequirement = 275,
 		Aura_276 = 276,
 		Aura_277 = 277,
-		Aura_278 = 278,
+		/// <summary>
+		/// 
+		/// </summary>
+		DisarmRanged = 278,
 		Aura_279 = 279,
 		ModArmorPenetration = 280,
 		Aura_281 = 281,
@@ -483,10 +510,14 @@ namespace WCell.Constants.Spells
 		Aura_283 = 283, // Highest in 3.0.2.9056
 		Aura_284 = 284,
 		/// <summary>
-		/// Increases your attack power by X for every Y armor value you have.
+		/// Increases your attack power by X for every Y armor you have.
+		/// Always comes together with a Dummy effect
 		/// </summary>
 		ModAPByArmor = 285,
-		Aura_286 = 286,
+		/// <summary>
+		/// Enables critical strikes for the spells affected by AffectMask
+		/// </summary>
+		EnableCritical = 286,
 		/// <summary>
 		/// "chance to deflect spells cast by targets in front of you"
 		/// </summary>
@@ -494,15 +525,15 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Only: Deterrence (Id: 67801) [Deterrence_3]
 		/// </summary>
-		Aura_288 = 288,
+		Aura_288_Unused = 288,
 		/// <summary>
 		/// Only: PaladinProtectionCombatExpertise (no apparent effect)
 		/// </summary>
-		Aura_290 = 290,
+		Aura_290_Unused = 290,
 		/// <summary>
 		/// Always with ModXpPct (no apparent effect)
 		/// </summary>
-		Aura_291 = 291,
+		ModQuestXpPct = 291,
 		Aura_292 = 292,
 		Aura_293 = 293,
         Aura_294 = 294,
@@ -518,6 +549,18 @@ namespace WCell.Constants.Spells
         Aura_304 = 304,
         Aura_305 = 305,
         Aura_306 = 307,
+		/// <summary>
+		/// No apparent effect, probably used in combination with talents
+		/// </summary>
+		UnkFrozenHunterDebuff,
 		End = 500
+	}
+
+	[Flags]
+	public enum DisarmMask : uint
+	{
+		MainHand = 1,
+		Ranged = 2,
+		Offhand = 3
 	}
 }

@@ -7,7 +7,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// MapId from Maps.dbc
         /// </summary>
-        public uint MapId
+        public int MapId
         {
             get { return Fields[0]; }
         }

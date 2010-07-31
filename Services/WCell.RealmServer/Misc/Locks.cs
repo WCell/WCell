@@ -6,6 +6,7 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Skills;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -152,7 +153,7 @@ namespace WCell.RealmServer.Misc
 		{
 			//DBCReader<LockEntry, LockConverter> reader =
 			new MappedDBCReader<LockEntry, LockConverter>(
-				RealmServerConfiguration.GetDBCFile("Lock.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_LOCKS));
 		}
 
 		class LockConverter : AdvancedDBCRecordConverter<LockEntry>

@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.RealmServer;
+using WCell.RealmServer.Lang;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Global;
 using WCell.Constants.World;
@@ -47,7 +48,7 @@ namespace WCell.Addons.Default.Teleport
 
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set { Names[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
@@ -73,7 +74,7 @@ namespace WCell.Addons.Default.Teleport
 			get { return ZoneId.None; }
 		}
 
-		public ZoneInfo ZoneInfo
+		public ZoneTemplate ZoneTemplate
 		{
 			get { return null; }
 		}

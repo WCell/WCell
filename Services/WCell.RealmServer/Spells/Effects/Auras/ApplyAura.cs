@@ -47,10 +47,10 @@ namespace WCell.RealmServer.Spells.Effects
 			m_auraEffectHandlers = new List<SingleAuraApplicationInfo>(3);
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var failedReason = SpellFailedReason.Ok;
-			var effectHandler = AuraHandler.CreateEffectHandler(Effect, m_cast.Caster.CasterInfo, (Unit)target, CalcEffectValue(), ref failedReason);
+			var effectHandler = AuraHandler.CreateEffectHandler(Effect, m_cast.CasterReference, (Unit)target, ref failedReason);
 
 			if (failedReason == SpellFailedReason.Ok)
 			{

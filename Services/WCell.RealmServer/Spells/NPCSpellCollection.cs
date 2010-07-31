@@ -212,7 +212,7 @@ namespace WCell.RealmServer.Spells
 			return m_readySpells.Contains(spell);
 		}
 
-		public override void ClearCooldown(Spell spell)
+		public override void ClearCooldown(Spell spell, bool alsoCategory)
 		{
 			if (m_cooldowns != null)
 			{

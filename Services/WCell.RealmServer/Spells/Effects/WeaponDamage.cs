@@ -17,21 +17,24 @@
 using NLog;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Spells.Effects
 {
 	public class WeaponDamageEffectHandler : SpellEffectHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public WeaponDamageEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
 		{
 		}
 
-		protected override void Apply(WorldObject target)
+		public override void Apply()
 		{
 			// does nothing, extra damage is applied on Hit
+		}
+
+		public virtual void OnHit(DamageAction action)
+		{
 		}
 
 		public override ObjectTypes CasterType

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -252,6 +252,7 @@
     <Compile Include="Maps\ObjectFileReader.cs" />
     <Compile Include="Maps\ZoneTileSetReader.cs" />
     <Compile Include="Maps\ZoneGridWriter.cs" />
+    <Compile Include="Misc\LineConverter.cs" />
     <Compile Include="Mokrago\CombatRatingsOutput.cs" />
     <Compile Include="Spells\SpellEffectCreator.cs" />
     <Compile Include="Domi\Output\SkillOutput.cs" />

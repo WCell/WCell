@@ -24,6 +24,7 @@ using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
@@ -35,6 +36,7 @@ using WCell.Util;
 using WCell.Util.Data;
 using System.Text.RegularExpressions;
 using WCell.Util.Graphics;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -87,7 +89,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// whether this is an ability involving any kind of weapon-attack
 		/// </summary>
-		public bool IsWeaponAbility;
+		public bool IsPhysicalAbility;
 
 		/// <summary>
 		/// Whether this can trigger an instant Strike
@@ -101,6 +103,11 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Whether this is a ranged attack (includes wands)
+		/// </summary>
+		public bool IsRanged;
+
+		/// <summary>
+		/// Whether this is a ranged attack (includes wands), that is not triggered
 		/// </summary>
 		public bool IsRangedAbility;
 
@@ -124,6 +131,14 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsTeachSpell;
 
+		/// <summary>
+		/// Whether it has any individual or category cooldown
+		/// </summary>
+		public bool HasCooldown;
+
+		/// <summary>
+		/// Whether this spell has an individual cooldown (unlike a category or "global" cooldown)
+		/// </summary>
 		public bool HasIndividualCooldown;
 
 		/// <summary>
@@ -131,13 +146,18 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsTame
 		{
-            get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
+			get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
 		}
 
 		/// <summary>
 		/// Tame Beast (Id: 13481) amongst others
 		/// </summary>
 		public bool IsTameEffect;
+
+		/// <summary>
+		/// Whether this spell enchants an Item
+		/// </summary>
+		public bool IsEnchantment;
 
 		/// <summary>
 		/// Fishing spawns a FishingNode which needs to be removed upon canceling
@@ -154,7 +174,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool PersistsThroughDeath
 		{
-            get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
+			get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
 		}
 
 		/// <summary>
@@ -195,11 +215,6 @@ namespace WCell.RealmServer.Spells
 		/// The SpellEffect of this Spell that represents a PersistentAreaAura and thus a DO (or null if it has none)
 		/// </summary>
 		public SpellEffect DOEffect;
-
-		/// <summary>
-		/// whether this is a Rejuvenation or Regrowth effect
-		/// </summary>
-		public bool IsRejuvenationOrRegrowth;
 
 		/// <summary>
 		/// whether this is a Heal-spell
@@ -259,14 +274,14 @@ namespace WCell.RealmServer.Spells
 		public SkillLine Skill;
 
 		/// <summary>
+		/// The tier of the skill that this spell represents (if this is a Skill spell)
+		/// </summary>
+		public SkillTierId SkillTier;
+
+		/// <summary>
 		/// Tools that are required by this spell (is set during Initialization of Items)
 		/// </summary>
 		public ItemTemplate[] RequiredTools;
-
-		/// <summary>
-		/// The SpellLine this Spell belongs to (or null)
-		/// </summary>
-		public SpellLine SpellLine;
 
 		public Spell NextRank, PreviousRank;
 
@@ -324,7 +339,7 @@ namespace WCell.RealmServer.Spells
 
 		public bool IsEnhancer;
 
-		private bool inited;
+		private bool init1, init2;
 
 		public SpellLine Line;
 		#endregion
@@ -405,29 +420,16 @@ namespace WCell.RealmServer.Spells
 
 		#region Custom Proc Handlers
 		/// <summary>
-		/// Add Handler which, when used, can proc this Spell 
+		/// Add Handler to be enabled when this aura spell is active
 		/// </summary>
-		public void AddCasterProcHandler(ProcHandlerTemplate handler)
+		public void AddProcHandler(ProcHandlerTemplate handler)
 		{
-			if (CasterProcHandlers == null)
+			if (ProcHandlers == null)
 			{
-				CasterProcHandlers = new List<ProcHandlerTemplate>();
-			}
-			handler.IsAttackerTriggerer = true;
-			CasterProcHandlers.Add(handler);
-		}
-
-		/// <summary>
-		/// Add Handler which can proc this Spell on their Target
-		/// </summary>
-		public void AddTargetProcHandler(ProcHandlerTemplate handler)
-		{
-			if (TargetProcHandlers == null)
-			{
-				TargetProcHandlers = new List<ProcHandlerTemplate>();
+				ProcHandlers = new List<ProcHandlerTemplate>();
 			}
 			handler.IsAttackerTriggerer = false;
-			TargetProcHandlers.Add(handler);
+			ProcHandlers.Add(handler);
 		}
 		#endregion
 
@@ -442,6 +444,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Initialize()
 		{
+			init1 = true;
 			var learnSpellEffect = GetEffect(SpellEffectType.LearnSpell);
 			if (learnSpellEffect == null)
 			{
@@ -502,16 +505,17 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Init2()
 		{
-			if (inited)
+			if (init2)
 			{
 				return;
 			}
-			inited = true;
+			init2 = true;
 
-            IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||	// don't use Enum.HasFlag!
-				ChannelInterruptFlags > 0;
+			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
+				// don't use Enum.HasFlag!
+						  ChannelInterruptFlags > 0;
 
-            IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
+			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
 				// tracking spells are also passive		     
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
@@ -549,15 +553,17 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);	// don't use Enum.HasFlag!
+			IsOnNextStrike = Attributes.HasAnyFlag(SpellAttributes.OnNextMelee | SpellAttributes.OnNextMelee_2);
+			// don't use Enum.HasFlag!
 
-			IsRangedAbility = !IsTriggeredSpell &&
-				(Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-					   AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
+						AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+
+			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
-			IsWeaponAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
+			IsPhysicalAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
 
 			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 
@@ -566,23 +572,48 @@ namespace WCell.RealmServer.Spells
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
-				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire, ImplicitTargetType.TotemWater));
+				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire,
+				ImplicitTargetType.TotemWater));
 
-			// Required Item slot for weapon abilities
-			if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
+			IsEnchantment = HasEffectWith(effect => effect.IsEnchantmentEffect);
+
+			if (!IsEnchantment)
 			{
-				EquipmentSlot = EquipmentSlot.OffHand;
-			}
-			else
-			{
-				EquipmentSlot =
-                    (IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)) ? EquipmentSlot.ExtraWeapon :
-                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon) ? EquipmentSlot.OffHand :
-                    (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon) ? EquipmentSlot.MainHand : EquipmentSlot.End));
+				// Required Item slot for weapon abilities
+				EquipmentSlot = EquipmentSlot.End;
+				if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
+				{
+					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
+				{
+					EquipmentSlot = EquipmentSlot.ExtraWeapon;
+				}
+				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon))
+				{
+					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon))
+				{
+					EquipmentSlot = EquipmentSlot.MainHand;
+				}
+				else if (RequiredItemClass == ItemClass.Weapon)
+				{
+					if (RequiredItemSubClassMask == ItemSubClassMask.AnyMeleeWeapon)
+					{
+						EquipmentSlot = EquipmentSlot.MainHand;
+					}
+					else if (RequiredItemSubClassMask == ItemSubClassMask.AnyRangedWeapon)
+					{
+						EquipmentSlot = EquipmentSlot.ExtraWeapon;
+					}
+				}
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-				(IsWeaponAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+									(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+
+			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
 			//IsAoe = HasEffectWith((effect) => {
 			//    if (effect.ImplicitTargetA == ImplicitTargetType.)
@@ -599,20 +630,16 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsProfession = !IsRangedAbility && Ability != null && Ability.Skill.Category == SkillCategory.Profession;
-
-			IsEnhancer = SpellClassSet != 0 && !SpellClassMask.Contains(val => val != 0) &&
-				HasEffectWith(effect => effect.AffectMask.Contains(val => val != 0));
-
+			IsEnhancer = HasEffectWith(effect => effect.IsEnhancer);
 			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
-
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
-
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
 			if (Id == 18425)
 			{
 				ToString();
 			}
+
 			if (IsPreventionDebuff || Mechanic.IsNegative())
 			{
 				HasHarmfulEffects = true;
@@ -633,11 +660,12 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-            ReqDeadTarget = TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+			ReqDeadTarget =
+				TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsMana = PowerCost > 0 || PowerCostPercentage > 0;
 
-			HasTargets = !HasEffectWith(effect => effect.HasTargets);
+			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
 			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.Self));
 
@@ -646,11 +674,15 @@ namespace WCell.RealmServer.Spells
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-					effect.EffectType == SpellEffectType.Attack ||
-					effect.EffectType == SpellEffectType.EnvironmentalDamage ||
-					effect.EffectType == SpellEffectType.InstantKill ||
-					effect.EffectType == SpellEffectType.SchoolDamage ||
-					effect.IsStrikeEffect);
+																						effect.EffectType ==
+																						SpellEffectType.Attack ||
+																						effect.EffectType ==
+																						SpellEffectType.EnvironmentalDamage ||
+																						effect.EffectType ==
+																						SpellEffectType.InstantKill ||
+																						effect.EffectType ==
+																						SpellEffectType.SchoolDamage ||
+																						effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
@@ -667,6 +699,15 @@ namespace WCell.RealmServer.Spells
 				}
 			});
 
+			// ResurrectFlat usually has no target type set
+			ForeachEffect(effect =>
+			{
+				if (effect.ImplicitTargetA == ImplicitTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
+				{
+					effect.ImplicitTargetA = ImplicitTargetType.SingleFriend;
+				}
+			});
+
 			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
 			if (Schools.Length == 0)
 			{
@@ -674,9 +715,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-                (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-                                        AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-                                        AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+										(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+										 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+										 AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -684,17 +725,24 @@ namespace WCell.RealmServer.Spells
 				InterruptFlags |= InterruptFlags.OnTakeDamage;
 			}
 
-            IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-                       Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
+					  Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
-			HasModifierEffects = HasEffectWith(effect => effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+			HasModifierEffects = HasModifierEffects ||
+								 HasEffectWith(
+									effect =>
+									effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+
+			// cannot taunt players
+			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
+
 			ForeachEffect(effect =>
-			{
-				for (var i = 0; i < 3; i++)
-				{
-					AllAffectingMasks[i] |= effect.AffectMask[i];
-				}
-			});
+							{
+								for (var i = 0; i < 3; i++)
+								{
+									AllAffectingMasks[i] |= effect.AffectMask[i];
+								}
+							});
 
 			if (Range.MaxDist == 0)
 			{
@@ -714,17 +762,32 @@ namespace WCell.RealmServer.Spells
 				ArrayUtil.PruneVals(ref RequiredToolIds);
 			}
 
+			var skillEffect = GetFirstEffectWith(effect =>
+												 effect.EffectType == SpellEffectType.SkillStep ||
+												 effect.EffectType == SpellEffectType.Skill);
+			if (skillEffect != null)
+			{
+				SkillTier = (SkillTierId)skillEffect.BasePoints;
+			}
+
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 
 			ForeachEffect(effect =>
-			{
-				if (effect.SpellEffectHandlerCreator != null)
-				{
-					EffectHandlerCount++;
-				}
-			});
+							{
+								if (effect.SpellEffectHandlerCreator != null)
+								{
+									EffectHandlerCount++;
+								}
+							});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
+
+
+			if (GetEffect(SpellEffectType.QuestComplete) != null)
+			{
+				SpellHandler.QuestCompletors.Add(this);
+			}
 		}
+
 		#endregion
 
 		#region Manage Effects
@@ -750,10 +813,28 @@ namespace WCell.RealmServer.Spells
 			return false;
 		}
 
+		public bool HasEffect(SpellEffectType type)
+		{
+			return GetEffect(type, false) != null;
+		}
+
+		public bool HasEffect(AuraType type)
+		{
+			return GetEffect(type, false) != null;
+		}
+
 		/// <summary>
 		/// Returns the first SpellEffect of the given Type within this Spell
 		/// </summary>
 		public SpellEffect GetEffect(SpellEffectType type)
+		{
+			return GetEffect(type, true);
+		}
+
+		/// <summary>
+		/// Returns the first SpellEffect of the given Type within this Spell
+		/// </summary>
+		public SpellEffect GetEffect(SpellEffectType type, bool force)
 		{
 			foreach (var effect in Effects)
 			{
@@ -761,6 +842,12 @@ namespace WCell.RealmServer.Spells
 				{
 					return effect;
 				}
+			}
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Effect of type {1}", this, type);
+			//return null;
+			if (!init1 && force)
+			{
+				throw new ContentException("Spell {0} does not contain Effect of type {1}", this, type);
 			}
 			return null;
 		}
@@ -770,12 +857,26 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
+			return GetEffect(type, ContentHandler.ForceDataPresence);
+		}
+
+		/// <summary>
+		/// Returns the first SpellEffect of the given Type within this Spell
+		/// </summary>
+		public SpellEffect GetEffect(AuraType type, bool force)
+		{
 			foreach (var effect in Effects)
 			{
 				if (effect.AuraType == type)
 				{
 					return effect;
 				}
+			}
+			//ContentHandler.OnInvalidClientData("Spell {0} does not contain Aura Effect of type {1}", this, type);
+			//return null;
+			if (!init1 && force)
+			{
+				throw new ContentException("Spell {0} does not contain Aura Effect of type {1}", this, type);
 			}
 			return null;
 		}
@@ -792,7 +893,7 @@ namespace WCell.RealmServer.Spells
 			return null;
 		}
 
-		public List<SpellEffect> GetEffectsWith(Predicate<SpellEffect> predicate)
+		public SpellEffect[] GetEffectsWhere(Predicate<SpellEffect> predicate)
 		{
 			List<SpellEffect> effects = null;
 			foreach (var effect in Effects)
@@ -806,7 +907,7 @@ namespace WCell.RealmServer.Spells
 					effects.Add(effect);
 				}
 			}
-			return effects;
+			return effects != null ? effects.ToArray() : null;
 		}
 
 		/// <summary>
@@ -945,20 +1046,35 @@ namespace WCell.RealmServer.Spells
 		{
 			Effects = new SpellEffect[0];
 		}
-		#endregion
 
-		/// <summary>
-		/// This is pretty ugly, but its the easiest way to find out whether we have a certain spell
-		/// until we provide spell overrides
-		/// </summary>
-		internal void FigureSpellFieldsByNamesOrIds()
+		public SpellEffect RemoveEffect(AuraType type)
 		{
-			// TODO: Move to PlayerSpells.cs and remove the IsRejuvenationOrRegrowth field
-			if (!IsTeachSpell && (Name.Equals("Rejuvenation") || Name.Equals("Regrowth")))
-			{
-				IsRejuvenationOrRegrowth = true;
-			}
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
 		}
+
+		public SpellEffect RemoveEffect(SpellEffectType type)
+		{
+			var effect = GetEffect(type);
+			RemoveEffect(effect);
+			return effect;
+		}
+
+		public void RemoveEffect(SpellEffect toRemove)
+		{
+			var effects = new SpellEffect[Effects.Length - 1];
+			var e = 0;
+			foreach (var effct in Effects)
+			{
+				if (effct != toRemove)
+				{
+					effects[e++] = effct;
+				}
+			}
+			Effects = effects;
+		}
+		#endregion
 
 		#region Misc Methods & Props
 		public bool MatchesMask(uint[] masks)
@@ -982,30 +1098,35 @@ namespace WCell.RealmServer.Spells
 			return Math.Abs(casterLevel - BaseLevel);
 		}
 
-		public int CalcPowerCost(Unit caster, DamageSchool school, Spell spell, PowerType type)
+		public int CalcBasePowerCost(Unit caster)
 		{
 			var cost = PowerCost + (PowerCostPerlevel * GetMaxLevelDiff(caster.Level));
 			if (PowerCostPercentage > 0)
 			{
 				cost += (PowerCostPercentage *
-					((type == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
+					((PowerType == PowerType.Health ? caster.BaseHealth : caster.BasePower))) / 100;
 			}
+			return cost;
+		}
 
-			return caster.GetPowerCost(school, spell, cost);
+		public int CalcPowerCost(Unit caster, DamageSchool school)
+		{
+			return caster.GetPowerCost(school, this, CalcBasePowerCost(caster));
 		}
 
 		public bool ShouldShowToClient()
 		{
-			return IsRangedAbility || Visual != 0 || Visual2 != 0 || IsChanneled || CastDelay > 0
-				// || (!IsPassive && IsAura)
-				;
+			return IsRangedAbility || Visual != 0 || Visual2 != 0 ||
+				   IsChanneled || CastDelay > 0 || HasCooldown;
+			// || (!IsPassive && IsAura)
+			;
 		}
 
 		/// <summary>
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster)
+		public int GetDuration(ObjectReference caster)
 		{
 			return GetDuration(caster, null);
 		}
@@ -1014,7 +1135,7 @@ namespace WCell.RealmServer.Spells
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.
 		/// </summary>
-		public int GetDuration(CasterInfo caster, Unit target)
+		public int GetDuration(ObjectReference caster, Unit target)
 		{
 			var millis = Durations.Min;
 			//if (Durations.LevelDelta > 0)
@@ -1026,10 +1147,10 @@ namespace WCell.RealmServer.Spells
 			//	}
 			//}
 
-			if (Durations.Max > Durations.Min && IsFinishingMove && caster.CasterUnit != null)
+			if (Durations.Max > Durations.Min && IsFinishingMove && caster.UnitMaster != null)
 			{
 				// For some finishing moves, Duration depends on Combopoints
-				millis += caster.CasterUnit.ComboPoints * ((Durations.Max - Durations.Min) / 5);
+				millis += caster.UnitMaster.ComboPoints * ((Durations.Max - Durations.Min) / 5);
 			}
 
 			if (target != null && Mechanic != SpellMechanic.None)
@@ -1041,10 +1162,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			var chr = caster.Caster as Character;
-			if (chr != null)
+			var unit = caster.UnitMaster;
+			if (unit != null)
 			{
-				millis = chr.PlayerSpells.GetModifiedInt(SpellModifierType.Duration, this, millis);
+				millis = unit.Auras.GetModifiedInt(SpellModifierType.Duration, this, millis);
 			}
 			return millis;
 		}
@@ -1180,9 +1301,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "AttributesExD: " + AttributesExD);
 			}
-			if ((int)ShapeshiftMask != 0)
+			if ((int)RequiredShapeshiftMask != 0)
 			{
-				writer.WriteLine(indent + "ShapeshiftMask: " + ShapeshiftMask);
+				writer.WriteLine(indent + "ShapeshiftMask: " + RequiredShapeshiftMask);
 			}
 			if ((int)ExcludeShapeshiftMask != 0)
 			{
@@ -1192,9 +1313,9 @@ namespace WCell.RealmServer.Spells
 			{
 				writer.WriteLine(indent + "TargetType: " + TargetFlags);
 			}
-			if ((int)TargetCreatureTypes != 0)
+			if ((int)CreatureMask != 0)
 			{
-				writer.WriteLine(indent + "TargetUnitTypes: " + TargetCreatureTypes);
+				writer.WriteLine(indent + "TargetUnitTypes: " + CreatureMask);
 			}
 			if ((int)RequiredSpellFocus != 0)
 			{
@@ -1418,7 +1539,7 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "PreventionType: " + PreventionType);
 			}
 
-			if (DamageMultipliers.Where(mult => mult != 1).Count() > 0)
+			if (DamageMultipliers.Any(mult => mult != 1))
 			{
 				writer.WriteLine(indent + "DamageMultipliers: " + DamageMultipliers.ToString(", "));
 			}
@@ -1439,9 +1560,9 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "SchoolMask: " + SchoolMask);
 			}
 
-			if (RuneCostId != 0)
+			if (RuneCostEntry != null)
 			{
-				writer.WriteLine(indent + "RuneCostId: " + RuneCostId);
+				writer.WriteLine(indent + "RuneCostId: " + RuneCostEntry);
 			}
 			if (MissileId != 0)
 			{
@@ -1477,19 +1598,14 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		public bool IsBeneficialFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsBeneficialFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterInfo.Caster == null || !casterInfo.Caster.MayAttack(target)));
+			return HarmType == HarmType.Beneficial || (HarmType == HarmType.Neutral && (casterReference.Object == null || !casterReference.Object.MayAttack(target)));
 		}
 
-		public bool IsHarmfulFor(CasterInfo casterInfo, WorldObject target)
+		public bool IsHarmfulFor(ObjectReference casterReference, WorldObject target)
 		{
-			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterInfo.Caster != null && casterInfo.Caster.MayAttack(target));
-		}
-
-		public bool IsHarmfulFor(WorldObject caster, WorldObject target)
-		{
-			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && caster.MayAttack(target));
+			return HarmType == HarmType.Harmful || (HarmType == HarmType.Neutral && casterReference.Object != null && casterReference.Object.MayAttack(target));
 		}
 
 		public override bool Equals(object obj)
@@ -1513,5 +1629,14 @@ namespace WCell.RealmServer.Spells
 			return GetEnumerator();
 		}
 		#endregion
+
+		#region Spell Alternatives
+
+		#endregion
+
+		protected Spell Clone()
+		{
+			return (Spell)MemberwiseClone();
+		}
 	}
 }

@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class GhostHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = m_aura.Auras.Owner;
 			if (owner is Character)
@@ -46,7 +46,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			m_aura.Auras.GhostAura = m_aura;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = m_aura.Auras.Owner;
 			if (owner is Character)

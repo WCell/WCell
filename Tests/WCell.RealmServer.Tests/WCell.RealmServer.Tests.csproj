@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -125,8 +125,7 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="AI\AIActionStub.cs" />
-    <Compile Include="AI\AIComplexActionTest.cs" />
+    <Compile Include="AI\ThreatTest.cs" />
     <Compile Include="Entities\DuelTest.cs" />
     <Compile Include="Entities\RangeTest.cs" />
     <Compile Include="Entities\UpdateFieldTest.cs" />

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;
 

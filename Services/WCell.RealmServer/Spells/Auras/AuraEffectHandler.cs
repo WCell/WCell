@@ -65,6 +65,25 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return EffectValue >= 0; }
 		}
 
+		private bool m_IsActive;
+
+		public bool IsActive
+		{
+			get { return m_IsActive; }
+			internal set
+			{
+				if (m_IsActive == value) return;
+				if ((m_IsActive = value))
+				{
+					Apply();
+				}
+				else
+				{
+					Remove(false);
+				}
+			}
+		}
+
 		/// <summary>
 		/// The Aura to which this AuraEffect belongs
 		/// </summary>
@@ -87,31 +106,56 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>		
-		/// /// Check whether this handler can be applied to the given target
-		///  </summary>
-		protected internal virtual void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		/// Check whether this handler can be applied to the given target.
+		/// m_aura, as well as some other fields are not set when this method gets called.
+		/// </summary>
+		protected internal virtual void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
+		}
+
+		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoApply()
+		{
+			Apply();
+		}
+
+		/// <summary>
+		/// To be called by Aura.Apply on periodic effects
+		/// </summary>
+		internal void DoRemove(bool cancelled)
+		{
+			Remove(cancelled);
 		}
 
 		/// <summary>
 		/// Applies this EffectHandler's effect to its holder
 		/// </summary>
-		protected internal virtual void Apply()
+		protected virtual void Apply()
 		{
 		}
 
 		/// <summary>
 		/// Is called by Aura to remove the effect from its holder
 		/// </summary>
-		protected internal virtual void Remove(bool cancelled)
+		protected virtual void Remove(bool cancelled)
 		{
+		}
+
+		/// <summary>
+		/// Whether this proc handler can be triggered by the given action
+		/// </summary>
+		public virtual bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			return true;
 		}
 
 		/// <summary>
 		/// Triggers a proc on this EffectHandler with the given target.
 		/// </summary>
-		/// <param name="target"></param>
-		public virtual void OnProc(Unit target, IUnitAction action)
+		/// <param name="triggerer"></param>
+		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}
 	}

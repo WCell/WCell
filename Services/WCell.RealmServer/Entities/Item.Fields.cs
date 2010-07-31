@@ -137,7 +137,6 @@ namespace WCell.RealmServer.Entities
 				}
 
 				m_record.Amount += value;
-				SetInt32(ItemFields.STACK_COUNT, m_record.Amount);
 				return value;
 			}
 			return 0;
@@ -168,7 +167,7 @@ namespace WCell.RealmServer.Entities
 						}
 
 						SetInt32(ItemFields.STACK_COUNT, value);
-						m_record.Amount = (int)value;
+						m_record.Amount = value;
 					}
 				}
 			}
@@ -195,11 +194,16 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
+				if (value <= 0)
+				{
+					Amount--;
+					return;
+				}
+				m_record.Charges = (short)value;
 				if (m_template.UseSpell != null)
 				{
 					SetSpellCharges(m_template.UseSpell.Index, value);
 				}
-				m_record.Charges = (short)value;
 			}
 		}
 

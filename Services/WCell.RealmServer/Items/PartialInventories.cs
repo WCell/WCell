@@ -370,6 +370,11 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public void CheckRemove(int slot, IMountableItem templ, ref InventoryError err)
 		{
+			// Disarmed
+			if (templ is IWeapon && templ.Template.IsWeapon && !Owner.MayCarry(templ.Template.InventorySlotMask))
+			{
+				err = InventoryError.CANT_DO_WHILE_DISARMED;
+			}
 		}
 
 		/// <summary>
@@ -377,7 +382,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public void Added(Item item)
 		{
-			item.OnEquip();
+			item.OnEquipDecision();
 		}
 
 		/// <summary>
@@ -385,7 +390,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public void Removed(int slot, Item item)
 		{
-			item.OnUnEquip((InventorySlot)slot);
+			item.OnUnequipDecision((InventorySlot)slot);
 		}
 		#endregion
 	}
@@ -522,7 +527,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public void Added(Item item)
 		{
-			item.OnEquip();
+			item.OnEquipDecision();
 		}
 
 		/// <summary>
@@ -530,7 +535,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public void Removed(int slot, Item item)
 		{
-			item.OnUnEquip((InventorySlot)slot);
+			item.OnUnequipDecision((InventorySlot)slot);
 		}
 		#endregion
 	}

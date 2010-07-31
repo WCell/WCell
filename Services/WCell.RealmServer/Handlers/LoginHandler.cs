@@ -60,6 +60,9 @@ namespace WCell.RealmServer.Handlers
 
 				client.ClientSeed = packet.ReadUInt32();
 
+				var unk1 = packet.ReadUInt32(); // 3.3.5a
+				var unk2 = packet.ReadUInt32(); // 3.3.5a
+				var unk3 = packet.ReadUInt32(); // 3.3.5a
 				var unk4 = packet.ReadUInt64();
 
 				client.ClientDigest = packet.ReadBigInteger(20);
@@ -96,10 +99,10 @@ namespace WCell.RealmServer.Handlers
 				packet.WriteUInt(0x6E8547B9);
 				packet.WriteUInt(0x9A6AA2F8);
 				packet.WriteUInt(0xA4F170F4);
-			    packet.WriteUInt(0xF3539DA3);
-			    packet.WriteUInt(0x6E8547B9);
-			    packet.WriteUInt(0x9A6AA2F8);
-			    packet.WriteUInt(0xA4F170F4);
+				packet.WriteUInt(0xF3539DA3);
+				packet.WriteUInt(0x6E8547B9);
+				packet.WriteUInt(0x9A6AA2F8);
+				packet.WriteUInt(0xA4F170F4);
 
 				client.Send(packet);
 			}

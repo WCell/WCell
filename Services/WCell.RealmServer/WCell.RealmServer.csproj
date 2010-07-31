@@ -184,10 +184,23 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
+    <Compile Include="Achievement\AchievementCriteria.cs" />
+    <Compile Include="Achievement\AchievementCategoryEntry.cs" />
+    <Compile Include="Achievement\AchievementCollection.cs" />
+    <Compile Include="Achievement\AchievementRecord.cs" />
+    <Compile Include="Achievement\AchievementProgressRecord.cs" />
+    <Compile Include="Battlegrounds\PvPDifficulty.cs" />
+    <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
-    <Compile Include="Lang\LangKey.cs" />
+    <Compile Include="Entities\Character.Mechanics.cs" />
+    <Compile Include="Events\Spells\Spell.Events.cs" />
+    <Compile Include="Formulas\PowerFormulas.cs" />
+    <Compile Include="Items\IItemEquipmentEventHandler.cs" />
+    <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
     <Compile Include="RacesClasses\BaseClass.cs" />
@@ -230,7 +243,28 @@
     <Compile Include="Res\Resources.cs" />
     <Compile Include="Res\WCell.RealmServer.Designer.cs" />
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModMeleeAttackPowerByPercentOfStatHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\EnableCriticalHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAOEDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDamageTaken.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDeflectChanceHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDetectRangeHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModIncreaseHealth.cs" />
+    <Compile Include="Spells\Auras\Mod\DamageShieldEffectHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModQuestXpPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModReputationGainHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpeedMountedFlightHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellHitChance.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAPByArmorHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\CriticalBlockPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModDamageDoneVersusCreatureTypeHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModRageFromDamageDealtPercentHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModHitChanceHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModArmorPenetrationHandler.cs" />
@@ -238,9 +272,16 @@
     <Compile Include="Spells\Auras\Mod\ModExpertiseHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModMeleeCritDamageBonusHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModOffhandDamagePercentHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAvoidances.cs" />
+    <Compile Include="Spells\Auras\Mod\ModSpellPowerByAPPctHandler.cs" />
+    <Compile Include="Spells\Auras\Mod\ModKillXpPctHandler.cs" />
     <Compile Include="Spells\Auras\NPCAuraCollection.cs" />
+    <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
+    <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
+    <Compile Include="Spells\RuneCostEntry.cs" />
+    <Compile Include="Spells\SpellException.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
@@ -443,7 +484,7 @@
     <Compile Include="GameObjects\GOEntries\IGOLootableEntry.cs" />
     <Compile Include="Global\InstancedRegion.cs" />
     <Compile Include="Global\IRegionId.cs" />
-    <Compile Include="Global\ZoneInfo.cs" />
+    <Compile Include="Global\ZoneTemplate.cs" />
     <Compile Include="Gossips\GossipMenuItem.cs" />
     <Compile Include="Handlers\AccountDataHandler.cs" />
     <Compile Include="Guilds\GuildBank.cs" />
@@ -535,7 +576,6 @@
     <Compile Include="Events\AccountEvents.cs" />
     <Compile Include="Events\Global\World.cs" />
     <Compile Include="Events\Help\Tickets\Ticket.cs" />
-    <Compile Include="Events\Spells\SpellCast.cs" />
     <Compile Include="Events\Spells\SpellChannel.cs" />
     <Compile Include="Extensions.cs">
       <SubType>Code</SubType>
@@ -582,7 +622,7 @@
     <Compile Include="GameObjects\Handlers\MailBoxHandler.cs" />
     <Compile Include="GameObjects\Handlers\MiscHandlers.cs" />
     <Compile Include="GameObjects\Handlers\TrapHandler.cs" />
-    <Compile Include="Global\RegionInfo.cs" />
+    <Compile Include="Global\RegionTemplate.cs" />
     <Compile Include="Gossips\GossipEntry.cs" />
     <Compile Include="Guilds\Guild.cs" />
     <Compile Include="Guilds\GuildEventLog.cs" />
@@ -732,7 +772,7 @@
     <Compile Include="Spells\ISpellParameters.cs" />
     <Compile Include="Spells\ITickedTimer.cs" />
     <Compile Include="Spells\Spell.Aura.cs" />
-    <Compile Include="Spells\Spell.Overrides.cs" />
+    <Compile Include="Spells\Spell.Variables.cs" />
     <Compile Include="Spells\SpellAIBehavior.cs" />
     <Compile Include="Spells\SpellCast.Aura.cs" />
     <Compile Include="Spells\SpellCast.Perform.cs" />
@@ -740,7 +780,7 @@
     <Compile Include="Spells\SpellLine.cs" />
     <Compile Include="Spells\SpellLines.cs" />
     <Compile Include="Spells\SpellLines.Def.cs" />
-    <Compile Include="Spells\SpellSummonHandlers.cs" />
+    <Compile Include="Spells\SpellSummons.cs" />
     <Compile Include="Talents\CharacterSpecProfile.cs" />
     <Compile Include="Talents\CharacterTalentCollection.cs" />
     <Compile Include="Talents\IHasTalents.cs" />
@@ -796,7 +836,7 @@
     <Compile Include="Misc\TutorialFlags.cs" />
     <Compile Include="GameObjects\GOEntry.cs" />
     <Compile Include="GameObjects\GOMgr.cs" />
-    <Compile Include="GameObjects\GOTemplate.cs" />
+    <Compile Include="GameObjects\GOSpawn.cs" />
     <Compile Include="Gossips\IGossipAction.cs" />
     <Compile Include="Gossips\GossipConversation.cs" />
     <Compile Include="Gossips\GossipMenu.cs" />
@@ -866,7 +906,7 @@
     <Compile Include="Skills\SkillCollection.cs" />
     <Compile Include="Skills\SkillLine.cs" />
     <Compile Include="Skills\SkillHandler.cs" />
-    <Compile Include="Skills\SkillTier.cs" />
+    <Compile Include="Skills\SkillTiers.cs" />
     <Compile Include="Spells\Auras\AreaAura.cs" />
     <Compile Include="Spells\Auras\Aura.cs">
       <SubType>Code</SubType>
@@ -880,7 +920,7 @@
     <Compile Include="Spells\Auras\AuraHandler.cs" />
     <Compile Include="Spells\Auras\AuraIndexId.cs" />
     <Compile Include="Spells\Auras\IAura.cs" />
-    <Compile Include="Spells\CasterInfo.cs" />
+    <Compile Include="Entities\ObjectReference.cs" />
     <Compile Include="Spells\Auras\Mod\ModAllCooldownDuration.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -899,7 +939,7 @@
     <Compile Include="Spells\Auras\Mod\ModBlockPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModBlockSkill.cs">
+    <Compile Include="Spells\Auras\Mod\ModCritHealValuePctHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModCastingSpeed.cs">
@@ -929,7 +969,7 @@
     <Compile Include="Spells\Auras\Mod\ModHaste.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModHealingTaken.cs">
+    <Compile Include="Spells\Auras\Mod\ModHealingDonePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModHealthRegenInCombat.cs">
@@ -992,7 +1032,7 @@
     <Compile Include="Spells\Auras\Mod\ModPowerRegenPercent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModRangedAttackPowerByPercentOfIntellect.cs">
+    <Compile Include="Spells\Auras\Mod\ModRangedAttackPowerByPercentOfStatHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Mod\ModRating.cs">
@@ -1046,7 +1086,7 @@
     <Compile Include="Spells\Auras\Mod\ModThreat.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Spells\Auras\Mod\ModTimeBetweenAttacks.cs">
+    <Compile Include="Spells\Auras\Mod\ModHastePct.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Auras\Passive\AddCasterHitTrigger.cs">
@@ -1259,9 +1299,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\WCell.RealmServer.resx" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

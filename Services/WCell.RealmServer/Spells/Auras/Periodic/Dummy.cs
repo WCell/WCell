@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class DummyHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 
 		}

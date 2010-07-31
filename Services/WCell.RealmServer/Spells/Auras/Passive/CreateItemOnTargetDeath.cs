@@ -27,12 +27,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			// does nada
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var procFlags = SpellEffect.Spell.ProcTriggerFlags;
 			var owner = m_aura.Auras.Owner;

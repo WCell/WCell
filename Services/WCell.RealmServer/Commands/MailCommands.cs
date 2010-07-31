@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Items;
+using WCell.Constants.Items;
 using WCell.RealmServer.Items;
 using WCell.Util.Commands;
 using WCell.RealmServer.Mail;

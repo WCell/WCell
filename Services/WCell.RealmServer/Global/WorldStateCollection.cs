@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -57,16 +57,6 @@ namespace WCell.RealmServer.Global
 			OnStateChanged(state, (int)value);
 		}
 
-		internal void UpdateWorldState(uint index, int value)
-		{
-			Array.Copy(BitConverter.GetBytes(value), 0, CompiledState, 4 + index * 8, 4);
-		}
-
-		private void OnStateChanged(WorldState state, int value)
-		{
-			Area.CallOnAllCharacters(chr => MiscHandler.SendUpdateWorldState(chr, state.Key, value));
-		}
-
 		public uint GetUInt32(WorldStateId id)
 		{
 			return GetUInt32(WorldStates.GetState(id).Index);
@@ -85,6 +75,16 @@ namespace WCell.RealmServer.Global
 		public int GetInt32(uint index)
 		{
 			return CompiledState.GetInt32(1 + index * 2);
+		}
+
+		internal void UpdateWorldState(uint index, int value)
+		{
+			Array.Copy(BitConverter.GetBytes(value), 0, CompiledState, 4 + index * 8, 4);
+		}
+
+		private void OnStateChanged(WorldState state, int value)
+		{
+			Area.CallOnAllCharacters(chr => MiscHandler.SendUpdateWorldState(chr, state.Key, value));
 		}
 
 	}

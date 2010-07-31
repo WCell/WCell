@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of the creature associated with this guard post.
         /// </summary>
-        public uint CreatureId
+        public int CreatureId
         {
             get { return Fields[0]; }
         }
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The number of creatures with Id = CreatureId in this guard post.
         /// </summary>
-        public uint Charges
+        public int Charges
         {
             get { return Fields[1]; }
         }

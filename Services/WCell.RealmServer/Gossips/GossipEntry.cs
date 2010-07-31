@@ -1,3 +1,4 @@
+using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.NPCs;
@@ -95,7 +96,7 @@ namespace WCell.RealmServer.Gossips
 		public GossipEntry()
 		{
 		}
-
+		
 		public GossipEntry(uint id, string text)
 		{
 			GossipId = id;
@@ -206,7 +207,7 @@ namespace WCell.RealmServer.Gossips
 	{
 		public NPCId NPCId;
 
-		public uint GossipId;
+		public uint TextId;
 
 		public uint GetId()
 		{
@@ -224,18 +225,18 @@ namespace WCell.RealmServer.Gossips
 			var entry = NPCMgr.GetEntry(NPCId);
 			if (entry != null && entry.DefaultGossip == null)
 			{
-				var menu = new GossipMenu(GossipId);
+				var menu = new GossipMenu(TextId);
 				GossipMgr.gossipCount++;
 
 				entry.DefaultGossip = menu;
 
-				if (entry.NPCFlags.HasFlag(NPCFlags.SpiritHealer))
+				if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
 				{
 					entry.NPCFlags |= NPCFlags.Gossip;
 				}
 				else
 				{
-					entry.NPCFlags ^= NPCFlags.Gossip;
+					entry.NPCFlags &= ~NPCFlags.Gossip;
 				}
 			}
 		}

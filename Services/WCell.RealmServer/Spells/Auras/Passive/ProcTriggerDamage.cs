@@ -24,17 +24,20 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ProcTriggerDamageHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
-			var val = m_spellEffect.CalcEffectValue(m_aura.CasterInfo);
+			var val = m_spellEffect.CalcEffectValue(m_aura.CasterReference);
 
-			if (action is IDamageAction)
+			//if (action is IDamageAction)
+			//{
+			//    ((IDamageAction)action).Damage += val;
+			//}
+			//else
 			{
-				((IDamageAction)action).Damage += val;
-			}
-			else
-			{
-				m_aura.Auras.Owner.DoSpellDamage(target, m_spellEffect, val);
+				if (Owner.MayAttack(triggerer))
+				{
+					Owner.DoSpellDamage(triggerer, m_spellEffect, val);
+				}
 			}
 		}
 	}

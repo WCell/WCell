@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		float val;
 
-		protected internal override void CheckInitialize(CasterInfo casterInfo, Unit target, ref SpellFailedReason failReason)
+		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (target.PowerType != type)
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace WCell.Constants
 {
@@ -81,7 +81,10 @@ namespace WCell.Constants
 		Nature = 8,
 		Frost = 0x10,
 		Shadow = 0x20,
-		Arcane = 0x40
+		Arcane = 0x40,
+
+		MagicSchools = Holy | Fire | Nature | Frost | Shadow | Arcane,
+		All = MagicSchools | Physical
 	}
 
 	public enum DamageSchool : uint

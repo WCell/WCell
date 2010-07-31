@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.Skills
@@ -163,4 +163,3 @@ namespace WCell.Constants.Skills
 	}
 
 }
-

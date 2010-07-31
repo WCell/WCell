@@ -43,7 +43,7 @@ namespace WCell.RealmServer.Commands
 			get { return ObjectTypeCustom.None; }
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get { return true; }
 		}
@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Commands
 
 				if (mod == "c")
 				{
-					ICollection<GOTemplate> templates;
+					ICollection<GOSpawn> templates;
 					if (entry != null)
 					{
 						templates = entry.Templates;
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 					}
 
 					// spawn closest
-					GOTemplate closest;
+					GOSpawn closest;
 
 					if (entry != null)
 					{
@@ -152,6 +152,10 @@ namespace WCell.RealmServer.Commands
 				var go = GOSelectMgr.Instance.SelectClosest(trigger.Args.Character);
 				if (go != null)
 				{
+					if (!trigger.Args.HasCharacter)
+					{
+						trigger.Args.Context = go;
+					}
 					trigger.Reply("Selected: " + go);
 				}
 				else
@@ -175,6 +179,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				GOSelectMgr.Instance.Deselect(trigger.Args.Character.ExtraInfo);
+				trigger.Args.Context = null;
 				trigger.Reply("Done.");
 			}
 		}
@@ -202,7 +207,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				Commands.SetCommand.Set(trigger, trigger.Args.Character.ExtraInfo.SelectedGO);
+				SetCommand.Set(trigger, trigger.Args.Character.ExtraInfo.SelectedGO);
 			}
 		}
 
@@ -363,7 +368,7 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

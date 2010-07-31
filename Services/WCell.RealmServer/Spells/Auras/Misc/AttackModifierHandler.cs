@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,20 +6,22 @@ using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {
-	public abstract class AttackModifierHandler : AuraEffectHandler, IAttackModifier
+	public abstract class AttackEventEffectHandler : AuraEffectHandler, IAttackEventHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			Owner.AttackModifiers.Add(this);
+			Owner.AttackEventHandlers.Add(this);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			Owner.AttackModifiers.Remove(this);
+			Owner.AttackEventHandlers.Remove(this);
 		}
 
-		public abstract void ModAttack(DamageAction action);
+		public abstract void OnBeforeAttack(DamageAction action);
 
-		public abstract void ModPreAttack(DamageAction action);
+		public abstract void OnAttack(DamageAction action);
+		
+		public abstract void OnDefend(DamageAction action);
 	}
 }

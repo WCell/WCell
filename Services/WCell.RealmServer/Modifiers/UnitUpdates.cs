@@ -21,6 +21,7 @@ using WCell.Constants.Misc;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Formulas;
 using WCell.RealmServer.RacesClasses;
 using WCell.Util;
 using System.Collections;
@@ -58,25 +59,24 @@ namespace WCell.RealmServer.Modifiers
 
 		static UnitUpdates()
 		{
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdatePower;
+			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
+			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegen] = UpdateHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenInCombat] = UpdateCombatHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdatePower;
+			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
-			FlatIntModHandlers[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect] = UpdateRangedAttackPower;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockValue] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
-			FlatIntModHandlers[(int)StatModifierInt.CritChance] = UpdateCritChance;
+			FlatIntModHandlers[(int)StatModifierInt.RangedCritChance] = UpdateCritChance;
 			FlatIntModHandlers[(int)StatModifierInt.ParryChance] = UpdateParryChance;
+			FlatIntModHandlers[(int)StatModifierInt.AttackerMeleeHitChance] = UpdateMeleeHitChance;
+			FlatIntModHandlers[(int)StatModifierInt.AttackerRangedHitChance] = UpdateRangedHitChance;
 
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
-			MultiModHandlers[(int)StatModifierFloat.Health] = UpdateHealth;
-			MultiModHandlers[(int)StatModifierFloat.CritChance] = UpdateCritChance;
-			MultiModHandlers[(int)StatModifierFloat.Power] = UpdatePower;
 			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 			MultiModHandlers[(int)StatModifierFloat.PowerRegen] = UpdatePowerRegen;
@@ -96,10 +96,6 @@ namespace WCell.RealmServer.Modifiers
 
 		internal static void UpdateLevel(this Character chr)
 		{
-			var clss = chr.Archetype.Class;
-			var lvl = chr.Level;
-			var agil = chr.Agility;
-
 			UpdateDodgeChance(chr);
 
 			UpdateBlockChance(chr);
@@ -146,6 +142,14 @@ namespace WCell.RealmServer.Modifiers
 			//}
 
 			//unit.BaseHealth += healthBonus;
+			if (unit is Character)
+			{
+				var chr = (Character)unit;
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
+			}
 			UpdateHealth(unit);
 		}
 
@@ -157,22 +161,22 @@ namespace WCell.RealmServer.Modifiers
 
 			if (unit is Character)
 			{
+				var chr = (Character)unit;
 				if (unit.PowerType == PowerType.Mana)
 				{
-					UpdateSpellCritChance((Character)unit);
+					UpdateSpellCritChance(chr);
 				}
 
+				// TODO Update spell power: AddDamageMod & HealingDoneMod
+
 				UpdatePowerRegen(unit);
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
 			}
 
-
-			UpdatePower(unit);
-			float apBonus = unit.StatModsInt[(int)StatModifierInt.RangedAttackPowerByPercentOfIntellect];
-			if (apBonus > 0)
-			{
-				unit.RangedAttackIntMod = ((apBonus * intel) / 100f).RoundInt();
-				unit.UpdateRangedAttackPower();
-			}
+			UpdateMaxPower(unit);
 		}
 
 		internal static void UpdateSpirit(this Unit unit)
@@ -187,6 +191,15 @@ namespace WCell.RealmServer.Modifiers
 			if (unit.Intellect != 0)
 			{
 				UpdatePowerRegen(unit);
+			}
+
+			if (unit is Character)
+			{
+				var chr = (Character)unit;
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					unit.UpdateAllAttackPower();
+				}
 			}
 		}
 
@@ -218,20 +231,19 @@ namespace WCell.RealmServer.Modifiers
 			var stamina = unit.Stamina;
 			var stamBonus = Math.Max(stamina, 20) + (Math.Max(0, stamina - 20) * 10);
 			var value = unit.BaseHealth + stamBonus + unit.MaxHealthMod;
-			value = value < 0 ? 0 : GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Health], value);
 
 			unit.SetInt32(UnitFields.MAXHEALTH, value);
 		}
 
-		internal static void UpdatePower(this Unit unit)
+		internal static void UpdateMaxPower(this Unit unit)
 		{
-			var value = unit.BasePower + unit.StatModsInt[(int)StatModifierInt.Power];
+			var value = unit.BasePower + unit.IntMods[(int)StatModifierInt.Power];
 			if (unit is Character && unit.PowerType == PowerType.Mana)
 			{
 				var intelBase = ((Character)unit).Archetype.FirstLevelStats.Intellect;
 				value += intelBase + (unit.Intellect - intelBase) * ManaPerInt;
 			}
-			value = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Power], value);
+			value += (value*unit.IntMods[(int) StatModifierInt.PowerPct] + 50) / 100;
 			if (value < 0)
 			{
 				value = 0;
@@ -265,10 +277,10 @@ namespace WCell.RealmServer.Modifiers
 			{
 				regen = 0;
 			}
-			regen += unit.StatModsInt[(int)StatModifierInt.HealthRegen] +
-				unit.StatModsInt[(int)StatModifierInt.HealthRegenNoCombat];
+			regen += unit.IntMods[(int)StatModifierInt.HealthRegen] +
+				unit.IntMods[(int)StatModifierInt.HealthRegenNoCombat];
 
-			regen = GetMultiMod((int)unit.MultiplierMods[(int)StatModifierFloat.HealthRegen], regen);
+			regen = GetMultiMod((int)unit.FloatMods[(int)StatModifierFloat.HealthRegen], regen);
 
 			unit.HealthRegenPerTickNoCombat = regen;
 		}
@@ -278,8 +290,8 @@ namespace WCell.RealmServer.Modifiers
 		/// </summary>
 		internal static void UpdateCombatHealthRegen(this Unit unit)
 		{
-			unit.HealthRegenPerTickCombat = unit.StatModsInt[(int)StatModifierInt.HealthRegen] +
-				unit.StatModsInt[(int)StatModifierInt.HealthRegenInCombat];
+			unit.HealthRegenPerTickCombat = unit.IntMods[(int)StatModifierInt.HealthRegen] +
+				unit.IntMods[(int)StatModifierInt.HealthRegenInCombat];
 		}
 
 
@@ -294,11 +306,7 @@ namespace WCell.RealmServer.Modifiers
 			{
 				if (unit is Character)
 				{
-					regen = ((Character)unit).Archetype.Class.CalculatePowerRegen((Character)unit);
-				}
-				else if (unit.IsMinion && unit.PowerType == PowerType.Focus)
-				{
-					regen = 5;
+					regen = PowerFormulas.GetPowerRegen(unit);
 				}
 				else
 				{
@@ -306,14 +314,15 @@ namespace WCell.RealmServer.Modifiers
 					regen = unit.BasePower / 20;
 				}
 
-				regen += unit.StatModsInt[(int)StatModifierInt.PowerRegen];
-				regen = GetMultiMod((int)unit.MultiplierMods[(int)StatModifierFloat.PowerRegen], regen);
+				regen += unit.IntMods[(int)StatModifierInt.PowerRegen];
+				regen = GetMultiMod((int)unit.FloatMods[(int)StatModifierFloat.PowerRegen], regen);
 			}
 
 			unit.PowerRegenPerTick = regen;
 		}
 		#endregion
 
+		#region Attack Power
 		internal static void UpdateAllAttackPower(this Unit unit)
 		{
 			UpdateMeleeAttackPower(unit);
@@ -329,7 +338,16 @@ namespace WCell.RealmServer.Modifiers
 				var lvl = chr.Level;
 				var agil = chr.Agility;
 				var str = unit.Strength;
-				chr.MeleeAttackPower = clss.CalculateMeleeAP(lvl, str, agil);
+
+				var ap = clss.CalculateMeleeAP(lvl, str, agil);
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					for (var stat = StatType.Strength; stat < StatType.End; stat++)
+					{
+						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+					}
+				}
+				chr.MeleeAttackPower = ap;
 			}
 
 			unit.UpdateMainDamage();
@@ -345,10 +363,20 @@ namespace WCell.RealmServer.Modifiers
 				var lvl = chr.Level;
 				var agil = chr.Agility;
 				var str = unit.Strength;
-				chr.RangedAttackPower = clss.CalculateRangedAP(lvl, str, agil) + chr.RangedAttackIntMod;
+
+				var ap = clss.CalculateRangedAP(lvl, str, agil);
+				if (chr.m_MeleeAPModByStat != null)
+				{
+					for (var stat = StatType.Strength; stat < StatType.End; stat++)
+					{
+						ap += (chr.GetRangedAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+					}
+				}
+				chr.RangedAttackPower = ap;
 			}
 			unit.UpdateRangedDamage();
 		}
+		#endregion
 
 		internal static void UpdateBlockChance(this Unit unit)
 		{
@@ -371,7 +399,7 @@ namespace WCell.RealmServer.Modifiers
 
 			if (shield != null && shield.Template.InventorySlotType == InventorySlotType.Shield)
 			{
-				blockChance = chr.StatModsInt[(int)StatModifierInt.BlockChance];
+				blockChance = chr.IntMods[(int)StatModifierInt.BlockChance];
 
 				blockValue = 5 + (int)shield.Template.BlockValue + (int)blockChance;
 
@@ -380,20 +408,22 @@ namespace WCell.RealmServer.Modifiers
 			}
 
 			blockValue += chr.Strength / 2 - 10;
-			blockValue = GetMultiMod(chr.MultiplierMods[(int)StatModifierFloat.BlockValue], blockValue);
+			blockValue = GetMultiMod(chr.FloatMods[(int)StatModifierFloat.BlockValue], blockValue);
 			chr.BlockValue = (uint)blockValue;
 			chr.BlockChance = blockChance;
 		}
 
 		internal static void UpdateSpellCritChance(this Character chr)
 		{
-			for (var school = DamageSchool.Physical; school < DamageSchool.Count; school++)
+			chr.UpdateCritChance();
+			for (var school = DamageSchool.Physical + 1; school < DamageSchool.Count; school++)
 			{
 				var chance = chr.GetCombatRatingMod(CombatRating.SpellCritChance) /
 						  GameTables.GetCRTable(CombatRating.SpellCritChance)[chr.Level - 1];
 				chance += chr.Archetype.Class.CalculateMagicCritChance(chr.Level, chr.Intellect);
-				chance += chr.GetSpellCritMod(school);
-				chr.SetSpellCritChance(school, chance);
+				chance += chr.GetCritMod(school);
+
+				chr.SetCritChance(school, chance);
 			}
 		}
 
@@ -404,7 +434,7 @@ namespace WCell.RealmServer.Modifiers
 			{
 				float parryChance = 0;
 				parryChance += 5f + chr.Archetype.Class.CalculateParry(chr.Level, (chr.GetCombatRatingMod(CombatRating.Parry)), chr.Strength);
-				parryChance += unit.StatModsInt[(int)StatModifierInt.ParryChance];
+				parryChance += unit.IntMods[(int)StatModifierInt.ParryChance];
 				chr.ParryChance = parryChance;
 			}
 		}
@@ -536,7 +566,7 @@ namespace WCell.RealmServer.Modifiers
 		internal static void UpdateMainAttackTime(this Unit unit)
 		{
 			var baseTime = unit.MainWeapon.AttackTime;
-			baseTime = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.AttackTime], baseTime);
+			baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
 			if (baseTime < 30)
 			{
 				baseTime = 30;
@@ -553,7 +583,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
 				unit.OffHandAttackTime = baseTime;
 			}
 			else
@@ -568,7 +598,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null && weapon.IsRanged)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
 				unit.RangedAttackTime = baseTime;
 			}
 			else
@@ -584,18 +614,22 @@ namespace WCell.RealmServer.Modifiers
 			var chr = unit as Character;
 			if (chr != null)
 			{
-				float critChance = 0;
 				// Crit chance from crit rating
-				critChance += chr.GetCombatRatingMod(CombatRating.MeleeCritChance) /
+				var critChance = chr.GetCombatRatingMod(CombatRating.MeleeCritChance) /
 							  GameTables.GetCRTable(CombatRating.MeleeCritChance)[chr.Level - 1];
 
+				var rangedCritChance = chr.GetCombatRatingMod(CombatRating.RangedCritChance) /
+							  GameTables.GetCRTable(CombatRating.RangedCritChance)[chr.Level - 1];
+
 				// Crit chance from agility
+				rangedCritChance += ((Character)unit).Archetype.Class.CalculateRangedCritChance(unit.Level, unit.Agility);
+				rangedCritChance += unit.IntMods[(int)StatModifierInt.RangedCritChance];
+
 				critChance += ((Character)unit).Archetype.Class.CalculateMeleeCritChance(unit.Level, unit.Agility);
-				critChance += unit.StatModsInt[(int)StatModifierInt.CritChance];
-				critChance = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.CritChance], critChance);
+				critChance += unit.GetCritMod(DamageSchool.Physical);
 
 				chr.CritChanceMeleePct = critChance;
-				chr.CritChanceRangedPct = critChance;
+				chr.CritChanceRangedPct = rangedCritChance;
 				chr.CritChanceOffHandPct = critChance;
 			}
 		}
@@ -617,8 +651,28 @@ namespace WCell.RealmServer.Modifiers
 																				 chr.GetCombatRatingMod(CombatRating.Dodge),
 																				 chr.GetCombatRatingMod(CombatRating.DefenseSkill)
 																				 );
-				dodgeChance += unit.StatModsInt[(int)StatModifierInt.DodgeChance];
+				dodgeChance += unit.IntMods[(int)StatModifierInt.DodgeChance];
 				chr.DodgeChance = dodgeChance;
+			}
+		}
+
+		/// <summary>
+		/// Increases the defense skill according to your defense rating
+		/// Updates Dodge and Parry chances
+		/// </summary>
+		/// <param name="unit"></param>
+		internal static void UpdateDefense(this Unit unit)
+		{
+			var chr = unit as Character;
+			if (chr != null)
+			{
+				var defense = chr.GetCombatRatingMod(CombatRating.DefenseSkill) /
+							  GameTables.GetCRTable(CombatRating.DefenseSkill)[chr.Level - 1];
+
+				//chr.Defense = chr.Skills[SkillId.Defense].ActualValue + defense;
+				chr.Defense = (uint)defense;
+				UpdateDodgeChance(unit);
+				UpdateParryChance(unit);
 			}
 		}
 
@@ -627,7 +681,44 @@ namespace WCell.RealmServer.Modifiers
 			unit.BoundingRadius = unit.Model.BoundingRadius * unit.ScaleX;
 		}
 
+		internal static void UpdateMeleeHitChance(this Unit unit)
+		{
+			float hitChance;
+			hitChance = unit.IntMods[(int) StatModifierInt.HitChance];
+			if(unit is Character)
+			{
+				var chr = unit as Character;
 
+				hitChance += chr.GetCombatRatingMod(CombatRating.MeleeHitChance)/
+				             GameTables.GetCRTable(CombatRating.MeleeHitChance)[chr.Level - 1];
+				chr.HitChance = hitChance;
+			}
+		}
+
+		internal static void UpdateRangedHitChance(this Unit unit)
+		{
+			float hitChance;
+			hitChance = unit.IntMods[(int)StatModifierInt.HitChance];
+			if (unit is Character)
+			{
+				var chr = unit as Character;
+
+				hitChance += chr.GetCombatRatingMod(CombatRating.RangedHitChance) /
+							 GameTables.GetCRTable(CombatRating.RangedHitChance)[chr.Level - 1];
+				chr.HitChance = hitChance;
+			}
+		}
+
+		internal static void UpdateExpertise(this Unit unit)
+		{
+			if(unit is Character)
+			{
+				var chr = unit as Character;
+				var expertise = (uint)chr.IntMods[(int) StatModifierInt.Expertise];
+				expertise += (uint)(chr.GetCombatRatingMod(CombatRating.Expertise)/GameTables.GetCRTable(CombatRating.Expertise)[chr.Level - 1]);
+				chr.Expertise = expertise;
+			}
+		}
 		//static int ApplyMultiMod(ModifierMulti mod, int value)
 		//{
 		//    var modValue = unit.MultiplierMods[(int)mod];
@@ -648,7 +739,7 @@ namespace WCell.RealmServer.Modifiers
 		/// </summary>
 		public static int GetMultiMod(float modValue, int value)
 		{
-			return (int)Math.Round(value * (1 + modValue));
+			return (int)(value * (1 + modValue) + 0.5f);
 		}
 
 		public static float GetMultiMod(float modValue, float value)
@@ -666,7 +757,7 @@ namespace WCell.RealmServer.Modifiers
 		/// <param name="delta"></param>
 		public static void ChangeModifier(this Unit unit, StatModifierInt mod, int delta)
 		{
-			unit.StatModsInt[(int)mod] += delta;
+			unit.IntMods[(int)mod] += delta;
 			if (FlatIntModHandlers[(int)mod] != null)
 			{
 				FlatIntModHandlers[(int)mod](unit);
@@ -681,7 +772,7 @@ namespace WCell.RealmServer.Modifiers
 		/// <param name="delta"></param>
 		public static void ChangeModifier(this Unit unit, StatModifierFloat mod, float delta)
 		{
-			unit.MultiplierMods[(int)mod] += delta;
+			unit.FloatMods[(int)mod] += delta;
 			if (MultiModHandlers[(int)mod] != null)
 			{
 				MultiModHandlers[(int)mod](unit);

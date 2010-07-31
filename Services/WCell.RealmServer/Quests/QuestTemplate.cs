@@ -31,6 +31,7 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Lang;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Constants.NPCs;
@@ -89,7 +90,7 @@ namespace WCell.RealmServer.Quests
 		/// Restricted to this Zone
 		/// </summary>
 		[NotPersistent]
-		public ZoneInfo ZoneInfo;
+		public ZoneTemplate ZoneTemplate;
 
 		/// <summary>
 		/// Id for QuestSort.dbc
@@ -110,12 +111,12 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// 
 		/// </summary>
-		public FactionReputationEntry MinReqReputation;
+		public FactionReputationEntry ObjectiveMinReputation;
 
 		/// <summary>
 		/// Player cannot have more than this in reputation
 		/// </summary>
-		public FactionReputationEntry MaxReqReputation;
+		public FactionReputationEntry ObjectiveMaxReputation;
 
 		/// <summary>
 		/// Gets or sets the reward money in copper, if it's negative,
@@ -222,7 +223,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Title
 		{
-			get { return Titles != null ? Titles[(int)RealmServerConfiguration.DefaultLocale] : "[unknown]"; }
+			get { return Titles != null ? Titles.LocalizeWithDefaultLocale() : "[unknown]"; }
 		}
 
 		/// <summary>
@@ -234,7 +235,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Objective
 		{
-			get { return Instructions[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Instructions.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -246,7 +247,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string Detail
 		{
-			get { return Details[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Details.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string EndText
 		{
-			get { return EndTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return EndTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -327,7 +328,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string OfferRewardText
 		{
-			get { return OfferRewardTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return OfferRewardTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -340,7 +341,7 @@ namespace WCell.RealmServer.Quests
 		[NotPersistent]
 		public string ProgressText
 		{
-			get { return ProgressTexts[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return ProgressTexts.LocalizeWithDefaultLocale(); }
 		}
 
 		/// <summary>
@@ -586,24 +587,6 @@ namespace WCell.RealmServer.Quests
 			if (RequiredClass != 0 && RequiredClass != chr.Class)
 			{
 				return QuestInvalidReason.WrongClass;
-			}
-
-			if (MinReqReputation.ReputationIndex != FactionReputationIndex.None && MinReqReputation.Value != 0)
-			{
-				var rep = chr.Reputations[MinReqReputation.ReputationIndex];
-				if (rep == null || rep.Value < MinReqReputation.Value)
-				{
-					return QuestInvalidReason.NoRequirements;
-				}
-			}
-
-			if (MaxReqReputation.ReputationIndex != FactionReputationIndex.None && MaxReqReputation.Value != 0)
-			{
-				var rep = chr.Reputations[MaxReqReputation.ReputationIndex];
-				if ((rep != null && rep.Value > MaxReqReputation.Value) || MaxReqReputation.Value < 0)
-				{
-					return QuestInvalidReason.NoRequirements;
-				}
 			}
 
 			if (RequiredSkill != SkillId.None && RequiredSkill > 0 &&
@@ -1015,7 +998,7 @@ namespace WCell.RealmServer.Quests
 				}
 				else
 				{
-					receiver.GainXp(CalcRewardXp(receiver.Level), false);
+					receiver.GainXp(CalcRewardXp(receiver), false);
 				}
 			}
 
@@ -1024,11 +1007,12 @@ namespace WCell.RealmServer.Quests
 				receiver.Money = (uint)(receiver.Money + RewMoney);
 			}
 
-			for (var i = 0; i < 2; i++)
+			for (var i = 0; i < QuestConstants.MaxReputations; i++)
 			{
-				if (RewardReputations[i].Value != 0)
+				if (RewardReputations[i].Faction != 0)
 				{
-					receiver.Reputations.ModValue(RewardReputations[i].Faction, RewardReputations[i].Value);
+				    int value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
+					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
 			//TODO Give RewardTitle
@@ -1036,10 +1020,20 @@ namespace WCell.RealmServer.Quests
 			return true;
 		}
 
-        public int CalcRewardXp(int playerLevel)
+        public int CalcRewRep(int valueId, int value)
+        {
+            if (value != 0)
+                return value*100;
+            var index = (valueId > 0) ? 0 : 1; 
+            return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
+        }
+
+        public int CalcRewardXp(Character character)
         {
             var fullxp = QuestMgr.QuestXpInfos[Level].RewXP[RewXPId-1];
-        	//float fullxp = playerLevel*1000;
+            fullxp = fullxp + (fullxp*character.QuestExperienceGainModifierPercent/100);
+
+            int playerLevel = character.Level;
             
             if (playerLevel <= Level + 5)
             {
@@ -1185,7 +1179,7 @@ namespace WCell.RealmServer.Quests
 			}
 			else if (Category > 0)
 			{
-				ZoneInfo = World.GetZoneInfo((ZoneId)Category);
+				ZoneTemplate = World.GetZoneInfo((ZoneId)Category);
 			}
 
 			List<QuestInteractionTemplate> goInteractions = null;
@@ -1324,7 +1318,7 @@ namespace WCell.RealmServer.Quests
 	{
 		//public FactionReputationIndex Faction;
 		public FactionId Faction;
-		public int Value;
+		public int ValueId;
+	    public int Value;
 	}
 }
-

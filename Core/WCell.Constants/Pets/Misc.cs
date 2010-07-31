@@ -123,9 +123,10 @@ namespace WCell.Constants.Pets
     
     public enum PetType
     {
-        Minion,
+		Minion,
+		Pet,
         Guardian,
-        Pet,
-        None
+		Companion,
+        End
     }
 }

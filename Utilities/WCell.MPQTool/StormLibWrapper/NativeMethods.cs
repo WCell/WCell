@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +14,7 @@ namespace WCell.MPQTool.StormLibWrapper
     {
         public const int MAX_PATH = 260;
         public const string StormLibDllName = "StormLib.dll";
-        public const string StormLibFolder = "../../../../StormLib/Bin/";
+        //public const string StormLibFolder = "../../../../StormLib/Bin/";
 
         
         /// Return Type: BOOL->int

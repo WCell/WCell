@@ -570,8 +570,17 @@ namespace WCell.Util.Commands
 			else
 			{
 				// help for all commands
+				var count = 0;
+				foreach (var cmd in Commands)
+				{
+					if (MayDisplay(trigger, cmd, ignoreRestrictions))
+					{
+						count++;
+					}
+				}
+
 				trigger.ReplyFormat("Use: ? <Alias> [<subalias> [<subalias> ...]] for help on a certain command.");
-				trigger.Reply("All available commands:");
+				trigger.Reply("All {0} available commands:", count);
 
 				foreach (var cmd in Commands)
 				{

@@ -18,26 +18,19 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
+	/// test
 	/// Gives EffectValue% to trigger another Spell
 	/// </summary>
 	public class AddTargetTriggerHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerSpells.TargetTriggers.Add(this);
-			}
+			Owner.Spells.TargetTriggers.Add(this);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			var owner = Owner as Character;
-			if (owner != null)
-			{
-				owner.PlayerSpells.TargetTriggers.Remove(this);
-			}
+			Owner.Spells.TargetTriggers.Remove(this);
 		}
 	}
 };

@@ -27,7 +27,9 @@ using WCell.RealmServer.Factions;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.Items;
@@ -41,14 +43,14 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_baseResistances = new int[DamageSchoolCount];
 		protected UnitModelInfo m_model;
 
-		internal readonly int[] StatModsInt = new int[UnitUpdates.FlatIntModCount + 1];
-		internal readonly float[] MultiplierMods = new float[UnitUpdates.MultiplierModCount + 1];
+		internal readonly int[] IntMods = new int[UnitUpdates.FlatIntModCount + 1];
+		internal readonly float[] FloatMods = new float[UnitUpdates.MultiplierModCount + 1];
 		//internal readonly int[] BaseMods = new int[UnitUpdates.BaseModCount];
 		//internal readonly float[] FlatModsFloat = new float[UnitUpdates.FlatFloatModCount];
 
 		protected Unit m_target;
 		protected Unit m_charm;
-		protected ObjectBase m_channeled;
+		protected WorldObject m_channeled;
 
 		protected Transport m_transport;
 		protected Vector3 m_transportPosition;
@@ -173,7 +175,7 @@ namespace WCell.RealmServer.Entities
 			internal set;
 		}
 
-		public ObjectBase ChannelObject
+		public WorldObject ChannelObject
 		{
 			get { return m_channeled; }
 			set
@@ -893,7 +895,7 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, delta);
+				ModBaseResistance(school, -delta);
 			}
 		}
 
@@ -911,13 +913,13 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, 0 - delta);
+				ModBaseResistance(school, delta);
 			}
 		}
 
@@ -1025,6 +1027,11 @@ namespace WCell.RealmServer.Entities
 			set { SetByte(UnitFields.BYTES_0, 1, (byte)value); }
 		}
 
+		public BaseClass GetBaseClass()
+		{
+			return ArchetypeMgr.GetClass(Class);
+		}
+
 		/// <summary>
 		/// Race of the character.
 		/// </summary>
@@ -1071,7 +1078,7 @@ namespace WCell.RealmServer.Entities
 			get { return (PowerType)GetByte(UnitFields.BYTES_0, 3); }
 			set
 			{
-				SetByte(UnitFields.BYTES_0, 3, (byte)((byte)value % (byte)PowerType.Count));
+				SetByte(UnitFields.BYTES_0, 3, (byte)((byte)value % (byte)PowerType.End));
 			}
 		}
 
@@ -1142,12 +1149,23 @@ namespace WCell.RealmServer.Entities
 			set { SetByte(UnitFields.BYTES_2, 2, (byte)value); }
 		}
 
+		#endregion
+
+		#region Shapeshifting
+		/// <summary>
+		/// The entry of the current shapeshift form
+		/// </summary>
+		public ShapeshiftEntry ShapeshiftEntry
+		{
+			get { return SpellHandler.ShapeshiftEntries.Get((uint)ShapeshiftForm); }
+		}
+
 		public ShapeshiftForm ShapeshiftForm
 		{
 			get { return (ShapeshiftForm)GetByte(UnitFields.BYTES_2, 3); }
 			set
 			{
-				// TODO: Shapeshifters dont hit with their weapon
+				// TODO: Shapeshifters dont use their weapons
 				// TODO: AttackTime is overridden
 				// TODO: Horde shapeshifters are missing some models
 
@@ -1157,7 +1175,7 @@ namespace WCell.RealmServer.Entities
 					var oldEntry = SpellHandler.ShapeshiftEntries.Get((uint)value);
 					if (oldEntry != null)
 					{
-						// remove old shapeshift effects
+						// remove old shapeshift spells
 						if (HasSpells)
 						{
 							foreach (var spell in oldEntry.DefaultActionBarSpells)
@@ -1191,25 +1209,54 @@ namespace WCell.RealmServer.Entities
 							}
 						}
 					}
+					if (entry.PowerType != PowerType.End)
+					{
+						PowerType = entry.PowerType;
+					}
+					else
+					{
+						SetDefaultPowerType();
+					}
 				}
-				else if (oldForm != 0)
+				else
 				{
-					// reset Model
-					DisplayId = NativeDisplayId;
+					if (oldForm != 0)
+					{
+						// reset Model
+						DisplayId = NativeDisplayId;
+					}
+					SetDefaultPowerType();
 				}
 
 				SetByte(UnitFields.BYTES_2, 3, (byte)value);
+
+				if (m_auras is PlayerAuraCollection)
+				{
+					((PlayerAuraCollection)m_auras).OnShapeshiftFormChanged();
+				}
 			}
 		}
 
-		public ShapeShiftMask ShapeShiftMask
+		/// <summary>
+		/// Sets this Unit's default PowerType
+		/// </summary>
+		public void SetDefaultPowerType()
 		{
-			get
+			var clss = GetBaseClass();
+			if (clss != null)
 			{
-				return (ShapeShiftMask)(1 << (int)(ShapeshiftForm));
+				PowerType = clss.DefaultPowerType;
+			}
+			else
+			{
+				PowerType = PowerType.Mana;
 			}
 		}
 
+		public ShapeshiftMask ShapeshiftMask
+		{
+			get { return (ShapeshiftMask)(1 << (int)(ShapeshiftForm - 1)); }
+		}
 		#endregion
 
 		/// <summary>
@@ -1228,13 +1275,9 @@ namespace WCell.RealmServer.Entities
 			Power = BasePower;
 		}
 
-		public bool BelongsToPlayer
-		{
-			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
-		}
-
 		/// <summary>
-		/// Whether this is a Player or owned by a player
+		/// Whether this is actively controlled by a player. 
+		/// Not to be confused with IsOwnedByPlayer.
 		/// </summary>
 		public override bool IsPlayerControlled
 		{
@@ -1253,9 +1296,29 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
+		public UnitExtraFlags ExtraFlags
+		{
+			get;
+			set;
+		}
+
 		#region Health
+
 		public void Kill()
 		{
+			Kill(null);
+		}
+
+		public void Kill(Unit killer)
+		{
+			if (killer != null)
+			{
+				if (FirstAttacker == null)
+				{
+					FirstAttacker = killer;
+				}
+				LastKiller = killer;
+			}
 			Health = 0;
 		}
 
@@ -1357,7 +1420,7 @@ namespace WCell.RealmServer.Entities
 
 		public int HealthPct
 		{
-			get { return (100 * Health) / MaxHealth; }
+			get { return (100 * Health + (1 >> MaxHealth)) / MaxHealth; }
 			set { Health = ((value * MaxHealth) + 50) / 100; }
 		}
 
@@ -1420,9 +1483,9 @@ namespace WCell.RealmServer.Entities
 				//if (PowerType == PowerType.Mana)
 				SetInt32(UnitFields.BASE_MANA, value);
 
-				this.UpdatePower();
+				this.UpdateMaxPower();
 
-				if ((PowerType != PowerType.Rage) && (PowerType != PowerType.Energy))
+				if (PowerType != PowerType.Rage && PowerType != PowerType.Energy)
 				{
 					Power = MaxPower;
 				}
@@ -1446,8 +1509,10 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return Math.Max(0, GetInt32(UnitFields.POWER1 + (int)PowerType) +
-					(m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0));
+				// TODO: fix this thing
+				// power is now calculated and regenerated continuously client-side
+				// so we also need to interpolate power values server-side
+				return UpdatePower();
 			}
 			set
 			{
@@ -1464,6 +1529,15 @@ namespace WCell.RealmServer.Entities
 					MiscHandler.SendPowerUpdate(this, PowerType, value);
 				}
 			}
+		}
+
+		private int UpdatePower()
+		{
+			var val = GetInt32(UnitFields.POWER1 + (int)PowerType) +
+					  (m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0);
+			val = MathUtil.ClampMinMax(val, 0, MaxPower);
+			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
+			return val;
 		}
 
 		/// <summary>
@@ -1549,11 +1623,28 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Amount of additional yards to be allowed to jump without having any damage inflicted.
+		/// TODO: Implement correctly (needs client packets)
 		/// </summary>
 		public int SafeFall
 		{
 			get;
 			internal set;
+		}
+
+		public int AoEDamageModifierPct
+		{
+			get;
+			set;
+		}
+
+		public virtual uint Defense
+		{
+			get
+			{
+				return (uint)(5 * Level);
+			}
+			internal set
+			{ }
 		}
 	}
 }

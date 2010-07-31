@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.Items
@@ -11706,7 +11706,7 @@ namespace WCell.Constants.Items
 		/// Level: 36
 		/// Class: Consumable
 		/// </summary>
-		MightyTrollsBloodElixir = 3826,
+		MajorTrollsBloodElixir = 3826,
 		/// <summary>
 		/// Level: 32
 		/// Class: Consumable
@@ -11731,7 +11731,7 @@ namespace WCell.Constants.Items
 		/// Level: 36
 		/// Class: Recipe
 		/// </summary>
-		RecipeMightyTrollsBloodElixir = 3831,
+		RecipeMajorTrollsBloodElixir = 3831,
 		/// <summary>
 		/// Level: 39
 		/// Class: Recipe
@@ -62575,7 +62575,6 @@ namespace WCell.Constants.Items
 		/// <summary>
 		/// Neck
 		/// Level: 71
-		/// Set: Spirit of Eskhandar (Id: 261)
 		/// Class: Armor
 		/// </summary>
 		EskhandarsCollar = 18205,
@@ -62641,7 +62640,7 @@ namespace WCell.Constants.Items
 		/// <summary>
 		/// Body
 		/// Level: 1
-		/// Class: Miscellaneous
+		/// Class: Armor
 		/// </summary>
 		SleevelessTShirt = 18231,
 		/// <summary>
@@ -62779,7 +62778,7 @@ namespace WCell.Constants.Items
 		/// Level: 60
 		/// Class: Recipe
 		/// </summary>
-		FormulaEnchantWeaponSpellPower = 18259,
+		FormulaEnchantWeaponSpellpower = 18259,
 		/// <summary>
 		/// Level: 60
 		/// Class: Recipe
@@ -62979,7 +62978,7 @@ namespace WCell.Constants.Items
 		/// Level: 58
 		/// Class: Weapon
 		/// </summary>
-		QuelDoraiChannelingRod = 18311,
+		QuelDoreiChannelingRod = 18311,
 		/// <summary>
 		/// Chest
 		/// Level: 59
@@ -65512,6 +65511,7 @@ namespace WCell.Constants.Items
 		GrandMarshalsBullseye = 18833,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde = 18834,
@@ -65575,11 +65575,13 @@ namespace WCell.Constants.Items
 		HighWarlordsRightClaw = 18844,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_2 = 18845,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_3 = 18846,
@@ -65597,31 +65599,37 @@ namespace WCell.Constants.Items
 		HighWarlordsLeftClaw = 18848,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_4 = 18849,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_5 = 18850,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_6 = 18851,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_7 = 18852,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_8 = 18853,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance = 18854,
@@ -65633,21 +65641,25 @@ namespace WCell.Constants.Items
 		GrandMarshalsHandCannon = 18855,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_2 = 18856,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_3 = 18857,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_4 = 18858,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_5 = 18859,
@@ -65665,16 +65677,19 @@ namespace WCell.Constants.Items
 		FlamewakerLegplates = 18861,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_6 = 18862,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_7 = 18863,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_8 = 18864,
@@ -66463,7 +66478,7 @@ namespace WCell.Constants.Items
 		/// Level: 50
 		/// Class: Armor
 		/// </summary>
-		LaqueredWoodenPlateLegplates = 19117,
+		LaqueredWoodenPlateLegguards = 19117,
 		/// <summary>
 		/// RangedRight
 		/// Level: 50
@@ -70194,7 +70209,7 @@ namespace WCell.Constants.Items
 		/// Level: 58
 		/// Class: Consumable
 		/// </summary>
-		MajorTrollsBloodElixir = 20004,
+		MightyTrollsBloodElixir = 20004,
 		/// <summary>
 		/// Finger
 		/// Level: 52
@@ -70240,7 +70255,7 @@ namespace WCell.Constants.Items
 		/// Level: 58
 		/// Class: Recipe
 		/// </summary>
-		RecipeMajorTrollsBloodElixir = 20014,
+		RecipeMightyTrollsBloodElixir = 20014,
 		/// <summary>
 		/// Level: 1
 		/// Class: Miscellaneous
@@ -72984,7 +72999,7 @@ namespace WCell.Constants.Items
 		/// Level: 62
 		/// Class: Armor
 		/// </summary>
-		AbyssalPlateLegplates = 20671,
+		AbyssalPlateLegguards = 20671,
 		/// <summary>
 		/// RangedRight
 		/// Level: 62
@@ -77967,7 +77982,7 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Miscellaneous
 		/// </summary>
-		BagOfCandies = 21813,
+		BagOfHeartCandies = 21813,
 		/// <summary>
 		/// Chest
 		/// Level: 73
@@ -78845,7 +78860,7 @@ namespace WCell.Constants.Items
 		DarkmantleCap = 22005,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: Darkmantle Armor (Id: 512)
 		/// Class: Armor
 		/// </summary>
@@ -78904,7 +78919,7 @@ namespace WCell.Constants.Items
 		HallowedBrazier = 22014,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: Beastmaster Armor (Id: 515)
 		/// Class: Armor
 		/// </summary>
@@ -79050,7 +79065,7 @@ namespace WCell.Constants.Items
 		SorcerersCrown = 22065,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: Sorcerer's Regalia (Id: 517)
 		/// Class: Armor
 		/// </summary>
@@ -79127,7 +79142,7 @@ namespace WCell.Constants.Items
 		DeathmistSandals = 22076,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: Deathmist Raiment (Id: 518)
 		/// Class: Armor
 		/// </summary>
@@ -79218,7 +79233,7 @@ namespace WCell.Constants.Items
 		SoulforgeBreastplate = 22089,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: Soulforge Armor (Id: 516)
 		/// Class: Armor
 		/// </summary>
@@ -79279,7 +79294,7 @@ namespace WCell.Constants.Items
 		CordOfTheFiveThunders = 22098,
 		/// <summary>
 		/// Hand
-		/// Level: 55
+		/// Level: 60
 		/// Set: The Five Thunders (Id: 519)
 		/// Class: Armor
 		/// </summary>
@@ -91337,7 +91352,7 @@ namespace WCell.Constants.Items
 		/// Level: 102
 		/// Class: Armor
 		/// </summary>
-		MistyreedBoot = 24638,
+		MistyreedBoots = 24638,
 		/// <summary>
 		/// Chest
 		/// Level: 102
@@ -91373,7 +91388,7 @@ namespace WCell.Constants.Items
 		/// Level: 102
 		/// Class: Armor
 		/// </summary>
-		MistyreedBracer = 24644,
+		MistyreedBracers = 24644,
 		/// <summary>
 		/// Waist
 		/// Level: 105
@@ -96203,7 +96218,7 @@ namespace WCell.Constants.Items
 		PairOfIvoryTusks = 25463,
 		/// <summary>
 		/// TwoHandWeapon
-		/// Level: 23
+		/// Level: 27
 		/// Class: Weapon
 		/// </summary>
 		BloodTemperedRanseur = 25464,
@@ -97980,7 +97995,7 @@ namespace WCell.Constants.Items
 		/// Level: 109
 		/// Class: Armor
 		/// </summary>
-		ConquerersBand = 25811,
+		ConquerorsBand = 25811,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -102490,7 +102505,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		EverlastingUndersporeFrond = 28111,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Consumable
 		/// </summary>
 		UndersporePod = 28112,
@@ -108728,7 +108743,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		WarpRiftGenerator = 29226,
 		/// <summary>
-		/// Level: 60
+		/// Level: 40
 		/// Class: Miscellaneous
 		/// </summary>
 		ReinsOfTheCobaltWarTalbuk_2 = 29227,
@@ -110440,11 +110455,13 @@ namespace WCell.Constants.Items
 		PreparedEthereumWrapping = 29591,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_9 = 29592,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_9 = 29593,
@@ -122820,12 +122837,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BoldCrimsonSpinel = 32193,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		DelicateCrimsonSpinel = 32194,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		TeardropCrimsonSpinel = 32195,
@@ -122835,7 +122852,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RunedCrimsonSpinel = 32196,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		BrightCrimsonSpinel = 32197,
@@ -122845,12 +122862,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SubtleCrimsonSpinel = 32198,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		FlashingCrimsonSpinel = 32199,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		SolidEmpyreanSapphire = 32200,
@@ -122870,12 +122887,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		StormyEmpyreanSapphire = 32203,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		BrilliantLionseye = 32204,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		SmoothLionseye = 32205,
@@ -122905,7 +122922,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GreatLionseye = 32210,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		SovereignShadowsongAmethyst = 32211,
@@ -122915,67 +122932,67 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ShiftingShadowsongAmethyst = 32212,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		BalancedShadowsongAmethyst = 32213,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		InfusedShadowsongAmethyst = 32214,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		GlowingShadowsongAmethyst = 32215,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		RoyalShadowsongAmethyst = 32216,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		InscribedPyrestone = 32217,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		PotentPyrestone = 32218,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		LuminousPyrestone = 32219,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		GlintingPyrestone = 32220,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		VeiledPyrestone = 32221,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		WickedPyrestone = 32222,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		EnduringSeasprayEmerald = 32223,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		RadiantSeasprayEmerald = 32224,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		DazzlingSeasprayEmerald = 32225,
@@ -126825,17 +126842,17 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DelicateFireRuby = 33132,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		DonJuliosHeart = 33133,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		KaileesRose = 33134,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		FallingStar = 33135,
@@ -126855,7 +126872,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BrilliantBladestone = 33139,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		BloodOfAmber = 33140,
@@ -126870,12 +126887,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RigidBladestone = 33142,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		StoneOfBlades = 33143,
 		/// <summary>
-		/// Level: 130
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		FacetOfEternity = 33144,
@@ -137576,17 +137593,17 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MechazodsHead = 35486,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		BrightCrimsonSpinel_2 = 35487,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		RunedCrimsonSpinel_2 = 35488,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		TeardropCrimsonSpinel_2 = 35489,
@@ -138686,12 +138703,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ForcefulSeasprayEmerald = 35759,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		RecklessPyrestone = 35760,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		QuickLionseye = 35761,
@@ -147616,7 +147633,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		QuarterflashsPackage = 37502,
 		/// <summary>
-		/// Level: 100
+		/// Level: 70
 		/// Class: Jewelry
 		/// </summary>
 		PurifiedShadowsongAmethyst = 37503,
@@ -149624,6 +149641,11 @@ namespace WCell.Constants.Items
 		/// Class: Consumable
 		/// </summary>
 		WildWinterPilsner = 37898,
+		/// <summary>
+		/// Level: 5
+		/// Class: Consumable
+		/// </summary>
+		IzzardsEverFlavor = 37899,
 		/// <summary>
 		/// Level: 5
 		/// Class: Consumable
@@ -151665,7 +151687,7 @@ namespace WCell.Constants.Items
 		ArcticChestpiece = 38400,
 		/// <summary>
 		/// Legs
-		/// Level: 138
+		/// Level: 146
 		/// Set: Borean Embrace (Id: 754)
 		/// Class: Armor
 		/// </summary>
@@ -151679,7 +151701,7 @@ namespace WCell.Constants.Items
 		ArcticShoulderpads = 38402,
 		/// <summary>
 		/// Hand
-		/// Level: 138
+		/// Level: 146
 		/// Set: Borean Embrace (Id: 754)
 		/// Class: Armor
 		/// </summary>
@@ -151728,7 +151750,7 @@ namespace WCell.Constants.Items
 		IceborneGloves = 38409,
 		/// <summary>
 		/// Legs
-		/// Level: 134
+		/// Level: 142
 		/// Set: Iceborne Embrace (Id: 757)
 		/// Class: Armor
 		/// </summary>
@@ -151770,7 +151792,7 @@ namespace WCell.Constants.Items
 		FrostscaleGloves = 38415,
 		/// <summary>
 		/// Legs
-		/// Level: 134
+		/// Level: 142
 		/// Set: Frostscale Binding (Id: 756)
 		/// Class: Armor
 		/// </summary>
@@ -151819,7 +151841,7 @@ namespace WCell.Constants.Items
 		NerubianLegguards = 38422,
 		/// <summary>
 		/// Shoulder
-		/// Level: 138
+		/// Level: 142
 		/// Set: Frostscale Binding (Id: 756)
 		/// Class: Armor
 		/// </summary>
@@ -153677,7 +153699,7 @@ namespace WCell.Constants.Items
 		/// Level: 60
 		/// Class: Consumable
 		/// </summary>
-		ScrollOfEnchantWeaponSpellPower = 38877,
+		ScrollOfEnchantWeaponSpellpower = 38877,
 		/// <summary>
 		/// Level: 60
 		/// Class: Consumable
@@ -154267,7 +154289,7 @@ namespace WCell.Constants.Items
 		/// Level: 85
 		/// Class: Consumable
 		/// </summary>
-		ScrollOfEnchantCloakHaste = 39003,
+		ScrollOfEnchantCloakGreaterSpeed = 39003,
 		/// <summary>
 		/// Level: 85
 		/// Class: Consumable
@@ -158015,7 +158037,7 @@ namespace WCell.Constants.Items
 		FireScorchedGreathelm = 39723,
 		/// <summary>
 		/// Chest
-		/// Level: 200
+		/// Level: 213
 		/// Class: Armor
 		/// </summary>
 		CultsChestguard = 39724,
@@ -160077,7 +160099,7 @@ namespace WCell.Constants.Items
 		/// Level: 80
 		/// Class: Jewelry
 		/// </summary>
-		ResplendentFlawlessAmetrine = 40145,
+		ResplendentAmetrine = 40145,
 		/// <summary>
 		/// Level: 80
 		/// Class: Jewelry
@@ -160147,12 +160169,12 @@ namespace WCell.Constants.Items
 		/// Level: 80
 		/// Class: Jewelry
 		/// </summary>
-		StarkFlawlessAmetrine = 40159,
+		StarkAmetrine = 40159,
 		/// <summary>
 		/// Level: 80
 		/// Class: Jewelry
 		/// </summary>
-		StalwartFlawlessAmetrine = 40160,
+		StalwartAmetrine = 40160,
 		/// <summary>
 		/// Level: 80
 		/// Class: Jewelry
@@ -161403,7 +161425,7 @@ namespace WCell.Constants.Items
 		LastLaugh = 40402,
 		/// <summary>
 		/// Cloak
-		/// Level: 223
+		/// Level: 226
 		/// Class: Armor
 		/// </summary>
 		DrapeOfTheDeadlyFoe = 40403,
@@ -161804,11 +161826,13 @@ namespace WCell.Constants.Items
 		BarricadeOfEternity = 40475,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheAlliance_10 = 40476,
 		/// <summary>
 		/// Trinket
+		/// Level: 60
 		/// Class: Armor
 		/// </summary>
 		InsigniaOfTheHorde_10 = 40477,
@@ -167007,7 +167031,7 @@ namespace WCell.Constants.Items
 		/// Level: 18
 		/// Class: Glyph
 		/// </summary>
-		GlyphOfFireNovaTotem = 41530,
+		GlyphOfFireNova = 41530,
 		/// <summary>
 		/// Level: 15
 		/// Class: Glyph
@@ -168710,7 +168734,7 @@ namespace WCell.Constants.Items
 		DeadlyGladiatorsMoonclothMantle = 41868,
 		/// <summary>
 		/// Shoulder
-		/// Level: 226
+		/// Level: 232
 		/// Set: Gladiator's Investiture (Id: 777)
 		/// Class: Armor
 		/// </summary>
@@ -169923,7 +169947,7 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
-		ShoveltuskIvory = 42104,
+		NorthernIvory = 42104,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -170760,6 +170784,18 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RelentlessGladiatorsGavel = 42354,
 		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 200
+		/// Class: Weapon
+		/// </summary>
+		SavageGladiatorsBattleStaff = 42356,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 200
+		/// Class: Weapon
+		/// </summary>
+		HatefulGladiatorsBattleStaff = 42359,
+		/// <summary>
 		/// Body
 		/// Level: 1
 		/// Class: Armor
@@ -170965,10 +171001,10 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfMindControl = 42405,
 		/// <summary>
-		/// Level: 25
+		/// Level: 15
 		/// Class: Glyph
 		/// </summary>
-		GlyphOfMindFlay = 42406,
+		GlyphOfShadowWordPain = 42406,
 		/// <summary>
 		/// Level: 25
 		/// Class: Glyph
@@ -171011,10 +171047,10 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfShadowWordDeath = 42414,
 		/// <summary>
-		/// Level: 9
+		/// Level: 20
 		/// Class: Glyph
 		/// </summary>
-		GlyphOfShadowWordPain = 42415,
+		GlyphOfMindFlay = 42415,
 		/// <summary>
 		/// Level: 6
 		/// Class: Glyph
@@ -171164,7 +171200,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfConflagrate = 42454,
 		/// <summary>
-		/// Level: 9
+		/// Level: 15
 		/// Class: Glyph
 		/// </summary>
 		GlyphOfCorruption = 42455,
@@ -171282,7 +171318,7 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
-		ReinsOfTheIcemawMatriarch = 42481,
+		ReinsOfTheWarbearMatriarch = 42481,
 		/// <summary>
 		/// Level: 1
 		/// Class: Key
@@ -171352,7 +171388,7 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
-		ReinsOfTheIcemawMatriarch_2 = 42499,
+		ReinsOfTheWarbearMatriarch_2 = 42499,
 		/// <summary>
 		/// Level: 80
 		/// Class: Consumable
@@ -171974,7 +172010,7 @@ namespace WCell.Constants.Items
 		/// Level: 25
 		/// Class: Glyph
 		/// </summary>
-		GlyphOfImprovedScorch = 42747,
+		GlyphOfScorch = 42747,
 		/// <summary>
 		/// Level: 73
 		/// Class: Glyph
@@ -172768,7 +172804,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfMending = 42900,
 		/// <summary>
-		/// Level: 71
+		/// Level: 20
 		/// Class: Glyph
 		/// </summary>
 		GlyphOfAspectOfTheViper = 42901,
@@ -174429,7 +174465,7 @@ namespace WCell.Constants.Items
 		/// Level: 70
 		/// Class: Quest
 		/// </summary>
-		BeautfulChalcedonyNecklace = 43298,
+		BeautifulChalcedonyNecklace = 43298,
 		/// <summary>
 		/// Level: 70
 		/// Class: Quest
@@ -175072,7 +175108,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfResonatingPower = 43430,
 		/// <summary>
-		/// Level: 62
+		/// Level: 15
 		/// Class: Glyph
 		/// </summary>
 		GlyphOfVictoryRush = 43431,
@@ -176375,7 +176411,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CelestialRubyRing = 43724,
 		/// <summary>
-		/// Level: 20
+		/// Level: 16
 		/// Class: Glyph
 		/// </summary>
 		GlyphOfGhostWolf = 43725,
@@ -176641,7 +176677,7 @@ namespace WCell.Constants.Items
 		/// Level: 55
 		/// Class: Glyph
 		/// </summary>
-		GlyphOfSealOfBlood = 43867,
+		GlyphOfHolyWrath = 43867,
 		/// <summary>
 		/// Level: 55
 		/// Class: Glyph
@@ -176764,7 +176800,7 @@ namespace WCell.Constants.Items
 		/// Level: 174
 		/// Class: Armor
 		/// </summary>
-		JhaequonsTunic = 43891,
+		JhaeqonsTunic = 43891,
 		/// <summary>
 		/// Waist
 		/// Level: 174
@@ -179459,6 +179495,18 @@ namespace WCell.Constants.Items
 		MekgineersChopper = 44413,
 		/// <summary>
 		/// TwoHandWeapon
+		/// Level: 200
+		/// Class: Weapon
+		/// </summary>
+		SavageGladiatorsWarStaff = 44415,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 200
+		/// Class: Weapon
+		/// </summary>
+		HatefulGladiatorsWarStaff = 44417,
+		/// <summary>
+		/// TwoHandWeapon
 		/// Level: 213
 		/// Class: Weapon
 		/// </summary>
@@ -180121,7 +180169,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		FlyingCarpet = 44554,
 		/// <summary>
-		/// Level: 80
+		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
 		MagnificentFlyingCarpet = 44558,
@@ -180807,7 +180855,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ChargedDisk = 44704,
 		/// <summary>
-		/// Level: 80
+		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
 		ReinsOfTheGreenProtoDrake = 44707,
@@ -181217,6 +181265,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		HordeHerbPouch = 44809,
 		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		TurkeyCage = 44810,
+		/// <summary>
 		/// Level: 1
 		/// Class: Consumable
 		/// </summary>
@@ -181254,14 +181307,14 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: TradeGoods
 		/// </summary>
-		WholeTurkey = 44834,
+		WildTurkey = 44834,
 		/// <summary>
 		/// Level: 5
 		/// Class: TradeGoods
 		/// </summary>
 		AutumnalHerbs = 44835,
 		/// <summary>
-		/// Level: 1
+		/// Level: 20
 		/// Class: Consumable
 		/// </summary>
 		PumpkinPie = 44836,
@@ -181269,19 +181322,19 @@ namespace WCell.Constants.Items
 		/// Level: 1
 		/// Class: Consumable
 		/// </summary>
-		CornbreadStuffing = 44837,
+		SpiceBreadStuffing = 44837,
 		/// <summary>
-		/// Level: 1
+		/// Level: 56
 		/// Class: Consumable
 		/// </summary>
 		SlowRoastedTurkey = 44838,
 		/// <summary>
-		/// Level: 1
+		/// Level: 44
 		/// Class: Consumable
 		/// </summary>
-		CandiedYam = 44839,
+		CandiedSweetPotato = 44839,
 		/// <summary>
-		/// Level: 1
+		/// Level: 32
 		/// Class: Consumable
 		/// </summary>
 		CranberryChutney = 44840,
@@ -182753,7 +182806,7 @@ namespace WCell.Constants.Items
 		/// Level: 232
 		/// Class: Weapon
 		/// </summary>
-		RuneEdge_2 = 45233,
+		StormruneEdge = 45233,
 		/// <summary>
 		/// TwoHandWeapon
 		/// Level: 232
@@ -184265,6 +184318,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		BootsOfTheServant = 45483,
+		/// <summary>
+		/// Weapon
+		/// Level: 239
+		/// Class: Weapon
+		/// </summary>
+		Bladetwister = 45484,
 		/// <summary>
 		/// Neck
 		/// Level: 239
@@ -188355,6 +188414,11 @@ namespace WCell.Constants.Items
 		/// Level: 40
 		/// Class: Miscellaneous
 		/// </summary>
+		GreatRedElekk_2 = 46756,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
 		SwiftBurgundyWolf_2 = 46757,
 		/// <summary>
 		/// Level: 40
@@ -188366,6 +188430,11 @@ namespace WCell.Constants.Items
 		/// Class: Miscellaneous
 		/// </summary>
 		SwiftPurpleRaptor_2 = 46760,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		Turbostrider_2 = 46763,
 		/// <summary>
 		/// Level: 40
 		/// Class: Miscellaneous
@@ -191464,6 +191533,12 @@ namespace WCell.Constants.Items
 		/// Level: 272
 		/// Class: Armor
 		/// </summary>
+		VereesasDexterity = 47545,
+		/// <summary>
+		/// Cloak
+		/// Level: 272
+		/// Class: Armor
+		/// </summary>
 		SylvanasCunning = 47546,
 		/// <summary>
 		/// Cloak
@@ -191477,6 +191552,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		GarroshsRage = 47548,
+		/// <summary>
+		/// Cloak
+		/// Level: 272
+		/// Class: Armor
+		/// </summary>
+		MagnisResolution = 47549,
 		/// <summary>
 		/// Cloak
 		/// Level: 272
@@ -191778,13 +191859,13 @@ namespace WCell.Constants.Items
 		/// Level: 245
 		/// Class: Armor
 		/// </summary>
-		LunarEclipseChestguard = 47601,
+		LunarEclipseRobes = 47601,
 		/// <summary>
 		/// Robe
 		/// Level: 245
 		/// Class: Armor
 		/// </summary>
-		LunarEclipseChestguard_2 = 47602,
+		LunarEclipseRobes_2 = 47602,
 		/// <summary>
 		/// Robe
 		/// Level: 245
@@ -191953,7 +192034,7 @@ namespace WCell.Constants.Items
 		/// Level: 85
 		/// Class: Recipe
 		/// </summary>
-		PatternLunarEclipseChestguard = 47632,
+		PatternLunarEclipseRobes = 47632,
 		/// <summary>
 		/// Level: 85
 		/// Class: Recipe
@@ -192053,7 +192134,7 @@ namespace WCell.Constants.Items
 		/// Level: 85
 		/// Class: Recipe
 		/// </summary>
-		PatternLunarEclipseChestguard_2 = 47652,
+		PatternLunarEclipseRobes_2 = 47652,
 		/// <summary>
 		/// Level: 85
 		/// Class: Recipe
@@ -198413,7 +198494,7 @@ namespace WCell.Constants.Items
 		/// Level: 232
 		/// Class: Armor
 		/// </summary>
-		TitanForgedPlateLegplatesOfSalvation = 48992,
+		TitanForgedPlateLegguardsOfSalvation = 48992,
 		/// <summary>
 		/// Legs
 		/// Level: 232
@@ -198544,7 +198625,7 @@ namespace WCell.Constants.Items
 		/// Level: 200
 		/// Class: Weapon
 		/// </summary>
-		DirebrewsShanker20 = 49120,
+		DirebrewsBloodyShanker = 49120,
 		/// <summary>
 		/// Finger
 		/// Level: 200
@@ -198633,6 +198714,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		AllianceTraumaCertification = 49193,
 		/// <summary>
+		/// Level: 28
+		/// Class: Miscellaneous
+		/// </summary>
+		SmallScroll_2 = 49205,
+		/// <summary>
 		/// Level: 1
 		/// Class: Miscellaneous
 		/// </summary>
@@ -198697,6 +198783,16 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		GoblinRocketPack = 49278,
+		/// <summary>
+		/// Level: 40
+		/// Class: Miscellaneous
+		/// </summary>
+		BigBattleBear_2 = 49282,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		ReinsOfTheSpectralTiger_2 = 49283,
 		/// <summary>
 		/// Level: 40
 		/// Class: Miscellaneous
@@ -198927,6 +199023,21 @@ namespace WCell.Constants.Items
 		/// Class: Quest
 		/// </summary>
 		DarosJournal = 49335,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		SpectralTigerCub = 49343,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		PerfumeNeutralizer = 49351,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CologneNeutralizer = 49352,
 		/// <summary>
 		/// Level: 30
 		/// Class: Miscellaneous
@@ -199186,6 +199297,17 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SunreaverOrders = 49536,
 		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		Shadowmourne = 49623,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		StandardApothecaryServingKit = 49631,
+		/// <summary>
 		/// Level: 90
 		/// Class: Consumable
 		/// </summary>
@@ -199201,6 +199323,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		DrumsOfTheWild = 49634,
 		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CourtSubpoena = 49635,
+		/// <summary>
 		/// Level: 70
 		/// Class: Miscellaneous
 		/// </summary>
@@ -199210,6 +199337,11 @@ namespace WCell.Constants.Items
 		/// Class: TradeGoods
 		/// </summary>
 		EssenceOrDust = 49640,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		FadedLovelyGreetingCard = 49641,
 		/// <summary>
 		/// Level: 80
 		/// Class: Quest
@@ -199226,10 +199358,35 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BorrowedTabard = 49648,
 		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		LovelyCharm = 49655,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		LovelyCharmCollectorsKit = 49661,
+		/// <summary>
 		/// Level: 80
 		/// Class: Quest
 		/// </summary>
 		WaterloggedRecipe_3 = 49667,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CrownPerfumeSprayer = 49668,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CrownCologneSprayer = 49669,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CrownChocolateSampler = 49670,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -199266,6 +199423,12 @@ namespace WCell.Constants.Items
 		/// Class: Miscellaneous
 		/// </summary>
 		CarvedOgreIdol_2 = 49704,
+		/// <summary>
+		/// Head
+		/// Level: 1
+		/// Class: Armor
+		/// </summary>
+		ForeverLovelyRose = 49715,
 		/// <summary>
 		/// Level: 1
 		/// Class: Quest
@@ -199723,6 +199886,36 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PlatedGripsOfKorthAzz = 49855,
 		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		VICTORYPerfume = 49856,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		EnchantressPerfume = 49857,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		ForeverPerfume = 49858,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		BravadoCologne = 49859,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		WizardryCologne = 49860,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		STALWARTCologne = 49861,
+		/// <summary>
 		/// Class: Quest
 		/// </summary>
 		LightsVengeance = 49869,
@@ -199871,10 +200064,20 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PrimordialSaronite = 49908,
 		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		BoxOfChocolates_2 = 49909,
+		/// <summary>
 		/// Level: 20
 		/// Class: Miscellaneous
 		/// </summary>
 		PerkyPug = 49912,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		SnivelsLedger = 49915,
 		/// <summary>
 		/// Wrist
 		/// Level: 1
@@ -199897,6 +200100,46 @@ namespace WCell.Constants.Items
 		/// Class: Miscellaneous
 		/// </summary>
 		LoveToken_2 = 49927,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyStormwindCard = 49936,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyUndercityCard = 49937,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyDarnassusCard = 49938,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyOrgrimmarCard = 49939,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyIronforgeCard = 49940,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyThunderBluffCard = 49941,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyExodarCard = 49942,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelySilvermoonCityCard = 49943,
 		/// <summary>
 		/// Finger
 		/// Level: 264
@@ -199925,7 +200168,37 @@ namespace WCell.Constants.Items
 		/// Level: 85
 		/// Class: Recipe
 		/// </summary>
+		PatternLeggingsOfWovenDeath = 49953,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternDeathfrostBoots = 49954,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternLightweaveLeggings = 49955,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternSandalsOfConsecration = 49956,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternLegwrapsOfUnleashedNature = 49957,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
 		PatternBlessedCenarionBoots = 49958,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternBladebornLeggings = 49959,
 		/// <summary>
 		/// Wrist
 		/// Level: 264
@@ -199938,11 +200211,31 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PatternFootpadsOfImpendingDeath = 49961,
 		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternLightningInfusedLeggings = 49962,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternEarthsoulBoots = 49963,
+		/// <summary>
 		/// Legs
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
 		LegguardsOfLostHope = 49964,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternDraconicBonesplinterLegguards = 49965,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PatternRockSteadyTreads = 49966,
 		/// <summary>
 		/// Finger
 		/// Level: 264
@@ -199955,6 +200248,31 @@ namespace WCell.Constants.Items
 		/// Class: Weapon
 		/// </summary>
 		FrozenBonespike = 49968,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansPuresteelLegplates = 49969,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansProtectorsOfLife = 49970,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansLegplatesOfPainfulDeath = 49971,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansHellfrozenBonegrinders = 49972,
+		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansPillarsOfMight = 49973,
 		/// <summary>
 		/// Level: 85
 		/// Class: Recipe
@@ -199996,6 +200314,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		RustedBonespikePauldrons = 49980,
+		/// <summary>
+		/// RangedRight
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		FalInrushDefenderOfQuelThalas = 49981,
 		/// <summary>
 		/// Weapon
 		/// Level: 264
@@ -200079,7 +200403,13 @@ namespace WCell.Constants.Items
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
-		DeathwhisperChestpiece = 49996,
+		DeathwhisperRaiment = 49996,
+		/// <summary>
+		/// Weapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		MithriosBronzebeardsLegacy = 49997,
 		/// <summary>
 		/// Cloak
 		/// Level: 264
@@ -200152,6 +200482,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		GunshipCaptainsMittens = 50011,
+		/// <summary>
+		/// Weapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		HavocsCallBladeOfLordaeronKings = 50012,
 		/// <summary>
 		/// Cloak
 		/// Level: 264
@@ -200398,6 +200734,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		UncleanSurgicalGloves = 50064,
 		/// <summary>
+		/// Shield
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IcecrownGlacialWall = 50065,
+		/// <summary>
 		/// Waist
 		/// Level: 264
 		/// Class: Armor
@@ -200416,11 +200758,23 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ProfessorsBloodiedSmock = 50069,
 		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		GlorenzelgHighBladeOfTheSilverHand = 50070,
+		/// <summary>
 		/// Feet
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
 		TreadsOfTheWasteland = 50071,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LandsoulsHornedGreathelm = 50072,
 		/// <summary>
 		/// Head
 		/// Level: 264
@@ -200625,6 +200979,31 @@ namespace WCell.Constants.Items
 		/// </summary>
 		GlyphOfRapidRejuvenation = 50125,
 		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		SnaggleboltsKhoriumBomb = 50130,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		SnaggleboltsAirAnalyzer = 50131,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		LovelyDressBox = 50160,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		DinnerSuitBox = 50161,
+		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		LovelyRose = 50163,
+		/// <summary>
 		/// Level: 50
 		/// Class: Recipe
 		/// </summary>
@@ -200651,6 +201030,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		ValanarsOtherSignetRing = 50170,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShouldersOfFrostTippedThorns = 50171,
 		/// <summary>
 		/// Robe
 		/// Level: 264
@@ -200688,6 +201073,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MailOfCrimsonCoins = 50177,
 		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Bloodfall = 50178,
+		/// <summary>
 		/// Weapon
 		/// Level: 264
 		/// Class: Weapon
@@ -200698,7 +201089,25 @@ namespace WCell.Constants.Items
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
+		LanaThelsChainOfFlagellation = 50180,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		DyingLight = 50181,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
 		BloodQueensCrimsonChoker = 50182,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Lungbreaker = 50183,
 		/// <summary>
 		/// WeaponOffHand
 		/// Level: 264
@@ -200706,11 +201115,47 @@ namespace WCell.Constants.Items
 		/// </summary>
 		KelesethsSeducer = 50184,
 		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		DeviumsEternallyColdRing = 50185,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		FrostbroodSapphireRing = 50186,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ColdwraithLinks = 50187,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		AnubArStalkersGloves = 50188,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		GrinningSkullGreatboots = 50190,
+		/// <summary>
 		/// Weapon
 		/// Level: 232
 		/// Class: Weapon
 		/// </summary>
 		Nighttime = 50191,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ScourgeReaversLegplates = 50192,
 		/// <summary>
 		/// Shoulder
 		/// Level: 232
@@ -200723,6 +201168,12 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		WeepingGauntlets = 50194,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		NooseOfMalachite = 50195,
 		/// <summary>
 		/// Neck
 		/// Level: 232
@@ -200742,11 +201193,29 @@ namespace WCell.Constants.Items
 		/// </summary>
 		NeedleEncrustedScorpion = 50198,
 		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfDyingCandles = 50199,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SnowstormHelm = 50202,
+		/// <summary>
 		/// Weapon
 		/// Level: 232
 		/// Class: Weapon
 		/// </summary>
 		BloodWeeper = 50203,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		FrostbindersShreddedCape = 50205,
 		/// <summary>
 		/// Head
 		/// Level: 232
@@ -200764,7 +201233,7 @@ namespace WCell.Constants.Items
 		/// Level: 232
 		/// Class: Armor
 		/// </summary>
-		PauldronsOfTheDevourer_2 = 50208,
+		PauldronsOfTheSouleater = 50208,
 		/// <summary>
 		/// Wrist
 		/// Level: 232
@@ -200808,7 +201277,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RecoveredReliquaryBoots = 50215,
 		/// <summary>
-		/// Class: Quest
+		/// Class: Miscellaneous
 		/// </summary>
 		FestergutsAcidicBlood = 50226,
 		/// <summary>
@@ -200836,7 +201305,7 @@ namespace WCell.Constants.Items
 		/// </summary>
 		MalykrissVambraces = 50230,
 		/// <summary>
-		/// Class: Quest
+		/// Class: Miscellaneous
 		/// </summary>
 		RotfacesAcidicBlood = 50231,
 		/// <summary>
@@ -201158,6 +201627,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		TheLadysPromise = 50306,
 		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		InfernalSpear = 50307,
+		/// <summary>
 		/// Feet
 		/// Level: 232
 		/// Class: Armor
@@ -201229,6 +201703,11 @@ namespace WCell.Constants.Items
 		/// Class: Weapon
 		/// </summary>
 		UnsharpenedIceRazor = 50319,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		FadedLovelyGreetingCard_2 = 50320,
 		/// <summary>
 		/// Shoulder
 		/// Level: 251
@@ -201319,19 +201798,61 @@ namespace WCell.Constants.Items
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
+		WhisperingFangedSkull_2 = 50343,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		UnidentifiableOrgan_2 = 50344,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		MuradinsSpyglass_2 = 50345,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SliverOfPureIce_2 = 50346,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DislodgedForeignObject = 50348,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CorpseTongueCoin = 50349,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
 		TinyAbominationInAJar = 50351,
 		/// <summary>
 		/// Trinket
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
-		CorpseTongueCoin = 50352,
+		CorpseTongueCoin_2 = 50352,
 		/// <summary>
 		/// Trinket
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
-		DislodgedForeignObject = 50353,
+		DislodgedForeignObject_2 = 50353,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BaubleOfTrueBlood = 50354,
 		/// <summary>
 		/// Trinket
 		/// Level: 264
@@ -201367,7 +201888,43 @@ namespace WCell.Constants.Items
 		/// Level: 264
 		/// Class: Armor
 		/// </summary>
+		PhylacteryOfTheNamelessLich = 50360,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SindragosasFlawlessFang = 50361,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
 		DeathbringersWill = 50362,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DeathbringersWill_2 = 50363,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SindragosasFlawlessFang_2 = 50364,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		PhylacteryOfTheNamelessLich_2 = 50365,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AlthorsAbacus_2 = 50366,
 		/// <summary>
 		/// Level: 80
 		/// Class: Quest
@@ -201414,12 +201971,12 @@ namespace WCell.Constants.Items
 		AshenBandOfWisdom = 50378,
 		/// <summary>
 		/// Level: 1
-		/// Class: Consumable
+		/// Class: Quest
 		/// </summary>
 		BatteredHilt = 50379,
 		/// <summary>
 		/// Level: 1
-		/// Class: Consumable
+		/// Class: Quest
 		/// </summary>
 		BatteredHilt_2 = 50380,
 		/// <summary>
@@ -201560,6 +202117,72 @@ namespace WCell.Constants.Items
 		/// </summary>
 		BryntrollTheBoneArbiter = 50415,
 		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BootsOfTheFuneralMarch = 50416,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BracersOfEternalDreaming = 50417,
+		/// <summary>
+		/// Robe
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		RobeOfTheWakingNightmare = 50418,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SindragosasCruelClaw = 50421,
+		/// <summary>
+		/// Holdable
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SundialOfEternalDusk = 50423,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		MemoryOfMalygos = 50424,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		OathbinderChargeOfTheRangerGeneral = 50425,
+		/// <summary>
+		/// Weapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		HeavensFallKryssOfAThousandLies = 50426,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		BloodsurgeKelThuzadsBladeOfAgony = 50427,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		RoyalScepterOfTerenasII = 50428,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		ArchusGreatstaffOfAntonidas = 50429,
+		/// <summary>
 		/// Level: 1
 		/// Class: Quest
 		/// </summary>
@@ -201570,6 +202193,11 @@ namespace WCell.Constants.Items
 		/// Class: Weapon
 		/// </summary>
 		RowansRifleOfSilverBullets = 50444,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		ToxicWasteling = 50446,
 		/// <summary>
 		/// Finger
 		/// Level: 264
@@ -201703,11 +202331,766 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RecoveredScarletOnslaughtCape = 50470,
 		/// <summary>
+		/// Level: 1
+		/// Class: Consumable
+		/// </summary>
+		TheHeartbreaker = 50471,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		NightmareEnder = 50472,
+		/// <summary>
 		/// Thrown
 		/// Level: 264
 		/// Class: Weapon
 		/// </summary>
 		ShrapnelStar = 50474,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Cryptmaker_2 = 50603,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BandOfTheBoneColossus_2 = 50604,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SnowserpentMailHelm_2 = 50605,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GendarmesCuirass_2 = 50606,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FrostbittenFurBoots_2 = 50607,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		FrozenBonespike_2 = 50608,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BoneSentinelsAmulet_2 = 50609,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		MarrowgarsFrigidEye_2 = 50610,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BracersOfDarkReckoning_2 = 50611,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LegguardsOfLostHope_2 = 50612,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CrushingColdwraithBelt_2 = 50613,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LoopOfTheEndlessLabyrinth_2 = 50614,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		HandguardsOfWintersRespite_2 = 50615,
+		/// <summary>
+		/// Shield
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BulwarkOfSmoulderingSteel_2 = 50616,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RustedBonespikePauldrons_2 = 50617,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FrostbroodSapphireRing_2 = 50618,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AnubArStalkersGloves_2 = 50619,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ColdwraithLinks_2 = 50620,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Lungbreaker_2 = 50621,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DeviumsEternallyColdRing_2 = 50622,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfDyingCandles_2 = 50623,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ScourgeReaversLegplates_2 = 50624,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GrinningSkullGreatboots_2 = 50625,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SnowstormHelm_2 = 50626,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		NooseOfMalachite_2 = 50627,
+		/// <summary>
+		/// Cloak
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FrostbindersShreddedCape_2 = 50628,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RobeOfTheWakingNightmare_2 = 50629,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BracersOfEternalDreaming_2 = 50630,
+		/// <summary>
+		/// RangedRight
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		NightmareEnder_2 = 50631,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BootsOfTheFuneralMarch_2 = 50632,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SindragosasCruelClaw_2 = 50633,
+		/// <summary>
+		/// Holdable
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SundialOfEternalDusk_2 = 50635,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		MemoryOfMalygos_2 = 50636,
+		/// <summary>
+		/// Ranged
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		ZodsRepeatingLongbow_2 = 50638,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BloodSoakedSaroniteStompers_2 = 50639,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BrokenRamSkullHelm_2 = 50640,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Heartpierce_2 = 50641,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		JuggernautBand_2 = 50642,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ShouldersOfMercyKilling_2 = 50643,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RingOfMaddeningWhispers_2 = 50644,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfNorthernLights_2 = 50645,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CultistsBloodsoakedSpaulders_2 = 50646,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AhnKaharOnyxNeckguard_2 = 50647,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Nibelung_2 = 50648,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DeathwhisperRaiment_2 = 50649,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FallenLordsHandguards_2 = 50650,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		TheLadysBrittleBracers_2 = 50651,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		NecrophoticGreaves_2 = 50652,
+		/// <summary>
+		/// Cloak
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ShadowvaultSlayersCloak_2 = 50653,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		ScourgeborneWaraxe_2 = 50654,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ScourgeHuntersVambraces_2 = 50655,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		IkfirussSackOfWonder_2 = 50656,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SkeletonLordsCircle_2 = 50657,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AmuletOfTheSilentEulogy_2 = 50658,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		PolarBearClawBracers_2 = 50659,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BoneguardCommandersPauldrons_2 = 50660,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CorpRetharCeremonialCrown_2 = 50661,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GunshipCaptainsMittens_2 = 50663,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RingOfRapidAscent_2 = 50664,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BootsOfUnnaturalGrowth_2 = 50665,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		WaistbandOfRighteousFury_2 = 50667,
+		/// <summary>
+		/// Cloak
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GreatcloakOfTheTurnedChampion_2 = 50668,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ToskksMaximizedWristguards_2 = 50670,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BeltOfTheBloodNova_2 = 50671,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		BloodvenomBlade_2 = 50672,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DualBladedPauldrons_2 = 50673,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RagingBehemothsShoulderplates_2 = 50674,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AldrianasGlovesOfSecrecy_2 = 50675,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		RibSpreader_2 = 50676,
+		/// <summary>
+		/// Cloak
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		WindingSheet_2 = 50677,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SealOfManyMouths_2 = 50678,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		HelmOfTheElderMoon_2 = 50679,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RotResistantBreastplate_2 = 50680,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BlightborneWarplate_2 = 50681,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BileEncrustedMedallion_2 = 50682,
+		/// <summary>
+		/// RangedRight
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		CorpseImpalingSpike_2 = 50684,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Trauma_2 = 50685,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		DeathSurgeonsSleeves_2 = 50686,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BloodsundersBracers_2 = 50687,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		NerubArStalkersCord_2 = 50688,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CarapaceOfForgottenKings_2 = 50689,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FleshrendingGauntlets_2 = 50690,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BeltOfBrokenBones_2 = 50691,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		BlackBruise_2 = 50692,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		MightOfBlight_2 = 50693,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		PlaguebringersStainedPants_2 = 50694,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		DistantLand_2 = 50695,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LeatherOfStitchedScourgeParts_2 = 50696,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GangrenousLeggings_2 = 50697,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		HorrificFleshEpaulets_2 = 50698,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		PlagueScientistsBoots_2 = 50699,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		HolidaysGrace_2 = 50700,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		FaceplateOfTheForgotten_2 = 50701,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LingeringIllness_2 = 50702,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		UncleanSurgicalGloves_2 = 50703,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Rigormortis_2 = 50704,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ProfessorsBloodiedSmock_2 = 50705,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		TinyAbominationInAJar_2 = 50706,
+		/// <summary>
+		/// Waist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AstryliansSuturedCinch_2 = 50707,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		LastWord_2 = 50708,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		BryntrollTheBoneArbiter_2 = 50709,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		KelesethsSeducer_2 = 50710,
+		/// <summary>
+		/// Feet
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		TreadsOfTheWasteland_2 = 50711,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LandsoulsHornedGreathelm_2 = 50712,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		GeistlordsPunishmentSack_2 = 50713,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ValanarsOtherSignetRing_2 = 50714,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ShouldersOfFrostTippedThorns_2 = 50715,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		TaldaramsPlatedFists_2 = 50716,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SanguineSilkRobes_2 = 50717,
+		/// <summary>
+		/// Cloak
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		RoyalCrimsonCloak_2 = 50718,
+		/// <summary>
+		/// Holdable
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		ShadowSilkSpindle_2 = 50719,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		IncarnadineBandOfMending_2 = 50720,
+		/// <summary>
+		/// Wrist
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		CryptKeepersBracers_2 = 50721,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		SanLaynRitualistGloves_2 = 50722,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		MailOfCrimsonCoins_2 = 50723,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BloodQueensCrimsonChoker_2 = 50724,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		DyingLight_2 = 50725,
+		/// <summary>
+		/// Trinket
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		BaubleOfTrueBlood_2 = 50726,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		Bloodfall_2 = 50727,
+		/// <summary>
+		/// Neck
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		LanaThelsChainOfFlagellation_2 = 50728,
+		/// <summary>
+		/// Shield
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		IcecrownGlacialWall_2 = 50729,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		GlorenzelgHighBladeOfTheSilverHand_2 = 50730,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 284
+		/// Class: Weapon
+		/// </summary>
+		ArchusGreatstaffOfAntonidas_2 = 50731,
+		/// <summary>
+		/// Head
+		/// Level: 200
+		/// Class: Armor
+		/// </summary>
+		VileFumigatorsMask = 50741,
 		/// <summary>
 		/// Weapon
 		/// Level: 251
@@ -201814,7 +203197,7 @@ namespace WCell.Constants.Items
 		/// Level: 251
 		/// Class: Weapon
 		/// </summary>
-		NjordnarBoneBow = 50776,
+		NjorndarBoneBow = 50776,
 		/// <summary>
 		/// Hand
 		/// Level: 251
@@ -202031,6 +203414,11 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		TaldronsLongNeglectedBoots = 50812,
+		/// <summary>
+		/// Level: 20
+		/// Class: Miscellaneous
+		/// </summary>
+		InvinciblesReins = 50818,
 		/// <summary>
 		/// Shoulder
 		/// Level: 251
@@ -202809,6 +204197,13 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedScourgelordFaceguard = 51133,
 		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordChestguard = 51134,
+		/// <summary>
 		/// Shoulder
 		/// Level: 264
 		/// Set: Lasherweave Garb (Id: 887)
@@ -203130,6 +204525,13 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SanctifiedCrimsonAcolyteRaiments = 51180,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolytePants = 51181,
 		/// <summary>
 		/// Shoulder
 		/// Level: 264
@@ -203502,6 +204904,48 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedDarkCovenShoulderpads_2 = 51234,
 		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsShoulderpads_2 = 51235,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsKilt_2 = 51236,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsHelm_2 = 51237,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsGloves_2 = 51238,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsHauberk_2 = 51239,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Frost Witch's Garb (Id: 892)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedFrostWitchsTunic_2 = 51249,
+		/// <summary>
 		/// Chest
 		/// Level: 277
 		/// Set: Shadowblade's Battlegear (Id: 890)
@@ -203536,6 +204980,48 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SanctifiedShadowbladePauldrons_2 = 51254,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Set: Crimson Acolyte's Regalia (Id: 886)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteRaiments_2 = 51259,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Set: Crimson Acolyte's Raiment (Id: 885)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteGloves_2 = 51260,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Crimson Acolyte's Raiment (Id: 885)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteHood_2 = 51261,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Crimson Acolyte's Raiment (Id: 885)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteLeggings_2 = 51262,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Set: Crimson Acolyte's Raiment (Id: 885)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteRobe_2 = 51263,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Crimson Acolyte's Raiment (Id: 885)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedCrimsonAcolyteShoulderpads_2 = 51264,
 		/// <summary>
 		/// Chest
 		/// Level: 277
@@ -203642,11 +205128,455 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SanctifiedLightswornShoulderplates_2 = 51279,
 		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Set: Bloodmage's Regalia (Id: 883)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedBloodmageGloves_2 = 51280,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Bloodmage's Regalia (Id: 883)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedBloodmageHood_2 = 51281,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Bloodmage's Regalia (Id: 883)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedBloodmageLeggings_2 = 51282,
+		/// <summary>
+		/// Robe
+		/// Level: 277
+		/// Set: Bloodmage's Regalia (Id: 883)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedBloodmageRobe_2 = 51283,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Bloodmage's Regalia (Id: 883)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedBloodmageShoulderpads_2 = 51284,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Lasherweave Battlegear (Id: 889)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveHeadguard_2 = 51296,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Lasherweave Battlegear (Id: 889)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveLegguards_2 = 51297,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Lasherweave Garb (Id: 887)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedLasherweaveLegplates_2 = 51303,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordChestguard_2 = 51305,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordFaceguard_2 = 51306,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordHandguards_2 = 51307,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordLegguards_2 = 51308,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Scourgelord's Plate (Id: 898)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordPauldrons_2 = 51309,
+		/// <summary>
+		/// Chest
+		/// Level: 277
+		/// Set: Scourgelord's Battlegear (Id: 897)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordBattleplate_2 = 51310,
+		/// <summary>
+		/// Hand
+		/// Level: 277
+		/// Set: Scourgelord's Battlegear (Id: 897)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordGauntlets_2 = 51311,
+		/// <summary>
+		/// Head
+		/// Level: 277
+		/// Set: Scourgelord's Battlegear (Id: 897)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordHelmet_2 = 51312,
+		/// <summary>
+		/// Legs
+		/// Level: 277
+		/// Set: Scourgelord's Battlegear (Id: 897)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordLegplates_2 = 51313,
+		/// <summary>
+		/// Shoulder
+		/// Level: 277
+		/// Set: Scourgelord's Battlegear (Id: 897)
+		/// Class: Armor
+		/// </summary>
+		SanctifiedScourgelordShoulderplates_2 = 51314,
+		/// <summary>
+		/// Waist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		BloodDrinkersGirdle = 51325,
+		/// <summary>
 		/// RangedRight
 		/// Level: 251
 		/// Class: Weapon
 		/// </summary>
 		WandOfRubyClaret = 51326,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCordOfDominance = 51327,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTreadsOfDominance = 51328,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCuffsOfDominance = 51329,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfDominance = 51330,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfDominance = 51331,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfSubjugation = 51332,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfSubjugation = 51333,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfAscendancy = 51334,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfAscendancy = 51335,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBandOfDominance = 51336,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCordOfAlacrity = 51337,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTreadsOfAlacrity = 51338,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCuffsOfAlacrity = 51339,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBeltOfSalvation = 51340,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBootsOfSalvation = 51341,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsArmwrapsOfSalvation = 51342,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBeltOfDominance = 51343,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBootsOfDominance = 51344,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsArmwrapsOfDominance = 51345,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfSalvation = 51346,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfSalvation = 51347,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfDeliverance = 51348,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfDeliverance = 51349,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWaistguardOfTriumph = 51350,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSabatonsOfTriumph = 51351,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWristguardsOfTriumph = 51352,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfSundering = 51353,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfTriumph = 51354,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfTriumph = 51355,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCloakOfVictory = 51356,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPendantOfVictory = 51357,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBandOfTriumph = 51358,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsGirdleOfSalvation = 51359,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsGreavesOfSalvation = 51360,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBracersOfSalvation = 51361,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsGirdleOfTriumph = 51362,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsGreavesOfTriumph = 51363,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBracersOfTriumph = 51364,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCordOfSalvation = 51365,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTreadsOfSalvation = 51366,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCuffsOfSalvation = 51367,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBeltOfTriumph = 51368,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBootsOfTriumph = 51369,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsArmwrapsOfTriumph = 51370,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWaistguardOfSalvation = 51371,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSabatonsOfSalvation = 51372,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWristguardsOfSalvation = 51373,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWaistguardOfDominance = 51374,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSabatonsOfDominance = 51375,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWristguardsOfDominance = 51376,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		MedallionOfTheAlliance_14 = 51377,
+		/// <summary>
+		/// Trinket
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		MedallionOfTheHorde_14 = 51378,
 		/// <summary>
 		/// Robe
 		/// Level: 251
@@ -203678,6 +205608,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		SpauldersOfTheBloodPrinces = 51383,
 		/// <summary>
+		/// Weapon
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		Bloodsipper = 51384,
+		/// <summary>
 		/// RangedRight
 		/// Level: 251
 		/// Class: Weapon
@@ -203695,6 +205631,971 @@ namespace WCell.Constants.Items
 		/// Class: Armor
 		/// </summary>
 		SealOfTheTwilightQueen = 51387,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsDecapitator = 51388,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSunderer = 51389,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBonegrinder = 51390,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsCrusher = 51391,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsGreatsword = 51392,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsClaymore = 51393,
+		/// <summary>
+		/// Ranged
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLongbow = 51394,
+		/// <summary>
+		/// Ranged
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsRecurve = 51395,
+		/// <summary>
+		/// Holdable
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsEndgame = 51396,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSpellblade = 51397,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBladeOfCelerity = 51398,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsMageblade = 51399,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsWarStaff = 51400,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsCombatStaff = 51401,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsFocusStaff = 51402,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsAcuteStaff = 51403,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBattleStaff = 51404,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSkirmishStaff = 51405,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBladeOfAlacrity = 51406,
+		/// <summary>
+		/// Holdable
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsCompendium = 51407,
+		/// <summary>
+		/// Holdable
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsGrimoire = 51408,
+		/// <summary>
+		/// Holdable
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsReprieve = 51409,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsTouchOfDefeat = 51410,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsHeavyCrossbow = 51411,
+		/// <summary>
+		/// RangedRight
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsRepeater = 51412,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Desecration (Id: 768)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDreadplateChestpiece = 51413,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Desecration (Id: 768)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDreadplateGauntlets = 51414,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Desecration (Id: 768)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDreadplateHelm = 51415,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Desecration (Id: 768)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDreadplateLegguards = 51416,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSigilOfStrife = 51417,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Desecration (Id: 768)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDreadplateShoulders = 51418,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Refuge (Id: 773)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsKodohideRobes = 51419,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Refuge (Id: 773)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsKodohideGloves = 51420,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Refuge (Id: 773)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsKodohideHelm = 51421,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Refuge (Id: 773)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsKodohideLegguards = 51422,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsIdolOfTenacity = 51423,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Refuge (Id: 773)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsKodohideSpaulders = 51424,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Sanctuary (Id: 775)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDragonhideRobes = 51425,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Sanctuary (Id: 775)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDragonhideGloves = 51426,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Sanctuary (Id: 775)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsDragonhideLegguards = 51428,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsIdolOfResolve = 51429,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsStaff = 51431,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsGreatstaff = 51432,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Wildhide (Id: 774)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWyrmhideGloves = 51434,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Wildhide (Id: 774)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsWyrmhideLegguards = 51436,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsIdolOfSteadfastness = 51437,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsHacker = 51439,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsDicer = 51440,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsShiv = 51441,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsDirk = 51442,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLeftRipper = 51443,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLeftRazor = 51444,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBonecracker = 51445,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsPunisher = 51446,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsQuickblade = 51447,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSwiftblade = 51448,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsRifle = 51449,
+		/// <summary>
+		/// RangedRight
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsShotgun = 51450,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsWandOfAlacrity = 51451,
+		/// <summary>
+		/// Shield
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsBarrier = 51452,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsGavel = 51453,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSalvation = 51454,
+		/// <summary>
+		/// Shield
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRedoubt = 51455,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsEnergyStaff = 51456,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLightStaff = 51457,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Pursuit (Id: 772)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsChainArmor = 51458,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Pursuit (Id: 772)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsChainGauntlets = 51459,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Pursuit (Id: 772)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsChainHelm = 51460,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Pursuit (Id: 772)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsChainLeggings = 51461,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Pursuit (Id: 772)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsChainSpaulders = 51462,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Regalia (Id: 779)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSilkRaiment = 51463,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Regalia (Id: 779)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSilkHandguards = 51464,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Regalia (Id: 779)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSilkTrousers = 51466,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Regalia (Id: 779)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSilkAmice = 51467,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Redemption (Id: 767)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsOrnamentedChestguard = 51468,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Redemption (Id: 767)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsOrnamentedGloves = 51469,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Redemption (Id: 767)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsOrnamentedHeadcover = 51470,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Redemption (Id: 767)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsOrnamentedLegplates = 51471,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLibramOfJustice = 51472,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Redemption (Id: 767)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsOrnamentedSpaulders = 51473,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Vindication (Id: 766)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsScaledChestpiece = 51474,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Vindication (Id: 766)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsScaledGauntlets = 51475,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Vindication (Id: 766)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsScaledHelm = 51476,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Vindication (Id: 766)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsScaledLegguards = 51477,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLibramOfFortitude = 51478,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Vindication (Id: 766)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsScaledShoulders = 51479,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsPike = 51480,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsHalberd = 51481,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Investiture (Id: 777)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMoonclothRobe = 51482,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Investiture (Id: 777)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMoonclothGloves = 51483,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Investiture (Id: 777)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMoonclothHood = 51484,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Investiture (Id: 777)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMoonclothLeggings = 51485,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Investiture (Id: 777)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMoonclothMantle = 51486,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Raiment (Id: 778)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSatinRobe = 51487,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Raiment (Id: 778)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSatinGloves = 51488,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Raiment (Id: 778)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSatinHood = 51489,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Raiment (Id: 778)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSatinLeggings = 51490,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Raiment (Id: 778)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsSatinMantle = 51491,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Vestments (Id: 776)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLeatherTunic = 51492,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Vestments (Id: 776)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLeatherGloves = 51493,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Vestments (Id: 776)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLeatherHelm = 51494,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Vestments (Id: 776)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLeatherLegguards = 51495,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Vestments (Id: 776)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLeatherSpaulders = 51496,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Wartide (Id: 771)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRingmailGauntlets = 51498,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Wartide (Id: 771)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRingmailLeggings = 51500,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTotemOfTheThirdWind = 51501,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Wartide (Id: 771)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsRingmailSpaulders = 51502,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Earthshaker (Id: 770)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLinkedArmor = 51503,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Earthshaker (Id: 770)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLinkedGauntlets = 51504,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Earthshaker (Id: 770)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLinkedLeggings = 51506,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTotemOfIndomitability = 51507,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Earthshaker (Id: 770)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsLinkedSpaulders = 51508,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Thunderfist (Id: 769)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMailArmor = 51509,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Thunderfist (Id: 769)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMailGauntlets = 51510,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Thunderfist (Id: 769)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMailHelm = 51511,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Thunderfist (Id: 769)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMailLeggings = 51512,
+		/// <summary>
+		/// Relic
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTotemOfSurvival = 51513,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Thunderfist (Id: 769)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsMailSpaulders = 51514,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsCleaver = 51515,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsHandaxe = 51516,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsShanker = 51517,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSpike = 51518,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsPummeler = 51519,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsTruncheon = 51520,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSlicer = 51521,
+		/// <summary>
+		/// Weapon
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLongblade = 51522,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsRightRipper = 51523,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsGrasp = 51524,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsChopper = 51525,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsSplitter = 51526,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsMutilator = 51527,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsEviscerator = 51528,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 277
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLeftClaw = 51529,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsLeftRender = 51530,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsPiercingTouch = 51531,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsBatonOfLight = 51532,
+		/// <summary>
+		/// Shield
+		/// Level: 270
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsShieldWall = 51533,
+		/// <summary>
+		/// Tabard
+		/// Level: 80
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsTabard = 51534,
+		/// <summary>
+		/// Thrown
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WrathfulGladiatorsWarEdge = 51535,
+		/// <summary>
+		/// Robe
+		/// Level: 270
+		/// Set: Gladiator's Felshroud (Id: 780)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsFelweaveRaiment = 51536,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Felshroud (Id: 780)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsFelweaveHandguards = 51537,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Felshroud (Id: 780)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsFelweaveCowl = 51538,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Felshroud (Id: 780)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsFelweaveTrousers = 51539,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Felshroud (Id: 780)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsFelweaveAmice = 51540,
+		/// <summary>
+		/// Chest
+		/// Level: 270
+		/// Set: Gladiator's Battlegear (Id: 765)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPlateChestpiece = 51541,
+		/// <summary>
+		/// Hand
+		/// Level: 270
+		/// Set: Gladiator's Battlegear (Id: 765)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPlateGauntlets = 51542,
+		/// <summary>
+		/// Head
+		/// Level: 270
+		/// Set: Gladiator's Battlegear (Id: 765)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPlateHelm = 51543,
+		/// <summary>
+		/// Legs
+		/// Level: 270
+		/// Set: Gladiator's Battlegear (Id: 765)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPlateLegguards = 51544,
+		/// <summary>
+		/// Shoulder
+		/// Level: 270
+		/// Set: Gladiator's Battlegear (Id: 765)
+		/// Class: Armor
+		/// </summary>
+		WrathfulGladiatorsPlateShoulders = 51545,
 		/// <summary>
 		/// Neck
 		/// Level: 251
@@ -203732,6 +206633,12 @@ namespace WCell.Constants.Items
 		/// </summary>
 		CowlOfMaleficRepose = 51554,
 		/// <summary>
+		/// Waist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TighteningWaistband = 51555,
+		/// <summary>
 		/// Hand
 		/// Level: 251
 		/// Class: Armor
@@ -203762,17 +206669,1127 @@ namespace WCell.Constants.Items
 		/// </summary>
 		RunedBandOfTheKirinTor = 51560,
 		/// <summary>
+		/// RangedRight
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		DreamhuntersCarbine = 51561,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		Oxheart = 51562,
+		/// <summary>
+		/// Wrist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TaigaBindings = 51563,
+		/// <summary>
+		/// Waist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		IronropeBeltOfYmirjar = 51564,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		SkinnedWhelpShoulders = 51565,
+		/// <summary>
+		/// Legs
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		LegguardsOfTheTwistedDream = 51566,
+		/// <summary>
+		/// Neck
+		/// Level: 245
+		/// Class: Armor
+		/// </summary>
+		TitanForgedPendantOfAscendancy = 51568,
+		/// <summary>
+		/// Neck
+		/// Level: 245
+		/// Class: Armor
+		/// </summary>
+		TitanForgedPendantOfVictory = 51569,
+		/// <summary>
+		/// Cloak
+		/// Level: 245
+		/// Class: Armor
+		/// </summary>
+		TitanForgedCloakOfAscendancy = 51570,
+		/// <summary>
+		/// Cloak
+		/// Level: 245
+		/// Class: Armor
+		/// </summary>
+		TitanForgedCloakOfVictory = 51571,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShoulderpadsOfSalvation = 51572,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShoulderpadsOfDomination = 51573,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedSpauldersOfDominance = 51574,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedSpauldersOfSalvation = 51575,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedSpauldersOfTriumph = 51576,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShouldersOfTriumph = 51577,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShouldersOfDominance = 51578,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShouldersOfSalvation = 51579,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShoulderplatesOfTriumph = 51580,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		TitanForgedShoulderplatesOfSalvation = 51581,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		SisterSvalnasAetherStaff = 51582,
+		/// <summary>
+		/// Hand
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		StormbringerGloves = 51583,
+		/// <summary>
+		/// Cloak
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		LichWrappings = 51584,
+		/// <summary>
+		/// Head
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		SisterSvalnasSpangenhelm = 51585,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		EmeraldSaintsSpaulders = 51586,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Set: Frost Witch's Regalia (Id: 893)
+		/// Class: Armor
+		/// </summary>
+		FrostWitchsShoulderpads_2 = 51761,
+		/// <summary>
+		/// Legs
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfTheRefractedMind = 51777,
+		/// <summary>
+		/// Neck
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		RimetoothPendant = 51779,
+		/// <summary>
+		/// Waist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		EtchedDragonboneGirdle = 51782,
+		/// <summary>
+		/// Wrist
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		VambracesOfTheFrostWyrmQueen = 51783,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		Splintershard = 51784,
+		/// <summary>
+		/// Feet
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		WyrmwingTreads = 51785,
+		/// <summary>
+		/// Legs
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		LegplatesOfAethericStrife = 51786,
+		/// <summary>
+		/// Feet
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		ScourgeFangedStompers = 51787,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 251
+		/// Class: Weapon
+		/// </summary>
+		BleakColdarraCarver = 51788,
+		/// <summary>
+		/// Hand
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		IcicleShapers = 51789,
+		/// <summary>
+		/// Robe
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		RobesOfAzureDownfall = 51790,
+		/// <summary>
+		/// Shield
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		LostPaviseOfTheBlueFlight = 51791,
+		/// <summary>
+		/// Shoulder
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		ShoulderguardsOfCrystallineBone = 51792,
+		/// <summary>
+		/// Weapon
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		TroggbaneAxeOfTheFrostborneKing = 51795,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		WarmaceOfMenethil = 51796,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		TaintedTwigOfNordrassil = 51797,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		ValiusGavelOfTheLightbringer = 51798,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		HalionStaffOfForgottenLove = 51799,
+		/// <summary>
+		/// Weapon
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		StormfuryBlackBladeOfTheBetrayer = 51800,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		PugiusFistOfDefiance = 51801,
+		/// <summary>
+		/// RangedRight
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		WindrunnersHeartseeker = 51802,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 258
+		/// Class: Weapon
+		/// </summary>
+		TelThasDaggerOfTheBloodKing = 51803,
+		/// <summary>
+		/// Neck
+		/// Level: 226
+		/// Class: Armor
+		/// </summary>
+		WinkingEyeOfLove = 51804,
+		/// <summary>
+		/// Neck
+		/// Level: 226
+		/// Class: Armor
+		/// </summary>
+		HeartbreakCharm = 51805,
+		/// <summary>
+		/// Neck
+		/// Level: 226
+		/// Class: Armor
+		/// </summary>
+		ShardOfPirouettingHappiness = 51806,
+		/// <summary>
+		/// Neck
+		/// Level: 226
+		/// Class: Armor
+		/// </summary>
+		SweetPerfumeBroach = 51807,
+		/// <summary>
+		/// Neck
+		/// Level: 226
+		/// Class: Armor
+		/// </summary>
+		ChokerOfThePureHeart = 51808,
+		/// <summary>
 		/// Bag
 		/// Level: 80
 		/// Class: Container
 		/// </summary>
 		PortableHole = 51809,
 		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShoulderguardsOfCrystallineBone_2 = 51811,
+		/// <summary>
+		/// Shield
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LostPaviseOfTheBlueFlight_2 = 51812,
+		/// <summary>
+		/// Robe
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		RobesOfAzureDownfall_2 = 51813,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IcicleShapers_2 = 51814,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		BleakColdarraCarver_2 = 51815,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ScourgeFangedStompers_2 = 51816,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LegplatesOfAethericStrife_2 = 51817,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WyrmwingTreads_2 = 51818,
+		/// <summary>
+		/// WeaponOffHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Splintershard_2 = 51819,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		VambracesOfTheFrostWyrmQueen_2 = 51820,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		EtchedDragonboneGirdle_2 = 51821,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		RimetoothPendant_2 = 51822,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfTheRefractedMind_2 = 51823,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		EmeraldSaintsSpaulders_2 = 51824,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SisterSvalnasSpangenhelm_2 = 51825,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LichWrappings_2 = 51826,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		StormbringerGloves_2 = 51827,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		SisterSvalnasAetherStaff_2 = 51828,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LegguardsOfTheTwistedDream_2 = 51829,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SkinnedWhelpShoulders_2 = 51830,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IronropeBeltOfYmirjar_2 = 51831,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		TaigaBindings_2 = 51832,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Oxheart_2 = 51833,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		DreamhuntersCarbine_2 = 51834,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		VeincrusherGauntlets_2 = 51835,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		TighteningWaistband_2 = 51836,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CowlOfMaleficRepose_2 = 51837,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		LanaThelsBloodyNail_2 = 51838,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShoulderpadsOfTheSearingKiss_2 = 51839,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ChestguardOfSiphonedElements_2 = 51840,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IvoryInlaidLeggings_2 = 51841,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CollarOfHaughtyDisdain_2 = 51842,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SealOfTheTwilightQueen_2 = 51843,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ThroatrenderHandguards_2 = 51844,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Stakethrower_2 = 51845,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Bloodsipper_2 = 51846,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SpauldersOfTheBloodPrinces_2 = 51847,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		HeartsickMendersCape_2 = 51848,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CeriseCoiledRing_2 = 51849,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		PaleCorpseBoots_2 = 51850,
+		/// <summary>
+		/// Robe
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BloodsoulRaiment_2 = 51851,
+		/// <summary>
+		/// RangedRight
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		WandOfRubyClaret_2 = 51852,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BloodDrinkersGirdle_2 = 51853,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BattleMaidensLegguards_2 = 51854,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ThriceFangedSignet_2 = 51855,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		TaldaramsSoftSlippers_2 = 51856,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		HersirsGreatspear_2 = 51857,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Soulbreaker_2 = 51858,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShouldersOfRuinousSenility_2 = 51859,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		RipplingFleshKilt_2 = 51860,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ChestplateOfSepticStitches_2 = 51861,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CauterizedCord_2 = 51862,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		PendantOfSplitVeins_2 = 51863,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShoulderpadsOfTheMorbidRitual_2 = 51864,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ScalpelSharpeningShoulderguards_2 = 51865,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		DiscardedBagOfEntrails_2 = 51866,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		InfectedChoker_2 = 51867,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		FleshCarvingScalpel_2 = 51868,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		TheFacelifter_2 = 51869,
+		/// <summary>
+		/// Robe
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ChestguardOfTheFailedExperiment_2 = 51870,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ChokerOfFilthyDiamonds_2 = 51871,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		EtherSoakedBracers_2 = 51872,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShufflingShoes_2 = 51873,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		GlovesOfBrokenFingers_2 = 51874,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Lockjaw_2 = 51875,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		AbominationKnuckles_2 = 51876,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		TaldronsShortSightedHelm_2 = 51877,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		RotfacesRupturingRing_2 = 51878,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		FleshShapersGurneyStrap_2 = 51879,
+		/// <summary>
+		/// Thrown
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		GluthsFetchingKnife_2 = 51880,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		ShaftOfGlacialIce_2 = 51881,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		KiltOfUntreatedWounds_2 = 51882,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BloodstainedSurgeonsShoulderguards_2 = 51883,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SignetOfPutrefaction_2 = 51884,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		WristsOfSepticShock_2 = 51885,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		FestergutsGaseousGloves_2 = 51886,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Abracadaver_2 = 51887,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CloakOfManySkins_2 = 51888,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		PlagueSoakedLeatherLeggings_2 = 51889,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		PrecioussPutridCollar_2 = 51890,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		TaldronsLongNeglectedBoots_2 = 51891,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		FesteringFingerguards_2 = 51892,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		Gutbuster_2 = 51893,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SoulcleavePendant_2 = 51894,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		DeathforgedLegplates_2 = 51895,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ThaumaturgesCracklingCowl_2 = 51896,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LeggingsOfUnrelentingBlood_2 = 51897,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		MagHariChieftainsStaff_2 = 51898,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IcecrownSpireSandals_2 = 51899,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SaurfangsColdForgedBand_2 = 51900,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		GargoyleSpitBracers_2 = 51901,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BladeScoredCarapace_2 = 51902,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		HauberkOfAThousandCuts_2 = 51903,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ScourgeStranglers_2 = 51904,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		RamaladnisBladeOfCulling_2 = 51905,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IceReinforcedVrykulHelm_2 = 51906,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BracersOfPaleIllumination_2 = 51907,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CordOfDarkSuffering_2 = 51908,
+		/// <summary>
+		/// Shield
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		NeverendingWinter_2 = 51909,
+		/// <summary>
 		/// WeaponMainHand
 		/// Level: 264
 		/// Class: Weapon
 		/// </summary>
 		MidnightSun_2 = 51910,
+		/// <summary>
+		/// Shoulder
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		PauldronsOfLostHope_2 = 51911,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SaroniteGargoyleCloak_2 = 51912,
+		/// <summary>
+		/// Finger
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		AbominationsBloodyRing_2 = 51913,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		IcecrownRampartBracers_2 = 51914,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BoneDrakesEnameledBoots_2 = 51915,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		FrostGiantsCleaver_2 = 51916,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		GhoulCommandersCuirass_2 = 51917,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BracersOfDarkBlessings_2 = 51918,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		DeathspeakerDisciplesBelt_2 = 51919,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		BootsOfTheFrozenSeed_2 = 51920,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SistersHandshrouds_2 = 51921,
+		/// <summary>
+		/// Holdable
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ScourgelordsBaton_2 = 51922,
+		/// <summary>
+		/// Chest
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ChestguardOfTheFrigidNoose_2 = 51923,
+		/// <summary>
+		/// Head
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		DeathspeakerZealotsHelm_2 = 51924,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		SoulthiefsBraidedBelt_2 = 51925,
+		/// <summary>
+		/// Hand
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		HandgripsOfFrostAndSleet_2 = 51926,
+		/// <summary>
+		/// Ranged
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		NjorndarBoneBow_2 = 51927,
+		/// <summary>
+		/// Legs
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CorruptedSilverplateLeggings_2 = 51928,
+		/// <summary>
+		/// Wrist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ColdwraithBracers_2 = 51929,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		CordOfThePatronizingPractitioner_2 = 51930,
+		/// <summary>
+		/// Feet
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		AncientSkeletalBoots_2 = 51931,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		FrostNeedle_2 = 51932,
+		/// <summary>
+		/// Cloak
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		ShawlOfNerubianSilk_2 = 51933,
+		/// <summary>
+		/// Neck
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		MarrowgarsScratchingChoker_2 = 51934,
+		/// <summary>
+		/// Waist
+		/// Level: 264
+		/// Class: Armor
+		/// </summary>
+		LinkedScourgeVertebrae_2 = 51935,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		CitadelEnforcersClaymore_2 = 51936,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		BonebreakerScepter_2 = 51937,
+		/// <summary>
+		/// Weapon
+		/// Level: 264
+		/// Class: Weapon
+		/// </summary>
+		BoneWardensSplitter_2 = 51938,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		PugiusFistOfDefiance_2 = 51941,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		HalionStaffOfForgottenLove_2 = 51943,
+		/// <summary>
+		/// WeaponMainHand
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		ValiusGavelOfTheLightbringer_2 = 51944,
+		/// <summary>
+		/// TwoHandWeapon
+		/// Level: 271
+		/// Class: Weapon
+		/// </summary>
+		WarmaceOfMenethil_2 = 51946,
+		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		ReinsOfTheBloodbathedFrostbroodVanquisher = 51954,
 		/// <summary>
 		/// Chest
 		/// Level: 167
@@ -204059,6 +208076,11 @@ namespace WCell.Constants.Items
 		/// </summary>
 		PlansShatterRounds = 52022,
 		/// <summary>
+		/// Level: 85
+		/// Class: Recipe
+		/// </summary>
+		PlansIcebladeArrow = 52023,
+		/// <summary>
 		/// Level: 80
 		/// Class: Miscellaneous
 		/// </summary>
@@ -204089,6 +208111,45 @@ namespace WCell.Constants.Items
 		/// </summary>
 		ConquerorsMarkOfSanctification_2 = 52030,
 		/// <summary>
+		/// Finger
+		/// Level: 251
+		/// Class: Armor
+		/// </summary>
+		AshenBandOfMight = 52569,
+		/// <summary>
+		/// Finger
+		/// Level: 259
+		/// Class: Armor
+		/// </summary>
+		AshenBandOfGreaterMight = 52570,
+		/// <summary>
+		/// Finger
+		/// Level: 268
+		/// Class: Armor
+		/// </summary>
+		AshenBandOfUnmatchedMight = 52571,
+		/// <summary>
+		/// Finger
+		/// Level: 277
+		/// Class: Armor
+		/// </summary>
+		AshenBandOfEndlessMight = 52572,
+		/// <summary>
+		/// Level: 1
+		/// Class: Miscellaneous
+		/// </summary>
+		CacheOfTheLeyGuardian = 52676,
+		/// <summary>
+		/// Level: 1
+		/// Class: Quest
+		/// </summary>
+		CommendationOfService = 54637,
+		/// <summary>
+		/// Level: 70
+		/// Class: Miscellaneous
+		/// </summary>
+		FrostyFlyingCarpet = 54797,
+		/// <summary>
 		/// Ranged
 		/// Level: 12
 		/// Class: Weapon
@@ -204098,4 +208159,3 @@ namespace WCell.Constants.Items
 	}
 
 }
-

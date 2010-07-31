@@ -18,7 +18,7 @@ namespace WCell.Util.Toolshed
 				{
 					continue;
 				}
-				
+
 				var classAttrs = type.GetCustomAttributes(true);
 				var toolAttr = (ToolAttribute)classAttrs.Where((attr) => attr is ToolAttribute).First();
 				if (toolAttr == null && classAttrs.Where((attr) => attr is NoToolAttribute).Count() > 0)
@@ -81,10 +81,19 @@ namespace WCell.Util.Toolshed
 					}
 
 					var success = true;
-					foreach (var param in method.GetParameters())
+					var parms = method.GetParameters();
+					for (var i = 0; i < parms.Length; i++)
 					{
-						if (!param.ParameterType.IsSimpleType())
+						var param = parms[i];
+						var ptype = param.ParameterType;
+						if (!ptype.IsSimpleType())
 						{
+							//// last value can be an array
+							//if (i == parms.Length - 1 && ptype.IsArray && ptype.GetActualType().IsSimpleType())
+							//{
+							//    continue;
+							//}
+
 							success = false;
 							break;
 						}
@@ -109,7 +118,7 @@ namespace WCell.Util.Toolshed
 					{
 						throw new ToolException("Static method {0} was marked with ToolAttribute" +
 							" but had non-simple Parameters. " +
-							"- Make sure to only give methods with simple parameters the ToolAttribute. You can exclude them with the NoToolAttribute.", 
+							"- Make sure to only give methods with simple parameters the ToolAttribute. You can exclude them with the NoToolAttribute.",
 							method.GetMemberName());
 					}
 				}

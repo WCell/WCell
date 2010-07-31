@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Entities;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var chr = m_cast.Caster as Character;
+			var chr = m_cast.CasterObject as Character;
 			if (chr != null)
 			{
 				if (chr.Totems != null)
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Effects
 						if (spell != null)
 						{
 							var spellCost = spell.PowerCost / 4;
-							chr.Energize(chr, spellCost, Effect);
+							chr.Energize(spellCost, chr, Effect);
 						}
 					}
 				}

@@ -577,7 +577,7 @@ namespace WCell.RealmServer
 			if (m_authServiceClient != null && m_authServiceClient.IsConnected)
 			{
 				// unset all accounts
-				m_authServiceClient.Channel.SetAllActiveAccounts(EmptyStringArr);
+				AddMessageAndWait(true, () => m_authServiceClient.Channel.SetAllActiveAccounts(EmptyStringArr));
 				Thread.Sleep(100);		// sleep for a short while to let the client send the msg to the AuthServer
 				m_authServiceClient.IsRunning = false;
 			}

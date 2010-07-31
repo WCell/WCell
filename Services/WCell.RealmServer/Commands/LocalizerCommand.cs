@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Localizer", "Lang");
-			Description = new TranslatableItem(LangKey.CmdLocalizerDescription);
+			Description = new TranslatableItem(RealmLangKey.CmdLocalizerDescription);
 		}
 
 		public class ReloadLangCommand : SubCommand
@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Reload", "Resync");
-				Description = new TranslatableItem(LangKey.CmdLocalizerSetLocaleDescription);
+				Description = new TranslatableItem(RealmLangKey.CmdLocalizerSetLocaleDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Commands
 				{
 					RealmLocalizer.Instance.Resync();
 				});
-				trigger.Reply(LangKey.Done);
+				trigger.Reply(RealmLangKey.Done);
 			}
 		}
 
@@ -41,8 +41,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("SetLocale", "Locale");
-				ParamInfo = new TranslatableItem(LangKey.CmdLocalizerSetLocaleParamInfo);
-				Description = new TranslatableItem(LangKey.CmdLocalizerSetLocaleDescription);
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdLocalizerSetLocaleParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdLocalizerSetLocaleDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -51,11 +51,11 @@ namespace WCell.RealmServer.Commands
 				if (user != null)
 				{
 					user.Locale = trigger.Text.NextEnum(user.Locale);
-					trigger.Reply(LangKey.Done);
+					trigger.Reply(RealmLangKey.Done);
 				}
 				else
 				{
-					trigger.Reply(LangKey.UnableToSetUserLocale);
+					trigger.Reply(RealmLangKey.UnableToSetUserLocale);
 				}
 			}
 		}

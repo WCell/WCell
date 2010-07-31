@@ -236,7 +236,7 @@ namespace WCell.AuthServer
 
 			if (remove)
 			{
-				AuthenticationServer.Realms.Remove(ChannelId);
+				AuthenticationServer.RemoveRealmById(ChannelId);
 			}
 			else
 			{
@@ -275,10 +275,10 @@ namespace WCell.AuthServer
             	//var cpos = packet.Position;
             	//packet.Position = cpos + 2;
 
-            	packet.Write((short)client.Server.RealmCount);
+            	packet.Write((short)AuthenticationServer.RealmCount);
 
             	//var count = 0;
-                foreach (var realm in AuthenticationServer.Realms.Values)
+                foreach (var realm in AuthenticationServer.Realms)
                 {
                 	// check for client version
                 	//if (realm.ClientVersion.IsSupported(client.Info.Version))

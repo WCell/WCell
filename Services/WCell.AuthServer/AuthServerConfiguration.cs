@@ -44,9 +44,25 @@ namespace WCell.AuthServer
 			get { return s_instance; }
 		}
 
+		public static bool Loaded
+		{
+			get;
+			private set;
+		}
+
 		public override string FilePath
 		{
 			get { return GetFullPath("AuthServerConfig.xml"); }
+		}
+
+		public static string LangDirName = "Lang";
+
+		public static string LangDir
+		{
+			get
+			{
+				return GetContentPath(LangDirName) + "/";
+			}
 		}
 
 		static void OnError(string msg)
@@ -57,6 +73,10 @@ namespace WCell.AuthServer
 		[Initialization(InitializationPass.Config, "Initialize Config")]
 		public static bool Init()
 		{
+			if (Loaded) return true;
+
+			Loaded = true;
+
 			s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(AuthServerConfiguration).Assembly);
 			try
 			{
@@ -150,6 +170,8 @@ namespace WCell.AuthServer
 		/// </summary>
 		public static bool RemoveOfflineRealms;
 
+		public static ClientLocale DefaultLocale = ClientLocale.English;
+
 		/// <summary>
 		/// The username for the IPC service.
 		/// </summary>
@@ -174,6 +196,22 @@ namespace WCell.AuthServer
 		/// The default priv Level for new Accounts
 		/// </summary>
 		public static string DefaultRole = "Player";
+
+		/// <summary>
+		/// The directory that contains extra Auth content
+		/// </summary>
+		[NotVariable]
+		public static string AuthContentDir = "../AuthContent/";
+
+
+		public static string GetContentPath(string file)
+		{
+			if (!Path.IsPathRooted(file))
+			{
+				return Path.Combine(GetFullPath(AuthContentDir), file);
+			}
+			return file;
+		}
 
 		public static string GetFullPath(string file)
 		{

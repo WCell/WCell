@@ -14,6 +14,8 @@
  *
  *************************************************************************/
 
+using System;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
@@ -23,14 +25,40 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicDamageHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var holder = m_aura.Auras.Owner;
+			var holder = Owner;
 			if (holder.IsAlive)
 			{
-				holder.DoSpellDamage(m_aura.Caster as Unit, m_spellEffect, EffectValue);
+				var value = EffectValue;
+				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				{
+					var bonus = m_aura.Auras.GetBleedBonusPercent();
+					value = ((value*bonus) + 50)/100;
+				}
+
+				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value);
 			}
 		}
+	}
 
+	public class ParameterizedPeriodicDamageHandler : PeriodicDamageHandler
+	{
+		public int TotalDamage { get; set; }
+
+		public ParameterizedPeriodicDamageHandler() : this(0)
+		{
+		}
+
+		public ParameterizedPeriodicDamageHandler(int totalDmg)
+		{
+			TotalDamage = totalDmg;
+		}
+
+		protected override void Apply()
+		{
+			BaseEffectValue = TotalDamage / (m_aura.TicksLeft + 1);
+			TotalDamage -= BaseEffectValue;
+		}
 	}
 };

@@ -21,7 +21,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The number of times this can cast the Spell
         /// </summary>
-        public uint Charges
+        public int Charges
         {
             get
             {

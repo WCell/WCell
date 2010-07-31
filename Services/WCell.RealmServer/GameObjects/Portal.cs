@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
@@ -15,7 +15,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = target;
 			return portal;
 		}
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}
@@ -52,7 +52,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstTemplate);
+			var portal = (Portal)Create(entry, entry.FirstSpawn);
 			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}
@@ -79,9 +79,9 @@ namespace WCell.RealmServer.GameObjects
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					if (((IWorldZoneLocation)Target).ZoneInfo != null)
+					if (((IWorldZoneLocation)Target).ZoneTemplate != null)
 					{
-						return ((IWorldZoneLocation)Target).ZoneInfo.Id;
+						return ((IWorldZoneLocation)Target).ZoneTemplate.Id;
 					}
 				}
 				return ZoneId.None;
@@ -95,13 +95,13 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Can be used to set the <see cref="Target"/>
 		/// </summary>
-		public ZoneInfo TargetZone
+		public ZoneTemplate TargetZone
 		{
 			get
 			{
 				if (Target is IWorldZoneLocation)
 				{
-					return ((IWorldZoneLocation)Target).ZoneInfo;
+					return ((IWorldZoneLocation)Target).ZoneTemplate;
 				}
 				return null;
 			}

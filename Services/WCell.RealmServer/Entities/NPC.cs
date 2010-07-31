@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -83,8 +84,6 @@ namespace WCell.RealmServer.Entities
 			// auras
 			m_auras = new NPCAuraCollection(this);
 
-			var mainWeapon = entry.CreateMainHandWeapon();
-
 			SpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
@@ -137,7 +136,9 @@ namespace WCell.RealmServer.Entities
 
 			Array.Copy(entry.Resistances, m_baseResistances, m_baseResistances.Length);
 
-			MainWeapon = mainWeapon;
+			MainWeapon = m_entry.CreateMainHandWeapon();
+			RangedWeapon = m_entry.CreateRangedWeapon();
+			OffHandWeapon = entry.CreateOffhandWeapon();
 
 			// Set Level/Scale *after* MainWeapon is set:
 			var level = entry.GetRandomLevel();
@@ -146,7 +147,7 @@ namespace WCell.RealmServer.Entities
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
 
-			m_gossipMenu = entry.DefaultGossip; // set gossip menu
+			GossipMenu = entry.DefaultGossip; // set gossip menu
 
 			// TODO: Init stats
 			//for (int i = 0; i < 5; i++)
@@ -175,9 +176,6 @@ namespace WCell.RealmServer.Entities
 			SetInt32(UnitFields.BASE_MANA, mana);
 			SetInt32(UnitFields.POWER1, mana);
 
-			OffHandWeapon = entry.CreateOffhandWeapon();
-			RangedWeapon = entry.CreateRangedWeapon();
-
 			HoverHeight = entry.HoverHeight;
 
 			m_Movement = new Movement(this);
@@ -203,17 +201,14 @@ namespace WCell.RealmServer.Entities
 				EnsureSpells();
 			}
 
-			if (m_entry.Type == NPCType.Totem || m_entry.Type == NPCType.None)
+			if (m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None)
 			{
 				m_Movement.MayMove = false;
 			}
 
 			AddEquipment();
 
-			CanMelee = mainWeapon != GenericWeapon.Peace;
-
-			// TODO: Don't create talents if this is not a pet
-			m_petTalents = new TalentCollection(this);
+			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
 			m_brain = m_entry.BrainCreator(this);
 			m_brain.IsRunning = true;
@@ -352,10 +347,7 @@ namespace WCell.RealmServer.Entities
 
 		public override Faction DefaultFaction
 		{
-			get
-			{
-				return m_entry.Faction;
-			}
+			get { return m_entry.Faction; }
 		}
 
 		public ThreatCollection ThreatCollection
@@ -660,7 +652,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		//
-		// Todo: Pets get about 7.5% of the hunter’s ranged attack power added to their spell damage.
+		// Todo: Pets get about 7.5% of the hunterï¿½s ranged attack power added to their spell damage.
 		//
 
 		public override int FireResist
@@ -774,12 +766,12 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override float GetSpellCritChance(DamageSchool school)
+		public override float GetCritChance(DamageSchool school)
 		{
 			var value = m_entry.Rank > CreatureRank.Normal ? BossSpellCritChance : 0;
-			if (m_spellCritMods != null)
+			if (m_CritMods != null)
 			{
-				value += m_spellCritMods[(int)school];
+				value += m_CritMods[(int)school];
 			}
 			return value;
 		}
@@ -844,25 +836,7 @@ namespace WCell.RealmServer.Entities
 				EnterFinalState();
 			}
 
-			if (looter is Character && YieldsXpOrHonor)
-			{
-				if (m_region.XpCalculator != null)
-				{
-					// TODO: Consider reductions if someone else killed the mob
-					var chr = (Character)looter;
-					var baseXp = m_region.XpCalculator(looter.Level, this);
-					XpGenerator.CombatXpDistributer(chr, this, baseXp);
-
-					if (chr.Group != null)
-					{
-						chr.Group.DistributeGroupQuestKills(chr, this);
-					}
-					else
-					{
-						chr.QuestLog.OnNPCInteraction(this);
-					}
-				}
-			}
+			m_region.OnNPCDied(this);
 
 			if (m_currentTamer != null)
 			{
@@ -910,10 +884,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Checks whether this NPC is of the given type
 		/// </summary>
-		public bool CheckCreatureType(TargetCreatureMask mask)
+		public bool CheckCreatureType(CreatureMask mask)
 		{
-			var type = Entry.Type;
-		    return mask.HasFlag((TargetCreatureMask) (1 << ((int) type - 1)));
+			return mask.HasFlag((CreatureMask)(1 << ((int)Entry.Type - 1)));
 		}
 
 		internal void SetScale()
@@ -947,12 +920,12 @@ namespace WCell.RealmServer.Entities
 			{
 				foreach (var aura in m_entry.Auras)
 				{
-					m_auras.AddSelf(aura, true);
+					m_auras.CreateSelf(aura, true);
 				}
 
 				foreach (var aura in m_spawnPoint.SpawnEntry.Auras)
 				{
-					m_auras.AddSelf(aura, true);
+					m_auras.CreateSelf(aura, true);
 				}
 			}
 
@@ -1121,17 +1094,32 @@ namespace WCell.RealmServer.Entities
 			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
 		}
 
+		/// <summary>
+		/// NPCs only have their default items which may always be used, so no invalidation
+		/// takes place.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					return m_entry.CreateMainHandWeapon();
+				case InventorySlotType.WeaponRanged:
+					return m_entry.CreateRangedWeapon();
+				case InventorySlotType.WeaponOffHand:
+					return m_entry.CreateOffhandWeapon();
+			}
+			return null;
+		}
+
 		protected override void OnEnterCombat()
 		{
 			base.OnEnterCombat();
 
-			// target is aggro'ed and will also enter combat
-			if (m_target != null && !m_target.IsInCombat)
+			if (m_target != null)
 			{
-				// client won't accept enforced Target but will select it automatically
-				// m_target.Target = this
-
-				m_target.IsInCombat = true;
+				// add Target into threat collection
+				m_threatCollection.AddNewIfNotExisted(m_target);
 			}
 
 		}
@@ -1148,11 +1136,6 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected internal override void OnDamageAction(IDamageAction action)
 		{
-			if (m_FirstAttacker == null && action.Attacker != null)
-			{
-				FirstAttacker = action.Attacker;
-			}
-
 			if (!action.Victim.IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor)
 			{
 				action.Attacker.Proc(ProcTriggerFlags.GainExperience, this, action, true);

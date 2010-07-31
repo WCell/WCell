@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Battlegrounds
 	{
 		protected BattlegroundTemplate m_Template;
 
-		protected int m_LevelBracket;
+		protected int m_BracketId;
 		protected int m_MinLevel;
 		protected int m_MaxLevel;
 
@@ -32,20 +32,20 @@ namespace WCell.RealmServer.Battlegrounds
 			TeamQueues[(int)BattlegroundSide.Horde] = CreateTeamQueue(BattlegroundSide.Horde);
 		}
 
-		public BattlegroundQueue(BattlegroundTemplate template, int lvlBracket, int minLevel, int maxLevel)
+		public BattlegroundQueue(BattlegroundTemplate template, int bracketId, int minLevel, int maxLevel)
 			: this()
 		{
 			m_Template = template;
-			m_LevelBracket = lvlBracket;
+			m_BracketId = bracketId;
 			m_MinLevel = minLevel;
 			m_MaxLevel = maxLevel;
 		}
 
 		protected abstract BattlegroundTeamQueue CreateTeamQueue(BattlegroundSide side);
 
-		public int LevelBracket
+		public int BracketId
 		{
-			get { return m_LevelBracket; }
+			get { return m_BracketId; }
 		}
 
 		public int MinLevel
@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public bool CanEnter(Character chr)
 		{
-			return chr.Level.IsBetween(MinLevel, MaxLevel) && m_Template.RegionInfo.MayEnter(chr);
+			return chr.Level.IsBetween(MinLevel, MaxLevel) && m_Template.RegionTemplate.MayEnter(chr);
 		}
 
 		public abstract Battleground Battleground

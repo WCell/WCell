@@ -27,7 +27,7 @@ using Cell.Core;
 
 namespace WCell.RealmServer.Spells
 {
-	public delegate void TargetFilter(SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failReason);
+	public delegate void TargetFilter(SpellCast cast, WorldObject target, ref SpellFailedReason failReason);
 
 	/// <summary>
 	/// A list of all targets for a spell.
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellTargetCollection()
 		{
-			m_handlers = new List<SpellEffectHandler>(5);
+			m_handlers = new List<SpellEffectHandler>(3);
 		}
 
 		public SpellFailedReason FindAllTargets()
@@ -71,15 +71,25 @@ namespace WCell.RealmServer.Spells
 			}
 			m_initialized = true;
 
+			var caster = Cast.CasterObject;
+			if (caster == null)
+			{
+				log.Warn("Invalid SpellCast - Tried to find targets, without Caster set: {0}", caster);
+				return SpellFailedReason.Error;
+			}
+
 			var firstEffect = FirstHandler.Effect;
 			if (firstEffect.Spell.IsPreventionDebuff)
 			{
 				// need to call CheckValidTarget nevertheless
-				var caster = Cast.Caster;
 				var err = SpellFailedReason.Ok;
+				if (caster == null)
+				{
+					return SpellFailedReason.NoValidTargets;
+				}
 				foreach (var handler in m_handlers)
 				{
-					err = handler.CheckValidTarget(caster);
+					err = handler.InitializeTarget(caster);
 					if (err != SpellFailedReason.Ok)
 					{
 						return err;
@@ -122,7 +132,7 @@ namespace WCell.RealmServer.Spells
 		public SpellFailedReason ValidateTarget(WorldObject target, TargetFilter filter)
 		{
 			var handler = FirstHandler;
-
+			var cast = handler.Cast;
 			var spell = handler.Effect.Spell;
 
 			if (!target.CheckObjType(handler.TargetType))
@@ -130,9 +140,7 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.BadTargets;
 			}
 
-			var caster = handler.Cast.Caster;
-			var failReason = spell.CheckValidTarget(caster, target);
-
+			var failReason = spell.CheckValidTarget(cast.CasterObject, target);
 			if (failReason != SpellFailedReason.Ok)
 			{
 				return failReason;
@@ -140,7 +148,7 @@ namespace WCell.RealmServer.Spells
 
 			if (filter != null)
 			{
-				filter(this, target, ref failReason);
+				filter(cast, target, ref failReason);
 				if (failReason != SpellFailedReason.Ok)
 				{
 					return failReason;
@@ -159,26 +167,35 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.BadTargets;
 			}
 
-			var caster = handler.Cast.Caster;
-			var failReason = spell.CheckValidTarget(caster, target);
+			var failReason = spell.CheckValidTarget(handler.Cast.CasterObject, target);
 
 			if (failReason != SpellFailedReason.Ok)
 			{
 				return failReason;
 			}
 
-			return handler.CheckValidTarget(target);
+			return handler.InitializeTarget(target);
 		}
 
 		public void AddTargetsInArea(Vector3 pos, TargetFilter targetFilter, float radius)
 		{
-			var limit = (int)FirstHandler.Effect.Spell.MaxTargets;
+			var spell = FirstHandler.Effect.Spell;
+			int limit;
+			if (spell.MaxTargetEffect != null)
+			{
+				limit = spell.MaxTargetEffect.CalcEffectValue(Cast.CasterReference);
+			}
+			else
+			{
+				limit = (int) spell.MaxTargets;
+			}
+
 			if (limit < 1)
 			{
 				limit = int.MaxValue;
 			}
 
-			Cast.Caster.Region.IterateObjects(ref pos, radius > 0 ? radius : 5,
+			Cast.Map.IterateObjects(ref pos, radius > 0 ? radius : 5, Cast.Phase,
 				obj =>
 				{
 					if (ValidateTarget(obj, targetFilter) == SpellFailedReason.Ok)
@@ -196,23 +213,40 @@ namespace WCell.RealmServer.Spells
 		public void FindChain(Unit first, TargetFilter filter, bool harmful, int limit)
 		{
 			var handler = FirstHandler;
-			var caster = handler.Cast.Caster;
+			var caster = handler.Cast.CasterObject;
+			var spell = handler.Cast.Spell;
 
 			first.IterateEnvironment(handler.GetRadius(), target =>
 			{
-				if (target != caster &&
-					target != first &&
-					((harmful && caster.MayAttack(target)) ||
-					(!harmful && caster.IsInSameDivision(target))) &&
-					ValidateTarget(target, filter) == SpellFailedReason.Ok)
+				if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 &&
+					caster != null &&
+					!target.IsInFrontOf(caster))
 				{
-					Add(target);
+					return true;
+				}
+				if (target != caster &&
+					target != first)
+				{
+					if (caster == null)
+					{
+						// TODO: Add chain targets, even if there is no caster
+						return true;
+					}
+					else if ((harmful && !caster.MayAttack(target)) ||
+					(!harmful && !caster.IsInSameDivision(target)))
+					{
+						return true;
+					}
+					if (ValidateTarget(target, filter) == SpellFailedReason.Ok)
+					{
+						Add(target);
+					}
 					//return Count < limit;
 				}
 				return true;
 			});
 
-			// TODO: Consider better ways to do this
+			// TODO: Consider better ways to do this?
 			Sort((a, b) => a.GetDistanceSq(first).CompareTo(b.GetDistanceSq(first)));
 			if (Count > limit)
 			{
@@ -221,13 +255,21 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Handlers
-		internal delegate void TargetAdder(SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason);
-		internal delegate void TargetHandler();
+		public delegate void TargetAdder(SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason);
+		public delegate void TargetHandler();
 
 		private static readonly TargetDefinition[] targetHandlers =
 			new TargetDefinition[(int)Utility.GetMaxEnum<ImplicitTargetType>() + 1];
 
-		private struct TargetDefinition
+		/// <summary>
+		/// Returns the handler and filter for the given target type
+		/// </summary>
+		public static TargetDefinition GetTargetDefinition(ImplicitTargetType target)
+		{
+			return targetHandlers[(int)target];
+		}
+
+		public struct TargetDefinition
 		{
 			//public readonly bool CheckInRange;
 			public readonly TargetAdder Handler;
@@ -252,7 +294,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.AllEnemiesAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.AllEnemiesInArea] = new TargetDefinition(
@@ -270,7 +312,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.AllPartyAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 
 			// Seems to be bogus: Often used together with AllEnemiesAroundCaster
@@ -285,11 +327,11 @@ namespace WCell.RealmServer.Spells
 			// Odd: Mostly in combination with LocationToSummon and TeleportLocation
 			// The only spell that has this with a negative effect is: Goblin Mortar (Id: 13238, Target: Default)
 			targetHandlers[(int)ImplicitTargetType.AllTargetableAroundLocationInRadiusOverTime] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.AreaEffectPartyAndClass] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsSamePartyAndClass);
 
 			//targetHandlers.Add(ImplicitTargetType.BehindTargetLocation,
@@ -347,15 +389,15 @@ namespace WCell.RealmServer.Spells
 			// ImplicitTargetType.HeartstoneLocation
 
 			targetHandlers[(int)ImplicitTargetType.InFrontOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			targetHandlers[(int)ImplicitTargetType.ConeInFrontOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			targetHandlers[(int)ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					null);
 
 			//targetHandlers[(int)ImplicitTargetType.LocationInFrontCaster] = new TargetDefinition(
@@ -414,7 +456,7 @@ namespace WCell.RealmServer.Spells
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.PartyAroundCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.ScriptedOrSingleTarget] = new TargetDefinition(
@@ -450,7 +492,7 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.TargetAtOrientationOfCaster] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
 			// ImplicitTargetType.TargetForVisualEffect
@@ -475,12 +517,12 @@ namespace WCell.RealmServer.Spells
 					null);
 
 			targetHandlers[(int)ImplicitTargetType.Tranquility] = new TargetDefinition(
-					TargetMethods.AddAreaCaster,
+					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 		}
 		#endregion
 
-		public delegate void TargetHandler<T>(T target);
+		public delegate void TargetHandler<in T>(T target);
 
 		public void ApplyToAllOf<TargetType>(TargetHandler<TargetType> handler)
 			where TargetType : ObjectBase
@@ -521,15 +563,23 @@ namespace WCell.RealmServer.Spells.Extensions
 	/// </summary>
 	static class TargetMethods
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		#region Add Methods
 		public static void AddSelf(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			var self = targets.Cast.Caster;
+			var self = targets.Cast.CasterObject;
+			if (self == null)
+			{
+				// invalid trigger proc
+				log.Warn("Invalid SpellCast tried to target self, but no Caster given: {0}", targets.Cast);
+				failReason = SpellFailedReason.Error;
+				return;
+			}
+
 			foreach (var handler in targets.m_handlers)
 			{
-				if ((failReason = handler.CheckValidTarget(self)) != SpellFailedReason.Ok)
+				if ((failReason = handler.InitializeTarget(self)) != SpellFailedReason.Ok)
 				{
 					return;
 				}
@@ -539,11 +589,12 @@ namespace WCell.RealmServer.Spells.Extensions
 
 		public static void AddPet(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			var caster = targets.Cast.Caster;
+			var caster = targets.Cast.CasterObject;
 			if (!(caster is Character))
 			{
 				log.Warn("Non-Player {0} tried to cast Pet - spell {1}", caster, targets.Cast.Spell);
 				failReason = SpellFailedReason.TargetNotPlayer;
+				return;
 			}
 
 			var pet = ((Character)caster).ActivePet;
@@ -555,7 +606,7 @@ namespace WCell.RealmServer.Spells.Extensions
 
 			foreach (var handler in targets.m_handlers)
 			{
-				if ((failReason = handler.CheckValidTarget(pet)) != SpellFailedReason.Ok)
+				if ((failReason = handler.InitializeTarget(pet)) != SpellFailedReason.Ok)
 				{
 					return;
 				}
@@ -610,58 +661,57 @@ namespace WCell.RealmServer.Spells.Extensions
 			if (cast == null)
 				return;
 
-			var caster = cast.Caster as Unit;
-			if (caster != null)
+			var caster = cast.CasterObject as Unit;
+			var selected = cast.Selected;
+			if (selected == null)
 			{
-				var selected = cast.Selected;
+				if (caster == null)
+				{
+					log.Warn("Invalid SpellCast, tried to add Selection but nothing selected and no Caster present: {0}", targets.Cast);
+					failReason = SpellFailedReason.Error;
+					return;
+				}
+				selected = caster.Target;
 				if (selected == null)
 				{
-					selected = caster.Target;
-					if (selected == null)
-					{
-						failReason = SpellFailedReason.BadTargets;
-						return;
-					}
+					failReason = SpellFailedReason.BadTargets;
+					return;
 				}
+			}
 
-				var effect = targets.FirstHandler.Effect;
-				var spell = effect.Spell;
-				if (selected != caster)
+			var effect = targets.FirstHandler.Effect;
+			var spell = effect.Spell;
+			if (selected != caster && caster != null)
+			{
+				if (!caster.IsInMaxRange(spell, selected))
 				{
-					if (!caster.IsInMaxRange(spell, selected))
-					{
-						failReason = SpellFailedReason.OutOfRange;
-					}
-					else if (caster.IsPlayer && !selected.IsInFrontOf(caster))
-					{
-						failReason = SpellFailedReason.UnitNotInfront;
-					}
+					failReason = SpellFailedReason.OutOfRange;
 				}
+				else if (caster.IsPlayer && !selected.IsInFrontOf(caster))
+				{
+					failReason = SpellFailedReason.UnitNotInfront;
+				}
+			}
+
+			if (failReason == SpellFailedReason.Ok)
+			{
+				// standard checks
+				failReason = targets.ValidateTarget(selected, filter);
 
 				if (failReason == SpellFailedReason.Ok)
 				{
-					// standard checks
-					failReason = targets.ValidateTarget(selected, filter);
-
-					if (failReason == SpellFailedReason.Ok)
+					// add target and look for more if we have a chain effect
+					targets.Add(selected);
+					var chainCount = effect.ChainTargets;
+					if (caster != null)
 					{
-						// add target and look for more if we have a chain effect
-						targets.Add(selected);
-						var chainCount = effect.ChainTargets;
-						if (caster is Character)
-						{
-							chainCount = ((Character) caster).PlayerSpells.GetModifiedInt(SpellModifierType.ChainTargets, spell, chainCount);
-						}
-						if (chainCount > 1 && selected is Unit)
-						{
-							targets.FindChain((Unit)selected, filter, true, chainCount);
-						}
+						chainCount = caster.Auras.GetModifiedInt(SpellModifierType.ChainTargets, spell, chainCount);
+					}
+					if (chainCount > 1 && selected is Unit)
+					{
+						targets.FindChain((Unit) selected, filter, true, chainCount);
 					}
 				}
-			}
-			else
-			{
-				failReason = SpellFailedReason.Error;
 			}
 		}
 
@@ -671,20 +721,19 @@ namespace WCell.RealmServer.Spells.Extensions
 		/// <param name="targets"></param>
 		/// <param name="filter"></param>
 		/// <param name="failReason"></param>
-		public static void AddAreaCaster(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
+		public static void AddAreaSource(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			AddAreaCaster(targets, filter, ref failReason, targets.FirstHandler.GetRadius());
+			AddAreaSource(targets, filter, ref failReason, targets.FirstHandler.GetRadius());
 		}
 
-		public static void AddAreaCaster(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason, float radius)
+		public static void AddAreaSource(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason, float radius)
 		{
-			var caster = targets.Cast.Caster;
-			targets.AddTargetsInArea(caster.Position, filter, radius);
+			targets.AddTargetsInArea(targets.Cast.SourceLoc, filter, radius);
 		}
 
 		public static void AddAreaSrc(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			AddAreaCaster(targets, filter, ref failReason);
+			AddAreaSource(targets, filter, ref failReason);
 		}
 
 		public static void AddAreaDest(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
@@ -731,7 +780,7 @@ namespace WCell.RealmServer.Spells.Extensions
 					// For NPCs: Add all friendly minions around (radius 30 if no radius is set?)
 					radius = 30;
 				}
-				targets.AddAreaCaster(IsFriendly, ref failReason, radius);
+				targets.AddAreaSource(IsFriendly, ref failReason, radius);
 			}
 		}
 
@@ -766,17 +815,17 @@ namespace WCell.RealmServer.Spells.Extensions
 
 
 		#region Filters
-		public static void IsFriendly(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsFriendly(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			if (targets.Cast.Caster.MayAttack(target))
+			if (cast.CasterObject.MayAttack(target))
 			{
 				failedReason = SpellFailedReason.TargetEnemy;
 			}
 		}
 
-		public static void CanHarm(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void CanHarm(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			var caster = targets.Cast.Caster;
+			var caster = cast.CasterObject;
 			if (!caster.MayAttack(target))
 			{
 				failedReason = SpellFailedReason.TargetFriendly;
@@ -793,30 +842,33 @@ namespace WCell.RealmServer.Spells.Extensions
 		/// <param name="targets"></param>
 		/// <param name="target"></param>
 		/// <param name="failedReason"></param>
-		public static void CanHarmOrHeal(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void CanHarmOrHeal(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			var cast = targets.Cast;
-			var caster = cast.Caster;
+			var caster = cast.CasterObject;
 			var isHarmful = cast.Spell.HasHarmfulEffects;
+			var isHarmfulAndBeneficial = cast.Spell.HasHarmfulEffects == cast.Spell.HasBeneficialEffects;
 
-			if (isHarmful != caster.MayAttack(target))
+			if (!isHarmfulAndBeneficial)
 			{
-				if (isHarmful)
+				if (isHarmful != caster.MayAttack(target))
 				{
-					failedReason = SpellFailedReason.TargetFriendly;
+					if (isHarmful)
+					{
+						failedReason = SpellFailedReason.TargetFriendly;
+					}
+					else
+					{
+						failedReason = SpellFailedReason.TargetEnemy;
+					}
 				}
-				else
+				else if (isHarmful && !target.CanBeHarmed)
 				{
-					failedReason = SpellFailedReason.TargetEnemy;
+					failedReason = SpellFailedReason.NotHere;
 				}
-			}
-			else if (isHarmful && !target.CanBeHarmed)
-			{
-				failedReason = SpellFailedReason.NotHere;
 			}
 		}
 
-		public static void IsAllied(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsAllied(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
 			//if (targets.Cast.Caster is Character && target is Character)
 			//{
@@ -826,17 +878,17 @@ namespace WCell.RealmServer.Spells.Extensions
 			//        failedReason = SpellFailedReason.TargetNotInParty;
 			//    }
 			//}
-			if (!targets.Cast.Caster.IsAlliedWith(target))
+			if (!cast.CasterObject.IsAlliedWith(target))
 			{
 				failedReason = SpellFailedReason.TargetNotInParty;
 			}
 		}
 
-		public static void IsSameClass(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsSameClass(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			if (targets.Cast.CasterUnit != null && target is Unit)
+			if (cast.CasterUnit != null && target is Unit)
 			{
-				if (targets.Cast.CasterUnit.Class == ((Unit)target).Class)
+				if (cast.CasterUnit.Class == ((Unit)target).Class)
 				{
 					return;
 				}
@@ -844,26 +896,26 @@ namespace WCell.RealmServer.Spells.Extensions
 			failedReason = SpellFailedReason.BadTargets;
 		}
 
-		public static void IsSamePartyAndClass(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsSamePartyAndClass(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			targets.IsAllied(target, ref failedReason);
+			cast.IsAllied(target, ref failedReason);
 			if (failedReason != SpellFailedReason.Ok)
-				targets.IsSameClass(target, ref failedReason);
+				cast.IsSameClass(target, ref failedReason);
 		}
 
-		public static void IsInFrontEnemies(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsInFrontEnemies(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			targets.IsInFront(target, ref failedReason, true);
+			cast.IsInFrontOfCaster(target, ref failedReason, true);
 		}
 
-		public static void IsInFrontFriends(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsInFrontFriends(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			targets.IsInFront(target, ref failedReason, false);
+			cast.IsInFrontOfCaster(target, ref failedReason, false);
 		}
 
-		public static void IsInFront(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason, bool harmful)
+		public static void IsInFrontOfCaster(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason, bool harmful)
 		{
-			var caster = targets.Cast.Caster;
+			var caster = cast.CasterObject;
 			if (caster.IsPlayer && !target.IsInFrontOf(caster))
 			{
 				failedReason = SpellFailedReason.NotInfront;
@@ -880,16 +932,16 @@ namespace WCell.RealmServer.Spells.Extensions
 		/// <summary>
 		/// Is caster behind target?
 		/// </summary>
-		public static void IsBehind(this SpellTargetCollection targets, WorldObject target, ref SpellFailedReason failedReason)
+		public static void IsCasterBehind(this SpellCast cast, WorldObject target, ref SpellFailedReason failedReason)
 		{
-			if (!targets.Cast.Caster.IsBehind(target))
+			if (!cast.CasterObject.IsBehind(target))
 			{
 				failedReason = SpellFailedReason.NotBehind;
 			}
 			else
 			{
-				var harmful = targets.FirstHandler.Effect.Spell.HasHarmfulEffects;
-				if (harmful != targets.Cast.Caster.MayAttack(target))
+				var harmful = cast.Spell.HasHarmfulEffects;
+				if (harmful != cast.CasterObject.MayAttack(target))
 				{
 					failedReason = harmful ? SpellFailedReason.TargetFriendly : SpellFailedReason.TargetEnemy;
 				}
@@ -901,7 +953,7 @@ namespace WCell.RealmServer.Spells.Extensions
 			for (var i = 0; i < handlers.Count; i++)
 			{
 				var hdlr = handlers[i];
-				var failReason = hdlr.CheckValidTarget(target);
+				var failReason = hdlr.InitializeTarget(target);
 				if (failReason != SpellFailedReason.Ok)
 				{
 					return failReason;

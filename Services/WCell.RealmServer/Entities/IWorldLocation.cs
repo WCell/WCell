@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Entities
 		ZoneId ZoneId { get; }
 
 		[NotPersistent]
-		ZoneInfo ZoneInfo { get; }
+		ZoneTemplate ZoneTemplate { get; }
 	}
 
 	public interface INamedWorldZoneLocation : IWorldZoneLocation
@@ -85,22 +85,22 @@ namespace WCell.RealmServer.Entities
 
 	public class ZoneWorldLocation : WorldLocation, IWorldZoneLocation
 	{
-		public ZoneWorldLocation(MapId region, Vector3 pos, ZoneInfo zone)
+		public ZoneWorldLocation(MapId region, Vector3 pos, ZoneTemplate zone)
 			: base(region, pos)
 		{
-			ZoneInfo = zone;
+			ZoneTemplate = zone;
 		}
 
-		public ZoneWorldLocation(Region region, Vector3 pos, ZoneInfo zone)
+		public ZoneWorldLocation(Region region, Vector3 pos, ZoneTemplate zone)
 			: base(region, pos)
 		{
-			ZoneInfo = zone;
+			ZoneTemplate = zone;
 		}
 
 		public ZoneWorldLocation(IWorldZoneLocation location)
 			: base(location.Region, location.Position)
 		{
-			ZoneInfo = location.ZoneInfo;
+			ZoneTemplate = location.ZoneTemplate;
 		}
 
 		public ZoneWorldLocation(MapId region, Vector3 pos, ZoneId zone)
@@ -108,16 +108,16 @@ namespace WCell.RealmServer.Entities
 		{
 			if (Region != null)
 			{
-				ZoneInfo = World.GetZoneInfo(zone);
+				ZoneTemplate = World.GetZoneInfo(zone);
 			}
 		}
 
 		public ZoneId ZoneId
 		{
-			get { return ZoneInfo != null ? ZoneInfo.Id : ZoneId.None; }
+			get { return ZoneTemplate != null ? ZoneTemplate.Id : ZoneId.None; }
 		}
 
-		public ZoneInfo ZoneInfo { get; set; }
+		public ZoneTemplate ZoneTemplate { get; set; }
 	}
 
 	public static class LocationUtil

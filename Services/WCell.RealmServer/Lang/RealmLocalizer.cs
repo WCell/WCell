@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +9,7 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Lang
 {
-	public class RealmLocalizer : Localizer<ClientLocale, LangKey>
+	public class RealmLocalizer : Localizer<ClientLocale, RealmLangKey>
 	{
 		private static RealmLocalizer instance;
 

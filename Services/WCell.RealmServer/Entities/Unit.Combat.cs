@@ -10,6 +10,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.Util.NLog;
@@ -105,21 +106,6 @@ namespace WCell.RealmServer.Entities
 		protected internal SpellCast m_pendingCombatAbility;
 
 		/// <summary>
-		/// Recycled AttackState (not actually relevant)
-		/// </summary>
-		internal DamageAction DamageAction
-		{
-			get
-			{
-				return m_DamageAction;
-			}
-			set
-			{
-				m_DamageAction = value;
-			}
-		}
-
-		/// <summary>
 		/// The last time when this Unit was still actively Fighting
 		/// </summary>
 		public int LastCombatTime
@@ -182,20 +168,31 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual void AddDamageMods(DamageAction action)
+		public virtual void OnAttack(DamageAction action)
 		{
-			foreach (var mod in AttackModifiers)
+			foreach (var mod in AttackEventHandlers)
 			{
-				mod.ModAttack(action);
+				mod.OnAttack(action);
 			}
 		}
 
 		/// <summary>
 		/// Adds damage mods to the given AttackAction
 		/// </summary>
-		public virtual int AddHealingMods(int dmg, SpellEffect effect, DamageSchool school)
+		public virtual void OnDefend(DamageAction action)
 		{
-			return dmg;
+			foreach (var mod in AttackEventHandlers)
+			{
+				mod.OnDefend(action);
+			}
+		}
+
+		/// <summary>
+		/// Adds damage mods to the given AttackAction
+		/// </summary>
+		public virtual int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)
+		{
+			return healValue;
 		}
 
 		/// <summary>
@@ -213,7 +210,7 @@ namespace WCell.RealmServer.Entities
 
 		internal DamageAction GetUnusedAction()
 		{
-			if (m_DamageAction == null || m_DamageAction.IsInUse)
+			if (m_DamageAction == null || m_DamageAction.ReferenceCount > 0)
 			{
 				return new DamageAction(this);
 			}
@@ -221,6 +218,16 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Standard Attack
+
+		/// <summary>
+		/// Use the given weapon to strike
+		/// </summary>
+		/// <param name="weapon"></param>
+		public void Strike()
+		{
+			Strike(MainWeapon);
+		}
+
 		/// <summary>
 		/// Use the given weapon to strike
 		/// </summary>
@@ -254,6 +261,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(Unit target)
+		{
+			Strike(MainWeapon, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given weapon on the given target.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, Unit target)
 		{
 			Strike(weapon, GetUnusedAction(), target);
@@ -264,8 +281,23 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="weapon"></param>
 		/// <param name="action"></param>
+		public void Strike(DamageAction action, Unit target)
+		{
+			Strike(MainWeapon, action, target);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given Weapon and AttackAction.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
+			if (!target.IsInWorld)
+			{
+				return;
+			}
+
 			if (weapon == null)
 			{
 				log.Error("Trying to strike without weapon: " + this);
@@ -278,23 +310,6 @@ namespace WCell.RealmServer.Entities
 			//    m_Movement.Stop();
 			//}
 
-			// calc damage
-			if (weapon == m_offhandWeapon)
-			{
-				action.Damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
-			}
-			else
-			{
-				if (weapon.IsRanged)
-				{
-					action.Damage = Utility.Random((int)MinRangedDamage, (int)MaxRangedDamage + 1);
-				}
-				else
-				{
-					action.Damage = Utility.Random((int)MinDamage, (int)MaxDamage + 1);
-				}
-			}
-
 			target.IsInCombat = true;
 
 			action.Victim = target;
@@ -305,27 +320,6 @@ namespace WCell.RealmServer.Entities
 			{
 				// Pending combat ability
 				var ability = m_pendingCombatAbility;
-				// get boni, damage and let the Spell impact
-				var multiplier = 100;
-				SpellEffect effect = null;
-				foreach (var effectHandler in ability.Handlers)
-				{
-					if (effectHandler.Effect.IsStrikeEffectFlat)
-					{
-						action.Damage += effectHandler.CalcEffectValue();
-					}
-					else if (effectHandler.Effect.IsStrikeEffectPct)
-					{
-						multiplier += effectHandler.CalcEffectValue();
-					}
-
-					if (effect == null)
-					{
-						// use the first effect
-						effect = effectHandler.Effect;
-					}
-				}
-				action.Damage = (action.Damage * multiplier) / 100;
 
 				// send pending animation
 				if (ability.IsInstant)
@@ -342,21 +336,23 @@ namespace WCell.RealmServer.Entities
 				m_pendingCombatAbility = null;
 
 				action.Schools = ability.Spell.SchoolMask;
-				action.SpellEffect = effect;
+				action.SpellEffect = ability.Spell.Effects[0];
 
-				if (ability.Spell.IsAreaSpell)
+				if (ability.Spell != null && ability.Spell.IsAreaSpell)
 				{
-					var totalDmg = action.Damage;
+					// AoE spell
 					action.IsDot = false;
 
-					// AoE spell
+					var i = 0;
 					foreach (var targ in ability.Targets)
 					{
-						action.Reset(this, (Unit)targ, weapon, totalDmg);
+						GetWeaponDamage(action, weapon, ability, i++);
+						action.Reset(this, (Unit)targ, weapon);
 						action.DoAttack();
 						if (ability.Spell.IsDualWieldAbility)
 						{
-							action.Reset(this, (Unit)targ, weapon, Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1));
+							action.Damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
+							action.Reset(this, (Unit)targ, weapon);
 							action.DoAttack();
 						}
 					}
@@ -364,7 +360,11 @@ namespace WCell.RealmServer.Entities
 				else
 				{
 					// single target
+
+					// calc damage
+					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
 					if (!action.DoAttack() &&
+						ability.Spell != null &&
 						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
 					{
 						// missed and is not attacking with both weapons -> don't trigger spell
@@ -374,16 +374,20 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// Impact and trigger remaining effects (if not cancelled)
-				if (!ability.Spell.IsRangedAbility)
+				if (ability.Spell != null && ability.Spell.IsRangedAbility)
 				{
 					ability.Impact(ability.Spell.IsOnNextStrike);
 				}
 			}
 			else
 			{
+				// no combat ability
 				m_extraAttacks += 1;
 				do
 				{
+					// calc damage
+					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
+
 					action.Schools = weapon.Damages.AllSchools();
 					if (action.Schools == DamageSchoolMask.None)
 					{
@@ -396,18 +400,79 @@ namespace WCell.RealmServer.Entities
 			}
 			action.OnFinished();
 		}
+
+		/// <summary>
+		/// Returns random damage for the given weapon
+		/// </summary>
+		public void GetWeaponDamage(DamageAction action, IWeapon weapon, SpellCast pendingAbility, int targetNo = 0)
+		{
+			int damage;
+			if (weapon == m_offhandWeapon)
+			{
+				damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
+			}
+			else
+			{
+				if (weapon.IsRanged)
+				{
+					damage = Utility.Random((int)MinRangedDamage, (int)MaxRangedDamage + 1);
+				}
+				else
+				{
+					damage = Utility.Random((int)MinDamage, (int)MaxDamage + 1);
+				}
+			}
+
+			if (pendingAbility != null && pendingAbility.IsCasting)
+			{
+				// get bonuses, damage and let the Spell impact
+				var multiplier = 0;
+
+				foreach (var effectHandler in pendingAbility.Handlers)
+				{
+					if (effectHandler.Effect.IsStrikeEffectFlat)
+					{
+						damage += effectHandler.CalcDamageValue(targetNo);
+					}
+					else if (effectHandler.Effect.IsStrikeEffectPct)
+					{
+						multiplier += effectHandler.CalcDamageValue(targetNo);
+					}
+				}
+				if (multiplier > 0)
+				{
+					action.Damage = (damage * multiplier + 50) / 100;
+				}
+				else
+				{
+					action.Damage = damage;
+				}
+
+				foreach (var effectHandler in pendingAbility.Handlers)
+				{
+					if (effectHandler is WeaponDamageEffectHandler)
+					{
+						((WeaponDamageEffectHandler)effectHandler).OnHit(action);
+					}
+				}
+			}
+			else
+			{
+				action.Damage = damage;
+			}
+		}
 		#endregion
 
 		#region Spells
 		/// <summary>
 		/// Does spell-damage to this Unit
 		/// </summary>
-		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg)
+		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true)
 		{
 			DamageSchool school;
 			if (effect != null)
 			{
-				school = GetLeastResistant(effect.Spell);
+				school = GetLeastResistantSchool(effect.Spell);
 				if (effect.Spell.DamageIncreasedByAP)
 				{
 					int ap;
@@ -420,7 +485,7 @@ namespace WCell.RealmServer.Entities
 						ap = TotalMeleeAP;
 					}
 
-					dmg += (ap + 7) / 14;	// round
+					dmg += (ap + 7) / 14; // round
 				}
 			}
 			else
@@ -430,31 +495,28 @@ namespace WCell.RealmServer.Entities
 
 			if (IsEvading || IsImmune(school) || IsInvulnerable || !IsAlive)
 			{
+				// cannot deal damage to this guy
 				return;
 			}
 
-			var action = attacker != null ? attacker.m_DamageAction : m_DamageAction;
-			if (action == null || action.IsInUse)
-			{
-				// currently in use
-				action = new DamageAction(attacker);
-			}
-			else
-			{
-				action.Attacker = attacker;
-				action.HitFlags = 0;
-				action.VictimState = 0;
-				action.Weapon = null;
-			}
+			var action = GetUnusedAction();
+
+			// reset values
+			action.Attacker = attacker;
+			action.HitFlags = 0;
+			action.VictimState = 0;
+			action.Weapon = null;
 
 			if (effect != null)
 			{
+				// Some kind of spell is involved
 				action.UsedSchool = school;
 				action.Schools = effect.Spell.SchoolMask;
 				action.IsDot = effect.IsPeriodic;
 			}
 			else
 			{
+				// pure white melee damage
 				action.UsedSchool = DamageSchool.Physical;
 				action.Schools = DamageSchoolMask.Physical;
 				action.IsDot = false;
@@ -463,34 +525,41 @@ namespace WCell.RealmServer.Entities
 			action.Damage = dmg;
 			action.ResistPct = GetResistChancePct(this, action.UsedSchool);
 			action.Absorbed = 0;
+			action.SpellEffect = effect;
 
 			action.Victim = this;
 
 			if (attacker != null)
 			{
-				attacker.AddDamageMods(action);
+				// the damage is caused by someone else (i.e. not environmental damage etc)
 
-				if (effect != null && !action.IsDot && !effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) &&
-					attacker.CalcSpellCritChance(this, action.UsedSchool, action.ResistPct, effect.Spell) > Utility.Random(0f, 100f))
+				// critical hits
+				if (action.CalcCritChance() > Utility.Random(0, 10000))
 				{
-					action.Damage = attacker.CalcCritDamage(action.ActualDamage, this, effect).RoundInt();
 					action.IsCritical = true;
+					action.SetCriticalDamage();
 				}
 				else
 				{
 					action.IsCritical = false;
 				}
-			}
 
+				// add mods and call events
+				OnDefend(action);
+				attacker.OnAttack(action);
+
+				if (addDamageBonuses && attacker is Character)
+				{
+					((Character)attacker).AddDamageModsToAction(action);
+				}
+			}
 
 			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
 			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
 			action.Blocked = 0; // TODO: Deflect
-			action.SpellEffect = effect;
-
-			//TODO: figure this out: However, when spells do only damage, it's not just a full hit or full miss situation. Pure damage spells can be resisted for 0%, 25%, 50%, 75%, or 100% of their regular damage. 
 
 			DoRawDamage(action);
+
 			CombatLogHandler.SendMagicDamage(action);
 			action.OnFinished();
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
@@ -517,6 +586,8 @@ namespace WCell.RealmServer.Entities
 
 			res *= resistChance;
 
+			res -= defender.GetAttackerSpellHitChanceMod(dmgSchool);
+
 			if (res < 1)
 			{
 				res = 1;
@@ -525,13 +596,31 @@ namespace WCell.RealmServer.Entities
 			return res;
 		}
 
-		public float CalcSpellCritChance(Unit defender, DamageSchool dmgSchool, float resistPct, Spell spell)
+		public float CalcCritChance(Unit defender, DamageSchool dmgSchool, Spell spell, IWeapon weapon)
 		{
-			var chance = GetSpellCritChance(dmgSchool);
+			float chance;
 			if (this is Character)
 			{
 				var chr = (Character)this;
-				chance += chr.PlayerSpells.GetModifierFlat(SpellModifierType.CritChance, spell);
+				if (weapon != null)
+				{
+					if (weapon.IsRanged)
+					{
+						chance = chr.CritChanceRangedPct;
+					}
+					else
+					{
+						chance = chr.CritChanceMeleePct;
+					}
+				}
+				else
+				{
+					chance = GetCritChance(dmgSchool);
+				}
+			}
+			else
+			{
+				chance = GetCritChance(dmgSchool);
 			}
 			chance -= defender.GetResiliencePct();
 			return chance;
@@ -594,6 +683,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var atk = (Character)attacker;
 				dodgeChance -= atk.Expertise * 0.25f;
+				dodgeChance += atk.IntMods[(int)StatModifierInt.TargetDodgesAttackChance];
 			}
 
 			dodgeChance *= 100;
@@ -648,19 +738,23 @@ namespace WCell.RealmServer.Entities
 			return resiliencePercentage;
 		}
 
+		/// <summary>
+		/// Modified by victim's resilience
+		/// </summary>
+		/// <param name="dmg"></param>
+		/// <param name="victim"></param>
+		/// <param name="effect"></param>
+		/// <returns></returns>
 		public virtual float CalcCritDamage(float dmg, Unit victim, SpellEffect effect)
 		{
-			dmg = (dmg * (1.5f - (victim.GetResiliencePct() * 2)));
-			return dmg;
-		}
-
-		/// <summary>
-		/// Crit chance from 0 to 100
-		/// </summary>
-		/// <returns></returns>
-		public virtual float CalcCritChanceBase(Unit victim, SpellEffect effect, IWeapon weapon)
-		{
-			return 5;		// mobs got 5% by default
+			if (effect != null)
+			{
+				return (int)(dmg * 1.5f);
+			}
+			var multiplier = 200;
+			multiplier -= (int)victim.GetResiliencePct();
+			multiplier += victim.GetIntMod(StatModifierInt.CritDamageBonusPct);
+			return (dmg * multiplier + 50) / 100;
 		}
 
 		/// <summary>
@@ -668,8 +762,10 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CheckResist(Unit attacker, DamageSchool school, SpellMechanic mechanic)
 		{
-			if (GetMechanicResistance(mechanic) +
-				GetResistChancePct(attacker, school) > Utility.Random(0f, 100f))
+			if (Utility.Random(0f, 100f) <
+				GetMechanicResistance(mechanic) -
+				GetAttackerSpellHitChanceMod(school) +
+				GetResistChancePct(attacker, school))
 				return true;
 
 			return false;
@@ -680,7 +776,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CheckDebuffResist(int attackerLevel, DamageSchool school)
 		{
-			if (GetDebuffResistance(school) > Utility.Random(0, 100))
+			if (Utility.Random(0, 100) <
+				GetDebuffResistance(school) -
+				GetAttackerSpellHitChanceMod(school))
 				return true;
 
 			return false;
@@ -1154,11 +1252,11 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
-					if (action.Weapon != OffHandWeapon)
+					if (action.Weapon == null || action.Weapon != OffHandWeapon)
 					{
 						// proc (if not offhand)
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
-						Proc(targetProcTriggerFlags, action.Attacker, action, false);	
+						Proc(targetProcTriggerFlags, action.Attacker, action, false);
 					}
 				}
 			}

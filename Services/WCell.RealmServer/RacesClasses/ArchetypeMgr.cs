@@ -230,7 +230,7 @@ namespace WCell.RealmServer.RacesClasses
 		private static void InitRaces()
 		{
 			//ContentHandler.Load<BaseRace>();
-			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile("ChrRaces.dbc"));
+			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CHRRACES));
 			foreach (var race in reader.EntryList)
 			{
 				race.FinalizeAfterLoad();
@@ -249,7 +249,7 @@ namespace WCell.RealmServer.RacesClasses
 			// ContentHandler.Load<PlayerItemEntry>();
 			//var reader = 
 			new DBCReader<DBCStartOutfitConverter>(
-				RealmServerConfiguration.GetDBCFile("CharStartOutfit.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CHARSTARTOUTFIT));
 		}
 		#endregion
 	}

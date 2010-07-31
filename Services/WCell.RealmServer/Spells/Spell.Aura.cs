@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
@@ -45,7 +47,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Modal Auras cannot be updated, but must be replaced
 		/// </summary>
-		public bool IsModalAura;
+		public bool IsAutoRepeating;
 
 		/// <summary>
 		/// General Amplitude for Spells that represent AreaAuras (can only have one per spell)
@@ -63,7 +65,7 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect[] AreaAuraEffects;
 
 		/// <summary>
-		/// Whether the Aura's effects should be applied once for each of its Applications
+		/// Whether the Aura's effects should multiply it's effect value by the amount of its Applications
 		/// </summary>
 		public bool CanStack;
 
@@ -72,10 +74,19 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int StackCount;
 
+		/// <summary>
+		/// Only has Aura effects
+		/// </summary>
 		public bool IsPureAura;
 
+		/// <summary>
+		/// Only has positive Aura effects
+		/// </summary>
 		public bool IsPureBuff;
 
+		/// <summary>
+		/// Only has negative Aura effects
+		/// </summary>
 		public bool IsPureDebuff;
 
 		/// <summary>
@@ -83,14 +94,12 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsGhost;
 
-		public bool IsProc;
-
 		/// <summary>
-		/// Whether this is a proc and whether its own effects handle procs (or false, if customary proc handlers have been added)
+		/// Whether this is a proc and whether its own effects handle procs (or false, if not a proc or custom proc handlers have been added)
 		/// </summary>
 		public bool DoesAuraHandleProc
 		{
-			get { return IsProc && TargetProcHandlers == null && CasterProcHandlers == null; }
+			get { return IsProc && ProcHandlers == null; }
 		}
 
 		public bool IsVehicle;
@@ -118,7 +127,20 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsFlyingMount;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public bool CanApplyMultipleTimes;
+
+		/// <summary>
+		/// Whether the Aura has effects that depend on the wearer's Shapeshift form
+		/// </summary>
+		public bool HasShapeshiftDependentEffects;
+
+		/// <summary>
+		/// Whether the Aura is in any way dependent on the wearer's shapeshift form
+		/// </summary>
+		public bool IsModalShapeshiftDependentAura;
 
 		/// <summary>
 		/// 
@@ -140,10 +162,10 @@ namespace WCell.RealmServer.Spells
 
 			if (!IsAura)
 			{
-				//if (TargetProcHandlers != null)
-				//{
-				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has TargetProcHandlers: {0}", this);
-				//}
+				if (ProcHandlers != null)
+				{
+					throw new InvalidSpellDataException("Invalid Non-Aura spell has ProcHandlers: {0}", this);
+				}
 				//if (CasterProcHandlers != null)
 				//{
 				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has CasterProcHandlers: {0}", this);
@@ -160,44 +182,31 @@ namespace WCell.RealmServer.Spells
 				}
 			});
 
-			IsModalAura = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
+			IsAutoRepeating = AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 
 			HasManaShield = HasEffectWith(effect => effect.AuraType == AuraType.ManaShield);
 
-			var auraEffects = GetEffectsWith(effect => effect.AuraEffectHandlerCreator != null);
-			if (auraEffects != null)
-			{
-				AuraEffects = auraEffects.ToArray();
-			}
-
-			var areaAuraEffects = GetEffectsWith(effect => effect.IsAreaAuraEffect);
-
-			if (areaAuraEffects != null)
-			{
-				AreaAuraEffects = areaAuraEffects.ToArray();
-			}
+			AuraEffects = GetEffectsWhere(effect => effect.AuraEffectHandlerCreator != null);
+			AreaAuraEffects = GetEffectsWhere(effect => effect.IsAreaAuraEffect);
 
 			IsAreaAura = AreaAuraEffects != null;
-
 			IsPureAura = !IsDamageSpell && !HasEffectWith(effect => effect.EffectType != SpellEffectType.ApplyAura ||
 																	effect.EffectType != SpellEffectType.ApplyAuraToMaster ||
 																	effect.EffectType != SpellEffectType.ApplyStatAura ||
 																	effect.EffectType != SpellEffectType.ApplyStatAuraPercent);
 
 			IsPureBuff = IsPureAura && HasBeneficialEffects && !HasHarmfulEffects;
-
 			IsPureDebuff = IsPureAura && HasHarmfulEffects && !HasBeneficialEffects;
 
 			IsVehicle = HasEffectWith(effect => effect.AuraType == AuraType.Vehicle);
-
 			IsShapeshift = HasEffectWith(effect =>
 			{
-				if (effect.AuraType == AuraType.ModShapeshift)
-				{
-					var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
-					return info.CreatureType > 0;
-				}
-				return effect.AuraType == AuraType.Transform;
+				//if (effect.AuraType == AuraType.ModShapeshift)
+				//{
+				//    var info = SpellHandler.ShapeshiftEntries.Get((uint)effect.MiscValue);
+				//    return info.CreatureType > 0;
+				//}
+				return effect.AuraType == AuraType.ModShapeshift || effect.AuraType == AuraType.Transform;
 			});
 
 			CanStack = MaxStackCount > 0;
@@ -224,6 +233,9 @@ namespace WCell.RealmServer.Spells
 			CanApplyMultipleTimes = Attributes == (SpellAttributes.NoVisibleAura | SpellAttributes.Passive) &&
 									Skill == null && Talent == null;
 
+			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
+			IsModalShapeshiftDependentAura = IsPassive && (RequiredShapeshiftMask != 0 || HasShapeshiftDependentEffects);
+
 			// procs
 			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
 			{
@@ -233,15 +245,15 @@ namespace WCell.RealmServer.Spells
 					// no proc-specific effects -> all effects are triggered on proc
 					ProcTriggerEffects = null;
 				}
-				else if (ProcTriggerEffects.Length > 1)
-				{
-					log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
-				}
+				//else if (ProcTriggerEffects.Length > 1)
+				//{
+				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
+				//}
 
-				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackSelf | ProcTriggerFlags.SpellCast))
+				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.SpellCast))
 				{
 					// we don't want any SpellCast to trigger on that
-					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackSelf;
+					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
 				}
 
 				IsProc = ProcTriggerEffects != null;
@@ -285,9 +297,9 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Proc Spells
+		#region Caster Proc Spells
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it Aura to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
 		/// </summary>
 		public void AddCasterProcSpells(params SpellId[] spellIds)
 		{
@@ -306,7 +318,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -320,7 +332,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -331,8 +343,9 @@ namespace WCell.RealmServer.Spells
 			CasterProcSpells.AddRange(spells);
 			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
+		#endregion
 
-
+		#region Target Proc Spells
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
 		/// </summary>
@@ -376,7 +389,7 @@ namespace WCell.RealmServer.Spells
 				TargetProcSpells = new HashSet<Spell>();
 			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellHit;
+			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 
@@ -392,7 +405,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public AuraIndexId GetAuraUID(CasterInfo caster, WorldObject target)
+		public AuraIndexId GetAuraUID(ObjectReference caster, WorldObject target)
 		{
 			return GetAuraUID(IsBeneficialFor(caster, target));
 		}

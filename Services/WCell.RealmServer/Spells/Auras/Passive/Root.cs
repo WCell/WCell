@@ -21,12 +21,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class RootHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Rooted);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Rooted);
 		}

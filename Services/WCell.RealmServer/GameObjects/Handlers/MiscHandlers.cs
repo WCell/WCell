@@ -357,7 +357,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	public class SpellCasterHandler : GameObjectHandler
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-		private uint chargesLeft;
+		private int chargesLeft;
 
 		protected internal override void Initialize(GameObject go)
 		{

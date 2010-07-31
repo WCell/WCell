@@ -85,15 +85,15 @@ namespace WCell.RealmServer.Skills
 
 
 		#region Init
-		static MappedDBCReader<SkillTier, SkillTierConverter> TierReader;
+		static MappedDBCReader<SkillTiers, SkillTierConverter> TierReader;
 		static MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter> RaceClassReader;
 
 		internal static void Initialize()
 		{
-			TierReader = new MappedDBCReader<SkillTier, SkillTierConverter>(RealmServerConfiguration.GetDBCFile("SkillTiers.dbc"));
+            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLTIERS));
 
 			var lineReader =
-				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile("SkillLine.dbc"));
+				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLLINE));
 
 			// make sure that all these skill types have correct tiers
 			foreach (var line in lineReader.Entries.Values)
@@ -120,12 +120,12 @@ namespace WCell.RealmServer.Skills
 			}
 
 			RaceClassReader = new MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter>(
-				RealmServerConfiguration.GetDBCFile("SkillRaceClassInfo.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLRACECLASSINFO));
 
 
 		    var abilityReader =
 		        new MappedDBCReader<SkillAbility, SkillAbilityConverter>(
-		            RealmServerConfiguration.GetDBCFile("SkillLineAbility.dbc"));
+		            RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLLINEABILITY));
 
 			var abilityLists = new List<SkillAbility>[MaxSkillId];
 			foreach (var ability in abilityReader.Entries.Values)
@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Skills
 					if (ability.Skill.Category == SkillCategory.Profession ||
 						ability.Skill.Category == SkillCategory.SecondarySkill)
 					{
-						if (ability.Spell.GetEffect(SpellEffectType.Skill) != null)
+						if (ability.Spell.HasEffect(SpellEffectType.Skill))
 						{
 							ability.Skill.TeachingSpells.Add(ability.Spell);
 						}

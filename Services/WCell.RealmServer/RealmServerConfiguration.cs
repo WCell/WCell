@@ -56,7 +56,7 @@ namespace WCell.RealmServer
 
 		public override string FilePath
 		{
-			get { return RealmServer.Instance.Configuration.GetFullPath(ConfigFilename); }
+			get { return GetFullPath(ConfigFilename); }
 			set
 			{// cannot modify Filename
 				throw new InvalidOperationException("Cannot modify Filename");
@@ -84,10 +84,7 @@ namespace WCell.RealmServer
 
 		public static string LangDir
 		{
-			get
-			{
-				return GetContentPath(LangDirName) + "/";
-			}
+			get { return GetContentPath(LangDirName) + "/"; }
 		}
 
 		private static ClientLocale defaultLocale = ClientLocale.English;
@@ -412,7 +409,7 @@ namespace WCell.RealmServer
 			set { contentDirName = value; }
 		}
 
-		public string ContentDir
+		public static string ContentDir
 		{
 			get { return GetFullPath(contentDirName); }
 		}
@@ -426,7 +423,7 @@ namespace WCell.RealmServer
 		{
 			get
 			{
-			    var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
+				var dir = Path.Combine(ContentDir, DBCFolderName) + "/";
 				if (!Directory.Exists(dir))
 				{
 					var msg = String.Format(WCell_RealmServer.NotFound, "DBC Directory", new DirectoryInfo(dir).FullName + " (Please export the DBC files of the correct version, using the MPQTool)");
@@ -454,17 +451,16 @@ namespace WCell.RealmServer
 			return path;
 		}
 
-
 		public static string GetContentPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{
-				return Path.Combine(s_instance.ContentDir, file);
+				return Path.Combine(GetFullPath(ContentDir), file);
 			}
 			return file;
 		}
 
-		public string GetFullPath(string file)
+		public static string GetFullPath(string file)
 		{
 			if (!Path.IsPathRooted(file))
 			{

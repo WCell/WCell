@@ -2275,7 +2275,11 @@ namespace WCell.Constants
         SMSG_UNKNOWN_1304 = 1303, // something with player movement (move event 58?), speed packet
         UMSG_UNKNOWN_1305 = 1304, // not found
         UMSG_UNKNOWN_1306 = 1305, // not found
-        Maximum = 1306,
+        CMSG_COMMENTATOR_SKIRMISH_QUEUE_COMMAND = 1306,
+        SMSG_UNKNOWN_1308 = 1307,
+        SMSG_MOVES  = 1308,
+        SMSG_UNKNOWN_1310 = 1309,
+        Maximum,
         Unknown,
     }
 

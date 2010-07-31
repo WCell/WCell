@@ -16,7 +16,7 @@ namespace WCell.Constants.World
 			boxes[(int)MapId.Kalimdor] = new BoundingBox(new Vector3(-13000f, -13000f, -2048f), new Vector3(17266.67f, 17266.67f, 2048f));
 			boxes[(int)MapId.Testing] = new BoundingBox(new Vector3(-1333.004f, -1331.893f, -1133.004f), new Vector3(1333.004f, 1334.115f, 1133.004f));
 			boxes[(int)MapId.ScottTest] = new BoundingBox(new Vector3(-1333.004f, -1331.893f, -1133.004f), new Vector3(1333.004f, 1334.115f, 1133.004f));
-			boxes[(int)MapId.CashTest] = new BoundingBox(new Vector3(-1333.004f, -1331.893f, -1133.004f), new Vector3(1333.004f, 1334.115f, 1133.004f));
+			//boxes[(int)MapId.CashTest] = new BoundingBox(new Vector3(-1333.004f, -1331.893f, -1133.004f), new Vector3(1333.004f, 1334.115f, 1133.004f));
 			boxes[(int)MapId.AlteracValley] = new BoundingBox(new Vector3(-2333.333f, -2866.667f, -2048f), new Vector3(1800f, 1266.667f, 2048f));
 			boxes[(int)MapId.ShadowfangKeep] = new BoundingBox(new Vector3(-1800f, 866.6666f, -2048f), new Vector3(1266.667f, 3933.333f, 2048f));
 			boxes[(int)MapId.StormwindStockade] = new BoundingBox(new Vector3(-351.8212f, -235.679f, -197.2988f), new Vector3(350.3298f, 466.472f, 8.136327f));
@@ -123,4 +123,3 @@ namespace WCell.Constants.World
 	}
 
 }
-

@@ -30,6 +30,7 @@ using WCell.Intercommunication.DataTypes;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Commands
 {
@@ -81,7 +82,7 @@ namespace WCell.RealmServer.Commands
 			else if (trigger.Text.HasNext)
 			{
 				object propHolder;
-				var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, trigger.Text.NextWord(),
+				var prop = ReflectUtil.Instance.GetProp(trigger.Args.Role, target, trigger.Text.NextWord(),
 					target.GetType(), out propHolder);
 
 				SetProp(propHolder, prop, trigger);
@@ -96,7 +97,7 @@ namespace WCell.RealmServer.Commands
 
 		public static void SetProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.Role))
 			{
 				var expr = trigger.Text.Remainder.Trim();
 				if (expr.Length == 0)
@@ -180,7 +181,15 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			GetAndReply(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => GetAndReply(trigger, obj));
+			}
+			else
+			{
+				GetAndReply(trigger, obj);
+			}
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -195,7 +204,7 @@ namespace WCell.RealmServer.Commands
 				var propName = trigger.Text.NextWord();
 				object val;
 
-				if (ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val))
+				if (ReflectUtil.Instance.GetPropValue(trigger.Args.Role, target, ref propName, out val))
 				{
 					trigger.Reply("{0} is: {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
 				}
@@ -214,10 +223,15 @@ namespace WCell.RealmServer.Commands
 
 		public static object Eval(CmdTrigger<RealmServerCmdArgs> trigger, object target)
 		{
+			if (!trigger.CheckPossibleContext(target))
+			{
+				// TODO: Come up with a more complete solution
+				return null;
+			}
 			var propName = trigger.Text.NextWord();
 			object val;
 
-			ReflectUtil.Instance.GetPropValue(trigger.Args.User.Role, target, ref propName, out val);
+			ReflectUtil.Instance.GetPropValue(trigger.Args.Role, target, ref propName, out val);
 			return val;
 		}
 	}
@@ -230,10 +244,7 @@ namespace WCell.RealmServer.Commands
 
 		public override RoleStatus RequiredStatusDefault
 		{
-			get
-			{
-				return RoleStatus.Admin;
-			}
+			get { return RoleStatus.Admin; }
 		}
 
 		protected override void Initialize()
@@ -245,14 +256,22 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			ModProp(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => ModProp(trigger, obj));
+			}
+			else
+			{
+				ModProp(trigger, obj);
+			}
 		}
 
 		public static void ModProp(CmdTrigger<RealmServerCmdArgs> trigger, object target)
 		{
 			var accessName = trigger.Text.NextWord();
 			object propHolder;
-			var prop = ReflectUtil.Instance.GetProp(trigger.Args.User.Role, target, accessName,
+			var prop = ReflectUtil.Instance.GetProp(trigger.Args.Role, target, accessName,
 													 target.GetType(), out propHolder);
 
 			ModProp(propHolder, prop, trigger);
@@ -260,7 +279,7 @@ namespace WCell.RealmServer.Commands
 
 		public static void ModProp(object propHolder, MemberInfo prop, CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.User.Role))
+			if (prop != null && ReflectUtil.Instance.CanWrite(prop, trigger.Args.Role))
 			{
 				var exprType = prop.GetVariableType();
 				if (!exprType.IsInteger())
@@ -320,8 +339,7 @@ namespace WCell.RealmServer.Commands
 
 	#region Call
 	/// <summary>
-	/// Calls methods! :D
-	/// Should be for developers (and Admins) only
+	/// Calls public methods.
 	/// </summary>
 	public class CallCommand : RealmServerCommand
 	{
@@ -338,10 +356,7 @@ namespace WCell.RealmServer.Commands
 
 		public override RoleStatus RequiredStatusDefault
 		{
-			get
-			{
-				return RoleStatus.Admin;
-			}
+			get { return RoleStatus.Admin; }
 		}
 
 		protected override void Initialize()
@@ -353,44 +368,36 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			Call(trigger, trigger.EvalNextOrTargetOrUser());
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (obj is IContextHandler)
+			{
+				((IContextHandler)obj).ExecuteInContext(() => Call(trigger, obj, true));
+			}
+			else
+			{
+				Call(trigger, obj, true);
+			}
 		}
 
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			return Eval(trigger, trigger.EvalNextOrTargetOrUser());
+			return Eval(trigger, false);
 		}
 
-		public static void Call(CmdTrigger<RealmServerCmdArgs> trigger, Object obj)
+		public object Eval(CmdTrigger<RealmServerCmdArgs> trigger, bool replySuccess)
 		{
-			if (trigger.Text.HasNext)
+			var obj = trigger.EvalNextOrTargetOrUser();
+			if (!trigger.CheckPossibleContext(obj))
 			{
-				var accessName = trigger.Text.NextWord();
-				var args = trigger.Text.Remainder.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-				for (var i = 0; i < args.Length; i++)
-				{
-					args[i] = args[i].Trim();
-				}
-				try
-				{
-					object result;
-					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
-						ref accessName, args, out result))
-					{
-						trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
-						return;
-					}
-				}
-				catch (Exception ex)
-				{
-					trigger.Reply("Exception thrown: " + ex);
-					return;
-				}
+				// TODO: Come up with a more complete solution
+				//((IContextHandler)obj).ExecuteInContext(() => Call(trigger, obj, replySuccess));
+				return null;
 			}
-			trigger.Reply("Invalid method, parameter count or parameters.");
+
+			return Call(trigger, obj, replySuccess);
 		}
 
-		public static object Eval(CmdTrigger<RealmServerCmdArgs> trigger, Object obj)
+		public static object Call(CmdTrigger<RealmServerCmdArgs> trigger, Object obj, bool replySuccess = true)
 		{
 			if (trigger.Text.HasNext)
 			{
@@ -400,20 +407,25 @@ namespace WCell.RealmServer.Commands
 				{
 					args[i] = args[i].Trim();
 				}
+
 				try
 				{
 					object result;
 					if (ReflectUtil.Instance.CallMethod(trigger.Args.Character.Role, obj,
 						ref accessName, args, out result))
 					{
+						if (replySuccess)
+						{
+							trigger.Reply("Success! {0}", result != null ? ("- Return value: " + result) : "");
+						}
 						return result;
 					}
 				}
 				catch (Exception ex)
 				{
 					trigger.Reply("Exception thrown: " + ex);
-					return null;
 				}
+				//return null;
 			}
 			trigger.Reply("Invalid method, parameter count or parameters.");
 			return null;
@@ -611,7 +623,7 @@ namespace WCell.RealmServer.Commands
 			caster.ChannelObject = target;
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{
@@ -841,4 +853,3 @@ namespace WCell.RealmServer.Commands
 	}
 	#endregion
 }
-

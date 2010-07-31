@@ -106,4 +106,3 @@ namespace ICSharpCode.SharpZipLib.Tar {
 ** REDISTRIBUTION OF THIS SOFTWARE. 
 ** 
 */
-

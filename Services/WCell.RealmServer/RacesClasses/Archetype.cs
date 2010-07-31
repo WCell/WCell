@@ -76,12 +76,6 @@ namespace WCell.RealmServer.RacesClasses
 		[NotPersistent]
 		public readonly List<ItemStack> FemaleItems = new List<ItemStack>();
 
-		// <summary>
-		// All initial skills of this Archetype
-		// </summary>
-		//[NotPersistent]
-		//public readonly List<PlayerSkillEntry> Skills = new List<PlayerSkillEntry>();
-
 		[NotPersistent]
 		public byte[] ActionButtons = CreateActionButtons();
 
@@ -118,7 +112,7 @@ namespace WCell.RealmServer.RacesClasses
 			}
 			else
 			{
-				if (StartLocation.ZoneInfo == null)
+				if (StartLocation.ZoneTemplate == null)
 				{
 					LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this +
 												 "\" - StartZone \"" + StartZoneId + "\" does not exist in StartMap \"" +

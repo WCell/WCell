@@ -3,6 +3,8 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
 using WCell.Core;
@@ -21,13 +23,21 @@ namespace WCell.RealmServer.Tests.Entities
 	[TestClass]
 	public class NPCTest
 	{
-		public NPCTest()
+		static NPC CreateDummy(int i)
 		{
-			//
-			// TODO: Add constructor logic here
-			//
+			var npc = Setup.NPCPool.CreateDummy();
+			npc.EnsureInWorldAndLiving();
+			npc.IsEvading = false;
+			npc.Name = i.ToString();
+
+			Assert.IsTrue(npc.CanGenerateThreat);
+			return npc;
 		}
 
+		public NPCTest()
+		{
+			
+		}
 		private TestContext testContextInstance;
 
 		/// <summary>
@@ -71,7 +81,7 @@ namespace WCell.RealmServer.Tests.Entities
 		[ClassInitialize()]
 		public static void Initialize(TestContext testContext)
 		{
-			Setup.EnsureNPCsLoaded();
+			//Setup.EnsureNPCsLoaded();
 
 			// register the test packet handlers
 			//RealmPacketManager.Instance.Register(typeof(CharacterTest));
@@ -80,8 +90,21 @@ namespace WCell.RealmServer.Tests.Entities
 		}
 
 		[TestMethod]
-		public void TestCreation()
+		public void TestDisarm()
 		{
+			var mob = CreateDummy(1);
+
+			mob.Entry.MinDamage = mob.Entry.MaxDamage = 100;
+			mob.MainWeapon = mob.Entry.CreateMainHandWeapon();
+
+			Assert.AreEqual(mob.MinDamage, 100);
+
+			mob.SetDisarmed(InventorySlotType.WeaponMainHand);
+			Assert.AreEqual(mob.MainWeapon, GenericWeapon.Fists);
+
+			mob.UnsetDisarmed(InventorySlotType.WeaponMainHand);
+
+			Assert.AreEqual(mob.MinDamage, 100);
 		}
 	}
 }

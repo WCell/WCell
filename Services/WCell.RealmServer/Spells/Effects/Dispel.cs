@@ -31,20 +31,18 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			DispelType dispelType = (DispelType)Effect.MiscValue;
-			if (dispelType == DispelType.None) {
+			var dispelType = (DispelType)Effect.MiscValue;
+			if (dispelType == DispelType.None)
+			{
 				throw new Exception("Invalid DispelType None in Spell: " + Effect.Spell);
 			}
 
-		    ((Unit) target).Auras.RemoveWhere(aura => aura.Spell.DispelType == dispelType);
+			((Unit)target).Auras.RemoveWhere(aura => aura.Spell.DispelType == dispelType, CalcEffectValue());
 		}
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

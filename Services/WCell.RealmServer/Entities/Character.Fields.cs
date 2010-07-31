@@ -3,7 +3,7 @@
  *   file		: Owner.Fields.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lÃ¸, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lø, 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -19,7 +19,9 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
+using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
@@ -55,6 +57,7 @@ using WCell.Core;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
+using WCell.RealmServer.Achievement;
 
 namespace WCell.RealmServer.Entities
 {
@@ -105,6 +108,8 @@ namespace WCell.RealmServer.Entities
 		/// All talents of this Character
 		/// </summary>
 		protected TalentCollection m_talents;
+
+	    protected AchievementCollection m_achievements;
 
 		protected PlayerInventory m_inventory;
 
@@ -667,11 +672,16 @@ namespace WCell.RealmServer.Entities
 			get { return FactionMgr.Get(Race); }
 		}
 
+        public int ReputationGainModifierPercent { get; set; }
+
+        public int KillExperienceGainModifierPercent { get; set; }
+
+        public int QuestExperienceGainModifierPercent { get; set; }
+
 		#region CombatRatings
 
 		/// <summary>
 		/// Gets the total modifier of the corresponding CombatRating (in %) 
-		/// ~MOK: Doubt it's in % (I'm guessing it's the value)
 		/// </summary>
 		public int GetCombatRatingMod(CombatRating rating)
 		{
@@ -728,9 +738,16 @@ namespace WCell.RealmServer.Entities
 					UnitUpdates.UpdateSpellCritChance(this);
 					break;
 				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDodgeChance(this);
-					UnitUpdates.UpdateParryChance(this);
-					//UnitUpdates.UpdateDefense
+					UnitUpdates.UpdateDefense(this);
+					break;
+				case CombatRating.MeleeHitChance:
+					UnitUpdates.UpdateMeleeHitChance(this);
+					break;
+				case CombatRating.RangedHitChance:
+					UnitUpdates.UpdateRangedHitChance(this);
+					break;
+				case CombatRating.Expertise:
+					UnitUpdates.UpdateExpertise(this);
 					break;
 			}
 		}
@@ -739,14 +756,9 @@ namespace WCell.RealmServer.Entities
 
 		#region Tracking of Resources & Creatures
 
-		/// <summary>
-		/// The Aura that activated a Resource- or CreatureTracker (or null if the player is not tracking anything)
-		/// </summary>
-		public Aura CurrentTracker { get; internal set; }
-
-		public CreatureTrackingMask CreatureTracking
+		public CreatureMask CreatureTracking
 		{
-			get { return (CreatureTrackingMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
+			get { return (CreatureMask)GetUInt32(PlayerFields.TRACK_CREATURES); }
 			internal set { SetUInt32(PlayerFields.TRACK_CREATURES, (uint)value); }
 		}
 
@@ -814,6 +826,20 @@ namespace WCell.RealmServer.Entities
 			internal set { SetFloat(PlayerFields.OFFHAND_CRIT_PERCENTAGE, value); }
 		}
 
+		/// <summary>
+		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
+		/// </summary>
+		public int GetTotalDamageDoneMod(DamageSchool school, int dmg, Spell spell = null)
+		{
+			dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school), dmg);
+			if (spell != null)
+			{
+				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
+			}
+			dmg += GetDamageDoneMod(school);
+			return dmg;
+		}
+
 		public int GetDamageDoneMod(DamageSchool school)
 		{
 			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
@@ -845,12 +871,22 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Modifies the chance to hit
+		/// Character's hit chance in %
 		/// </summary>
-		public int HitChanceMod
+		public float HitChance
 		{
 			get;
 			set;
+		}
+
+		public float RangedHitChance
+		{
+			get; set;
+		}
+
+		public override uint Defense
+		{
+			get; internal set;
 		}
 		#endregion
 
@@ -1085,7 +1121,7 @@ namespace WCell.RealmServer.Entities
 			this.UpdateAllDamages();
 		}
 
-		private void ModDamageBonusPct(DamageSchool school, int delta)
+		private void ModDamageModPct(DamageSchool school, int delta)
 		{
 			if (delta == 0)
 			{
@@ -1098,11 +1134,11 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds/Removes a percent modifier to all of the given damage schools
 		/// </summary>
-		public void ModDamageBonusPct(uint[] schools, int delta)
+		public void ModDamageModPct(uint[] schools, int delta)
 		{
 			foreach (var school in schools)
 			{
-				ModDamageBonusPct((DamageSchool)school, delta);
+				ModDamageModPct((DamageSchool)school, delta);
 			}
 			this.UpdateAllDamages();
 		}
@@ -1142,7 +1178,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType (0-100)
 		/// </summary>
-		public override float GetSpellCritChance(DamageSchool school)
+		public override float GetCritChance(DamageSchool school)
 		{
 			return GetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school);
 		}
@@ -1150,7 +1186,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sets the SpellCritChance for the given DamageType
 		/// </summary>
-		internal void SetSpellCritChance(DamageSchool school, float val)
+		internal void SetCritChance(DamageSchool school, float val)
 		{
 			SetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school, val);
 		}
@@ -1379,7 +1415,7 @@ namespace WCell.RealmServer.Entities
 			return zone != null && IsZoneExplored(zone);
 		}
 
-		public bool IsZoneExplored(ZoneInfo zone)
+		public bool IsZoneExplored(ZoneTemplate zone)
 		{
 			return IsZoneExplored(zone.ExplorationBit);
 		}
@@ -1404,7 +1440,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void SetZoneExplored(ZoneInfo zone, bool gainXp)
+		public void SetZoneExplored(ZoneTemplate zone, bool gainXp)
 		{
 			var index = zone.ExplorationBit >> 5;
 			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize * 4)
@@ -1620,7 +1656,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public ClientLocale Locale
+		public override ClientLocale Locale
 		{
 			get { return m_client.Info.Locale; }
 			set { m_client.Info.Locale = value; }
@@ -1926,6 +1962,14 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_talents; }
 		}
+
+        /// <summary>
+        /// Collection of all this Character's Achievements
+        /// </summary>
+	    public AchievementCollection Achievements
+	    {
+            get { return m_achievements; }
+	    }
 
 		/// <summary>
 		/// Unused talent-points for this Character

@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Debugging
 		/// <summary>
 		/// Where to load Packet definitions from
 		/// </summary>
-		static DirectoryInfo DefinitionDir;
+		public static DirectoryInfo DefinitionDir;
 
 		static IndentTextWriter m_defaultWriter;
 		static Dictionary<string, IndentTextWriter> m_packetWriters;
@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Debugging
 		{
 			if (!m_initialized)
 			{
-				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Packets"));
+				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServerConfiguration.ContentDir, "Packets"));
 
 				var paAsm = typeof(PacketParser).Assembly;
 				if (mgr == null)
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Debugging
 		{
 			if (DefinitionDir == null)
 			{
-				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Packets"));
+				DefinitionDir = new DirectoryInfo(Path.Combine(RealmServerConfiguration.ContentDir, "Packets"));
 			}
 			PacketAnalyzer.LoadDefinitions(DefinitionDir);
 		}

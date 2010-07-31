@@ -1,4 +1,4 @@
-﻿using WCell.Tools.Maps.Parsing.WDT;
+using WCell.Tools.Maps.Parsing.WDT;
 using WCell.Util.Commands;
 
 namespace WCell.Tools.Commands

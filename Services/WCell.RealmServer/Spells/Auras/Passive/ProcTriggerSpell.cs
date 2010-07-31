@@ -25,16 +25,17 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			if (m_spellEffect.TriggerSpell == null)
 			{
-				log.Warn("Tried to trigger invalid Spell \"{0}\" from Aura {1}", 
+				log.Warn("Tried to trigger invalid Spell \"{0}\" from Aura {1}",
 					SpellEffect.TriggerSpellId, m_spellEffect.Spell);
 			}
 			else
 			{
-				Owner.SpellCast.ValidateAndTrigger(m_spellEffect.TriggerSpell, target);
+				SpellCast.ValidateAndTriggerNew(m_spellEffect.TriggerSpell, m_aura.CasterReference, Owner, triggerer, 
+					m_aura.Controller as SpellChannel, m_aura.UsedItem, action);
 			}
 		}
 	}

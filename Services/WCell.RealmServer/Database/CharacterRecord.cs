@@ -395,26 +395,14 @@ namespace WCell.RealmServer.Database
 
 		public int WatchedFaction
 		{
-			get
-			{
-				return _watchedFaction;
-			}
-			set
-			{
-				_watchedFaction = value;
-			}
+			get { return _watchedFaction; }
+			set { _watchedFaction = value; }
 		}
 
 		public uint DisplayId
 		{
-			get
-			{
-				return (uint)_displayId;
-			}
-			set
-			{
-				_displayId = (int)value;
-			}
+			get { return (uint)_displayId; }
+			set { _displayId = (int)value; }
 		}
 
 		[Property(NotNull = true)]
@@ -1256,17 +1244,6 @@ namespace WCell.RealmServer.Database
 			LevelPlayTime = 0;
 			TutorialFlags = new byte[32];
 			WatchedFaction = -1;
-
-			var setting = archetype.Class.GetLevelSetting(Level);
-			BaseHealth = setting.Health;
-			BasePower = archetype.Class.GetPowerForLevel(Level);
-
-			var stats = archetype.GetLevelStats((uint)Level);
-			BaseStrength = stats.Strength;
-			BaseStamina = stats.Stamina;
-			BaseSpirit = stats.Spirit;
-			BaseIntellect = stats.Intellect;
-			BaseAgility = stats.Agility;
 
 			DisplayId = archetype.Race.GetDisplayId(Gender);
 			ActionButtons = (byte[])archetype.ActionButtons.Clone();

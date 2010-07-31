@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Spells;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.Constants;
 using WCell.Constants.Misc;
@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
     {
         int value = 0;
 
-        protected internal override void Apply()
+        protected override void Apply()
         {
             var owner = m_aura.Auras.Owner as Character;
             if (owner != null)
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
             }
         }
 
-        protected internal override void Remove(bool cancelled)
+        protected override void Remove(bool cancelled)
         {
             var owner = m_aura.Auras.Owner as Character;
             if (owner != null)

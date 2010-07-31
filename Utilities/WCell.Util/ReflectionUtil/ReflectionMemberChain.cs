@@ -1,4 +1,4 @@
-﻿namespace WCell.Util.ReflectionUtil
+namespace WCell.Util.ReflectionUtil
 {
 	public class ReflectionMemberChain
 	{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -51,10 +51,10 @@ namespace WCell.RealmServer.Entities
 		{
 			if (!PetMgr.InfinitePetRenames && !chr.GodMode)
 			{
-                if (!PetState.HasFlag(PetState.CanBeRenamed))
-                {
-                    return PetNameInvalidReason.Invalid;
-                }
+				if (!PetState.HasFlag(PetState.CanBeRenamed))
+				{
+					return PetNameInvalidReason.Invalid;
+				}
 			}
 
 			var response = PetMgr.IsPetNameValid(ref name);
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanEat(PetFoodType petFoodType)
 		{
-            return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
+			return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
 		}
 
 		public int GetHappinessGain(ItemTemplate food)
@@ -122,12 +122,24 @@ namespace WCell.RealmServer.Entities
 			set;
 		}
 
+		public bool HasTalents
+		{
+			get { return m_petTalents != null; }
+		}
+
 		/// <summary>
 		/// Collection of all this Pet's Talents
 		/// </summary>
 		public TalentCollection Talents
 		{
-			get { return m_petTalents; }
+			get
+			{
+				if (m_petTalents == null)
+				{
+					m_petTalents = new TalentCollection(this);
+				}
+				return m_petTalents;
+			}
 		}
 
 		public int FreeTalentPoints
@@ -262,7 +274,7 @@ namespace WCell.RealmServer.Entities
 		internal void TryPetLevelUp()
 		{
 			// reset casterinfo
-			m_casterInfo = null;
+			m_CasterReference = null;
 
 			var nextLevelXp = PetNextLevelExp;
 			var level = Level;
@@ -432,7 +444,7 @@ namespace WCell.RealmServer.Entities
 				var spell = SpellHandler.Get(CreationSpellId);
 				if (spell != null && spell.TotemEffect != null)
 				{
-					var handler = spell.TotemEffect.SummonHandler as SpellSummonTotemHandler;
+					var handler = spell.TotemEffect.SummonEntry.Handler as SpellSummonTotemHandler;
 					if (handler != null)
 					{
 						return handler.Index;

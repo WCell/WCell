@@ -145,7 +145,7 @@ namespace WCell.RealmServer.Chat
 		/// Creates a zone channel, which is a constant, non-moderated channel specific to one or more Zones.
 		/// TODO: Fix: Channels exist per Zone instance
 		/// </summary>
-		internal ChatChannel CreateGeneralChannel(ZoneInfo zone)
+		internal ChatChannel CreateGeneralChannel(ZoneTemplate zone)
 		{
 			var name = string.Format("General - {0}", zone.Name);
 
@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Chat
 		/// <summary>
 		/// Creates a zone channel, which is a constant, non-moderated channel specific to one or more Zones.
 		/// </summary>
-		internal ChatChannel CreateLocalDefenseChannel(ZoneInfo zone)
+		internal ChatChannel CreateLocalDefenseChannel(ZoneTemplate zone)
 		{
 			var name = string.Format("LocalDefense - {0}", zone.Name);
 

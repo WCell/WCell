@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
-        public uint LockId
+        public int LockId
         {
             get { return Fields[0]; }
         }
@@ -18,7 +18,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The radius within which the damage is applied (?)
         /// </summary>
-        public uint Radius
+        public int Radius
         {
             get { return Fields[1]; }
         }
@@ -26,7 +26,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The minimum damage done.
         /// </summary>
-        public uint MinDamage
+        public int MinDamage
         {
             get { return Fields[2]; }
         }
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The maximum damage done.
         /// </summary>
-        public uint MaxDamage
+        public int MaxDamage
         {
             get { return Fields[3]; }
         }
@@ -50,7 +50,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The duration of the damaging effect (?)
         /// </summary>
-        public uint AutoClose
+        public int AutoClose
         {
             get { return Fields[5]; }
         }
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of a text object to be displayed when the AreaDamage starts. (?)
         /// </summary>
-        public uint OpenTextId
+        public int OpenTextId
         {
             get { return Fields[6]; }
         }
@@ -66,14 +66,14 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of a text object to be displayed when the AreaDamage ends. (?)
         /// </summary>
-        public uint CloseTextId
+        public int CloseTextId
         {
             get { return Fields[7]; }
         }
 
 		protected internal override void InitEntry()
 		{
-			Lock = LockEntry.Entries.Get(LockId);
+			Lock = LockEntry.Entries.Get((uint)LockId);
 		}
     }
 }

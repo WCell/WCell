@@ -24,14 +24,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PowerBurnHandler : AuraEffectHandler
 	{
 
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			var holder = m_aura.Auras.Owner;
+			var holder = Owner;
 			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
-				m_aura.CasterInfo.CasterUnit != null)
+				m_aura.Caster != null)
 			{
-				m_aura.Auras.Owner.BurnPower(m_aura.CasterInfo.CasterUnit, m_spellEffect,
-					holder.GetLeastResistant(m_spellEffect.Spell), EffectValue, m_spellEffect.ProcValue);
+				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.Caster, m_spellEffect);
 			}
 		}
 

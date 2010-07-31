@@ -2,7 +2,7 @@ using System;
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.Updates
@@ -4140,7 +4140,7 @@ namespace WCell.Constants.Updates
 					Name = "MOD_DAMAGE_DONE_PCT",
 					Offset = 1185,
 					Size = 7,
-					Type = UpdateFieldType.Float
+					Type = UpdateFieldType.UInt32
 				},
 				null,
 				null,
@@ -4787,4 +4787,3 @@ namespace WCell.Constants.Updates
 	}
 
 }
-

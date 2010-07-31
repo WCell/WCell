@@ -24,6 +24,7 @@ using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Database;
@@ -304,7 +305,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteZoneEnum()
 		{
-			WriteEnum("ZoneId", " : uint", "World", World.ZoneInfos,
+			WriteEnum("ZoneId", " : uint", "World", World.ZoneTemplates,
 					  (item) => { return true; },
 					  (item) => { return item.Name.Trim().Length > 0 ? item.Name : "Unnamed"; },
 					  (item) => { return ((uint)item.Id).ToString(); });
@@ -312,7 +313,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteMapEnum()
 		{
-			WriteEnum("MapId", " : uint", "World", World.RegionInfos,
+			WriteEnum("MapId", " : uint", "World", World.RegionTemplates,
 					  (region) => { return true; },
 					  (region) => { return region.Name.Trim().Length > 0 ? region.Name : "Unnamed"; },
 					  (region) => { return ((uint)region.Id).ToString(); });
@@ -491,7 +492,7 @@ namespace WCell.Tools.Domi
 		public static void WriteRangeEnum()
 		{
 			var ranges = new MappedDBCReader<DistanceEntry, DistanceConverter>(
-				RealmServerConfiguration.GetDBCFile("SpellRange.dbc"));
+                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
 
 			WriteEnum("Range", " : uint", "Spells", ranges.Entries.Values,
 					  (entry) => { return entry.Distance == (int)entry.Distance; },

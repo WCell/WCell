@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -42,6 +42,7 @@ namespace WCell.Tools.Spells
 			WCellEnumWriter.WriteSpellLinesEnum();
 
 			using (writer = new CodeFileWriter(outputFileName, "WCell.RealmServer.Spells", "SpellLines", "static partial class", "",
+				"WCell.Constants",
 				"WCell.Constants.Spells"))
 			{
 				writer.WriteMethod("private", "static void", "SetupSpellLines", "", WriteSpellLinesMethod);
@@ -94,7 +95,7 @@ namespace WCell.Tools.Spells
 						++s;
 					}
 					writer.CloseBracket(true);
-					writer.WriteLine("AddSpellLines(lines);");
+					writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
 					writer.WriteEndRegion();
 					writer.WriteLine();
 				}
@@ -155,7 +156,7 @@ namespace WCell.Tools.Spells
 					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
 					{
 						var spell = spellEntry.Spell;
-						if (spell.Id == 20900)
+						if (spell.Id == 24866)
 						{
 							spell.ToString();
 						}

@@ -14,20 +14,53 @@
  *
  *************************************************************************/
 
+using System;
+using WCell.Constants.Items;
 using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class DisarmHandler : AuraEffectHandler
+	/// <summary>
+	/// Simply disarm melee and ranged for now
+	/// </summary>
+	public abstract class DisarmHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		public abstract InventorySlotType DisarmType { get; }
+
+		protected override void Apply()
 		{
-			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Disarmed);
+			Owner.IncMechanicCount(SpellMechanic.Disarmed);
+			Owner.SetDisarmed(DisarmType);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Disarmed);
+			Owner.DecMechanicCount(SpellMechanic.Disarmed);
+			Owner.UnsetDisarmed(DisarmType);
+		}
+	}
+
+	public class DisarmMainHandHandler : DisarmHandler
+	{
+		public override InventorySlotType DisarmType
+		{
+			get { return InventorySlotType.WeaponMainHand; }
+		}
+	}
+
+	public class DisarmOffHandHandler : DisarmHandler
+	{
+		public override InventorySlotType DisarmType
+		{
+			get { return InventorySlotType.WeaponOffHand; }
+		}
+	}
+
+	public class DisarmRangedHandler : DisarmHandler
+	{
+		public override InventorySlotType DisarmType
+		{
+			get { return InventorySlotType.WeaponRanged; }
 		}
 	}
 };

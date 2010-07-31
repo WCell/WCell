@@ -5,6 +5,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
+using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -197,7 +198,7 @@ namespace WCell.RealmServer.NPCs
 			// Read in the prices for Stable Slots from the dbc
 			var stableSlotPriceReader =
 				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
-					RealmServerConfiguration.GetDBCFile("StableSlotPrices.dbc"));
+                    RealmServerConfiguration.GetDBCFile(WCellDef.DBC_STABLESLOTPRICES));
 			stableSlotPriceReader.EntryList.CopyTo(StableSlotPrices, 0);
 		}
 		#endregion
@@ -512,7 +513,7 @@ namespace WCell.RealmServer.NPCs
 			where T : IPetRecord, new()
 		{
 			var record = new T();
-			var mode = entry.Type == NPCType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+			var mode = entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
 
 			record.OwnerId = ownerId;
 			record.AttackMode = mode;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -44,7 +44,7 @@ namespace WCell.Addons.Default.Spells.Priest
 			{
 				var effect = spell.GetEffect(AuraType.AddTargetTrigger);
 				effect.ImplicitTargetA = ImplicitTargetType.Self;
-				effect.AddToEffectMask(SpellLineId.PriestShadowMindFlay);
+				effect.AddToAffectMask(SpellLineId.PriestShadowMindFlay);
 			});
 
 			// Dispersion also regenerates Mana
@@ -77,9 +77,10 @@ namespace WCell.Addons.Default.Spells.Priest
 		}
 	}
 
+	#region AuraVampiricEmbracerHandler
 	public class AuraVampiricEmbracerHandler : AuraEffectHandler
 	{
-		public override void OnProc(Unit target, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			if (action is IDamageAction)
 			{
@@ -89,7 +90,7 @@ namespace WCell.Addons.Default.Spells.Priest
 				var healSelfAmount = ((dmgAction.Damage * EffectValue) + 50) / 100;	// don't forget rounding
 				var healPartyAmount = (healSelfAmount + 3) / 5; // don't forget rounding
 
-				owner.Heal(owner, healSelfAmount, SpellEffect);
+				owner.Heal(healSelfAmount, owner, SpellEffect);
 				if (owner is Character)
 				{
 					var chr = (Character)owner;
@@ -99,11 +100,12 @@ namespace WCell.Addons.Default.Spells.Priest
 						// heal all group members in same context (ie same Region in current implementation)
 						group.CallOnAllInSameContext(chr.ContextHandler, (member) =>
 						{
-							member.Heal(owner, healPartyAmount, SpellEffect);
+							member.Heal(healPartyAmount, owner, SpellEffect);
 						});
 					}
 				}
 			}
 		}
 	}
+	#endregion
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -146,9 +146,10 @@ namespace WCell.Addons.Default.Samples
 				var chr = (Character)chatter;
 				var selected = chr.Target as NPC;
 				if (selected != null &&
+					selected.FactionId == FactionId.Friendly &&							// Ambusher is frienddly
+					selected.FirstAttacker == chr &&									// Ambusher was tagged by Chr
 					selected.Entry.NPCId == NPCId.WitchwingAmbusher &&					// Chr selected the ambusher
 					(chatType == ChatMsgType.Say || chatType == ChatMsgType.Yell) &&	// Chr speaks out loud
-					selected.StandState == StandState.Kneeling &&						// Ambusher is kneeling
 					message == "I forgive thee!")										// Chr says the right words
 				{
 					if (!selected.IsInFrontOf(chr))

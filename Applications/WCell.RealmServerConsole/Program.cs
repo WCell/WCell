@@ -14,15 +14,10 @@
  *
  *************************************************************************/
 
-using System;
-using Cell.Core;
 using NLog;
 using System.Runtime;
 using System.Threading;
-using WCell.RealmServer.Lang;
-using WCell.Util.Lang;
-using WCell.Util.NLog;
-using System.Text.RegularExpressions;
+using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole
 {
@@ -40,8 +35,10 @@ namespace WCell.RealmServerConsole
         	{
         		GCSettings.LatencyMode = GCLatencyMode.Interactive;
         	}
+
         	Thread.CurrentThread.IsBackground = true;
 
+			ContentHandler.ForceDataPresence = true;
         	RealmServer.Program.Start();
         	RealmServerConsole.Run();
         }

@@ -24,4 +24,3 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyInformationalVersionAttribute("1.0.3.5224")]
 [assembly: AssemblyFileVersionAttribute("1.0.3.5224")]
 [assembly: AssemblyDelaySignAttribute(false)]
-

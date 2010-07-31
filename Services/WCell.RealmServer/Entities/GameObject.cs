@@ -56,11 +56,11 @@ namespace WCell.RealmServer.Entities
 		protected Faction m_faction;
 
 		protected GameObjectHandler m_handler;
-		protected Unit m_Owner;
 		protected bool m_respawns;
-		protected GOTemplate m_template;
+		protected GOSpawn m_template;
 		protected TimerEntry m_decayTimer, m_respawnTimer;
 		protected GameObject m_linkedTrap;
+		protected internal bool m_IsTrap;
 
 		/// <summary>
 		/// Use the <c>Create()</c> method to create new GameObjects
@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
-		public GOTemplate Template
+		public GOSpawn Spawn
 		{
 			get { return m_template; }
 		}
@@ -109,10 +109,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Traps get removed when their AreaAura gets removed
 		/// </summary>
-		public bool IsTrap
+		public override bool IsTrap
 		{
-			get;
-			internal set;
+			get { return m_IsTrap; }
 		}
 
 		/// <summary>
@@ -194,7 +193,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, GOTemplate templ)
+		public static GameObject Create(GOEntryId id, GOSpawn templ)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
@@ -207,7 +206,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntry entry, GOTemplate templ)
+		public static GameObject Create(GOEntry entry, GOSpawn templ)
 		{
 			var go = entry.GOCreator();
 			var handlerCreator = entry.HandlerCreator;
@@ -230,7 +229,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="templ"></param>
-		internal virtual void Init(GOEntry entry, GOTemplate templ)
+		internal virtual void Init(GOEntry entry, GOSpawn templ)
 		{
 			EntityId = EntityId.GetGameObjectId((uint)Interlocked.Increment(ref _lastGOUID), entry.GOId);
 			Type |= ObjectTypes.GameObject;
@@ -295,7 +294,7 @@ namespace WCell.RealmServer.Entities
 			// add Trap
 			if (m_entry.LinkedTrap != null)
 			{
-				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_Owner);
+				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_master);
 				//if (m_entry.LinkedTrap.DisplayId != 0)
 				//{
 				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_region, m_position, m_Owner);

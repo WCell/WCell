@@ -167,7 +167,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		#region Fields
-		internal protected RegionInfo m_regionInfo;
+		internal protected RegionTemplate m_RegionTemplate;
 		protected Dictionary<EntityId, WorldObject> m_objects;
 		protected ZoneSpacePartitionNode m_root;
 		protected ZoneTileSet m_zoneTileSet;
@@ -237,17 +237,17 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Creates a region from the given region info.
 		/// </summary>
-		/// <param name="rgnInfo">the info for this region to use</param>
-		public Region(RegionInfo rgnInfo) :
+		/// <param name="rgnTemplate">the info for this region to use</param>
+		public Region(RegionTemplate rgnTemplate) :
 			this()
 		{
-			m_regionInfo = rgnInfo;
-			m_CanFly = rgnInfo.Id == MapId.Outland || rgnInfo.Id == MapId.Northrend;
+			m_RegionTemplate = rgnTemplate;
+			m_CanFly = rgnTemplate.Id == MapId.Outland || rgnTemplate.Id == MapId.Northrend;
 		}
 
-		protected internal void InitRegion(RegionInfo info)
+		protected internal void InitRegion(RegionTemplate template)
 		{
-			m_regionInfo = info;
+			m_RegionTemplate = template;
 			InitRegion();
 		}
 
@@ -257,40 +257,35 @@ namespace WCell.RealmServer.Global
 		protected internal virtual void InitRegion()
 		{
 			// Set our region's bounds and Terrain
-			m_Terrain = TerrainMgr.GetTerrain(m_regionInfo.Id);
-			m_zoneTileSet = m_regionInfo.ZoneTileSet;
-			m_root = new ZoneSpacePartitionNode(m_regionInfo.Bounds);
+			m_Terrain = TerrainMgr.GetTerrain(m_RegionTemplate.Id);
+			m_zoneTileSet = m_RegionTemplate.ZoneTileSet;
+			m_root = new ZoneSpacePartitionNode(m_RegionTemplate.Bounds);
 			//m_root = new ZoneSpacePartitionNode(new BoundingBox(
 			//                                        new Vector3(-(TerrainConstants.MapLength / 2), -(TerrainConstants.MapLength / 2), -MAP_HEIGHT),
 			//                                        new Vector3((TerrainConstants.MapLength / 2), (TerrainConstants.MapLength / 2), MAP_HEIGHT)
 			//                                    ));
 			PartitionSpace();
 
-			var states = Constants.World.WorldStates.GetStates(m_regionInfo.Id) ?? WorldState.EmptyArray;
+			var states = Constants.World.WorldStates.GetStates(m_RegionTemplate.Id) ?? WorldState.EmptyArray;
 			WorldStates = new WorldStateCollection(this, states);
 
 			CreateZones();
 			World.AddRegion(this);
 
-			var evt = Created;
-			if (evt != null)
-			{
-				evt(this);
-			}
-			m_regionInfo.NotifyCreated(this);
+			m_RegionTemplate.NotifyCreated(this);
 		}
 
 		private void CreateZones()
 		{
-			for (var i = 0; i < m_regionInfo.ZoneInfos.Count; i++)
+			for (var i = 0; i < m_RegionTemplate.ZoneInfos.Count; i++)
 			{
-				var info = m_regionInfo.ZoneInfos[i];
-				var zone = new Zone(this, info);
+				var templ = m_RegionTemplate.ZoneInfos[i];
+				var zone = templ.Creator(this, templ);
 				if (zone.ParentZone == null)
 				{
 					MainZones.Add(zone);
 				}
-				Zones.Add(info.Id, zone);
+				Zones.Add(templ.Id, zone);
 			}
 
 			m_defaultZone = MainZones.FirstOrDefault();
@@ -312,9 +307,9 @@ namespace WCell.RealmServer.Global
 			get { return 0; }
 		}
 
-		public RegionInfo RegionInfo
+		public RegionTemplate RegionTemplate
 		{
-			get { return m_regionInfo; }
+			get { return m_RegionTemplate; }
 		}
 
 		public ITerrain Terrain
@@ -358,7 +353,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public string Name
 		{
-			get { return m_regionInfo.Name; }
+			get { return m_RegionTemplate.Name; }
 		}
 
 		/// <summary>
@@ -366,7 +361,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public MapId Id
 		{
-			get { return m_regionInfo.Id; }
+			get { return m_RegionTemplate.Id; }
 		}
 
 		/// <summary>
@@ -374,7 +369,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public ClientId RequiredClient
 		{
-			get { return m_regionInfo.RequiredClientId; }
+			get { return m_RegionTemplate.RequiredClientId; }
 		}
 
 		/// <summary>
@@ -400,7 +395,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public MapType Type
 		{
-			get { return m_regionInfo.Type; }
+			get { return m_RegionTemplate.Type; }
 		}
 
 		/// <summary>
@@ -416,7 +411,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public virtual int MinLevel
 		{
-			get { return m_regionInfo.MinLevel; }
+			get { return m_RegionTemplate.MinLevel; }
 		}
 
 		/// <summary>
@@ -424,7 +419,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public virtual int MaxLevel
 		{
-			get { return m_regionInfo.MaxLevel; }
+			get { return m_RegionTemplate.MaxLevel; }
 		}
 
 		/// <summary>
@@ -432,7 +427,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public int MaxPlayerCount
 		{
-			get { return m_regionInfo.MaxPlayerCount; }
+			get { return m_RegionTemplate.MaxPlayerCount; }
 		}
 
 		/// <summary>
@@ -671,7 +666,7 @@ namespace WCell.RealmServer.Global
 						m_running = true;
 					}
 
-					s_log.Debug(Resources.RegionStarted, m_regionInfo.Id);
+					s_log.Debug(Resources.RegionStarted, m_RegionTemplate.Id);
 
 					m_regionTime.Start();
 
@@ -683,7 +678,7 @@ namespace WCell.RealmServer.Global
 						SpawnRegionLater();
 					}
 
-					m_regionInfo.NotifyStarted(this);
+					m_RegionTemplate.NotifyStarted(this);
 				}
 			}
 		}
@@ -695,7 +690,7 @@ namespace WCell.RealmServer.Global
 		{
 			if (m_running)
 			{
-				if (!m_regionInfo.NotifyStopping(this))
+				if (!m_RegionTemplate.NotifyStopping(this))
 				{
 					return;
 				}
@@ -709,13 +704,13 @@ namespace WCell.RealmServer.Global
 					}
 					m_running = false;
 
-					s_log.Debug(Resources.RegionStopped, m_regionInfo.Id);
+					s_log.Debug(Resources.RegionStopped, m_RegionTemplate.Id);
 
 					m_regionTime.Reset();
 					m_lastRegionUpdate = 0;
 					m_lastUpdate = 0;
 
-					m_regionInfo.NotifyStopped(this);
+					m_RegionTemplate.NotifyStopped(this);
 				}
 			}
 		}
@@ -865,7 +860,7 @@ namespace WCell.RealmServer.Global
 			for (var i = 0; i < objs.Length; i++)
 			{
 				var obj = objs[i];
-				if (!(obj is Character) && (!(obj is Unit) || obj.MasterChar != null))
+				if (!(obj is Character) && (!(obj is Unit) || obj.IsOwnedByPlayer))
 				{
 					// only delete things that are not Characters or belong to Characters
 					obj.DeleteNow();
@@ -915,7 +910,7 @@ namespace WCell.RealmServer.Global
 
 			if (!IsSpawned)
 			{
-				if (!m_regionInfo.NotifySpawning(this))
+				if (!m_RegionTemplate.NotifySpawning(this))
 				{
 					return;
 				}
@@ -950,7 +945,7 @@ namespace WCell.RealmServer.Global
 
 				if (IsSpawned)
 				{
-					m_regionInfo.NotifySpawned(this);
+					m_RegionTemplate.NotifySpawned(this);
 				}
 			}
 		}
@@ -1458,15 +1453,17 @@ namespace WCell.RealmServer.Global
 
 		public Zone GetZone(float x, float y)
 		{
-			if (m_regionInfo.ZoneTileSet != null)
+			if (m_RegionTemplate.ZoneTileSet != null)
 			{
-				var zoneId = m_regionInfo.ZoneTileSet.GetZoneId(x, y);
+				var zoneId = m_RegionTemplate.ZoneTileSet.GetZoneId(x, y);
 				return GetZone(zoneId);
 			}
 			//return DefaultZone;
 			return null;
 		}
+		#endregion
 
+		#region GetObjectsInRadius
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
@@ -1565,34 +1562,6 @@ namespace WCell.RealmServer.Global
 
 			return entities;
 		}
-
-		/// <summary>
-		/// Iterates over all objects in all phases in the given radius around the given origin.
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateObjects(ref Vector3 origin, float radius, Func<WorldObject, bool> predicate)
-		{
-			return IterateObjects(ref origin, radius, predicate, uint.MaxValue);
-		}
-
-		/// <summary>
-		/// Iterates over all objects in the given radius around the given origin.
-		/// </summary>
-		/// <param name="origin"></param>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateObjects(ref Vector3 origin, float radius, Func<WorldObject, bool> predicate, uint phase)
-		{
-			EnsureContext();
-
-			var sphere = new BoundingSphere(origin, radius);
-			return m_root.Iterate(ref sphere, predicate, phase);
-		}
-
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
@@ -1681,6 +1650,40 @@ namespace WCell.RealmServer.Global
 			}
 
 			return entities;
+		}
+		#endregion
+
+		#region IterateObjects
+		/// <summary>
+		/// Iterates over all objects in the given radius around the given origin.
+		/// </summary>
+		/// <param name="origin"></param>
+		/// <param name="radius"></param>
+		/// <param name="predicate">Returns whether to continue iteration.</param>
+		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
+		public bool IterateObjects(ref Vector3 origin, float radius, uint phase, Func<WorldObject, bool> predicate)
+		{
+			EnsureContext();
+
+			var sphere = new BoundingSphere(origin, radius);
+			return m_root.Iterate(ref sphere, predicate, phase);
+		}
+
+		/// <summary>
+		/// Sends a packet to all nearby characters.
+		/// </summary>
+		/// <param name="packet">the packet to send</param>
+		/// <param name="includeSelf">whether or not to send the packet to ourselves (if we're a character)</param>
+		public void SendPacketToArea(RealmPacketOut packet, ref Vector3 center, uint phase)
+		{
+			IterateObjects(ref center, WorldObject.BroadcastRange, phase, obj =>
+			{
+				if (obj is Character)
+				{
+					((Character)obj).Send(packet.GetFinalizedPacket());
+				}
+				return true;
+			});
 		}
 		#endregion
 
@@ -1860,7 +1863,7 @@ namespace WCell.RealmServer.Global
 
 				if (obj is Character)
 				{
-					m_regionInfo.NotifyPlayerEntered(this, (Character)obj);
+					m_RegionTemplate.NotifyPlayerEntered(this, (Character)obj);
 				}
 			}
 			catch (Exception ex)
@@ -1975,7 +1978,7 @@ namespace WCell.RealmServer.Global
 				//    chr.Zone = null;
 				//}
 
-				m_regionInfo.NotifyPlayerLeft(this, (Character)obj);
+				m_RegionTemplate.NotifyPlayerLeft(this, (Character)obj);
 			}
 
 			obj.OnLeavingRegion();				// call before actually removing
@@ -2016,7 +2019,7 @@ namespace WCell.RealmServer.Global
 		{
 			return chr.Level >= MinLevel &&
 				(MaxLevel == 0 || chr.Level <= MaxLevel) &&
-				(m_regionInfo.MayEnter(chr) &&
+				(m_RegionTemplate.MayEnter(chr) &&
 				(MaxPlayerCount == 0 || PlayerCount < MaxPlayerCount));
 		}
 
@@ -2432,12 +2435,58 @@ namespace WCell.RealmServer.Global
 
 		#endregion
 
+		/// <summary>
+		/// Is called whenever a Character dies.
+		/// </summary>
+		/// <param name="action"></param>
+		protected internal virtual void OnPlayerDeath(IDamageAction action)
+		{
+			if (action.Attacker.IsPvPing)
+			{
+				if (action.Victim.YieldsXpOrHonor)
+				{
+					var attacker = ((Character)action.Attacker);
+					attacker.Proc(ProcTriggerFlags.GainExperience, action.Victim, action, true);
+					attacker.OnHonorableKill(action);
+					OnHonorableKill(action);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Is called whenevr an honorable character was killed by another character
+		/// </summary>
+		/// <param name="action"></param>
 		protected internal virtual void OnHonorableKill(IDamageAction action)
 		{
 		}
 
-		protected internal virtual void OnDeath(IDamageAction action)
+		/// <summary>
+		/// Is called whenever an NPC dies
+		/// </summary>
+		protected internal virtual void OnNPCDied(NPC npc)
 		{
+			var looter = npc.FirstAttacker;
+			if (looter is Character && npc.YieldsXpOrHonor)
+			{
+				if (XpCalculator != null)
+				{
+					// distribute XP
+					// TODO: Consider reductions if someone else killed the mob
+					var chr = (Character)looter;
+					var baseXp = XpCalculator(looter.Level, npc);
+					XpGenerator.CombatXpDistributer(chr, npc, baseXp);
+
+					if (chr.Group != null)
+					{
+						chr.Group.DistributeGroupQuestKills(chr, npc);
+					}
+					else
+					{
+						chr.QuestLog.OnNPCInteraction(npc);
+					}
+				}
+			}
 		}
 	}
 }

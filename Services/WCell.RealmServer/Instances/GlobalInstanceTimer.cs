@@ -1,4 +1,4 @@
-﻿using Castle.ActiveRecord;
+using Castle.ActiveRecord;
 using WCell.Constants.World;
 using WCell.Core.Database;
 using System;
@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Instances
 				timers[(int)timer.MapId] = timer;
 			}
 
-			var rgns = World.RegionInfos;
+			var rgns = World.RegionTemplates;
 			for (var i = 0; i < rgns.Length; i++)
 			{
 				var rgn = rgns[i];

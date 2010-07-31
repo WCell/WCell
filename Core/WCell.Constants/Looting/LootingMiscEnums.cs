@@ -1,4 +1,4 @@
-﻿namespace WCell.Constants.Looting
+namespace WCell.Constants.Looting
 {	/// <summary>
 	/// Loot method
 	/// </summary>

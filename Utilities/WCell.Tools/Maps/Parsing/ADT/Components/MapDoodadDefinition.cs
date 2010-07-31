@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using WCell.Util.Graphics;
 
 namespace WCell.Tools.Maps.Parsing.ADT.Components

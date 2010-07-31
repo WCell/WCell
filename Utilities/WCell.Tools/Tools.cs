@@ -68,8 +68,19 @@ namespace WCell.Tools
 			get { return ToolConfig.Instance.PATool; }
 		}
 
-		public static bool Init(params Assembly[] assemblies)
+		internal static bool Init(params Assembly[] assemblies)
 		{
+			return Init(ToolConfig.ToolsRoot, assemblies);
+		}
+
+		public static bool Init(string toolsRoot, params Assembly[] assemblies)
+		{
+			ToolConfig.ToolsRoot = toolsRoot;
+			RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
+			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
+
+			ToolConfig.InitCfg();
+
 			LogUtil.SetupConsoleLogging();
 
 			Console.WriteLine("Output Directory: " + new DirectoryInfo(ToolConfig.OutputDir).FullName);
@@ -78,16 +89,12 @@ namespace WCell.Tools
 				Directory.CreateDirectory(ToolConfig.OutputDir);
 			}
 
-			RealmServ.EntryLocation = ToolConfig.WCellRealmServerConsoleExe;
-			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
-
-
 			RealmServerConfiguration.Instance.AutoSave = false;
 			RealmServerConfiguration.ContentDirName = Path.GetFullPath(ToolConfig.ContentDir);
 			RealmServerConfiguration.Initialize();
 			RealmAddonMgr.AddonDir = ToolConfig.AddonDir;
 
-			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServ.Instance.Configuration.ContentDir).FullName);
+			Console.WriteLine("Content Directory: " + new DirectoryInfo(RealmServerConfiguration.ContentDir).FullName);
 
 			if (!InitMgr.Initialize(typeof(Tools).Assembly) ||
 				!InitMgr.Initialize(typeof(PacketAnalyzer).Assembly))

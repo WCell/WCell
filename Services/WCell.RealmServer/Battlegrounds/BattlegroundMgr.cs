@@ -39,6 +39,8 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public static MappedDBCReader<BattlemasterList, BattlemasterConverter> BattlemasterListReader;
 
+        public static MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter> PVPDifficultyReader;
+
 		/// <summary>
 		/// Indexed by BattlegroundId
 		/// </summary>
@@ -135,7 +137,9 @@ namespace WCell.RealmServer.Battlegrounds
 		[Initialization(InitializationPass.Eighth, "Initialize Battlegrounds")]
 		public static void InitializeBGs()
 		{
-			BattlemasterListReader = new MappedDBCReader<BattlemasterList, BattlemasterConverter>(RealmServerConfiguration.GetDBCFile("BattlemasterList.dbc"));
+            BattlemasterListReader = new MappedDBCReader<BattlemasterList, BattlemasterConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BATTLEMASTERLIST));
+
+            PVPDifficultyReader = new MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_PVPDIFFICULTY));
 
 			ContentHandler.Load<BattlegroundTemplate>();
 
@@ -162,7 +166,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			var reader =
 				new MappedDBCReader<WorldSafeLocation, DBCWorldSafeLocationConverter>(
-					RealmServerConfiguration.GetDBCFile("WorldSafeLocs.dbc"));
+                    RealmServerConfiguration.GetDBCFile(WCellDef.DBC_WORLDSAFELOCATION));
 			WorldSafeLocs = reader.Entries;
 		}
 
@@ -268,7 +272,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// the given Character.
 		/// </summary>
 		/// <param name="bgid"></param>
-		/// <param name="level">The level determines the level range of the queue.</param>
+		/// <param name="level">The level determines the bracket id of the queue.</param>
 		/// <returns></returns>
 		public static BattlegroundQueue GetInstanceQueue(BattlegroundId bgid, uint instanceId, int level)
 		{
@@ -343,7 +347,6 @@ namespace WCell.RealmServer.Battlegrounds
 				BattlegroundHandler.SendBattlegroundError(chr, BattlegroundJoinError.Max3Battles);
 				return;
 			}
-
 			// cannot enqueue twice for the same bg
 			if (chr.Battlegrounds.IsEnqueuedFor(bgId))
 				return;

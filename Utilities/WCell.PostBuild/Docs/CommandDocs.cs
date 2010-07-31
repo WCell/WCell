@@ -57,7 +57,7 @@ namespace WCell.PostBuild.Docs
 			var command = cmd as RealmServerCommand;
 			if (command != null)
 			{
-				writer.WriteLine(indent + "Needs Char: {0}", command.NeedsCharacter);
+				writer.WriteLine(indent + "Needs Char: {0}", command.RequiresCharacter);
 				writer.WriteLine(indent + "Required Targets: {0}", command.TargetTypes);
 			}
 			writer.WriteLine();

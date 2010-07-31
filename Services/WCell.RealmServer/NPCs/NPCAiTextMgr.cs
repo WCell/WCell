@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,8 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs
 {
-    [GlobalMgr]
     public static class NPCAiTextMgr
     {
-        private static Logger log = LogManager.GetCurrentClassLogger();
-        
         #region Global Containers & Get Methods
         [NotVariable]
         /// <summary>
@@ -81,7 +78,7 @@ namespace WCell.RealmServer.NPCs
         {
             if (_entriesLoaded)
             {
-                RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCAiTextMgr));
+                //RealmServer.InitMgr.SignalGlobalMgrReady(typeof(NPCAiTextMgr));
             }
         }
 

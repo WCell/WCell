@@ -1,4 +1,4 @@
-﻿using WCell.Core.TerrainAnalysis;
+using WCell.Core.TerrainAnalysis;
 using WCell.Constants.World;
 
 namespace WCell.RealmServer.Global
@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Global
 			    Provider = new DefaultTerrainProvider();
 			}
 
-			foreach (var rgn in World.RegionInfos)
+			foreach (var rgn in World.RegionTemplates)
 			{
 				if (rgn != null)
 				{

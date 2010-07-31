@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.DBC;
 using WCell.RealmServer.Content;
@@ -26,13 +27,12 @@ using WCell.RealmServer.Items;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Misc;
+using WCell.Core;
 
 namespace WCell.RealmServer.Spells
 {
 	/// <summary>
 	/// Represents a Spell (which -in fact- is any kind of effect or action) in WoW.
-	/// 
-	/// TODO: Spell-Crafting through XML overrides
 	/// </summary>
 	public partial class Spell
 	{
@@ -51,13 +51,13 @@ namespace WCell.RealmServer.Spells
 
 		internal static void InitDbcs()
 		{
-			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile("SpellDuration.dbc"));
-			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile("SpellRadius.dbc"));
-			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile("SpellCastTimes.dbc"));
-			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile("SpellRange.dbc"));
-			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile("SpellMechanic.dbc"));
-			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile("SpellMechanic.dbc"));
-		    mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile("SpellRuneCost.dbc"));
+			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLDURATION));
+			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRADIUS));
+			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLCASTTIMES));
+			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
+            //DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
+			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
+		    mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRUNECOST));
 		}
 
 		#region SpellDuration.dbc
@@ -123,9 +123,12 @@ namespace WCell.RealmServer.Spells
 
 				id = GetInt32(rawData, 0);
 				range.MinDist = (uint)GetFloat(rawData, 1);
-				// another min ?
+                // min range friendly
 				range.MaxDist = (uint)GetFloat(rawData, 3);
-				// another max?
+				// max range friendly
+                // flags (uint32)
+                // char* ???
+                // char* ???
 
 				return range;
 			}
@@ -166,15 +169,6 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
         #region SpellRuneCost.dbc
-        public class RuneCostEntry
-        {
-            public uint Id;                                                                              
-            public uint BloodCost;
-            public uint FrostCost;
-            public uint UnholyCost;
-            public uint PowerGain;                                  
-        }
-
         public class DBCSpellRuneCostConverter : AdvancedDBCRecordConverter<RuneCostEntry>
         {
             public override RuneCostEntry ConvertTo(byte[] rawData, ref int id)
@@ -217,13 +211,13 @@ namespace WCell.RealmServer.Spells
                     spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
                     spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
                     spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-                    spell.ShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);             // 11
+                    spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
                     spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
-                    spell.ExcludeShapeshiftMask = (ShapeShiftMask)GetUInt32(rawData, currentIndex++);      // 13
+                    spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
                     spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
                     spell.TargetFlags = (SpellTargetFlags)GetUInt32(rawData, currentIndex++);              // 15
                     spell.Unk_322_3 = GetUInt32(rawData, currentIndex++);                                  // 16
-                    spell.TargetCreatureTypes = (TargetCreatureMask)GetUInt32(rawData, currentIndex++);    // 17
+                    spell.CreatureMask = (CreatureMask)GetUInt32(rawData, currentIndex++);    // 17
 					spell.RequiredSpellFocus = (SpellFocus)GetUInt32(rawData, currentIndex++);              // 18
 					spell.FacingFlags = (SpellFacingFlags)GetUInt32(rawData, currentIndex++);               // 19
 					spell.RequiredCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 20
@@ -325,11 +319,17 @@ namespace WCell.RealmServer.Spells
 
 					var effects = new List<SpellEffect>(3);     // 71 - 127
 					int effectStart = currentIndex;
+
 					for (int i = 0; i < 3; i++)
 					{
-						SpellEffect effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
-						if (effect != null && effect.EffectType != SpellEffectType.None)
+						var effect = ReadEffect(spell, rawData, effectStart, i, out currentIndex);
+						if (effect != null && 
+							(effect.EffectType != SpellEffectType.None || 
+								effect.BasePoints > 0 ||
+								effect.AuraType != 0 ||
+								effect.TriggerSpellId != 0))
 						{
+
 							effects.Add(effect);
 						}
 					}
@@ -379,7 +379,11 @@ namespace WCell.RealmServer.Spells
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);                     // 147
 					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);    // 148
 
-                    spell.RuneCostId = GetUInt32(rawData, currentIndex++);          // 149
+					var runeCostId = GetInt32(rawData, currentIndex++);
+					if (runeCostId != 0)
+					{
+						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);// 149
+					}
 					spell.MissileId = GetUInt32(rawData, currentIndex++);           // 150
 
                     // New 3.1.0. Id from PowerDisplay.dbc
@@ -508,18 +512,6 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#endregion
-
-		public SpellEffect GetAuraEffect(AuraType aura)
-		{
-			foreach (SpellEffect effect in Effects)
-			{
-				if (effect.AuraType == aura)
-				{
-					return effect;
-				}
-			}
-			return null;
-		}
 
 		#region Verbose / Debug
 		public void PrintEffects(TextWriter writer)

@@ -1,4 +1,4 @@
-﻿using WCell.Core.Paths;
+using WCell.Core.Paths;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
 using WCell.Constants.NPCs;

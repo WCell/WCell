@@ -352,7 +352,7 @@ namespace WCell.RealmServer.Handlers
 						packet.Zero(CharEnumItemCount * CharEnumItemBytes);
 						packet.Position = itemOffset;
 
-						if (record.New)
+						if (record.JustCreated)
 						{
 							var archetype = ArchetypeMgr.GetArchetype(record.Race, record.Class);
 							if (archetype != null)
@@ -729,7 +729,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (healer != null && healer.IsSpiritHealer && chr.IsCorpseReclaimable && healer.CanInteractWith(chr))
 			{
-				chr.ResurrectSH();
+				chr.ResurrectWithConsequences();
 			}
 		}
 
@@ -1137,8 +1137,8 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOGOUT_RESPONSE, 5))
 			{
-				packet.WriteByte((byte)error);
-				packet.WriteUInt(0);
+                packet.WriteUInt(1);
+                packet.WriteByte((byte)error);
 
 				client.Send(packet);
 			}

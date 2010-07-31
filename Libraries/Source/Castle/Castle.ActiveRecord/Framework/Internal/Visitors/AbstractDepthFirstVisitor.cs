@@ -240,7 +240,7 @@ namespace Castle.ActiveRecord.Framework.Internal
 		}
 
 		/// <summary>
-		/// Visits the Dependent Object à
+		/// Visits the Dependent Object ï¿½
 		/// </summary>
 		/// <param name="model">The model</param>
 		public virtual void VisitDependentObject(DependentObjectModel model)

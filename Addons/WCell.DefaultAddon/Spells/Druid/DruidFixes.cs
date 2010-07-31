@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 
 namespace WCell.Addons.Default.Spells.Druid
@@ -11,7 +12,6 @@ namespace WCell.Addons.Default.Spells.Druid
 		[Initialization(InitializationPass.Second)]
 		public static void FixSpells()
 		{
-
 		}
 	}
 }

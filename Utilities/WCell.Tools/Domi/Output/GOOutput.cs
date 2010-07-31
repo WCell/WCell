@@ -168,7 +168,7 @@ namespace WCell.Tools.Domi.Output
 					field.Name != "Id" && field.Name != "GOId")
 				{
 					var val = field.GetValue(entry);
-					if (val == null)
+					if (val == null || val is Delegate)
 					{
 						continue;
 					}
@@ -231,7 +231,7 @@ namespace WCell.Tools.Domi.Output
 			return false;
 		}
 
-		public static void Write(this GOTemplate templ, TextWriter writer, string indent)
+		public static void Write(this GOSpawn templ, TextWriter writer, string indent)
 		{
 			writer.WriteLine("{0}\tMap: {1}", indent, templ.MapId);
 			writer.WriteLine("{0}\tState: {1}", indent, templ.State);

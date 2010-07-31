@@ -3,7 +3,7 @@
  *   file		: Quest.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (út, 08 IV 2008) $
+ *   last changed	: $LastChangedDate: 2008-04-08 11:02:58 +0200 (ï¿½t, 08 IV 2008) $
  *   last author	: $LastChangedBy: domiii $
  *   revision		: $Rev: 244 $
  *
@@ -358,6 +358,8 @@ namespace WCell.RealmServer.Quests
 					{
 						// Offer the next Quest if its also offered by the same QuestGiver
 						QuestHandler.SendDetails(qHolder, nq, chr, true);
+                        if (nq.Flags.HasFlag(QuestFlags.AutoAccept))
+                            chr.QuestLog.TryAddQuest(nq, qHolder);
 					}
 				}
 				return true;

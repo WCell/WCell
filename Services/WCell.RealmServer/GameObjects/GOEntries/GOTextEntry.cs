@@ -10,7 +10,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// The Id of a PageText object that is associated with this object.
         /// </summary>
-        public uint PageId
+        public int PageId
         {
             get { return Fields[0]; }
         }
@@ -26,7 +26,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The PageTextMaterialId from PageTextMaterial.dbc
 		/// </summary>
-		public uint PageTextMaterialId;
+		public int PageTextMaterialId;
 
 		protected internal override void InitEntry()
 		{

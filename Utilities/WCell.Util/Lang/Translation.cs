@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Xml.Serialization;
 
@@ -9,7 +9,7 @@ namespace WCell.Util.Lang
 		where L : IConvertible
 		where K : IConvertible
 	{
-		public static readonly string Extension = ".xml";
+		static readonly string Extension = ".xml";
 
 		public static string GetFile(string folder, L locale)
 		{

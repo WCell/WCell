@@ -3,7 +3,7 @@
  *   file		: Summon.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sÃ¸, 17 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sø, 17 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1198 $
  *
@@ -62,11 +62,11 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var handler = SpellHandler.GetSummonHandler(SummonType);
+			var handler = SpellHandler.GetSummonEntry(SummonType);
 			Summon(handler);
 		}
 
-		protected virtual void Summon(SpellSummonHandler handler)
+		protected virtual void Summon(SpellSummonEntry summonEntry)
 		{
 			var caster = m_cast.CasterUnit;
 
@@ -80,9 +80,25 @@ namespace WCell.RealmServer.Spells.Effects
 				targetLoc = caster.Position;
 			}
 
-			var pet = handler.Summon(m_cast, ref targetLoc, entry);
+			int amount;
+			if (summonEntry.DetermineAmountBySpellEffect)
+			{
+				amount = CalcEffectValue();
+				if (amount < 1)
+				{
+					amount = 1;
+				}
+			}
+			else
+			{
+				amount = 1;
+			}
 
-			pet.CreationSpellId = Effect.Spell.SpellId;
+			for (var i = 0; i < amount; i++)
+			{
+				var pet = summonEntry.Handler.Summon(m_cast, ref targetLoc, entry);
+				pet.CreationSpellId = Effect.Spell.SpellId;
+			}
 		}
 
 		public override ObjectTypes CasterType

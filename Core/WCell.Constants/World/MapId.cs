@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.World
@@ -11,8 +11,8 @@ namespace WCell.Constants.World
 		EasternKingdoms = 0,
 		Kalimdor = 1,
 		Testing = 13,
+		Unkkk = 29,
 		ScottTest = 25,
-		CashTest = 29,
 		AlteracValley = 30,
 		ShadowfangKeep = 33,
 		StormwindStockade = 34,
@@ -148,4 +148,3 @@ namespace WCell.Constants.World
 	}
 
 }
-

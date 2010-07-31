@@ -184,9 +184,19 @@ namespace WCell.RealmServer.Entities
 				msg.Execute();
 			}
 
-			if (m_areaAura != null)
+			if (m_areaAuras != null)
 			{
-				m_areaAura.Update(dt);
+				var count = m_areaAuras.Count;
+				for (var i = 0; i < count; i++)
+				{
+					var aura = m_areaAuras[i];
+					aura.Update(dt);
+					if (m_areaAuras.Count != count)
+					{
+						// areaauras changed -> break and continue on next tick
+						break;
+					}
+				}
 			}
 
 			if (m_spellCast != null)
@@ -239,7 +249,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool IsInContext
 		{
-			get { return ContextHandler != null && ContextHandler.IsInContext; }
+			get { return IsInWorld && ContextHandler != null && ContextHandler.IsInContext; }
 		}
 
 		public void EnsureContext()

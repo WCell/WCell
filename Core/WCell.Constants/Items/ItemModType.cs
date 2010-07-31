@@ -1,4 +1,4 @@
-﻿namespace WCell.Constants.Items
+namespace WCell.Constants.Items
 {
 	/// <summary>
 	/// Item modifiers
@@ -67,6 +67,9 @@
 		/// </summary>
 		HitRating = 31,
 
+		/// <summary>
+		/// Used
+		/// </summary>
 		CriticalStrikeRating = 32,
 		/// <summary>
 		/// Unused

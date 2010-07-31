@@ -29,31 +29,6 @@ namespace WCell.RealmServer.Spells
 		protected bool m_sendPackets;
 
 		/// <summary>
-		/// Amount of currently added modifiers that require charges.
-		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
-		/// </summary>
-		public int ModifiersWithCharges
-		{
-			get;
-			protected internal set;
-		}
-
-		/// <summary>
-		/// Flat modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Percent modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Additional effects to be triggered when casting certain Spells
-		/// </summary>
-		public readonly List<AddTargetTriggerHandler> TargetTriggers = new List<AddTargetTriggerHandler>(1);
-
-		/// <summary>
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
@@ -88,6 +63,7 @@ namespace WCell.RealmServer.Spells
 			get { return Owner as Character; }
 		}
 
+		#region Add
 		public void AddNew(Spell spell)
 		{
 			AddSpell(spell, true);
@@ -119,9 +95,18 @@ namespace WCell.RealmServer.Spells
 		void AddSpell(Spell spell, bool isNew)
 		{
 			// make sure the char knows the skill that this spell belongs to
-			if (spell.Ability != null && !OwnerChar.Skills.Contains(spell.Ability.Skill.Id))
+			if (spell.Ability != null)
 			{
-				OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				var skill = OwnerChar.Skills[spell.Ability.Skill.Id];
+				if (skill == null)
+				{
+					// learn new skill
+					skill = OwnerChar.Skills.Add(spell.Ability.Skill, true);
+				}	// else upgrade tier
+				if (skill.CurrentTierSpell == null || skill.CurrentTierSpell.SkillTier < spell.SkillTier)
+				{
+					skill.CurrentTierSpell = spell;
+				}
 			}
 
 			if (!m_byId.ContainsKey(spell.Id))
@@ -131,7 +116,7 @@ namespace WCell.RealmServer.Spells
 					SpellHandler.SendLearnedSpell(OwnerChar.Client, spell.Id);
 					if (!spell.IsPassive)
 					{
-						SpellHandler.SendVisual(Owner, 362);
+						SpellHandler.SendVisual(Owner, 362);	// ouchy: Unnamed constants 
 					}
 				}
 				OwnerChar.m_record.AddSpell(spell.Id);
@@ -139,21 +124,9 @@ namespace WCell.RealmServer.Spells
 				base.AddSpell(spell);
 			}
 		}
+		#endregion
 
-		public override void Clear()
-		{
-			foreach (var spell in m_byId.Values.ToArray())
-			{
-				OnRemove(spell);
-				if (m_sendPackets)
-				{
-					SpellHandler.SendSpellRemoved(OwnerChar, spell.Id);
-				}
-			}
-
-			m_byId.Clear();
-		}
-
+		#region Remove/Replace/Clear
 		/// <summary>
 		/// Replaces or (if newSpell == null) removes oldSpell.
 		/// </summary>
@@ -235,15 +208,29 @@ namespace WCell.RealmServer.Spells
 			Owner = owner;
 		}
 
+		public override void Clear()
+		{
+			foreach (var spell in m_byId.Values.ToArray())
+			{
+				OnRemove(spell);
+				if (m_sendPackets)
+				{
+					SpellHandler.SendSpellRemoved(OwnerChar, spell.Id);
+				}
+			}
+
+			m_byId.Clear();
+		}
+		#endregion
+
+		#region Init
 		internal void PlayerInitialize()
 		{
 			// re-apply passive effects
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive 
-					&& !spell.HasHarmfulEffects
-					)
+				if (spell.IsPassive && !spell.HasHarmfulEffects)
 				{
 					chr.SpellCast.Start(spell, true, Owner);
 				}
@@ -274,154 +261,6 @@ namespace WCell.RealmServer.Spells
 			//        AddNew(ability.Spell);
 			//    }
 			//}
-		}
-
-		#region Enhancers
-		public void RemoveEnhancer(SpellEffect effect)
-		{
-
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
-		/// </summary>
-		public int GetModifiedInt(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
-		}
-
-		///// <summary>
-		///// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
-		///// </summary>
-		//public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
-		//{
-		//    var flatMod = GetModifierFlat(type, spell);
-		//    var percentMod = GetModifierPercent(type, spell);
-		//    return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
-		//}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
-		/// </summary>
-		public float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (value + flatMod) * (1 + (percentMod / 100f));
-		}
-
-		/// <summary>
-		/// Returns the percent modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierPercent(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersPct.Count; i++)
-			{
-				var modifier = SpellModifiersPct[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Returns the flat modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierFlat(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersFlat.Count; i++)
-			{
-				var modifier = SpellModifiersFlat[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-					spell.MatchesMask(modifier.SpellEffect.AffectMask))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Trigger all spells that might be triggered by the given Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		public void TriggerSpellsFor(SpellCast cast)
-		{
-			int val;
-			var spell = cast.Spell;
-			for (var i = 0; i < TargetTriggers.Count; i++)
-			{
-				var triggerHandler = TargetTriggers[i];
-				var effect = triggerHandler.SpellEffect;
-				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
-					spell.MatchesMask(effect.AffectMask) &&
-					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
-					spell != effect.TriggerSpell)	// prevent inf loops
-				{
-					var caster = triggerHandler.Aura.Caster;
-					if (caster != null)
-					{
-						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
-						cast.Trigger(effect.TriggerSpell);
-					}
-				}
-			}
-		}
-
-		public void OnCasted(SpellCast cast)
-		{
-			TriggerSpellsFor(cast);
-			var spell = cast.Spell;
-			if (ModifiersWithCharges > 0)
-			{
-				var toRemove = new List<Aura>(3);
-				for (var i = 0; i < SpellModifiersFlat.Count; i++)
-				{
-					var modifier = SpellModifiersFlat[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-				for (var i = 0; i < SpellModifiersPct.Count; i++)
-				{
-					var modifier = SpellModifiersPct[i];
-					if (spell.SpellClassSet == modifier.SpellEffect.Spell.SpellClassSet &&
-						spell.MatchesMask(modifier.SpellEffect.AffectMask))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-
-				foreach (var aura in toRemove)
-				{
-					aura.Remove(false);
-				}
-			}
 		}
 		#endregion
 
@@ -723,16 +562,16 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Clears the cooldown for this spell and all spells in its category
+		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
 		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)
 			{
 				// send cooldown update to client
 				SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
-				if (cooldownSpell.Category != 0)
+				if (alsoCategory && cooldownSpell.Category != 0)
 				{
 					foreach (var spell in m_byId.Values)
 					{
@@ -759,7 +598,7 @@ namespace WCell.RealmServer.Spells
 				idCooldown = null;
 			}
 
-			if (m_categoryCooldowns != null)
+			if (alsoCategory && m_categoryCooldowns != null)
 			{
 				if (m_categoryCooldowns.TryGetValue(cooldownSpell.Category, out catCooldown))
 				{

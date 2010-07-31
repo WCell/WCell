@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using WCell.MPQTool;
 using WCell.Tools.Maps.Parsing.ADT.Components;

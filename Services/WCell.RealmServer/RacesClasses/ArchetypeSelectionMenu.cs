@@ -1,4 +1,4 @@
-﻿using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Gossips;
 
 namespace WCell.RealmServer.RacesClasses
 {

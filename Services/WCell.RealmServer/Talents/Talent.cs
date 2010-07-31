@@ -15,6 +15,8 @@
  *************************************************************************/
 
 using WCell.Constants.Talents;
+using WCell.RealmServer.Spells;
+
 namespace WCell.RealmServer.Talents
 {
 	public class Talent
@@ -36,6 +38,11 @@ namespace WCell.RealmServer.Talents
 			Talents = talents;
 			Entry = entry;
 			Rank = rank;
+		}
+
+		public Spell Spell
+		{
+			get { return Entry.Spells[m_rank]; }
 		}
 
 		/// <summary>
@@ -78,15 +85,15 @@ namespace WCell.RealmServer.Talents
 				else if (value > m_rank)
 				{
 					// add Ranks
-					if (value > Entry.MaxRank-1)
+					if (value > Entry.MaxRank - 1)
 					{
-						value = Entry.MaxRank-1;
+						value = Entry.MaxRank - 1;
 					}
 					diff = value - m_rank;
 
 					if (m_rank >= 0)
 					{
-						Talents.Owner.Spells.Replace(Entry.Spells[m_rank], Entry.Spells[value]);
+						Talents.Owner.Spells.Replace(Spell, Entry.Spells[value]);
 					}
 					else
 					{
@@ -111,7 +118,7 @@ namespace WCell.RealmServer.Talents
 		internal void SetRankSilently(int rank)
 		{
 			m_rank = rank;
-			Talents.m_treePoints[Entry.Tree.TabIndex] += rank+1;
+			Talents.m_treePoints[Entry.Tree.TabIndex] += rank + 1;
 		}
 
 		/// <summary>

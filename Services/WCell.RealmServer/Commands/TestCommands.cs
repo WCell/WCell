@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Done.");
 		}
 
-		public override bool NeedsCharacter
+		public override bool RequiresCharacter
 		{
 			get
 			{

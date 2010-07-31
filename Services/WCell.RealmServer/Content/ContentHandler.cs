@@ -31,6 +31,12 @@ namespace WCell.RealmServer.Content
 		/// </summary>
 		[Variable("ContentErrorResponse")]
 		public static ErrorResponse ErrorResponse = ErrorResponse.None;
+
+		/// <summary>
+		/// Causes an error to be thrown if certain data is not present when requested
+		/// </summary>
+		[NotVariable]
+		public static bool ForceDataPresence = false;
 		//ErrorResponse.Warn;
 
 		public static bool EnableCaching = true;
@@ -183,7 +189,7 @@ namespace WCell.RealmServer.Content
 
 		public static void Initialize(Assembly asm)
 		{
-			s_implementationRoot = Path.Combine(RealmServer.Instance.Configuration.ContentDir, "Impl");
+			s_implementationRoot = Path.Combine(RealmServerConfiguration.ContentDir, "Impl");
 			s_implementationFolder = Path.Combine(s_implementationRoot, ContentProviderName);
 
 			var defs = DataHolderMgr.CreateDataHolderDefinitionArray(asm);

@@ -5,6 +5,8 @@ using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
@@ -52,7 +54,8 @@ namespace WCell.RealmServer.Entities
 		/// <param name="record">The name of the character to load</param>
 		/// <param name="client">The client to associate with this character</param>
 		internal protected void Create(RealmAccount acc, CharacterRecord record, IRealmClient client)
-		{			client.ActiveCharacter = this;
+		{
+			client.ActiveCharacter = this;
 			acc.ActiveCharacter = this;
 
 			Type |= ObjectTypes.Player;
@@ -69,7 +72,7 @@ namespace WCell.RealmServer.Entities
 
 			Archetype = ArchetypeMgr.GetArchetype(record.Race, record.Class);
 			MainWeapon = GenericWeapon.Fists;
-			PowerType = m_archetype.Class.PowerType;
+			PowerType = m_archetype.Class.DefaultPowerType;
 
 			StandState = StandState.Sit;
 
@@ -135,6 +138,10 @@ namespace WCell.RealmServer.Entities
 			// talents
 			m_talents = new TalentCollection(this);
 
+            // achievements
+
+            m_achievements = new AchievementCollection(this);
+
 			// Items
 			m_inventory = new PlayerInventory(this);
 
@@ -162,25 +169,25 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = this;
 			MoveControl.CanControl = true;
 
-			BaseHealth = m_record.BaseHealth;
-			SetBasePowerDontUpdate(m_record.BasePower);
-
-			SetBaseStat(StatType.Strength, m_record.BaseStrength);
-			SetBaseStat(StatType.Stamina, m_record.BaseStamina);
-			SetBaseStat(StatType.Spirit, m_record.BaseSpirit);
-			SetBaseStat(StatType.Intellect, m_record.BaseIntellect);
-			SetBaseStat(StatType.Agility, m_record.BaseAgility);
-
 			CanMelee = true;
 
 			// basic setup
 			if (record.JustCreated)
 			{
-				Power = PowerType == PowerType.Rage ? 0 : MaxPower;
-				SetInt32(UnitFields.HEALTH, MaxHealth);
+				ModStatsForLevel(m_record.Level);
+				BasePower = PowerFormulas.GetPowerForLevel(this);
 			}
 			else
 			{
+				BaseHealth = m_record.BaseHealth;
+				SetBasePowerDontUpdate(m_record.BasePower);
+
+				SetBaseStat(StatType.Strength, m_record.BaseStrength);
+				SetBaseStat(StatType.Stamina, m_record.BaseStamina);
+				SetBaseStat(StatType.Spirit, m_record.BaseSpirit);
+				SetBaseStat(StatType.Intellect, m_record.BaseIntellect);
+				SetBaseStat(StatType.Agility, m_record.BaseAgility);
+
 				Power = m_record.Power;
 				SetInt32(UnitFields.HEALTH, m_record.Health);
 			}
@@ -208,7 +215,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_zone != null)
 				{
-					SetZoneExplored(m_zone.Info, true);
+					SetZoneExplored(m_zone.Template, true);
 				}
 
 				//m_record.FreeTalentPoints = 0;
@@ -221,7 +228,6 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = 0u;
 				m_record.HonorPoints = 0u;
 				m_record.ArenaPoints = 0u;
-				Skills.UpdateSkillsForLevel(Level);
 			}
 			else
 			{
@@ -233,7 +239,7 @@ namespace WCell.RealmServer.Entities
 					m_reputations.Load();
 					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
-					AddPostUpdateMessage(() => m_auras.PlayerInitialize(auras));
+					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
 
 					if (QuestMgr.Loaded)
 					{
@@ -481,12 +487,6 @@ namespace WCell.RealmServer.Entities
 
 				OnLogin();
 
-				if (!m_record.JustCreated)
-				{
-					LoadDeathState();
-					LoadEquipmentState();
-				}
-
 #if DEV
 				// do this check in case that we did not load Items yet
 				if (ItemMgr.Loaded)
@@ -506,6 +506,23 @@ namespace WCell.RealmServer.Entities
 
 					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
+
+                    if(Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
+                    }
+                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    {
+                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
+                    }
+
+					// set initial weapon skill max values
+					Skills.UpdateSkillsForLevel(Level);
+				}
+				else
+				{
+					LoadDeathState();
+					LoadEquipmentState();
 				}
 
 				var ticket = TicketMgr.Instance.GetTicket(EntityId.Low);
@@ -576,7 +593,7 @@ namespace WCell.RealmServer.Entities
 					if (GodMode)
 					{
 						//Notify("Your GodMode is " + (GodMode ? "ON" : "OFF") + "!");
-						Notify("GodMode is Activated!");
+						Notify(RealmLangKey.GodModeIsActivated);
 					}
 
 					var login = LoggedIn;
@@ -658,7 +675,7 @@ namespace WCell.RealmServer.Entities
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
 			// SMSG_EQUIPMENT_SET_LIST
-			// SMSG_ALL_ACHIEVEMENT_DATA
+            AchievementHandler.SendAchievementData(this);
 			// SMSG_EXPLORATION_EXPERIENCE
 			CharacterHandler.SendTimeSpeed(this);
 			TalentHandler.SendTalentGroupList(this);
@@ -902,7 +919,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				return Role.IsStaff ||
-					(!m_isInCombat && Zone != null && Zone.Info.IsCity) ||
+					(!m_isInCombat && Zone != null && Zone.Template.IsCity) ||
 					IsOnTaxi;
 			}
 		}
@@ -1296,12 +1313,6 @@ namespace WCell.RealmServer.Entities
 
 			m_InstanceCollection = null;
 
-			if (m_spellCast != null)
-			{
-				m_spellCast.Cancel();
-				m_spellCast = null;
-			}
-
 			if (m_activePet != null)
 			{
 				m_activePet.Delete();
@@ -1336,10 +1347,10 @@ namespace WCell.RealmServer.Entities
 				m_InstanceCollection.Dispose();
 			}
 
-			if (m_casterInfo != null)
+			if (m_CasterReference != null)
 			{
-				m_casterInfo.Caster = null;
-				m_casterInfo = null;
+				m_CasterReference.Object = null;
+				m_CasterReference = null;
 			}
 
 			if (m_looterEntry != null)

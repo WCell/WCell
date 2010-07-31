@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var chr = (Character) target;
 			if (chr.SummonRequest != null)

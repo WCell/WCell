@@ -19,6 +19,7 @@ using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Skills;
 using WCell.Util.Commands;
 
@@ -31,7 +32,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			base.Init("Skill", "Skills", "Sk");
-			EnglishDescription = "Used for manipulation of Skills.";
+			Description = new TranslatableItem(RealmLangKey.CmdSkillDescription);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -50,8 +51,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Set", "S");
-				EnglishParamInfo = "<skill> [<value> [<maxValue>]]";
-				EnglishDescription = "Sets the given Skill to the given values (or uses 1 by default)";
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdSkillSetParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdSkillSetDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -66,31 +67,31 @@ namespace WCell.RealmServer.Commands
 					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
 					skill.CurrentValue = (ushort)amount;
 					skill.MaxValue = (ushort)max;
-					trigger.Reply("Skill {0} set to {1} (Max: {2}).", skillLine, amount, max);
+					trigger.Reply(RealmLangKey.CmdSkillSetResponse, skillLine, amount, max);
 				}
 				else
 				{
-					trigger.Reply("Skill {0} doesn't exist.", id);
+					trigger.Reply(RealmLangKey.CmdSkillSetError, id);
 				}
 			}
 		}
 
-		public class LeanCommand : SubCommand
+		public class LearnCommand : SubCommand
 		{
-			protected LeanCommand() { }
+			protected LearnCommand() { }
 
 			protected override void Initialize()
 			{
 				Init("Learn", "L");
-				EnglishParamInfo = "[-r] <skill> [<amount>]";
-				EnglishDescription = "Learns the given skill and all or optionally only the given maximum of abilities. Use the -r switch to also add other requirements.";
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdSkillLearnParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdSkillLearnDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
 				var id = trigger.Text.NextEnum(SkillId.None);
-				var amount = trigger.Text.NextUInt(1000);
+				var amount = trigger.Text.NextUInt(0);
 				var chr = (Character)trigger.Args.Target;
 				var inv = chr.Inventory;
 
@@ -98,9 +99,9 @@ namespace WCell.RealmServer.Commands
 				if (skillLine != null)
 				{
 					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
-					skill.CurrentValue = (ushort)skillLine.MaxValue;
+					skill.CurrentValue = amount > 0 ? (ushort)amount : (ushort)skillLine.MaxValue;
 					skill.MaxValue = (ushort)skillLine.MaxValue;
-					trigger.Reply("Skill {0} set to {1}.", skillLine, amount);
+					trigger.Reply(RealmLangKey.CmdSkillLearnResponse, skillLine, amount > 0 ? amount : skillLine.MaxValue);
 					if (mod == "r")
 					{
 						// add bags
@@ -134,7 +135,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					trigger.Reply("Skill {0} doesn't exist.", id);
+					trigger.Reply(RealmLangKey.CmdSkillLearnError, id);
 				}
 			}
 		}
@@ -147,31 +148,31 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Tier", "SetTier", "ST");
-				EnglishParamInfo = "<skill> <tier>";
-				EnglishDescription = "Set the given Skill to the given Tier";
+				ParamInfo = new TranslatableItem(RealmLangKey.CmdSkillTierParamInfo);
+				Description = new TranslatableItem(RealmLangKey.CmdSkillTierDescription);;
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				SkillId id = trigger.Text.NextEnum(SkillId.None);
+				var id = trigger.Text.NextEnum(SkillId.None);
 				if (trigger.Text.HasNext)
 				{
-					var tier = trigger.Text.NextUInt(1);
+					var tier = trigger.Text.NextEnum(SkillTierId.GrandMaster);
 
-					SkillLine skillLine = SkillHandler.Get(id);
+					var skillLine = SkillHandler.Get(id);
 					if (skillLine != null)
 					{
 						var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, tier, true);
-						trigger.Reply("Skill {0} set to {1} (Max: {2}).", skill, skill.CurrentValue, skill.MaxValue);
+						trigger.Reply(RealmLangKey.CmdSkillTierResponse, skill, skill.CurrentValue, skill.MaxValue);
 					}
 					else
 					{
-						trigger.Reply("Skill {0} doesn't exist.", id);
+						trigger.Reply(RealmLangKey.CmdSkillTierError1, id);
 					}
 				}
 				else
 				{
-					trigger.Reply("Invalid Tier-number");
+					trigger.Reply(RealmLangKey.CmdSkillTierError2);
 				}
 			}
 		}

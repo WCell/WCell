@@ -15,10 +15,11 @@ using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.NLog;
+using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Entities
 {
-	public partial class Item : ObjectBase, IOwned, IWeapon, INamed, ILockable, IQuestHolder, IMountableItem
+	public partial class Item : ObjectBase, IOwned, IWeapon, INamed, ILockable, IQuestHolder, IMountableItem, IContextHandler
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
@@ -46,7 +47,7 @@ namespace WCell.RealmServer.Entities
 		protected IProcHandler m_hitProc;
 		protected ItemRecord m_record;
 
-
+		#region CreateItem
 		public static Item CreateItem(uint templateId, Character owner, int amount)
 		{
 			var template = ItemMgr.GetTemplate(templateId);
@@ -101,11 +102,13 @@ namespace WCell.RealmServer.Entities
 			item.LoadItem(record, template);
 			return item;
 		}
+		#endregion
 
 		protected internal Item()
 		{
 		}
 
+		#region Init & Load
 		/// <summary>
 		/// Initializes a new Item
 		/// </summary>
@@ -128,9 +131,9 @@ namespace WCell.RealmServer.Entities
 			EntityId = m_record.EntityId;
 
 			// set charges to max
-			if (m_template.UseSpell != null)
+			if (m_template.UseSpell != null && m_template.UseSpell.Charges != 0)
 			{
-				SetSpellCharges(m_template.UseSpell.Index, m_template.UseSpell.Charges);
+				SpellCharges = m_template.UseSpell.Charges;
 			}
 
 			var randomEnchants = m_template.RandomPrefixes;
@@ -233,7 +236,9 @@ namespace WCell.RealmServer.Entities
 		protected virtual void OnLoad()
 		{
 		}
+		#endregion
 
+		#region Properties
 		public ItemTemplate Template
 		{
 			get { return m_template; }
@@ -263,7 +268,6 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Checks whether this Item can currently be used
-		/// TODO: Disarm
 		/// </summary>
 		public bool CanBeUsed
 		{
@@ -324,6 +328,17 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Item is currently equipped.
+		/// </summary>
+		public bool IsEquipped
+		{
+			get
+			{
+				return m_container == m_owningCharacter.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
+			}
+		}
+
+		/// <summary>
 		/// Whether this Item is currently equipped and is not a kind of container.
 		/// </summary>
 		public bool IsEquippedItem
@@ -338,23 +353,21 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether this Item is currently equipped.
-		/// </summary>
-		public bool IsEquipped
-		{
-			get
-			{
-				return m_container == m_owningCharacter.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
-			}
-		}
-
-		/// <summary>
 		/// Whether this is a Container and it is currently
 		/// equipped or in a bankbag slot (so Items can be put into it).
 		/// </summary>
 		public bool IsEquippedContainer
 		{
 			get { return m_container == m_owningCharacter.Inventory && ItemMgr.ContainerSlotsWithBank[Slot]; }
+		}
+
+		/// <summary>
+		/// Wheter this item's bonuses are applied
+		/// </summary>
+		public bool IsApplied
+		{
+			get;
+			private set;
 		}
 
 		public bool IsBuyback
@@ -366,6 +379,12 @@ namespace WCell.RealmServer.Entities
 					   m_container == m_owningCharacter.Inventory;
 			}
 		}
+
+		public InventorySlotTypeMask InventorySlotMask
+		{
+			get { return m_template.InventorySlotMask; }
+		}
+		#endregion
 
 		/// <summary>
 		/// Called when this Item was added to someone's inventory
@@ -425,13 +444,6 @@ namespace WCell.RealmServer.Entities
 		public bool CanStackWith(Item otherItem)
 		{
 			return m_template.IsStackable && m_template == otherItem.m_template;
-		}
-
-		public override void Dispose(bool disposing)
-		{
-			m_owningCharacter = null;
-			m_isInWorld = false;
-			IsDeleted = true;
 		}
 
 		/// <summary>
@@ -957,12 +969,59 @@ namespace WCell.RealmServer.Entities
 			return err;
 		}
 
+		internal void OnEquipDecision()
+		{
+			// weapon handling
+			if (m_template.IsWeapon)
+			{
+				var slot = (InventorySlot)Slot;
+
+				switch (slot)
+				{
+					case InventorySlot.MainHand:
+						m_owningCharacter.MainWeapon = this;
+						return;
+					case InventorySlot.OffHand:
+						m_owningCharacter.OffHandWeapon = this;
+						return;
+					case InventorySlot.ExtraWeapon:
+						m_owningCharacter.RangedWeapon = this;
+						return;
+				}
+			}
+			OnEquip();
+		}
+
+		internal void OnUnequipDecision(InventorySlot slot)
+		{
+			// weapon handling
+			if (m_template.IsWeapon)
+			{
+				switch (slot)
+				{
+					case InventorySlot.MainHand:
+						m_owningCharacter.MainWeapon = null;
+						return;
+					case InventorySlot.OffHand:
+						m_owningCharacter.OffHandWeapon = null;
+						return;
+					case InventorySlot.ExtraWeapon:
+						m_owningCharacter.RangedWeapon = null;
+						return;
+				}
+			}
+			OnUnEquip(slot);
+		}
+
 		/// <summary>
 		/// Called when this Item gets equipped.
 		/// Requires region context.
 		/// </summary>
 		public void OnEquip()
 		{
+			if (IsApplied) return;
+			IsApplied = true;
+
 			var slot = (InventorySlot)Slot;
 			var chr = OwningCharacter;
 			if (slot < InventorySlot.Bag1 && !m_template.IsAmmo)
@@ -994,23 +1053,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			// weapon handling
-			if (m_template.IsWeapon)
-			{
-				if (slot == InventorySlot.MainHand)
-				{
-					m_owningCharacter.MainWeapon = this;
-				}
-				else if (slot == InventorySlot.OffHand)
-				{
-					m_owningCharacter.OffHandWeapon = this;
-				}
-				else if (slot == InventorySlot.ExtraWeapon)
-				{
-					m_owningCharacter.RangedWeapon = this;
-				}
-			}
-			else if (slot == InventorySlot.Invalid)
+			// ammo
+			if (slot == InventorySlot.Invalid)
 			{
 				// ammo
 				chr.UpdateRangedDamage();
@@ -1061,6 +1105,13 @@ namespace WCell.RealmServer.Entities
 			}
 
 			m_owningCharacter.PlayerAuras.OnEquip(this);
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			{
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				{
+					handler.OnEquip(this);
+				}
+			}
 
 			m_template.NotifyEquip(this);
 		}
@@ -1071,6 +1122,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void OnUnEquip(InventorySlot slot)
 		{
+			if (!IsApplied) return;
+			IsApplied = false;
+
 			var chr = OwningCharacter;
 			if (!m_template.IsAmmo)
 			{
@@ -1085,11 +1139,11 @@ namespace WCell.RealmServer.Entities
 				{
 					if (spell.IsAura)
 					{
-						chr.Auras.Cancel(spell);	
+						chr.Auras.Cancel(spell);
 					}
 				}
 			}
-			
+
 			// remove procs
 			if (m_template.HitSpells != null)
 			{
@@ -1109,23 +1163,8 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			// damages
-			if (m_template.IsWeapon)
-			{
-				if (slot == InventorySlot.MainHand)
-				{
-					m_owningCharacter.MainWeapon = null;
-				}
-				else if (slot == InventorySlot.OffHand)
-				{
-					m_owningCharacter.OffHandWeapon = null;
-				}
-				else if (slot == InventorySlot.ExtraWeapon)
-				{
-					m_owningCharacter.RangedWeapon = null;
-				}
-			}
-			else if (slot == InventorySlot.Invalid)
+			// ammo
+			if (slot == InventorySlot.Invalid)
 			{
 				// ammo
 				chr.UpdateRangedDamage();
@@ -1174,46 +1213,44 @@ namespace WCell.RealmServer.Entities
 				m_hitProc = null;
 			}
 
-			m_owningCharacter.PlayerAuras.OnUnEquip(this);
+			m_owningCharacter.PlayerAuras.OnBeforeUnEquip(this);
+			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			{
+				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				{
+					handler.OnBeforeUnEquip(this);
+				}
+			}
 
 			m_template.NotifyUnequip(this);
 		}
 		#endregion
 
+		#region Using
 		/// <summary>
 		/// Called whenever an item is used.
 		/// Make sure to only call on Items whose Template has a UseSpell.
 		/// </summary>
 		internal void OnUse()
 		{
+			m_template.NotifyUsed(this);
+
 			if (m_template.BondType == ItemBondType.OnUse)
 			{
 				Flags |= ItemFlags.Soulbound;
 			}
 
-			if (m_template.ConsumesAmount)
-			{
-				Amount--;
-			}
-			else if (m_template.UseSpell != null && m_template.UseSpell.ConsumesCharges)
+			if (m_template.UseSpell != null && m_template.UseSpell.ConsumesCharges)
 			{
 				// consume a charge
-				var charges = GetSpellCharges(m_template.UseSpell.Index);
-				if (m_template.Class == ItemClass.Consumable && charges == 1)
+				if (m_template.Class == ItemClass.Consumable)
 				{
-					Amount--;
+					SpellCharges--;
 				}
-				else
-				{
-					SetSpellCharges(m_template.UseSpell.Index, charges - 1);
-				}
-			}
-
-			if (IsInWorld)
-			{
-				m_template.NotifyUsed(this);
 			}
 		}
+
+		#endregion
 
 		#region Destroy / Remove
 		/// <summary>
@@ -1242,7 +1279,7 @@ namespace WCell.RealmServer.Entities
 			{
 				RealmServer.Instance.AddMessage(() =>
 				{
-					if (!record.IsNew)
+					if (!record.New)
 					{
 						record.Delete();
 					}
@@ -1288,9 +1325,70 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		public override void Dispose(bool disposing)
+		{
+			m_owningCharacter = null;
+			m_isInWorld = false;
+			IsDeleted = true;
+		}
+
 		public override string ToString()
 		{
 			return string.Format("{0}{1} (Templ: {2}, Id: {3})", Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId);
+		}
+
+		public bool IsInContext
+		{
+			get
+			{
+				var owner = Owner;
+				if (owner != null)
+				{
+					var context = owner.ContextHandler;
+					if (context != null)
+					{
+						return context.IsInContext;
+					}
+				}
+				return false;
+			}
+		}
+
+		public void AddMessage(IMessage message)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.AddMessage(message);
+			}
+		}
+
+		public void AddMessage(Action action)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.AddMessage(action);
+			}
+		}
+
+		public bool ExecuteInContext(Action action)
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				return owner.ExecuteInContext(action);
+			}
+			return false;
+		}
+
+		public void EnsureContext()
+		{
+			var owner = Owner;
+			if (owner != null)
+			{
+				owner.EnsureContext();
+			}
 		}
 	}
 }

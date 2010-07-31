@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
@@ -65,10 +66,18 @@ namespace WCell.RealmServer.Spells
 		public AuraType AuraType;
 
 		/// <summary>
-		/// $o1/2/3
 		/// Interval-delay in milliseconds
 		/// </summary>
 		public int Amplitude;
+
+		/// <summary>
+		/// Returns the max amount of ticks of this Effect
+		/// </summary>
+		public int GetMaxTicks()
+		{
+			if (Amplitude == 0) return 0;
+			return Spell.Durations.Max/Amplitude;
+		}
 
 		/// <summary>
 		/// $e1/2/3 in Description
@@ -86,18 +95,38 @@ namespace WCell.RealmServer.Spells
 
 		public int MiscValueB;
 
+		/// <summary>
+		/// Not set during InitializationPass 2, so 
+		/// for fixing things, use GetTriggerSpell() instead.
+		/// </summary>
 		[NotPersistent]
 		public Spell TriggerSpell;
 		public SpellId TriggerSpellId;
+
+		public Spell GetTriggerSpell()
+		{
+			var spell = SpellHandler.Get(TriggerSpellId);
+			if (spell == null && ContentHandler.ForceDataPresence)
+			{
+				throw new ContentException("Spell {0} does not have a valid TriggerSpellId: {1}", this, TriggerSpellId);
+			}
+			return spell;
+		}
 
 		/// <summary>
 		/// 
 		/// </summary>
 		public float PointsPerComboPoint;
 
+		/// <summary>
+		/// Multi purpose.
+		/// 1. If it is a proc effect, determines set of spells that can proc this proc (use <see cref="AddToAffectMask"/>)
+		/// 2. If it is a modifier effect, determines set of spells to be affected by this effect
+		/// 3. Ignored in some cases
+		/// 4. Special applications in some cases
+		/// </summary>
 		[Persistent(3)]
 		public uint[] AffectMask = new uint[3];
-
 		#endregion
 
 		#region IDataHolder Members

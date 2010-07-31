@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Commands
 					{
 						if (!silent)
 						{
-							trigger.Reply(LangKey.MustNotUseCommand, cmd.Name);
+							trigger.Reply(RealmLangKey.MustNotUseCommand, cmd.Name);
 						}
 						return false;
 					}
@@ -141,6 +141,24 @@ namespace WCell.RealmServer.Commands
 
 
 		/// <summary>
+		/// Removes the next char if it's a Command Prefix, and
+		/// sets dbl = true, if it is double.
+		/// </summary>
+		public static bool ConsumeCommandPrefix(StringStream str, out bool dbl)
+		{
+			var c = str.PeekChar();
+			if (IsCommandPrefix(c))
+			{
+				str.Position++;
+				dbl = str.ConsumeNext(c);
+				return true;
+			}
+			dbl = false;
+			return false;
+		}
+
+
+		/// <summary>
 		/// Whether the given character is a command prefix
 		/// </summary>
 		public static bool IsCommandPrefix(char c)
@@ -179,29 +197,20 @@ namespace WCell.RealmServer.Commands
 		/// </summary>
 		public void ExecuteInContext(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			ExecuteInContext(trigger, true, null, null);
+			ExecuteInContext(trigger, null, null);
 		}
 
 		/// <summary>
 		/// Executes the trigger in Context
 		/// </summary>
 		public void ExecuteInContext(CmdTrigger<RealmServerCmdArgs> trigger,
-			bool checkForCall,
 			Action<CmdTrigger<RealmServerCmdArgs>> doneCallback,
 			Action<CmdTrigger<RealmServerCmdArgs>> failCalback)
 		{
-			BaseCommand<RealmServerCmdArgs> cmd;
-			if (checkForCall && trigger.Text.ConsumeNext(ExecCommandPrefix))
+			var cmd = GetCommand(trigger);
+			if (cmd == null)
 			{
-				cmd = WCell.RealmServer.Commands.CallCommand.Instance;
-			}
-			else
-			{
-				cmd = GetCommand(trigger);
-				if (cmd == null)
-				{
-					return;
-				}
+				return;
 			}
 
 			if (cmd.GetRequiresContext())
@@ -274,12 +283,12 @@ namespace WCell.RealmServer.Commands
 		public override bool Execute(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
 		{
 			// verify context
-			if (trigger.Args.Context != null &&
-				!trigger.Args.Context.IsInContext &&
-				cmd.RootCmd.GetRequiresContext())
+			if (cmd.RootCmd.GetRequiresContext() &&
+				(trigger.Args.Context == null ||
+				!trigger.Args.Context.IsInContext))
 			{
-				// will throw Exception
-				trigger.Args.Context.EnsureContext();
+				trigger.Reply("Command requires different context: {0}", cmd.RootCmd);
+				return false;
 			}
 
 			return base.Execute(trigger, cmd, silentFail);
@@ -288,12 +297,12 @@ namespace WCell.RealmServer.Commands
 		public override object Eval(CmdTrigger<RealmServerCmdArgs> trigger, BaseCommand<RealmServerCmdArgs> cmd, bool silentFail)
 		{
 			// verify context
-			if (trigger.Args.Context != null &&
-				!trigger.Args.Context.IsInContext &&
-				cmd.RootCmd.GetRequiresContext())
+			if (cmd.RootCmd.GetRequiresContext() &&
+				(trigger.Args.Context == null ||
+				!trigger.Args.Context.IsInContext))
 			{
-				// will throw Exception
-				trigger.Args.Context.EnsureContext();
+				trigger.Reply("Command requires different context: {0}", cmd.RootCmd);
+				return null;
 			}
 
 			return base.Eval(trigger, cmd, silentFail);
@@ -360,7 +369,21 @@ namespace WCell.RealmServer.Commands
 
 					if (trigger.InitTrigger())
 					{
-						trigger.Args.Context.ExecuteInContext(() =>
+						if (trigger.Args.Context != null)
+						{
+							trigger.Args.Context.ExecuteInContext(() =>
+							{
+								if (!isCall)
+								{
+									Instance.Execute(trigger, false);
+								}
+								else
+								{
+									Call(trigger);
+								}
+							});
+						}
+						else
 						{
 							if (!isCall)
 							{
@@ -370,7 +393,7 @@ namespace WCell.RealmServer.Commands
 							{
 								Call(trigger);
 							}
-						});
+						}
 					}
 					return true;
 				}
@@ -434,7 +457,7 @@ namespace WCell.RealmServer.Commands
 		public static void AutoexecStartup()
 		{
 			var args = new RealmServerCmdArgs(null, false, null);
-		    var file = AutoExecDir + AutoExecStartupFile;
+			var file = AutoExecDir + AutoExecStartupFile;
 			if (File.Exists(file))
 			{
 				Instance.ExecFile(file, args);
@@ -471,12 +494,12 @@ namespace WCell.RealmServer.Commands
 
 		public static void ExecFirstLoginFileFor(Character user)
 		{
-		    ExecFileFor(AutoExecDir + AutoExecAllCharsFirstLoginFile, user);
+			ExecFileFor(AutoExecDir + AutoExecAllCharsFirstLoginFile, user);
 		}
 
 		public static void ExecAllCharsFileFor(Character user)
 		{
-		    ExecFileFor(AutoExecDir + AutoExecAllCharsFile, user);
+			ExecFileFor(AutoExecDir + AutoExecAllCharsFile, user);
 		}
 
 		public static void ExecFileFor(string file, Character user)

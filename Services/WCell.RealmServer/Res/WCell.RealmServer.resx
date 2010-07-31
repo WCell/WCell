@@ -157,7 +157,7 @@
     <value>IPC device failed to reconnect to the AuthServer. Is the AuthServer running?</value>
   </data>
   <data name="IPCProxyFailedException" xml:space="preserve">
-    <value>IPC device failed to connect to the AuthServer. Retrying in {0} seconds...</value>
+    <value>IPC device failed to connect to the AuthServer. Retrying...</value>
   </data>
   <data name="IPCProxyFailed" xml:space="preserve">
     <value>IPC device failed to connect to the AuthServer because the AuthServer is probably not running. Retrying in {0} seconds...</value>
@@ -171,8 +171,8 @@
   <data name="IPCProxyDisconnected" xml:space="preserve">
     <value>IPC device disconnected from AuthServer!</value>
   </data>
-  <data name="ResetIPCConnection" xml:space="preserve">
-    <value>Resetting the IPC connection to the AuthServer!</value>
+  <data name="ConnectingToAuthServer" xml:space="preserve">
+    <value>Trying to connect to AuthServer...</value>
   </data>
   <data name="MailSystemHalted" xml:space="preserve">
     <value>Mail System Halted</value>

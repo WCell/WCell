@@ -24,12 +24,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModIncreaseEnergyHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
+			//var powerType = (PowerType)m_spellEffect.MiscValue;
 			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, EffectValue);
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			m_aura.Auras.Owner.ChangeModifier(StatModifierInt.Power, -EffectValue);
 		}

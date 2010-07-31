@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Written by Mokrago from the WCell team.
  * Please see the wiki article on my findings and more documentation.
  * 
@@ -137,7 +137,7 @@ namespace WCell.RealmServer.Entities
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>
-        /// <returns>The modified value matching the format "XX crit rating for 1% chance"</returns>
+        /// <returns>The modified value matching the format "XX stat for 1% chance"</returns>
         public static float GetClassSpellCritChanceValue(int level, ClassId id)
         {
             var value = GetValuePerRating(ClassSpellCritChance, level, id);
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Entities
 
         /// <summary>
         /// Gets the modified value from the table ClassMeleeCritChance from the correct index.
-        /// Returns the modified value matching the format "XX rating for 1% chance"
+        /// Returns the modified value matching the format "XX stat for 1% chance"
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>
@@ -170,7 +170,8 @@ namespace WCell.RealmServer.Entities
 
         /// <summary>
         /// Modifies the values from ClassSpellCritChance, ClassMeleeCritChance
-        /// to match the format of "XX rating for 1% chance"
+        /// to match the format of "XX stat for 1% chance"
+        /// TODO: Phase out use for optimization (use the unmodified value)
         /// </summary>
         /// <param name="level"></param>
         /// <param name="id"></param>

@@ -157,6 +157,22 @@ namespace WCell.Constants
         IsTappedByAllThreatList = 0x80,
     }
 
+    [Flags]
+    public enum UnitExtraFlags
+    {
+        None = 0,
+        InstanceBind = 0x1,         // Bounds killer's party to the instance they are in
+        Civilian = 0x2,             // Ignores aggro
+        NoParry = 0x4,              // Prohibits creature from parrying
+        NoParryHaste = 0x8,         // Creatures parries do not speed up its next attack
+        NoBlock = 0x10,             // Prohibits creature from blocking
+        NoCrush = 0x20,             // Prohibits creature from dealing crushing blows
+        NoXP = 0x40,                // Makes creature reward no XP at kill
+        Invisible = 0x80,           // Makes creature invisible for player. Use this for triggers etc.
+        NoTaunt = 0x100,             // Makes creature immune to taunt.
+        Ghost = 0x200,               // Makes creature visible only for dead players.
+    }
+
 
     /// <summary>
     /// Used in UNIT_FIELD_BYTES_1, 1st byte
@@ -253,6 +269,7 @@ namespace WCell.Constants
         BerserkerStance = 19,
         EpicFlightForm = 27,
         Shadow = 28,
+		FlightForm = 29,
         Stealth = 30,
         Moonkin = 31,
         SpiritOfRedemption = 32,

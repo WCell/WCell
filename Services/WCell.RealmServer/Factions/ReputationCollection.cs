@@ -27,8 +27,6 @@ namespace WCell.RealmServer.Factions
 {
 	/// <summary>
 	/// Represents the Reputation between a Player and all his known factions
-	/// 
-	/// TODO: Load data from DB
 	/// </summary>
 	public class ReputationCollection
 	{
@@ -394,6 +392,18 @@ namespace WCell.RealmServer.Factions
                 // Let the client know the Faction is visible
                 FactionHandler.SendVisible(m_owner.Client, reputationIndex);
             }
+        }
+
+        /// <summary>
+        /// Increases or Decreases reputation with the given faction.
+        /// </summary>
+        /// <param name="factionId">Faction Id.</param>
+        /// <param name="value">Amount to add or decrease</param>
+        /// <returns></returns>
+        public Reputation GainReputation(FactionId factionId, int value)
+        {
+            value = value + (int)Math.Round(value * m_owner.ReputationGainModifierPercent / 100.0);
+            return ModValue(factionId, value);
         }
 	} 
 }

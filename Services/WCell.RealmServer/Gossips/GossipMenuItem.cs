@@ -1,4 +1,4 @@
-﻿using WCell.Constants;
+using WCell.Constants;
 using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
@@ -6,25 +6,13 @@ namespace WCell.RealmServer.Gossips
 	#region LocalizeGossipMenuItem
 	public class LocalizedGossipMenuItem : GossipMenuItemBase
 	{
-		public readonly string[] Texts = new string[(int) ClientLocale.End];
+		public readonly string[] Texts = new string[(int)ClientLocale.End];
 
 		/// <summary>
 		/// If set, will show an Accept/Cancel dialog with this text to the player
 		/// when selecting this Item.
 		/// </summary>
 		public string[] ConfirmTexts = new string[(int)ClientLocale.End];
-
-		public string DefaultText
-		{
-			get { return Texts[(int)RealmServerConfiguration.DefaultLocale]; }
-			set { Texts[(int)RealmServerConfiguration.DefaultLocale] = value; }
-		}
-
-		public string DefaultConfirmText
-		{
-			get { return ConfirmTexts[(int)RealmServerConfiguration.DefaultLocale]; }
-			set { ConfirmTexts[(int)RealmServerConfiguration.DefaultLocale] = value; }
-		}
 
 
 		public LocalizedGossipMenuItem()
@@ -114,89 +102,99 @@ namespace WCell.RealmServer.Gossips
 			Action = new DefaultGossipAction(callback);
 		}
 
-		
-		public LocalizedGossipMenuItem(GossipMenuIcon type, string defaultLangText)
+		public LocalizedGossipMenuItem(GossipMenuIcon type, RealmLangKey langKey)
 		{
 			Icon = type;
-			DefaultText = defaultLangText;
-			DefaultConfirmText = string.Empty;
+			Texts = RealmLocalizer.Instance.GetTranslations(langKey);
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText)
-			: this(GossipMenuIcon.Talk, defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey)
+			: this(GossipMenuIcon.Talk, langKey)
 		{
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, IGossipAction action)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, IGossipAction action)
+			: this(langKey)
 		{
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, GossipActionHandler callback)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback)
+			: this(langKey)
 		{
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, GossipActionHandler callback, string confirmDefaultText)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, RealmLangKey confirmLangKey)
+			: this(langKey)
 		{
-			DefaultConfirmText = confirmDefaultText;
+			ConfirmTexts = RealmLocalizer.Instance.GetTranslations(confirmLangKey);
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
+			: this(langKey)
 		{
 			Action = new DefaultGossipAction(callback);
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, GossipMenu subMenu)
-			: this(defaultLangText, (IGossipAction)null, subMenu)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipMenu subMenu)
+			: this(langKey, (IGossipAction)null, subMenu)
 		{
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, GossipActionHandler callback, GossipMenu subMenu)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, GossipMenu subMenu)
+			: this(langKey)
 		{
 			Action = new DefaultGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, IGossipAction action, GossipMenu subMenu)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, IGossipAction action, GossipMenu subMenu)
+			: this(langKey)
 		{
 			Action = action;
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(string defaultLangText, params LocalizedGossipMenuItem[] items)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(RealmLangKey langKey, params LocalizedGossipMenuItem[] items)
+			: this(langKey)
 		{
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string defaultLangText, params LocalizedGossipMenuItem[] items)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey langKey, params LocalizedGossipMenuItem[] items)
+			: this(langKey)
 		{
 			Icon = icon;
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string defaultLangText, IGossipAction action)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey langKey, IGossipAction action)
+			: this(langKey)
 		{
 			Icon = icon;
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string defaultLangText, GossipActionHandler callback)
-			: this(defaultLangText)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey langKey, GossipActionHandler callback)
+			: this(langKey)
 		{
 			Icon = icon;
 			Action = new DefaultGossipAction(callback);
+		}
+
+		public string DefaultText
+		{
+			get { return Texts.LocalizeWithDefaultLocale(); }
+			set { Texts[(int)RealmServerConfiguration.DefaultLocale] = value; }
+		}
+
+		public string DefaultConfirmText
+		{
+			get { return ConfirmTexts.LocalizeWithDefaultLocale(); }
+			set { ConfirmTexts[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
 		public override string GetText(GossipConversation convo)

@@ -30,7 +30,7 @@ namespace WCell.Core.WDB
     public class CreatureCache
     {
         public uint Id;
-        public string[] Names;//4
+        public string[] Names;          //4
         public string Description;
 
         public string UnkString;
@@ -39,17 +39,18 @@ namespace WCell.Core.WDB
         /// <summary>
         /// CreatureType.dbc
         /// </summary>
-        public NPCType Type;
+        public CreatureType Type;
         /// <summary>
         /// CreatureFamily.dbc
         /// </summary>
         public uint Family;
         public CreatureRank Rank;
-        public uint UnkField;
+        
         /// <summary>
-        /// CreatureSpellData.dbc
+        /// Link creature to another creature that is required for a quest.
         /// </summary>
-        public uint SpellDataId;
+        public uint CreatureRelation1;
+        public uint CreatureRelation2;
         /// <summary>
         /// CreatureDisplayInfo.dbc
         /// </summary>
@@ -67,10 +68,17 @@ namespace WCell.Core.WDB
         /// </summary>
         public uint DisplayId4;
 
-        public float UnkFloat1;
-        public float UnkFloat2;
+        public float HpModifier;
+        public float ManaModifier;
 
-        public byte UnkByte;
+        public byte RacialLeader;
+
+        public uint[] QuestItem;        // 6
+
+        /// <summary>
+        /// CreatureMovementInfo.dbc
+        /// </summary>
+        public uint MovementInfo;
     }
 
     public class CreatureCacheConverter : WDBRecordConverter<CreatureCache>
@@ -95,20 +103,28 @@ namespace WCell.Core.WDB
 
             cache.Flags = (NPCEntryFlags)binReader.ReadUInt32();
 
-            cache.Type = (NPCType)binReader.ReadUInt32();
+            cache.Type = (CreatureType)binReader.ReadUInt32();
             cache.Family = binReader.ReadUInt32();
             cache.Rank = (CreatureRank)binReader.ReadUInt32();
-            cache.UnkField = binReader.ReadUInt32();
-            cache.SpellDataId = binReader.ReadUInt32();
+            cache.CreatureRelation1 = binReader.ReadUInt32();
+            cache.CreatureRelation2 = binReader.ReadUInt32();
             cache.MaleDisplayId = binReader.ReadUInt32();
             cache.FemaleDisplayId = binReader.ReadUInt32();
             cache.DisplayId3 = binReader.ReadUInt32();
             cache.DisplayId4 = binReader.ReadUInt32();
 
-            cache.UnkFloat1 = binReader.ReadSingle();
-            cache.UnkFloat2 = binReader.ReadSingle();
+            cache.HpModifier = binReader.ReadSingle();
+            cache.ManaModifier = binReader.ReadSingle();
 
-            cache.UnkByte = binReader.ReadByte();
+            cache.RacialLeader = binReader.ReadByte();
+
+            cache.QuestItem = new uint[6];
+            for (int i = 0; i < cache.QuestItem.Length; i++)
+            {
+                cache.QuestItem[i] = binReader.ReadUInt32();
+            }
+
+            cache.MovementInfo = binReader.ReadUInt32();
 
             return cache;
         }

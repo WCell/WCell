@@ -176,6 +176,10 @@
     <Compile Include="Firewall\IPRange.cs" />
     <Compile Include="IPC\IPCServiceAdapter.cs" />
     <Compile Include="IPC\IPCServiceHost.cs" />
+    <Compile Include="Lang\ArrayLocalizer.cs" />
+    <Compile Include="Lang\AuthLangKey.cs" />
+    <Compile Include="Lang\AuthLocalizer.cs" />
+    <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Network\AuthClient.cs" />
     <Compile Include="AuthenticationServer.cs" />
     <Compile Include="Network\AuthPacketMessage.cs" />

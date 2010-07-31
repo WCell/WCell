@@ -1,4 +1,4 @@
-﻿namespace WCell.Tools.Maps.Parsing.WMO
+namespace WCell.Tools.Maps.Parsing.WMO
 {
     /// <summary>
     /// MOPR Chunk. Used in WMO root files

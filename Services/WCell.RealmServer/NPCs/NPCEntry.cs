@@ -9,6 +9,7 @@ using WCell.Constants.NPCs;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Trainers;
@@ -55,7 +56,7 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public string DefaultName
 		{
-			get { return Names[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Names.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Names == null)
@@ -72,7 +73,7 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public string DefaultTitle
 		{
-			get { return Titles[(int)RealmServerConfiguration.DefaultLocale]; }
+			get { return Titles.LocalizeWithDefaultLocale(); }
 			set
 			{
 				if (Titles == null)
@@ -85,7 +86,7 @@ namespace WCell.RealmServer.NPCs
 
 		public string InfoString = "";
 
-		public NPCType Type;
+		public CreatureType Type;
 
 		public CreatureFamilyId FamilyId;
 
@@ -101,9 +102,9 @@ namespace WCell.RealmServer.NPCs
 		[Persistent(4)]
 		public uint[] DisplayIds = new uint[4];
 
-		public float Float1;
+		public float HpModifier;
 
-		public float Float2;
+		public float ManaModifier;
 
 		public bool IsLeader;
 
@@ -144,7 +145,7 @@ namespace WCell.RealmServer.NPCs
 
 		public int RangedAttackPower;
 
-		public int OffhandAttackPower;
+		// public int OffhandAttackPower;
 
 		public DamageSchool DamageSchool;
 
@@ -168,7 +169,7 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-		public int ExtraFlags;
+        public UnitExtraFlags ExtraFlags;
 
 		public MovementType MovementType;
 
@@ -317,13 +318,13 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public IWeapon CreateMainHandWeapon()
 		{
-			if (Type == NPCType.None || Type == NPCType.Totem || Type == NPCType.NotSpecified)
+			if (Type == CreatureType.None || Type == CreatureType.Totem || Type == CreatureType.NotSpecified)
 			{
 				// these kinds of NPCs do not attack ever
 				return GenericWeapon.Peace;
 			}
 
-			return new GenericWeapon(MinDamage, MaxDamage, AttackTime);
+			return new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, MinDamage, MaxDamage, AttackTime);
 		}
 
 		/// <summary>
@@ -333,7 +334,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (OffhandAttackTime > 0 && OffhandMaxDamage > 0 && OffhandMinDamage > 0)
 			{
-				return new GenericWeapon(OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponOffHand, OffhandMinDamage, OffhandMaxDamage, OffhandAttackTime);
 			}
 			return null;
 		}
@@ -345,7 +346,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (RangedAttackTime > 0)
 			{
-				return new GenericWeapon(true, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
+				return new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedMinDamage, RangedMaxDamage, RangedAttackTime);
 			}
 			return null;
 		}
@@ -720,7 +721,7 @@ namespace WCell.RealmServer.NPCs
 			DefaultDecayDelay = _DefaultDecayDelay;
 			Family = NPCMgr.GetFamily(FamilyId);
 
-			if (Type == NPCType.NotSpecified)
+			if (Type == CreatureType.NotSpecified)
 			{
 				IsIdle = true;
 			}
@@ -793,7 +794,7 @@ namespace WCell.RealmServer.NPCs
 
 			ModelInfos = new UnitModelInfo[DisplayIds.Length];
 
-			GeneratesXp = Type != NPCType.Critter && Type != NPCType.None;
+			GeneratesXp = (Type != CreatureType.Critter && Type != CreatureType.None && !ExtraFlags.HasFlag(UnitExtraFlags.NoXP));
 
 			var x = 0;
 			for (var i = 0; i < DisplayIds.Length; i++)
@@ -841,8 +842,6 @@ namespace WCell.RealmServer.NPCs
 				NPCCreator = DefaultCreator;
 			}
 		}
-
-		public static NPCCreator DefaultCreator = entry => new NPC();
 
 		public bool IsVendor
 		{
@@ -902,6 +901,8 @@ namespace WCell.RealmServer.NPCs
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;
 		}
+
+		public static NPCCreator DefaultCreator = entry => new NPC();
 
 		public IBrain DefaultBrainCreator(NPC npc)
 		{
@@ -1019,12 +1020,12 @@ namespace WCell.RealmServer.NPCs
 			writer.WriteLineNotDefault(NPCFlags, "Flags: " + NPCFlags);
 			writer.WriteLineNotDefault(DynamicFlags, "DynamicFlags: " + DynamicFlags);
 			writer.WriteLineNotDefault(UnitFlags, "UnitFlags: " + UnitFlags);
-			writer.WriteLineNotDefault(ExtraFlags, "ExtraFlags: " + ExtraFlags.ToString("0x:X"));
+			writer.WriteLineNotDefault(ExtraFlags, "ExtraFlags: " + string.Format("0x{0:X}", ExtraFlags));
 			writer.WriteLineNotDefault(AttackTime + OffhandAttackTime, "AttackTime: " + AttackTime, "Offhand: " + OffhandAttackTime);
 			writer.WriteLineNotDefault(RangedAttackTime, "RangedAttackTime: " + RangedAttackTime);
 			writer.WriteLineNotDefault(AttackPower, "AttackPower: " + AttackPower);
 			writer.WriteLineNotDefault(RangedAttackPower, "RangedAttackPower: " + RangedAttackPower);
-			writer.WriteLineNotDefault(OffhandAttackPower, "OffhandAttackPower: " + OffhandAttackPower);
+			//writer.WriteLineNotDefault(OffhandAttackPower, "OffhandAttackPower: " + OffhandAttackPower);
 			writer.WriteLineNotDefault(MinDamage + MaxDamage, "Damage: {0} - {1}", MinDamage, MaxDamage);
 			writer.WriteLineNotDefault(RangedMinDamage + RangedMaxDamage, "RangedDamage: {0} - {1}", RangedMinDamage,
 									   RangedMaxDamage);

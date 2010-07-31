@@ -81,4 +81,3 @@ namespace NHibernate.Bytecode.Lightweight
 		#endregion
 	}
 }
-

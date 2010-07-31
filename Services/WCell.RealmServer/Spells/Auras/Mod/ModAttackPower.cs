@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	#region Melee
 	public class ModMeleeAttackPowerHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			if (EffectValue > 0)
 			{
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (EffectValue > 0)
 			{
@@ -46,14 +46,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 	public class ModMeleeAttackPowerPercentHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue;
+			m_aura.Auras.Owner.MeleeAttackPowerMultiplier += EffectValue / 100f;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue;
+			m_aura.Auras.Owner.MeleeAttackPowerMultiplier -= EffectValue / 100f;
 		}
 	}
 	#endregion
@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	#region Ranged
 	public class ModRangedAttackPowerHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			if (EffectValue > 0)
 			{
@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			if (EffectValue > 0)
 			{
@@ -88,14 +88,14 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 	public class ModRangedAttackPowerPercentHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue;
+			m_aura.Auras.Owner.RangedAttackPowerMultiplier += EffectValue / 100f;
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue;
+			m_aura.Auras.Owner.RangedAttackPowerMultiplier -= EffectValue / 100f;
 		}
 	}
 	#endregion

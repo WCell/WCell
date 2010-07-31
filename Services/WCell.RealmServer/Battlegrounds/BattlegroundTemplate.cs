@@ -18,12 +18,6 @@ namespace WCell.RealmServer.Battlegrounds
 	[DataHolder]
 	public class BattlegroundTemplate : IDataHolder
 	{
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		[Variable("DefaultBGLevelRange")]
-		public static int DefaultLevelRange = 10;
-
 		public BattlegroundId Id;
 
 		[NotPersistent]
@@ -41,19 +35,17 @@ namespace WCell.RealmServer.Battlegrounds
 		public Vector3 AllianceStartPosition, HordeStartPosition;
 		public float AllianceStartOrientation, HordeStartOrientation;
 
-		/// <summary>
-		/// The range of levels per Queue (one queue will hold players of this many different levels)
-		/// </summary>
-		public int LevelRange = DefaultLevelRange;
-
 		[NotPersistent]
 		public BattlegroundCreator Creator;
 
 		[NotPersistent]
-		public RegionInfo RegionInfo;
+		public RegionTemplate RegionTemplate;
 
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
+
+        [NotPersistent]
+        public PvPDifficultyEntry[] Difficulties;
 
 		public int MinPlayerCount
 		{
@@ -64,7 +56,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			return (uint) Id;
 		}
-
+        
 		public DataHolderState DataHolderState
 		{
 			get;
@@ -75,8 +67,8 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			RegionId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			RegionInfo = World.GetRegionInfo(RegionId);
-			if (RegionInfo == null)
+			RegionTemplate = World.GetRegionTemplate(RegionId);
+			if (RegionTemplate == null)
 			{
 				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
 					RegionId, (int)RegionId);
@@ -90,8 +82,16 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
-			RegionInfo.MinLevel = Math.Max(1, MinLevel);
-			RegionInfo.MaxLevel = Math.Max(MinLevel, MaxLevel);
+            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId)) + 1];
+
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
+            {
+                if (entry.mapId == RegionId)
+                    Difficulties[entry.bracketId] = entry;
+            }
+
+            RegionTemplate.MinLevel = Math.Max(1, MinLevel);
+            RegionTemplate.MaxLevel = Math.Max(MinLevel, MaxLevel);
 
 			BattlegroundMgr.Templates[(int)Id] = this;
 
@@ -99,40 +99,24 @@ namespace WCell.RealmServer.Battlegrounds
             SetStartPos();
 		}
 
+        public int GetBracketIdForLevel(int level)
+        {
+            var diff = Difficulties.First(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+            return diff.bracketId; 
+        }
+
 		private void CreateQueues()
 		{
-			if (MaxLevel == 0)
-			{
-				MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
-			}
-			if (MinLevel == 0)
-			{
-				MinLevel = 1;
-			}
-
-			Queues = new GlobalBattlegroundQueue[RealmServerConfiguration.MaxCharacterLevel];
-
-			var lvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, MaxLevel);
-			var bracket = 0;
-
-			AddQueue(new GlobalBattlegroundQueue(this, ++bracket, lvl, lvl));
-
-			while (lvl >= MinLevel)
-			{
-				var maxLvl = Math.Min(RealmServerConfiguration.MaxCharacterLevel, lvl - 1);
-				var minLvl = Math.Max(lvl - LevelRange, MinLevel);
-				AddQueue(new GlobalBattlegroundQueue(this, ++bracket, minLvl, maxLvl));
-
-				lvl -= LevelRange;
-			}
+            Queues = new GlobalBattlegroundQueue[Difficulties.Length];
+            foreach (var entry in Difficulties)
+            {
+                    AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+            }
 		}
 
 		void AddQueue(GlobalBattlegroundQueue queue)
 		{
-			for (var i = queue.MinLevel - 1; i < queue.MaxLevel; i++)
-			{
-				Queues[i] = queue;
-			}
+				Queues[queue.BracketId] = queue;
 		}
 
 		/// <summary>
@@ -152,11 +136,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <returns>the appropriate queue for the given character level</returns>
 		public GlobalBattlegroundQueue GetQueue(int level)
 		{
-			// normalize level
-			level = Math.Max(1, level);
-			level = Math.Min(level, Queues.Length);
-
-			return Queues[level - 1];
+            return Queues[GetBracketIdForLevel(level)];
 		}
 
 		#region Enqueue

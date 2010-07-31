@@ -1,7 +1,7 @@
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 4/23/2010
+/// Date: 7/19/2010
 ///
 
 namespace WCell.Constants.NPCs
@@ -153,7 +153,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		NargTheTaskmaster = 79,
 		/// <summary>
-		/// Level: 3
+		/// Level: 3 - 4
 		/// </summary>
 		KoboldLaborer = 80,
 		/// <summary>
@@ -3286,7 +3286,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HighlandScytheclaw = 1017,
 		/// <summary>
-		/// Level: 28
+		/// Level: 27 - 28
 		/// </summary>
 		HighlandRazormaw = 1018,
 		/// <summary>
@@ -4692,11 +4692,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ProspectorStormpike = 1356,
 		/// <summary>
-		/// Level: 8
+		/// Level: 8 - 9
 		/// </summary>
 		MinerGrothor = 1358,
 		/// <summary>
-		/// Level: 9
+		/// Level: 9 - 10
 		/// </summary>
 		MinerGrumnal = 1360,
 		/// <summary>
@@ -5285,11 +5285,11 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1 - 2
 		/// </summary>
-		WretchedZombie = 1502,
+		WretchedGhoul = 1502,
 		/// <summary>
 		/// Level: 1 - 2
 		/// </summary>
-		WretchedZombie_2 = 1503,
+		WretchedZombie = 1503,
 		/// <summary>
 		/// Level: 2 - 3
 		/// </summary>
@@ -6498,7 +6498,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DevouringOoze = 1808,
 		/// <summary>
-		/// Level: 50
+		/// Level: 50 - 52
 		/// </summary>
 		CarrionVulture = 1809,
 		/// <summary>
@@ -9815,7 +9815,7 @@ namespace WCell.Constants.NPCs
 		MechanicalDragonling = 2678,
 		/// <summary>
 		/// Title: Special Goods Dealer
-		/// Level: 28 - 29
+		/// Level: 28 - 30
 		/// </summary>
 		WennaSilkbeard = 2679,
 		/// <summary>
@@ -10962,11 +10962,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Battleboar = 2966,
 		/// <summary>
-		/// Level: 9
+		/// Level: 8 - 9
 		/// </summary>
 		GalakCentaur = 2967,
 		/// <summary>
-		/// Level: 10
+		/// Level: 9 - 10
 		/// </summary>
 		GalakOutrunner = 2968,
 		/// <summary>
@@ -12061,11 +12061,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BraveWindfeather = 3209,
 		/// <summary>
-		/// Level: 55 - 65
+		/// Level: 65
 		/// </summary>
 		BraveProudsnout = 3210,
 		/// <summary>
-		/// Level: 55 - 65
+		/// Level: 65
 		/// </summary>
 		BraveLightninghorn = 3211,
 		/// <summary>
@@ -12073,11 +12073,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BraveIronhorn = 3212,
 		/// <summary>
-		/// Level: 55 - 65
+		/// Level: 65
 		/// </summary>
 		BraveRunningWolf = 3213,
 		/// <summary>
-		/// Level: 55 - 65
+		/// Level: 65
 		/// </summary>
 		BraveGreathoof = 3214,
 		/// <summary>
@@ -15379,11 +15379,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CharredStoneSpirit = 4033,
 		/// <summary>
-		/// Level: 25
+		/// Level: 24 - 25
 		/// </summary>
 		EnragedStoneSpirit = 4034,
 		/// <summary>
-		/// Level: 27
+		/// Level: 26 - 27
 		/// </summary>
 		FuriousStoneSpirit = 4035,
 		/// <summary>
@@ -15828,7 +15828,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KitariFarseeker = 4157,
 		/// <summary>
-		/// Level: 32 - 33
+		/// Level: 32 - 34
 		/// </summary>
 		SaltFlatsVulture = 4158,
 		/// <summary>
@@ -17817,7 +17817,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KolkarDestroyer = 4637,
 		/// <summary>
-		/// Level: 33
+		/// Level: 32 - 33
 		/// </summary>
 		MagramScout = 4638,
 		/// <summary>
@@ -17969,11 +17969,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LesserInfernal = 4676,
 		/// <summary>
-		/// Level: 37
+		/// Level: 37 - 38
 		/// </summary>
 		Doomwarder = 4677,
 		/// <summary>
-		/// Level: 38
+		/// Level: 37 - 38
 		/// </summary>
 		ManaEater = 4678,
 		/// <summary>
@@ -17985,7 +17985,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DoomwarderCaptain = 4680,
 		/// <summary>
-		/// Level: 38
+		/// Level: 38 - 39
 		/// </summary>
 		MageHunter = 4681,
 		/// <summary>
@@ -18023,7 +18023,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StarvingBonepaw = 4689,
 		/// <summary>
-		/// Level: 36 - 37
+		/// Level: 36 - 38
 		/// </summary>
 		RabidBonepaw = 4690,
 		/// <summary>
@@ -20021,7 +20021,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HulkingFeralScar = 5293,
 		/// <summary>
-		/// Level: 44
+		/// Level: 44 - 45
 		/// </summary>
 		EnragedFeralScar = 5295,
 		/// <summary>
@@ -20107,7 +20107,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HatecrestWarrior = 5331,
 		/// <summary>
-		/// Level: 41 - 42
+		/// Level: 41
 		/// </summary>
 		HatecrestWaveRider = 5332,
 		/// <summary>
@@ -20115,11 +20115,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HatecrestSerpentGuard = 5333,
 		/// <summary>
-		/// Level: 44
+		/// Level: 43 - 44
 		/// </summary>
 		HatecrestMyrmidon = 5334,
 		/// <summary>
-		/// Level: 41
+		/// Level: 41 - 42
 		/// </summary>
 		HatecrestScreamer = 5335,
 		/// <summary>
@@ -20127,7 +20127,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HatecrestSorceress = 5336,
 		/// <summary>
-		/// Level: 42
+		/// Level: 42 - 43
 		/// </summary>
 		HatecrestSiren = 5337,
 		/// <summary>
@@ -23112,7 +23112,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Hetaera = 6140,
 		/// <summary>
-		/// Level: 22
+		/// Level: 21 - 22
 		/// </summary>
 		PridewingSoarer = 6141,
 		/// <summary>
@@ -23813,7 +23813,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MennetCarkad = 6467,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		BlackSkeletalHorse = 6486,
 		/// <summary>
@@ -24476,7 +24476,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		OninMacHammar = 6886,
 		/// <summary>
-		/// Level: 51 - 54
+		/// Level: 50 - 54
 		/// </summary>
 		Yalda = 6887,
 		/// <summary>
@@ -24520,7 +24520,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TestSatyr = 6926,
 		/// <summary>
-		/// Level: 8 - 9
+		/// Level: 9
 		/// </summary>
 		DefiasDockworker = 6927,
 		/// <summary>
@@ -24659,7 +24659,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ShadowforgeGeologist = 7030,
 		/// <summary>
-		/// Level: 52 - 53
+		/// Level: 51 - 53
 		/// </summary>
 		ObsidianElemental = 7031,
 		/// <summary>
@@ -27001,7 +27001,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BimbleLongberry = 7978,
 		/// <summary>
-		/// Level: 65 - 75
+		/// Level: 75
 		/// </summary>
 		DeathguardElite = 7980,
 		/// <summary>
@@ -27996,7 +27996,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RyntharielTheKeymaster = 8518,
 		/// <summary>
-		/// Level: 54
+		/// Level: 54 - 55
 		/// </summary>
 		BlightedSurge = 8519,
 		/// <summary>
@@ -28931,7 +28931,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GolemLordArgelmach = 8983,
 		/// <summary>
-		/// Level: 10 - 80
+		/// Level: 10 - 11
 		/// </summary>
 		VoidwalkerMinion = 8996,
 		/// <summary>
@@ -30111,7 +30111,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WindwallTotemIII = 9689,
 		/// <summary>
-		/// Level: 51 - 52
+		/// Level: 51
 		/// </summary>
 		EmberWorg = 9690,
 		/// <summary>
@@ -30237,7 +30237,7 @@ namespace WCell.Constants.NPCs
 		Galgar = 9796,
 		/// <summary>
 		/// Level: 60
-		/// Rank: WorldBoss
+		/// Rank: Elite
 		/// </summary>
 		PyroguardEmberseer = 9816,
 		/// <summary>
@@ -30431,7 +30431,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Ringo = 9999,
 		/// <summary>
-		/// Level: 26
+		/// Level: 21
 		/// Rank: Elite
 		/// </summary>
 		Arugal = 10000,
@@ -31090,7 +31090,7 @@ namespace WCell.Constants.NPCs
 		UNUSEDGethuxxuz = 10362,
 		/// <summary>
 		/// Level: 62
-		/// Rank: WorldBoss
+		/// Rank: Elite
 		/// </summary>
 		GeneralDrakkisath = 10363,
 		/// <summary>
@@ -31270,7 +31270,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UNUSEDDevouringWight = 10403,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		PustulatingHorror = 10404,
@@ -32589,7 +32589,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WizloBearingshiner = 10941,
 		/// <summary>
-		/// Level: 63
+		/// Level: 62
 		/// Rank: WorldBoss
 		/// </summary>
 		Nessy = 10942,
@@ -32646,7 +32646,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Bloodletter = 10954,
 		/// <summary>
-		/// Level: 55 - 56
+		/// Level: 83
 		/// </summary>
 		SummonedWaterElemental = 10955,
 		/// <summary>
@@ -32732,7 +32732,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TwizwickSprocketgrind = 10993,
 		/// <summary>
-		/// Level: 58 - 60
+		/// Level: 59 - 60
 		/// Rank: Elite
 		/// </summary>
 		FallenHero = 10996,
@@ -34208,7 +34208,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KingGordok = 11501,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Ragnaros = 11502,
@@ -34368,7 +34368,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WhirlwindStormwalker = 11577,
 		/// <summary>
-		/// Level: 33
+		/// Level: 33 - 34
 		/// </summary>
 		WhirlwindShredder = 11578,
 		/// <summary>
@@ -34794,7 +34794,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LorukForeststrider = 11720,
 		/// <summary>
-		/// Level: 58
+		/// Level: 57 - 58
 		/// </summary>
 		HiveAshiWorker = 11721,
 		/// <summary>
@@ -35314,7 +35314,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MasatTAndr = 11874,
 		/// <summary>
-		/// Level: 6 - 14
+		/// Level: 6
 		/// </summary>
 		MortarTeamTargetDummy = 11875,
 		/// <summary>
@@ -35525,25 +35525,25 @@ namespace WCell.Constants.NPCs
 		ClaireWillower = 11945,
 		/// <summary>
 		/// Title: Frostwolf General
-		/// Level: 72
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		DrekThar = 11946,
 		/// <summary>
 		/// Title: Frostwolf Captain
-		/// Level: 71
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainGalvangar = 11947,
 		/// <summary>
 		/// Title: Stormpike General
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		VanndarStormpike = 11948,
 		/// <summary>
 		/// Title: Stormpike Captain
-		/// Level: 71
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainBalindaStonehearth = 11949,
@@ -35587,7 +35587,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Flamegor = 11981,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Magmadar = 11982,
@@ -35597,7 +35597,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Firemaw = 11983,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		GolemaggTheIncinerator = 11988,
@@ -35623,7 +35623,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BroodlordLashlayer = 12017,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		MajordomoExecutus = 12018,
@@ -35769,11 +35769,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AllianceSentinel = 12048,
 		/// <summary>
-		/// Level: 68
+		/// Level: 58
 		/// </summary>
 		StormpikeDefender = 12050,
 		/// <summary>
-		/// Level: 67
+		/// Level: 57
 		/// </summary>
 		FrostwolfLegionnaire = 12051,
 		/// <summary>
@@ -35781,7 +35781,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfWarrior = 12052,
 		/// <summary>
-		/// Level: 68
+		/// Level: 58
 		/// </summary>
 		FrostwolfGuardian = 12053,
 		/// <summary>
@@ -35789,12 +35789,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Dawnchaser = 12054,
 		/// <summary>
-		/// Level: 59
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		BaronGeddon = 12056,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Garr = 12057,
@@ -35812,7 +35812,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfQuartermaster = 12097,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		SulfuronHarbinger = 12098,
@@ -35837,7 +35837,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PriestessOfElune = 12116,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Lucifron = 12118,
@@ -35851,12 +35851,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PlaguelandTermite = 12120,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		Drakan = 12121,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		Duros = 12122,
@@ -35882,7 +35882,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LordTirionFordring = 12126,
 		/// <summary>
-		/// Level: 67
+		/// Level: 57
 		/// </summary>
 		StormpikeGuardsman = 12127,
 		/// <summary>
@@ -36225,7 +36225,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Razorlash = 12258,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Gehennas = 12259,
@@ -36247,7 +36247,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SlaughterhouseProtector = 12263,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Shazzrah = 12264,
@@ -36325,11 +36325,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DrulzegarSkraghook = 12340,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		BlueSkeletalHorse_2 = 12341,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		BrownSkeletalHorse_2 = 12342,
 		/// <summary>
@@ -36357,7 +36357,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IvoryRaptor_2 = 12348,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		TurquoiseRidingRaptor = 12349,
 		/// <summary>
@@ -36377,11 +36377,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TimberRidingWolf = 12353,
 		/// <summary>
-		/// Level: 12
+		/// Level: 11 - 12
 		/// </summary>
 		BrownRidingKodo = 12354,
 		/// <summary>
-		/// Level: 12
+		/// Level: 11 - 12
 		/// </summary>
 		GrayRidingKodo = 12355,
 		/// <summary>
@@ -36502,7 +36502,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AugustusTheTouched = 12384,
 		/// <summary>
-		/// Level: 6 - 15
+		/// Level: 6
 		/// </summary>
 		MortarTeamAdvancedTargetDummy = 12385,
 		/// <summary>
@@ -36933,7 +36933,7 @@ namespace WCell.Constants.NPCs
 		CaptainDirgehammer = 12777,
 		/// <summary>
 		/// Title: Outland Armor Quartermaster
-		/// Level: 55
+		/// Level: 65
 		/// </summary>
 		LieutenantRachelVaccar = 12778,
 		/// <summary>
@@ -36970,11 +36970,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SergeantMajorClate = 12785,
 		/// <summary>
-		/// Level: 62
+		/// Level: 75
 		/// </summary>
 		GuardQuine = 12786,
 		/// <summary>
-		/// Level: 62
+		/// Level: 75
 		/// </summary>
 		GuardHammon = 12787,
 		/// <summary>
@@ -37020,11 +37020,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RaiderBork = 12796,
 		/// <summary>
-		/// Level: 62
+		/// Level: 75
 		/// </summary>
 		GruntKorf = 12797,
 		/// <summary>
-		/// Level: 62
+		/// Level: 75
 		/// </summary>
 		GruntBekRah = 12798,
 		/// <summary>
@@ -37033,7 +37033,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SergeantBasha = 12799,
 		/// <summary>
-		/// Level: 60 - 61
+		/// Level: 61
 		/// Rank: Elite
 		/// </summary>
 		Chimaerok = 12800,
@@ -37856,11 +37856,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfMineLayer = 13357,
 		/// <summary>
-		/// Level: 69 - 70
+		/// Level: 60
 		/// </summary>
 		StormpikeBowman = 13358,
 		/// <summary>
-		/// Level: 69 - 70
+		/// Level: 60
 		/// </summary>
 		FrostwolfBowman = 13359,
 		/// <summary>
@@ -38437,7 +38437,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TestingTotem = 13838,
 		/// <summary>
-		/// Level: 60
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		RoyalDreadguard = 13839,
@@ -39750,7 +39750,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Tosamina = 14498,
 		/// <summary>
-		/// Level: 1 - 2
+		/// Level: 1 - 3
 		/// </summary>
 		HordeOrphan = 14499,
 		/// <summary>
@@ -39950,7 +39950,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SwiftGrayWolf = 14541,
 		/// <summary>
-		/// Level: 2
+		/// Level: 1 - 2
 		/// </summary>
 		GreatWhiteKodo = 14542,
 		/// <summary>
@@ -39978,11 +39978,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SwiftGrayRam = 14548,
 		/// <summary>
-		/// Level: 2
+		/// Level: 1 - 2
 		/// </summary>
 		GreatBrownKodo = 14549,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		GreatGrayKodo = 14550,
 		/// <summary>
@@ -40166,7 +40166,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ZorbinFandazzle = 14637,
 		/// <summary>
-		/// Level: 47 - 48
+		/// Level: 47
 		/// </summary>
 		ZappedWaveStrider = 14638,
 		/// <summary>
@@ -40586,22 +40586,22 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CreepingDoom = 14761,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarNorthMarshal = 14762,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarSouthMarshal = 14763,
 		/// <summary>
-		/// Level: 60 - 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		IcewingMarshal = 14764,
 		/// <summary>
-		/// Level: 60 - 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		StonehearthMarshal = 14765,
@@ -40636,12 +40636,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DunBaldarSouthWarmaster = 14771,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		EastFrostwolfWarmaster = 14772,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		IcebloodWarmaster = 14773,
@@ -40656,12 +40656,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StonehearthWarmaster = 14775,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		TowerPointWarmaster = 14776,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// Rank: Elite
 		/// </summary>
 		WestFrostwolfWarmaster = 14777,
@@ -42426,17 +42426,17 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ObsidianDestroyer = 15338,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		OssirianTheUnscarred = 15339,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		Moam = 15340,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		GeneralRajaxx = 15341,
@@ -42480,12 +42480,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RCBlimpPH = 15349,
 		/// <summary>
-		/// Level: 60 - 80
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HordeWarbringer = 15350,
 		/// <summary>
-		/// Level: 60 - 80
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceBrigadierGeneral = 15351,
@@ -42558,7 +42558,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TonkMine = 15368,
 		/// <summary>
-		/// Level: 73
+		/// Level: 63
 		/// Rank: WorldBoss
 		/// </summary>
 		AyamissTheHunter = 15369,
@@ -43577,7 +43577,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EyeOfCThun = 15589,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		OssirianCrystalTrigger = 15590,
 		/// <summary>
@@ -44995,7 +44995,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TruesilverBoar = 15935,
 		/// <summary>
-		/// Level: 83 - 73
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HeiganTheUnclean = 15936,
@@ -45665,7 +45665,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Gnashjaw = 16095,
 		/// <summary>
-		/// Level: 65 - 75
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		SteamwheedleBruiser = 16096,
@@ -45817,7 +45817,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Rhonin = 16128,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ShadowFissure = 16129,
 		/// <summary>
@@ -47150,7 +47150,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UnstoppableAbomination = 16428,
 		/// <summary>
-		/// Level: 60
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SoulWeaver = 16429,
@@ -47207,7 +47207,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HighlordMograineTransform = 16440,
 		/// <summary>
-		/// Level: 60
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		GuardianOfIcecrown = 16441,
@@ -49770,7 +49770,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DuelistLarenis = 17005,
 		/// <summary>
-		/// Level: 58
+		/// Level: 58 - 59
 		/// </summary>
 		Elsaana = 17006,
 		/// <summary>
@@ -49938,7 +49938,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UndercityFireeater = 17051,
 		/// <summary>
-		/// Level: 61
+		/// Level: 60 - 61
 		/// </summary>
 		Rumatu = 17052,
 		/// <summary>
@@ -50391,6 +50391,7 @@ namespace WCell.Constants.NPCs
 		LivingCyclone = 17160,
 		/// <summary>
 		/// Level: 73
+		/// Rank: WorldBoss
 		/// </summary>
 		BlizzardShadeOfAran = 17161,
 		/// <summary>
@@ -51542,7 +51543,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Susurrus = 17435,
 		/// <summary>
-		/// Level: 44 - 45
+		/// Level: 43 - 45
 		/// </summary>
 		AspectOfAir = 17436,
 		/// <summary>
@@ -52408,7 +52409,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LordaeronCommander = 17635,
 		/// <summary>
-		/// Level: 57
+		/// Level: 55 - 57
 		/// </summary>
 		KalynnaLathred = 17636,
 		/// <summary>
@@ -53545,7 +53546,7 @@ namespace WCell.Constants.NPCs
 		Ghoul = 17895,
 		/// <summary>
 		/// Title: Stable Master
-		/// Level: 57 - 58
+		/// Level: 56 - 58
 		/// </summary>
 		KameelLongstride = 17896,
 		/// <summary>
@@ -54366,7 +54367,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Mogor = 18069,
 		/// <summary>
-		/// Level: 56
+		/// Level: 55 - 56
 		/// </summary>
 		WindcallerBlackhoof = 18070,
 		/// <summary>
@@ -55019,7 +55020,7 @@ namespace WCell.Constants.NPCs
 		GaradarEventControllerFarseer = 18228,
 		/// <summary>
 		/// Level: 70
-		/// Rank: Elite
+		/// Rank: WorldBoss
 		/// </summary>
 		SaurfangTheYounger = 18229,
 		/// <summary>
@@ -55080,7 +55081,7 @@ namespace WCell.Constants.NPCs
 		InfernalRelayHyjal = 18242,
 		/// <summary>
 		/// Title: Merchant
-		/// Level: 61
+		/// Level: 60 - 61
 		/// </summary>
 		Lorti = 18243,
 		/// <summary>
@@ -55116,7 +55117,7 @@ namespace WCell.Constants.NPCs
 		Joraal = 18250,
 		/// <summary>
 		/// Title: Innkeeper
-		/// Level: 63
+		/// Level: 62 - 63
 		/// </summary>
 		CaregiverAbidaar = 18251,
 		/// <summary>
@@ -55354,7 +55355,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BurningBladePyre03 = 18307,
 		/// <summary>
-		/// Level: 11
+		/// Level: 11 - 34
 		/// </summary>
 		BurningBladePyre04 = 18308,
 		/// <summary>
@@ -55628,11 +55629,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FocusFire = 18374,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SwiftGreenGryphon = 18375,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SwiftRedGryphon = 18376,
 		/// <summary>
@@ -55640,15 +55641,15 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SwiftRedWindRider = 18377,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SwiftGreenWindRider = 18378,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SwiftPurpleWindRider = 18379,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SwiftYellowWindRider = 18380,
 		/// <summary>
@@ -56763,7 +56764,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AgedDalaranWizard = 18664,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		OverrunTarget = 18665,
 		/// <summary>
@@ -57505,7 +57506,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KigglerTheCrazed = 18835,
 		/// <summary>
-		/// Level: 70
+		/// Level: 73
 		/// Rank: WorldBoss
 		/// </summary>
 		BlindeyeTheSeer = 18836,
@@ -57622,7 +57623,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ManaWraith = 18864,
 		/// <summary>
-		/// Level: 67
+		/// Level: 67 - 68
 		/// </summary>
 		WarpAberration = 18865,
 		/// <summary>
@@ -58295,7 +58296,7 @@ namespace WCell.Constants.NPCs
 		Vanteg = 19013,
 		/// <summary>
 		/// Title: Reagents & Poison Supplies
-		/// Level: 63
+		/// Level: 62 - 63
 		/// </summary>
 		Ogir = 19014,
 		/// <summary>
@@ -58309,7 +58310,7 @@ namespace WCell.Constants.NPCs
 		HellfireFamiliar = 19016,
 		/// <summary>
 		/// Title: Trade Supplies
-		/// Level: 60 - 66
+		/// Level: 63
 		/// </summary>
 		Borto = 19017,
 		/// <summary>
@@ -58319,7 +58320,7 @@ namespace WCell.Constants.NPCs
 		WildaBearmane = 19018,
 		/// <summary>
 		/// Title: Stable Master
-		/// Level: 60 - 66
+		/// Level: 61
 		/// </summary>
 		Luftasia = 19019,
 		/// <summary>
@@ -58329,7 +58330,7 @@ namespace WCell.Constants.NPCs
 		MatronQualia = 19020,
 		/// <summary>
 		/// Title: General Goods
-		/// Level: 63
+		/// Level: 61 - 63
 		/// </summary>
 		Nancila = 19021,
 		/// <summary>
@@ -58353,7 +58354,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StabledRaptor = 19026,
 		/// <summary>
-		/// Level: 60 - 68
+		/// Level: 63
 		/// </summary>
 		StabledKurenaiLion = 19027,
 		/// <summary>
@@ -58365,7 +58366,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheStadiumCaptureCreditMarker = 19029,
 		/// <summary>
-		/// Level: 60 - 68
+		/// Level: 63 - 66
 		/// </summary>
 		StabledKurenaiPanther = 19030,
 		/// <summary>
@@ -60399,12 +60400,12 @@ namespace WCell.Constants.NPCs
 		Caoileann = 19497,
 		/// <summary>
 		/// Title: General Goods
-		/// Level: 64 - 66
+		/// Level: 66
 		/// </summary>
 		Tanaide = 19498,
 		/// <summary>
 		/// Title: Weaponsmith
-		/// Level: 62 - 65
+		/// Level: 65
 		/// </summary>
 		Cahill = 19499,
 		/// <summary>
@@ -60757,17 +60758,17 @@ namespace WCell.Constants.NPCs
 		Gant = 19572,
 		/// <summary>
 		/// Title: Trade Supplies
-		/// Level: 60
+		/// Level: 60 - 62
 		/// </summary>
 		Dash = 19573,
 		/// <summary>
 		/// Title: General Supplies
-		/// Level: 65
+		/// Level: 63
 		/// </summary>
 		Kizzie = 19574,
 		/// <summary>
 		/// Title: Engineering Supplies
-		/// Level: 67
+		/// Level: 65
 		/// </summary>
 		Qiff = 19575,
 		/// <summary>
@@ -61479,7 +61480,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AlthenTheHistorian = 19736,
 		/// <summary>
-		/// Level: 61 - 64
+		/// Level: 60 - 65
 		/// </summary>
 		EngineeringCrewmember = 19737,
 		/// <summary>
@@ -61843,7 +61844,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CrazedColossus = 19823,
 		/// <summary>
-		/// Level: 68 - 69
+		/// Level: 68
 		/// Rank: Elite
 		/// </summary>
 		SonOfCorok = 19824,
@@ -62254,7 +62255,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ZeggonBotsnap = 19912,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Area52Spotlight = 19913,
 		/// <summary>
@@ -62541,7 +62542,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DeathforgeTechnician = 19979,
 		/// <summary>
-		/// Level: 67 - 68
+		/// Level: 67
 		/// </summary>
 		VoidTerror = 19980,
 		/// <summary>
@@ -62589,7 +62590,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BloodmaulBrute = 19991,
 		/// <summary>
-		/// Level: 65
+		/// Level: 65 - 66
 		/// </summary>
 		BloodmaulShaman = 19992,
 		/// <summary>
@@ -62903,7 +62904,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WindTraderMarid = 20071,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		CobaltWarTalbuk = 20072,
 		/// <summary>
@@ -64012,7 +64013,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UnlivingStalker1 = 20323,
 		/// <summary>
-		/// Level: 61
+		/// Level: 61 - 62
 		/// </summary>
 		ParchedHydra = 20324,
 		/// <summary>
@@ -64768,15 +64769,15 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EclipsionDragonhawk = 20502,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// </summary>
 		EbonGryphon_2 = 20503,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// </summary>
 		GoldenGryphon_2 = 20504,
 		/// <summary>
-		/// Level: 70
+		/// Level: 60
 		/// </summary>
 		SnowyGryphonMount = 20505,
 		/// <summary>
@@ -65275,7 +65276,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ArodisSunblade = 20613,
 		/// <summary>
-		/// Level: 67
+		/// Level: 67 - 68
 		/// </summary>
 		RazaaniSpellThief = 20614,
 		/// <summary>
@@ -67354,7 +67355,7 @@ namespace WCell.Constants.NPCs
 		SpiritcallerSkrash = 21106,
 		/// <summary>
 		/// Title: Gryphon Master
-		/// Level: 65
+		/// Level: 68
 		/// Rank: Elite
 		/// </summary>
 		RipPedalslam = 21107,
@@ -67383,7 +67384,7 @@ namespace WCell.Constants.NPCs
 		BossiPentapiston = 21112,
 		/// <summary>
 		/// Title: Trade Goods
-		/// Level: 67 - 68
+		/// Level: 67
 		/// </summary>
 		SassaWeldwell = 21113,
 		/// <summary>
@@ -68821,7 +68822,7 @@ namespace WCell.Constants.NPCs
 		AshtongueShaman = 21453,
 		/// <summary>
 		/// Title: Servant of Illidan
-		/// Level: 69 - 70
+		/// Level: 69
 		/// </summary>
 		AshtongueWarrior = 21454,
 		/// <summary>
@@ -68851,7 +68852,7 @@ namespace WCell.Constants.NPCs
 		TallyZapnabber = 21460,
 		/// <summary>
 		/// Title: Tally's Twin
-		/// Level: 67
+		/// Level: 67 - 68
 		/// </summary>
 		RallyZapnabber = 21461,
 		/// <summary>
@@ -70063,7 +70064,7 @@ namespace WCell.Constants.NPCs
 		EncasedElectromental = 21731,
 		/// <summary>
 		/// Title: Banker
-		/// Level: 66
+		/// Level: 67
 		/// </summary>
 		Nandirx = 21732,
 		/// <summary>
@@ -70073,7 +70074,7 @@ namespace WCell.Constants.NPCs
 		Karzo = 21733,
 		/// <summary>
 		/// Title: Banker
-		/// Level: 67
+		/// Level: 65
 		/// </summary>
 		Zixxy = 21734,
 		/// <summary>
@@ -70801,7 +70802,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CabalInitiate = 21907,
 		/// <summary>
-		/// Level: 67
+		/// Level: 67 - 68
 		/// </summary>
 		SpellboundTerrorguard = 21908,
 		/// <summary>
@@ -71166,7 +71167,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SethekkSlayer1 = 21991,
 		/// <summary>
-		/// Level: 1
+		/// Level: 20
 		/// </summary>
 		StrengthOfEarthTotem_2 = 21992,
 		/// <summary>
@@ -71178,7 +71179,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StoneskinTotem_2 = 21994,
 		/// <summary>
-		/// Level: 1
+		/// Level: 20
 		/// </summary>
 		SearingTotem_2 = 21995,
 		/// <summary>
@@ -71401,7 +71402,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		VengefulHusk = 22045,
 		/// <summary>
-		/// Level: 63 - 64
+		/// Level: 63
 		/// </summary>
 		PHCaveBat = 22046,
 		/// <summary>
@@ -71952,7 +71953,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ShardHideBoar = 22180,
 		/// <summary>
-		/// Level: 70 - 71
+		/// Level: 71
 		/// </summary>
 		AetherRay = 22181,
 		/// <summary>
@@ -72431,7 +72432,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ThroneGuardHighlord = 22297,
 		/// <summary>
-		/// Level: 71
+		/// Level: 70 - 71
 		/// </summary>
 		VileFireSoul = 22298,
 		/// <summary>
@@ -73452,7 +73453,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DruidOfTheGrove1 = 22541,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarNorthMarshal1 = 22542,
@@ -73462,7 +73463,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DunBaldarNorthWarmaster1 = 22543,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarSouthMarshal1 = 22544,
@@ -73482,7 +73483,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EastFrostwolfMarshal1 = 22547,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		EastFrostwolfWarmaster1 = 22548,
@@ -73543,7 +73544,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IcebloodWarmaster1 = 22560,
 		/// <summary>
-		/// Level: 60 - 70
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		IcewingMarshal1 = 22561,
@@ -73598,7 +73599,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SmithRegzar1 = 22571,
 		/// <summary>
-		/// Level: 60 - 70
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		StonehearthMarshal1 = 22572,
@@ -73638,7 +73639,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TowerPointMarshal1 = 22579,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		TowerPointWarmaster1 = 22580,
@@ -73760,13 +73761,13 @@ namespace WCell.Constants.NPCs
 		AlteracYeti1 = 22604,
 		/// <summary>
 		/// Title: Stormpike Captain
-		/// Level: 71
+		/// Level: 73
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainBalindaStonehearth1 = 22605,
 		/// <summary>
 		/// Title: Frostwolf Captain
-		/// Level: 71
+		/// Level: 73
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainGalvangar1 = 22606,
@@ -73939,7 +73940,7 @@ namespace WCell.Constants.NPCs
 		WarmasterLaggrond1 = 22640,
 		/// <summary>
 		/// Title: Frostwolf General
-		/// Level: 72
+		/// Level: 73
 		/// Rank: WorldBoss
 		/// </summary>
 		DrekThar1 = 22641,
@@ -74054,7 +74055,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfLegionnaire1 = 22665,
 		/// <summary>
-		/// Level: 1
+		/// Level: 67
 		/// </summary>
 		StormpikeGuardsman1 = 22666,
 		/// <summary>
@@ -74392,7 +74393,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfBloodhound1 = 22738,
 		/// <summary>
-		/// Level: 69 - 70
+		/// Level: 70
 		/// </summary>
 		FrostwolfBowman1 = 22739,
 		/// <summary>
@@ -74503,7 +74504,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StabledFrostwolf1 = 22765,
 		/// <summary>
-		/// Level: 69 - 70
+		/// Level: 70
 		/// </summary>
 		StormpikeBowman1 = 22766,
 		/// <summary>
@@ -75395,7 +75396,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LightswornElekkRider = 22966,
 		/// <summary>
-		/// Level: 1
+		/// Level: 69
 		/// </summary>
 		ScryerCavalier = 22967,
 		/// <summary>
@@ -75624,7 +75625,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PHSkyguardFletcher = 23021,
 		/// <summary>
-		/// Level: 70
+		/// Level: 70 - 71
 		/// Rank: Elite
 		/// </summary>
 		GordunniSoulreaper = 23022,
@@ -75991,7 +75992,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SaRah = 23108,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		VengefulSpirit = 23109,
@@ -76140,22 +76141,22 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		YarzillTheMerc = 23141,
 		/// <summary>
-		/// Level: 67 - 69
+		/// Level: 69
 		/// </summary>
 		GoblinMerc = 23142,
 		/// <summary>
 		/// Title: Innkeeper
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		Horus = 23143,
 		/// <summary>
 		/// Title: Armorsmith
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		Gug = 23144,
 		/// <summary>
 		/// Title: Reagents & Poison Supplies
-		/// Level: 68
+		/// Level: 66
 		/// </summary>
 		Rumpus = 23145,
 		/// <summary>
@@ -76170,7 +76171,7 @@ namespace WCell.Constants.NPCs
 		ShadowmoonGrunt = 23147,
 		/// <summary>
 		/// Title: Pit Fight Organizer
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		Forgus = 23148,
 		/// <summary>
@@ -76187,7 +76188,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheRulkster = 23151,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// Rank: Elite
 		/// </summary>
 		Vagath_2 = 23152,
@@ -76449,7 +76450,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SkyguardPyrotechnician = 23208,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		DragonmawPeonKillCredit = 23209,
 		/// <summary>
@@ -76783,7 +76784,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AkamaEventStalker = 23288,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		MineCar = 23289,
 		/// <summary>
@@ -76836,7 +76837,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DragonBunny = 23301,
 		/// <summary>
-		/// Level: 1
+		/// Level: 73
 		/// </summary>
 		CageTrapDisturbTrigger = 23304,
 		/// <summary>
@@ -76852,7 +76853,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EtherealRingBoltTargetBunny = 23307,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		DragonmawPeonWorkNode = 23308,
 		/// <summary>
@@ -77008,11 +77009,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CorlokTheVet = 23344,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WingCommanderIchman_2 = 23345,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WingCommanderMulverick_2 = 23346,
 		/// <summary>
@@ -77020,7 +77021,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Tork = 23347,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		CaptainSkyshatter = 23348,
 		/// <summary>
@@ -77395,7 +77396,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SanctumDefender = 23435,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// Rank: Elite
 		/// </summary>
 		ImageOfDementia = 23436,
@@ -77527,7 +77528,7 @@ namespace WCell.Constants.NPCs
 		Voranaku = 23466,
 		/// <summary>
 		/// Title: The Betrayer
-		/// Level: 1
+		/// Level: 73
 		/// Rank: WorldBoss
 		/// </summary>
 		IllidanStormrage_2 = 23467,
@@ -77651,7 +77652,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LegionRingShieldZapperInvisMan = 23500,
 		/// <summary>
-		/// Level: 69
+		/// Level: 69 - 70
 		/// </summary>
 		NetherwingRay = 23501,
 		/// <summary>
@@ -77809,7 +77810,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Nagulon = 23536,
 		/// <summary>
-		/// Level: 65 - 70
+		/// Level: 65
 		/// </summary>
 		HeadlessHorsemanFireDND = 23537,
 		/// <summary>
@@ -78278,7 +78279,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LongtuskWayfinder = 23642,
 		/// <summary>
-		/// Level: 70 - 71
+		/// Level: 70
 		/// </summary>
 		UnstableMurGhoul = 23643,
 		/// <summary>
@@ -78435,7 +78436,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CaptainAveren = 23681,
 		/// <summary>
-		/// Level: 70
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HeadlessHorseman = 23682,
@@ -78454,7 +78455,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GordokBrewBarker = 23685,
 		/// <summary>
-		/// Level: 70
+		/// Level: 65
 		/// </summary>
 		HeadlessHorsemanFlameBunny = 23686,
 		/// <summary>
@@ -78487,7 +78488,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DuskwingEagle = 23693,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		PulsingPumpkin = 23694,
 		/// <summary>
@@ -78562,7 +78563,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IronRuneLaborer = 23711,
 		/// <summary>
-		/// Level: 3
+		/// Level: 1 - 3
 		/// </summary>
 		TouringOrphan = 23712,
 		/// <summary>
@@ -78715,7 +78716,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ZulAmanExteriorInvisMan = 23746,
 		/// <summary>
-		/// Level: 15 - 19
+		/// Level: 14 - 19
 		/// </summary>
 		OverworkedNag = 23747,
 		/// <summary>
@@ -78760,7 +78761,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AmaniHealingWard = 23757,
 		/// <summary>
-		/// Level: 70
+		/// Level: 1
 		/// </summary>
 		HeadlessHorsemanEarthExplosionBunny = 23758,
 		/// <summary>
@@ -78802,11 +78803,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BlockadeCaptain = 23767,
 		/// <summary>
-		/// Level: 1
+		/// Level: 40
 		/// </summary>
 		LynnHyal = 23768,
 		/// <summary>
-		/// Level: 1
+		/// Level: 8
 		/// </summary>
 		JimmyHyal = 23769,
 		/// <summary>
@@ -78831,7 +78832,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AmanishiTrainer = 23774,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HeadOfTheHorseman = 23775,
@@ -78866,7 +78867,7 @@ namespace WCell.Constants.NPCs
 		ApothecaryCelestine = 23781,
 		/// <summary>
 		/// Title: Royal Apothecary Society
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		ApothecaryRavien = 23782,
 		/// <summary>
@@ -79455,7 +79456,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WestguardDefenderSleeping = 23933,
 		/// <summary>
-		/// Level: 1
+		/// Level: 68 - 69
 		/// </summary>
 		NorthFleetSalvager = 23934,
 		/// <summary>
@@ -79493,7 +79494,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AndelloPorter = 23942,
 		/// <summary>
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		HungryPlaguehound = 23943,
 		/// <summary>
@@ -79536,7 +79537,7 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Title: The San'layn
 		/// Level: 72
-		/// Rank: WorldBoss
+		/// Rank: Elite
 		/// </summary>
 		PrinceKeleseth = 23953,
 		/// <summary>
@@ -79733,7 +79734,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HungryPlaguehoundCounter = 24000,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Ashli = 24001,
 		/// <summary>
@@ -79757,7 +79758,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MillCourier = 24007,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		FallenCombatant = 24008,
 		/// <summary>
@@ -79814,11 +79815,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TestFactionMonster = 24022,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		QueenAngerboda = 24023,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Kraz = 24024,
 		/// <summary>
@@ -79864,7 +79865,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BoriWintertotem = 24033,
 		/// <summary>
-		/// Level: 70
+		/// Level: 1
 		/// </summary>
 		HeadlessHorsemanWispInvis = 24034,
 		/// <summary>
@@ -79872,7 +79873,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GjalerbronPrisoner = 24035,
 		/// <summary>
-		/// Level: 1
+		/// Level: 69
 		/// Rank: Elite
 		/// </summary>
 		CaptainHarker = 24037,
@@ -79881,7 +79882,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FatherLevariol = 24038,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		SunderedGhost = 24039,
 		/// <summary>
@@ -79891,7 +79892,7 @@ namespace WCell.Constants.NPCs
 		McGoyver = 24040,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 72
 		/// Rank: Elite
 		/// </summary>
 		PrinceKeleseth_2 = 24041,
@@ -79905,7 +79906,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AmaniLynx = 24043,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WinterskornGuard = 24044,
 		/// <summary>
@@ -80224,7 +80225,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Lurielle = 24117,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// </summary>
 		ValKyrObserver = 24118,
 		/// <summary>
@@ -80233,7 +80234,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HalfdansSoul = 24119,
 		/// <summary>
-		/// Level: 1
+		/// Level: 68 - 69
 		/// </summary>
 		NorthFleetReservist = 24120,
 		/// <summary>
@@ -80283,7 +80284,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TrapperJethan = 24131,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WinterhoofWindRider = 24132,
 		/// <summary>
@@ -80391,7 +80392,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TobiasSarkhoff = 24155,
 		/// <summary>
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		PlaguehoundTracker = 24156,
 		/// <summary>
@@ -80404,7 +80405,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DragonflayerOracleTarget = 24158,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		AmaniEagle = 24159,
 		/// <summary>
@@ -80457,7 +80458,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DaggercapHawk = 24172,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		Frostgore = 24173,
 		/// <summary>
@@ -80621,7 +80622,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RivenWidowCocoon = 24210,
 		/// <summary>
-		/// Level: 1
+		/// Level: 65 - 67
 		/// </summary>
 		FreedWinterhoofLongrunner = 24211,
 		/// <summary>
@@ -80695,7 +80696,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IceshardElemental = 24228,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70 - 71
 		/// </summary>
 		HowlingCyclone = 24229,
 		/// <summary>
@@ -80910,7 +80911,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BjornInsultCredit = 24276,
 		/// <summary>
-		/// Level: 1
+		/// Level: 66 - 71
 		/// </summary>
 		Garwal = 24277,
 		/// <summary>
@@ -81089,11 +81090,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KingYmiron = 24321,
 		/// <summary>
-		/// Level: 1
+		/// Level: 55 - 65
 		/// </summary>
 		AncientCitizenOfNifflevar = 24322,
 		/// <summary>
-		/// Level: 1
+		/// Level: 55 - 65
 		/// </summary>
 		AncientCitizenOfNifflevar_2 = 24323,
 		/// <summary>
@@ -81157,7 +81158,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDBrewfestDeliveryBunny = 24337,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		AmaniSnake = 24338,
 		/// <summary>
@@ -81184,7 +81185,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BrockOlson = 24343,
 		/// <summary>
-		/// Level: 1
+		/// Level: 66 - 71
 		/// </summary>
 		GjalerbronSkeleton = 24344,
 		/// <summary>
@@ -81417,7 +81418,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ForestFrog = 24396,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Mannuth = 24397,
 		/// <summary>
@@ -81440,23 +81441,23 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SteelGatePackMule = 24401,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Deez = 24403,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Galathryn = 24404,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Adarrah = 24405,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Fudgerick = 24406,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		Darwen = 24407,
 		/// <summary>
@@ -81537,7 +81538,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		NexusPrinceShaffarImage = 24423,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// Rank: Elite
 		/// </summary>
 		ExarchMaladaarImage = 24424,
@@ -81582,7 +81583,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TempestForgeDestroyerImage = 24432,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// Rank: Elite
 		/// </summary>
 		PathaleonImage = 24433,
@@ -82012,7 +82013,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HandsomeTerry = 24537,
 		/// <summary>
-		/// Level: 70 - 71
+		/// Level: 70
 		/// </summary>
 		DragonflayerInstallationI = 24538,
 		/// <summary>
@@ -82193,7 +82194,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UNUSEDRiplashTidelord = 24579,
 		/// <summary>
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		RiplashSiren = 24580,
 		/// <summary>
@@ -82459,11 +82460,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MirrorFrame = 24645,
 		/// <summary>
-		/// Level: 71 - 72
+		/// Level: 72
 		/// </summary>
 		DragonflayerInstallationII = 24646,
 		/// <summary>
-		/// Level: 71 - 72
+		/// Level: 71
 		/// </summary>
 		DragonflayerInstallationIII = 24647,
 		/// <summary>
@@ -82851,7 +82852,7 @@ namespace WCell.Constants.NPCs
 		BenjariEdune = 24739,
 		/// <summary>
 		/// Title: Elenna Edune's Pet
-		/// Level: 6
+		/// Level: 6 - 7
 		/// </summary>
 		Goodie = 24740,
 		/// <summary>
@@ -83026,7 +83027,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ScuttleFrostprow = 24784,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		BigRoy = 24785,
 		/// <summary>
@@ -83745,7 +83746,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EmaciatedFelblood = 24955,
 		/// <summary>
-		/// Level: 1
+		/// Level: 66
 		/// Rank: Elite
 		/// </summary>
 		Juniper = 24956,
@@ -83834,7 +83835,7 @@ namespace WCell.Constants.NPCs
 		DawnbladeBloodKnight = 24976,
 		/// <summary>
 		/// Title: Liza's Pet
-		/// Level: 12
+		/// Level: 12 - 15
 		/// </summary>
 		Warpy = 24977,
 		/// <summary>
@@ -84127,7 +84128,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Kaalif = 25039,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		GreaterWaterElemental = 25040,
@@ -84184,22 +84185,22 @@ namespace WCell.Constants.NPCs
 		GalleyChiefHalumvorea = 25052,
 		/// <summary>
 		/// Title: Elune's Blessing
-		/// Level: 65
+		/// Level: 65 - 75
 		/// </summary>
 		MarinerFarseeker = 25053,
 		/// <summary>
 		/// Title: Elune's Blessing
-		/// Level: 65
+		/// Level: 65 - 75
 		/// </summary>
 		MarinerKeenstar = 25054,
 		/// <summary>
 		/// Title: Elune's Blessing
-		/// Level: 65
+		/// Level: 65 - 75
 		/// </summary>
 		MarinerFrostnight = 25055,
 		/// <summary>
 		/// Title: Elune's Blessing
-		/// Level: 65
+		/// Level: 65 - 75
 		/// </summary>
 		MarinerStillglider = 25056,
 		/// <summary>
@@ -84300,15 +84301,15 @@ namespace WCell.Constants.NPCs
 		CaptainKrickWrenchnozzle = 25078,
 		/// <summary>
 		/// Title: The Thundercaller
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		DeathguardFowles = 25079,
 		/// <summary>
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		GruntUmgor = 25080,
 		/// <summary>
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		GruntOunda = 25081,
 		/// <summary>
@@ -84318,7 +84319,7 @@ namespace WCell.Constants.NPCs
 		EngineerTorquespindle = 25082,
 		/// <summary>
 		/// Title: The Thundercaller
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		DeathguardLawson = 25083,
 		/// <summary>
@@ -84424,11 +84425,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SkyCaptainCableclamp = 25105,
 		/// <summary>
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		WatcherDuUna = 25106,
 		/// <summary>
-		/// Level: 55 - 75
+		/// Level: 75
 		/// </summary>
 		WatcherUmjin = 25107,
 		/// <summary>
@@ -84839,7 +84840,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ArcanistMyndimendez = 25202,
 		/// <summary>
-		/// Level: 1
+		/// Level: 66
 		/// </summary>
 		Glrggl = 25203,
 		/// <summary>
@@ -85676,7 +85677,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ElderKesuk = 25397,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// </summary>
 		ElderSagani = 25398,
 		/// <summary>
@@ -86993,7 +86994,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ColdarraWyrmkin = 25728,
 		/// <summary>
-		/// Level: 1
+		/// Level: 69
 		/// Rank: Elite
 		/// </summary>
 		ShadowstalkerGetry = 25729,
@@ -87221,7 +87222,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		VoidSentinalSummoner = 25782,
 		/// <summary>
-		/// Level: 67 - 68
+		/// Level: 67 - 70
 		/// </summary>
 		FizzcrankAirstripSurvivor = 25783,
 		/// <summary>
@@ -88774,11 +88775,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Saragosa_2 = 26232,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		SergeantTyric = 26233,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// </summary>
 		SergeantDaelian = 26234,
 		/// <summary>
@@ -89343,7 +89344,7 @@ namespace WCell.Constants.NPCs
 		Arcanimus = 26370,
 		/// <summary>
 		/// Title: Gryan's Squire
-		/// Level: 1
+		/// Level: 9
 		/// </summary>
 		SquireWalter = 26371,
 		/// <summary>
@@ -89361,7 +89362,7 @@ namespace WCell.Constants.NPCs
 		MaevinFarmoon = 26374,
 		/// <summary>
 		/// Title: Innkeeper
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		QuartermasterMcCarty = 26375,
 		/// <summary>
@@ -91176,7 +91177,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FizzcrankBomberFlyby01 = 26807,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		FizzcrankBomberFlyby02 = 26808,
 		/// <summary>
@@ -91742,7 +91743,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BloodbanesMount = 26931,
 		/// <summary>
-		/// Level: 1
+		/// Level: 71
 		/// Rank: Elite
 		/// </summary>
 		Petrov = 26932,
@@ -93006,7 +93007,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ClaytonDubinJ = 27231,
 		/// <summary>
-		/// Level: 1
+		/// Level: 72
 		/// </summary>
 		CaptainShely = 27232,
 		/// <summary>
@@ -93357,7 +93358,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ZeligTheVisionary = 27314,
 		/// <summary>
-		/// Level: 1
+		/// Level: 61 - 69
 		/// </summary>
 		HelplessWintergardeVillager = 27315,
 		/// <summary>
@@ -93439,11 +93440,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		OnslaughtCommanderIustus = 27334,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70 - 71
 		/// </summary>
 		HungeringDead_3 = 27335,
 		/// <summary>
-		/// Level: 1
+		/// Level: 61 - 69
 		/// </summary>
 		HelplessWintergardeVillager_2 = 27336,
 		/// <summary>
@@ -93941,6 +93942,7 @@ namespace WCell.Constants.NPCs
 		ZeligSpellTarget = 27454,
 		/// <summary>
 		/// Level: 70
+		/// Rank: WorldBoss
 		/// </summary>
 		PrinceArthas = 27455,
 		/// <summary>
@@ -94044,7 +94046,7 @@ namespace WCell.Constants.NPCs
 		SlainTrapper = 27479,
 		/// <summary>
 		/// Level: 70
-		/// Rank: Elite
+		/// Rank: WorldBoss
 		/// </summary>
 		Muradin = 27480,
 		/// <summary>
@@ -94433,7 +94435,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TaunkaHuntsman = 27573,
 		/// <summary>
-		/// Level: 71 - 74
+		/// Level: 70 - 74
 		/// </summary>
 		WarKodo = 27574,
 		/// <summary>
@@ -94472,7 +94474,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RuunaTheBlind = 27581,
 		/// <summary>
-		/// Level: 1
+		/// Level: 73
 		/// </summary>
 		PrivateArun = 27582,
 		/// <summary>
@@ -94647,7 +94649,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ShadeOfArugal_2 = 27620,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		ArugalRotationBunny = 27622,
 		/// <summary>
@@ -95198,7 +95200,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HordeConscript = 27749,
 		/// <summary>
-		/// Level: 75 - 76
+		/// Level: 74 - 76
 		/// Rank: Elite
 		/// </summary>
 		RustlerBurnhoof = 27750,
@@ -95475,7 +95477,7 @@ namespace WCell.Constants.NPCs
 		WeakenedTurgidTheVile = 27809,
 		/// <summary>
 		/// Title: Brew of the Month Club
-		/// Level: 1
+		/// Level: 50
 		/// </summary>
 		BrewVendor_2 = 27810,
 		/// <summary>
@@ -95774,7 +95776,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostmourneWeaponHolder = 27880,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		WintergraspCatapult = 27881,
 		/// <summary>
@@ -95826,7 +95828,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RuneWeapon = 27893,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70 - 80
 		/// Rank: Elite
 		/// </summary>
 		AntipersonnelCannon = 27894,
@@ -96704,7 +96706,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WarlordTartek = 28105,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78
 		/// Rank: Elite
 		/// </summary>
 		ShamanJakjek = 28106,
@@ -96738,7 +96740,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MosswalkerVictim = 28113,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78
 		/// Rank: Elite
 		/// </summary>
 		MistcallerSooGan = 28114,
@@ -97607,12 +97609,12 @@ namespace WCell.Constants.NPCs
 		TrapdoorAmbusher = 28342,
 		/// <summary>
 		/// Title: Banker
-		/// Level: 1
+		/// Level: 67
 		/// </summary>
 		Meeda = 28343,
 		/// <summary>
 		/// Title: Blacksmithing Supplies
-		/// Level: 65
+		/// Level: 65 - 67
 		/// </summary>
 		Blazzle = 28344,
 		/// <summary>
@@ -99448,7 +99450,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ExplosiveChargesBunny = 28780,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70 - 80
 		/// </summary>
 		BattlegroundDemolisher = 28781,
 		/// <summary>
@@ -100937,7 +100939,7 @@ namespace WCell.Constants.NPCs
 		RefurbishedSteamTank = 29144,
 		/// <summary>
 		/// Title: Barber
-		/// Level: 1
+		/// Level: 68
 		/// </summary>
 		PulikSwiftsnip = 29145,
 		/// <summary>
@@ -101439,7 +101441,7 @@ namespace WCell.Constants.NPCs
 		SpiritHealer_2 = 29259,
 		/// <summary>
 		/// Title: Used Demolisher Salesman
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		RiggerSparklight = 29260,
 		/// <summary>
@@ -101448,7 +101450,7 @@ namespace WCell.Constants.NPCs
 		WindleSparkshine = 29261,
 		/// <summary>
 		/// Title: Used Demolisher Salesman
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		GorgrilRigspark = 29262,
 		/// <summary>
@@ -103407,7 +103409,7 @@ namespace WCell.Constants.NPCs
 		GlorthalStiffbeard = 29727,
 		/// <summary>
 		/// Title: Locksmith
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		WalterSoref = 29728,
 		/// <summary>
@@ -103492,7 +103494,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Databank = 29746,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		TheOcular = 29747,
@@ -104277,7 +104279,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DrakkariRhino_2 = 29931,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		EckTheFerocious = 29932,
@@ -104826,7 +104828,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		VaelenTheFlayed = 30056,
 		/// <summary>
-		/// Level: 60
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		GuardianOfIcecrown1 = 30057,
@@ -105440,7 +105442,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ForgottenDepthsHighPriest = 30203,
 		/// <summary>
-		/// Level: 1
+		/// Level: 77 - 78
 		/// </summary>
 		ForgottenDepthsAmbusher = 30204,
 		/// <summary>
@@ -106564,7 +106566,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MageHunterAscendant1 = 30460,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Veranus_4 = 30461,
@@ -107100,7 +107102,7 @@ namespace WCell.Constants.NPCs
 		MargaBearbrawn = 30579,
 		/// <summary>
 		/// Title: Strand of the Ancients Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		NivaraBladedancer = 30580,
@@ -107271,7 +107273,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DansTestDummyNonVehicle = 30615,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FlameTsunami = 30616,
 		/// <summary>
@@ -107354,7 +107356,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDIcecrownAirshipACannonTarget = 30640,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TwilightFissure = 30641,
 		/// <summary>
@@ -107362,7 +107364,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WaterTerror_2 = 30642,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// </summary>
 		LavaBlaze = 30643,
 		/// <summary>
@@ -107441,7 +107443,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PortalGuardian = 30660,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureInvader = 30661,
@@ -107451,7 +107453,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AzureSpellbreaker = 30662,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureBinder = 30663,
@@ -107461,7 +107463,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AzureMageSlayer = 30664,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		VeteranMageHunter = 30665,
 		/// <summary>
@@ -107470,12 +107472,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AzureCaptain = 30666,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureSorceror = 30667,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureRaider = 30668,
@@ -108417,7 +108419,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ServantOfHodir = 30881,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		TwilightEgg = 30882,
@@ -108457,7 +108459,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DataScanTargetBunny = 30889,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		TwilightWhelp = 30890,
@@ -108466,7 +108468,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BlessedBannerOfTheCrusade = 30891,
 		/// <summary>
-		/// Level: 1
+		/// Level: 76
 		/// Rank: Elite
 		/// </summary>
 		PortalGuardian_2 = 30892,
@@ -108587,7 +108589,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Snowflake1 = 30917,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureBinder_2 = 30918,
@@ -108784,7 +108786,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RisenSoldier = 30960,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureInvader_2 = 30961,
@@ -108932,7 +108934,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GreaterLeyWhelp1 = 30991,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DoctorSabnok = 30992,
@@ -109213,7 +109215,7 @@ namespace WCell.Constants.NPCs
 		AnchoriteTessa = 31054,
 		/// <summary>
 		/// Title: Frostwolf Captain
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainGalvangar2 = 31055,
@@ -109478,7 +109480,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EidolonWatcher_2 = 31110,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		NightElfMohawk = 31111,
@@ -109683,7 +109685,7 @@ namespace WCell.Constants.NPCs
 		Rokir_2 = 31160,
 		/// <summary>
 		/// Title: Rider of Frost
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Sapph_2 = 31161,
@@ -109871,7 +109873,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InfiniteAgent1 = 31203,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SartharionTwilightEgg = 31204,
@@ -109913,7 +109915,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SalrammTheFleshcrafter1 = 31212,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		SartharionTwilightWhelp = 31214,
@@ -109932,18 +109934,18 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MalGanis1 = 31217,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		AcolyteOfShadron = 31218,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		AcolyteOfVesperon = 31219,
 		/// <summary>
 		/// Title: Rokir's Steed
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Plaguehoof = 31220,
@@ -110213,7 +110215,7 @@ namespace WCell.Constants.NPCs
 		ArgentHealer_2 = 31282,
 		/// <summary>
 		/// Title: The Hand of Suffering
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		OrbazBloodbane_4 = 31283,
@@ -110375,7 +110377,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EbonBladeReaper = 31316,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// </summary>
 		LavaBlaze1 = 31317,
 		/// <summary>
@@ -111324,7 +111326,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Shadron1 = 31520,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TwilightFissure1 = 31521,
 		/// <summary>
@@ -111357,7 +111359,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RavishingBetrayer = 31529,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		GrandApothecaryPutress_2 = 31530,
@@ -111402,17 +111404,17 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Loken1 = 31538,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		TwilightEgg1 = 31539,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		TwilightWhelp1 = 31540,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		AcolyteOfShadron1 = 31541,
@@ -111422,7 +111424,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RottingMaggot1 = 31542,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		AcolyteOfVesperon1 = 31543,
@@ -111442,12 +111444,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DiscipleOfVesperon1 = 31546,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SartharionTwilightEgg1 = 31547,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		SartharionTwilightWhelp1 = 31548,
@@ -111926,7 +111928,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HordeDemolisher = 31652,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		InvisibleStalkerTesla = 31653,
 		/// <summary>
@@ -112104,11 +112106,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FacelessLurker = 31691,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ReanimatedAbomination = 31692,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// </summary>
 		StormforgedSaboteur = 31693,
 		/// <summary>
@@ -112632,19 +112634,19 @@ namespace WCell.Constants.NPCs
 		SeeInvisoBunny = 31817,
 		/// <summary>
 		/// Title: Stormpike General
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		VanndarStormpike2 = 31818,
 		/// <summary>
 		/// Title: Frostwolf General
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		DrekThar2 = 31819,
 		/// <summary>
 		/// Title: Stormpike Captain
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		CaptainBalindaStonehearth2 = 31820,
@@ -112688,7 +112690,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WingCommanderGuse2 = 31828,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		WestFrostwolfWarmaster2 = 31829,
@@ -113009,7 +113011,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TowerPointMarshal2 = 31908,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		TowerPointWarmaster2 = 31909,
@@ -113255,7 +113257,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DirkSwindle2 = 31963,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Drakan2 = 31964,
@@ -113265,7 +113267,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DruidOfTheGrove2 = 31965,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarNorthMarshal2 = 31966,
@@ -113275,7 +113277,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DunBaldarNorthWarmaster2 = 31967,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DunBaldarSouthMarshal2 = 31968,
@@ -113285,7 +113287,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DunBaldarSouthWarmaster2 = 31969,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Duros2 = 31970,
@@ -113295,7 +113297,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EastFrostwolfMarshal2 = 31971,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		EastFrostwolfWarmaster2 = 31972,
@@ -113323,7 +113325,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfBloodhound2 = 31977,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FrostwolfBowman2 = 31978,
 		/// <summary>
@@ -113336,7 +113338,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfExplosivesExpert2 = 31980,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78
 		/// </summary>
 		FrostwolfGuardian2 = 31981,
 		/// <summary>
@@ -113344,7 +113346,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostwolfHerald2 = 31982,
 		/// <summary>
-		/// Level: 1
+		/// Level: 77
 		/// </summary>
 		FrostwolfLegionnaire2 = 31983,
 		/// <summary>
@@ -113460,12 +113462,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IcebloodMarshal2 = 32006,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		IcebloodWarmaster2 = 32007,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		IcewingMarshal2 = 32008,
@@ -113823,7 +113825,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StabledFrostwolf2 = 32085,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		StonehearthMarshal2 = 32086,
@@ -113838,7 +113840,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StormpikeBattleguard2 = 32088,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		StormpikeBowman2 = 32089,
 		/// <summary>
@@ -113847,7 +113849,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StormpikeCommando2 = 32090,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78
 		/// </summary>
 		StormpikeDefender2 = 32091,
 		/// <summary>
@@ -113860,7 +113862,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		StormpikeExplosivesExpert2 = 32093,
 		/// <summary>
-		/// Level: 1
+		/// Level: 77
 		/// </summary>
 		StormpikeGuardsman2 = 32094,
 		/// <summary>
@@ -114296,7 +114298,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SkybreakerAirman = 32190,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		AzureStalker = 32191,
@@ -114489,7 +114491,7 @@ namespace WCell.Constants.NPCs
 		BitterInitiate = 32238,
 		/// <summary>
 		/// Level: 1
-		/// Rank: Elite
+		/// Rank: WorldBoss
 		/// </summary>
 		HighlordTirionFordring_7 = 32239,
 		/// <summary>
@@ -115040,19 +115042,19 @@ namespace WCell.Constants.NPCs
 		EveeCopperspring_3 = 32362,
 		/// <summary>
 		/// Title: Warchief
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Thrall_8 = 32363,
 		/// <summary>
 		/// Title: Ruler of Theramore
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LadyJainaProudmoore_6 = 32364,
 		/// <summary>
 		/// Title: Banshee Queen
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LadySylvanasWindrunner_4 = 32365,
@@ -115061,7 +115063,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WGADummy = 32366,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		KorKronElite_4 = 32367,
@@ -115106,7 +115108,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WarmageYurias = 32375,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BrollBearmantle_2 = 32376,
@@ -115116,7 +115118,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PerobasTheBloodthirster = 32377,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ValeeraSanguinar_2 = 32378,
@@ -115162,51 +115164,51 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		VigdisTheWarMaiden = 32386,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75 - 76
 		/// Rank: Elite
 		/// </summary>
 		StormwindElite_2 = 32387,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		AllianceFlyingMachine_2 = 32388,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		AllianceSiegeVehicle_2 = 32389,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// Rank: Elite
 		/// </summary>
 		TreacherousGuardian_2 = 32390,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		PerfidiousDreadlord_2 = 32391,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74
 		/// </summary>
 		PlaguedFelbeast_2 = 32392,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// Rank: Elite
 		/// </summary>
 		FelguardMarauder_2 = 32393,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		RavishingBetrayer_2 = 32394,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		ApothecaryChemist_2 = 32395,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		ApothecaryCollaborator_2 = 32396,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		BlightDoctor_2 = 32397,
 		/// <summary>
@@ -115225,13 +115227,13 @@ namespace WCell.Constants.NPCs
 		Tukemuth = 32400,
 		/// <summary>
 		/// Title: King of Stormwind
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		KingVarianWrynn_3 = 32401,
 		/// <summary>
 		/// Title: Ruler of Theramore
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LadyJainaProudmoore_7 = 32402,
@@ -115551,7 +115553,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PustulentColossus = 32482,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		EngorgedBlightWorm = 32483,
@@ -115661,12 +115663,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BrammoldDeepmine = 32509,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// Rank: Elite
 		/// </summary>
 		WarsongBattleguard_5 = 32510,
 		/// <summary>
-		/// Level: 1
+		/// Level: 76
 		/// Rank: WorldBoss
 		/// </summary>
 		KhanokTheImpassable_2 = 32511,
@@ -115700,12 +115702,12 @@ namespace WCell.Constants.NPCs
 		LoqueNahak = 32517,
 		/// <summary>
 		/// Title: Warchief
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Thrall_9 = 32518,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74 - 75
 		/// </summary>
 		FailedExperiment = 32519,
 		/// <summary>
@@ -115713,7 +115715,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TotallyGenericBunnyAllPhase = 32520,
 		/// <summary>
-		/// Level: 1
+		/// Level: 76
 		/// Rank: WorldBoss
 		/// </summary>
 		Varimathras_3 = 32521,
@@ -116256,22 +116258,22 @@ namespace WCell.Constants.NPCs
 		SOTAHordeGun1 = 32656,
 		/// <summary>
 		/// Title: Captain of the Frostbreaker
-		/// Level: 1
+		/// Level: 72
 		/// </summary>
 		PrivateerStonemantle = 32657,
 		/// <summary>
 		/// Title: Captain of the Graceful Maiden
-		/// Level: 1
+		/// Level: 72
 		/// </summary>
 		PrivateerZierhut = 32658,
 		/// <summary>
 		/// Title: Captain of the Casket Carrier
-		/// Level: 1
+		/// Level: 70 - 80
 		/// </summary>
 		DreadCaptainWinge = 32659,
 		/// <summary>
 		/// Title: Captain of the Blightbringer
-		/// Level: 1
+		/// Level: 70 - 80
 		/// </summary>
 		DreadCaptainMoldyNadeux = 32660,
 		/// <summary>
@@ -116796,11 +116798,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IllidanStormrageKillCredit = 32797,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		SpringGatherer = 32798,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		SpringCollector = 32799,
 		/// <summary>
@@ -116946,11 +116948,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CorporalMoonstrike = 32835,
 		/// <summary>
-		/// Level: 1
+		/// Level: 12
 		/// </summary>
 		NoblegardenVendor = 32836,
 		/// <summary>
-		/// Level: 1
+		/// Level: 12
 		/// </summary>
 		NoblegardenMerchant = 32837,
 		/// <summary>
@@ -117482,7 +117484,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AlgalonStalker = 33086,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		SignalFireInvisman = 33087,
 		/// <summary>
@@ -118014,7 +118016,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SenJinValiant = 33285,
 		/// <summary>
-		/// Level: 1
+		/// Level: 8
 		/// </summary>
 		ElwynnForestWolf = 33286,
 		/// <summary>
@@ -119139,51 +119141,51 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ArthurDenny = 33603,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Alchemy = 33608,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Blacksmithing = 33609,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Enchanting = 33610,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Engineering = 33611,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Leatherworking = 33612,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Tailoring = 33613,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Jewelcrafting = 33614,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Inscription = 33615,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Herbalism = 33616,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Mining = 33617,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Skinning = 33618,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Cooking = 33619,
 		/// <summary>
@@ -119192,7 +119194,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EarthenStoneshaper = 33620,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		FirstAid = 33621,
 		/// <summary>
@@ -119201,7 +119203,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GoranSteelbreaker = 33622,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Fishing = 33623,
 		/// <summary>
@@ -119237,7 +119239,7 @@ namespace WCell.Constants.NPCs
 		WeslexQuickwrench_2 = 33629,
 		/// <summary>
 		/// Title: Master Alchemy Trainer
-		/// Level: 1
+		/// Level: 62
 		/// </summary>
 		Aelthin = 33630,
 		/// <summary>
@@ -119281,7 +119283,7 @@ namespace WCell.Constants.NPCs
 		ScribeLanloer = 33638,
 		/// <summary>
 		/// Title: Master Herbalism Trainer
-		/// Level: 1
+		/// Level: 62
 		/// </summary>
 		BotanistAlaenra = 33639,
 		/// <summary>
@@ -119295,7 +119297,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Irduil = 33641,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		LoremasterSkosiris = 33642,
 		/// <summary>
@@ -119440,7 +119442,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CrawlerMount = 33671,
 		/// <summary>
-		/// Level: 78
+		/// Level: 78 - 80
 		/// </summary>
 		KirinTorMage_2 = 33672,
 		/// <summary>
@@ -120059,7 +120061,7 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		SwiftQuelDoreiSteed = 33840,
+		QuelDoreiSteed = 33840,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -120079,7 +120081,7 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		QuelDoreiSteed = 33845,
+		QuelDoreiSteed_2 = 33845,
 		/// <summary>
 		/// Level: 80
 		/// Rank: Elite
@@ -120311,7 +120313,7 @@ namespace WCell.Constants.NPCs
 		KezzikTheStriker_3 = 33918,
 		/// <summary>
 		/// Title: Apprentice Arena Vendor
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		LeeniSmileySmalls_3 = 33919,
 		/// <summary>
@@ -120366,7 +120368,7 @@ namespace WCell.Constants.NPCs
 		EctonBrasstumbler_4 = 33929,
 		/// <summary>
 		/// Title: Apprentice Arena Vendor
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		LeeniSmileySmalls_4 = 33930,
 		/// <summary>
@@ -120386,32 +120388,32 @@ namespace WCell.Constants.NPCs
 		BigZokkTorquewrench_5 = 33933,
 		/// <summary>
 		/// Title: Apprentice Arena Vendor
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		EctonBrasstumbler_5 = 33934,
 		/// <summary>
 		/// Title: Arena Vendor
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		EveeCopperspring_6 = 33935,
 		/// <summary>
 		/// Title: Veteran Arena Vendor
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		NargleLashcord_5 = 33936,
 		/// <summary>
 		/// Title: Arena Vendor
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		XaziSmolderpipe_5 = 33937,
 		/// <summary>
 		/// Title: Apprentice Arena Vendor
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ZomBocom_5 = 33938,
 		/// <summary>
 		/// Title: Veteran Arena Vendor
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		ArgexIrongut_5 = 33939,
 		/// <summary>
@@ -120610,7 +120612,7 @@ namespace WCell.Constants.NPCs
 		HeartOfTheDeconstructor1 = 33995,
 		/// <summary>
 		/// Title: Grain & Feed Vendor
-		/// Level: 1
+		/// Level: 5
 		/// </summary>
 		WilliamSaldean = 33996,
 		/// <summary>
@@ -120746,7 +120748,7 @@ namespace WCell.Constants.NPCs
 		SergeantThunderhorn_6 = 34037,
 		/// <summary>
 		/// Title: Apprentice Armor Quartermaster
-		/// Level: 1
+		/// Level: 65
 		/// </summary>
 		SergeantThunderhorn_7 = 34038,
 		/// <summary>
@@ -120766,11 +120768,11 @@ namespace WCell.Constants.NPCs
 		PhantomGhostfish = 34042,
 		/// <summary>
 		/// Title: Jewelcrafting Quartermaster
-		/// Level: 1
+		/// Level: 65
 		/// </summary>
 		LadyPalanseer_7 = 34043,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BrannBronzebeard_9 = 34044,
@@ -120819,7 +120821,7 @@ namespace WCell.Constants.NPCs
 		DorisVolanthius_5 = 34059,
 		/// <summary>
 		/// Title: Veteran Armor Quartermaster
-		/// Level: 1
+		/// Level: 70
 		/// Rank: Elite
 		/// </summary>
 		DorisVolanthius_6 = 34060,
@@ -120834,8 +120836,8 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BloodGuardZarshi_3 = 34062,
 		/// <summary>
-		/// Title: Armor Quartermaster
-		/// Level: 1
+		/// Title: Northrend Armor Quartermaster
+		/// Level: 65
 		/// </summary>
 		BloodGuardZarshi_4 = 34063,
 		/// <summary>
@@ -120878,7 +120880,7 @@ namespace WCell.Constants.NPCs
 		CaptainDirgehammer_6 = 34074,
 		/// <summary>
 		/// Title: Apprentice Armor Quartermaster
-		/// Level: 1
+		/// Level: 65
 		/// </summary>
 		CaptainDirgehammer_7 = 34075,
 		/// <summary>
@@ -120893,7 +120895,7 @@ namespace WCell.Constants.NPCs
 		LieutenantTristia_6 = 34077,
 		/// <summary>
 		/// Title: Veteran Armor Quartermaster
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		LieutenantTristia_7 = 34078,
 		/// <summary>
@@ -120908,7 +120910,7 @@ namespace WCell.Constants.NPCs
 		CaptainONeal_6 = 34080,
 		/// <summary>
 		/// Title: Jewelcrafting Quartermaster
-		/// Level: 1
+		/// Level: 65
 		/// </summary>
 		CaptainONeal_7 = 34081,
 		/// <summary>
@@ -120922,8 +120924,8 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KnightLieutenantMoonstrike_3 = 34083,
 		/// <summary>
-		/// Title: Armor Quartermaster
-		/// Level: 1
+		/// Title: Northrend Armor Quartermaster
+		/// Level: 75
 		/// </summary>
 		KnightLieutenantMoonstrike_4 = 34084,
 		/// <summary>
@@ -120968,7 +120970,7 @@ namespace WCell.Constants.NPCs
 		TrapjawRix_2 = 34092,
 		/// <summary>
 		/// Title: Exceptional Arena Weaponry
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		BlazzekTheBiter_3 = 34093,
 		/// <summary>
@@ -120978,7 +120980,7 @@ namespace WCell.Constants.NPCs
 		GrexBrainboiler_3 = 34094,
 		/// <summary>
 		/// Title: Exceptional Arena Weaponry
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		TrapjawRix_3 = 34095,
 		/// <summary>
@@ -121201,7 +121203,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BlueSkeletalWarhorse = 34154,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		WhiteKodo = 34155,
 		/// <summary>
@@ -121513,7 +121515,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LightningChargedIronDwarf1 = 34237,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		BlackSkeletalHorse_2 = 34238,
 		/// <summary>
@@ -121712,6 +121714,10 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		ThePostmaster = 34337,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
 		SilithidEggFeedingCredit = 34338,
 		/// <summary>
 		/// Level: 1
@@ -121732,7 +121738,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CalicoCat = 34364,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		OrphanMatronAria = 34365,
 		/// <summary>
@@ -121754,37 +121760,38 @@ namespace WCell.Constants.NPCs
 		ELMAttacker = 34436,
 		/// <summary>
 		/// Title: Priest
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		VivienneBlackwhisper = 34441,
 		/// <summary>
 		/// Title: Shaman
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		Thrakgar = 34444,
 		/// <summary>
 		/// Title: Paladin
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		LiandraSuncaller = 34445,
 		/// <summary>
 		/// Title: Priest
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		CaiphusTheStern = 34447,
 		/// <summary>
 		/// Title: Hunter
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		RujKah = 34448,
 		/// <summary>
 		/// Title: Mage
-		/// Level: 1
+		/// Level: 80
+		/// Rank: WorldBoss
 		/// </summary>
 		GinselleBlightslinger = 34449,
 		/// <summary>
@@ -121795,37 +121802,37 @@ namespace WCell.Constants.NPCs
 		Harkzog = 34450,
 		/// <summary>
 		/// Title: Druid
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		BiranaStormhoof = 34451,
 		/// <summary>
 		/// Title: Warrior
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		NarrhokSteelbreaker = 34453,
 		/// <summary>
 		/// Title: Rogue
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		MazDinah = 34454,
 		/// <summary>
 		/// Title: Shaman
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		BrolnStouthorn = 34455,
 		/// <summary>
 		/// Title: Death Knight
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		GorgrimShadowcleave = 34458,
 		/// <summary>
 		/// Title: Druid
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		ErinMisthoof = 34459,
@@ -121914,12 +121921,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Shocuul = 34475,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		EydisDarkbane = 34496,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		FjolaLightbane = 34497,
@@ -121937,11 +121944,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WolvarOrphan = 34520,
 		/// <summary>
-		/// Level: 1
+		/// Level: 55
 		/// </summary>
 		AponiBrightmane = 34526,
 		/// <summary>
-		/// Level: 1
+		/// Level: 55
 		/// </summary>
 		TahuSagewind = 34528,
 		/// <summary>
@@ -121967,7 +121974,7 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		WhiteSkeletalWarhose = 34552,
+		WhiteSkeletalWarhorse = 34552,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -122001,7 +122008,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDStinkBombTarget = 34562,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		AnubArak_2 = 34564,
@@ -122010,12 +122017,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InnocuousTownsman = 34565,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		DarkEssence = 34567,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LightEssence = 34568,
@@ -122032,25 +122039,25 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDBattleBotRed = 34589,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SwarmScarab = 34605,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FrostSphere = 34606,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		NerubianBurrower = 34607,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		ConcentratedDarkness = 34628,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		ConcentratedLight = 34630,
@@ -122086,7 +122093,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		JaelyneEvensongsMount = 34658,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		AnubArak_3 = 34660,
@@ -122100,11 +122107,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WilminaHolbeck = 34682,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		HealingStreamTotem_2 = 34686,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SearingTotem_3 = 34687,
 		/// <summary>
@@ -122130,7 +122137,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LanaStouthammer_2 = 34703,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ValKyrTwinsBulletStalkerDark = 34704,
 		/// <summary>
@@ -122151,40 +122158,40 @@ namespace WCell.Constants.NPCs
 		EllenMoore = 34710,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 40
 		/// </summary>
 		SkyCaptainDustyBlastnut = 34715,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CaptiveAspirant = 34716,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 26
 		/// </summary>
 		CrewmanPipewrench = 34717,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 26
 		/// </summary>
 		CrewmanDeadbolt = 34718,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 26
 		/// </summary>
 		CrewmanGrit = 34719,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ValKyrTwinsBulletStalkerLight = 34720,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 40
 		/// </summary>
 		ChiefOfficerOgrah = 34721,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 40
 		/// </summary>
 		WatcherTolwe = 34723,
 		/// <summary>
@@ -122193,12 +122200,12 @@ namespace WCell.Constants.NPCs
 		ShimmeringWyrmling = 34724,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 78 - 80
+		/// Level: 80
 		/// </summary>
 		DarkZealot = 34728,
 		/// <summary>
 		/// Title: The Zephyr
-		/// Level: 1
+		/// Level: 40
 		/// </summary>
 		NavigatorZippik = 34730,
 		/// <summary>
@@ -122211,11 +122218,11 @@ namespace WCell.Constants.NPCs
 		DNDMagicRoosterTaurenMale = 34732,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 78 - 80
+		/// Level: 80
 		/// </summary>
 		DarkRitualist = 34734,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BlackKnightsGrave = 34735,
 		/// <summary>
@@ -122239,7 +122246,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CranberryChutneyProxy = 34741,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ValKyrTwinsBulletController = 34743,
 		/// <summary>
@@ -122252,12 +122259,12 @@ namespace WCell.Constants.NPCs
 		HealingMarker = 34755,
 		/// <summary>
 		/// Title: Thunder Bluff Zeppelin Master
-		/// Level: 1
+		/// Level: 45
 		/// </summary>
 		ZelliHotnozzle = 34765,
 		/// <summary>
 		/// Title: Orgrimmar Zeppelin Master
-		/// Level: 1
+		/// Level: 45
 		/// </summary>
 		KrendleBigpockets = 34766,
 		/// <summary>
@@ -122266,7 +122273,7 @@ namespace WCell.Constants.NPCs
 		MacabreMarionette = 34770,
 		/// <summary>
 		/// Title: The Sunreavers
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GiranaTheBlooded = 34771,
 		/// <summary>
@@ -122275,32 +122282,32 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		VasarinRedmorn = 34772,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Demolisher = 34775,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SiegeEngine = 34776,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SiegeTurret = 34777,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FlameTurret = 34778,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LordJaraxxus = 34780,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ChampionsController = 34781,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		LegionFlame = 34784,
 		/// <summary>
@@ -122308,11 +122315,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GormokZealot = 34788,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		HuntsmanAloke = 34789,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Catapult = 34793,
 		/// <summary>
@@ -122320,27 +122327,27 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Immuyak = 34794,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		GormokTheImpaler = 34796,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Icehowl = 34797,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Dreadscale = 34799,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SnoboldVassal = 34800,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GlaiveThrower = 34802,
 		/// <summary>
@@ -122353,7 +122360,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DeathspeakerKharos = 34808,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CoDEyeProxy = 34810,
 		/// <summary>
@@ -122361,17 +122368,17 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheTurkeyChair = 34812,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		InfernalVolcano = 34813,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		FelflameInfernal = 34815,
 		/// <summary>
 		/// Title: Argent Coliseum Master
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BarrettRamsey = 34816,
@@ -122392,11 +122399,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheSweetPotatoChair = 34824,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		NetherPortal = 34825,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		MistressOfPain = 34826,
@@ -122413,52 +122420,52 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SlainTualiqVillager = 34852,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: WorldBoss
 		/// </summary>
 		FireBomb = 34854,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		DwarvenColiseumSpectator = 34856,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		TrollColiseumSpectator = 34857,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		TaurenColiseumSpectator = 34858,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		OrcishColiseumSpectator = 34859,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ForsakenColiseumSpectator = 34860,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		BloodElfColiseumSpectator = 34861,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		NerubianBurrow = 34862,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		DraeneiColiseumSpectator = 34868,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		GnomishColiseumSpectator = 34869,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		HumanColiseumSpectator = 34870,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		NightElfColiseumSpectator = 34871,
 		/// <summary>
@@ -122467,7 +122474,7 @@ namespace WCell.Constants.NPCs
 		TualiqVillagerProxy = 34879,
 		/// <summary>
 		/// Title: The Silver Covenant
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		NarasiSnowdawn = 34880,
 		/// <summary>
@@ -122476,20 +122483,20 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HirenLoresong = 34881,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		HighCrusaderAdelard = 34882,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXHorde = 34883,
 		/// <summary>
 		/// Title: Crusader's Quartermaster
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		DameEvnikiKapsalis = 34885,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXAlliance = 34887,
 		/// <summary>
@@ -122501,31 +122508,31 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SnowblindFollowerProxy = 34899,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXHuman = 34900,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXOrc = 34901,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXTroll = 34902,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXTauren = 34903,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXBloodElf = 34904,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXUndead = 34905,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXDwarf = 34906,
 		/// <summary>
@@ -122533,57 +122540,57 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KvaldirHarpooner = 34907,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXDraenei = 34908,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXNightElf = 34909,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorFXGnome = 34910,
 		/// <summary>
 		/// Title: The Silver Covenant
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SaviniaLoresong = 34912,
 		/// <summary>
 		/// Title: The Sunreavers
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TylosDawnrunner = 34914,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78 - 79
 		/// </summary>
 		StormforgedMarauder = 34915,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		KorKronGuard = 34918,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SevenThLegionInfantry = 34919,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		DeepJormungar = 34920,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		OverlordAgmar_2 = 34922,
 		/// <summary>
 		/// Title: 7th Legion
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		HighCommanderHalfordWyrmbane_2 = 34924,
 		/// <summary>
 		/// Level: 82
-		/// Rank: WorldBoss
+		/// Rank: Elite
 		/// </summary>
 		NorthSeaKraken = 34925,
 		/// <summary>
@@ -122592,17 +122599,17 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ArgentConfessorPaletress_2 = 34928,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceGunshipCannon = 34929,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70 - 80
 		/// Rank: Elite
 		/// </summary>
 		HordeGunshipCannon = 34935,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		KeepCannon = 34944,
@@ -122611,41 +122618,41 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KvaldirBerserker = 34947,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		IsleOfConquestEmissary = 34948,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		IsleOfConquestEnvoy = 34949,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		IsleOfConquestEmissary_2 = 34950,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		IsleOfConquestEnvoy_2 = 34951,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		IsleOfConquestPortal = 34952,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		IsleOfConquestPortal_2 = 34953,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		KargSkullgore = 34955,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		KulTheReckless = 34956,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		AllianceGunshipCaptain = 34960,
 		/// <summary>
@@ -122653,11 +122660,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MistcallerYngvar = 34965,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator = 34966,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator_2 = 34970,
 		/// <summary>
@@ -122673,31 +122680,31 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IrissaBloodstar = 34973,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator_3 = 34974,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator_4 = 34975,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		RukWarstomper = 34976,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator_5 = 34977,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		MoshaStarhorn = 34978,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArgentCrusadeSpectator_6 = 34979,
 		/// <summary>
@@ -122707,17 +122714,17 @@ namespace WCell.Constants.NPCs
 		DrottinnHrothgar = 34980,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		DeathstalkerFane = 34983,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		WorldTriggerNotFloating = 34984,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		Misery = 34985,
@@ -122729,7 +122736,7 @@ namespace WCell.Constants.NPCs
 		LiedelTheJust = 34986,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		Hunara = 34987,
@@ -122747,7 +122754,7 @@ namespace WCell.Constants.NPCs
 		RissaShadeleaf = 34989,
 		/// <summary>
 		/// Title: King of Stormwind
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		KingVarianWrynn_4 = 34990,
@@ -122759,24 +122766,24 @@ namespace WCell.Constants.NPCs
 		BorimGoldhammer = 34991,
 		/// <summary>
 		/// Title: Ruler of Theramore
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		LadyJainaProudmoore_8 = 34992,
 		/// <summary>
 		/// Title: Warchief
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Thrall_10 = 34994,
 		/// <summary>
 		/// Title: Overlord of the Warsong Offensive
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		GarroshHellscream_2 = 34995,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		HighlordTirionFordring_9 = 34996,
@@ -122817,11 +122824,15 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		AsaraDawnblaze = 35002,
 		/// <summary>
+		/// Level: 80
+		/// </summary>
+		HordeGunshipCaptain = 35003,
+		/// <summary>
 		/// Level: 1
 		/// </summary>
 		JaerenSunsworn = 35004,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArelasBrightstar = 35005,
 		/// <summary>
@@ -122832,7 +122843,7 @@ namespace WCell.Constants.NPCs
 		LixaFelflinger = 35007,
 		/// <summary>
 		/// Title: Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		Sawemba = 35008,
@@ -122845,25 +122856,25 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		OrnolfTheScarred = 35012,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		KoralonTheFlameWatcher = 35013,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BeastsController = 35014,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BurningBreathKoralonStalker = 35015,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		PhArgentRaidSpectatorGenericBunny = 35016,
 		/// <summary>
 		/// Title: Isle of Conquest Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		GoromWarfang = 35017,
@@ -122887,7 +122898,7 @@ namespace WCell.Constants.NPCs
 		DracienFlanning = 35024,
 		/// <summary>
 		/// Title: Isle of Conquest Battlemaster
-		/// Level: 1
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		LynetteBracer = 35025,
@@ -122919,10 +122930,15 @@ namespace WCell.Constants.NPCs
 		MemoryOfHakkar = 35034,
 		/// <summary>
 		/// Title: Argent Coliseum Master
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BarrettRamsey_2 = 35035,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		MemoryOfVekNilash = 35036,
 		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
@@ -122985,6 +123001,14 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		NorthSeaThresher = 35060,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		NorthSeaBlueShark = 35061,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
 		FuriousChargeStalker = 35062,
 		/// <summary>
 		/// Title: The Earthen Ring
@@ -122992,13 +123016,21 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GoturaFourwinds = 35068,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SiegeEngine_2 = 35069,
 		/// <summary>
 		/// Level: 79 - 80
 		/// </summary>
 		FirehawkMariner = 35070,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		NorthSeaMako = 35071,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		AngryKvaldir = 35072,
 		/// <summary>
 		/// Title: The Earthen Ring
 		/// Level: 55
@@ -123021,7 +123053,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		KvaldirHarpoonerDead = 35084,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BlackKnightSpellProxy = 35089,
 		/// <summary>
@@ -123038,7 +123070,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WindRiderJahubo = 35093,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CrusaderSilverdawn = 35094,
 		/// <summary>
@@ -123077,13 +123109,18 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WavecrestMarinerMaleDead = 35105,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BlackKnightCaster = 35106,
 		/// <summary>
 		/// Level: 80
 		/// </summary>
 		DoctorKohler = 35113,
+		/// <summary>
+		/// Title: Cult of the Damned
+		/// Level: 1
+		/// </summary>
+		CultSaboteur = 35116,
 		/// <summary>
 		/// Level: 80
 		/// </summary>
@@ -123094,6 +123131,11 @@ namespace WCell.Constants.NPCs
 		/// Rank: Elite
 		/// </summary>
 		EadricThePure_2 = 35119,
+		/// <summary>
+		/// Title: Cult of the Damned
+		/// Level: 1
+		/// </summary>
+		CultAssassin = 35127,
 		/// <summary>
 		/// Title: Gryphon Keeper
 		/// Level: 70
@@ -123115,46 +123157,54 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WindRiderSabamba = 35135,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		FlameWarder = 35143,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Acidmaw = 35144,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		SilverCovenantHippogryph_2 = 35147,
+		/// <summary>
+		/// Level: 1 - 2
+		/// </summary>
 		StripedDawnsaber = 35168,
 		/// <summary>
-		/// Level: 1
+		/// Level: 1 - 2
 		/// </summary>
 		OchreSkeletalWarhorse = 35169,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SlimePool = 35176,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		ArgentCharger_2 = 35179,
 		/// <summary>
 		/// Level: 80
 		/// Rank: RareElite
 		/// </summary>
 		Skoll = 35189,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		MobileBurrowTarget = 35226,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SessileBurrowTarget = 35227,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		DeathShade = 35255,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GlaiveThrower_2 = 35273,
 		/// <summary>
@@ -123164,22 +123214,22 @@ namespace WCell.Constants.NPCs
 		Rukua = 35281,
 		/// <summary>
 		/// Title: Stable Master
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		SteenHorngrass = 35290,
 		/// <summary>
 		/// Title: Stable Master
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		Moonbell = 35291,
 		/// <summary>
 		/// Title: Steen's Pet
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		Froggle = 35292,
 		/// <summary>
 		/// Title: Moonbell's Pet
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		Anmarie = 35293,
 		/// <summary>
@@ -123187,7 +123237,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IcecrownCultistProxy = 35297,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		RoyalGryphon = 35299,
 		/// <summary>
@@ -123223,23 +123273,23 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SilverBladeSailor = 35319,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		LadyJainaProudmoore_9 = 35320,
 		/// <summary>
 		/// Title: King of Stormwind
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		KingVarianWrynn_5 = 35321,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		StormwindRoyalGuard_2 = 35322,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SenJinChampion_3 = 35323,
@@ -123248,12 +123298,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		NorthSeaShark = 35324,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ThunderBluffChampion_3 = 35325,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SilvermoonChampion_3 = 35326,
@@ -123315,21 +123365,21 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BognarIronfoot = 35344,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GnomishMechanic = 35345,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GoblinMechanic_2 = 35346,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HighlordTirionFordring_10 = 35361,
 		/// <summary>
 		/// Title: Experience Eliminator
-		/// Level: 1
+		/// Level: 19
 		/// </summary>
 		Slahtz = 35364,
 		/// <summary>
@@ -123339,22 +123389,22 @@ namespace WCell.Constants.NPCs
 		Behsten = 35365,
 		/// <summary>
 		/// Title: Warchief
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		Thrall_11 = 35368,
 		/// <summary>
 		/// Title: Overlord of the Warsong Offensive
-		/// Level: 1
+		/// Level: 75
 		/// Rank: WorldBoss
 		/// </summary>
 		GarroshHellscream_3 = 35372,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		TournamentWindRider = 35373,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		JumpTarget = 35376,
 		/// <summary>
@@ -123402,31 +123452,35 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GundrakHatchling = 35400,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TheBlackKnight_3 = 35444,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		ArgentWarhorse_4 = 35445,
 		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
 		TheBlackKnight_4 = 35451,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		WilfredFizzlebang = 35458,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		KorKronElite_5 = 35460,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		TheBlackKnightImage = 35461,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TragHighmountain = 35462,
 		/// <summary>
@@ -123434,16 +123488,16 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Zhaagrym = 35465,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Akiak = 35467,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		GormokTheImpaler_2 = 35469,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Icehowl_2 = 35470,
@@ -123452,34 +123506,34 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SornProudmane = 35471,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		HuntsmanYahto = 35472,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		ArgentTournamentPost = 35473,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		VengefulValKyr = 35474,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		VisitingWarlock = 35475,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		WilfredFizzlebang_2 = 35476,
 		/// <summary>
-		/// Level: 1
+		/// Level: 6
 		/// </summary>
 		LittleAdeline = 35477,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		HungryJormungar = 35482,
@@ -123504,17 +123558,17 @@ namespace WCell.Constants.NPCs
 		MagistrixVesara = 35495,
 		/// <summary>
 		/// Title: Cloth Armor Merchant
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		RuebenLauren = 35496,
 		/// <summary>
 		/// Title: Leather Armor Merchant
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		RafaelLangrom = 35497,
 		/// <summary>
 		/// Title: Plate Armor Merchant
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		HoraceHunderland = 35498,
 		/// <summary>
@@ -123523,12 +123577,12 @@ namespace WCell.Constants.NPCs
 		HuntsmanLokni = 35499,
 		/// <summary>
 		/// Title: Mail Armor Merchant
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		MatildaBrightlink = 35500,
 		/// <summary>
 		/// Title: Voice of the Argent Tournament
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		HeraldBeluus = 35501,
 		/// <summary>
@@ -123563,19 +123617,19 @@ namespace WCell.Constants.NPCs
 		RisenArelasBrightstar = 35564,
 		/// <summary>
 		/// Title: Grand Champion of Silvermoon
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		EresseaDawnsinger_2 = 35569,
 		/// <summary>
 		/// Title: Grand Champion of Sen'jin
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ZulTore_2 = 35570,
 		/// <summary>
 		/// Title: Grand Champion of the Thunder Bluff
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		RunokWildmane_2 = 35571,
@@ -123631,7 +123685,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ArgentPeacekeeper_3 = 35587,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		JaerenSunsworn_2 = 35589,
 		/// <summary>
@@ -123641,7 +123695,7 @@ namespace WCell.Constants.NPCs
 		RisenChampion = 35590,
 		/// <summary>
 		/// Title: Steam-Powered Auctioneer
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BrassboltMechawrench = 35594,
 		/// <summary>
@@ -123682,23 +123736,23 @@ namespace WCell.Constants.NPCs
 		ArcanistNazalia = 35601,
 		/// <summary>
 		/// Title: Wintergrasp Battle-Mage
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		MagisterSavarin = 35602,
 		/// <summary>
 		/// Title: Wintergrasp Battle-Mage
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		MagisterDalhyr = 35603,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		ArelasBrightstar_2 = 35604,
 		/// <summary>
 		/// Title: Steam-Powered Auctioneer
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ReginaldArcfire = 35607,
 		/// <summary>
@@ -123706,12 +123760,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDDalaranArgentTournamentHeraldBunny = 35608,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Cat_2 = 35610,
 		/// <summary>
 		/// Title: Wintergrasp Battle-Mage
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		MagistrixErembria = 35611,
@@ -123740,7 +123794,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DeathstalkerViscerisMount = 35634,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		EresseaDawnsingersMount = 35635,
 		/// <summary>
@@ -123756,11 +123810,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		MokraTheSkullcrushersMount = 35638,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		RunokWildmanesMount = 35640,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ZulToresMount = 35641,
 		/// <summary>
@@ -123770,9 +123824,9 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		ArgentWarhorse_4 = 35644,
+		ArgentWarhorse_5 = 35644,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Wormhole = 35646,
 		/// <summary>
@@ -123780,12 +123834,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PurpleGroundRuneArgentRaid = 35651,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SkitteringScarab = 35763,
 		/// <summary>
 		/// Title: Argent Coliseum Master
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BarrettRamsey_3 = 35766,
@@ -123795,13 +123849,13 @@ namespace WCell.Constants.NPCs
 		ColososMount = 35768,
 		/// <summary>
 		/// Title: Argent Coliseum Master
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BarrettRamsey_4 = 35770,
 		/// <summary>
 		/// Title: Argent Coliseum Master
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BarrettRamsey_5 = 35771,
@@ -123811,7 +123865,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		UsuriBrightcoin = 35790,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SwiftAllianceSteed = 35808,
 		/// <summary>
@@ -123820,19 +123874,19 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BrokenKeepCannon = 35819,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BeastsTaplist = 35820,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ChampionsTaplist = 35821,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		KayeToogie = 35826,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		TheLichKing_17 = 35877,
@@ -123843,7 +123897,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BarrettRamsey_6 = 35909,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SunreaverDragonhawk_2 = 35984,
@@ -123856,104 +123910,108 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheBlackBrewmaiden_2 = 36024,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		FjolaLightbane_2 = 36065,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		EydisDarkbane_2 = 36066,
 		/// <summary>
-		/// Level: 1
+		/// Level: 25
 		/// </summary>
 		ArgentCustodian = 36069,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Treant_2 = 36070,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		VaultStalker = 36093,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HighlordTirionFordring_11 = 36095,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ArgentMage = 36097,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		AnubArakTapList = 36099,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		PriestessAlorah = 36101,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		PriestGrimmin = 36102,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		AntharForgemender_2 = 36108,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		BaelnorLightbearer_2 = 36109,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		NoozleWhizzlestick_2 = 36114,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		MeladorValestrider_2 = 36116,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		Shocuul_2 = 36118,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		CaiphusTheStern_2 = 36119,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		MalithusBrightblade = 36120,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		MazDinah_2 = 36121,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		NarrhokSteelbreaker_2 = 36122,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		Harkzog_2 = 36124,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		NavigatorTaylor = 36151,
+		DNDForsakenMariner = 36148,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		NavigatorTaylor = 36151,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		NavigatorSaracen = 36152,
 		/// <summary>
@@ -123961,19 +124019,24 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		DNDValgardePeon = 36154,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		AnzimControllerBunny = 36155,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GoblinEngineeringCrew = 36162,
 		/// <summary>
 		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		KorKronReaver_2 = 36164,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		SevenThLegionDeckhand = 36165,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SevenThLegionMarine = 36166,
@@ -123990,11 +124053,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WorldTriggerInfiniteAOI = 36171,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		InnocuousScarab = 36173,
 		/// <summary>
-		/// Level: 1
+		/// Level: 50
 		/// </summary>
 		XerashFireblade = 36208,
 		/// <summary>
@@ -124004,36 +124067,52 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		DNDCrazedApothecaryGenerator = 36212,
+		/// <summary>
+		/// Level: 75
+		/// </summary>
 		KorKronOverseer = 36213,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		OverseerKraggosh = 36217,
 		/// <summary>
-		/// Level: 1
+		/// Level: 10
 		/// </summary>
 		SwiftHordeWolf = 36223,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerClea = 36224,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerAnya = 36225,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerCyndia = 36226,
 		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		ApothecaryFrye = 36272,
+		/// <summary>
 		/// Title: Kor'kron Captain
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BragorBloodfist = 36273,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		ApothecaryHummel = 36296,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -124043,27 +124122,27 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		HonorableDefenderTrigger25YdHorde = 36350,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SiegeTurret_2 = 36355,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FlameTurret_2 = 36356,
 		/// <summary>
 		/// Title: Krick's Minion
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		Ick = 36476,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Krick = 36477,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 77 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulguardWatchman = 36478,
@@ -124081,7 +124160,7 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TuskarrKite = 36482,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80 - 82
 		/// Rank: Elite
 		/// </summary>
 		ForgemasterGarfrost = 36494,
@@ -124091,24 +124170,24 @@ namespace WCell.Constants.NPCs
 		ForgemasterPutridusInvisibleStalker = 36495,
 		/// <summary>
 		/// Title: Godfather of Souls
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		Bronjahm = 36497,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 77 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulguardReaper = 36499,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		DevourerOfSouls = 36502,
 		/// <summary>
 		/// Title: The Highborne
-		/// Level: 1
+		/// Level: 55
 		/// </summary>
 		DarosMoonlance = 36506,
 		/// <summary>
@@ -124116,24 +124195,32 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SoulguardBeamFocusTarget = 36508,
 		/// <summary>
-		/// Title: Cult of the Damned
 		/// Level: 1
+		/// </summary>
+		SpectralTigerCub = 36511,
+		/// <summary>
+		/// Title: Cult of the Damned
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulguardAnimator = 36516,
 		/// <summary>
 		/// Title: The Deathstalkers
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AlericHawkins = 36517,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulHorror = 36522,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
+		/// </summary>
+		DNDValentineBossVialBunny = 36530,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		CorruptedSoulFragment = 36535,
@@ -124142,36 +124229,46 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WellOfSouls = 36536,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		BeastsCombatStalker = 36549,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// </summary>
 		SpitefulApparition = 36551,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
-		ArgentWarhorse_5 = 36557,
+		ArgentWarhorse_6 = 36557,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ArgentBattleworg = 36558,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ArgentBattleworg_2 = 36559,
 		/// <summary>
-		/// Level: 1
+		/// Level: 77 - 80
 		/// Rank: Elite
 		/// </summary>
 		OnyxianLairGuard = 36561,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulguardBonecaster = 36564,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 79 - 82
+		/// Rank: Elite
+		/// </summary>
+		ApothecaryBaxter = 36565,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		CrazedApothecary = 36568,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -124189,102 +124286,110 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ExplodingOrb = 36610,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		LordMarrowgar = 36612,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BoneSpike = 36619,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		SoulguardAdept = 36620,
 		/// <summary>
 		/// Title: The Silver Covenant
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CaladisBrightspear = 36624,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Festergut = 36626,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		Rotface = 36627,
 		/// <summary>
 		/// Title: Sunreavers
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		MyralionSunblaze = 36642,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		DNDValentineBossManager = 36643,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
 		SilverCovenantSentinel = 36656,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SunreaverWarMage = 36657,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		ScourgelordTyrannus = 36658,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		AbominationWingOrangeGasStalker = 36659,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		Rimefang = 36661,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		SpectralWarden = 36666,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ArcanistTybalin = 36669,
 		/// <summary>
 		/// Title: The Sunreavers
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		MagisterHathorel = 36670,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Coldflame = 36672,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		ProfessorPutricide = 36678,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		QuelDelarKrasusCredit = 36715,
+		DNDApothecaryTableSpellEffect = 36710,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		QuelDelarKrasusCredit = 36715,
+		/// <summary>
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		FrostswornGeneral = 36723,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ServantOfTheThrone = 36724,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		NerubArBroodkeeper = 36725,
@@ -124298,66 +124403,76 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InvisibleStalkerIcecrownDungeonTrap = 36736,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceSlave = 36764,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceSlave_2 = 36765,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceSlave_3 = 36766,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		AllianceSlave_4 = 36767,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HordeSlave = 36770,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HordeSlave_2 = 36771,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HordeSlave_3 = 36772,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HordeSlave_4 = 36773,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SilverCovenantAgent = 36774,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SunreaverAgent = 36776,
 		/// <summary>
 		/// Title: Night Elf Mohawk's Companion
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		MightyFrostsaber = 36778,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		DeathwhisperNecrolyte = 36788,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
+		/// Rank: WorldBoss
+		/// </summary>
+		ValithriaDreamwalker = 36789,
+		/// <summary>
+		/// Level: 83
+		/// Rank: Elite
+		/// </summary>
+		BlazingSkeleton = 36791,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		ScourgelordTyrannus_2 = 36794,
@@ -124367,60 +124482,72 @@ namespace WCell.Constants.NPCs
 		CorruptedChampion = 36796,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DeathspeakerServant = 36805,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DeathspeakerDisciple = 36807,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DeathspeakerZealot = 36808,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DeathspeakerAttendant = 36811,
 		/// <summary>
-		/// Title: Cult of the Damned
 		/// Level: 1
+		/// </summary>
+		StormwindLoveBoat = 36812,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DNDLoveBoatSummoner = 36817,
+		/// <summary>
+		/// Title: Cult of the Damned
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		DeathspeakerHighPriest = 36829,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		WrathboneLaborer = 36830,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// </summary>
+		AllianceGunshipCannon_2 = 36838,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		HordeGunshipCannon_2 = 36839,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		YmirjarWrathbringer = 36840,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		FallenWarrior = 36841,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		WrathboneColdwraith = 36842,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		RisenDeathspeakerServant = 36844,
@@ -124433,16 +124560,16 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InvisibleStalker_2 = 36848,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Aquanos = 36851,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		LadyDeathwhisper = 36855,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ShandyGlossgleam = 36856,
 		/// <summary>
@@ -124450,74 +124577,78 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		CoreHoundPup = 36871,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DisturbedGlacialRevenant = 36874,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		WrathboneSkeleton = 36877,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		PlaguebornHorror = 36879,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DecayingColossus = 36880,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// </summary>
 		SkeletalSlave = 36881,
 		/// <summary>
-		/// Level: 1
+		/// Level: 20 - 23
+		/// </summary>
+		CrownApothecary = 36885,
+		/// <summary>
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		GeistAmbusher = 36886,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		RescuedAllianceSlave = 36888,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		RescuedHordeSlave = 36889,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		IcebornProtoDrake = 36891,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		YmirjarDeathbringer = 36892,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		YmirjarFlamebearer = 36893,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		StonespineGargoyle = 36896,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		LittleOoze = 36897,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		BigOoze = 36899,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// </summary>
 		WrathboneSiegesmith = 36907,
 		/// <summary>
@@ -124525,12 +124656,12 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PandarenMonk = 36911,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		EyeOfTheLichKing = 36913,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GhoulMinion_2 = 36916,
 		/// <summary>
@@ -124538,42 +124669,42 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EmpoweringOrbControllerStalker = 36934,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		HighOverlordSaurfang_6 = 36939,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// </summary>
 		RagingGhoul = 36940,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		RisenWitchDoctor = 36941,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WantsShirts = 36944,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WantsPants = 36945,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WantsUnmentionables = 36946,
 		/// <summary>
-		/// Level: 1
+		/// Level: 70
 		/// </summary>
 		WantsWater = 36947,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		MuradinBronzebeard = 36948,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerMarine_2 = 36950,
@@ -124583,29 +124714,49 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheLichKing_19 = 36954,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
 		/// </summary>
 		LadyJainaProudmoore_10 = 36955,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronReaver_3 = 36957,
+		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronSergeant = 36960,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerSergeant = 36961,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SpitefulApparitionAmbient = 36967,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronAxethrower = 36968,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerRifleman = 36969,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// </summary>
+		SkybreakerDeckhand_2 = 36970,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		OrgrimsHammerCrew_2 = 36971,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerMortarSoldier = 36978,
@@ -124613,6 +124764,11 @@ namespace WCell.Constants.NPCs
 		/// Level: 1
 		/// </summary>
 		LilKT = 36979,
+		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronRocketeer = 36982,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -124624,41 +124780,46 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LadySylvanasWindrunner_5 = 36990,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		LadyJainaProudmoore_11 = 36993,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerProtector = 36998,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerVindicator = 37003,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerDreadblade = 37004,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		StickyOoze = 37006,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		DeathboundWard = 37007,
 		/// <summary>
-		/// Level: 1
+		/// Level: 76 - 80
 		/// Rank: Elite
 		/// </summary>
 		TheDamned = 37011,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		AncientSkeletalSoldier = 37012,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		PuddleStalker = 37013,
 		/// <summary>
@@ -124666,96 +124827,105 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IceWallTarget = 37014,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerLuminary = 37016,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerAssassin = 37017,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerVicar = 37021,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		BlightedAbomination = 37022,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		PlagueScientist = 37023,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Stinky = 37025,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerSorcerer = 37026,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerHierophant = 37027,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronStalker = 37028,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
-		KorKronReaver_2 = 37029,
+		KorKronReaver_4 = 37029,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronPrimalist = 37030,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronOracle = 37031,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronDefender_2 = 37032,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronInvoker = 37033,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronTemplar = 37034,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronVanquisher = 37035,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		VengefulFleshreaper = 37038,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// </summary>
+		SkybreakerBattleStandard = 37041,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		KorKronBattleStandard = 37044,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SpiritualReflection = 37068,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		LumberingAbomination = 37069,
@@ -124764,93 +124934,177 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InvisibleStalkerIcecrownDungeonTrapController = 37071,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		Rogg = 37072,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		ValKyrHerald = 37098,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SpiritualReflection_2 = 37107,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerSorcerer_2 = 37116,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronBattleMage = 37117,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HighlordTirionFordring_12 = 37119,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HighlordDarionMograine_8 = 37120,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
+		/// Rank: Elite
+		/// </summary>
+		CaptainArnath_2 = 37122,
+		/// <summary>
+		/// Level: 81
+		/// Rank: Elite
+		/// </summary>
+		CaptainBrandon_2 = 37123,
+		/// <summary>
+		/// Level: 81
+		/// Rank: Elite
+		/// </summary>
+		CaptainGrondel_2 = 37124,
+		/// <summary>
+		/// Level: 81
+		/// Rank: Elite
+		/// </summary>
+		CaptainRupert_2 = 37125,
+		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		SisterSvalna = 37126,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		YmirjarFrostbinder = 37127,
+		/// <summary>
+		/// Title: Grand Champion of the Ebon Blade
+		/// Level: 83
+		/// Rank: Elite
+		/// </summary>
+		CrokScourgebane_2 = 37129,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		YmirjarBattleMaiden = 37132,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		YmirjarWarlord = 37133,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		YmirjarHuntress = 37134,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerMarksman = 37144,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronSniper = 37146,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SkybreakerSummoner = 37148,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronNecrolyte = 37149,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		QuelDelar = 37158,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		DetectiveSnapSnagglebolt = 37172,
+		/// <summary>
+		/// Level: 83
+		/// </summary>
 		TheLichKing_20 = 37181,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		HighCaptainJustinBartlett_2 = 37182,
+		/// <summary>
+		/// Level: 80
 		/// Rank: WorldBoss
 		/// </summary>
 		HighlordBolvarFordragon_4 = 37183,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: Elite
 		/// </summary>
 		ZafodBoombox = 37184,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		HighOverlordSaurfang_7 = 37187,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KorKronGeneral = 37189,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		AllianceCommander_2 = 37190,
+		/// <summary>
+		/// Level: 83
+		/// Rank: WorldBoss
+		/// </summary>
+		MuradinBronzebeard_2 = 37200,
+		/// <summary>
+		/// Level: 8 - 9
+		/// </summary>
+		CrownLackey = 37214,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		OrgrimsHammer_2 = 37215,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Precious_2 = 37217,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		LadyJainaProudmoore_12 = 37221,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -124863,7 +125117,7 @@ namespace WCell.Constants.NPCs
 		LadySylvanasWindrunner_6 = 37223,
 		/// <summary>
 		/// Title: Knight of the Silver Hand
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		UtherTheLightbringer_2 = 37225,
@@ -124873,11 +125127,11 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		TheLichKing_21 = 37226,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// </summary>
 		TeleportPortal = 37227,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SpireFrostwyrm = 37230,
@@ -124886,136 +125140,209 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		RopeBeamStalker = 37231,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// </summary>
 		TeleportExit = 37488,
 		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
-		ColiseumChampion = 37496,
+		CaptainArnath_3 = 37491,
 		/// <summary>
 		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		CaptainBrandon_3 = 37493,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		CaptainGrondel_3 = 37494,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		CaptainRupert_3 = 37495,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		ColiseumChampion = 37496,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ColiseumChampion_2 = 37497,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ColiseumChampion_3 = 37498,
 		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		NerubArChampion = 37501,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		NerubArWebweaver = 37502,
+		/// <summary>
 		/// Level: 1
+		/// </summary>
+		SindragosasWard = 37503,
+		/// <summary>
+		/// Level: 83
 		/// </summary>
 		SafeAreaIGB = 37519,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SpireFrostwyrmAmbient = 37528,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		Rimefang_2 = 37533,
+		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		Spinestalker = 37534,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		TheSkybreaker_2 = 37540,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		DNDShaker = 37543,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SpireGargoyle = 37544,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		SpireMinion = 37545,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		FrenziedAbomination = 37546,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81
 		/// </summary>
-		DamageTarget = 37547,
+		GunshipHull = 37547,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		LadySylvanasWindrunner_7 = 37554,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		DNDSomethingStinksKillCreditBunny = 37558,
+		/// <summary>
+		/// Level: 82
+		/// </summary>
 		GasCloud = 37562,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenAdvisor = 37571,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		FreedAllianceSlave = 37572,
+		/// <summary>
+		/// Level: 60
 		/// </summary>
 		DNDShakerSmall = 37574,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		FreedAllianceSlave_2 = 37575,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		FreedAllianceSlave_3 = 37576,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		FreedHordeSlave = 37577,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		FreedHordeSlave_2 = 37578,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		FreedHordeSlave_3 = 37579,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		MartinVictus = 37580,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		GorkunIronskull = 37581,
 		/// <summary>
 		/// Title: Kirin Tor
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ArchmageKoreln = 37582,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerKalira = 37583,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ColiseumChampion_4 = 37584,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		Fury_2 = 37586,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ColiseumChampion_5 = 37587,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ColiseumChampion_6 = 37588,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		StefanVadu_2 = 37589,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		MartinVictus_2 = 37591,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		GorkunIronskull_2 = 37592,
@@ -125026,7 +125353,7 @@ namespace WCell.Constants.NPCs
 		IcecrownDungeonHordeGunshipCannon = 37593,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenBloodKnight = 37595,
@@ -125037,41 +125364,41 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LadySylvanasWindrunner_8 = 37596,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
-		LadyJainaProudmoore_11 = 37597,
+		LadyJainaProudmoore_13 = 37597,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
 		ThalorienDawnseekerCredit = 37601,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenCommander = 37662,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenNoble = 37663,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenArchmage = 37664,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenLieutenant = 37665,
 		/// <summary>
 		/// Title: The San'layn
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkfallenTactician = 37666,
@@ -125080,22 +125407,37 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		Frostblade = 37670,
 		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		CrownSupplyGuard = 37671,
+		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
 		MutatedAbomination = 37672,
 		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 40 - 50
+		/// </summary>
+		LovelyMerchant = 37674,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 40 - 50
+		/// </summary>
+		PublicRelationsAgent = 37675,
+		/// <summary>
 		/// Title: Ashen Verdict Quartermaster
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		AlchemistFinklestein_2 = 37687,
 		/// <summary>
 		/// Title: Warrior Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CrusaderGrimtong = 37688,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CommanderKunz_2 = 37689,
 		/// <summary>
@@ -125104,15 +125446,15 @@ namespace WCell.Constants.NPCs
 		GrowingOozePuddle = 37690,
 		/// <summary>
 		/// Title: Paladin Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		CrusaderHalford = 37696,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// </summary>
 		VolatileOoze = 37697,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		RuneforgeBunny = 37702,
 		/// <summary>
@@ -125120,39 +125462,44 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		FrostmourneAltarBunnyQuelDelar = 37704,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		HungeringGhoul = 37711,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DeathwhisperShadowcaster = 37712,
 		/// <summary>
 		/// Title: Cult of the Damned
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DeathwhisperTorturer = 37713,
 		/// <summary>
-		/// Level: 1
+		/// Title: Venture Co.
+		/// Level: 30
+		/// </summary>
+		SnivelRustrocket = 37715,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		WrathboneSorcerer = 37728,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		WrathboneReaver = 37729,
 		/// <summary>
 		/// Title: Explorer's League
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		DruganDeepdraught = 37742,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		FrostFreezeTrap = 37744,
 		/// <summary>
@@ -125163,58 +125510,81 @@ namespace WCell.Constants.NPCs
 		Sindragosa_3 = 37755,
 		/// <summary>
 		/// Title: Kirin Tor
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ArchmageElandra = 37774,
 		/// <summary>
 		/// Title: Kirin Tor
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		ApprenticeNelphi = 37776,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerLoralen = 37779,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		DarkRangerVorel = 37780,
 		/// <summary>
-		/// Level: 1
+		/// Level: 75
 		/// </summary>
 		FleshEatingInsect = 37782,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		HealingStreamTotem_3 = 37810,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		DeathbringerSaurfang = 37813,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		AbominationWingMadScientistStalker = 37824,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		SkybreakerMarine_3 = 37830,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SkyReaverKormBlackscar_2 = 37833,
 		/// <summary>
+		/// Title: The San'layn
 		/// Level: 1
+		/// Rank: WorldBoss
+		/// </summary>
+		BloodQueenLanaThel = 37846,
+		/// <summary>
+		/// Level: 82
 		/// </summary>
 		SartharionImage = 37849,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// </summary>
 		AnubRekhanImage = 37850,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		NothThePlaguebringerImage = 37851,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
 		QuelDelarSkullTarget = 37852,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		InstructorRazuviousImage = 37853,
+		/// <summary>
+		/// Level: 82
 		/// </summary>
 		PatchwerkImage = 37854,
 		/// <summary>
@@ -125234,9 +125604,18 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		IgnisTheFurnaceMasterImage = 37859,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// </summary>
 		XT002DeconstructorImage = 37861,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		LordJaraxxusImage = 37862,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		Suppresser = 37863,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -125246,72 +125625,128 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		PerkyPug = 37865,
 		/// <summary>
-		/// Title: Cult of the Damned
+		/// Level: 81
+		/// Rank: Elite
+		/// </summary>
+		RisenArchmage = 37868,
+		/// <summary>
 		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		GluttonousAbomination = 37886,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_2 = 37887,
+		/// <summary>
+		/// Title: Flight Master
+		/// Level: 75
+		/// Rank: Elite
+		/// </summary>
+		FraxBucketdrop = 37888,
+		/// <summary>
+		/// Title: Cult of the Damned
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		CultFanatic = 37890,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		VampiricFiend = 37901,
-		/// <summary>
-		/// Level: 1
-		/// </summary>
-		ImprisonedSoul = 37906,
-		/// <summary>
-		/// Title: Bat Handler
-		/// Level: 1
-		/// </summary>
-		TimothyCunningham = 37915,
-		/// <summary>
-		/// Level: 1
-		/// Rank: Elite
-		/// </summary>
-		KorKronReaver_3 = 37920,
-		/// <summary>
-		/// Level: 1
-		/// Rank: Elite
-		/// </summary>
-		ArgentChampion_4 = 37928,
-		/// <summary>
-		/// Level: 1
-		/// Rank: Elite
-		/// </summary>
-		WarsongPeon_4 = 37930,
-		/// <summary>
-		/// Title: General Goods
-		/// Level: 1
-		/// Rank: Elite
-		/// </summary>
-		ApothecaryCandithTomas = 37935,
 		/// <summary>
 		/// Title: Blacksmith
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
-		MorganDayblaze = 37936,
+		ShelySteelbowels = 37903,
 		/// <summary>
-		/// Title: Emblem of Frost Quartermaster
+		/// Title: General Goods
 		/// Level: 1
+		/// Rank: Elite
 		/// </summary>
-		MagisterArlan = 37941,
-		/// <summary>
-		/// Title: Emblem of Frost Quartermaster
-		/// Level: 1
-		/// </summary>
-		ArcanistUovril = 37942,
+		BrazieGetz = 37904,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		DeathwhisperSpawnStalker = 37947,
+		ImprisonedSoul = 37906,
 		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
-		DeathwhisperController = 37948,
+		RotWorm = 37907,
+		/// <summary>
+		/// Title: Bat Handler
+		/// Level: 65
+		/// </summary>
+		TimothyCunningham = 37915,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		CrownThug = 37917,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		ColumnOfFrost = 37918,
+		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		KorKronReaver_5 = 37920,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		ArgentChampion_4 = 37928,
+		/// <summary>
+		/// Level: 60 - 65
+		/// Rank: Elite
+		/// </summary>
+		WarsongPeon_4 = 37930,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		BlisteringZombie = 37934,
+		/// <summary>
+		/// Title: General Goods
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		ApothecaryCandithTomas = 37935,
+		/// <summary>
+		/// Title: Blacksmith
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		MorganDayblaze = 37936,
+		/// <summary>
+		/// Title: Emblem of Frost Quartermaster
+		/// Level: 80
+		/// </summary>
+		MagisterArlan = 37941,
+		/// <summary>
+		/// Title: Emblem of Frost Quartermaster
+		/// Level: 80
+		/// </summary>
+		ArcanistUovril = 37942,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		DreamPortal = 37945,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DeathwhisperSpawnStalker = 37947,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		DeathwhisperController = 37948,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		CultAdherent = 37949,
@@ -125319,51 +125754,84 @@ namespace WCell.Constants.NPCs
 		/// Level: 1
 		/// Rank: WorldBoss
 		/// </summary>
-		BloodQueenLanaThel = 37955,
+		ValithriaDreamwalker_2 = 37950,
 		/// <summary>
 		/// Level: 1
+		/// Rank: WorldBoss
+		/// </summary>
+		BloodQueenLanaThel_2 = 37955,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		DNDLoveBoatSummoner02 = 37964,
+		/// <summary>
+		/// Level: 81
 		/// </summary>
 		ArgentCommander = 37965,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		UndercityLoveBoat = 37966,
+		/// <summary>
+		/// Level: 81
+		/// </summary>
 		EbonBladeCommander = 37967,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		ArgentHippogryph_2 = 37968,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		PrinceValanar_7 = 37970,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		PrinceKeleseth_7 = 37972,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		PrinceTaldaram_2 = 37973,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
+		DarnassusLoveBoat = 37980,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DNDLoveBoatSummoner03 = 37981,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		CrownDuster = 37984,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		DreamCloud = 37985,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
 		OozeSprayStalker = 37986,
 		/// <summary>
-		/// Title: Rogue Armor
 		/// Level: 1
+		/// </summary>
+		DNDSampleQuestKillCreditBunny = 37990,
+		/// <summary>
+		/// Title: Rogue Armor
+		/// Level: 80
 		/// </summary>
 		IkfirusTheVile = 37991,
 		/// <summary>
 		/// Title: Druid Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		Tortunok = 37992,
 		/// <summary>
 		/// Title: Hunter Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GerardoTheSuave = 37993,
 		/// <summary>
@@ -125371,15 +125839,34 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		WaterElemental_2 = 37994,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		EbonChampion = 37996,
 		/// <summary>
+		/// Title: Rogue Armor
+		/// Level: 80
+		/// </summary>
+		Yili = 37997,
+		/// <summary>
+		/// Title: Hunter Armor
+		/// Level: 80
+		/// </summary>
+		TalanMoonstrike = 37998,
+		/// <summary>
+		/// Title: Druid Armor
+		/// Level: 80
+		/// </summary>
+		AlanaMoonstrike = 37999,
+		/// <summary>
 		/// Level: 1
 		/// Rank: WorldBoss
 		/// </summary>
-		BloodQueenLanaThel_2 = 38004,
+		BloodQueenLanaThel_3 = 38004,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		CrownHoodlum = 38006,
 		/// <summary>
 		/// Level: 1
 		/// Rank: WorldBoss
@@ -125397,36 +125884,99 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		ReanimatedAdherent = 38010,
 		/// <summary>
-		/// Title: Ambassador of the Blue Dragonflight
 		/// Level: 1
+		/// </summary>
+		CrownAgent = 38016,
+		/// <summary>
+		/// Title: Ambassador of the Blue Dragonflight
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		Kalecgos_6 = 38017,
 		/// <summary>
-		/// Level: 1
+		/// Level: 54 - 56
+		/// </summary>
+		CrownSprinkler = 38023,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		WebWrap_3 = 38028,
 		/// <summary>
-		/// Title: Priest Armor
 		/// Level: 1
+		/// </summary>
+		CrownUnderling = 38030,
+		/// <summary>
+		/// Level: 73 - 75
+		/// </summary>
+		CrownSprayer = 38032,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		ChemicalWagon = 38035,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_3 = 38039,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_4 = 38040,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_5 = 38041,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_6 = 38042,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_7 = 38044,
+		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 1
+		/// </summary>
+		KweeQPeddlefeet_8 = 38045,
+		/// <summary>
+		/// Title: Priest Armor
+		/// Level: 80
 		/// </summary>
 		ScottTheMerciful = 38054,
 		/// <summary>
+		/// Title: Crown Chemical Co.
+		/// Level: 80
+		/// </summary>
+		CrownSupplySentry = 38065,
+		/// <summary>
+		/// Level: 30
+		/// </summary>
+		InspectorSnipSnagglebolt = 38066,
+		/// <summary>
 		/// Level: 1
+		/// </summary>
+		ManaVoid = 38068,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		PlaguedZombie = 38104,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		UnstableOozeExplosionStalker = 38107,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		Falric = 38112,
 		/// <summary>
-		/// Level: 1
+		/// Level: 81 - 82
 		/// Rank: Elite
 		/// </summary>
 		Marwyn = 38113,
@@ -125434,6 +125984,11 @@ namespace WCell.Constants.NPCs
 		/// Level: 1
 		/// </summary>
 		SoulFeastKillCreditBunny = 38121,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		YmirjarDeathbringer_2 = 38125,
 		/// <summary>
 		/// Title: Cult of the Damned
 		/// Level: 1
@@ -125446,18 +126001,22 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		EmpoweredAdherent = 38136,
 		/// <summary>
-		/// Level: 1
+		/// Level: 60
 		/// </summary>
 		TheLichKing_22 = 38153,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		Warhawk = 38154,
+		/// <summary>
+		/// Level: 80
 		/// </summary>
 		ChokingGasBomb = 38159,
 		/// <summary>
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
-		LadyJainaProudmoore_12 = 38160,
+		LadyJainaProudmoore_14 = 38160,
 		/// <summary>
 		/// Title: Banshee Queen
 		/// Level: 1
@@ -125466,6 +126025,10 @@ namespace WCell.Constants.NPCs
 		LadySylvanasWindrunner_9 = 38161,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		SwarmingShadows = 38163,
+		/// <summary>
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		PhantomMage = 38172,
@@ -125475,25 +126038,45 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		SpectralFootman = 38173,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		GhostlyPriest = 38175,
 		/// <summary>
-		/// Level: 1
+		/// Level: 78 - 80
 		/// Rank: Elite
 		/// </summary>
 		TorturedRifleman = 38176,
 		/// <summary>
-		/// Level: 1
+		/// Level: 79 - 80
 		/// Rank: Elite
 		/// </summary>
 		ShadowyMercenary = 38177,
 		/// <summary>
 		/// Title: Warlock Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		HaraggTheUnseen = 38181,
+		/// <summary>
+		/// Title: Warlock Armor
+		/// Level: 80
+		/// </summary>
+		NibyTheAlmighty_2 = 38182,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		CorruptedYmirjar = 38184,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		DreamPortalPreEffect = 38186,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		LadyJainaProudmoore_15 = 38188,
 		/// <summary>
 		/// Title: Banshee Queen
 		/// Level: 1
@@ -125501,24 +126084,28 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		LadySylvanasWindrunner_10 = 38189,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		TorgoTheElder = 38194,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SilverCovenantAgent_2 = 38200,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		SunreaverAgent_2 = 38201,
+		/// <summary>
+		/// Level: 30
+		/// </summary>
+		InvestigatorFezzenBrasstacks = 38208,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
 		WrathOfTheLichKingCredit = 38211,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		VengefulShade = 38222,
 		/// <summary>
@@ -125542,32 +126129,54 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		GrowingOozePuddleTrigger = 38234,
 		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		ImpalingSpear = 38248,
+		/// <summary>
 		/// Title: Mage Armor
-		/// Level: 1
+		/// Level: 80
+		/// </summary>
+		MalfusGrimfrost = 38283,
+		/// <summary>
+		/// Title: Mage Armor
+		/// Level: 80
 		/// </summary>
 		UvlusBanefire = 38284,
 		/// <summary>
-		/// Title: Honored Fisher
 		/// Level: 1
+		/// </summary>
+		LoveGuardPerfumeBunny = 38288,
+		/// <summary>
+		/// Level: 30
+		/// </summary>
+		JuniorInspector = 38293,
+		/// <summary>
+		/// Title: Honored Fisher
+		/// Level: 80
 		/// </summary>
 		ElderClearwater = 38294,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		JuniorDetective = 38295,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		OozeCoveredTentacleStalker = 38308,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		SlimyTentacleStalker = 38309,
 		/// <summary>
 		/// Title: Death Knight Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		OrmusThePenitent = 38316,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		TearGasTargetStalker = 38317,
 		/// <summary>
@@ -125575,20 +126184,74 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		BloodQueenDoor = 38319,
 		/// <summary>
+		/// Level: 30
+		/// </summary>
+		MarionSutton = 38325,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		Roka = 38328,
+		/// <summary>
 		/// Level: 1
 		/// </summary>
 		BallOfFlame = 38332,
 		/// <summary>
+		/// Title: Venture Co.
 		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_2 = 38334,
+		/// <summary>
+		/// Title: Venture Co.
+		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_3 = 38335,
+		/// <summary>
+		/// Title: Venture Co.
+		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_4 = 38336,
+		/// <summary>
+		/// Title: Venture Co.
+		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_5 = 38337,
+		/// <summary>
+		/// Title: Venture Co.
+		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_6 = 38338,
+		/// <summary>
+		/// Title: Venture Co.
+		/// Level: 1
+		/// </summary>
+		SnivelRustrocket_7 = 38339,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DNDHolidayLoveBankBunny = 38340,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DNDHolidayLoveAHBunny = 38341,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		DNDHolidayLoveBarberBunny = 38342,
+		/// <summary>
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		DarkNucleus = 38369,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		ValKyrGuardian = 38391,
+		ToxicWasteling = 38374,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		ValKyrGuardian = 38391,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		SeveredEssence = 38410,
@@ -125599,18 +126262,31 @@ namespace WCell.Constants.NPCs
 		ShockVortex = 38422,
 		/// <summary>
 		/// Level: 1
+		/// Rank: WorldBoss
+		/// </summary>
+		ToravonTheIceWatcher = 38433,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		ToravonStalker = 38439,
+		/// <summary>
+		/// Level: 1
 		/// </summary>
 		BallOfInfernoFlame = 38451,
 		/// <summary>
-		/// Level: 1
+		/// Level: 74
 		/// Rank: RareElite
 		/// </summary>
 		Arcturis = 38453,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		KineticBomb = 38454,
+		/// <summary>
+		/// Level: 1
+		/// </summary>
+		FrozenOrb_3 = 38456,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
@@ -125618,36 +126294,69 @@ namespace WCell.Constants.NPCs
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		EmpoweringOrbVisualStalker = 38463,
+		ToravonFrozenOrbStalker = 38461,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		EmpoweringOrbVisualStalker = 38463,
+		/// <summary>
+		/// Level: 81
 		/// </summary>
 		Darnavan = 38472,
 		/// <summary>
-		/// Level: 73 - 74
-		/// </summary>
-		SampleGrizzly = 41421422,
-		/// <summary>
 		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		FrostWarder = 38482,
+		/// <summary>
+		/// Level: 81
+		/// </summary>
+		Darnavan_2 = 38485,
+		/// <summary>
+		/// Level: 80
 		/// Rank: Elite
 		/// </summary>
 		FallenWarrior_2 = 38487,
 		/// <summary>
+		/// Level: 82
+		/// Rank: Elite
+		/// </summary>
+		RottingFrostGiant = 38490,
+		/// <summary>
 		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		KorKronLieutenant = 38491,
+		/// <summary>
+		/// Level: 1
+		/// Rank: Elite
+		/// </summary>
+		SkybreakerLieutenant = 38492,
+		/// <summary>
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		ArgentCrusader_4 = 38493,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
+		/// Rank: Elite
 		/// </summary>
-		ArgentWarhorse_6 = 38500,
+		RottingFrostGiant_2 = 38494,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
+		/// </summary>
+		ArgentWarhorse_7 = 38500,
+		/// <summary>
+		/// Level: 80
+		/// </summary>
+		AlchemistAdrianna = 38501,
+		/// <summary>
+		/// Level: 81
 		/// Rank: Elite
 		/// </summary>
 		KnightOfTheEbonBlade_3 = 38505,
 		/// <summary>
-		/// Level: 1
+		/// Level: 82
 		/// Rank: Elite
 		/// </summary>
 		BloodBeast = 38508,
@@ -125655,9 +126364,27 @@ namespace WCell.Constants.NPCs
 		/// Level: 1
 		/// Rank: Elite
 		/// </summary>
-		PhantomHallucination = 38567,
+		AlrinTheAgile = 38551,
 		/// <summary>
 		/// Level: 1
+		/// </summary>
+		MincharBeamStalker = 38557,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		InfiltratorMinchar = 38558,
+		/// <summary>
+		/// Level: 73 - 74
+		/// </summary>
+		SampleGrizzly = 41421422,
+		/// <summary>
+		/// Level: 79 - 80
+		/// Rank: Elite
+		/// </summary>
+		PhantomHallucination = 38567,
+		/// <summary>
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		MartyrStalkerIGBSaurfang = 38569,
@@ -125667,16 +126394,16 @@ namespace WCell.Constants.NPCs
 		SummonedCadaver = 38763,
 		/// <summary>
 		/// Title: Shaman Armor
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		VolGuk = 38841,
 		/// <summary>
 		/// Title: Emblem of Frost Quartermaster
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
 		GoodmanTheCloser = 38858,
 		/// <summary>
-		/// Level: 1
+		/// Level: 25 - 26
 		/// </summary>
 		OldTownThug_2 = 38867,
 		/// <summary>
@@ -125684,28 +126411,69 @@ namespace WCell.Constants.NPCs
 		/// </summary>
 		InvisibleStalkerHostileIgnoreCombatFloatUninteractibleLargeAOI = 38879,
 		/// <summary>
-		/// Level: 1
+		/// Level: 83
 		/// Rank: WorldBoss
 		/// </summary>
 		MartyrStalkerReputation = 39010,
 		/// <summary>
-		/// Level: 1
+		/// Level: 80
 		/// </summary>
-		RottingFrostGiant = 38494,
+		BlackKnightShieldProxy = 38751,
+		/// <summary>
+		/// Title: Wintergrasp Quartermaster
+		/// Level: 80
+		/// </summary>
+		ChampionRosslai = 39173,
+		/// <summary>
+		/// Title: Wintergrasp Quartermaster
+		/// Level: 80
+		/// </summary>
+		MarshalMagruder = 39172,
+		/// <summary>
+		/// Title: Apprentice to Ormus
+		/// Level: 80
+		/// </summary>
+		Aronen = 39509,
+		/// <summary>
+		/// Title: Shaman Armor
+		/// Level: 80
+		/// </summary>
+		Jedebia = 38840,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		BoneSpike_2 = 38711,
+		/// <summary>
+		/// Level: 80
+		/// Rank: Elite
+		/// </summary>
+		BoneSpike_3 = 38712,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		RottingFrostGiant_2 = 38490,
+		GreenDragonCombatTrigger = 38752,
 		/// <summary>
 		/// Level: 1
 		/// </summary>
-		Darnavan_2 = 38485,
+		ClockworkRocketBot_2 = 40295,
 		/// <summary>
+		/// Title: Frozen Orb Trader
 		/// Level: 1
 		/// </summary>
-		InfiltratorMinchar = 38558,
+		FrozoTheRenowned = 40160,
+		/// <summary>
+		/// Title: Northrend Armor Quartermaster
+		/// Level: 75
+		/// </summary>
+		KnightLieutenantTMaireSydes = 40607,
+		/// <summary>
+		/// Title: King of Stormwind
+		/// Level: 83
+		/// Rank: Elite
+		/// </summary>
+		KingVarianWrynn_6 = 39371,
 		End
 	}
 
 }
-

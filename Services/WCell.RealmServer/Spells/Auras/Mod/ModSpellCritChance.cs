@@ -24,26 +24,40 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModSpellCritChanceHandler : AuraEffectHandler
 	{
-		protected internal override void Apply()
+		protected override void Apply()
 		{
 			var owner = Owner as Character;
 			if (owner != null)
-			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+			{	
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, EffectValue);
+					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+					{
+						owner.ModCritMod(s, EffectValue);
+					}
+				}
+				else
+				{
+					owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
 				}
 			}
 		}
 
-		protected internal override void Remove(bool cancelled)
+		protected override void Remove(bool cancelled)
 		{
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+				if (m_spellEffect.MiscValue == 0)
 				{
-					owner.ModSpellCritMod(s, -EffectValue);
+					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
+					{
+						owner.ModCritMod(s, -EffectValue);
+					}
+				}
+				else
+				{
+					owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);	
 				}
 			}
 		}

@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
@@ -18,7 +20,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Applies modifications to your attacks
 		/// </summary>
-		public readonly List<IAttackModifier> AttackModifiers = new List<IAttackModifier>(1);
+		public readonly List<IAttackEventHandler> AttackEventHandlers = new List<IAttackEventHandler>(1);
 
 		/// <summary>
 		/// The maximum distance in yards to a valid attackable target
@@ -69,16 +71,31 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
+				if (value == m_mainWeapon)
+				{
+					return;
+				}
+
 				if (value == null)
 				{
 					// always make sure that a weapon is equipped
 					value = GenericWeapon.Fists;
 				}
 
+				if (m_mainWeapon is Item)
+				{
+					((Item)m_mainWeapon).OnUnEquip(InventorySlot.MainHand);
+				}
+
 				m_mainWeapon = value;
 
 				this.UpdateMainDamage();
 				this.UpdateMainAttackTime();
+
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
+				}
 			}
 		}
 
@@ -94,12 +111,22 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_RangedWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_RangedWeapon = value;
+					return;
+				}
 
-					this.UpdateRangedAttackTime();
-					this.UpdateRangedDamage();
+				if (m_RangedWeapon is Item)
+				{
+					((Item)m_RangedWeapon).OnUnEquip(InventorySlot.ExtraWeapon);
+				}
+				m_RangedWeapon = value;
+
+				this.UpdateRangedAttackTime();
+				this.UpdateRangedDamage();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -116,12 +143,23 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
-				if (m_offhandWeapon != value)
+				if (value == m_RangedWeapon)
 				{
-					m_offhandWeapon = value;
+					return;
+				}
 
-					this.UpdateOffHandDamage();
-					this.UpdateOffHandAttackTime();
+				if (m_offhandWeapon is Item)
+				{
+					((Item)m_offhandWeapon).OnUnEquip(InventorySlot.OffHand);
+				}
+
+				m_offhandWeapon = value;
+
+				this.UpdateOffHandDamage();
+				this.UpdateOffHandAttackTime();
+				if (value is Item)
+				{
+					((Item)value).OnEquip();
 				}
 			}
 		}
@@ -130,22 +168,111 @@ namespace WCell.RealmServer.Entities
 		{
 			switch (slot)
 			{
-				case EquipmentSlot.OffHand:
-					return m_offhandWeapon;
+				case EquipmentSlot.MainHand:
+					return m_mainWeapon;
 				case EquipmentSlot.ExtraWeapon:
 					return m_RangedWeapon;
-				default:
+				case EquipmentSlot.OffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public IWeapon GetWeapon(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
 					return m_mainWeapon;
+				case InventorySlotType.WeaponRanged:
+					return m_RangedWeapon;
+				case InventorySlotType.WeaponOffHand:
+					return m_offhandWeapon;
+			}
+			return null;
+		}
+
+		public void SetWeapon(InventorySlotType slot, IWeapon weapon)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					MainWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponRanged:
+					RangedWeapon = weapon;
+					break;
+				case InventorySlotType.WeaponOffHand:
+					OffHandWeapon = weapon;
+					break;
 			}
 		}
 
 		/// <summary>
-		/// Whether this Unit should use melee at all
+		/// Whether this Unit is allowed to melee at all
 		/// </summary>
 		public bool CanMelee
 		{
 			get;
 			set;
+		}
+		#endregion
+
+		#region Disarm
+		private InventorySlotTypeMask m_DisarmMask;
+
+		public bool MayCarry(InventorySlotTypeMask itemMask)
+		{
+			return (itemMask & DisarmMask) == 0;
+		}
+
+		/// <summary>
+		/// The mask of slots of currently disarmed items.
+		/// </summary>
+		public InventorySlotTypeMask DisarmMask
+		{
+			get { return m_DisarmMask; }
+		}
+
+		/// <summary>
+		/// Disarms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void SetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask |= m;
+
+			SetWeapon(type, null);
+		}
+
+		/// <summary>
+		/// Rearms the weapon of the given type (WeaponMainHand, WeaponRanged or WeaponOffHand)
+		/// </summary>
+		public void UnsetDisarmed(InventorySlotType type)
+		{
+			var m = type.ToMask();
+			if (!m_DisarmMask.HasAnyFlag(m))
+			{
+				return;
+			}
+
+			m_DisarmMask &= ~m;
+
+			SetWeapon(type, GetOrInvalidateItem(type));
+		}
+
+		/// <summary>
+		/// Finds the item for the given slot. 
+		/// Unequips it and returns null, if it may not currently be used.
+		/// </summary>
+		protected virtual IWeapon GetOrInvalidateItem(InventorySlotType type)
+		{
+			return null;
 		}
 		#endregion
 
@@ -266,7 +393,7 @@ namespace WCell.RealmServer.Entities
 				value += MeleeAttackPowerModsPos;
 				value -= MeleeAttackPowerModsNeg;
 
-				value = ((1 + MeleeAttackPowerMultiplier)*value).RoundInt();
+				value = ((1 + MeleeAttackPowerMultiplier) * value).RoundInt();
 				return value;
 			}
 		}
@@ -313,15 +440,6 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		/// <summary>
-		/// Ranged AP bonus by Intelligence
-		/// </summary>
-		public int RangedAttackIntMod
-		{
-			get;
-			internal set;
-		}
-
 		public int TotalRangedAP
 		{
 			get
@@ -362,47 +480,81 @@ namespace WCell.RealmServer.Entities
 		public void DoRawDamage(IDamageAction action)
 		{
 			// Default on damage stuff
+			if (m_FirstAttacker == null && action.Attacker != null)
+			{
+				FirstAttacker = action.Attacker;
+			}
+
+			if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
+			{
+				// deduct mana shield points
+				action.Damage -= action.Victim.DrainManaShield(action.Damage);
+			}
+
+			// damage taken modifiers
+			if (m_damageTakenMods != null)
+			{
+				action.Damage -= m_damageTakenMods[(int)action.UsedSchool];
+			}
+			if (m_damageTakenPctMods != null)
+			{
+				var val = m_damageTakenPctMods[(int)action.UsedSchool];
+				if (val != 0)
+				{
+					action.Damage -= (val * action.Damage + 50) / 100;
+				}
+			}
+
+			// AoE damage reduction
+			if (AoEDamageModifierPct != 0)
+			{
+				action.Damage -= (action.Damage*AoEDamageModifierPct - 50)/100;
+			}
+
 			action.Victim.OnDamageAction(action);
-
-			// events
-			if (action.Attacker is Character)
-			{
-				Character.NotifyHitDeliver(action);
-			}
-			else if (action.Attacker is NPC)
-			{
-				((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
-			}
-
-			if (action.Victim is Character)
-			{
-				Character.NotifyHitReceive(action);
-			}
-			else if (action.Victim is NPC)
-			{
-				((NPC)action.Victim).Entry.NotifyHitReceive(action);
-			}
-
-			if (action.Attacker != null && action.Attacker.Brain != null)
-			{
-				action.Attacker.Brain.OnDamageDealt(action);
-			}
-
-			if (m_brain != null)
-			{
-				m_brain.OnDamageReceived(action);
-			}
 
 			// deal damage
 			var dmg = action.ActualDamage;
 			if (dmg > 0)
 			{
-				if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
+				// events (changing the DamageAction won't have any effect anymore)
+				if (action.Attacker is Character)
 				{
-					action.Victim.DrainManaShield(ref dmg);
+					Character.NotifyHitDeliver(action);
+				}
+				else if (action.Attacker is NPC)
+				{
+					((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
 				}
 
-				action.Victim.Health -= dmg;
+				if (action.Victim is Character)
+				{
+					Character.NotifyHitReceive(action);
+				}
+				else if (action.Victim is NPC)
+				{
+					((NPC)action.Victim).Entry.NotifyHitReceive(action);
+				}
+
+				if (action.Attacker != null && action.Attacker.Brain != null)
+				{
+					action.Attacker.Brain.OnDamageDealt(action);
+				}
+
+				if (m_brain != null)
+				{
+					m_brain.OnDamageReceived(action);
+				}
+
+				var health = action.Victim.Health;
+
+				if (dmg >= health)
+				{
+					// kill
+					LastKiller = action.Attacker;
+				}
+
+				action.Victim.Health = health - dmg;
 			}
 		}
 	}

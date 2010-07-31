@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -211,8 +211,10 @@ namespace WCell.Util.ReflectionUtil
 						for (var i = 0; i < argArr.Length; i++)
 						{
 							object arg = null;
+
 							// rule out non-simple arugments and try parsing
 							var paramType = paras[i].ParameterType;
+							
 							if (!paramType.IsSimpleType() || !Utility.Parse(args[i], paramType, ref arg))
 							{
 								// try the next overload
@@ -221,6 +223,7 @@ namespace WCell.Util.ReflectionUtil
 							}
 							argArr[i] = arg;
 						}
+
 						if (success)
 						{
 							accessName = method.Name;

@@ -42,14 +42,14 @@ namespace WCell.RealmServer.Instances
 			set;
 		}
 
-		public RegionInfo RegionInfo
+		public RegionTemplate RegionTemplate
 		{
-			get { return World.GetRegionInfo(RegionId); }
+			get { return World.GetRegionTemplate(RegionId); }
 		}
 
 		public MapDifficultyEntry Difficulty
 		{
-			get { return RegionInfo.Difficulties.Get(DifficultyIndex); }
+			get { return RegionTemplate.Difficulties.Get(DifficultyIndex); }
 		}
 
 		/// <summary>
@@ -87,16 +87,14 @@ namespace WCell.RealmServer.Instances
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			return obj.m_DifficultyIndex == m_DifficultyIndex &&
-				obj.RegionId == RegionId &&
-				obj.InstanceId == InstanceId;
+			return obj.m_DifficultyIndex == m_DifficultyIndex && obj.BindTime.Equals(BindTime) && Equals(obj.RegionId, RegionId) && obj.InstanceId == InstanceId;
 		}
 
 		public override bool Equals(object obj)
 		{
 			if (ReferenceEquals(null, obj)) return false;
 			if (ReferenceEquals(this, obj)) return true;
-			if (obj.GetType() != typeof (InstanceBinding)) return false;
+			if (!(obj is InstanceBinding)) return false;
 			return Equals((InstanceBinding) obj);
 		}
 

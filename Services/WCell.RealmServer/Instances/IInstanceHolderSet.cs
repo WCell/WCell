@@ -33,6 +33,6 @@ namespace WCell.RealmServer.Instances
 		/// or null.
 		/// </summary>
 		/// <returns></returns>
-		BaseInstance GetActiveInstance(RegionInfo region);
+		BaseInstance GetActiveInstance(RegionTemplate region);
 	}
 }

@@ -173,7 +173,7 @@ namespace WCell.RealmServer.Tests.Misc
 									}
 								}
 							};
-							region.RegionInfo.PlayerEntered += onTeleported;
+							region.RegionTemplate.PlayerEntered += onTeleported;
 							foreach (var chr in this)
 							{
 								if (chr.Region != region)
@@ -190,7 +190,7 @@ namespace WCell.RealmServer.Tests.Misc
 								{
 									Monitor.Wait(lockObj);
 								}
-								region.RegionInfo.PlayerEntered -= onTeleported;
+								region.RegionTemplate.PlayerEntered -= onTeleported;
 							}
 						}
 					}

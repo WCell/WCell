@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
 using WCell.Constants;
 using WCell.Constants.World;
@@ -231,9 +231,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             }
         }
 
-        #region Spell/GO fixes
+		#region Spell/GO fixes
 
-        [Initialization]
+		[Initialization]
         [DependentInitialization(typeof(GOMgr))]
         public static void FixGOs()
         {

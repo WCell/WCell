@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override SpellFailedReason CheckValidTarget(WorldObject target)
+		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			//if (((Unit)target).Health >= ((Unit)target).MaxHealth) {
 			//    return SpellFailedReason.AlreadyAtFullHealth;
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spells.Effects
 		protected override void Apply(WorldObject target)
 		{
 			var unit = (Unit)target;
-			unit.Heal(m_cast.Caster, unit.MaxHealth - unit.Health, Effect);
+			unit.Heal((m_cast.CasterUnit ?? unit).MaxHealth, m_cast.CasterUnit, Effect);
 		}
 
 		public override ObjectTypes TargetType
