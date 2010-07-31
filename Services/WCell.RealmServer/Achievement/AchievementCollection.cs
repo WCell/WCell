@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="achievementEntry"></param>
 		public void EarnAchievement(AchievementEntryId achievementEntryId)
 		{
-			Add(AchievementRecord.CreateNewAchievementRecord(m_owner,(uint)achievementEntryId));
+			Add(AchievementRecord.CreateNewAchievementRecord(m_owner,achievementEntryId));
 			AchievementHandler.SendAchievementEarned(achievementEntryId,m_owner);
 		}
 

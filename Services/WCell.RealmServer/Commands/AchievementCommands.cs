@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Commands
 
 			public static bool AddAchievement(Character character, AchievementEntryId achievementEntryId)
 			{
-				character.Achievements.Add(achievementEntryId);
+				character.Achievements.Add(AchievementRecord.CreateNewAchievementRecord(character, achievementEntryId));
 				return true;
 			}
 		}
