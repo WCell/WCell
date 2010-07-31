@@ -1020,7 +1020,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura.CanBeSaved)
+				if (aura != null && aura.CanBeSaved)
 				{
 					aura.SaveNow();
 				}
