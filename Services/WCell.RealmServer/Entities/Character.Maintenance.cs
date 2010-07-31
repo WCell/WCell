@@ -804,6 +804,7 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = LifetimeHonorableKills;
 				m_record.HonorPoints = HonorPoints;
 				m_record.ArenaPoints = ArenaPoints;
+				
 
 				// Finished quests
 				if (m_questLog.FinishedQuests.Count > 0)
@@ -861,6 +862,9 @@ namespace WCell.RealmServer.Entities
 
 					// Talents
 					//m_record.SpecProfile.Save();
+					
+					// Achievements
+					m_achievements.SaveNow();
 
 					// Auras
 					m_auras.SaveAurasNow();

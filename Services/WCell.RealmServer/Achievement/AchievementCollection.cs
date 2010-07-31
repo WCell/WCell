@@ -117,6 +117,18 @@ namespace WCell.RealmServer.Achievement
 
         #endregion
 
+		public void SaveNow()
+		{
+			foreach (var mCompletedAchievement in m_completedAchievements.Values)
+			{
+				mCompletedAchievement.Save();
+			}
+			foreach (var value in m_achivement_progress.Values)
+			{
+				value.Save();
+			}
+		}
+
 		public void Load()
 		{
 			foreach (var mCompletedAchievement in AchievementRecord.Load(Owner.EntityId.Low))
