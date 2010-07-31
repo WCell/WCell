@@ -117,6 +117,13 @@ namespace WCell.RealmServer.Achievement
 
         #endregion
 
+		public void Update(AchievementCriteriaType type, uint value1, uint value2, ObjectBase involved)
+		{
+			// TODO: Do something
+			AchievementUpdateMgr.GetUpdater(type)(type, Owner, value1, value2, involved);
+			// TODO: Finish
+		}
+
 		public void SaveNow()
 		{
 			foreach (var mCompletedAchievement in m_completedAchievements.Values)
