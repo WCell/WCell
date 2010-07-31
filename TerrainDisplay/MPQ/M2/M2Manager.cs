@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using WCell.Util.Graphics;
+using Microsoft.Xna.Framework;
 using TerrainDisplay.MPQ.ADT.Components;
+using Matrix = WCell.Util.Graphics.Matrix;
+using Vector3 = WCell.Util.Graphics.Vector3;
 
 namespace TerrainDisplay.MPQ.M2
 {

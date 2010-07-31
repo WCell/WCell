@@ -62,9 +62,11 @@ namespace TerrainDisplay.MPQ
                 _baseDirectory = baseFileDirectory;
             }
             else
-            {
-                MessageBox.Show("Invalid data directory entered. Please exit and update your app.CONFIG file",
-                                "Invalid Data Directory");
+			{
+				var msg = "Invalid data directory entered: \"" + baseFileDirectory + "\" - Please exit and update your config file";
+				MessageBox.Show(msg,
+								"Invalid Data Directory");
+				throw new FileNotFoundException(msg);
             }
 
             _wdtFile = WDTParser.Process(baseFileDirectory, _internalMapName);
