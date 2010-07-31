@@ -2,6 +2,7 @@ using System;
 using NLog;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
+using WCell.Util.NLog;
 using WCell.Util.Variables;
 using Castle.ActiveRecord;
 
@@ -48,9 +49,16 @@ namespace WCell.RealmServer.Database
 				{
 					// repeat init
 					OnDBError(e);
-					if (!DatabaseUtil.InitAR(asm))
+					try
 					{
-						return false;
+						if (!DatabaseUtil.InitAR(asm))
+						{
+							return false;
+						}
+					}
+					catch (Exception e2)
+					{
+						LogUtil.ErrorException(e2, true, "Failed to initialize the Database.");
 					}
 				}
 			}
