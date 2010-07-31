@@ -6,32 +6,60 @@ using System.Text;
 
 namespace Terra.Memory
 {
-    public class Heap : List<HeapNode>
+    internal class Heap
     {
+        private HeapNode[] nodes;
+        private int m_Size;
+        private int m_Capacity;
         public const int NOT_IN_HEAP = -47;
 
-        public Heap (int size) : base(size)
+        public Heap()
         {
+            m_Size = 0;
+            m_Capacity = 0;
+        }
+
+        public Heap (int size)
+        {
+            m_Size = 0;
+            m_Capacity = size;
+            nodes = new HeapNode[size];
         }
 
         public void Insert(ILabelled obj, float importance)
         {
-            var i = Count;
+            if (m_Size == m_Capacity)
+            {
+                Resize(2*m_Size);
+            }
+
+            var i = m_Size++;
             var node = new HeapNode(obj, importance);
             node.Object.Token = i;
-            Add(node);
+            nodes[i] = node;
             
             UpHeap(i);
         }
         
+        private void Resize(int newSize)
+        {
+            var newArray = new HeapNode[newSize];
+            for (var i = 0; i < m_Size; i++)
+            {
+                newArray[i] = nodes[i];
+            }
+            nodes = newArray;
+            m_Capacity = newSize;
+        }
+
         public void Update(ILabelled obj, float importance)
         {
             var i = obj.Token;
-            Debug.Assert(i <= Count, "WARNING: Attempting to update past end of heap!");
+            Debug.Assert(i <= m_Size, "WARNING: Attempting to update past end of heap!");
             Debug.Assert(i != NOT_IN_HEAP, "WARNING: Attempting to update object not in heap!");
 
-            var oldImport = this[i].Importance;
-            this[i].Importance = importance;
+            var oldImport = nodes[i].Importance;
+            nodes[i].Importance = importance;
 
             if (importance < oldImport)
             {
@@ -44,64 +72,62 @@ namespace Terra.Memory
 
         public HeapNode Extract()
         {
-            if (Count < 1) return null;
+            if (m_Size < 1) return null;
 
-            var end = Count - 1;
-            Swap(0, end);
-            var node = this[end];
-            RemoveAt(end);
+            Swap(0, m_Size - 1);
+            m_Size--;
+            
             DownHeap(0);
 
-            node.Object.Token = NOT_IN_HEAP;
-            return node;
+            nodes[m_Size].Object.Token = NOT_IN_HEAP;
+            return nodes[m_Size];
         }
 
         public HeapNode Top()
         {
-            return (Count < 1) ? null : this[0];
+            return (m_Size < 1) ? null : nodes[0];
         }
 
         public HeapNode Kill(int i)
         {
-            Debug.Assert(i >= Count, "WARNING: Attempt to delete invalid heap node.");
+            if (i >= m_Size)
+                Debugger.Break();
 
-            var end = Count - 1;
-            Swap(i, end);
-            var node = this[end];
-            RemoveAt(end);
-            node.Object.Token = NOT_IN_HEAP;
+            Swap(i, m_Size - 1);
+            m_Size--;
+            nodes[m_Size].Object.Token = NOT_IN_HEAP;
 
-            if (this[i].Importance < node.Importance)
+            if (nodes[i].Importance < nodes[m_Size].Importance)
             {
                 DownHeap(i);
-                return node;
+                return nodes[m_Size];
             }
-
+            
             UpHeap(i);
-            return node;
+            return nodes[m_Size];
         }
 
         private void Swap (int i, int j)
         {
-            var tempNode = this[i];
-            this[i] = this[j];
-            this[j] = tempNode;
+            var tempNode = nodes[i];
+            nodes[i] = nodes[j];
+            nodes[j] = tempNode;
 
-            this[i].Object.Token = i;
-            this[j].Object.Token = j;
+            nodes[i].Object.Token = i;
+            nodes[j].Object.Token = j;
         }
 
-        private int Parent (int i)
+        private static int Parent (int i)
         {
             return (i - 1)/2;
         }
 
-        private int Left (int i)
+        private static int Left (int i)
         {
             return (i*2 + 1);
         }
 
-        private int Right (int i)
+        private static int Right (int i)
         {
             return (i*2 + 2);
         }
@@ -111,7 +137,7 @@ namespace Terra.Memory
             if (i == 0) return;
 
             var parent = Parent(i);
-            if (this[i].Importance <= this[parent].Importance) return;
+            if (nodes[i].Importance <= nodes[parent].Importance) return;
 
             Swap(i, parent);
             UpHeap(parent);
@@ -119,14 +145,14 @@ namespace Terra.Memory
 
         private void DownHeap(int i)
         {
-            if (i >= Count) return;
+            if (i >= m_Size) return;
 
             var largest = i;
             var left = Left(i);
             var right = Right(i);
 
-            if (left < Count && this[left].Importance > this[largest].Importance) largest = left;
-            if (right < Count && this[right].Importance > this[largest].Importance) largest = right;
+            if (left < m_Size && nodes[left].Importance > nodes[largest].Importance) largest = left;
+            if (right < m_Size && nodes[right].Importance > nodes[largest].Importance) largest = right;
             if (largest == i) return;
 
             Swap(i, largest);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.WMO.Components;
 
 namespace TerrainDisplay.Extracted.WMO
@@ -21,7 +21,8 @@ namespace TerrainDisplay.Extracted.WMO
         public bool[,] LiquidTileMap;
         public float[,] LiquidHeights;
 
-        public List<Vector3> Vertices;
+        public List<Vector3> WmoVertices;
+        public List<Vector3> LiquidVertices;
         public BSPTree Tree;
     }
 }

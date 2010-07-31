@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.Collision._3D;
 
 namespace TerrainDisplay.MPQ.WMO.Components

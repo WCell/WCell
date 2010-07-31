@@ -130,6 +130,7 @@
     <Compile Include="MPQ\M2\M2ModelParser.cs" />
     <Compile Include="MPQ\M2\M2Renderer.cs" />
     <Compile Include="MPQ\OffsetLocation.cs" />
+    <Compile Include="RendererBase.cs" />
     <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
     <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
     <Compile Include="Recast\RecastRendererBase.cs" />
@@ -213,6 +214,12 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Terra\Terra.csproj">
+      <Project>{1E90346C-7D04-4D97-8399-397B2E7DD0D6}</Project>
+      <Name>Terra</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

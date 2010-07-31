@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TerrainDisplay.Collision._3D;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.M2
 {
@@ -18,7 +19,7 @@ namespace TerrainDisplay.MPQ.M2
         /// <summary>
         /// List of vertices used for rendering this M2 in World Space
         /// </summary>
-        public List<VertexPositionNormalColored> Vertices = new List<VertexPositionNormalColored>();
+        public List<Vector3> Vertices = new List<Vector3>();
         /// <summary>
         /// List of indicies used for rendering this M2 in World Space
         /// </summary>

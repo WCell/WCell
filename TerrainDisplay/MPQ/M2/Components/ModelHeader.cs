@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.M2.Components
 {

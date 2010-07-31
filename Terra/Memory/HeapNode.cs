@@ -1,6 +1,6 @@
 namespace Terra.Memory
 {
-    public class HeapNode
+    internal class HeapNode
     {
         public float Importance;
         public ILabelled Object;

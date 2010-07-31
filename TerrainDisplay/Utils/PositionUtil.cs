@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WCell.Util.Graphics;
 
 namespace TerrainDisplay
 {
@@ -19,6 +19,14 @@ namespace TerrainDisplay
             TransformWoWCoordsToXNACoords(ref vertex.Position);
         }
 
+        public static void TransformWoWCoordsToXNACoords(ref Microsoft.Xna.Framework.Vector3 vertex)
+        {
+            var temp = vertex.X;
+            vertex.X = vertex.Y * -1;
+            vertex.Y = vertex.Z;
+            vertex.Z = temp * -1;
+        }
+
         public static void TransformWoWCoordsToXNACoords(ref Vector3 vertex)
         {
             var temp = vertex.X;
@@ -28,6 +36,14 @@ namespace TerrainDisplay
         }
 
         public static void TransformWoWCoordsToRecastCoords(ref Vector3 vertex)
+        {
+            var temp = vertex.X;
+            vertex.X = vertex.Y * -1;
+            vertex.Y = vertex.Z;
+            vertex.Z = temp;
+        }
+
+        public static void TransformWoWCoordsToRecastCoords(ref Microsoft.Xna.Framework.Vector3 vertex)
         {
             var temp = vertex.X;
             vertex.X = vertex.Y * -1;

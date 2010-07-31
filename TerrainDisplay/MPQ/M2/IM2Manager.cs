@@ -1,21 +1,14 @@
 ﻿using System.Collections.Generic;
 using TerrainDisplay.MPQ.ADT.Components;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.M2
 {
     public interface IM2Manager
     {
-        List<VertexPositionNormalColored> RenderVertices
-        {
-            get; 
-            set;
-        }
+        List<Vector3> RenderVertices { get; set; }
 
-        List<int> RenderIndices
-        {
-            get; 
-            set;
-        }
+        List<int> RenderIndices { get; set; }
 
         /// <summary>
         /// Add a M2 to this manager.

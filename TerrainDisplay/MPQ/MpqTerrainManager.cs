@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WDT;
@@ -101,7 +101,7 @@ namespace TerrainDisplay.MPQ
 
         	    // The heightmap information
         	    idxOffset = CopyIndicesToRecastArray(tile.Indices, indices, idxOffset, vecOffset);
-                vecOffset = CopyVectorsToRecastArray(tile.Vertices, vertices, vecOffset);
+                vecOffset = CopyVectorsToRecastArray(tile.TerrainVertices, vertices, vecOffset);
 
         	    // The liquid information
                 //idxOffset = CopyIndicesToRecastArray(tile.LiquidIndices, indices, idxOffset, vecOffset);
@@ -109,8 +109,8 @@ namespace TerrainDisplay.MPQ
         	}
 
         	// Get the WMO triangles
-            idxOffset = CopyIndicesToRecastArray(_wmoManager.RenderIndices, indices, idxOffset, vecOffset);
-            vecOffset = CopyVectorsToRecastArray(_wmoManager.RenderVertices, vertices, vecOffset);
+            idxOffset = CopyIndicesToRecastArray(_wmoManager.WmoIndices, indices, idxOffset, vecOffset);
+            vecOffset = CopyVectorsToRecastArray(_wmoManager.WmoVertices, vertices, vecOffset);
             
             // Get the M2 triangles
             idxOffset = CopyIndicesToRecastArray(_m2Manager.RenderIndices, indices, idxOffset, vecOffset);
@@ -149,7 +149,7 @@ namespace TerrainDisplay.MPQ
             return idxOffset;
         }
 
-        private static int CopyVectorsToRecastArray(IList<VertexPositionNormalColored> renderVertices, IList<Vector3> vertices, int vecOffset)
+        private static int CopyVectorsToRecastArray(IList<Vector3> renderVertices, IList<Vector3> vertices, int vecOffset)
         {
             if (renderVertices != null)
             {
@@ -157,9 +157,8 @@ namespace TerrainDisplay.MPQ
                 for (var i = 0; i < length; i++)
                 {
                     var vertex = renderVertices[i];
-                    var vec = vertex.Position;
-                    PositionUtil.TransformWoWCoordsToRecastCoords(ref vec);
-                    vertices[vecOffset + i] = vec;
+                    PositionUtil.TransformWoWCoordsToRecastCoords(ref vertex);
+                    vertices[vecOffset + i] = vertex;
                 }
                 vecOffset += renderVertices.Count;
             }
@@ -194,7 +193,7 @@ namespace TerrainDisplay.MPQ
             if (includeWMO)
             {
 
-                renderIndices = _wmoManager.RenderIndices;
+                renderIndices = _wmoManager.WmoIndices;
                 if (renderIndices != null)
                 {
                     count += renderIndices.Count;
@@ -217,14 +216,14 @@ namespace TerrainDisplay.MPQ
         private int CalcVecArraySize(bool includeTerrain, bool includeLiquid, bool includeWMO, bool includeM2)
         {
             var count = 0;
-            List<VertexPositionNormalColored> renderVertices;
+            List<Vector3> renderVertices;
             foreach (var tile in _adtManager.MapTiles)
             {
                 if (tile == null) continue;
 
                 if (includeTerrain)
                 {
-                    renderVertices = tile.Vertices;
+                    renderVertices = tile.TerrainVertices;
                     if (renderVertices != null)
                     {
                         count += renderVertices.Count;
@@ -242,7 +241,7 @@ namespace TerrainDisplay.MPQ
             // Get the WMO triangles
             if (includeWMO)
             {
-                renderVertices = _wmoManager.RenderVertices;
+                renderVertices = _wmoManager.WmoVertices;
                 if (renderVertices != null)
                 {
                     count += renderVertices.Count;

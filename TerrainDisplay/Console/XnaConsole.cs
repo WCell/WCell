@@ -4,16 +4,11 @@
 // Copyright (c) 2008 Samuel Christie
 //
 using System;
-using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
-//using IronPython.Hosting;
-//using IronPython.Runtime.Exceptions;
-//using IronPython.Modules;
-using XnaConsole;
+using Vector2 = WCell.Util.Graphics.Vector2;
 
 namespace XnaConsole
 {
@@ -521,6 +516,7 @@ namespace XnaConsole
             }
 
         }
+        
         /// <summary>
         /// Renders a list of strings to the console
         /// </summary>
@@ -536,6 +532,7 @@ namespace XnaConsole
             lines.Reverse();
             return lines;
         }
+        
         /// <summary>
         /// Used to draw the cursor
         /// </summary>
@@ -602,7 +599,10 @@ namespace XnaConsole
 
             string cursorString = DrawCursor(now);
 
-            spriteBatch.DrawString(font, cursorString, new Vector2(consoleXOffset + 10, consoleYOffset + consoleYSize - 10 - font.LineSpacing), Color.White);
+            spriteBatch.DrawString(font, cursorString,
+                                   new Microsoft.Xna.Framework.Vector2(consoleXOffset + 10,
+                                                                       consoleYOffset + consoleYSize - 10 -
+                                                                       font.LineSpacing), Color.White);
 
             int j = 0;
             List<string> lines = Render(OutputBuffer + InputBuffer); //show them in the proper order, because we're drawing from the bottom
@@ -611,7 +611,10 @@ namespace XnaConsole
                 //draw each line at an offset determined by the line height and line count
                 j++;
 
-                    spriteBatch.DrawString(font, str, new Vector2(consoleXOffset + 10, consoleYOffset + consoleYSize - 10 - font.LineSpacing * (j)), Color.White);
+                spriteBatch.DrawString(font, str,
+                                       new Microsoft.Xna.Framework.Vector2(consoleXOffset + 10,
+                                                                           consoleYOffset + consoleYSize - 10 -
+                                                                           font.LineSpacing*(j)), Color.White);
 
 
             }

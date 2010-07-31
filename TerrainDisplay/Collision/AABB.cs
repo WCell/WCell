@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.Collision._3D
 {
@@ -91,7 +91,8 @@ namespace TerrainDisplay.Collision._3D
         /// <returns>True if the two intersect.</returns>
         public static bool Intersects(AABB box1, AABB box2)
         {
-            return box1.Bounds.Intersects(box2.Bounds);
+            return true;
+            //return box1.Bounds.Intersects(box2.Bounds);
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.WMO;
 

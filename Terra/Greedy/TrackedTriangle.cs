@@ -7,7 +7,7 @@ using Terra.Memory;
 
 namespace Terra.Greedy
 {
-    public class TrackedTriangle<T> : Triangle
+    internal class TrackedTriangle : Triangle
     {
         // Candidate position
         private int subX;
@@ -24,7 +24,12 @@ namespace Terra.Greedy
 
         public override void Update(Subdivision sub)
         {
-            var greedySub = (GreedySubdivision<T>) sub;
+            var greedySub = sub as GreedySubdivision;
+            if (greedySub == null)
+            {
+                Console.WriteLine("Attempted reference to a null GreedySubdivision.");
+                return;
+            }
             greedySub.ScanTriangle(this);
         }
 

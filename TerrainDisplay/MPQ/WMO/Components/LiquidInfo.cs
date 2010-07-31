@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.WMO.Components
 {

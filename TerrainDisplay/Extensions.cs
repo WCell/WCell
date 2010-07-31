@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 
-namespace TerrainDisplay.Collision
+namespace TerrainDisplay
 {
     ///<summary>
     /// Adds functonality to the BoundingBox class
@@ -15,7 +15,7 @@ namespace TerrainDisplay.Collision
         /// <returns>A Vector3 that points to the center of the BoundingBox.</returns>
         public static Vector3 Center(this BoundingBox box)
         {
-            return (0.5f * (box.Min + box.Max));
+            return ((box.Min + box.Max)*0.5f);
         }
 
         /// <summary>
@@ -49,6 +49,42 @@ namespace TerrainDisplay.Collision
         {
             return new[] {
                 vector.X, vector.Y, vector.Z
+            };
+        }
+
+        public static Microsoft.Xna.Framework.Vector3 ToXna(this Vector3 vec)
+        {
+            return new Microsoft.Xna.Framework.Vector3
+            {
+                X = vec.X,
+                Y = vec.Y,
+                Z = vec.Z
+            };
+        }
+    }
+
+    public static class MatrixExtensions
+    {
+        public static Microsoft.Xna.Framework.Matrix ToXna(this Matrix mat)
+        {
+            return new Microsoft.Xna.Framework.Matrix
+            {
+                M11 = mat.M11,
+                M12 = mat.M12,
+                M13 = mat.M13,
+                M14 = mat.M14,
+                M21 = mat.M21,
+                M22 = mat.M22,
+                M23 = mat.M23,
+                M24 = mat.M24,
+                M31 = mat.M31,
+                M32 = mat.M32,
+                M33 = mat.M33,
+                M34 = mat.M34,
+                M41 = mat.M41,
+                M42 = mat.M42,
+                M43 = mat.M43,
+                M44 = mat.M44
             };
         }
     }
@@ -98,6 +134,5 @@ namespace TerrainDisplay.Collision
         {
             return Vector3.Normalize(Vector3.Cross(a - b, c - b));
         }
-
-    }
+   }
 }

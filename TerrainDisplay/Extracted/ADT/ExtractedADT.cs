@@ -1,14 +1,7 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay;
-using TerrainDisplay.MPQ;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.ADT.Components;
-using TerrainDisplay.MPQ.WMO.Components;
 using TerrainDisplay.Extracted.ADT;
 using TerrainDisplay.Extracted.M2;
 using TerrainDisplay.Extracted.WMO;
@@ -38,7 +31,7 @@ namespace TerrainDisplay.Extracted
 
         public override void GenerateLiquidVertexAndIndices()
         {
-            LiquidVertices = new List<VertexPositionNormalColored>();
+            LiquidVertices = new List<Vector3>();
             LiquidIndices = new List<int>();
 
             var vertexCounter = 0;
@@ -46,7 +39,7 @@ namespace TerrainDisplay.Extracted
             {
                 for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
                 {
-                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices, Watercolor);
+                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices);
                     GenerateLiquidIndices(indexY, indexX, vertexCounter, LiquidIndices);
                     vertexCounter += tempVertexCounter;
                 }
@@ -55,40 +48,40 @@ namespace TerrainDisplay.Extracted
 
         public override void GenerateHeightVertexAndIndices()
         {
-            Vertices = new List<VertexPositionNormalColored>();
+            TerrainVertices = new List<Vector3>();
             Indices = new List<int>();
 
             for (var indexX = 0; indexX < TerrainConstants.ChunksPerTileSide; indexX++)
             {
                 for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
                 {
-                    GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
-                    GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
+                    GenerateHeightIndices(indexY, indexX, TerrainVertices.Count, Indices);
+                    GenerateHeightVertices(indexY, indexX, TerrainVertices);
                 }
             }
         }
 
-        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
+        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<Vector3> vertices)
         {
             var tempVertexCounter = 0;
             var mapChunk = Chunks[indexY, indexX];
 
             if (!mapChunk.HasLiquid) return tempVertexCounter;
 
-            var clr = Color.Green;
+            //var clr = Color.Green;
 
-            switch (mapChunk.LiquidType)
-            {
-                case FluidType.Water:
-                    clr = Color.Blue;
-                    break;
-                case FluidType.Lava:
-                    clr = Color.Red;
-                    break;
-                case FluidType.OceanWater:
-                    clr = Color.Coral;
-                    break;
-            }
+            //switch (mapChunk.LiquidType)
+            //{
+            //    case FluidType.Water:
+            //        clr = Color.Blue;
+            //        break;
+            //    case FluidType.Lava:
+            //        clr = Color.Red;
+            //        break;
+            //    case FluidType.OceanWater:
+            //        clr = Color.Coral;
+            //        break;
+            //}
 
             var medianLiqHeight = mapChunk.MedianLiquidHeight1;
 
@@ -113,7 +106,7 @@ namespace TerrainDisplay.Extracted
 
                     var position = new Vector3(xPos, yPos, zPos);
 
-                    vertices.Add(new VertexPositionNormalColored(position, clr, Vector3.Up));
+                    vertices.Add(position);
                     tempVertexCounter++;
                 }
             }
@@ -142,7 +135,7 @@ namespace TerrainDisplay.Extracted
             }
         }
 
-        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
+        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<Vector3> vertices)
         {
             var mcnk = Chunks[indexY, indexX];
             var lowResMap = mcnk.HeightMap;
@@ -169,7 +162,7 @@ namespace TerrainDisplay.Extracted
                     }
 
                     var position = new Vector3(xPos, yPos, zPos);
-                    vertices.Add(new VertexPositionNormalColored(position, color, Vector3.Up));
+                    vertices.Add(position);
                     counter++;
                 }
             }

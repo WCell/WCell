@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WDT;

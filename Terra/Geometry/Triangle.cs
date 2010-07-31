@@ -6,15 +6,8 @@ using WCell.Util.Graphics;
 
 namespace Terra.Geometry
 {
-    public delegate void EdgeCallback(Edge edge, object closure);
-    public delegate void FaceCallback(Triangle tri, object closure);
-
-    public class Triangle : ILabelled
+    internal class Triangle : ILabelled
     {
-        private Edge anchor;
-        private Triangle nextFace;
-
-
         public Triangle(Edge edge) : this(edge, 0)
         {
         }
@@ -28,46 +21,40 @@ namespace Terra.Geometry
 
         public int Token { get; set; }
 
-        public Triangle Link
-        {
-            get { return nextFace; }
-        }
+        public Triangle NextFace { get; private set; }
 
-        public Edge Anchor
-        {
-            get { return anchor; }
-        }
+        public Edge Anchor { get; private set; }
 
         public Vector2 Point1
         {
-            get { return anchor.Orig; }
+            get { return Anchor.Orig; }
         }
 
         public Vector2 Point2
         {
-            get { return anchor.Dest; }
+            get { return Anchor.Dest; }
         }
 
         public Vector2 Point3
         {
-            get { return anchor.LPrev.Orig; }
+            get { return Anchor.LPrev.Orig; }
         }
 
         public Triangle LinkTo(Triangle triangle)
         {
-            nextFace = triangle;
+            NextFace = triangle;
             return this;
         }
 
         public void DontAnchor(Edge edge)
         {
-            if (anchor != edge) return;
-            anchor = edge.LNext;
+            if (Anchor != edge) return;
+            Anchor = edge.LNext;
         }
 
         public void Reshape(Edge edge)
         {
-            anchor = edge;
+            Anchor = edge;
 
             edge.LFace = this;
             edge.LNext.LFace = this;

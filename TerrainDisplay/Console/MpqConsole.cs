@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using XnaConsole;
 using Microsoft.Xna.Framework;
+using XnaConsole;
 using Microsoft.Xna.Framework.Graphics;
 /// <summary>
 /// Delegate Declaration

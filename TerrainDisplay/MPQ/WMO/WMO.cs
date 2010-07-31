@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Collision._3D;
+using WCell.Util.Graphics;
+using OBB = WCell.Util.Graphics.OBB;
 
 namespace TerrainDisplay.MPQ.WMO
 {
@@ -86,21 +86,6 @@ namespace TerrainDisplay.MPQ.WMO
             OrientatedBoundingBox = new OBB();
             Vertices.Clear();
             Indices.Clear();
-        }
-
-        public void AddVertex(Vector3 vec)
-        {
-            Vertices.Add(new VertexPositionNormalColored(vec, Color.Yellow, Vector3.Up));
-        }
-
-        public void AddIndex(int index)
-        {
-            Indices.Add(index);
-        }
-
-        public void AddIndex(short index)
-        {
-            Indices.Add(index);
         }
     }
 }

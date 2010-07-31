@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.Collision._3D
 {
@@ -21,7 +21,7 @@ namespace TerrainDisplay.Collision._3D
         /// Constructor
         /// </summary>
         public OBB()
-            : this(Vector3.Zero, Vector3.One, Matrix.Identity)
+            : this(Vector3.Zero, new Vector3(1.0f, 1.0f, 1.0f), Matrix.Identity)
         {
         }
 

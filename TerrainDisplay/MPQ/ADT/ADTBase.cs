@@ -1,14 +1,15 @@
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.ADT
 {
     public abstract class ADTBase
     {
         public List<int> LiquidIndices;
-        public List<VertexPositionNormalColored> LiquidVertices;
+        public List<Vector3> LiquidVertices;
         public List<int> Indices;
-        public List<VertexPositionNormalColored> Vertices;
+        public List<Vector3> TerrainVertices;
+
         public abstract void GenerateLiquidVertexAndIndices();
         public abstract void GenerateHeightVertexAndIndices();
 
@@ -19,7 +20,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public abstract int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color);
+        public abstract int GenerateLiquidVertices(int indexY, int indexX, ICollection<Vector3> vertices);
 
         /// <summary>
         /// Adds the rendering liquid indices to the provided list for the MapChunk given by:
@@ -37,7 +38,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public abstract int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color);
+        public abstract int GenerateHeightVertices(int indexY, int indexX, ICollection<Vector3> vertices);
 
         /// <summary>
         /// Adds the rendering indices to the provided list for the MapChunk given by:

@@ -1,12 +1,25 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Vector3 = WCell.Util.Graphics.Vector3;
 
 namespace TerrainDisplay.MPQ.ADT
 {
     class ADTRenderer : DrawableGameComponent
     {
         private readonly IADTManager _manager;
+
+        private const bool DrawLiquids = false;
+        private static Color TerrainColor
+        {
+            get { return Color.DarkSlateGray; }
+            //get { return Color.Green; }
+        }
+
+        private static Color WaterColor
+        {
+            get { return Color.DarkSlateGray; }
+        }
 
         /// <summary>
         /// Boolean variable representing if all the rendering data has been cached.
@@ -83,11 +96,12 @@ namespace TerrainDisplay.MPQ.ADT
             foreach (var adt in _manager.MapTiles)
             {
                 // Handle the ADTs
-                for (var v = 0; v < adt.Vertices.Count; v++)
+                for (var v = 0; v < adt.TerrainVertices.Count; v++)
                 {
-                    var vertex = adt.Vertices[v];
-                    vertex.Normal = Vector3.Down;
-                    tempVertices.Add(vertex);
+                    var vertex = adt.TerrainVertices[v];
+                    var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(), TerrainColor,
+                                                                          Microsoft.Xna.Framework.Vector3.Down);
+                    tempVertices.Add(vertexPosNmlCol);
                 }
                 for (var i = 0; i < adt.Indices.Count; i++)
                 {
@@ -95,14 +109,18 @@ namespace TerrainDisplay.MPQ.ADT
                 }
                 offset = tempVertices.Count;
 
-                //for (var v = 0; v < adt.LiquidVertices.Count; v++)
-                //{
-                //    tempVertices.Add(adt.LiquidVertices[v]);
-                //}
-                //for (var i = 0; i < adt.LiquidIndices.Count; i++)
-                //{
-                //    tempIndicies.Add(adt.LiquidIndices[i] + offset);
-                //}
+                if (!DrawLiquids) continue;
+                for (var v = 0; v < adt.LiquidVertices.Count; v++)
+                {
+                    var vertex = adt.LiquidVertices[v];
+                    var vertexPosNmlCol = new VertexPositionNormalColored(vertex.ToXna(), WaterColor,
+                                                                          Microsoft.Xna.Framework.Vector3.Down);
+                    tempVertices.Add(vertexPosNmlCol);
+                }
+                for (var i = 0; i < adt.LiquidIndices.Count; i++)
+                {
+                    tempIndicies.Add(adt.LiquidIndices[i] + offset);
+                }
                 offset = tempVertices.Count;
             }
 

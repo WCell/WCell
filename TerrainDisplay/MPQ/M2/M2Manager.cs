@@ -1,28 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay.Collision;
-using TerrainDisplay.Collision._3D;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 
 namespace TerrainDisplay.MPQ.M2
 {
     public class M2Manager : IM2Manager
     {
-        private static Color M2Color
-        {
-            get { return Color.DarkSlateGray; }
-        }
-
         #region variables
-
-        /// <summary>
-        /// 1 degree = 0.0174532925 radians
-        /// </summary>
-        private const float RadiansPerDegree = 0.0174532925f;
-
         /// <summary>
         /// List of filenames managed by this M2Manager
         /// </summary>
@@ -32,7 +18,6 @@ namespace TerrainDisplay.MPQ.M2
         /// List of WMOs managed by this WMOManager
         /// </summary>
         public List<M2> M2s = new List<M2>();
-
         #endregion
 
         private readonly string _baseDirectory;
@@ -42,10 +27,10 @@ namespace TerrainDisplay.MPQ.M2
             _baseDirectory = baseDirectory;
         }
 
-        private List<VertexPositionNormalColored> _renderVertices;
+        private List<Vector3> _renderVertices;
         private List<int> _renderIndices;
 
-        public List<VertexPositionNormalColored> RenderVertices
+        public List<Vector3> RenderVertices
         {
             get
             {
@@ -55,10 +40,7 @@ namespace TerrainDisplay.MPQ.M2
                 }
                 return _renderVertices;
             }
-            set
-            {
-                _renderVertices = value;
-            }
+            set { _renderVertices = value; }
         }
 
         public List<int> RenderIndices
@@ -71,27 +53,24 @@ namespace TerrainDisplay.MPQ.M2
                 }
                 return _renderIndices;
             }
-            set
-            {
-                _renderIndices = value;
-            }
+            set { _renderIndices = value; }
         }
 
         private void GenerateRenderVerticesAndIndices()
         {
-            _renderVertices = new List<VertexPositionNormalColored>();
+            _renderVertices = new List<Vector3>();
             _renderIndices = new List<int>();
 
             var offset = 0;
             foreach (var m2 in M2s)
             {
-                for (var v = 0; v < m2.Vertices.Count; v++)
+                foreach (var vector in m2.Vertices)
                 {
-                   _renderVertices.Add(m2.Vertices[v]);
+                    _renderVertices.Add(vector);
                 }
-                for (var i = 0; i < m2.Indices.Count; i++)
+                foreach (var index in m2.Indices)
                 {
-                    _renderIndices.Add(m2.Indices[i] + offset);
+                    _renderIndices.Add(index + offset);
                 }
                 offset = _renderVertices.Count;
             }
@@ -178,13 +157,9 @@ namespace TerrainDisplay.MPQ.M2
                 Vector3 finalVector;
                 Vector3.Add(ref rotatedPosition, ref origin, out finalVector);
 
-                currentM2.Vertices.Add(new VertexPositionNormalColored(finalVector, M2Color, rotatedNormal));
+                currentM2.Vertices.Add(finalVector);
             }
-
-            //currentM2.AABB = new AABB(currentM2.Vertices);
-            //currentM2.OBB = new OBB(currentM2.AABB.Bounds.Center(), currentM2.AABB.Bounds.Extents(),
-            //                         Matrix.CreateRotationY(mddf.OrientationB - 90));
-
+            
             currentM2.Indices.AddRange(indicies);
             return currentM2;
         }

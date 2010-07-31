@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay;
 using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.ADT;
@@ -76,21 +76,21 @@ namespace TerrainDisplay.Extracted
         {
             var vecList = new List<Vector3>();
             var indexList = new List<int>();
-            List<VertexPositionNormalColored> renderVertices;
+            List<Vector3> renderVertices;
 
             int offset;
             // Get the ADT triangles
             foreach (var tile in _adtManager.MapTiles)
             {
                 offset = vecList.Count;
-                renderVertices = tile.Vertices;
+                renderVertices = tile.TerrainVertices;
                 if (renderVertices != null)
                 {
-                    foreach (var vertex in renderVertices)
+                    for (int i = 0; i < renderVertices.Count; i++)
                     {
-                        var vec = vertex.Position;
-                        PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                        vecList.Add(vec);
+                        var vertex = renderVertices[i];
+                        PositionUtil.TransformWoWCoordsToXNACoords(ref vertex);
+                        vecList.Add(vertex);
                     }
                     foreach (var index in tile.Indices)
                     {
@@ -99,13 +99,13 @@ namespace TerrainDisplay.Extracted
                 }
 
                 offset = vecList.Count;
-                renderVertices = tile.Vertices;
+                renderVertices = tile.TerrainVertices;
                 if (renderVertices == null) continue;
-                foreach (var vertex in renderVertices)
+                for (int i = 0; i < renderVertices.Count; i++)
                 {
-                    var vec = vertex.Position;
-                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                    vecList.Add(vec);
+                    var vertex = renderVertices[i];
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vertex);
+                    vecList.Add(vertex);
                 }
                 foreach (var index in tile.Indices)
                 {
@@ -115,16 +115,16 @@ namespace TerrainDisplay.Extracted
 
             // Get the WMO triangles
             offset = vecList.Count;
-            renderVertices = _wmoManager.RenderVertices;
-            var renderIndices = _wmoManager.RenderIndices;
+            renderVertices = _wmoManager.WmoVertices;
+            var renderIndices = _wmoManager.WmoIndices;
 
             if (renderVertices != null)
             {
-                foreach (var vertex in renderVertices)
+                for (int i = 0; i < renderVertices.Count; i++)
                 {
-                    var vec = vertex.Position;
-                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                    vecList.Add(vec);
+                    var vertex = renderVertices[i];
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vertex);
+                    vecList.Add(vertex);
                 }
             }
             if (renderIndices != null)
@@ -141,11 +141,11 @@ namespace TerrainDisplay.Extracted
             renderIndices = _m2Manager.RenderIndices;
             if (renderVertices != null)
             {
-                foreach (var vertex in renderVertices)
+                for (int i = 0; i < renderVertices.Count; i++)
                 {
-                    var vec = vertex.Position;
-                    PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
-                    vecList.Add(vec);
+                    var vertex = renderVertices[i];
+                    PositionUtil.TransformWoWCoordsToXNACoords(ref vertex);
+                    vecList.Add(vertex);
                 }
             }
             if (renderIndices != null)

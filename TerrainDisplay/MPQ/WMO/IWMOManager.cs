@@ -1,21 +1,19 @@
 using System.Collections.Generic;
 using TerrainDisplay.MPQ.ADT.Components;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.WMO
 {
     public interface IWMOManager
     {
-        List<VertexPositionNormalColored> RenderVertices
-        {
-            get; 
-            set;
-        }
+        List<Vector3> WmoVertices { get; set; }
+        List<int> WmoIndices { get; set; }
 
-        List<int> RenderIndices
-        {
-            get; 
-            set;
-        }
+        List<Vector3> WmoM2Vertices { get; set; }
+        List<int> WmoM2Indices { get; set; }
+
+        List<Vector3> WmoLiquidVertices { get; set; }
+        List<int> WmoLiquidIndices { get; set; }
 
         /// <summary>
         /// Adds a WMO to the manager

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay;
-using TerrainDisplay.MPQ;
+﻿using System.Collections.Generic;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.Extracted.M2;
@@ -19,10 +12,10 @@ namespace TerrainDisplay.Extracted
         private string _basePath;
         public List<ExtractedM2> Models;
 
-        private List<VertexPositionNormalColored> _renderVertices;
+        private List<Vector3> _renderVertices;
         private List<int> _renderIndices;
 
-        public List<VertexPositionNormalColored> RenderVertices
+        public List<Vector3> RenderVertices
         {
             get
             {
@@ -93,7 +86,7 @@ namespace TerrainDisplay.Extracted
 
         private void GenerateVerticesAndIndices()
         {
-            _renderVertices = new List<VertexPositionNormalColored>();
+            _renderVertices = new List<Vector3>();
             _renderIndices = new List<int>();
 
             foreach (var m2 in Models)
@@ -103,7 +96,7 @@ namespace TerrainDisplay.Extracted
                 var offset = _renderVertices.Count;
                 foreach (var vec in m2.BoundingVertices)
                 {
-                    _renderVertices.Add(new VertexPositionNormalColored(vec, Color.Red, Vector3.Up));
+                    _renderVertices.Add(vec);
                 }
                 
                 foreach (var index3 in m2.BoundingTriangles)

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace TerrainDisplay.Extracted.WMO
                 {
                     ReadWMOGroupLiquidInfo(br, group);
                 }
-                group.Vertices = br.ReadVector3List();
+                group.WmoVertices = br.ReadVector3List();
 
                 ReadBSPTree(br, group);
 

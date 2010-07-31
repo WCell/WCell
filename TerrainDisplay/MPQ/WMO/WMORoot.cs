@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Collision._3D;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.WMO.Components;
+using OBB = WCell.Util.Graphics.OBB;
 
 namespace TerrainDisplay.MPQ.WMO
 {
@@ -98,11 +98,15 @@ namespace TerrainDisplay.MPQ.WMO
         /// <summary>
         /// List of vertices used for rendering this WMO in World Space
         /// </summary>
-        public readonly List<VertexPositionNormalColored> Vertices = new List<VertexPositionNormalColored>();
+        public readonly List<Vector3> WmoVertices = new List<Vector3>();
+        public readonly List<Vector3> WmoM2Vertices = new List<Vector3>();
+        public readonly List<Vector3> WmoLiquidVertices = new List<Vector3>();
         /// <summary>
         /// List of indicies used for rendering this WMO in World Space
         /// </summary>
-        public List<int> Indices = new List<int>();
+        public List<int> WmoIndices = new List<int>();
+        public List<int> WmoM2Indices = new List<int>();
+        public List<int> WmoLiquidIndices = new List<int>();
         #endregion
 
         public WMORoot(string filePath)
@@ -113,29 +117,13 @@ namespace TerrainDisplay.MPQ.WMO
         public void ClearCollisionData()
         {
             OrientatedBoundingBox = new OBB();
-            Vertices.Clear();
-            Indices.Clear();
+            WmoVertices.Clear();
+            WmoIndices.Clear();
         }
 
         public void CreateAABB()
         {
             AABB = new AABB(Header.BoundingBox.Min, Header.BoundingBox.Max);
-        }
-
-
-        public void AddVertex(Vector3 vec)
-        {
-            Vertices.Add(new VertexPositionNormalColored(vec, Color.Yellow, Vector3.Up));
-        }
-
-        public void AddM2Vertex(Vector3 vec)
-        {
-            Vertices.Add(new VertexPositionNormalColored(vec, Color.HotPink, Vector3.Up));
-        }
-
-        public void AddIndex(int index)
-        {
-            Indices.Add(index);
         }
 
         internal void DumpLiqChunks()

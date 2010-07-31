@@ -7,29 +7,26 @@ using WCell.Util.Graphics;
 
 namespace Terra
 {
-    public class Subdivision
+    internal class Subdivision
     {
+        internal delegate void EdgeCallback(Edge edge, object closure);
+        internal delegate void FaceCallback(Triangle tri, object closure);
+        
+        private const float EPS = 1e-6f;
+        private static int timeStamp = 0;
+        private Random rand = new Random();
         private Edge startingEdge;
         private Triangle firstFace;
 
         
-        public Subdivision(ref Vector2 a, ref Vector2 b, ref Vector2 c, ref Vector2 d)
-        {
-            InitMesh(ref a, ref b, ref c, ref d);
-        }
-
         protected Subdivision()
         {
         }
-
-
-        public virtual bool ShouldSwap(ref Vector2 point, Edge edge)
+        
+        public virtual bool ShouldSwap(Vector2 point, Edge edge)
         {
-            var start = edge.Orig;
-            var a = edge.OPrev.Dest;
-            var b = edge.Dest;
-
-            return GeometryHelpers.IsInCircle(ref start, ref a, ref b, ref point);
+            var t = edge.OPrev;
+            return GeometryHelpers.IsInCircle(edge.Orig, t.Dest, edge.Dest, point);
         }
 
         public bool IsInterior(Edge edge)
@@ -77,14 +74,11 @@ namespace Terra
                     DeleteEdge(edge.ONext);
                 }
             }
-            else
-            {
-                // point lies with the LFace of edge
-            }
-
-            var baseEdge = MakeEdge(edge.Orig, point);
+            
+            var baseEdge = MakeEdge(edge.Orig, new Vector2(point.X, point.Y));
             Edge.Splice(baseEdge, edge);
 
+            startingEdge = baseEdge;
             do
             {
                 baseEdge = Connect(edge, baseEdge.Sym);
@@ -99,14 +93,15 @@ namespace Terra
             baseEdge = (boundaryEdge != null) ? startingEdge.RPrev : startingEdge.Sym;
             do
             {
-                if (faceIdx > 0)
+                if (faceIdx != 0)
                 {
                     newFaces[--faceIdx].Reshape(baseEdge);
-                    baseEdge = baseEdge.ONext;
-                    continue;
+                }
+                else
+                {
+                    MakeFace(baseEdge);
                 }
 
-                MakeFace(baseEdge);
                 baseEdge = baseEdge.ONext;
             } while (baseEdge != startingEdge.Sym);
 
@@ -118,23 +113,26 @@ namespace Terra
         /// </summary>
         /// <param name="point">The center point of the spokes to optimize.</param>
         /// <param name="edge">An edge pointing AWAY from point.</param>
-        public void Optimize(ref Vector2 point, Edge edge)
+        public void Optimize(Vector2 point, Edge edge)
         {
             var startSpoke = edge;
             var spoke = edge;
 
-            while (true)
+            do
             {
                 var e = spoke.LNext;
-                if (IsInterior(e) && ShouldSwap(ref point, e))
+                var t = e.OPrev;
+
+                if (IsInterior(e) && ShouldSwap(point, e))
                 {
                     Swap(e);
-                    continue;
                 }
-
-                spoke = spoke.ONext;
-                if (spoke == startSpoke) break;
-            }
+                else
+                {
+                    spoke = spoke.ONext;
+                    if (spoke == startSpoke) break;
+                }
+            } while (true);
 
             // Update all the triangles
             spoke = startSpoke;
@@ -151,12 +149,12 @@ namespace Terra
             } while (spoke != startSpoke);
         }
 
-        public Edge Locate(ref Vector2 point)
+        public Edge Locate(Vector2 point)
         {
-            return Locate(ref point, startingEdge);
+            return Locate(point, startingEdge);
         }
 
-        public Edge Locate(ref Vector2 point, Edge edgeHint)
+        public Edge Locate(Vector2 point, Edge edgeHint)
         {
             var e = edgeHint;
             var t = GeometryHelpers.TriArea(point, e.Dest, e.Orig);
@@ -171,7 +169,7 @@ namespace Terra
             if (t > 0)
             {
                 // Switch search to the left side
-                t = -t;
+                t *= -1;
                 e = e.Sym;
             }
 
@@ -201,84 +199,96 @@ namespace Terra
                         startingEdge = e;
                         return e;
                     }
-
-                    // point is below ed and below eo
-                    // move the search to eo
-                    //  DPrev------>d----->RPrev
-                    //              ^
-                    //              |  
-                    //             e|
-                    //              |
-                    //  ONext<------o<-----RNext
-                    //          .P
-                    t = to;
-                    e = eo;
-                    continue;
-                }
-                
-                // point is on or above ed
-                // point is above eo
-                if (to > 0)
-                {
-                    // point is e.Dest
-                    if (to == 0 && t == 0)
+                    else
                     {
-                        startingEdge = e;
-                        return e;
+                        // point is below ed and below eo
+                        // move the search to eo
+                        //  DPrev------>d----->RPrev
+                        //              ^
+                        //              |  
+                        //             e|
+                        //              |
+                        //  ONext<------o<-----RNext
+                        //          .P
+                        t = to;
+                        e = eo;
                     }
-
-                    // point is above eo and above ed
-                    // move the search to ed
-                    //          .P
-                    //  DPrev------>d----->RPrev
-                    //              ^
-                    //              |  
-                    //             e|
-                    //              |
-                    //  ONext<------o<-----RNext
-                    t = td;
-                    e = ed;
-                    continue;
                 }
-                
-                // point is on or to the left of eo
-                // point is on e, but the subdivision is to the right
-                if (t == 0 && !Edge.IsLeftOf(eo.Dest, e))
+                else
                 {
-                    e = e.Sym;
-                    continue;
-                }
-                
-                // point is on or above ed and on or below eo (what the ...)
-                // step randomly
-                if ((DateTime.Now.Ticks & 1) > 0)
-                {
-                    t = to;
-                    e = eo;
-                    continue;
-                }
+                    // point is on or above ed
+                    // point is above eo
+                    if (to > 0)
+                    {
+                        // point is e.Dest
+                        if (td == 0 && t == 0)
+                        {
+                            startingEdge = e;
+                            return e;
+                        }
+                        else
+                        {
+                            // point is above eo and above ed
+                            // move the search to ed
+                            //          .P
+                            //  DPrev------>d----->RPrev
+                            //              ^
+                            //              |  
+                            //             e|
+                            //              |
+                            //  ONext<------o<-----RNext
+                            t = td;
+                            e = ed;
+                        }
+                    }
+                    else
+                    {
+                        // point is on or to the left of eo
+                        // point is on e, but the subdivision is to the right
+                        if (t == 0 && !Edge.IsLeftOf(eo.Dest, e))
+                        {
+                            e = e.Sym;
+                        }
 
-                t = td;
-                e = ed;
+                        // point is on or above ed and on or below eo (what the ...)
+                        // step randomly
+                        else if ((rand.Next() & 1) > 0)
+                        {
+                            t = to;
+                            e = eo;
+                        }
+                        else
+                        {
+                            t = td;
+                            e = ed;
+                        }
+                    }
+                }
             }
         }
 
-        public Edge Insert(ref Vector2 point)
+        public Edge Insert(Vector2 point)
         {
-            Insert(ref point, null);
+            return Insert(point, null);
         }
 
-        public Edge Insert(ref Vector2 point, Triangle tri)
+        public Edge Insert(Vector2 point, Triangle tri)
         {
-            var edge = (tri != null) ? Locate(ref point, tri.Anchor) : Locate(ref point);
+            var edge = (tri != null) ? Locate(point, tri.Anchor) : Locate(point);
             var startSpoke = Spoke(point, edge);
 
             if (startSpoke != null)
             {
-                Optimize(ref point, startSpoke.Sym);
+                Optimize(point, startSpoke.Sym);
             }
 
             return startSpoke;
+        }
+
+        public Edge Insert(float x, float y, Triangle tri)
+        {
+            var newVec = new Vector2(x, y);
+            return Insert(newVec, tri);
         }
 
         public void OverEdges(EdgeCallback callback)
@@ -320,12 +330,18 @@ namespace Terra
             while( tri != null)
             {
                 callback(tri, closure);
-                tri = tri.Link;
+                tri = tri.NextFace;
             }
         }
 
-        protected void InitMesh(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        protected void InitMesh(Vector2 av, Vector2 bv, Vector2 cv, Vector2 dv)
         {
+            var a = new Vector2(av.X, av.Y);
+            var b = new Vector2(bv.X, bv.Y);
+            var c = new Vector2(cv.X, cv.Y);
+            var d = new Vector2(dv.X, dv.Y);
+
+
             var edgeA = MakeEdge();
             edgeA.SetEndPoints(a, b);
 
@@ -335,11 +351,11 @@ namespace Terra
 
             var edgeC = MakeEdge();
             Edge.Splice(edgeB.Sym, edgeC);
-            edgeB.SetEndPoints(c, d);
+            edgeC.SetEndPoints(c, d);
 
             var edgeD = MakeEdge();
             Edge.Splice(edgeC.Sym, edgeD);
-            edgeB.SetEndPoints(d, a);
+            edgeD.SetEndPoints(d, a);
             Edge.Splice(edgeD.Sym, edgeA);
 
             var diag = MakeEdge();
@@ -383,6 +399,8 @@ namespace Terra
         {
             Edge.Splice(edge, edge.OPrev);
             Edge.Splice(edge.Sym, edge.Sym.OPrev);
+
+            edge.Delete();
         }
 
         protected Edge Connect(Edge a, Edge b)
@@ -420,21 +438,18 @@ namespace Terra
 
         protected bool OnEdge(Vector2 point, Edge edge)
         {
-            const float eps2 = GeometryHelpers.EpsilonSquared;
-
-            var t1 = (point - edge.Orig).LengthSquared();
-            var t2 = (point - edge.Dest).LengthSquared();
-            if (t1 < eps2 || t2 < eps2) return true;
+            var t1 = (point - edge.Orig).Length();
+            var t2 = (point - edge.Dest).Length();
+            if (t1 < EPS || t2 < EPS) return true;
 
             
-            var t3 = (edge.Orig - edge.Dest).LengthSquared();
+            var t3 = (edge.Orig - edge.Dest).Length();
             if (t1 > t3 || t2 > t3) return false;
 
             var line = new Line(edge.Orig, edge.Dest);
             var result = line.Eval(ref point);
 
-            if (result < 0) return ((-result) < eps2);
-            return (result < eps2);
+            return (Math.Abs(result) < EPS);
         }
     }
 }

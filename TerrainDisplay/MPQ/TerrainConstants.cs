@@ -35,6 +35,7 @@
         public const int TilesPerMapSide = 64;
         public const int ChunksPerTileSide = 16;
         public const int UnitsPerChunkSide = 8;
+        public const int UnitsPerMapSide = ChunksPerTileSide*UnitsPerChunkSide;
 
         public const float TerrainSimplificationConst = 0.005f;
         public const float H2OSimplificationConst = 0.005f;

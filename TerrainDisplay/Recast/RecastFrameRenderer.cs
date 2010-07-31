@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay;
-using TerrainDisplay.MPQ;
-using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.Util;
+using Vector3 = WCell.Util.Graphics.Vector3;
 
 namespace TerrainDisplay.Recast
 {
 	/// <summary>
-	/// Render Recast NavMesh in XNA
+    /// Render Recast NavMesh in XNA
 	/// TODO: API will only need one more method to setup parameters and start parsing to support this class
 	/// </summary>
     public class RecastSolidRenderer : RecastRendererBase
     {
+        private Color MeshPolyColor { get { return Color.Black; } }
+
 	    public RecastSolidRenderer(Game game, NavMeshManager manager)
             : base(game, manager)
         {
@@ -62,13 +59,25 @@ namespace TerrainDisplay.Recast
 
 	    protected override bool BuildPolyVerticiesAndIndicies()
         {
-            _manager.GetMeshVerticesAndIndices(out _cachedPolyVertices, out _cachedPolyIndices);
-            if (_cachedPolyVertices.IsNullOrEmpty() || _cachedPolyIndices.IsNullOrEmpty()) return false;
+	        List<Vector3> vertices;
+	        List<int> indices;
+            _manager.GetMeshVerticesAndIndices(out vertices, out indices);
 
-            for (var i = 0; i < _cachedPolyVertices.Length; i++)
+            if (vertices.Count == 0 || indices.Count == 0) return false;
+
+            _cachedPolyVertices = new VertexPositionNormalColored[vertices.Count];
+            for (var i = 0; i < vertices.Count; i++)
             {
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i].Position);
+                _cachedPolyVertices[i] = new VertexPositionNormalColored(vertices[i].ToXna(), MeshPolyColor,
+                                                                         Vector3.Up.ToXna());
+                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
             }
+
+            _cachedPolyIndices = new int[indices.Count];
+	        for (int i = 0; i < indices.Count; i++)
+	        {
+	            _cachedPolyIndices[i] = indices[i];
+	        }
 
             RenderPolyCached = true;
 	        return true;
@@ -77,6 +86,8 @@ namespace TerrainDisplay.Recast
 
     public class RecastFrameRenderer : RecastRendererBase
     {
+        public Color RecastFrameColor { get { return Color.Green; } }
+
         public RecastFrameRenderer(Game game, NavMeshManager manager)
             : base(game, manager)
         {
@@ -130,14 +141,23 @@ namespace TerrainDisplay.Recast
 
         protected override bool BuildPolyVerticiesAndIndicies()
         {
-            _manager.GetMeshVerticesAndIndices(out _cachedPolyVertices, out _cachedPolyIndices);
-            if (_cachedPolyVertices.IsNullOrEmpty() || _cachedPolyIndices == null) return false;
+            List<Vector3> polyVertices;
+            List<int> polyIndices;
+            _manager.GetMeshVerticesAndIndices(out polyVertices, out polyIndices);
+            if (polyVertices.Count == 0 || polyIndices == null) return false;
             
-            for (var i = 0; i < _cachedPolyVertices.Length; i++)
+            _cachedPolyVertices = new VertexPositionNormalColored[polyVertices.Count];
+            for (var i = 0; i < polyVertices.Count; i++)
             {
-                _cachedPolyVertices[i].Color = Color.Green;
-                _cachedPolyVertices[i].Normal = Vector3.Up;
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i].Position);
+                _cachedPolyVertices[i] = new VertexPositionNormalColored(polyVertices[i].ToXna(), RecastFrameColor,
+                                                                         Vector3.Up.ToXna());
+                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedPolyVertices[i]);
+            }
+
+            _cachedPolyIndices = new int[polyIndices.Count];
+            for (int i = 0; i < polyIndices.Count; i++)
+            {
+                _cachedPolyIndices[i] = polyIndices[i];
             }
 
             RenderPolyCached = true;

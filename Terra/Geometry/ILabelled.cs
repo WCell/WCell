@@ -1,6 +1,6 @@
 namespace Terra
 {
-     public interface ILabelled
+    internal interface ILabelled
      {
           int Token { get; set; }
      }

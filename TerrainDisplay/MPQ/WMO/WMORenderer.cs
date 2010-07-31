@@ -2,19 +2,15 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
+
 namespace TerrainDisplay.MPQ.WMO
 {
-    public class WMORenderer : DrawableGameComponent
+    public class WMORenderer : RendererBase
     {
-        /// <summary>
-        /// Boolean variable representing if all the rendering data has been cached.
-        /// </summary>
-        private bool _renderCached;
-
-        private VertexPositionNormalColored[] _cachedVertices;
-        private int[] _cachedIndices;
         private readonly IWMOManager _manager;
-
+        private static Color WMOColor { get { return Color.DarkSlateGray; } }
+        private static Color WMOModelColor { get { return Color.DarkSlateGray; } }
+        private static Color WMOWaterColor { get { return Color.DarkSlateGray; } }
 
         public WMORenderer(Game game, IWMOManager manager)
             : base(game)
@@ -22,61 +18,67 @@ namespace TerrainDisplay.MPQ.WMO
             _manager = manager;
         }
 
-        public override void Draw(GameTime gameTime)
+        protected override void BuildVerticiesAndIndicies()
         {
-            var vertices = GetRenderingVerticies();
-            var indices = GetRenderingIndices();
+            var vertCount = _manager.WmoVertices.Count +
+                            _manager.WmoM2Vertices.Count +
+                            _manager.WmoLiquidVertices.Count;
+            _cachedVertices = new VertexPositionNormalColored[vertCount];
 
-            GraphicsDevice.DrawUserIndexedPrimitives(
-                PrimitiveType.TriangleList,
-                vertices,
-                0, // vertex buffer offset to add to each element of the index buffer
-                vertices.Length, // number of vertices to draw
-                indices,
-                0, // first index element to read
-                indices.Length / 3 // number of primitives to draw
-                );
+            var idxCount = _manager.WmoIndices.Count +
+                           _manager.WmoM2Indices.Count +
+                           _manager.WmoLiquidIndices.Count;
+            _cachedIndices = new int[idxCount];
 
-            base.Draw(gameTime);
-        }
-
-        private VertexPositionNormalColored[] GetRenderingVerticies()
-        {
-            if (_renderCached)
-            {
-                return _cachedVertices;
-            }
-
-            BuildVerticiesAndIndicies();
-            return _cachedVertices;
-        }
-
-        private int[] GetRenderingIndices()
-        {
-            if (_renderCached)
-            {
-                return _cachedIndices;
-            }
-
-            BuildVerticiesAndIndicies();
-            return _cachedIndices;
-        }
-
-        private void BuildVerticiesAndIndicies()
-        {
-            var vertices = _manager.RenderVertices;
-            var indices = _manager.RenderIndices;
+            var vertices = _manager.WmoVertices;
+            var indices = _manager.WmoIndices;
             
-            _cachedIndices = indices.ToArray();
-            _cachedVertices = vertices.ToArray();
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var vec = vertices[i];
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                _cachedVertices[i] = new VertexPositionNormalColored(vec.ToXna(), WMOColor, Vector3.Down);
+            }
+            for (var i = 0; i < indices.Count; i++)
+            {
+                _cachedIndices[i] = indices[i];
+            }
+
+            // Add the M2 stuff
+            var vecOffset = vertices.Count;
+            vertices = _manager.WmoM2Vertices;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var vec = vertices[i + vecOffset];
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                _cachedVertices[i + vecOffset] = new VertexPositionNormalColored(vec.ToXna(), WMOModelColor,
+                                                                                 Vector3.Down);
+            }
+            var idxOffset = indices.Count;
+            indices = _manager.WmoM2Indices;
+            for (var i = 0; i < indices.Count; i++)
+            {
+                _cachedIndices[i + idxOffset] = indices[i] + vecOffset;
+            }
+
+            // Add the Liquid stuff
+            vecOffset += vertices.Count;
+            vertices = _manager.WmoLiquidVertices;
+            for (var i = 0; i < vertices.Count; i++)
+            {
+                var vec = vertices[i + vecOffset];
+                PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
+                _cachedVertices[i + vecOffset] = new VertexPositionNormalColored(vec.ToXna(), WMOWaterColor,
+                                                                                 Vector3.Down);
+            }
+            idxOffset += indices.Count;
+            indices = _manager.WmoLiquidIndices;
+            for (var i = 0; i < indices.Count; i++)
+            {
+                _cachedIndices[i + idxOffset] = indices[i] + vecOffset;
+            }
 
             _renderCached = true;
-
-            for (var i = 0; i < _cachedVertices.Length; i++)
-            {
-                _cachedVertices[i].Normal = Vector3.Down;
-                PositionUtil.TransformWoWCoordsToXNACoords(ref _cachedVertices[i]);
-            }
         }
     }
 }

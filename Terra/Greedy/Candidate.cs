@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Terra.Greedy
 {
-    public class Candidate
+    internal class Candidate
     {
         public int X;
         public int Y;

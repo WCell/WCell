@@ -1,25 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay.Collision._3D;
+using Terra;
 using TerrainDisplay.MPQ.ADT.Components;
+using WCell.Util.Graphics;
+using Color = WCell.Util.Graphics.Color;
 
 namespace TerrainDisplay.MPQ.ADT
 {
     public class ADT : ADTBase
     {
-        private static Color TerrainColor
-        {
-            get { return Color.DarkSlateGray; }
-        }
-
-        private static Color WaterColor
-        {
-            get { return Color.DarkSlateGray; }
-        }
-
         private const float MAX_FLAT_LAND_DELTA = 0.005f;
         private const float MAX_FLAT_WATER_DELTA = 0.001f;
 
@@ -85,12 +75,6 @@ namespace TerrainDisplay.MPQ.ADT
 
         #endregion
 
-        #region Rendering Variables
-
-        //public List<Triangle> Triangles;
-        //public List<Triangle> LiquidTriangles;
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -114,7 +98,7 @@ namespace TerrainDisplay.MPQ.ADT
 
         public override void GenerateLiquidVertexAndIndices()
         {
-            LiquidVertices = new List<VertexPositionNormalColored>();
+            LiquidVertices = new List<Vector3>();
             LiquidIndices = new List<int>();
            
             var vertexCounter = 0;
@@ -122,7 +106,7 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 for (var indexY = 0; indexY < 16; indexY++)
                 {
-                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices, WaterColor);
+                    var tempVertexCounter = GenerateLiquidVertices(indexY, indexX, LiquidVertices);
                     GenerateLiquidIndices(indexY, indexX, vertexCounter, LiquidIndices);
                     vertexCounter += tempVertexCounter;
                 }
@@ -131,17 +115,177 @@ namespace TerrainDisplay.MPQ.ADT
         
         public override void GenerateHeightVertexAndIndices()
         {
-            Vertices = new List<VertexPositionNormalColored>();
-            Indices = new List<int>();
+            const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide*TerrainConstants.ChunksPerTileSide;
+            var tileHeights = new float[heightsPerTileSide + 1, heightsPerTileSide + 1];
+            var tileHoles = new List<Index2>();
+            var holeBorders = new List<Index2>();
 
-            for (var indexX = 0; indexX < 16; indexX++)
+            for (var chunkRow = 0; chunkRow < TerrainConstants.ChunksPerTileSide; chunkRow++)
             {
-                for (var indexY = 0; indexY < 16; indexY++)
+                for (var chunkCol = 0; chunkCol < TerrainConstants.ChunksPerTileSide; chunkCol++)
                 {
-                    GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
-                    GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
+                    var chunk = MapChunks[chunkCol, chunkRow];
+                    var heights = chunk.Heights.GetLowResMapMatrix();
+                    var holes = (chunk.Header.Holes > 0) ? chunk.Header.GetHolesMap() : new bool[4,4];
+
+                    // Add the height map values, inserting them into their correct positions
+                    for (var unitRow = 0; unitRow <= TerrainConstants.UnitsPerChunkSide; unitRow++)
+                    {
+                        for (var unitCol = 0; unitCol <= TerrainConstants.UnitsPerChunkSide; unitCol++)
+                        {
+                            var tileRow = chunkRow*TerrainConstants.UnitsPerChunkSide + unitRow;
+                            var tileCol = chunkCol*TerrainConstants.UnitsPerChunkSide + unitCol;
+
+                            tileHeights[tileRow, tileCol] = heights[unitCol, unitRow] + chunk.Header.Z;
+
+                            if (unitCol == TerrainConstants.UnitsPerChunkSide) continue;
+                            if (unitRow == TerrainConstants.UnitsPerChunkSide) continue;
+                            // Add the hole vertices to the pre-insertion 'script'
+                            if (!holes[unitRow/2, unitCol/2]) continue;
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Max(tileCol - 1, 0),
+                            //    X = Math.Max(tileRow - 1, 0),
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = tileCol,
+                            //    X = Math.Max(tileRow - 1, 0),
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 1, heightsPerTileSide),
+                            //    X = Math.Max(tileRow - 1, 0),
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
+                            //    X = Math.Max(tileRow - 1, 0),
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Max(tileCol - 1, 0),
+                            //    X = tileRow,
+                            //});
+
+                            tileHoles.AddUnique(new Index2
+                            {
+                                Y = tileCol,
+                                X = tileRow
+                            });
+
+                            tileHoles.AddUnique(new Index2
+                            {
+                                Y = Math.Min(tileCol + 1, heightsPerTileSide),
+                                X = tileRow
+                            });
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
+                            //    X = tileRow
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Max(tileCol - 1, 0),
+                            //    X = Math.Min(tileRow + 1, heightsPerTileSide)
+                            //});
+
+                            tileHoles.AddUnique(new Index2
+                            {
+                                Y = tileCol,
+                                X = Math.Min(tileRow + 1, heightsPerTileSide)
+                            });
+
+                            tileHoles.AddUnique(new Index2
+                            {
+                                Y = Math.Min(tileCol + 1, heightsPerTileSide),
+                                X = Math.Min(tileRow + 1, heightsPerTileSide)
+                            });
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
+                            //    X = Math.Min(tileRow + 1, heightsPerTileSide)
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Max(tileCol - 1, 0),
+                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = tileCol,
+                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 1, heightsPerTileSide),
+                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
+                            //});
+
+                            //holeBorders.AddUnique(new Index2
+                            //{
+                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
+                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
+                            //});
+                        }
+                    }
                 }
             }
+
+            var allHoleIndices = new List<Index2>();
+            foreach (var index in tileHoles)
+            {
+                var count = 0;
+                for (var i = -1; i < 2; i++)
+                {
+                    for (var j = -1; j < 2; j++)
+                    {
+                        if (!tileHoles.Contains(new Index2
+                        {
+                            X = index.X + i,
+                            Y = index.Y + j
+                        })) continue;
+                        count++;
+                    }
+                }
+                if (count != 9) continue;
+                allHoleIndices.AddUnique(index);
+            }
+            
+            var terra = new Terra.Terra(1.0f, tileHeights);
+            terra.ScriptedPreInsertion(tileHoles);
+            terra.Triangulate();
+            
+            List<Vector3> newVertices;
+            Indices = new List<int>();
+            terra.GenerateOutput(allHoleIndices, out newVertices, out Indices);
+
+            TerrainVertices = new List<Vector3>();
+            foreach (var vertex in newVertices)
+            {
+                var xPos = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize) - (vertex.X*TerrainConstants.UnitSize);
+                var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) - (vertex.Y*TerrainConstants.UnitSize);
+                TerrainVertices.Add(new Vector3(xPos, yPos, vertex.Z));
+            }
+            //for (var indexX = 0; indexX < 16; indexX++)
+            //{
+            //    for (var indexY = 0; indexY < 16; indexY++)
+            //    {
+            //        GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
+            //        GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
+            //    }
+            //}
         }
 
         /// <summary>
@@ -151,7 +295,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color color)
+        public override int GenerateLiquidVertices(int indexY, int indexX, ICollection<Vector3> vertices)
         {
             var tempVertexCounter = 0;
             var mapChunk = MapChunks[indexY, indexX];
@@ -161,20 +305,20 @@ namespace TerrainDisplay.MPQ.ADT
             if (mh2O == null) return tempVertexCounter;
             if (!mh2O.Header.Used) return tempVertexCounter;
 
-            var clr = Color.Green;
+            //var clr = Color.Green;
 
-            switch (mh2O.Header.Type)
-            {
-                case FluidType.Water:
-                    clr = Color.Blue;
-                    break;
-                case FluidType.Lava:
-                    clr = Color.Red;
-                    break;
-                case FluidType.OceanWater:
-                    clr = Color.Coral;
-                    break;
-            }
+            //switch (mh2O.Header.Type)
+            //{
+            //    case FluidType.Water:
+            //        clr = Color.Blue;
+            //        break;
+            //    case FluidType.Lava:
+            //        clr = Color.Red;
+            //        break;
+            //    case FluidType.OceanWater:
+            //        clr = Color.Coral;
+            //        break;
+            //}
 
             var mh2OHeightMap = mh2O.GetMapHeightsMatrix();
             for (var xStep = 0; xStep < 9; xStep++)
@@ -196,7 +340,7 @@ namespace TerrainDisplay.MPQ.ADT
 
                     var position = new Vector3(xPos, yPos, zPos);
 
-                    vertices.Add(new VertexPositionNormalColored(position, color, Vector3.Up));
+                    vertices.Add(position);
                     tempVertexCounter++;
                 }
             }
@@ -242,7 +386,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="indexX">The x index of the map chunk</param>
         /// <param name="vertices">The Collection to add the vertices to.</param>
         /// <returns>The number of vertices added.</returns>
-        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<VertexPositionNormalColored> vertices, Color terrainColor)
+        public override int GenerateHeightVertices(int indexY, int indexX, ICollection<Vector3> vertices)
         {
             var mcnk = MapChunks[indexY, indexX];
             var lowResMap = mcnk.Heights.GetLowResMapMatrix();
@@ -270,7 +414,7 @@ namespace TerrainDisplay.MPQ.ADT
                     //}
 
                     var position = new Vector3(xPos, yPos, zPos);
-                    vertices.Add(new VertexPositionNormalColored(position, terrainColor, theNormal));
+                    vertices.Add(position);
                     counter++;
                 }
             }

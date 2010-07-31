@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 using TerrainDisplay.MPQ.M2.Components;
 

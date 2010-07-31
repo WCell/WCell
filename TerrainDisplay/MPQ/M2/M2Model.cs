@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+﻿using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.M2.Components;
 
 namespace TerrainDisplay.MPQ.M2

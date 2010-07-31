@@ -1,12 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using TerrainDisplay;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ;
 
 namespace TerrainDisplay.Recast
@@ -32,21 +25,21 @@ namespace TerrainDisplay.Recast
             InputMeshGenerator = GenerateInputMesh;
 		}
 
-		private void BuildVerticiesAndIndicies()
-		{
-			Vector3[] vertices;
-			_manager.GetRecastTriangleMesh(out vertices, out indices);
+        //private void BuildVerticiesAndIndicies()
+        //{
+        //    Vector3[] vertices;
+        //    _manager.GetRecastTriangleMesh(out vertices, out indices);
 
 
 
-			_cachedVertices = new VertexPositionNormalColored[vectors.Length];
-			//_cachedIndices = indices;
-			for (var i = 0; i < vectors.Length; i++)
-			{
-				_cachedVertices[i] = new VertexPositionNormalColored(vectors[i], Color.White, Vector3.Up);
-			}
+        //    _cachedVertices = new VertexPositionNormalColored[vectors.Length];
+        //    //_cachedIndices = indices;
+        //    for (var i = 0; i < vectors.Length; i++)
+        //    {
+        //        _cachedVertices[i] = new VertexPositionNormalColored(vectors[i], Color.White, Vector3.Up);
+        //    }
 
-		}
+        //}
 
 		/// <summary>
 		/// TODO: Add Identifier for mesh to be generated

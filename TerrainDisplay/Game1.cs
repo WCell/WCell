@@ -1,14 +1,12 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TerrainDisplay.MPQ;
-using TerrainDisplay;
-using TerrainDisplay.Extracted;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Recast;
+using Matrix = Microsoft.Xna.Framework.Matrix;
+using Vector3 = Microsoft.Xna.Framework.Vector3;
 
 namespace TerrainDisplay
 {

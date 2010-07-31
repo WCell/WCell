@@ -1,10 +1,10 @@
 //test
 using System;
-using Microsoft.Xna.Framework;
 using TerrainDisplay.Extracted;
 using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.Recast;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay
 {
@@ -40,7 +40,7 @@ namespace TerrainDisplay
 			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
             new RecastRunner(TerrainManager).Start();
 
-            using (var game = new Game1(AvatarPosition))
+            using (var game = new Game1(AvatarPosition.ToXna()))
             {
                 game.Run();
             }

@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using WCell.Util.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.Util;
 
