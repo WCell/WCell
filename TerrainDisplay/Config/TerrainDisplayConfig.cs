@@ -87,7 +87,7 @@ namespace TerrainDisplay
                     {
                         if (s_instance.AutoSave)
                         {
-                            //s_instance.Save(true, true);
+                            s_instance.Save(true, true);
                         }
                     }
                 }

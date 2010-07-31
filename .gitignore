@@ -33,5 +33,4 @@ _ReSharper*/
 changes.diff
 
 #ignore the program config
-TerrainDisplay/App.config
 Terra/terra/

@@ -180,9 +180,6 @@
     <Compile Include="VertexPositionNormalColored.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Content\mfont.spritefont">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
