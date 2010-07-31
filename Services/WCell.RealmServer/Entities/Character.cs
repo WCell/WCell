@@ -790,20 +790,6 @@ namespace WCell.RealmServer.Entities
 			m_client.Send(packet);
 		}
 
-		/// <summary>
-		/// Change target and/or amount of combo points
-		/// </summary>
-		public override bool ModComboState(Unit target, int amount)
-		{
-			if (base.ModComboState(target, amount))
-			{
-				CombatHandler.SendComboPoints(this);
-				return true;
-			}
-
-			return false;
-		}
-
 		#region Interaction with NPCs & GameObjects
 		/// <summary>
 		/// Called whenever this Character interacts with any WorldObject
@@ -1131,6 +1117,20 @@ namespace WCell.RealmServer.Entities
 				return Auras.GetModifiedFloat(SpellModifierType.CritDamage, effect.Spell, dmg);
 			}
 			return dmg;
+		}
+
+		/// <summary>
+		/// Change target and/or amount of combo points
+		/// </summary>
+		public override bool ModComboState(Unit target, int amount)
+		{
+			if (base.ModComboState(target, amount))
+			{
+				CombatHandler.SendComboPoints(this);
+				return true;
+			}
+
+			return false;
 		}
 		#endregion
 

@@ -262,5 +262,10 @@ namespace WCell.RealmServer.RacesClasses
         {
             ArchetypeMgr.BaseClasses[(uint)Id] = this;
         }
+
+    	protected internal virtual void UpdatePower(Unit unit)
+    	{
+			unit.UpdatePower();
+    	}
     }
 }

@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Power Type			
-			if (CostsMana && 
+			if (CostsPower && 
 				PowerType != caster.PowerType && 
 				PowerType != PowerType.Health &&
 				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
@@ -413,7 +413,7 @@ namespace WCell.RealmServer.Spells
 
 
 			// Corpse target
-			if (ReqDeadTarget)
+			if (RequiresDeadTarget)
 			{
 				if (TargetFlags.HasAnyFlag(SpellTargetFlags.PvPCorpse | SpellTargetFlags.Corpse))
 				{

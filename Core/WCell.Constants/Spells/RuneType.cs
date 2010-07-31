@@ -7,7 +7,7 @@ namespace WCell.Constants.Spells
 {
 	public enum RuneType
 	{
-		Blood,
+		Blood = 0,
 		Unholy,
 		Frost,
 		Death,

@@ -175,11 +175,11 @@ namespace WCell.RealmServer.Spells
             {
                 var entry = new RuneCostEntry
                                 {
-                                    Id = (uint) (id = GetInt32(rawData, 0)),
-                                    BloodCost = (uint) (GetInt32(rawData, 1)),
-                                    FrostCost = (uint) (GetInt32(rawData, 2)),
-                                    UnholyCost = (uint) (GetInt32(rawData, 3)),
-                                    PowerGain = (uint) (GetInt32(rawData, 4))
+                                    Id = (uint)(id = GetInt32(rawData, 0)),
+									BloodCost = GetInt32(rawData, 1),
+									UnholyCost = GetInt32(rawData, 2),
+                                    FrostCost = GetInt32(rawData, 3),
+                                    RunicPowerGain = GetInt32(rawData, 4)
                                 };
                 return entry;
             }

@@ -656,7 +656,7 @@ namespace WCell.RealmServer.Entities
 		{
 			this.UpdatePowerRegen();
 			m_RegenerationDelay = RegenTickDelay;
-			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regen);
+			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regenerate);
 			m_regenTimer.Start();
 			m_regenerates = true;
 		}
@@ -664,7 +664,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Is called on Regeneration ticks
 		/// </summary>
-		protected void Regen(float timeElapsed)
+		protected void Regenerate(float timeElapsed)
 		{
 			if (!IsRegenerating)
 			{
@@ -699,7 +699,16 @@ namespace WCell.RealmServer.Entities
 
 			// Power is interpolated automagically
 			// TODO: Find out when client is in interrupted mode
-			Power += 0;
+
+			var clss = GetBaseClass();
+			if (clss != null)
+			{
+				clss.UpdatePower(this);
+			}
+			else
+			{
+				UpdatePower();
+			}
 
 			//if (Health == MaxHealth)
 			//{
@@ -1439,7 +1448,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool HasEnoughPowerToCast(Spell spell, WorldObject selected)
 		{
-			if (!spell.CostsMana)
+			if (!spell.CostsPower)
 			{
 				return true;
 			}
