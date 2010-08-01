@@ -202,6 +202,15 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public void SetSpellCast(SpellCast cast)
+		{
+			if (m_spellCast != null && m_spellCast != cast)
+			{
+				m_spellCast.Dispose();
+			}
+			m_spellCast = cast;
+		}
+
 		/// <summary>
 		/// Set to the SpellCast-object of this Object.
 		/// If the Object is not in the world, will return null
@@ -220,6 +229,11 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
+				if (value == m_spellCast)
+				{
+					return;
+				}
+
 				m_spellCast = value;
 			}
 		}
@@ -238,8 +252,8 @@ namespace WCell.RealmServer.Entities
 			}
 			if (this is Unit)
 			{
-				range += ((Unit) this).CombatReach;
-				((Unit) this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
+				range += ((Unit)this).CombatReach;
+				((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
 			}
 			return range;
 		}
@@ -1526,7 +1540,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return false;
 			}
-			
+
 			if (m_areaAuras.Remove(aura))
 			{
 				if (this is Unit)
@@ -1665,12 +1679,7 @@ namespace WCell.RealmServer.Entities
 
 		public override void Dispose(bool disposing)
 		{
-			if (m_spellCast != null)
-			{
-				m_spellCast.Dispose();
-				m_spellCast = null;
-			}
-
+			SpellCast = null;
 			m_region = null;
 		}
 		#endregion

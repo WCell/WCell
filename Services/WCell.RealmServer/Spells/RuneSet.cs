@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Spells
 	{
 		public static float DefaultRuneCooldownPerSecond = 0.1f;
 
-		public readonly RuneType[] ActiveRunes = new RuneType[(int)RuneType.End];
+		public readonly RuneType[] ActiveRunes = new RuneType[SpellConstants.MaxRuneCount];
 		public readonly float[] Cooldowns;
 
 		public RuneSet(Character owner, int runeSetMask, float[] runeCooldowns)

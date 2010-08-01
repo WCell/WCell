@@ -1,2 +1,4 @@
-- more rune stuff
-- fixed achievement loading
+- fixed spell striking with weapons / npc rotation when stunned
+- improved physical spell abilities
+- fixed an exception with NPC spell casting
+- added #aura add <list of spells> command
