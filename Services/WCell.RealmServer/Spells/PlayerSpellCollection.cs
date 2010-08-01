@@ -576,6 +576,12 @@ namespace WCell.RealmServer.Spells
 					catCds.Clear();
 				}
 			}));
+
+			// clear rune cooldowns
+			if (m_runes != null)
+			{
+				// TODO: Clear rune cooldown
+			}
 		}
 
 		/// <summary>

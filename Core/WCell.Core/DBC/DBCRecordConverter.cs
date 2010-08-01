@@ -63,14 +63,22 @@ namespace WCell.Core.DBC
 			{
 				throw new Exception("Cannot copy to object " + obj + " because it's size is not a multiple of 4.");
 			}
-			var handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
+
 			try
 			{
-				Marshal.Copy(bytes, offset * 4, new IntPtr(handle.AddrOfPinnedObject().ToInt64() + objectOffset), size);
+				var handle = GCHandle.Alloc(obj, GCHandleType.Pinned);
+				try
+				{
+					Marshal.Copy(bytes, offset*4, new IntPtr(handle.AddrOfPinnedObject().ToInt64() + objectOffset), size);
+				}
+				finally
+				{
+					handle.Free();
+				}
 			}
-			finally
+			catch (Exception e)
 			{
-				handle.Free();
+				throw new Exception(string.Format("Unable to copy bytes to object {0} of type {1}", obj, obj.GetType()), e);
 			}
 		}
 

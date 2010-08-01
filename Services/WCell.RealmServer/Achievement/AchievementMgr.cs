@@ -104,12 +104,16 @@ namespace WCell.RealmServer.Achievement
 
 		public static AchievementEntry GetAchievementEntry(AchievementEntryId achievementEntryId)
 		{
-			return AchievementEntries[achievementEntryId];
+			AchievementEntry entry;
+			AchievementEntries.TryGetValue(achievementEntryId, out entry);
+			return entry;
 		}
 
 		public static AchievementCategoryEntry GetCategoryEntry(AchievementCategoryEntryId achievementCategoryEntryId)
 		{
-			return AchievementCategoryEntries[achievementCategoryEntryId];
+			AchievementCategoryEntry entry;
+			AchievementCategoryEntries.TryGetValue(achievementCategoryEntryId, out entry);
+			return entry;
 		}
 	}
 }

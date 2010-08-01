@@ -992,7 +992,8 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (!caster.HasEnoughPowerToCast(m_spell, null))
+			if (!caster.HasEnoughPowerToCast(m_spell, null) ||
+				(Spell.RuneCostEntry != null && caster.PlayerSpells.Runes != null && !caster.PlayerSpells.Runes.HasEnoughRunes(Spell.RuneCostEntry)))
 			{
 				return SpellFailedReason.NoPower;
 			}

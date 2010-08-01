@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells
@@ -12,12 +13,12 @@ namespace WCell.RealmServer.Spells
 	/// </summary>
 	public class RuneSet
 	{
-		public static int RuneCooldownMillis = 10000;
+		public static float DefaultRuneCooldownPerSecond = 0.1f;
 
 		public readonly RuneType[] ActiveRunes = new RuneType[(int)RuneType.End];
-		public readonly int[] Cooldowns;
+		public readonly float[] Cooldowns;
 
-		public RuneSet(Character owner, int runeSetMask, int[] runeCooldowns)
+		public RuneSet(Character owner, int runeSetMask, float[] runeCooldowns)
 		{
 			Owner = owner;
 
@@ -25,9 +26,14 @@ namespace WCell.RealmServer.Spells
 
 			if (runeCooldowns == null || runeCooldowns.Length != SpellConstants.MaxRuneCount)
 			{
-				runeCooldowns = new int[SpellConstants.MaxRuneCount];
+				runeCooldowns = new float[SpellConstants.MaxRuneCount];
 			}
 			Cooldowns = runeCooldowns;
+
+			for (RuneType i = 0; i < RuneType.End; i++)
+			{
+				SetCooldownPerSecond(i, DefaultRuneCooldownPerSecond);
+			}
 		}
 
 		public Character Owner
@@ -36,7 +42,7 @@ namespace WCell.RealmServer.Spells
 			internal set;
 		}
 
-		#region Convert
+		#region Convert between Rune types
 		public bool Convert(RuneType from, RuneType to)
 		{
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
@@ -68,9 +74,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool HasEnoughRunes(RuneCostEntry costs)
 		{
-			for (RuneType type = 0; type < (RuneType) costs.CostPerType.Length; type++)
+			for (RuneType type = 0; type < (RuneType)costs.CostPerType.Length; type++)
 			{
-				var cost = costs.CostPerType[(int) type];
+				var cost = costs.CostPerType[(int)type];
 				if (cost > 0)
 				{
 					for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
@@ -90,11 +96,14 @@ namespace WCell.RealmServer.Spells
 			return true;
 		}
 
-		public void ConsumeRunes(RuneCostEntry costs)
+		/// <summary>
+		/// Method is internal because we don't have a packet yet to signal the client spontaneous cooldown updates
+		/// </summary>
+		internal void ConsumeRunes(RuneCostEntry costs)
 		{
 			for (RuneType type = 0; type < (RuneType)costs.CostPerType.Length; type++)
 			{
-				var cost = costs.CostPerType[(int) type];
+				var cost = costs.CostPerType[(int)type];
 				if (cost > 0)
 				{
 					// first look for normal runes
@@ -140,24 +149,24 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// TODO: Send update to client, if necessary
 		/// </summary>
-		public void StartCooldown(uint index)
+		internal void StartCooldown(uint index)
 		{
-			Cooldowns[index] = RuneCooldownMillis;
+			Cooldowns[index] = 1;
 		}
 
 		/// <summary>
 		/// TODO: Send update to client, if necessary
 		/// </summary>
-		public void UnsetCooldown(uint index)
+		internal void UnsetCooldown(uint index)
 		{
 			Cooldowns[index] = 0;
 		}
 
-		internal void UpdateCooldown(int dt)
+		internal void UpdateCooldown(float dt)
 		{
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
 			{
-				var cd = Cooldowns[i] - dt;
+				var cd = Cooldowns[i] - (dt * GetCooldownPerSecond(ActiveRunes[i]));
 				if (cd > 0)
 				{
 					Cooldowns[i] = cd;
@@ -168,6 +177,16 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 		}
+
+		public float GetCooldownPerSecond(RuneType type)
+		{
+			return Owner.GetFloat(PlayerFields.RUNE_REGEN_1 + (int)type);
+		}
+
+		public void SetCooldownPerSecond(RuneType type, float cdPerSecond)
+		{
+			Owner.SetFloat(PlayerFields.RUNE_REGEN_1 + (int)type, cdPerSecond);
+		}
 		#endregion
 
 		#region Serialize & Deserialize
@@ -176,27 +195,37 @@ namespace WCell.RealmServer.Spells
 			var setMask = 0;
 			for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
 			{
-				setMask |= ((int)ActiveRunes[i] << (SpellConstants.BitsPerRune * i));
+				setMask |= (((int)ActiveRunes[i] + 1) << (SpellConstants.BitsPerRune * i));	// always add one (since the lowest rune starts at 0)
 			}
 			return setMask;
 		}
 
 		public void UnpackRuneSetMask(int runeSetMask)
 		{
-			for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
+			if (runeSetMask == 0)
 			{
-				var rune = (RuneType)(runeSetMask);
-				if (rune >= RuneType.End)
+				// no runes set
+				SpellConstants.DefaultRuneSet.CopyTo(ActiveRunes, 0);
+			}
+			else
+			{
+				for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
 				{
-					ActiveRunes[i] = SpellConstants.DefaultRuneSet[i];
+					// subtract one (since the lowest rune started at 0)
+					var rune = (RuneType)((runeSetMask & SpellConstants.SingleRuneFullBitMask) - 1);
+					if (rune >= RuneType.End || rune < 0)
+					{
+						ActiveRunes[i] = SpellConstants.DefaultRuneSet[i];
+					}
+					else
+					{
+						ActiveRunes[i] = rune;
+					}
+					runeSetMask >>= SpellConstants.BitsPerRune;
 				}
-				else
-				{
-					ActiveRunes[i] = rune;
-				}
-				runeSetMask >>= SpellConstants.BitsPerRune;
 			}
 		}
+
 		#endregion
 	}
 }

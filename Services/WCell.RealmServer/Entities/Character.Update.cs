@@ -413,7 +413,7 @@ namespace WCell.RealmServer.Entities
 			}
 			if (PlayerSpells.Runes != null)
 			{
-				PlayerSpells.Runes.UpdateCooldown((int)(dt * 1000));
+				PlayerSpells.Runes.UpdateCooldown(dt);
 			}
 		}
 
