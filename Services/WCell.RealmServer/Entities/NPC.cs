@@ -1515,7 +1515,7 @@ namespace WCell.RealmServer.Entities
 				m_decayTimer.Update(dt);
 			}
 
-			if (m_target != null)
+			if (m_target != null && CanMove)
 			{
 				// always face the target
 				SetOrientationTowards(m_target);

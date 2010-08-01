@@ -325,8 +325,7 @@ namespace WCell.Tools
 
 
 				GC.Collect();
-				Console.WriteLine("Total memory usage with fully spawned world: {0}",
-								  GC.GetTotalMemory(true));
+				Console.WriteLine("Total memory usage with fully spawned world: {0}", GC.GetTotalMemory(true));
 			});
 		}
 

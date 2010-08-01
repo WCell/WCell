@@ -697,18 +697,11 @@ namespace WCell.RealmServer.Entities
 			//    power = MathUtil.Divide(power * ManaRegenPerTickInterruptedPct, 100);
 			//}
 
-			// Power is interpolated automagically
 			// TODO: Find out when client is in interrupted mode
 
-			var clss = GetBaseClass();
-			if (clss != null)
-			{
-				clss.UpdatePower(this);
-			}
-			else
-			{
-				UpdatePower();
-			}
+
+			// Power is interpolated automagically
+			UpdatePower();
 
 			//if (Health == MaxHealth)
 			//{
@@ -719,7 +712,6 @@ namespace WCell.RealmServer.Entities
 			//        m_regenTimer.Stop();
 			//}
 		}
-
 		#endregion
 
 		#region Powers and Power costs

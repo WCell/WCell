@@ -670,7 +670,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		[Property]
-		public int[] RuneCooldowns
+		public float[] RuneCooldowns
 		{
 			get;
 			set;

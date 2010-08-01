@@ -51,20 +51,25 @@ namespace WCell.RealmServer.Achievement
 		public override void Convert(byte[] rawData)
 		{
 			var criteriaType = (AchievementCriteriaType)GetUInt32(rawData, 2);
-			var entry = AchievementMgr.GetCriteriaEntryCreator(criteriaType)();
+			var creator = AchievementMgr.GetCriteriaEntryCreator(criteriaType);
+			if (creator == null)
+			{
+				// unknown type
+				return;
+			}
+
+			var entry = creator();
 
 			entry.AchievementCriteriaId = (AchievementCriteriaId)GetUInt32(rawData, 0);
-			
-			var achievementId = (AchievementEntryId)GetUInt32(rawData, 1);
+			entry.AchievementEntryId = (AchievementEntryId)GetUInt32(rawData, 1);
 
 			CopyTo(rawData, 3, Marshal.SizeOf(typeof(AchievementCriteriaEntry)), entry);
 
-			// set entry.AchievementEntry
-			entry.AchievementEntry = AchievementMgr.GetAchievementEntry(achievementId);
-			if (entry.AchievementEntry != null)
+			var achievement = entry.AchievementEntry;
+			if (achievement != null)
 			{
 				// add criterion to achievement
-				entry.AchievementEntry.Criteria.Add(entry);
+				achievement.Criteria.Add(entry);
 			}
 
 			// add to critera map

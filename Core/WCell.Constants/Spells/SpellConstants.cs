@@ -34,6 +34,7 @@ namespace WCell.Constants.Spells
 			MoveMechanics[(int)SpellMechanic.Shackled] = true;
 			MoveMechanics[(int)SpellMechanic.Turned] = true;
 			MoveMechanics[(int)SpellMechanic.Sapped] = true;
+			MoveMechanics[(int)SpellMechanic.Snared] = true;
 
 			InteractMechanics[(int)SpellMechanic.Disoriented] = true;
 			InteractMechanics[(int)SpellMechanic.Asleep] = true;
@@ -103,7 +104,16 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		public const int MaxRuneCountPerType = MaxRuneCount / StandardRuneTypeCount;
 
-		public static readonly int BitsPerRune = (int)(Math.Log((int)RuneType.End, 2) + 0.99999);	// always round up
+		/// <summary>
+		/// Amount of bits that are necessary to store a single rune's type.
+		/// Start counting from 1 to End, instead of 0 to End - 1
+		/// </summary>
+		public static readonly int BitsPerRune = (int)(Math.Log((int)RuneType.End + 1, 2) + 0.9999999);	// always round up
+
+		/// <summary>
+		/// BitsPerRune 1 bits to mask away anything but a single rune's bit set
+		/// </summary>
+		public static readonly int SingleRuneFullBitMask = (1 << BitsPerRune) - 1;
 
 		public static readonly uint[,] IndicesPerType = new [,]
 		{

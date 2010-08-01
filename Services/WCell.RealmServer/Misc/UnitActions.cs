@@ -1086,7 +1086,7 @@ namespace WCell.RealmServer.Misc
 				return 0;
 			}
 
-			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, SpellEffect.Spell, Weapon) * 100;
+			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, Spell, Weapon) * 100;
 
 			if (Weapon != null)
 			{

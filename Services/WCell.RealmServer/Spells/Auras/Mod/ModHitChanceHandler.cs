@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Modifiers;
 
 namespace WCell.RealmServer.Spells.Auras.Mod
 {
@@ -14,7 +15,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.IntMods[(int)StatModifierInt.HitChance] += EffectValue;
+				owner.ChangeModifier(StatModifierInt.HitChance, EffectValue);
 			}
 		}
 
@@ -23,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.IntMods[(int)StatModifierInt.HitChance] -= EffectValue;
+				owner.ChangeModifier(StatModifierInt.HitChance, -EffectValue);
 			}
 		}
 	}

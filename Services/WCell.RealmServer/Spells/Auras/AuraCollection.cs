@@ -396,17 +396,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(SpellId id)
-		{
-			return CreateSelf(id, false);
-		}
-
-		/// <summary>
-		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
-		/// Also initializes the new Aura.
-		/// </summary>
-		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(SpellId id, bool noTimeout)
+		public Aura CreateSelf(SpellId id, bool noTimeout = false)
 		{
 			return CreateAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
 		}
@@ -416,7 +406,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(Spell spell, bool noTimeout)
+		public Aura CreateSelf(Spell spell, bool noTimeout = false)
 		{
 			return CreateAura(m_owner.SharedReference, spell, noTimeout);
 		}

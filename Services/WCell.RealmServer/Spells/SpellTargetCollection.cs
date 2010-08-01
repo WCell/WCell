@@ -83,10 +83,9 @@ namespace WCell.RealmServer.Spells
 			{
 				// need to call CheckValidTarget nevertheless
 				var err = SpellFailedReason.Ok;
-				if (caster == null)
-				{
-					return SpellFailedReason.NoValidTargets;
-				}
+
+
+
 				foreach (var handler in m_handlers)
 				{
 					err = handler.InitializeTarget(caster);

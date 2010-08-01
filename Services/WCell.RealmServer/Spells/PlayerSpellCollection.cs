@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Spells
 			m_sendPackets = false;
 			if (owner.Class == Constants.ClassId.DeathKnight)
 			{
-				m_runes = new RuneSet(owner, owner.Record.RuneSetMask, owner.Record.RuneCooldowns);
+				m_runes = new RuneSet(owner);
 			}
 		}
 
@@ -576,6 +576,12 @@ namespace WCell.RealmServer.Spells
 					catCds.Clear();
 				}
 			}));
+
+			// clear rune cooldowns
+			if (m_runes != null)
+			{
+				// TODO: Clear rune cooldown
+			}
 		}
 
 		/// <summary>

@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Spells
 		public static int PushbackDelay = 500;
 		public static int ChannelPushbackFraction = 4;
 
-		static readonly ObjectPool<SpellCast> SpellCastPool = ObjectPoolMgr.CreatePool(() => new SpellCast(), true);
+		internal static readonly ObjectPool<SpellCast> SpellCastPool = ObjectPoolMgr.CreatePool(() => new SpellCast(), true);
 		public static readonly ObjectPool<List<IAura>> AuraListPool = ObjectPoolMgr.CreatePool(() => new List<IAura>(), true);
 		public static readonly ObjectPool<List<CastMiss>> CastMissListPool = ObjectPoolMgr.CreatePool(() => new List<CastMiss>(3), true);
 		public static readonly ObjectPool<List<SpellEffectHandler>> SpellEffectHandlerListPool = ObjectPoolMgr.CreatePool(() => new List<SpellEffectHandler>(3), true);
@@ -311,14 +311,26 @@ namespace WCell.RealmServer.Spells
 			get { return isPlayerCast; }
 		}
 
+		public bool UsesRunes
+		{
+			get { return m_spell.RuneCostEntry != null && CasterChar != null && CasterChar.PlayerSpells.Runes != null; }
+		}
+
 		public CastFlags StartFlags
 		{
 			get
 			{
 				var flags = CastFlags.None;
-				if (m_spell != null && m_spell.IsRangedAbility)
+				if (m_spell != null)
 				{
-					flags |= CastFlags.Ranged;
+					if (m_spell.IsRangedAbility)
+					{
+						flags |= CastFlags.Ranged;
+					}
+					if (UsesRunes)
+					{
+						flags |= CastFlags.RuneAbility;
+					}
 				}
 				return flags;
 			}
@@ -341,6 +353,18 @@ namespace WCell.RealmServer.Spells
 				if (m_spell.IsRangedAbility)
 				{
 					flags |= CastFlags.Ranged;
+				}
+				if (UsesRunes)
+				{
+					flags |= CastFlags.RuneAbility;
+					if (m_spell.RuneCostEntry.RunicPowerGain > 0)
+					{
+						flags |= CastFlags.RunicPowerGain;
+					}
+					if (m_spell.RuneCostEntry.CostsRunes)
+					{
+						flags |= CastFlags.RuneCooldownList;
+					}
 				}
 
 				// TODO: If Ghost - Aura gets applied, add more flags?
@@ -427,6 +451,14 @@ namespace WCell.RealmServer.Spells
 		public bool IsChanneling
 		{
 			get { return m_channel != null && m_channel.IsChanneling; }
+		}
+
+		/// <summary>
+		/// Whether this SpellCast is waiting to be casted on next strike
+		/// </summary>
+		public bool IsPending
+		{
+			get { return m_casting && m_spell.IsOnNextStrike; }
 		}
 
 		/// <summary>
@@ -794,83 +826,124 @@ namespace WCell.RealmServer.Spells
 
 		private SpellFailedReason Prepare()
 		{
-			//var stopwatch = Stopwatch.StartNew();
-			if (Selected == null && CasterUnit != null)
+			if (m_spell == null)
 			{
-				if (m_initialTargets != null)
-				{
-					Selected = m_initialTargets[0];
-				}
-				else
-				{
-					Selected = CasterUnit.Target;
-				}
+				LogManager.GetCurrentClassLogger().Warn("{0} tried to cast without selecting a Spell.", CasterObject);
+				return SpellFailedReason.Error;
 			}
 
-			if (!m_passiveCast && !m_spell.IsPassive && CasterUnit != null)
+			try
 			{
-				var spell = m_spell;
-
-				if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileMounted))
+				//var stopwatch = Stopwatch.StartNew();
+				if (Selected == null && CasterUnit != null)
 				{
-					// don't sit on a ride (even if you try to, the Client will show you dismounted - maybe add auto-remount for GodMode)
-					CasterUnit.Dismount();
-				}
-
-				// make sure, the Caster is standing
-				if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileSitting))
-				{
-					CasterUnit.StandState = StandState.Stand;
-				}
-
-				if (!GodMode && !m_passiveCast && CasterUnit.IsPlayer)
-				{
-					// check whether we may cast at all for Characters (NPC check before casting)
-					var failReason = CheckPlayerCast(Selected);
-					if (failReason != SpellFailedReason.Ok)
+					if (m_initialTargets != null)
 					{
-						Cancel(failReason);
-						return failReason;
+						Selected = m_initialTargets[0];
+					}
+					else
+					{
+						Selected = CasterUnit.Target;
+					}
+				}
+
+				if (!m_passiveCast && !m_spell.IsPassive && CasterUnit != null)
+				{
+					var spell = m_spell;
+
+					if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileMounted))
+					{
+						// don't sit on a ride (even if you try to, the Client will show you dismounted - maybe add auto-remount for GodMode)
+						CasterUnit.Dismount();
 					}
 
-					// remove certain Auras
-					CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
+					// make sure, the Caster is standing
+					if (!spell.Attributes.HasFlag(SpellAttributes.CastableWhileSitting))
+					{
+						CasterUnit.StandState = StandState.Stand;
+					}
+
+					if (!GodMode && !m_passiveCast && CasterUnit.IsPlayer)
+					{
+						// check whether we may cast at all for Characters (NPC check before casting)
+						var failReason = CheckPlayerCast(Selected);
+						if (failReason != SpellFailedReason.Ok)
+						{
+							Cancel(failReason);
+							return failReason;
+						}
+
+						// remove certain Auras
+						CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
+					}
 				}
-			}
 
-			m_startTime = Environment.TickCount;
-			m_castDelay = (int)m_spell.CastDelay;
+				m_startTime = Environment.TickCount;
+				m_castDelay = (int) m_spell.CastDelay;
 
-			if (!IsInstant)
-			{
-				// calc exact cast delay
-				if (CasterUnit != null)
+				if (!IsInstant)
 				{
-					m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
-					m_castDelay = CasterChar.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
+					// calc exact cast delay
+					if (CasterUnit != null)
+					{
+						m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
+						m_castDelay = CasterUnit.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
+					}
 				}
-			}
 
-			if (m_spell.TargetLocation != null)
+				if (m_spell.TargetLocation != null)
+				{
+					TargetLoc = m_spell.TargetLocation.Position;
+				}
+
+				// Notify that we are about to cast
+				return m_spell.NotifyCasting(this);
+			}
+			catch (Exception e)
 			{
-				TargetLoc = m_spell.TargetLocation.Position;
+				OnException(e);
+				return SpellFailedReason.Error;
 			}
-
-			// Notify that we are about to cast
-			return m_spell.NotifyCasting(this);
 		}
 
 		SpellFailedReason FinishPrepare()
 		{
-			if (!IsInstant)
+			try
 			{
-				// send Start packet
-				SendCastStart();
-				m_castTimer.Start(m_castDelay);
-				return SpellFailedReason.Ok;
-			}
+				if (!IsInstant)
+				{
+					// send Start packet
+					SendCastStart();
+					m_castTimer.Start(m_castDelay);
+					return SpellFailedReason.Ok;
+				}
 
-			return Perform();
+				if (m_spell.IsOnNextStrike)
+				{
+					// perform on next strike
+					if (!(CasterObject is Unit))
+					{
+						Cancel();
+						return SpellFailedReason.Error;
+					}
+
+					CasterUnit.SetSpellCast(this);
+
+					// send Start packet
+					SendCastStart();
+					return SpellFailedReason.Ok;
+
+				}
+				else
+				{
+					return Perform();
+				}
+			}
+			catch (Exception e)
+			{
+				OnException(e);
+				return SpellFailedReason.Error;
+			}
 		}
 
 		/// <summary>
@@ -887,7 +960,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void CheckHitAndSendSpellGo(bool revalidateTargets)
+		internal void CheckHitAndSendSpellGo(bool revalidateTargets, byte previousRuneMask)
 		{
 			List<CastMiss> missedTargets;
 			if (revalidateTargets)
@@ -904,7 +977,7 @@ namespace WCell.RealmServer.Spells
 			{
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;
-				SpellHandler.SendSpellGo(caster2, this, m_targets, missedTargets);
+				SpellHandler.SendSpellGo(caster2, this, m_targets, missedTargets, previousRuneMask);
 			}
 
 			if (missedTargets != null)
@@ -992,7 +1065,8 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (!caster.HasEnoughPowerToCast(m_spell, null))
+			if (!caster.HasEnoughPowerToCast(m_spell, null) ||
+				(UsesRunes && !caster.PlayerSpells.Runes.HasEnoughRunes(Spell.RuneCostEntry)))
 			{
 				return SpellFailedReason.NoPower;
 			}
@@ -1196,6 +1270,14 @@ namespace WCell.RealmServer.Spells
 		private void OnException(Exception e)
 		{
 			LogUtil.ErrorException(e, "{0} failed to cast Spell {1} (Targets: {2})", CasterObject, Spell, Targets.ToString(", "));
+			if (CasterObject != null && !CasterObject.IsPlayer)
+			{
+				CasterObject.Delete();
+			}
+			else if (Client != null)
+			{
+				Client.Disconnect();
+			}
 			if (IsCasting)
 			{
 				Cleanup(true);
@@ -1547,7 +1629,7 @@ namespace WCell.RealmServer.Spells
 				//else
 				//if (!m_spell.IsModalAura)
 				{
-					SpellHandler.SendSpellGo(CasterReference, this, null, null);
+					SpellHandler.SendSpellGo(CasterReference, this, null, null, 0);
 				}
 			}
 			else if (CasterObject != null && CasterObject.IsUsingSpell && reason != SpellFailedReason.Ok && reason != SpellFailedReason.DontReport)
