@@ -240,8 +240,8 @@
     <Compile Include="Lang\Translation.cs" />
     <Compile Include="Lang\Localizer.cs" />
     <Compile Include="MathUtil.cs" />
-    <Compile Include="NLog\LogUtil.cs" />
-    <Compile Include="NLog\StreamLogger.cs" />
+    <Compile Include="Logging\LogUtil.cs" />
+    <Compile Include="Logging\StreamLogger.cs" />
     <Compile Include="ReflectionUtils.cs" />
     <Compile Include="SortedTopN.cs" />
     <Compile Include="Strings\StringStream.cs" />

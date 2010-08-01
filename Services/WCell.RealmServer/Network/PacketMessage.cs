@@ -1,7 +1,7 @@
 using System;
 using NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Network
 {

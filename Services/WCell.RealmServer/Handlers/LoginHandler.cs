@@ -10,7 +10,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.RealmServer.Network;
 using WCell.Util;

@@ -14,7 +14,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Quests;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Entities

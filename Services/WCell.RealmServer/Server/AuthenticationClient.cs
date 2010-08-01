@@ -23,7 +23,7 @@ using WCell.Intercommunication.Client;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Res;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Server

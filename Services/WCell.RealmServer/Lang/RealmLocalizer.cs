@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Util.Lang;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Lang
 {

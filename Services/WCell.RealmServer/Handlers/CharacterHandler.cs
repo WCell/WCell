@@ -11,6 +11,7 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
@@ -21,7 +22,6 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.RacesClasses;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Handlers
 {

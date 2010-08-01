@@ -23,6 +23,7 @@ using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Util.Graphics;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
@@ -31,7 +32,6 @@ using WCell.RealmServer.Items;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 

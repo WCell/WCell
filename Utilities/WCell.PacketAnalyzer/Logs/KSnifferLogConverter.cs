@@ -10,7 +10,7 @@ using WCell.Constants;
 using WCell.Core.Network;
 using WCell.PacketAnalysis.Updates;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.PacketAnalysis.Logs
 {

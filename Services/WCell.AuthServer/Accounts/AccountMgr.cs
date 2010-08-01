@@ -5,13 +5,13 @@ using System.Threading;
 using NHibernate.Criterion;
 using NLog;
 using WCell.AuthServer.Database;
+using WCell.Util.Logging;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.Core.Initialization;
 using WCell.Intercommunication.DataTypes;
-using WCell.Util.NLog;
 
 namespace WCell.AuthServer.Accounts
 {

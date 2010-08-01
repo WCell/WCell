@@ -8,7 +8,7 @@ using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Guilds
 {

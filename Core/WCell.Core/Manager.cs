@@ -18,7 +18,7 @@ using System;
 using NLog;
 using Cell.Core;
 using WCell.Core.Localization;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.Core
 {

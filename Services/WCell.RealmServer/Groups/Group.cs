@@ -30,10 +30,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Instances;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
-using WCell.Util.NLog;
 using WCell.RealmServer.Looting;
 using WCell.Constants.Factions;
 using WCell.Constants.Looting;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Groups

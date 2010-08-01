@@ -29,7 +29,7 @@ using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Stats;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Network
 {

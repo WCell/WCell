@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using NLog;
-using NLog.Config;
 
-namespace WCell.Util.NLog
+namespace WCell.Util.Logging
 {
 	public class StreamTarget : TargetWithLayout
 	{

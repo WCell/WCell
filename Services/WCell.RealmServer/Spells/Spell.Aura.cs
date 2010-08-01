@@ -5,7 +5,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells
 {

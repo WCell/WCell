@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using NLog;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Instances
 {

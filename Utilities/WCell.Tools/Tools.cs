@@ -34,7 +34,7 @@ using WCell.RealmServer.Quests;
 using WCell.Tools.Commands;
 using WCell.Tools.PATools;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Strings;
 using WCell.Util.Toolshed;
 using RealmServ = WCell.RealmServer.RealmServer;

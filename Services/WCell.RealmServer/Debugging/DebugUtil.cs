@@ -10,7 +10,7 @@ using WCell.PacketAnalysis;
 using WCell.PacketAnalysis.Logs;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 using WCell.RealmServer.Handlers;
 

@@ -6,7 +6,7 @@ using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Misc;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {

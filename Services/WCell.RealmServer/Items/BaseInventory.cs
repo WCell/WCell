@@ -7,7 +7,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Items
 {

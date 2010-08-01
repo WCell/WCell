@@ -1,18 +1,12 @@
 using System;
 using System.IO;
-using NLog;
-using NLog.Config;
-using NLog.Win32.Targets;
 using System.Threading;
 using System.Diagnostics;
-
-namespace WCell.Util.NLog
+namespace WCell.Util.Logging
 {
 
 	public static class LogUtil
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		private static int _streamNum;
 
 		public static Action<Action<string>> SystemInfoLogger;
@@ -22,8 +16,9 @@ namespace WCell.Util.NLog
 		/// <summary>
 		/// Will enable logging to the console
 		/// </summary>
-		public static void SetupConsoleLogging()
+	/*	public static void SetupConsoleLogging()
 		{
+            
 			var config = LogManager.Configuration ?? new LoggingConfiguration();
 
 			var consoleTarget = new ColoredConsoleTarget
@@ -36,12 +31,12 @@ namespace WCell.Util.NLog
 
 			LogManager.Configuration = config;
 			LogManager.EnableLogging();
-		}
+		}*/
 
 		/// <summary>
 		/// Will enable logging to the console and (if not null) the specified file
 		/// </summary>
-		public static void SetupStreamLogging(TextWriter stream)
+		/*public static void SetupStreamLogging(TextWriter stream)
 		{
 			var config = LogManager.Configuration ?? new LoggingConfiguration();
 
@@ -57,7 +52,7 @@ namespace WCell.Util.NLog
 
 			LogManager.Configuration = config;
 			LogManager.EnableLogging();
-		}
+		}*/
 
 		public static void ErrorException(Exception e)
 		{
@@ -133,12 +128,19 @@ namespace WCell.Util.NLog
 		{
 			LogException(log.Fatal, e, addSystemInfo, msg, format);
 		}
-
-		public static void LogException(Action<string> logger, Exception e, bool addSystemInfo, string msg, params object[] format)
+        public enum LogLevel
+        {
+            Info,
+            Debug,
+            Warn,
+            Error,
+            Fatal
+        }
+		public static void LogException(string msg,LogLevel logLevel = LogLevel.Info, Exception e = null,bool outputToConsole = true,bool addSystemInfo = false)
 		{
 			if (!string.IsNullOrEmpty(msg))
 			{
-				msg = string.Format(msg, format);
+				msg = string.Format(msg);
 				logger(msg);
 			}
 
@@ -168,8 +170,12 @@ namespace WCell.Util.NLog
 				evt(msg, e);
 			}
 		}
+        public static void WriteToLog(LogLevel logLevel,string data)
+        {
+            
+        }
 
-		public static void LogStacktrace(Action<string> logger)
+	    public static void LogStacktrace(Action<string> logger)
 		{
 			logger(new StackTrace(Thread.CurrentThread, true).GetFrames().ToString("\n\t", frame => frame.ToString().Trim()));
 		}

@@ -21,7 +21,7 @@ using System.Reflection;
 using NLog;
 using WCell.Core.Localization;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.Core.Initialization
 {

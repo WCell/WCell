@@ -29,8 +29,8 @@ using WCell.RealmServer.Entities;
 using WCell.Util.Commands;
 using WCell.Util;
 using System.Diagnostics;
-using WCell.Util.NLog;
 using System.Text.RegularExpressions;
+using WCell.Util.Logging;
 using WCell.Util.Strings;
 
 using RealmServ = WCell.RealmServer.RealmServer;

@@ -29,10 +29,10 @@ using WCell.Core.Variables;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Res;
 using WCell.Util;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Util.NLog;
 using WCell.RealmServer.Addons;
 
 namespace WCell.RealmServer

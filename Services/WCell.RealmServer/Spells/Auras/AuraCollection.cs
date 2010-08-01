@@ -24,8 +24,8 @@ using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.RealmServer.Chat;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells.Auras
 {

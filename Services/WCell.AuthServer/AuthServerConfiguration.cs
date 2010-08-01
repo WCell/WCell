@@ -26,8 +26,8 @@ using System.Collections.Generic;
 using WCell.AuthServer.Privileges;
 using WCell.Core.Initialization;
 using WCell.Util;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
-using WCell.Util.NLog;
 
 namespace WCell.AuthServer
 {

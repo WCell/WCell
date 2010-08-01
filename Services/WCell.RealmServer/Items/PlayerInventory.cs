@@ -27,7 +27,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
 using Castle.ActiveRecord;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Items
 {

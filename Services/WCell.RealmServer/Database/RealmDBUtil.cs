@@ -2,7 +2,7 @@ using System;
 using NLog;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 using Castle.ActiveRecord;
 

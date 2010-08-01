@@ -15,7 +15,7 @@ using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.Addons.Default.Spells.Druid
 {

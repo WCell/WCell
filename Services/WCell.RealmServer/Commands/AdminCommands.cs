@@ -17,7 +17,7 @@ using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Misc;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Commands
 {

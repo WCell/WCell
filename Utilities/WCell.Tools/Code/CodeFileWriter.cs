@@ -7,7 +7,7 @@ using NLog;
 using WCell.Constants;
 using System.Collections;
 using WCell.Util;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.Tools.Code
 {

@@ -11,10 +11,10 @@ using WCell.RealmServer.Database;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Util.DB;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 using WCell.Util.Conversion;
 using System.Text;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Content
 {

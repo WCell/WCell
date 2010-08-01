@@ -6,7 +6,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.PacketAnalysis.Updates
 {
