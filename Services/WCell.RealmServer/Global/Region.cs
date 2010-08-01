@@ -82,16 +82,16 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Every how many ticks to send UpdateField-changes to Characters
 		/// </summary>
-		public static int CharacterUpdateEnvironmentTicks = 5;
+		public static int CharacterUpdateEnvironmentTicks = 1000 / DefaultUpdateDelay;
 
 		[Variable("UpdateInactiveAreas")]
-		public static bool UpdateInactiveAreasDefault = true;
+		public static bool UpdateInactiveAreasDefault = false;
 
 		/// <summary>
 		/// Whether to have NPCs scan inactive nodes for enemies
 		/// </summary>
 		[Variable("ScanInactiveAreas")]
-		public static bool ScanInactiveAreasDefault;
+		public static bool ScanInactiveAreasDefault = false;
 
 		[Variable("NPCsCanEvade")]
 		public static bool CanNPCsEvadeDefault = true;

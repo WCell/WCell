@@ -248,6 +248,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
+			var isAutoShot = IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
 			if (IsInstant && !m_spell.IsPhysicalAbility)
 			{
 				// send start packet (the logic for this is rather complicated)
@@ -289,7 +290,7 @@ namespace WCell.RealmServer.Spells
 			// toggle autoshot
 			if (CasterUnit != null)
 			{
-				if (IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
+				if (isAutoShot)
 				{
 					if (CasterUnit.Target == null)
 					{
@@ -334,7 +335,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Performs the actual Spell
 		/// </summary>
-		public SpellFailedReason Perform()
+		internal SpellFailedReason Perform()
 		{
 			try
 			{
@@ -393,49 +394,32 @@ namespace WCell.RealmServer.Spells
 				var delayedImpact = delay > Map.UpdateDelay / 1000f; // only delay if its noticable
 
 				SpellFailedReason err;
-				if (m_spell.IsPhysicalAbility && !m_spell.IsRangedAbility && CasterUnit != null)
+				CheckHitAndSendSpellGo(!delayedImpact);
+				if (delayedImpact)
 				{
-					// will be triggered during the next strike
-					CasterUnit.m_pendingCombatAbility = this;
-
-					// reset SpellCast so it cannot be cancelled anymore
-					CasterUnit.SpellCast = null;
-					if (!m_spell.IsOnNextStrike)
+					// delayed impact
+					if (CasterObject != null)
 					{
-						// strike instantly
-						CasterUnit.Strike(GetWeapon());
+						CasterObject.CallDelayed(delay, DoDelayedImpact);
+						if (!m_spell.IsChanneled && this == CasterObject.SpellCast)
+						{
+							// reset SpellCast so it cannot be cancelled anymore
+							CasterObject.SpellCast = null;
+						}
+					}
+					else
+					{
+						Map.CallDelayed(delay, () => DoDelayedImpact(null));
 					}
 					err = SpellFailedReason.Ok;
 				}
 				else
 				{
-					CheckHitAndSendSpellGo(!delayedImpact);
-					if (delayedImpact)
-					{
-						// delayed impact
-						if (CasterObject != null)
-						{
-							CasterObject.CallDelayed(delay, DoDelayedImpact);
-							if (!m_spell.IsChanneled && this == CasterObject.SpellCast)
-							{
-								// reset SpellCast so it cannot be cancelled anymore
-								CasterObject.SpellCast = null;
-							}
-						}
-						else
-						{
-							Map.CallDelayed(delay, () => DoDelayedImpact(null));
-						}
-						err = SpellFailedReason.Ok;
-					}
-					else
-					{
-						// instant impact
-						err = Impact(false);
-					}
+					// instant impact
+					err = Impact(false);
 				}
 
-				if (m_casting && !spell.IsPhysicalAbility)
+				if (m_casting)
 				{
 					// weapon abilities will call this after execution
 					if (CasterUnit != null)
@@ -515,6 +499,18 @@ namespace WCell.RealmServer.Spells
 				{
 					// the last handler cancelled the SpellCast
 					return SpellFailedReason.DontReport;
+				}
+			}
+
+			if (CasterObject is Unit && m_spell.IsPhysicalAbility)
+			{
+				// strike at everyone
+				foreach (var target in m_targets)
+				{
+					if (target is Unit)
+					{
+						((Unit) CasterObject).Strike(GetWeapon(), (Unit)target, this);
+					}
 				}
 			}
 
@@ -610,26 +606,6 @@ namespace WCell.RealmServer.Spells
 					if (target is Unit && m_spell.IsHarmfulFor(CasterReference, target))
 					{
 						((Unit)target).Auras.RemoveByFlag(AuraInterruptFlags.OnHostileSpellInflicted);
-					}
-				}
-			}
-
-			// check for weapon abilities
-			if (m_spell.IsPhysicalAbility && !IsChanneling)
-			{
-				if (CasterObject is Unit)
-				{
-					if (m_spell.IsRangedAbility)
-					{
-						// reset SpellCast so it cannot be cancelled anymore
-						CasterUnit.SpellCast = null;
-						CasterUnit.m_pendingCombatAbility = this;
-						CasterUnit.Strike(GetWeapon());
-					}
-
-					if (!IsChanneling)
-					{
-						OnCasted();
 					}
 				}
 			}
