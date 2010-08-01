@@ -128,7 +128,10 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// runes
-			((PlayerSpellCollection)m_spells).Runes.InitRunes();
+			if (((PlayerSpellCollection)m_spells).Runes != null)
+			{
+				((PlayerSpellCollection) m_spells).Runes.InitRunes();
+			}
 
 			// factions
 			WatchedFaction = m_record.WatchedFaction;
