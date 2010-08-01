@@ -418,16 +418,16 @@ namespace WCell.RealmServer.Spells
 					err = Impact(false);
 				}
 
-				var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
 				if (m_casting)
 				{
+
+					var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
 					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
+					CheckHitAndSendSpellGo(!delayedImpact, runeMask);
 				}
-
-				CheckHitAndSendSpellGo(!delayedImpact, runeMask);
 
 				if (m_casting)
 				{
@@ -620,7 +620,7 @@ namespace WCell.RealmServer.Spells
 			//}
 
 			// clean it up
-			if ((delayed || m_spell.IsPhysicalAbility) && (!m_spell.IsChanneled) && m_casting)
+			if (delayed && !m_spell.IsChanneled && m_casting)
 			{
 				Cleanup(true);
 			}
