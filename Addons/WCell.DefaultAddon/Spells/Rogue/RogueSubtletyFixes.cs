@@ -26,6 +26,29 @@ namespace WCell.Addons.Default.Spells.Rogue
             {
                 spell.AddTriggerSpellEffect(SpellId.ClassSkillStealth);
             }, EffectVanishLine);
+
+            SpellLineId.RogueCloakOfShadows.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.TriggerSpell);
+                effect.SpellEffectHandlerCreator = (cast, eff) => new CloakOfShadowsHandler(cast, eff);
+            });
+        }
+    }
+
+    class CloakOfShadowsHandler : SpellEffectHandler
+    {
+        public CloakOfShadowsHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
+		{
+		}
+
+        public override void Apply()
+        {
+            var chr = m_cast.CasterChar;
+
+            if(chr != null)
+            {
+                chr.Auras.RemoveWhere(aura => aura.Spell.HasHarmfulEffects);
+            }
         }
     }
 }
