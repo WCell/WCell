@@ -681,15 +681,15 @@ namespace WCell.RealmServer.Spells
 				if (caster is Character)
 				{
 					// gain skill
-					var chr = (Character) caster;
+					var chr = (Character)caster;
 					if (m_spell.Ability != null && m_spell.Ability.CanGainSkill)
 					{
 						var skill = chr.Skills[m_spell.Ability.Skill.Id];
 						var skillVal = skill.CurrentValue;
-						var max = (ushort) skill.ActualMax;
+						var max = (ushort)skill.ActualMax;
 						if (skillVal < max)
 						{
-							skillVal += (ushort) m_spell.Ability.Gain(skillVal);
+							skillVal += (ushort)m_spell.Ability.Gain(skillVal);
 							skill.CurrentValue = skillVal <= max ? skillVal : max;
 						}
 					}
@@ -719,7 +719,7 @@ namespace WCell.RealmServer.Spells
 				{
 					foreach (var target in m_targets)
 					{
-						if (target is Unit && ((Unit) target).IsInCombat)
+						if (target is Unit && ((Unit)target).IsInCombat)
 						{
 							caster.IsInCombat = true;
 							break;
@@ -759,17 +759,25 @@ namespace WCell.RealmServer.Spells
 				if (Client != null)
 				{
 					if (!m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade) &&
-					    CasterItem != null)
+						CasterItem != null)
 					{
 						SpellHandler.SendItemCooldown(Client, m_spell.Id, CasterItem);
 					}
 				}
 
+				// consume runes
+				var hasRunes = m_spell.RuneCostEntry != null && caster is Character &&
+							   ((Character)caster).PlayerSpells.Runes != null;
+				if (hasRunes)
+				{
+					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell.RuneCostEntry);
+				}
+
 				// consume power (might cancel the cast due to dying)
 				var powerCost = m_spell.CalcPowerCost(caster,
-				                                      Selected is Unit
-				                                      	? ((Unit) Selected).GetLeastResistantSchool(m_spell)
-				                                      	: m_spell.Schools[0]);
+													  Selected is Unit
+														? ((Unit)Selected).GetLeastResistantSchool(m_spell)
+														: m_spell.Schools[0]);
 				if (m_spell.PowerType != PowerType.Health)
 				{
 					caster.Power -= powerCost;
@@ -779,14 +787,20 @@ namespace WCell.RealmServer.Spells
 					caster.Health -= powerCost;
 					if (!m_casting)
 					{
-						return; // should not happen (but might)
+						return; // we dead!
 					}
+				}
+
+				// add runic power
+				if (hasRunes)
+				{
+					caster.Power += m_spell.RuneCostEntry.RunicPowerGain;
 				}
 			}
 			else if (!m_passiveCast && caster is Character)
 			{
 				// clear cooldowns
-				var spells = ((Character) caster).PlayerSpells;
+				var spells = ((Character)caster).PlayerSpells;
 				if (spells != null)
 				{
 					spells.ClearCooldown(m_spell);
