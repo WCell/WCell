@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,6 +6,7 @@ using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Constants;
 
 namespace WCell.Addons.Default.Spells.Rogue
 {
@@ -23,21 +24,8 @@ namespace WCell.Addons.Default.Spells.Rogue
         {
             SpellHandler.Apply(spell =>
             {
-                var effect = spell.GetEffect(AuraType.ModStealth);
-                effect.AuraEffectHandlerCreator = () => new RogueVanishHandler();
+                spell.AddTriggerSpellEffect(SpellId.ClassSkillStealth);
             }, EffectVanishLine);
-        }
-    }
-    
-    class RogueVanishHandler : AuraEffectHandler
-    {
-        protected override void Remove(bool cancelled)
-        {
-            //hacky fix for now until we get a log of vanish
-            if (!cancelled)
-            {
-                m_aura.Owner.SpellCast.Trigger(SpellId.ClassSkillStealth);
-            }
         }
     }
 }
