@@ -18,12 +18,14 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.RealmServer.Achievement;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Factions;
@@ -625,6 +627,7 @@ namespace WCell.RealmServer.Entities
 
 			if (leveled)
 			{
+				m_achievements.Update(AchievementCriteriaType.ReachLevel, (uint)Level, 0, this);
 				ModStatsForLevel(level);
 				m_auras.ReapplyAllAuras();
 				SaveLater();

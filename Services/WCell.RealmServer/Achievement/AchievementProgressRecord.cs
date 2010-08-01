@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
-		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, uint achievementCriteriaEntry, int counter)
+		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, AchievementCriteriaId achievementCriteriaId, uint counter)
 		{
 			AchievementProgressRecord record;
 
@@ -47,15 +47,15 @@ namespace WCell.RealmServer.Achievement
 				{
 					RecordId = _idGenerator.Next(),
 					_characterGuid = (int)chr.EntityId.Low,
-					_achievementCriteriaEntry = (int)achievementCriteriaEntry,
-					_counter = counter,
-					CompleteDate = DateTime.Now,
+					_achievementCriteriaId = (int)achievementCriteriaId,
+					_counter = (int)counter,
+					Date = DateTime.Now,
 					New = true
 				};
 			}
 			catch (Exception ex)
 			{
-				s_log.Error("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
+				s_log.Error("AchievementProgressRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
 				record = null;
 			}
 
@@ -71,13 +71,13 @@ namespace WCell.RealmServer.Achievement
 		private int _characterGuid;
 
 		[Field("Criteria", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int _achievementCriteriaEntry;
+		private int _achievementCriteriaId;
 
 		[Field("Counter", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _counter;
 
 		[Property]
-		public DateTime CompleteDate { get; set; }
+		public DateTime Date { get; set; }
 
 
 		public uint CharacterGuid
@@ -86,10 +86,10 @@ namespace WCell.RealmServer.Achievement
 			set { _characterGuid = (int)value; }
 		}
 
-		public AchievementCriteriaType AchievementCriteriaEntry
+		public AchievementCriteriaId AchievementCriteriaId
 		{
-			get { return (AchievementCriteriaType)_achievementCriteriaEntry; }
-			set { _achievementCriteriaEntry = (int)value; }
+			get { return (AchievementCriteriaId)_achievementCriteriaId; }
+			set { _achievementCriteriaId = (int)value; }
 		}
 
 		public uint Counter

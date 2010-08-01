@@ -111,5 +111,10 @@ namespace WCell.RealmServer.Achievement
 		{
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
+
+		public static AchievementCategoryEntry GetCriteria(AchievementCategoryEntryId achievementCategoryEntryId)
+		{
+			return AchievementCategoryEntries[achievementCategoryEntryId];
+		}
 	}
 }

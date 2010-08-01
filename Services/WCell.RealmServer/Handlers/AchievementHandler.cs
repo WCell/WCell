@@ -51,16 +51,15 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr)
+		public static void SendAchievmentStatus(AchievementProgressRecord achievementProgressRecord, Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 30))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 8+4+8))
 			{
-				packet.WriteUInt((uint)achievementCriteriaId);
-				packet.WriteByte(1);
-				packet.WriteByte(1); //this is some ID or something maybe merge with previous value ? Maybe it is value for criteria ?
+				packet.WriteUInt((uint)achievementProgressRecord.AchievementCriteriaId);
+				packet.WriteULong(achievementProgressRecord.Counter); // data.appendPackGUID(progress->counter); we need this.
 				chr.EntityId.WritePacked(packet);
 				packet.WriteUInt(0);
-				packet.WriteDateTime(DateTime.Now);
+				packet.WriteDateTime(achievementProgressRecord.Date);
 				packet.WriteUInt(0); // Duration
 				packet.WriteUInt(0); // Duration left
 
