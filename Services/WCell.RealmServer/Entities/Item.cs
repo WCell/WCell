@@ -1240,7 +1240,7 @@ namespace WCell.RealmServer.Entities
 				Flags |= ItemFlags.Soulbound;
 			}
 
-			if (m_template.UseSpell != null && m_template.UseSpell.ConsumesCharges)
+            if (m_template.UseSpell != null)
 			{
 				// consume a charge
 				if (m_template.Class == ItemClass.Consumable)
