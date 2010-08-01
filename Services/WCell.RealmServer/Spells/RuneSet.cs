@@ -16,30 +16,38 @@ namespace WCell.RealmServer.Spells
 		public static float DefaultRuneCooldownPerSecond = 0.1f;
 
 		public readonly RuneType[] ActiveRunes = new RuneType[SpellConstants.MaxRuneCount];
-		public readonly float[] Cooldowns;
 
-		public RuneSet(Character owner, int runeSetMask, float[] runeCooldowns)
+		public RuneSet(Character owner)
 		{
 			Owner = owner;
-
-			UnpackRuneSetMask(runeSetMask);
-
-			if (runeCooldowns == null || runeCooldowns.Length != SpellConstants.MaxRuneCount)
-			{
-				runeCooldowns = new float[SpellConstants.MaxRuneCount];
-			}
-			Cooldowns = runeCooldowns;
-
-			for (RuneType i = 0; i < RuneType.End; i++)
-			{
-				SetCooldownPerSecond(i, DefaultRuneCooldownPerSecond);
-			}
 		}
 
 		public Character Owner
 		{
 			get;
 			internal set;
+		}
+
+		public float[] Cooldowns
+		{
+			get { return Owner.Record.RuneCooldowns; }
+		}
+
+		internal void InitRunes()
+		{
+			var runeSetMask = Owner.Record.RuneSetMask;
+			UnpackRuneSetMask(runeSetMask);
+
+			var runeCooldowns = Cooldowns;
+			if (runeCooldowns == null || runeCooldowns.Length != SpellConstants.MaxRuneCount)
+			{
+				Owner.Record.RuneCooldowns = new float[SpellConstants.MaxRuneCount];
+			}
+
+			for (RuneType i = 0; i < RuneType.End; i++)
+			{
+				SetCooldownPerSecond(i, DefaultRuneCooldownPerSecond);
+			}
 		}
 
 		#region Convert between Rune types
@@ -164,12 +172,13 @@ namespace WCell.RealmServer.Spells
 
 		internal void UpdateCooldown(float dt)
 		{
+			var cds = Cooldowns;
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
 			{
-				var cd = Cooldowns[i] - (dt * GetCooldownPerSecond(ActiveRunes[i]));
+				var cd = cds[i] - (dt * GetCooldownPerSecond(ActiveRunes[i]));
 				if (cd > 0)
 				{
-					Cooldowns[i] = cd;
+					cds[i] = cd;
 				}
 				else
 				{
@@ -226,6 +235,20 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+
+		public byte GetActiveRuneMask()
+		{
+			var mask = 0;
+			var cds = Cooldowns;
+			for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
+			{
+				if (cds[i] == 0)
+				{
+					mask |= 1 << i;
+				}
+			}
+			return (byte) mask;
+		}
 		#endregion
 	}
 }

@@ -191,6 +191,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_region != null; }
 		}
 
+		#region Spells
 		/// <summary>
 		/// whether this Object is currently casting or channeling a Spell
 		/// </summary>
@@ -240,12 +241,21 @@ namespace WCell.RealmServer.Entities
 
 		public float GetSpellMaxRange(Spell spell)
 		{
-			return GetSpellMaxRange(spell, null);
+			return GetSpellMaxRange(spell, spell.Range.MaxDist);
+		}
+
+		public float GetSpellMaxRange(Spell spell, float range)
+		{
+			return GetSpellMaxRange(spell, null, range);
 		}
 
 		public float GetSpellMaxRange(Spell spell, WorldObject target)
 		{
-			var range = spell.Range.MaxDist;
+			return GetSpellMaxRange(spell, target, spell.Range.MaxDist);
+		}
+
+		public float GetSpellMaxRange(Spell spell, WorldObject target, float range)
+		{
 			if (target is Unit)
 			{
 				range += ((Unit)target).CombatReach;
@@ -270,6 +280,7 @@ namespace WCell.RealmServer.Entities
 			}
 			return range;
 		}
+		#endregion
 
 		public abstract string Name
 		{
@@ -282,10 +293,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual int CasterLevel
 		{
-			get
-			{
-				return 0;
-			}
+			get { return 0; }
 		}
 
 		public ObjectReference SharedReference

@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;

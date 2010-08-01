@@ -34,6 +34,7 @@ namespace WCell.Constants.Spells
 			MoveMechanics[(int)SpellMechanic.Shackled] = true;
 			MoveMechanics[(int)SpellMechanic.Turned] = true;
 			MoveMechanics[(int)SpellMechanic.Sapped] = true;
+			MoveMechanics[(int)SpellMechanic.Snared] = true;
 
 			InteractMechanics[(int)SpellMechanic.Disoriented] = true;
 			InteractMechanics[(int)SpellMechanic.Asleep] = true;

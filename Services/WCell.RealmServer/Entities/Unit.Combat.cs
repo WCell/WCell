@@ -199,6 +199,11 @@ namespace WCell.RealmServer.Entities
 			return m_DamageAction;
 		}
 
+		public bool UsesPendingAbility(IWeapon weapon)
+		{
+			return m_spellCast != null && m_spellCast.IsPending && m_spellCast.GetWeapon() == weapon;
+		}
+
 		#region Standard Attack
 
 		/// <summary>
@@ -259,7 +264,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
-			if (m_spellCast != null && m_spellCast.IsPending && m_spellCast.GetWeapon() == weapon)
+			if (UsesPendingAbility(weapon))
 			{
 				m_spellCast.Perform();
 			}
@@ -1319,15 +1324,24 @@ namespace WCell.RealmServer.Entities
 		public bool IsInAttackRangeSq(IWeapon weapon, Unit target, float distSq)
 		{
 			var max = GetAttackRange(weapon, target);
-			if (weapon.IsRanged)
+			if (UsesPendingAbility(weapon))
 			{
-				var min = GetMinAttackRange(weapon, target);
-				if (distSq < min * min)
-				{
-					return false;
-				}
+				max = GetSpellMaxRange(m_spellCast.Spell, max);
 			}
-			return distSq <= max * max;
+
+			if (distSq <= max * max)
+			{
+				if (weapon.IsRanged)
+				{
+					var min = GetMinAttackRange(weapon, target);
+					if (distSq < min*min)
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 
 		public bool IsInRange(SimpleRange range, WorldObject obj)

@@ -311,14 +311,26 @@ namespace WCell.RealmServer.Spells
 			get { return isPlayerCast; }
 		}
 
+		public bool UsesRunes
+		{
+			get { return m_spell.RuneCostEntry != null && CasterChar != null && CasterChar.PlayerSpells.Runes != null; }
+		}
+
 		public CastFlags StartFlags
 		{
 			get
 			{
 				var flags = CastFlags.None;
-				if (m_spell != null && m_spell.IsRangedAbility)
+				if (m_spell != null)
 				{
-					flags |= CastFlags.Ranged;
+					if (m_spell.IsRangedAbility)
+					{
+						flags |= CastFlags.Ranged;
+					}
+					if (UsesRunes)
+					{
+						flags |= CastFlags.RuneAbility;
+					}
 				}
 				return flags;
 			}
@@ -341,6 +353,18 @@ namespace WCell.RealmServer.Spells
 				if (m_spell.IsRangedAbility)
 				{
 					flags |= CastFlags.Ranged;
+				}
+				if (UsesRunes)
+				{
+					flags |= CastFlags.RuneAbility;
+					if (m_spell.RuneCostEntry.RunicPowerGain > 0)
+					{
+						flags |= CastFlags.RunicPowerGain;
+					}
+					if (m_spell.RuneCostEntry.CostsRunes)
+					{
+						flags |= CastFlags.RuneCooldownList;
+					}
 				}
 
 				// TODO: If Ghost - Aura gets applied, add more flags?
@@ -936,7 +960,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void CheckHitAndSendSpellGo(bool revalidateTargets)
+		internal void CheckHitAndSendSpellGo(bool revalidateTargets, byte previousRuneMask)
 		{
 			List<CastMiss> missedTargets;
 			if (revalidateTargets)
@@ -953,7 +977,7 @@ namespace WCell.RealmServer.Spells
 			{
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;
-				SpellHandler.SendSpellGo(caster2, this, m_targets, missedTargets);
+				SpellHandler.SendSpellGo(caster2, this, m_targets, missedTargets, previousRuneMask);
 			}
 
 			if (missedTargets != null)
@@ -1042,7 +1066,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			if (!caster.HasEnoughPowerToCast(m_spell, null) ||
-				(Spell.RuneCostEntry != null && caster.PlayerSpells.Runes != null && !caster.PlayerSpells.Runes.HasEnoughRunes(Spell.RuneCostEntry)))
+				(UsesRunes && !caster.PlayerSpells.Runes.HasEnoughRunes(Spell.RuneCostEntry)))
 			{
 				return SpellFailedReason.NoPower;
 			}
@@ -1605,7 +1629,7 @@ namespace WCell.RealmServer.Spells
 				//else
 				//if (!m_spell.IsModalAura)
 				{
-					SpellHandler.SendSpellGo(CasterReference, this, null, null);
+					SpellHandler.SendSpellGo(CasterReference, this, null, null, 0);
 				}
 			}
 			else if (CasterObject != null && CasterObject.IsUsingSpell && reason != SpellFailedReason.Ok && reason != SpellFailedReason.DontReport)

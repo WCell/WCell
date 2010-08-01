@@ -394,7 +394,6 @@ namespace WCell.RealmServer.Spells
 				var delayedImpact = delay > Map.UpdateDelay / 1000f; // only delay if its noticable
 
 				SpellFailedReason err;
-				CheckHitAndSendSpellGo(!delayedImpact);
 				if (delayedImpact)
 				{
 					// delayed impact
@@ -419,14 +418,19 @@ namespace WCell.RealmServer.Spells
 					err = Impact(false);
 				}
 
+				var runeMask = UsesRunes ? CasterChar.PlayerSpells.Runes.GetActiveRuneMask() : (byte)0;
 				if (m_casting)
 				{
-					// weapon abilities will call this after execution
 					if (CasterUnit != null)
 					{
 						OnCasted();
 					}
+				}
 
+				CheckHitAndSendSpellGo(!delayedImpact, runeMask);
+
+				if (m_casting)
+				{
 					if (!delayedImpact && !IsChanneling && m_casting)
 					{
 						Cleanup(true);
@@ -742,8 +746,7 @@ namespace WCell.RealmServer.Spells
 				}
 
 				// consume runes
-				var hasRunes = m_spell.RuneCostEntry != null && caster is Character &&
-							   ((Character)caster).PlayerSpells.Runes != null;
+				var hasRunes = UsesRunes;
 				if (hasRunes)
 				{
 					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell.RuneCostEntry);

@@ -81,18 +81,18 @@ namespace WCell.RealmServer.Formulas
 			{
 				return 0;
 			}
-			return -50;
+			return -10;
 		}
 
 
 		public static int CalculateEnergyRegen(Unit unit)
 		{
-			return 50;
+			return 10;
 		}
 
 		public static int CalculateRunicPowerRegen(Unit unit)
 		{
-			return -50;
+			return -10;
 		}
 
 		private static int CalculateRuneRegen(Unit unit)
@@ -102,7 +102,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalculateFocusRegen(Unit unit)
 		{
-			return 5;
+			return 1;
 		}
 		#endregion
 

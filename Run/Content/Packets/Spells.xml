@@ -315,24 +315,24 @@
 
 
     <Switch CompareWith="CastFlags">
-      <Case And="Flag_0x800">
+      <Case And="RunicPowerGain">
         <Simple>
-          <Name>Flag_0x800 Int</Name>
+          <Name>RunicPowerGain</Name>
           <Type>Int</Type>
         </Simple>
       </Case>
-      <Case And="Flag_0x200000">
+      <Case And="RuneCooldownList">
         <Simple>
-          <Name>Flag_0x200000 Byte1</Name>
+          <Name>PreviousRuneMask</Name>
           <Type>Byte</Type>
         </Simple>
         <Simple>
-          <Name>Flag_0x200000 Byte2</Name>
+          <Name>NewRuneMask</Name>
           <Type>Byte</Type>
         </Simple>
-        <Switch CompareWith="Flag_0x200000 Byte1">
+        <Switch CompareWith="PreviousRuneMask">
           <Case And="1">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="1">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x1</Name>
@@ -342,7 +342,7 @@
             </Switch>
           </Case>
           <Case And="2">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="2">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x2</Name>
@@ -352,7 +352,7 @@
             </Switch>
           </Case>
           <Case And="4">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="4">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x4</Name>
@@ -362,7 +362,7 @@
             </Switch>
           </Case>
           <Case And="8">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="8">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x8</Name>
@@ -372,7 +372,7 @@
             </Switch>
           </Case>
           <Case And="16">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="16">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x10</Name>
@@ -382,7 +382,7 @@
             </Switch>
           </Case>
           <Case And="32">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="32">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x20</Name>
@@ -527,24 +527,24 @@
     </Switch>
     
     <Switch CompareWith="CastFlags">
-      <Case And="Flag_0x800">
+      <Case And="RunicPowerGain">
         <Simple>
-          <Name>Flag_0x800</Name>
-          <Type>UInt</Type>
+          <Name>RunicPowerGain</Name>
+          <Type>Int</Type>
         </Simple>
       </Case>
-      <Case And="Flag_0x200000">
+      <Case And="RuneCooldownList">
         <Simple>
-          <Name>Flag_0x200000 Byte1</Name>
+          <Name>PreviousRuneMask</Name>
           <Type>Byte</Type>
         </Simple>
         <Simple>
-          <Name>Flag_0x200000 Byte2</Name>
+          <Name>NewRuneMask</Name>
           <Type>Byte</Type>
         </Simple>
-        <Switch CompareWith="Flag_0x200000 Byte1">
+        <Switch CompareWith="PreviousRuneMask">
           <Case And="1">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="1">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x1</Name>
@@ -554,7 +554,7 @@
             </Switch>
           </Case>
           <Case And="2">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="2">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x2</Name>
@@ -564,7 +564,7 @@
             </Switch>
           </Case>
           <Case And="4">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="4">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x4</Name>
@@ -574,7 +574,7 @@
             </Switch>
           </Case>
           <Case And="8">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="8">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x8</Name>
@@ -584,7 +584,7 @@
             </Switch>
           </Case>
           <Case And="16">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="16">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x10</Name>
@@ -594,7 +594,7 @@
             </Switch>
           </Case>
           <Case And="32">
-            <Switch CompareWith="Flag_0x200000 Byte2">
+            <Switch CompareWith="NewRuneMask">
               <Case AndNot="32">
                 <Simple>
                   <Name>Flag_0x200000 Mask0x20</Name>
