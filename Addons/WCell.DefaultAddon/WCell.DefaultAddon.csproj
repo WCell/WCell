@@ -268,6 +268,7 @@
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinProtectionFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinRetributionFixes.cs" />
+    <Compile Include="Spells\Rogue\RogueSubtletyFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorProtectionFixes.cs" />
