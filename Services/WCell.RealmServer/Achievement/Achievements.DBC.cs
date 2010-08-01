@@ -55,7 +55,6 @@ namespace WCell.RealmServer.Achievement
 			if (creator == null)
 			{
 				// unknown type
-				
 				return;
 			}
 
@@ -66,7 +65,6 @@ namespace WCell.RealmServer.Achievement
 
 			CopyTo(rawData, 3, Marshal.SizeOf(typeof(AchievementCriteriaEntry)), entry);
 
-			// set entry.AchievementEntry
 			var achievement = entry.AchievementEntry;
 			if (achievement != null)
 			{
