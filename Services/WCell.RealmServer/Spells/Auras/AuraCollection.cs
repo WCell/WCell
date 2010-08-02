@@ -714,7 +714,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public bool Cancel(Spell spell)
 		{
 			Aura aura;
-			if (spell.HasBeneficialEffects)
+			if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
 			{
 				aura = this[spell, true];
 			}

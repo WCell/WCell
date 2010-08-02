@@ -37,7 +37,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// We attack
 		/// </summary>
-		MeleeAttackOther = 0x4,
+		MeleeHitOther = 0x4,
 		/// <summary>
 		/// We are critically hit
 		/// </summary>
@@ -55,22 +55,22 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		PhysicalAttack = 0x20,
 		/// <summary>
-		/// We attack physically with ranged weapon
+		/// We hit someone with a ranged weapon's ammo
 		/// </summary>
-		RangedAttackOther = 0x40,
+		RangedHitOther = 0x40,
 		/// <summary>
 		/// We are critcally hit with a ranged weapon
 		/// </summary>
 		RangedCriticalHit = 0x80,
 
 		/// <summary>
-		/// We land a critical hit on sb else
+		/// We physically attack someone else
 		/// </summary>
 		PhysicalAttackOther = 0x100,
 		/// <summary>
-		/// We are attacked physically
+		/// We are struck by a melee weapon
 		/// </summary>
-		MeleeAttack = 0x200,
+		MeleeHit = 0x200,
 		/// <summary>
 		/// We do something with someone else
 		/// </summary>
@@ -85,7 +85,10 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		MeleeCriticalHitOther = 0x1000,
 
-		RangedAttack = 0x2000,
+		/// <summary>
+		/// We are hit by a ranged weapon
+		/// </summary>
+		RangedHit = 0x2000,
 
 		/// <summary>
 		/// We heal sb else

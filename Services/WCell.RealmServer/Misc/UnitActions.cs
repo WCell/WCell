@@ -477,7 +477,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.RangedHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -485,7 +485,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.MeleeHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
@@ -520,7 +520,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackOther;
+					flags |= ProcTriggerFlags.RangedHitOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -528,7 +528,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackOther;
+					flags |= ProcTriggerFlags.MeleeHitOther;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHitOther;

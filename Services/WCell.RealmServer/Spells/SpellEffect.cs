@@ -68,8 +68,6 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public float APPerComboPointValueFactor;
 
-		public bool IsUsed;
-
 		/// <summary>
 		/// Only use this effect if the caster is in the given form (if given)
 		/// </summary>
@@ -444,7 +442,7 @@ namespace WCell.RealmServer.Spells
 				AffectMaskBitSet = Utility.GetSetIndices(AffectMask);
 			}
 
-			if (SpellEffectHandlerCreator == null && !IsUsed)
+			if (SpellEffectHandlerCreator == null)
 			{
 				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int)EffectType];
 			}

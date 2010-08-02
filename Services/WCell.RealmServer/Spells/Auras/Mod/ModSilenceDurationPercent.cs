@@ -19,7 +19,7 @@ using WCell.Constants.Spells;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
-	/// Same as ModMechanicResistance
+	/// 
 	/// </summary>
 	public class ModSilenceDurationPercentHandler : AuraEffectHandler
 	{

@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
 using WCell.Constants.Spells;
@@ -29,7 +30,7 @@ namespace WCell.RealmServer.Spells
 	/// <summary>
 	/// 
 	/// </summary>
-	public abstract class SpellCollection
+	public abstract class SpellCollection : IEnumerable<Spell>
 	{
 		public static readonly int SpellEnhancerCount = (int)Utility.GetMaxEnum<SpellModifierType>() + 1;
 
@@ -205,6 +206,30 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+		/// <summary>
+		/// Gets the highest rank of the line that this SpellCollection contains
+		/// </summary>
+		public Spell GetHighestRankOf(SpellLineId lineId)
+		{
+			return GetHighestRankOf(lineId.GetLine());
+		}
+
+		/// <summary>
+		/// Gets the highest rank of the line that this SpellCollection contains
+		/// </summary>
+		public Spell GetHighestRankOf(SpellLine line)
+		{
+			var rank = line.HighestRank;
+			do
+			{
+				if (Contains(rank.SpellId))
+				{
+					return rank;
+				}
+			} while ((rank = rank.PreviousRank) != null);
+			return null;
+		}
+
 		public void Remove(SpellId spellId)
 		{
 			Replace(SpellHandler.Get(spellId), null);
@@ -223,6 +248,13 @@ namespace WCell.RealmServer.Spells
 
 		public virtual void Clear()
 		{
+			foreach (var spell in m_byId.Values)
+			{
+				if (spell.IsPassive)
+				{
+					Owner.Auras.Cancel(spell);
+				}
+			}
 			m_byId.Clear();
 		}
 
@@ -252,14 +284,6 @@ namespace WCell.RealmServer.Spells
 			if (newSpell != null)
 			{
 				AddSpell(newSpell);
-			}
-		}
-
-		public IEnumerator<Spell> GetEnumerator()
-		{
-			foreach (var spell in m_byId.Values)
-			{
-				yield return spell;
 			}
 		}
 
@@ -301,7 +325,7 @@ namespace WCell.RealmServer.Spells
 		/// Trigger all spells that might be triggered by the given Spell
 		/// </summary>
 		/// <param name="spell"></param>
-		public void TriggerSpellsFor(SpellCast cast)
+		internal void TriggerSpellsFor(SpellCast cast)
 		{
 			int val;
 			var spell = cast.Spell;
@@ -324,5 +348,18 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public IEnumerator<Spell> GetEnumerator()
+		{
+			foreach (var spell in m_byId.Values)
+			{
+				yield return spell;
+			}
+		}
 	}
 }

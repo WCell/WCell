@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using NLog;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 
@@ -33,11 +34,15 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			//    ((IDamageAction)action).Damage += val;
 			//}
 			//else
+
+			if (Owner.MayAttack(triggerer))
 			{
-				if (Owner.MayAttack(triggerer))
-				{
-					Owner.DoSpellDamage(triggerer, m_spellEffect, val);
-				}
+				Owner.DoSpellDamage(triggerer, m_spellEffect, val);
+			}
+			else
+			{
+				LogManager.GetCurrentClassLogger().Warn("Invalid damage effect on Spell {0} was triggered by {1} who cannot be attacked by Aura-Owner {2}.",
+					m_spellEffect.Spell, triggerer, Owner);
 			}
 		}
 	}

@@ -288,6 +288,7 @@
     <Compile Include="Spells\RuneCostEntry.cs" />
     <Compile Include="Spells\RuneSet.cs" />
     <Compile Include="Spells\SpellException.cs" />
+    <Compile Include="Spells\SpellExtensions.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />

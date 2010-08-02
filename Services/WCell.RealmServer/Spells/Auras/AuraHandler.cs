@@ -87,6 +87,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
 			EffectHandlers[(int)AuraType.DispelImmunity] = () => new DispelImmunityHandler();
 			EffectHandlers[(int)AuraType.ProcTriggerSpell] = () => new ProcTriggerSpellHandler();
+			EffectHandlers[(int)AuraType.ProcTriggerSpellWithOverride] = () => new ProcTriggerSpellHandler();		// TODO: Might need some tweaks
 			EffectHandlers[(int)AuraType.ProcTriggerDamage] = () => new ProcTriggerDamageHandler();
 			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();
 			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();
@@ -212,6 +213,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
 			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
 			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
+			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
