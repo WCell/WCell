@@ -32,16 +32,11 @@ namespace WCell.PacketAnalysis.Logs
 
             while (reader.BaseStream.Position != reader.BaseStream.Length)
             {
-                var type = reader.ReadByte();
                 var opcode = (RealmServerOpCode)reader.ReadUInt16();
                 var length = reader.ReadInt32();
                 var direction = reader.ReadBoolean() ? PacketSender.Client : PacketSender.Server;
                 var time = Utility.GetUTCTimeSeconds(reader.ReadUInt32());
                 var data = reader.ReadBytes(length);
-
-                // only do world packets (for now)
-                if (type != 2)
-                    continue;
 
                 var opcodeHandlers = handlers.Where(handler => handler.Validator(opcode));
                 if (opcodeHandlers.Count() <= 0)
