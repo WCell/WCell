@@ -943,7 +943,7 @@ namespace WCell.RealmServer.Entities
 					}
 				}
 
-				if (m_spawnPoint.SpawnEntry.AddonData != null)
+				if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
 				{
 					foreach (var aura in m_spawnPoint.SpawnEntry.AddonData.Auras)
 					{
