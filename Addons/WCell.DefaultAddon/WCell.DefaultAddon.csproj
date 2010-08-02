@@ -268,6 +268,9 @@
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinProtectionFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinRetributionFixes.cs" />
+    <Compile Include="Spells\Priest\PriestFixes.cs" />
+    <Compile Include="Spells\Priest\PriestHolyFixes.cs" />
+    <Compile Include="Spells\Priest\PriestShadowFixes.cs" />
     <Compile Include="Spells\Rogue\RogueCombatFixes.cs" />
     <Compile Include="Spells\Rogue\RogueSubtletyFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
@@ -286,7 +289,6 @@
     <Compile Include="Spells\Paladin\SealsAndJudgements.cs" />
     <Compile Include="Spells\Paladin\PaladinFixes.cs" />
     <Compile Include="Spells\PlayerSpells.cs" />
-    <Compile Include="Spells\Priest\PriestFixes.cs" />
     <Compile Include="Spells\QuestSpells.cs" />
     <Compile Include="Spells\Rogue\RogueFixes.cs" />
     <Compile Include="Spells\Shaman\ShamanFixes.cs" />
