@@ -73,6 +73,12 @@ namespace WCell.Addons.Default.Spells.Priest
 					SpellLineId.PriestShadowVampiricTouch,
 					SpellLineId.PriestMindSear);
 			});
+
+            SpellLineId.PriestDispelMagic.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.Dispel);
+                effect.SpellEffectHandlerCreator = (cast, eff) => new DispelMagicHandler(cast, eff);
+            });
 		}
 
 	}
@@ -108,4 +114,44 @@ namespace WCell.Addons.Default.Spells.Priest
 		}
 	}
 	#endregion
+
+    #region DispelMagicHandler
+    class DispelMagicHandler : SpellEffectHandler
+    {
+        public DispelMagicHandler(SpellCast cast, SpellEffect effect)
+            : base(cast, effect)
+        {
+        }
+
+        protected override void Apply(WorldObject target)
+        {
+            var chr = target as Character;
+
+            if (chr != null)
+            {
+                if (target.IsFriendlyWith(Cast.CasterChar))
+                {
+                    chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.HasHarmfulEffects);
+                    if (Cast.Spell.Id == (int)SpellId.ClassSkillDispelMagicRank2)
+                    {
+                        chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.HasHarmfulEffects);
+                    }
+                    if (Cast.CasterChar.Spells.Contains(SpellId.GlyphOfDispelMagic) || Cast.CasterChar.Spells.Contains(SpellId.GlyphOfDispelMagic_2))
+                    {
+                        int amountToHeal = (chr.Health * 3) / 100;
+                        chr.Target.Heal(amountToHeal, Cast.CasterChar, Effect);
+                    }
+                }
+                else
+                {
+                    chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.HasBeneficialEffects);
+                    if (Cast.Spell.Id == (int)SpellId.ClassSkillDispelMagicRank2)
+                    {
+                        chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.HasHarmfulEffects);
+                    }
+                }
+            }
+        }
+    }
+#endregion
 }
