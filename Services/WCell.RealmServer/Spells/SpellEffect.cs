@@ -26,11 +26,13 @@ using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
@@ -52,13 +54,12 @@ namespace WCell.RealmServer.Spells
 
 		#region Variables
 		/// <summary>
-		/// Factor of the amount of AP to be added to the EffectValue
-		/// TODO: Change to int (%)
+		/// Factor of the amount of AP to be added to the EffectValue (1.0f = +100%)
 		/// </summary>
 		public float APValueFactor;
 
 		/// <summary>
-		/// Amount of Spell Power to be added to the EffectValue in %
+		/// Amount of Spell Power to be added to the EffectValue in % (1 = +1%)
 		/// </summary>
 		public int SpellPowerValuePct;
 
@@ -79,6 +80,14 @@ namespace WCell.RealmServer.Spells
 
 		[NotPersistent]
 		public AuraEffectHandlerCreator AuraEffectHandlerCreator;
+
+		/// <summary>
+		/// Explicitely defined spells that are somehow related to this effect.
+		/// Is used for procs, talent-modifiers and AddTargetTrigger-relations mostly. 
+		/// Can be used for other things.
+		/// </summary>
+		[NotPersistent]
+		public HashSet<Spell> AffectSpellSet;
 		#endregion
 
 		#region Auto generated Fields
@@ -950,15 +959,64 @@ namespace WCell.RealmServer.Spells
 			AddToAffectMask(abilities);
 		}
 
-		public void AddToAffectMask(params SpellLineId[] abilities)
+		/// <summary>
+		/// Adds a set of spells to the explicite relationship set of this effect, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Only adds the spells, will not work on the spells' trigger spells.
+		/// </summary>
+		/// <param name="abilities"></param>
+		public void AddAffectingSpells(params SpellLineId[] abilities)
 		{
+			if (AffectSpellSet == null)
+			{
+				AffectSpellSet = new HashSet<Spell>();
+			}
 			foreach (var ability in abilities)
 			{
-				var spell = SpellLines.GetLine(ability).FirstRank;
-				for (int i = 0; i < AffectMask.Length; i++)
+				AffectSpellSet.AddRange(SpellLines.GetLine(ability));
+			}
+		}
+
+		/// <summary>
+		/// Adds a set of spells to this Effect's AffectMask, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Usually the mask also contains any spell that is triggered by the original spell.
+		/// 
+		/// If you get a warning that the wrong set is affected, use AddAffectingSpells instead.
+		/// </summary>
+		public void AddToAffectMask(params SpellLineId[] abilities)
+		{
+			var newMask = new uint[SpellConstants.SpellClassMaskSize];
+
+			// build new mask from abilities
+			if (abilities.Length != 1)
+			{
+				foreach (var ability in abilities)
 				{
-					AffectMask[i] |= spell.SpellClassMask[i];
+					var spell = SpellLines.GetLine(ability).FirstRank;
+					for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+					{
+						newMask[i] |= spell.SpellClassMask[i];
+					}
 				}
+			}
+			else
+			{
+				SpellLines.GetLine(abilities[0]).FirstRank.SpellClassMask.CopyTo(newMask, 0);
+			}
+
+			// verification
+			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
+			if (affectedLines.Count() != abilities.Length)
+			{
+				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
+					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2})", 
+					Spell, affectedLines.ToString(", "), abilities.ToString(", "));
+			}
+
+			for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+			{
+				AffectMask[i] |= newMask[i];
 			}
 		}
 
@@ -978,12 +1036,13 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		#endregion
-
 		public bool MatchesSpell(Spell spell)
 		{
-			return spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask);
+			return (spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask)) ||
+				(AffectSpellSet != null && AffectSpellSet.Contains(spell));
 		}
+		#endregion
+
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{

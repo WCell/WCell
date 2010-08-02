@@ -1031,7 +1031,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if (handler.CanProcBeTriggeredBy(action) && 
 								(!handler.SpellEffect.HasAffectMask ||
 								action.Spell == null || 
-								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
+								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							canProc = true;
@@ -1064,7 +1064,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if (handler.CanProcBeTriggeredBy(action) && 
 								(!handler.SpellEffect.HasAffectMask ||
 								action.Spell == null ||
-								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
+								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							handler.OnProc(triggerer, action);

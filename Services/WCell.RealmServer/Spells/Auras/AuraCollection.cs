@@ -900,7 +900,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura.Spell.IsPassive &&
 					!aura.HasTimeout &&
 					aura.Spell != spell &&
-					aura.Spell.MatchesMask(spell.AllAffectingMasks))
+					aura.Spell.IsAffectedBy(spell))
 				{
 					aura.ReApplyNonPeriodicEffects();
 				}
@@ -1061,7 +1061,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
 					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
-						spell.MatchesMask(handler.SpellEffect.AffectMask))
+						handler.SpellEffect.MatchesSpell(spell))
 					{
 						return true;
 					}
