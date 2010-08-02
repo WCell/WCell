@@ -436,7 +436,6 @@ namespace WCell.RealmServer.Spells
 			{
 				ProcHandlers = new List<ProcHandlerTemplate>();
 			}
-			handler.IsAttackerTriggerer = false;
 			ProcHandlers.Add(handler);
 		}
 		#endregion
@@ -488,7 +487,6 @@ namespace WCell.RealmServer.Spells
 						{
 							IsTeachSpell = GetEffect(SpellEffectType.LearnSpell) != null;
 						}
-						Effects[i].IsUsed = true;
 					}
 				}
 			}

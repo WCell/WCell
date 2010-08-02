@@ -164,7 +164,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// only proc the trigger spell on dodge
 				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
 				spell.AddProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
+					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeValidator,
 					SpellHandler.Get(triggerSpellEffect.TriggerSpellId)
 					));
@@ -323,7 +323,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Savage Defense has wrong trigger flags & it's buff has wrong effect type 
 			SpellLineId.DruidSavageDefensePassive.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
 			});
 			SpellHandler.Apply(spell =>
 			{

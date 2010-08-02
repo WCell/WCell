@@ -22,7 +22,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
+					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
 					spell.ProcChance
@@ -45,8 +45,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 				var effect = spell.GetEffect(SpellEffectType.Dummy);
 				effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
 				effect = spell.GetEffect(SpellEffectType.SchoolDamage);
-				// dont need this one
-				effect.IsUsed = false;
 			});
 
 			// Last Stand has a Dummy and does not apply an Aura (through triggering the Aura spell)

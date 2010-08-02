@@ -930,7 +930,7 @@ namespace WCell.RealmServer.Spells
 					CasterUnit.SetSpellCast(this);
 
 					// send Start packet
-					SendCastStart();
+					//SendCastStart();
 					return SpellFailedReason.Ok;
 
 				}
@@ -1500,6 +1500,15 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// 
 		/// </summary>
+		public static void ValidateAndTriggerNew(Spell spell, Unit caster, WorldObject target, 
+		                                         SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
+		{
+			ValidateAndTriggerNew(spell, caster.SharedReference, caster, target, usedChannel, usedItem, action);
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
 		public static void ValidateAndTriggerNew(Spell spell, ObjectReference caster, Unit triggerOwner, WorldObject target, 
 			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null)
 		{
@@ -1718,6 +1727,11 @@ namespace WCell.RealmServer.Spells
 
 		internal void Dispose()
 		{
+			if (CasterReference == null)
+			{
+				LogManager.GetCurrentClassLogger().Warn("Tried to dispose SpellCast twice: " + this);
+				return;
+			}
 			Cancel();
 			if (m_channel != null)
 			{
@@ -1733,6 +1747,7 @@ namespace WCell.RealmServer.Spells
 
 			SourceLoc = Vector3.Zero;
 			CasterObject = CasterUnit = null;
+			CasterReference = null;
 			SpellCastPool.Recycle(this);
 			Map = null;
 			//Context = null;

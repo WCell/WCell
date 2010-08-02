@@ -26,11 +26,11 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	public class PeriodicTriggerSpellHandler : AuraEffectHandler
 	{
 		protected Spell spell;
-		protected SpellCast cast, origCast;
 
 		protected override void Apply()
 		{
 			var channel = m_aura.Controller as SpellChannel;
+			SpellCast origCast = null;
 			if (spell == null)
 			{
 				if (channel != null)
@@ -57,12 +57,6 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Remove(bool cancelled)
 		{
-			if (cast != null && cast.IsChanneling)
-			{
-				cast.Cancel(SpellFailedReason.Ok);
-				cast.Dispose();
-				cast = null;
-			}
 		}
 
 

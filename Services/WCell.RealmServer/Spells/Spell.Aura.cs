@@ -151,7 +151,30 @@ namespace WCell.RealmServer.Spells
 		#region InitAura
 		private void InitAura()
 		{
-			IsAura = HasEffectWith(effect =>
+			// procs
+			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
+			{
+				ProcTriggerEffects = Effects.Where(effect => effect.IsProc).ToArray();
+				if (ProcTriggerEffects.Length == 0)
+				{
+					// no proc-specific effects -> all effects are triggered on proc
+					ProcTriggerEffects = null;
+				}
+				//else if (ProcTriggerEffects.Length > 1)
+				//{
+				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
+				//}
+
+				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.SpellCast))
+				{
+					// we don't want any SpellCast to trigger on that
+					ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
+				}
+
+				IsProc = ProcTriggerEffects != null || ProcHandlers != null || CasterProcSpells != null;
+			}
+
+			IsAura = IsProc || HasEffectWith(effect =>
 			{
 				if (effect.AuraType != AuraType.None)
 				{
@@ -159,19 +182,6 @@ namespace WCell.RealmServer.Spells
 				}
 				return false;
 			});
-
-			if (!IsAura)
-			{
-				if (ProcHandlers != null)
-				{
-					throw new InvalidSpellDataException("Invalid Non-Aura spell has ProcHandlers: {0}", this);
-				}
-				//if (CasterProcHandlers != null)
-				//{
-				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has CasterProcHandlers: {0}", this);
-				//}
-				return;
-			}
 
 			ForeachEffect(effect =>
 			{
@@ -209,8 +219,8 @@ namespace WCell.RealmServer.Spells
 				return effect.AuraType == AuraType.ModShapeshift || effect.AuraType == AuraType.Transform;
 			});
 
+			// charges and stacks:
 			CanStack = MaxStackCount > 0;
-			// procs and stacking:
 			if (ProcCharges > 0)
 			{
 				// applications will be used up by procs
@@ -235,29 +245,6 @@ namespace WCell.RealmServer.Spells
 
 			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
 			IsModalShapeshiftDependentAura = IsPassive && (RequiredShapeshiftMask != 0 || HasShapeshiftDependentEffects);
-
-			// procs
-			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
-			{
-				ProcTriggerEffects = Effects.Where(effect => effect.IsProc).ToArray();
-				if (ProcTriggerEffects.Length == 0)
-				{
-					// no proc-specific effects -> all effects are triggered on proc
-					ProcTriggerEffects = null;
-				}
-				//else if (ProcTriggerEffects.Length > 1)
-				//{
-				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
-				//}
-
-				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.SpellCast))
-				{
-					// we don't want any SpellCast to trigger on that
-					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
-				}
-
-				IsProc = ProcTriggerEffects != null;
-			}
 
 			if (AuraUID == 0)
 			{

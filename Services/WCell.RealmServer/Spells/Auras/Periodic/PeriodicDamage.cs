@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
 				{
 					var bonus = m_aura.Auras.GetBleedBonusPercent();
-					value = ((value*bonus) + 50)/100;
+					value += ((value * bonus) + 50) / 100;
 				}
 
 				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value);

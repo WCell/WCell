@@ -188,10 +188,6 @@ namespace WCell.RealmServer.Spells
 				OwnerChar.Talents.Remove(spell.Talent.Id);
 			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
-			if (spell.IsPassive)
-			{
-				Owner.Auras.Cancel(spell);
-			}
 		}
 
 		/// <summary>
@@ -236,7 +232,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			m_byId.Clear();
+			base.Clear();
 		}
 		#endregion
 

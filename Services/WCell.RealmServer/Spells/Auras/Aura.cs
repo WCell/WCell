@@ -1061,9 +1061,9 @@ namespace WCell.RealmServer.Spells.Auras
 					if (handler.SpellEffect.IsProc)
 					{
 						// only trigger proc effects or all effects, if there arent any proc-specific effects
-						if (handler.CanProcBeTriggeredBy(action) && 
-								(!handler.SpellEffect.HasAffectMask ||
-								action.Spell == null ||
+						if (handler.CanProcBeTriggeredBy(action) &&
+								(action.Spell == null || 
+								!handler.SpellEffect.HasAffectMask ||
 								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
