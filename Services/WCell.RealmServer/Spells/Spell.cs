@@ -1087,6 +1087,11 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Misc Methods & Props
+		public bool IsAffectedBy(Spell spell)
+		{
+			return MatchesMask(spell.AllAffectingMasks);
+		}
+
 		public bool MatchesMask(uint[] masks)
 		{
 			for (var i = 0; i < SpellClassMask.Length; i++)

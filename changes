@@ -1,4 +1,4 @@
-- fixed mechanic immunities, also in combination with trigger spells 
-- fixed: Prevent cancelling of negative auras
-- added: ProcEnergizeHandler
-- to test: DeathKnightBloodButchery
+- added a check in SpellEffect.AddToAffectMask to make sure that the attempted change does not have any unforseen results
+- added SpellEffect.AddAffectSpell for any spells/spell lines whose mask affects matches that of the wrong spells
+- added comments to how Affect* members of SpellEffect work
+-> fixes ShadowWeaving
