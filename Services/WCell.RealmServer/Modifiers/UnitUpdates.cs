@@ -314,8 +314,12 @@ namespace WCell.RealmServer.Modifiers
 					regen = unit.BasePower / 20;
 				}
 
-				regen += unit.IntMods[(int)StatModifierInt.PowerRegen];
-				regen = GetMultiMod((int)unit.FloatMods[(int)StatModifierFloat.PowerRegen], regen);
+				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat)
+				{
+					// runic power bonuses only apply during combat
+					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
+					regen = GetMultiMod((int) unit.FloatMods[(int) StatModifierFloat.PowerRegen], regen);
+				}
 			}
 
 			unit.PowerRegenPerTick = regen;

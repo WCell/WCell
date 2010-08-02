@@ -35,7 +35,6 @@ namespace WCell.Addons.Default.Spells.Priest
 			SpellLineId.PriestShadowMindFlay.Apply(spell =>
 			{
 				var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
-				effect.BasePoints = spell.Effects[2].BasePoints * 3;
 				effect.Amplitude = spell.Effects[2].Amplitude;
 			});
 
@@ -75,6 +74,7 @@ namespace WCell.Addons.Default.Spells.Priest
 					SpellLineId.PriestMindSear);
 			});
 		}
+
 	}
 
 	#region AuraVampiricEmbracerHandler

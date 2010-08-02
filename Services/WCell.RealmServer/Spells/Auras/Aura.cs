@@ -234,7 +234,10 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool CanBeCancelled
 		{
-			get { return m_spell != null && m_beneficial && !m_spell.Attributes.HasFlag(SpellAttributes.CannotRemove); }
+			get { return m_spell != null && m_beneficial && 
+					!m_spell.AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) &&
+					!m_spell.Attributes.HasAnyFlag(SpellAttributes.CannotRemove);
+			}
 		}
 
 		/// <summary>

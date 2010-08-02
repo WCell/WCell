@@ -250,6 +250,7 @@
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
