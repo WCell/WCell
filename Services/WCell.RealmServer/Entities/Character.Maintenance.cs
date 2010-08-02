@@ -127,6 +127,12 @@ namespace WCell.RealmServer.Entities
 				m_spells = new PlayerSpellCollection(this);
 			}
 
+			// runes
+			if (((PlayerSpellCollection)m_spells).Runes != null)
+			{
+				((PlayerSpellCollection) m_spells).Runes.InitRunes();
+			}
+
 			// factions
 			WatchedFaction = m_record.WatchedFaction;
 			Faction = FactionMgr.ByRace[(uint)record.Race];
@@ -237,6 +243,7 @@ namespace WCell.RealmServer.Entities
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
+					m_achievements.Load();
 					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
@@ -675,7 +682,7 @@ namespace WCell.RealmServer.Entities
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
 			// SMSG_EQUIPMENT_SET_LIST
-            // SMSG_ALL_ACHIEVEMENT_DATA SendAchievementData
+            AchievementHandler.SendAchievementData(this);
 			// SMSG_EXPLORATION_EXPERIENCE
 			CharacterHandler.SendTimeSpeed(this);
 			TalentHandler.SendTalentGroupList(this);
@@ -804,6 +811,7 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = LifetimeHonorableKills;
 				m_record.HonorPoints = HonorPoints;
 				m_record.ArenaPoints = ArenaPoints;
+				
 
 				// Finished quests
 				if (m_questLog.FinishedQuests.Count > 0)
@@ -821,11 +829,17 @@ namespace WCell.RealmServer.Entities
 				{
 					m_record.NextTaxiVertexId = 0;
 				}
+
+				// spells & runes
+				PlayerSpells.OnSave();
+
+				// taxi mask
 				m_record.TaxiMask = m_taxiNodeMask.Mask;
 
 				if (m_record.Level > 1 &&
 					m_record.Level > Account.HighestCharLevel)
 				{
+					// tell auth server about the new highest level
 					Account.HighestCharLevel = m_record.Level;
 				}
 			}
@@ -861,6 +875,9 @@ namespace WCell.RealmServer.Entities
 
 					// Talents
 					//m_record.SpecProfile.Save();
+					
+					// Achievements
+					m_achievements.SaveNow();
 
 					// Auras
 					m_auras.SaveAurasNow();
@@ -882,6 +899,7 @@ namespace WCell.RealmServer.Entities
 			}
 			catch (Exception ex)
 			{
+				OnSaveFailed(ex);
 				try
 				{
 					m_record.Save();
@@ -889,7 +907,7 @@ namespace WCell.RealmServer.Entities
 				}
 				catch //(Exception ex2)
 				{
-					OnSaveFailed(ex);
+					//OnSaveFailed(ex);
 				}
 				return false;
 			}

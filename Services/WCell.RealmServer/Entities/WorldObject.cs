@@ -191,6 +191,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_region != null; }
 		}
 
+		#region Spells
 		/// <summary>
 		/// whether this Object is currently casting or channeling a Spell
 		/// </summary>
@@ -200,6 +201,15 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_spellCast != null && (m_spellCast.IsCasting || m_spellCast.IsChanneling);
 			}
+		}
+
+		public void SetSpellCast(SpellCast cast)
+		{
+			if (m_spellCast != null && m_spellCast != cast)
+			{
+				m_spellCast.Dispose();
+			}
+			m_spellCast = cast;
 		}
 
 		/// <summary>
@@ -220,18 +230,32 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{
+				if (value == m_spellCast)
+				{
+					return;
+				}
+
 				m_spellCast = value;
 			}
 		}
 
 		public float GetSpellMaxRange(Spell spell)
 		{
-			return GetSpellMaxRange(spell, null);
+			return GetSpellMaxRange(spell, spell.Range.MaxDist);
+		}
+
+		public float GetSpellMaxRange(Spell spell, float range)
+		{
+			return GetSpellMaxRange(spell, null, range);
 		}
 
 		public float GetSpellMaxRange(Spell spell, WorldObject target)
 		{
-			var range = spell.Range.MaxDist;
+			return GetSpellMaxRange(spell, target, spell.Range.MaxDist);
+		}
+
+		public float GetSpellMaxRange(Spell spell, WorldObject target, float range)
+		{
 			if (target is Unit)
 			{
 				range += ((Unit)target).CombatReach;
@@ -239,10 +263,7 @@ namespace WCell.RealmServer.Entities
 			if (this is Unit)
 			{
 				range += ((Unit)this).CombatReach;
-				if (this is Character)
-				{
-					((Character)this).PlayerSpells.GetModifiedFloat(SpellModifierType.Range, spell, range);
-				}
+				((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
 			}
 			return range;
 		}
@@ -259,6 +280,7 @@ namespace WCell.RealmServer.Entities
 			}
 			return range;
 		}
+		#endregion
 
 		public abstract string Name
 		{
@@ -271,10 +293,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual int CasterLevel
 		{
-			get
-			{
-				return 0;
-			}
+			get { return 0; }
 		}
 
 		public ObjectReference SharedReference
@@ -1529,7 +1548,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return false;
 			}
-			
+
 			if (m_areaAuras.Remove(aura))
 			{
 				if (this is Unit)
@@ -1668,12 +1687,7 @@ namespace WCell.RealmServer.Entities
 
 		public override void Dispose(bool disposing)
 		{
-			if (m_spellCast != null)
-			{
-				m_spellCast.Dispose();
-				m_spellCast = null;
-			}
-
+			SpellCast = null;
 			m_region = null;
 		}
 		#endregion

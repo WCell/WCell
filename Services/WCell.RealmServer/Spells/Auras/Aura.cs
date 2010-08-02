@@ -96,9 +96,9 @@ namespace WCell.RealmServer.Spells.Auras
 			m_auraLevel = (byte)casterReference.Level;
 
 			m_stackCount = (byte)m_spell.StackCount;
-			if (m_stackCount > 0 && Caster is Character)
+			if (m_stackCount > 0 && casterReference.UnitMaster != null)
 			{
-				m_stackCount = ((Character)Caster).PlayerSpells.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
+				m_stackCount = casterReference.UnitMaster.Auras.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
 			}
 
 			SetAmplitude();
@@ -234,7 +234,10 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool CanBeCancelled
 		{
-			get { return m_spell != null && m_beneficial && !m_spell.Attributes.HasFlag(SpellAttributes.CannotRemove); }
+			get { return m_spell != null && m_beneficial && 
+					!m_spell.AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) &&
+					!m_spell.Attributes.HasAnyFlag(SpellAttributes.CannotRemove);
+			}
 		}
 
 		/// <summary>
@@ -1028,7 +1031,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if (handler.CanProcBeTriggeredBy(action) && 
 								(!handler.SpellEffect.HasAffectMask ||
 								action.Spell == null || 
-								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
+								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							canProc = true;
@@ -1061,7 +1064,7 @@ namespace WCell.RealmServer.Spells.Auras
 						if (handler.CanProcBeTriggeredBy(action) && 
 								(!handler.SpellEffect.HasAffectMask ||
 								action.Spell == null ||
-								action.Spell.MatchesMask(handler.SpellEffect.AffectMask)))
+								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
 							handler.OnProc(triggerer, action);

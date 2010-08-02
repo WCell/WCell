@@ -29,31 +29,6 @@ namespace WCell.RealmServer.Spells
 		protected bool m_sendPackets;
 
 		/// <summary>
-		/// Amount of currently added modifiers that require charges.
-		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
-		/// </summary>
-		public int ModifiersWithCharges
-		{
-			get;
-			protected internal set;
-		}
-
-		/// <summary>
-		/// Flat modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Percent modifiers of spells
-		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
-
-		/// <summary>
-		/// Mask of spells that are allowed to crit hit, although they are not allowed to, by default
-		/// </summary>
-		internal readonly uint[] CriticalStrikeEnabledMask = new uint[SpellConstants.SpellClassMaskSize];
-
-		/// <summary>
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
@@ -64,10 +39,19 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
 
+		/// <summary>
+		/// The runes of this Player (if any)
+		/// </summary>
+		private RuneSet m_runes;
+
 		public PlayerSpellCollection(Character owner)
 			: base(owner)
 		{
 			m_sendPackets = false;
+			if (owner.Class == Constants.ClassId.DeathKnight)
+			{
+				m_runes = new RuneSet(owner);
+			}
 		}
 
 		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
@@ -81,11 +65,19 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// If this is a player's 
+		/// Owner as Character
 		/// </summary>
 		public Character OwnerChar
 		{
-			get { return Owner as Character; }
+			get { return (Character)Owner; }
+		}
+
+		/// <summary>
+		/// The set of runes of this Character (if any)
+		/// </summary>
+		public RuneSet Runes
+		{
+			get { return m_runes; }
 		}
 
 		#region Add
@@ -289,155 +281,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Enhancers
-
-		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
-		{
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-		}
-
-		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
-		{
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-		}
-
-		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
-		{
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-		}
-
-		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
-		{
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-		}
-
-		private void OnModifierChange(AddModifierEffectHandler modifier)
-		{
-			foreach (var aura in Owner.Auras)
-			{
-				if (aura.IsActivated && !aura.Spell.IsEnhancer && modifier.SpellEffect.MatchesSpell(aura.Spell))
-				{
-					// activated, passive Aura, affected by this modifier -> Needs to re-apply
-					aura.ReApplyNonPeriodicEffects();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
-		/// </summary>
-		public int GetModifiedInt(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
-		}
-
-		/// <summary>
-		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
-		/// </summary>
-		public int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
-		/// </summary>
-		public float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (value + flatMod) * (1 + (percentMod / 100f));
-		}
-
-		/// <summary>
-		/// Returns the percent modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierPercent(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersPct.Count; i++)
-			{
-				var modifier = SpellModifiersPct[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					modifier.SpellEffect.MatchesSpell(spell))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Returns the flat modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierFlat(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersFlat.Count; i++)
-			{
-				var modifier = SpellModifiersFlat[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					modifier.SpellEffect.MatchesSpell(spell))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		public void OnCasted(SpellCast cast)
-		{
-			var spell = cast.Spell;
-			if (ModifiersWithCharges > 0)
-			{
-				var toRemove = new List<Aura>(3);
-				for (var i = 0; i < SpellModifiersFlat.Count; i++)
-				{
-					var modifier = SpellModifiersFlat[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-				for (var i = 0; i < SpellModifiersPct.Count; i++)
-				{
-					var modifier = SpellModifiersPct[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-
-				foreach (var aura in toRemove)
-				{
-					aura.Remove(false);
-				}
-			}
-		}
-		#endregion
-
 		#region Spell Constraints
 		/// <summary>
 		/// Add everything to the caster that this spell requires
@@ -479,7 +322,7 @@ namespace WCell.RealmServer.Spells
 			// Profession
 			if (spell.Skill != null)
 			{
-			    chr.Skills.TryLearn(spell.SkillId);
+				chr.Skills.TryLearn(spell.SkillId);
 			}
 
 
@@ -733,6 +576,12 @@ namespace WCell.RealmServer.Spells
 					catCds.Clear();
 				}
 			}));
+
+			// clear rune cooldowns
+			if (m_runes != null)
+			{
+				// TODO: Clear rune cooldown
+			}
 		}
 
 		/// <summary>
@@ -839,12 +688,10 @@ namespace WCell.RealmServer.Spells
 					}
 
 					var cd = cooldown.AsConsistent();
-					if (cd.CharId != m_ownerId)
-					{
-						cd.CharId = m_ownerId;
-					}
-					cd.SaveAndFlush();		// update or create
-					newCooldowns.Add(cd.Identifier, (T)cd);
+					//if (cd.CharId != m_ownerId)
+					cd.CharId = m_ownerId;
+					cd.SaveAndFlush(); // update or create
+					newCooldowns.Add(cd.Identifier, (T) cd);
 				}
 			}
 			cooldowns = newCooldowns;
@@ -852,12 +699,16 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		/// <summary>
-		/// Returns wehther the given spell is allowed to crit, if it was not
-		/// allowed to crit by default.
+		/// Called to save runes (cds & spells are saved in another way)
 		/// </summary>
-		public bool CanSpellCrit(Spell spell)
+		internal void OnSave()
 		{
-			return spell.MatchesMask(CriticalStrikeEnabledMask);
+			if (m_runes != null)
+			{
+				var record = OwnerChar.Record;
+				record.RuneSetMask = m_runes.PackRuneSetMask();
+				record.RuneCooldowns = m_runes.Cooldowns;
+			}
 		}
 	}
 }

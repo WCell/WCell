@@ -29,31 +29,24 @@ namespace WCell.Addons.Default.Spells.Warrior
 					));
 			});
 
-			// Gag Order needs a custom proc trigger and the correct auratype
+			// Gag Order has a ProcTriggerSpell effect and is only trigged by bash and throw
 			SpellLineId.WarriorProtectionGagOrder.Apply(spell =>
 			{
-				spell.AddCasterProcSpells(SpellLineId.WarriorShieldBash, SpellLineId.WarriorHeroicThrow);
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
 				var effect = spell.GetEffect(AuraType.Dummy);
-				if (effect != null)
-				{
-					effect.AuraType = AuraType.ProcTriggerSpell;
-				}
+				effect.AuraType = AuraType.ProcTriggerSpell;
+				effect.SetAffectMask(SpellLineId.WarriorShieldBash, SpellLineId.WarriorHeroicThrow);
 			});
 
 			// Concussion Blow deals AP based school damage
 			SpellLineId.WarriorProtectionConcussionBlow.Apply(spell =>
 			{
 				var effect = spell.GetEffect(SpellEffectType.Dummy);
-				if (effect != null)
-				{
-					effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
-				}
+				effect.SpellEffectHandlerCreator = (cast, eff) => new SchoolDamageByAPPctEffectHandler(cast, eff);
 				effect = spell.GetEffect(SpellEffectType.SchoolDamage);
-				if (effect != null)
-				{
-					// dont need this one
-					effect.IsUsed = false;
-				}
+				// dont need this one
+				effect.IsUsed = false;
 			});
 
 			// Last Stand has a Dummy and does not apply an Aura (through triggering the Aura spell)

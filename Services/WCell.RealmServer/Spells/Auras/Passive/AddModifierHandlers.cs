@@ -42,9 +42,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				Charges = m_spellEffect.Spell.ProcCharges;
 				if (Charges > 0)
 				{
-					owner.PlayerSpells.ModifiersWithCharges++;
+					owner.PlayerAuras.ModifiersWithCharges++;
 				}
-				owner.PlayerSpells.AddSpellModifierFlat(this);
+				owner.PlayerAuras.AddSpellModifierFlat(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
 			}
 		}
@@ -56,9 +56,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			{
 				if (m_spellEffect.Spell.ProcCharges > 0)
 				{
-					owner.PlayerSpells.ModifiersWithCharges--;
+					owner.PlayerAuras.ModifiersWithCharges--;
 				}
-				owner.PlayerSpells.RemoveSpellModifierFlat(this);
+				owner.PlayerAuras.RemoveSpellModifierFlat(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, false);
 			}
 		}
@@ -74,9 +74,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				Charges = m_spellEffect.Spell.ProcCharges;
 				if (Charges > 0)
 				{
-					owner.PlayerSpells.ModifiersWithCharges += 1;
+					owner.PlayerAuras.ModifiersWithCharges += 1;
 				}
-				owner.PlayerSpells.AddSpellModifierPercent(this);
+				owner.PlayerAuras.AddSpellModifierPercent(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
 			}
 		}
@@ -88,9 +88,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			{
 				if (m_spellEffect.Spell.ProcCharges > 0)
 				{
-					owner.PlayerSpells.ModifiersWithCharges -= 1;
+					owner.PlayerAuras.ModifiersWithCharges -= 1;
 				}
-				owner.PlayerSpells.RemoveSpellModifierPercent(this);
+				owner.PlayerAuras.RemoveSpellModifierPercent(this);
 				AuraHandler.SendModifierUpdate(owner, m_spellEffect, true);
 			}
 		}

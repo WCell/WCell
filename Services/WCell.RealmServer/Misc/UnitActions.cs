@@ -442,7 +442,7 @@ namespace WCell.RealmServer.Misc
 			{
 				return (SpellEffect == null ||
 						((!Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && !IsDot)) ||
-						(Attacker is Character && ((Character)Attacker).PlayerSpells.CanSpellCrit(SpellEffect.Spell)));
+						(Attacker is Character && ((Character)Attacker).PlayerAuras.CanSpellCrit(SpellEffect.Spell)));
 			}
 		}
 
@@ -1086,7 +1086,7 @@ namespace WCell.RealmServer.Misc
 				return 0;
 			}
 
-			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, SpellEffect.Spell, Weapon) * 100;
+			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, Spell, Weapon) * 100;
 
 			if (Weapon != null)
 			{

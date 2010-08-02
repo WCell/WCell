@@ -36,18 +36,12 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 
 		public override ObjectTypes CasterType
 		{
-			get
-			{
-				return ObjectTypes.Unit;
-			}
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }

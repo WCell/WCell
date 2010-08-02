@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			var chr = Owner as Character;
 			if (chr != null)
 			{
-				m_spellEffect.CopyAffectMaskTo(chr.PlayerSpells.CriticalStrikeEnabledMask);
+				m_spellEffect.CopyAffectMaskTo(chr.PlayerAuras.CriticalStrikeEnabledMask);
 			}
 		}
 
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			var chr = Owner as Character;
 			if (chr != null)
 			{
-				m_spellEffect.RemoveAffectMaskFrom(chr.PlayerSpells.CriticalStrikeEnabledMask);
+				m_spellEffect.RemoveAffectMaskFrom(chr.PlayerAuras.CriticalStrikeEnabledMask);
 			}
 		}
 	}

@@ -449,7 +449,7 @@ namespace WCell.Constants.Spells
 		ModPoisonDurationPct = 246,
 		Aura_247 = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
-		Aura_249 = 249,
+		ConvertRune = 249,
 		Aura_250 = 250,
 		Aura_251 = 251,
 		Aura_252 = 252,

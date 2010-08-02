@@ -20,11 +20,13 @@
     <Flat Name="IsDead" Column="DeathState" />
     <Flat Name="RespawnSeconds" Column="spawntimesecs" />
 
-    <Flat Name="AuraIdStr" Table="creature_addon" Column="auras" />
-    <Flat Name="Bytes" Table="creature_addon" Column="bytes1" />
-    <Flat Name="Bytes2" Table="creature_addon" Column="bytes2" />
-    <Flat Name="EmoteState" Table="creature_addon" Column="emote" />
-    <Flat Name="MountId" Table="creature_addon" Column="mount" />
+    <Nested Name="AddonData">
+      <Flat Name="AuraIdStr" Table="creature_addon" Column="auras" />
+      <Flat Name="Bytes" Table="creature_addon" Column="bytes1" />
+      <Flat Name="Bytes2" Table="creature_addon" Column="bytes2" />
+      <Flat Name="EmoteState" Table="creature_addon" Column="emote" />
+      <Flat Name="MountModelId" Table="creature_addon" Column="mount" />
+    </Nested>
 
     <Flat Name="EventId" Table="game_event_creature" Column="event" />
 

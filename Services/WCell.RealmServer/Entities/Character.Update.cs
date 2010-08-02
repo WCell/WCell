@@ -411,6 +411,10 @@ namespace WCell.RealmServer.Entities
 					UpdatePvPState(false, false);
 				}
 			}
+			if (PlayerSpells.Runes != null)
+			{
+				PlayerSpells.Runes.UpdateCooldown(dt);
+			}
 		}
 
 		public override UpdatePriority UpdatePriority

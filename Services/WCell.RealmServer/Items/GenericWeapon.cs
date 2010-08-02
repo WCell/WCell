@@ -20,12 +20,12 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Default Fists
 		/// </summary>
-		public static GenericWeapon Fists = new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, FistDamage, SkillId.Unarmed, 0f, Unit.DefaultMeleeDistance, 2000);
+		public static GenericWeapon Fists = new GenericWeapon(InventorySlotTypeMask.WeaponMainHand, FistDamage, SkillId.Unarmed, 0f, Unit.DefaultMeleeCombatDistance, 2000);
 
 		/// <summary>
 		/// Default Ranged Weapon
 		/// </summary>
-		public static GenericWeapon Ranged = new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedDamage, SkillId.Bows, Unit.DefaultMeleeDistance, Unit.DefaultRangedDistance, 2000);
+		public static GenericWeapon Ranged = new GenericWeapon(InventorySlotTypeMask.WeaponRanged, RangedDamage, SkillId.Bows, Unit.DefaultMeleeCombatDistance, Unit.DefaultRangedCombatDistance, 2000);
 
 		/// <summary>
 		/// No damage weapon

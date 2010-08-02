@@ -255,6 +255,9 @@
     <Compile Include="Instances\ZulAman.cs" />
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightFrostFixes.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightBloodFixes.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightUnholyFixes.cs" />
     <Compile Include="Spells\Druid\DruidBalanceFixes.cs" />
     <Compile Include="Spells\Druid\DruidFeralCombatFixes.cs" />
     <Compile Include="Spells\Druid\DruidRestorationFixes.cs" />
@@ -265,6 +268,11 @@
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinProtectionFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinRetributionFixes.cs" />
+    <Compile Include="Spells\Priest\PriestFixes.cs" />
+    <Compile Include="Spells\Priest\PriestHolyFixes.cs" />
+    <Compile Include="Spells\Priest\PriestShadowFixes.cs" />
+    <Compile Include="Spells\Rogue\RogueCombatFixes.cs" />
+    <Compile Include="Spells\Rogue\RogueSubtletyFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorArmsFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorFuryFixes.cs" />
     <Compile Include="Spells\Warrior\WarriorProtectionFixes.cs" />
@@ -281,7 +289,6 @@
     <Compile Include="Spells\Paladin\SealsAndJudgements.cs" />
     <Compile Include="Spells\Paladin\PaladinFixes.cs" />
     <Compile Include="Spells\PlayerSpells.cs" />
-    <Compile Include="Spells\Priest\PriestFixes.cs" />
     <Compile Include="Spells\QuestSpells.cs" />
     <Compile Include="Spells\Rogue\RogueFixes.cs" />
     <Compile Include="Spells\Shaman\ShamanFixes.cs" />

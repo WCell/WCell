@@ -26,11 +26,13 @@ using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
@@ -52,13 +54,12 @@ namespace WCell.RealmServer.Spells
 
 		#region Variables
 		/// <summary>
-		/// Factor of the amount of AP to be added to the EffectValue
-		/// TODO: Change to int (%)
+		/// Factor of the amount of AP to be added to the EffectValue (1.0f = +100%)
 		/// </summary>
 		public float APValueFactor;
 
 		/// <summary>
-		/// Amount of Spell Power to be added to the EffectValue in %
+		/// Amount of Spell Power to be added to the EffectValue in % (1 = +1%)
 		/// </summary>
 		public int SpellPowerValuePct;
 
@@ -79,6 +80,14 @@ namespace WCell.RealmServer.Spells
 
 		[NotPersistent]
 		public AuraEffectHandlerCreator AuraEffectHandlerCreator;
+
+		/// <summary>
+		/// Explicitely defined spells that are somehow related to this effect.
+		/// Is used for procs, talent-modifiers and AddTargetTrigger-relations mostly. 
+		/// Can be used for other things.
+		/// </summary>
+		[NotPersistent]
+		public HashSet<Spell> AffectSpellSet;
 		#endregion
 
 		#region Auto generated Fields
@@ -314,13 +323,13 @@ namespace WCell.RealmServer.Spells
 			if (IsPeriodic = Amplitude > 0)
 			{
 				_IsPeriodicAura = (AuraType == AuraType.PeriodicDamage ||
-				                   AuraType == AuraType.PeriodicDamagePercent ||
-				                   AuraType == AuraType.PeriodicEnergize ||
-				                   AuraType == AuraType.PeriodicHeal ||
-				                   AuraType == AuraType.PeriodicHealthFunnel ||
-				                   AuraType == AuraType.PeriodicLeech ||
-				                   AuraType == AuraType.PeriodicManaLeech ||
-				                   AuraType == AuraType.PeriodicTriggerSpell);
+								   AuraType == AuraType.PeriodicDamagePercent ||
+								   AuraType == AuraType.PeriodicEnergize ||
+								   AuraType == AuraType.PeriodicHeal ||
+								   AuraType == AuraType.PeriodicHealthFunnel ||
+								   AuraType == AuraType.PeriodicLeech ||
+								   AuraType == AuraType.PeriodicManaLeech ||
+								   AuraType == AuraType.PeriodicTriggerSpell);
 			}
 
 			if (Spell.IsPassive)
@@ -329,37 +338,37 @@ namespace WCell.RealmServer.Spells
 				HarmType = HarmType.Beneficial;
 			}
 			else if ((HasTarget(ImplicitTargetType.AllEnemiesAroundCaster,
-			                    ImplicitTargetType.AllEnemiesInArea,
-			                    ImplicitTargetType.AllEnemiesInAreaChanneled,
-			                    ImplicitTargetType.AllEnemiesInAreaInstant,
-			                    ImplicitTargetType.CurrentSelection) ||
-			          HasTarget(ImplicitTargetType.InFrontOfCaster,
-			                    ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
-			                    ImplicitTargetType.LocationInFrontCaster,
-			                    ImplicitTargetType.NetherDrakeSummonLocation,
-			                    ImplicitTargetType.SelectedEnemyChanneled,
-			                    ImplicitTargetType.SelectedEnemyDeadlyPoison,
-			                    ImplicitTargetType.SingleEnemy,
-			                    ImplicitTargetType.SpreadableDesease,
-			                    ImplicitTargetType.TargetAtOrientationOfCaster)) &&
-			         (!HasTarget(
-			         	ImplicitTargetType.Self,
-			         	ImplicitTargetType.AllFriendlyInAura,
-			         	ImplicitTargetType.AllParty,
-			         	ImplicitTargetType.AllPartyAroundCaster,
-			         	ImplicitTargetType.AllPartyInArea,
-			         	ImplicitTargetType.PartyAroundCaster,
-			         	ImplicitTargetType.AllPartyInAreaChanneled) ||
-			          Spell.Mechanic.IsNegative()))
+								ImplicitTargetType.AllEnemiesInArea,
+								ImplicitTargetType.AllEnemiesInAreaChanneled,
+								ImplicitTargetType.AllEnemiesInAreaInstant,
+								ImplicitTargetType.CurrentSelection) ||
+					  HasTarget(ImplicitTargetType.InFrontOfCaster,
+								ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
+								ImplicitTargetType.LocationInFrontCaster,
+								ImplicitTargetType.NetherDrakeSummonLocation,
+								ImplicitTargetType.SelectedEnemyChanneled,
+								ImplicitTargetType.SelectedEnemyDeadlyPoison,
+								ImplicitTargetType.SingleEnemy,
+								ImplicitTargetType.SpreadableDesease,
+								ImplicitTargetType.TargetAtOrientationOfCaster)) &&
+					 (!HasTarget(
+						ImplicitTargetType.Self,
+						ImplicitTargetType.AllFriendlyInAura,
+						ImplicitTargetType.AllParty,
+						ImplicitTargetType.AllPartyAroundCaster,
+						ImplicitTargetType.AllPartyInArea,
+						ImplicitTargetType.PartyAroundCaster,
+						ImplicitTargetType.AllPartyInAreaChanneled) ||
+					  Spell.Mechanic.IsNegative()))
 			{
 				HarmType = HarmType.Harmful;
 			}
 			else if (!HasTarget(ImplicitTargetType.Duel) &&
-			         (ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
+					 (ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
 			{
 				HarmType = HarmType.Beneficial;
 			}
-			
+
 			// do some correction for ModManaRegen
 			if (AuraType == AuraType.ModManaRegen && Amplitude == 0)
 			{
@@ -372,8 +381,8 @@ namespace WCell.RealmServer.Spells
 			HasSingleTarget = HasTargets && !IsAreaEffect;
 
 			IsAreaAuraEffect = (EffectType == SpellEffectType.PersistantAreaAura ||
-			                    EffectType == SpellEffectType.ApplyAreaAura ||
-			                    EffectType == SpellEffectType.ApplyGroupAura);
+								EffectType == SpellEffectType.ApplyAreaAura ||
+								EffectType == SpellEffectType.ApplyGroupAura);
 
 			if (EffectType == SpellEffectType.ApplyGroupAura)
 			{
@@ -388,36 +397,36 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsAuraEffect = IsAreaAuraEffect ||
-			               EffectType == SpellEffectType.ApplyAura ||
-			               EffectType == SpellEffectType.ApplyAuraToMaster ||
-			               EffectType == SpellEffectType.ApplyPetAura ||
-			               EffectType == SpellEffectType.ApplyStatAura ||
-			               EffectType == SpellEffectType.ApplyStatAuraPercent;
+						   EffectType == SpellEffectType.ApplyAura ||
+						   EffectType == SpellEffectType.ApplyAuraToMaster ||
+						   EffectType == SpellEffectType.ApplyPetAura ||
+						   EffectType == SpellEffectType.ApplyStatAura ||
+						   EffectType == SpellEffectType.ApplyStatAuraPercent;
 
 			IsEnhancer = IsAuraEffect && (AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent);
 
-			MiscBitSet = MiscValue > 0 ? Utility.GetSetIndices((uint) MiscValue) : new uint[0];
+			MiscBitSet = MiscValue > 0 ? Utility.GetSetIndices((uint)MiscValue) : new uint[0];
 
 			MinValue = BasePoints; // + DiceCount; TODO: check this!
 
 			IsStrikeEffectFlat = EffectType == SpellEffectType.WeaponDamage ||
-			                     EffectType == SpellEffectType.WeaponDamageNoSchool ||
-			                     EffectType == SpellEffectType.NormalizedWeaponDamagePlus;
+								 EffectType == SpellEffectType.WeaponDamageNoSchool ||
+								 EffectType == SpellEffectType.NormalizedWeaponDamagePlus;
 
 			IsStrikeEffectPct = EffectType == SpellEffectType.WeaponPercentDamage;
 
 			IsTotem = HasTarget(ImplicitTargetType.TotemAir) ||
-			          HasTarget(ImplicitTargetType.TotemEarth) ||
-			          HasTarget(ImplicitTargetType.TotemFire) ||
-			          HasTarget(ImplicitTargetType.TotemWater);
+					  HasTarget(ImplicitTargetType.TotemEarth) ||
+					  HasTarget(ImplicitTargetType.TotemFire) ||
+					  HasTarget(ImplicitTargetType.TotemWater);
 
 			IsProc = IsProc || (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) ||
-			         AuraType == AuraType.ProcTriggerDamage;
+					 AuraType == AuraType.ProcTriggerDamage;
 
 			IsHealEffect = EffectType == SpellEffectType.Heal ||
-			               EffectType == SpellEffectType.HealMaxHealth ||
-			               AuraType == AuraType.PeriodicHeal ||
-			               (TriggerSpell != null && TriggerSpell.IsHealSpell);
+						   EffectType == SpellEffectType.HealMaxHealth ||
+						   AuraType == AuraType.PeriodicHeal ||
+						   (TriggerSpell != null && TriggerSpell.IsHealSpell);
 
 			IsModifierEffect = AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent;
 
@@ -437,11 +446,11 @@ namespace WCell.RealmServer.Spells
 
 			if (SpellEffectHandlerCreator == null && !IsUsed)
 			{
-				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int) EffectType];
+				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int)EffectType];
 			}
 			if (IsAuraEffect && AuraEffectHandlerCreator == null)
 			{
-				AuraEffectHandlerCreator = AuraHandler.EffectHandlers[(int) AuraType];
+				AuraEffectHandlerCreator = AuraHandler.EffectHandlers[(int)AuraType];
 				if (AuraEffectHandlerCreator == null)
 				{
 					AuraEffectHandlerCreator = AuraHandler.EffectHandlers[0];
@@ -551,46 +560,47 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue(Unit caster, int value)
 		{
-			if (caster != null)
+			if (caster == null)
 			{
-				if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
-				{
-					var apFactor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
-					var ap = Spell.IsRanged ? caster.TotalRangedAP : caster.TotalMeleeAP;
-
-					value += (int)(ap * apFactor + 0.5f);	// implicit rounding
-				}
+				return value;
 			}
 
+			if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
+			{
+				var apFactor = APValueFactor + (APPerComboPointValueFactor*caster.ComboPoints);
+				var ap = Spell.IsRanged ? caster.TotalRangedAP : caster.TotalMeleeAP;
+
+				value += (int) (ap*apFactor + 0.5f); // implicit rounding
+			}
 			if (caster is Character)
 			{
 				if (SpellPowerValuePct != 0)
 				{
-					value += (SpellPowerValuePct * ((Character)caster).GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
+					value += (SpellPowerValuePct*((Character) caster).GetDamageDoneMod(Spell.Schools[0]) + 50)/100;
 				}
-
-				if (EffectIndex <= 2)
-				{
-					SpellModifierType type;
-					switch (EffectIndex)
-					{
-						case 0:
-							type = SpellModifierType.EffectValue1;
-							break;
-						case 1:
-							type = SpellModifierType.EffectValue2;
-							break;
-						case 3:
-							type = SpellModifierType.EffectValue3;
-							break;
-						default:
-							type = SpellModifierType.EffectValue4AndBeyond;
-							break;
-					}
-					value = ((Character)caster).PlayerSpells.GetModifiedInt(type, Spell, value);
-				}
-				value = ((Character)caster).PlayerSpells.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
 			}
+			if (EffectIndex <= 2)
+			{
+				SpellModifierType type;
+				switch (EffectIndex)
+				{
+					case 0:
+						type = SpellModifierType.EffectValue1;
+						break;
+					case 1:
+						type = SpellModifierType.EffectValue2;
+						break;
+					case 3:
+						type = SpellModifierType.EffectValue3;
+						break;
+					default:
+						type = SpellModifierType.EffectValue4AndBeyond;
+						break;
+				}
+				value = caster.Auras.GetModifiedInt(type, Spell, value);
+			}
+			value = caster.Auras.GetModifiedInt(SpellModifierType.AllEffectValues, Spell, value);
+
 			return value;
 		}
 
@@ -622,10 +632,10 @@ namespace WCell.RealmServer.Spells
 		public float GetRadius(ObjectReference caster)
 		{
 			var radius = Radius;
-			var chr = caster.UnitMaster as Character;
+			var chr = caster.UnitMaster;
 			if (chr != null)
 			{
-				radius = chr.PlayerSpells.GetModifiedFloat(SpellModifierType.Radius, Spell, radius);
+				radius = chr.Auras.GetModifiedFloat(SpellModifierType.Radius, Spell, radius);
 			}
 			if (radius < 5)
 			{
@@ -891,8 +901,8 @@ namespace WCell.RealmServer.Spells
 			SetAuraEffectMiscValueType(AuraType.ModSilenceDurationPercent, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.ModMechanicDurationPercent, typeof(SpellMechanic));
 			SetAuraEffectMiscValueType(AuraType.TrackCreatures, typeof(CreatureType));
-			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance, typeof(DamageSchool));
-			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance2, typeof(DamageSchool));
+			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance, typeof(DamageSchoolMask));
+			SetAuraEffectMiscValueType(AuraType.ModSpellHitChance2, typeof(DamageSchoolMask));
 
 			SetAuraEffectMiscValueBType(AuraType.ModSpellDamageByPercentOfStat, typeof(StatType));
 			SetAuraEffectMiscValueBType(AuraType.ModSpellHealingByPercentOfStat, typeof(StatType));
@@ -949,15 +959,65 @@ namespace WCell.RealmServer.Spells
 			AddToAffectMask(abilities);
 		}
 
-		public void AddToAffectMask(params SpellLineId[] abilities)
+		/// <summary>
+		/// Adds a set of spells to the explicite relationship set of this effect, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Only adds the spells, will not work on the spells' trigger spells.
+		/// </summary>
+		/// <param name="abilities"></param>
+		public void AddAffectingSpells(params SpellLineId[] abilities)
 		{
+			if (AffectSpellSet == null)
+			{
+				AffectSpellSet = new HashSet<Spell>();
+			}
 			foreach (var ability in abilities)
 			{
-				var spell = SpellLines.GetLine(ability).FirstRank;
-				for (int i = 0; i < AffectMask.Length; i++)
+				AffectSpellSet.AddRange(SpellLines.GetLine(ability));
+			}
+		}
+
+		/// <summary>
+		/// Adds a set of spells to this Effect's AffectMask, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Usually the mask also contains any spell that is triggered by the original spell.
+		/// 
+		/// If you get a warning that the wrong set is affected, use AddAffectingSpells instead.
+		/// </summary>
+		public void AddToAffectMask(params SpellLineId[] abilities)
+		{
+			var newMask = new uint[SpellConstants.SpellClassMaskSize];
+
+			// build new mask from abilities
+			if (abilities.Length != 1)
+			{
+				foreach (var ability in abilities)
 				{
-					AffectMask[i] |= spell.SpellClassMask[i];
+					var spell = SpellLines.GetLine(ability).FirstRank;
+					for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+					{
+						newMask[i] |= spell.SpellClassMask[i];
+					}
 				}
+			}
+			else
+			{
+				SpellLines.GetLine(abilities[0]).FirstRank.SpellClassMask.CopyTo(newMask, 0);
+			}
+
+			// verification
+			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
+			if (affectedLines.Count() != abilities.Length)
+			{
+				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
+					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
+					"You might want to use AddAffectingSpells instead!", 
+					Spell, affectedLines.ToString(", "), abilities.ToString(", "));
+			}
+
+			for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+			{
+				AffectMask[i] |= newMask[i];
 			}
 		}
 
@@ -977,14 +1037,15 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		#endregion
-
 		public bool MatchesSpell(Spell spell)
 		{
-			return spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask);
+			return (spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask)) ||
+				(AffectSpellSet != null && AffectSpellSet.Contains(spell));
 		}
+		#endregion
 
-		public int GetMultipliedValue(Character charCaster, int val, int currentTargetNo)
+
+		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
 			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
 			{
@@ -992,13 +1053,13 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var dmgMod = Spell.DamageMultipliers[EffectIndex];
-			if (charCaster != null)
+			if (caster != null)
 			{
-				dmgMod = charCaster.PlayerSpells.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
+				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
 			}
 			if (dmgMod != 1)
 			{
-				return val = ((float) (Math.Pow(dmgMod, currentTargetNo)*val)).RoundInt();
+				return val = ((float)(Math.Pow(dmgMod, currentTargetNo) * val)).RoundInt();
 			}
 			return val;
 		}

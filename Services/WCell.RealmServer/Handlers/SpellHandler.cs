@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LEARNED_SPELL, 4))
 			{
 				packet.WriteUInt(spellId);
-			    packet.WriteUShort(0); // 3.3.3a
+				packet.WriteUShort(0); // 3.3.3a
 
 				client.Send(packet);
 			}
@@ -134,22 +134,22 @@ namespace WCell.RealmServer.Spells
 			return SpellTargetFlags.Self;
 		}
 
-        public static void SendUnitCastStart(IRealmClient client, SpellCast cast, WorldObject target)
+		public static void SendUnitCastStart(IRealmClient client, SpellCast cast, WorldObject target)
 		{
-            // TODO: research and implement this.
-            // maybe sent for all targets in SpellCast object?
+			// TODO: research and implement this.
+			// maybe sent for all targets in SpellCast object?
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_UNIT_SPELLCAST_START, 28))
-            {
-                cast.CasterReference.EntityId.WritePacked(packet);   // caster pguid
-                target.EntityId.WritePacked(packet);        // target pguid
-                packet.Write(cast.Spell.Id);                // spell id
-                packet.Write(cast.Spell.CastDelay);         // cast time?
-                packet.Write(cast.Spell.CastDelay);         // cast time mod?
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_UNIT_SPELLCAST_START, 28))
+			{
+				cast.CasterReference.EntityId.WritePacked(packet);   // caster pguid
+				target.EntityId.WritePacked(packet);        // target pguid
+				packet.Write(cast.Spell.Id);                // spell id
+				packet.Write(cast.Spell.CastDelay);         // cast time?
+				packet.Write(cast.Spell.CastDelay);         // cast time mod?
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
 		public static void SendCastStart(SpellCast cast)
 		{
@@ -174,12 +174,12 @@ namespace WCell.RealmServer.Spells
 				packet.Write(cast.CastDelay);
 				WriteTargets(packet, cast);
 
-				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x800))
+				if (cast.StartFlags.HasFlag(CastFlags.RunicPowerGain))
 				{
 					packet.Write(0);
 				}
 
-				if (cast.StartFlags.HasFlag(CastFlags.Flag_0x200000))
+				if (cast.StartFlags.HasFlag(CastFlags.RuneCooldownList))
 				{
 					byte b1 = 0;
 					byte b2 = 0;
@@ -210,10 +210,10 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
-                {
-                    packet.Write((byte)0); // unk 3.3.x?
-                }
+				if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
+				{
+					packet.Write((byte)0); // unk 3.3.x?
+				}
 
 				cast.SendPacketToArea(packet);
 			}
@@ -282,7 +282,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 			// 0x1010
-            if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
+			if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				if (cast.UsedItem != null)
 				{
@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Spells
 		/// Sent after spell start. Triggers the casting animation
 		/// </summary>
 		public static void SendSpellGo(IEntity caster2, SpellCast cast,
-			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets)
+			ICollection<WorldObject> hitTargets, ICollection<CastMiss> missedTargets, byte previousRuneMask)
 		{
 			if (cast.CasterObject != null && !cast.CasterObject.IsAreaActive) return;
 
@@ -406,23 +406,24 @@ namespace WCell.RealmServer.Spells
 
 				WriteTargets(packet, cast);
 
-				if (castGoFlags.HasFlag(CastFlags.Flag_0x800))
+				// runes
+				if (castGoFlags.HasFlag(CastFlags.RunicPowerGain))
 				{
 					packet.Write(0);
 				}
 
-				if (castGoFlags.HasFlag(CastFlags.Flag_0x200000))
+				if (castGoFlags.HasFlag(CastFlags.RuneCooldownList))
 				{
-					byte b1 = 0;
-					byte b2 = 0;
-					packet.Write(b1);
-					packet.Write(b2);
-					for (int i = 0; i < 6; i++)
+					var chr = cast.CasterChar;
+					var newRuneMask = chr.PlayerSpells.Runes.GetActiveRuneMask();
+					packet.Write(previousRuneMask);
+					packet.Write(newRuneMask);
+					for (int i = 0; i < SpellConstants.MaxRuneCount; i++)
 					{
-						byte mask = (byte)(1 << i);
-						if ((mask & b1) != 0)
+						var mask = (byte)(1 << i);
+						if ((mask & previousRuneMask) != 0)
 						{
-							if ((mask & b2) == 0)
+							if ((mask & newRuneMask) == 0)
 							{
 								packet.WriteByte(0);
 							}
@@ -447,10 +448,10 @@ namespace WCell.RealmServer.Spells
 					packet.Write(0);
 				}
 
-                if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
-                {
-                    packet.Write((byte)0); // unk 3.3.x?
-                }
+				if (cast.TargetFlags.HasAnyFlag(SpellTargetFlags.DestinationLocation))
+				{
+					packet.Write((byte)0); // unk 3.3.x?
+				}
 
 				cast.SendPacketToArea(packet);
 			}
@@ -707,7 +708,7 @@ namespace WCell.RealmServer.Spells
 			using (var packet = new RealmPacketOut(opcode, 6))
 			{
 				packet.Write(groupBitNumber);
-				packet.Write((byte) type);
+				packet.Write((byte)type);
 				packet.Write(amount);
 
 				chr.Send(packet);
@@ -787,6 +788,19 @@ namespace WCell.RealmServer.Spells
 			if (mob != null && (spellInfo = mob.Entry.SpellTriggerInfo) != null)
 			{
 				chr.SpellCast.Start(spellInfo.Spell, false);
+			}
+		}
+		#endregion
+
+		#region Runes
+		public static void SendConvertRune(IRealmClient client, uint index, RuneType type)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CONVERT_RUNE, 2))
+			{
+				packet.Write((byte)index);
+				packet.Write((byte)type);
+
+				client.Send(packet);
 			}
 		}
 		#endregion

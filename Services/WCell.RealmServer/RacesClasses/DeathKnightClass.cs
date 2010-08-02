@@ -13,18 +13,12 @@ namespace WCell.RealmServer.RacesClasses
 
 		public override int StartLevel
 		{
-			get
-			{
-				return 55;
-			}
+			get { return 55; }
 		}
 
 		public override PowerType DefaultPowerType
 		{
-			get
-			{
-				return PowerType.RunicPower;
-			}
+			get { return PowerType.RunicPower; }
 		}
 
 		/// <summary>
@@ -44,21 +38,21 @@ namespace WCell.RealmServer.RacesClasses
 			return 0;
 		}
 
-        public override float CalculateMagicCritChance(int level, int intellect)
+		public override float CalculateMagicCritChance(int level, int intellect)
 		{
 			return (intellect / 80f) + /*(Spell Critical Strike Rating/22.08)*/ +2.2f;
 		}
 
-        /// <summary>
-        /// Deathknights get 25% of their str added as parry rating.
-        /// </summary>
-        /// <param name="level"></param>
-        /// <param name="parryRating"></param>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public override float CalculateParry(int level, int parryRating, int str)
-        {
-            return base.CalculateParry(level, (int)(parryRating + str*0.25), str);
-        }
+		/// <summary>
+		/// Deathknights get 25% of their str added as parry rating.
+		/// </summary>
+		/// <param name="level"></param>
+		/// <param name="parryRating"></param>
+		/// <param name="str"></param>
+		/// <returns></returns>
+		public override float CalculateParry(int level, int parryRating, int str)
+		{
+			return base.CalculateParry(level, (int)(parryRating + str * 0.25), str);
+		}
 	}
 }

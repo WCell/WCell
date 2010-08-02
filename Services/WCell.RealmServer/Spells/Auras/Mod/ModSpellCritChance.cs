@@ -33,12 +33,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 					{
-						owner.ModSpellCritMod(s, EffectValue);
+						owner.ModCritMod(s, EffectValue);
 					}
 				}
 				else
 				{
-					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, EffectValue);
+					owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
 				}
 			}
 		}
@@ -52,12 +52,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 					{
-						owner.ModSpellCritMod(s, -EffectValue);
+						owner.ModCritMod(s, -EffectValue);
 					}
 				}
 				else
 				{
-					owner.ModSpellCritMod(m_spellEffect.MiscBitSet, -EffectValue);	
+					owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);	
 				}
 			}
 		}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Util;
 
 namespace WCell.Constants.Spells
 {
@@ -33,6 +34,7 @@ namespace WCell.Constants.Spells
 			MoveMechanics[(int)SpellMechanic.Shackled] = true;
 			MoveMechanics[(int)SpellMechanic.Turned] = true;
 			MoveMechanics[(int)SpellMechanic.Sapped] = true;
+			MoveMechanics[(int)SpellMechanic.Snared] = true;
 
 			InteractMechanics[(int)SpellMechanic.Disoriented] = true;
 			InteractMechanics[(int)SpellMechanic.Asleep] = true;
@@ -79,6 +81,8 @@ namespace WCell.Constants.Spells
 					NegativeMechanics[(int)mech] = true;
 				}
 			}
+
+			InitRunes();
 		}
 
 		public static bool IsNegative(this SpellMechanic mech)
@@ -86,5 +90,51 @@ namespace WCell.Constants.Spells
 			return NegativeMechanics[(int)mech];
 		}
 		#endregion
+
+		#region Runes
+
+		/// <summary>
+		/// Amount of different types of runes (3)
+		/// </summary>
+		public const int StandardRuneTypeCount = 3;
+		public const int MaxRuneCount = 6;
+
+		/// <summary>
+		/// Amount of runes per type (usually 2)
+		/// </summary>
+		public const int MaxRuneCountPerType = MaxRuneCount / StandardRuneTypeCount;
+
+		/// <summary>
+		/// Amount of bits that are necessary to store a single rune's type.
+		/// Start counting from 1 to End, instead of 0 to End - 1
+		/// </summary>
+		public static readonly int BitsPerRune = (int)(Math.Log((int)RuneType.End + 1, 2) + 0.9999999);	// always round up
+
+		/// <summary>
+		/// BitsPerRune 1 bits to mask away anything but a single rune's bit set
+		/// </summary>
+		public static readonly int SingleRuneFullBitMask = (1 << BitsPerRune) - 1;
+
+		public static readonly uint[,] IndicesPerType = new [,]
+		{
+			{0u, 1u},
+			{2u, 3u},
+			{4u, 5u}
+		};
+
+		/// <summary>
+		/// Default rune layout, 2 of every kind, in this order
+		/// </summary>
+		public static readonly RuneType[] DefaultRuneSet = new[]
+		{
+			RuneType.Blood, RuneType.Blood,
+			RuneType.Unholy, RuneType.Unholy,
+			RuneType.Frost, RuneType.Frost
+		};
+		#endregion
+
+		static void InitRunes()
+		{
+		}
 	}
 }

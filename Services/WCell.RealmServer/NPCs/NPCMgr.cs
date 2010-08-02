@@ -198,7 +198,7 @@ namespace WCell.RealmServer.NPCs
 		public static List<SpawnEntry>[] SpawnEntriesByMap = new List<SpawnEntry>[600];
 
 		[NotVariable]
-		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[600];
+		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[2000];
 
 		[NotVariable]
 		public static Dictionary<int, CreatureFamily> CreatureFamilies = new Dictionary<int, CreatureFamily>(1);

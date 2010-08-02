@@ -44,9 +44,12 @@ namespace WCell.Constants.Spells
 		MeleeCriticalHit = 0x8,
 
 		/// <summary>
-		/// We cast a spell
+		/// We cast a damage spell.
+		/// If you want this to proc on non-damaging spells,
+		/// make sure to use Spell.AddCasterProcSpells.
 		/// </summary>
 		SpellCast = 0x10,
+
 		/// <summary>
 		/// We are attacked physically
 		/// </summary>
@@ -93,14 +96,19 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Heal = 0x8000,
 
+		/// <summary>
+		/// We cast a critical damage spell.
+		/// See SpellCast for reference.
+		/// </summary>
 		SpellCastCritical = 0x10000,
 
 		/// <summary>
-		/// We get hit by a spell
+		/// We get hit by a damage spell
 		/// </summary>
 		SpellHit = 0x20000,
+
 		/// <summary>
-		/// We get critically hit by spell
+		/// We get critically hit by a damage spell
 		/// </summary>
 		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,

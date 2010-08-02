@@ -189,7 +189,9 @@
     <Compile Include="Achievement\AchievementCollection.cs" />
     <Compile Include="Achievement\AchievementRecord.cs" />
     <Compile Include="Achievement\AchievementProgressRecord.cs" />
+    <Compile Include="Achievement\AchievementUpdateMgr.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
+    <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />
@@ -199,6 +201,8 @@
     <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="NPCs\INPCDataHolder.cs" />
+    <Compile Include="NPCs\NPCAddonData.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -246,6 +250,7 @@
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
@@ -278,7 +283,10 @@
     <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
+    <Compile Include="Spells\Effects\RemoveImpairingEffects.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
+    <Compile Include="Spells\RuneCostEntry.cs" />
+    <Compile Include="Spells\RuneSet.cs" />
     <Compile Include="Spells\SpellException.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />

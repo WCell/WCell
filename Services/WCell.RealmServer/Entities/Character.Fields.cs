@@ -834,7 +834,7 @@ namespace WCell.RealmServer.Entities
 			dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school), dmg);
 			if (spell != null)
 			{
-				dmg = PlayerSpells.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
+				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
 			}
 			dmg += GetDamageDoneMod(school);
 			return dmg;
@@ -1178,7 +1178,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType (0-100)
 		/// </summary>
-		public override float GetSpellCritChance(DamageSchool school)
+		public override float GetCritChance(DamageSchool school)
 		{
 			return GetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school);
 		}
@@ -1186,7 +1186,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sets the SpellCritChance for the given DamageType
 		/// </summary>
-		internal void SetSpellCritChance(DamageSchool school, float val)
+		internal void SetCritChance(DamageSchool school, float val)
 		{
 			SetFloat(PlayerFields.SPELL_CRIT_PERCENTAGE1 + (int)school, val);
 		}

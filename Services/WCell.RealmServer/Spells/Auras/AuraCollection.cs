@@ -31,7 +31,6 @@ namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
 	/// Represents the collection of all Auras of a Unit
-	/// TODO: Uniqueness of Auras?
 	/// </summary>
 	public class AuraCollection : IEnumerable<Aura>
 	{
@@ -55,12 +54,6 @@ namespace WCell.RealmServer.Spells.Auras
 		protected readonly Aura[] m_visibleAuras = new Aura[64];
 
 		protected int m_visAuraCount;
-
-		/// <summary>
-		/// TODO: 
-		/// </summary>
-		protected internal List<SpellEffect> DamagePctAmplifiers;
-
 
 		public AuraCollection(Unit owner)
 		{
@@ -96,7 +89,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return m_auras.Count; }
 		}
 
-		#region Get & Contains
+		#region Get
 		public Aura this[SpellId spellId, bool positive]
 		{
 			get
@@ -402,17 +395,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(SpellId id)
-		{
-			return CreateSelf(id, false);
-		}
-
-		/// <summary>
-		/// Applies the given spell as an Aura (the owner being the caster) to the owner of this AuraCollection.
-		/// Also initializes the new Aura.
-		/// </summary>
-		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(SpellId id, bool noTimeout)
+		public Aura CreateSelf(SpellId id, bool noTimeout = false)
 		{
 			return CreateAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
 		}
@@ -422,7 +405,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateSelf(Spell spell, bool noTimeout)
+		public Aura CreateSelf(Spell spell, bool noTimeout = false)
 		{
 			return CreateAura(m_owner.SharedReference, spell, noTimeout);
 		}
@@ -917,7 +900,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura.Spell.IsPassive &&
 					!aura.HasTimeout &&
 					aura.Spell != spell &&
-					aura.Spell.MatchesMask(spell.AllAffectingMasks))
+					aura.Spell.IsAffectedBy(spell))
 				{
 					aura.ReApplyNonPeriodicEffects();
 				}
@@ -933,6 +916,48 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				aura.ReApplyNonPeriodicEffects();
 			}
+		}
+		#endregion
+
+		#region Spell Modifiers
+		/// <summary>
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
+		/// </summary>
+		public virtual int GetModifiedInt(SpellModifierType type, Spell spell, int value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character) Owner.Master).PlayerAuras.GetModifiedInt(type, spell, value);
+			}
+			return value;
+		}
+
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public virtual int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedIntNegative(type, spell, value);
+			}
+			return value;
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
+		/// </summary>
+		public virtual float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
+		{
+			if (Owner.Master is Character)
+			{
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedFloat(type, spell, value);
+			}
+			return value;
+		}
+
+		public virtual void OnCasted(SpellCast cast)
+		{
 		}
 		#endregion
 
@@ -984,7 +1009,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura.CanBeSaved)
+				if (aura != null && aura.CanBeSaved)
 				{
 					aura.SaveNow();
 				}
@@ -1036,7 +1061,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
 					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
-						spell.MatchesMask(handler.SpellEffect.AffectMask))
+						handler.SpellEffect.MatchesSpell(spell))
 					{
 						return true;
 					}

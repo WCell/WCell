@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -109,7 +110,7 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_threatMods;
 		protected int[] m_attackerSpellHitChance;
 		protected int[] m_SpellHitChance;
-		protected int[] m_spellCritMods;
+		protected int[] m_CritMods;
 		protected int[] m_damageTakenMods;
 		protected int[] m_damageTakenPctMods;
 
@@ -692,7 +693,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds immunity against given SpellMechanic-school
 		/// </summary>
-		public void IncMechImmunityCount(SpellMechanic mechanic)
+		public void IncMechImmunityCount(SpellMechanic mechanic, Spell exclude)
 		{
 			if (m_mechanicImmunities == null)
 			{
@@ -704,6 +705,9 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
+					aura.Spell != exclude &&
+					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
+					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
 					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
@@ -1059,40 +1063,40 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the SpellCritChance for the given DamageType
 		/// </summary>
-		public virtual float GetSpellCritChance(DamageSchool school)
+		public virtual float GetCritChance(DamageSchool school)
 		{
-			return GetSpellCritMod(school);
+			return GetCritMod(school);
 		}
 
-		public int GetSpellCritMod(DamageSchool school)
+		public int GetCritMod(DamageSchool school)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
 				return 0;
 			}
-			return m_spellCritMods[(int)school];
+			return m_CritMods[(int)school];
 		}
 
-		public void SetSpellCritMod(DamageSchool school, int value)
+		public void SetCritMod(DamageSchool school, int value)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
-			m_spellCritMods[(uint)school] = value;
+			m_CritMods[(uint)school] = value;
 			if (this is Character)
 			{
 				((Character)this).UpdateSpellCritChance();
 			}
 		}
 
-		public void ModSpellCritMod(DamageSchool school, int delta)
+		public void ModCritMod(DamageSchool school, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
-			m_spellCritMods[(int)school] += delta;
+			m_CritMods[(int)school] += delta;
 
 			if (this is Character)
 			{
@@ -1100,16 +1104,16 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void ModSpellCritMod(DamageSchool[] schools, int delta)
+		public void ModCritMod(DamageSchool[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[(int)school] += delta;
+				m_CritMods[(int)school] += delta;
 			}
 			if (this is Character)
 			{
@@ -1117,16 +1121,16 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void ModSpellCritMod(uint[] schools, int delta)
+		public void ModCritMod(uint[] schools, int delta)
 		{
-			if (m_spellCritMods == null)
+			if (m_CritMods == null)
 			{
-				m_spellCritMods = CreateDamageSchoolArr();
+				m_CritMods = CreateDamageSchoolArr();
 			}
 
 			foreach (var school in schools)
 			{
-				m_spellCritMods[school] += delta;
+				m_CritMods[school] += delta;
 			}
 			if (this is Character)
 			{
@@ -1533,13 +1537,11 @@ namespace WCell.RealmServer.Entities
 					if (m_stealthed > 0 && value <= 0)
 					{
 						// deactivated stealth
-						ShapeshiftForm = ShapeshiftForm.Normal;
 						StateFlags &= ~StateFlag.Sneaking;
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
 						// activated stealth
-						ShapeshiftForm = ShapeshiftForm.Stealth;
 						StateFlags |= StateFlag.Sneaking;
 
 						// some auras don't live through Stealth

@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.ModSpellCritMod(m_spellEffect.MiscBitSet, EffectValue);
+				owner.ModCritMod(m_spellEffect.MiscBitSet, EffectValue);
 			}
 		}
 
@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = Owner as Character;
 			if (owner != null)
 			{
-				owner.ModSpellCritMod(m_spellEffect.MiscBitSet, -EffectValue);
+				owner.ModCritMod(m_spellEffect.MiscBitSet, -EffectValue);
 			}
 		}
 	}

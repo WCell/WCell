@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Modifiers
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockValue] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
-			FlatIntModHandlers[(int)StatModifierInt.CritChance] = UpdateCritChance;
+			FlatIntModHandlers[(int)StatModifierInt.RangedCritChance] = UpdateCritChance;
 			FlatIntModHandlers[(int)StatModifierInt.ParryChance] = UpdateParryChance;
 			FlatIntModHandlers[(int)StatModifierInt.AttackerMeleeHitChance] = UpdateMeleeHitChance;
 			FlatIntModHandlers[(int)StatModifierInt.AttackerRangedHitChance] = UpdateRangedHitChance;
@@ -96,10 +96,6 @@ namespace WCell.RealmServer.Modifiers
 
 		internal static void UpdateLevel(this Character chr)
 		{
-			var clss = chr.Archetype.Class;
-			var lvl = chr.Level;
-			var agil = chr.Agility;
-
 			UpdateDodgeChance(chr);
 
 			UpdateBlockChance(chr);
@@ -318,8 +314,12 @@ namespace WCell.RealmServer.Modifiers
 					regen = unit.BasePower / 20;
 				}
 
-				regen += unit.IntMods[(int)StatModifierInt.PowerRegen];
-				regen = GetMultiMod((int)unit.FloatMods[(int)StatModifierFloat.PowerRegen], regen);
+				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat)
+				{
+					// runic power bonuses only apply during combat
+					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
+					regen = GetMultiMod((int) unit.FloatMods[(int) StatModifierFloat.PowerRegen], regen);
+				}
 			}
 
 			unit.PowerRegenPerTick = regen;
@@ -419,13 +419,15 @@ namespace WCell.RealmServer.Modifiers
 
 		internal static void UpdateSpellCritChance(this Character chr)
 		{
-			for (var school = DamageSchool.Physical; school < DamageSchool.Count; school++)
+			chr.UpdateCritChance();
+			for (var school = DamageSchool.Physical + 1; school < DamageSchool.Count; school++)
 			{
 				var chance = chr.GetCombatRatingMod(CombatRating.SpellCritChance) /
 						  GameTables.GetCRTable(CombatRating.SpellCritChance)[chr.Level - 1];
 				chance += chr.Archetype.Class.CalculateMagicCritChance(chr.Level, chr.Intellect);
-				chance += chr.GetSpellCritMod(school);
-				chr.SetSpellCritChance(school, chance);
+				chance += chr.GetCritMod(school);
+
+				chr.SetCritChance(school, chance);
 			}
 		}
 
@@ -616,9 +618,8 @@ namespace WCell.RealmServer.Modifiers
 			var chr = unit as Character;
 			if (chr != null)
 			{
-				float critChance = 0;
 				// Crit chance from crit rating
-				critChance += chr.GetCombatRatingMod(CombatRating.MeleeCritChance) /
+				var critChance = chr.GetCombatRatingMod(CombatRating.MeleeCritChance) /
 							  GameTables.GetCRTable(CombatRating.MeleeCritChance)[chr.Level - 1];
 
 				var rangedCritChance = chr.GetCombatRatingMod(CombatRating.RangedCritChance) /
@@ -629,7 +630,7 @@ namespace WCell.RealmServer.Modifiers
 				rangedCritChance += unit.IntMods[(int)StatModifierInt.RangedCritChance];
 
 				critChance += ((Character)unit).Archetype.Class.CalculateMeleeCritChance(unit.Level, unit.Agility);
-				critChance += unit.IntMods[(int)StatModifierInt.CritChance];
+				critChance += unit.GetCritMod(DamageSchool.Physical);
 
 				chr.CritChanceMeleePct = critChance;
 				chr.CritChanceRangedPct = rangedCritChance;
