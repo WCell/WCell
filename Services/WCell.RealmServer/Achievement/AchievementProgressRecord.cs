@@ -64,6 +64,7 @@ namespace WCell.RealmServer.Achievement
 		}
 
 		#endregion
+
 		[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long RecordId { get; set; }
 

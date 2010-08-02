@@ -201,6 +201,8 @@
     <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="NPCs\INPCDataHolder.cs" />
+    <Compile Include="NPCs\NPCAddonData.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />

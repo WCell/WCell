@@ -16,7 +16,7 @@ namespace WCell.RealmServer.NPCs
 		public uint EquipmentId;
 
 		[Persistent(3)]
-		public ItemId[] ItemIds;
+		public ItemId[] ItemIds = new ItemId[3];
 
 		public void FinalizeDataHolder()
 		{

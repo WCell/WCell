@@ -1,2 +1,2 @@
-- fixed some more regen issues / some more rune issues (but still misbehaving)
-- fixed weapon range mods / hit chance mods
+- fixed NPC items & additional data, such as mounts, emotestate etc to be loaded  correctly from both addon tables
+- fixed #npc add -d <params>
