@@ -92,7 +92,7 @@ namespace WCell.Addons.Default.Spells.Rogue
                     {
                         if(chr.Spells.Contains(spell.Id))
                         { 
-                            chr.Spells.ClearCooldown(spell);
+                            chr.Spells.ClearCooldown(spell, false);
                         }
                     });
                 }
@@ -104,7 +104,7 @@ namespace WCell.Addons.Default.Spells.Rogue
                         {
                             if (chr.Spells.Contains(spell.Id))
                             {
-                                chr.Spells.ClearCooldown(spell);
+                                chr.Spells.ClearCooldown(spell, false);
                             }
                         });
                     }
