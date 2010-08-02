@@ -578,7 +578,7 @@ namespace WCell.RealmServer.Items
 			ConsumesAmount =
 				(Class == ItemClass.Consumable ||
 				Spells.Contains(spell => spell.Trigger == ItemSpellTrigger.Consume)) &&
-				(UseSpell == null || !UseSpell.ConsumesCharges);
+				(UseSpell == null || !UseSpell.HasCharges);
 
 			IsHearthStone = UseSpell != null && UseSpell.Spell.IsHearthStoneSpell;
 

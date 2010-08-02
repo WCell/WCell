@@ -535,6 +535,10 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		private bool IsAnySetNoCheck(bool[] set)
 		{
+			if (m_mechanics == null)
+			{
+				return false;
+			}
 			for (var i = 0; i < set.Length; i++)
 			{
 				if (set[i] && m_mechanics[i] > 0)

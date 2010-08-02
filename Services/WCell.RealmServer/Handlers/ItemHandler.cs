@@ -112,7 +112,7 @@ namespace WCell.RealmServer.Handlers
 					client.ActiveCharacter.SendSystemMessage("Item {0} has no Spell associated with it.", item);
 #endif
 				}
-				else if (!template.UseSpell.ConsumesCharges || 
+				else if (!template.UseSpell.HasCharges || 
 					item.GetSpellCharges(template.UseSpell.Index) > 0)
 				{
 					err = item.Template.CheckEquip(chr);
