@@ -1,2 +1,4 @@
-- fixed NPC items & additional data, such as mounts, emotestate etc to be loaded  correctly from both addon tables
-- fixed #npc add -d <params>
+- fixed mechanic immunities, also in combination with trigger spells 
+- fixed: Prevent cancelling of negative auras
+- added: ProcEnergizeHandler
+- to test: DeathKnightBloodButchery

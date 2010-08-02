@@ -1207,9 +1207,15 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
+					// Procs
 					if (action.Weapon == null || action.Weapon != OffHandWeapon)
 					{
-						// proc (if not offhand)
+						var gainExpProc = !IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor;
+						if (gainExpProc)
+						{
+							attackerProcTriggerFlags |= ProcTriggerFlags.GainExperience;
+						}
+
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
 						Proc(targetProcTriggerFlags, action.Attacker, action, false);
 					}

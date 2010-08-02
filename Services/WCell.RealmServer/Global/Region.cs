@@ -2446,7 +2446,6 @@ namespace WCell.RealmServer.Global
 				if (action.Victim.YieldsXpOrHonor)
 				{
 					var attacker = ((Character)action.Attacker);
-					attacker.Proc(ProcTriggerFlags.GainExperience, action.Victim, action, true);
 					attacker.OnHonorableKill(action);
 					OnHonorableKill(action);
 				}

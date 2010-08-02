@@ -1153,19 +1153,6 @@ namespace WCell.RealmServer.Entities
 
 			InitializeRegeneration();
 		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		protected internal override void OnDamageAction(IDamageAction action)
-		{
-			if (!action.Victim.IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor)
-			{
-				action.Attacker.Proc(ProcTriggerFlags.GainExperience, this, action, true);
-			}
-
-			base.OnDamageAction(action);
-		}
 		#endregion
 
 		#region Talk
