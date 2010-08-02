@@ -25,7 +25,6 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Improved Berserker Range can only be proc'ed by Berserker Rage
 			SpellLineId.WarriorFuryImprovedBerserkerRage.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.AddCasterProcSpells(SpellLineId.WarriorBerserkerRage);
 			});
 

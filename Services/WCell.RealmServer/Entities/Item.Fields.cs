@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Entities
 				{
 					return 0.0f;
 				}
-				return Unit.DefaultMeleeDistance;
+				return Unit.DefaultMeleeCombatDistance;
 			}
 		}
 
@@ -381,9 +381,9 @@ namespace WCell.RealmServer.Entities
 			{
 				if (IsMelee)
 				{
-					return Unit.DefaultMeleeDistance;
+					return Unit.DefaultMeleeCombatDistance;
 				}
-				return Unit.DefaultRangedDistance;
+				return Unit.DefaultRangedCombatDistance;
 			}
 		}
 

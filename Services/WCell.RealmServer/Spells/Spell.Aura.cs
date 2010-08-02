@@ -300,6 +300,7 @@ namespace WCell.RealmServer.Spells
 		#region Caster Proc Spells
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params SpellId[] spellIds)
 		{
@@ -319,6 +320,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -333,6 +335,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -340,14 +343,19 @@ namespace WCell.RealmServer.Spells
 			{
 				CasterProcSpells = new HashSet<Spell>();
 			}
+			foreach (var spell in spells)
+			{
+				spell.GeneratesProcEventOnCast = true;
+			}
 			CasterProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 
 		#region Target Proc Spells
 		/// <summary>
-		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params SpellId[] spellIds)
 		{
@@ -367,6 +375,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -381,6 +390,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params Spell[] spells)
 		{
@@ -388,8 +398,12 @@ namespace WCell.RealmServer.Spells
 			{
 				TargetProcSpells = new HashSet<Spell>();
 			}
+			foreach (var spell in spells)
+			{
+				spell.GeneratesProcEventOnCast = true;
+			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 

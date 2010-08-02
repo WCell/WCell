@@ -14,10 +14,18 @@ namespace WCell.Addons.Default.Spells.Rogue
 		public static void FixRogue()
 		{
 			// RogueKick can proc RogueCombatImprovedKick
-			SpellLineId.RogueCombatImprovedKick.Apply(spell => spell.AddCasterProcSpells(SpellLineId.RogueKick));
+			SpellLineId.RogueCombatImprovedKick.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.RogueKick);
+			});
 
 			// RogueDeadlyThrow can proc RogueCombatThrowingSpecialization
-			SpellLineId.RogueCombatThrowingSpecialization.Apply(spell => spell.AddCasterProcSpells(SpellLineId.RogueDeadlyThrow));
+			SpellLineId.RogueCombatThrowingSpecialization.Apply(spell => 
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				spell.GetEffect(AuraType.ProcTriggerSpell).AddAffectingSpells(SpellLineId.RogueDeadlyThrow);
+			});
 
 			// all combo point abilities: 2680070E0000010600000000
 			SpellLineId.RogueAssassinationSealFate.Apply(

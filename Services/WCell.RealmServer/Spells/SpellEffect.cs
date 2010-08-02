@@ -1010,7 +1010,8 @@ namespace WCell.RealmServer.Spells
 			if (affectedLines.Count() != abilities.Length)
 			{
 				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
-					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2})", 
+					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
+					"You might want to use AddAffectingSpells instead!", 
 					Spell, affectedLines.ToString(", "), abilities.ToString(", "));
 			}
 

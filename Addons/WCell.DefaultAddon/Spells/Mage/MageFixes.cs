@@ -19,6 +19,12 @@ namespace WCell.Addons.Default.Spells.Mage
 		[Initialization(InitializationPass.Second)]
 		public static void FixMage()
 		{
+			// The improved counterspell aura should apply to Counterspell only
+			SpellLineId.MageArcaneImprovedCounterspell.Apply(spell =>
+			{
+				spell.AddCasterProcSpells(SpellLineId.MageCounterspell);
+			});
+
 			// Cone of cold is missing Range
 			SpellLineId.MageConeOfCold.Apply(spell =>
 			{
@@ -70,13 +76,12 @@ namespace WCell.Addons.Default.Spells.Mage
 
 			// Mana gems don't have a limit
 			SpellHandler.Apply(spell =>
-			                   	{
-			                   		spell.RemoveEffect(SpellEffectType.CreateItem);
-			                   		var efct = spell.GetEffect(SpellEffectType.Dummy);
-			                   		efct.SpellEffectHandlerCreator =
-			                   			(cast, effect) => new TriggerSpellEffectHandler(cast, effect);
-			                   		efct.TriggerSpellId = (SpellId) efct.CalcEffectValue();
-			                   	}, SpellLineId.MageConjureManaGem);
+			{
+				spell.RemoveEffect(SpellEffectType.CreateItem);
+				var efct = spell.GetEffect(SpellEffectType.Dummy);
+				efct.EffectType = SpellEffectType.TriggerSpell;
+				efct.TriggerSpellId = (SpellId)efct.CalcEffectValue();
+			}, SpellLineId.MageConjureManaGem);
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler

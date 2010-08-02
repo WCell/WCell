@@ -1,4 +1,4 @@
-- added a check in SpellEffect.AddToAffectMask to make sure that the attempted change does not have any unforseen results
-- added SpellEffect.AddAffectSpell for any spells/spell lines whose mask affects matches that of the wrong spells
-- added comments to how Affect* members of SpellEffect work
--> fixes ShadowWeaving
+- added DefaultNPCSpellCooldown, so they won't spam if their spells have no cooldown
+- fixed power & rune regeneration (thanks to TOM_RUS!)
+- fixed DefaultMeleeCombatDistance (thanks to ZaDarkSide)
+- implemented proc'ing of non-damage spell correctly (this fixes Holy Inspiration, Counterspell and some more)
