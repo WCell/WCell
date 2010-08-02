@@ -426,7 +426,8 @@ namespace WCell.RealmServer.Spells
 					{
 						OnCasted();
 					}
-					CheckHitAndSendSpellGo(!delayedImpact, runeMask);
+					// TODO: Fix this in case the spellcast got cancelled
+					CheckHitAndSendSpellGo(false, runeMask);
 				}
 
 				if (m_casting)

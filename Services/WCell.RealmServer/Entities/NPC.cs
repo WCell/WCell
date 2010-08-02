@@ -79,6 +79,7 @@ namespace WCell.RealmServer.Entities
 			m_threatCollection = new ThreatCollection();
 		}
 
+		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
 			// auras
@@ -92,18 +93,11 @@ namespace WCell.RealmServer.Entities
 				m_spawnPoint = spawnPoint;
 				Phase = spawnEntry.PhaseMask;
 				m_orientation = spawnEntry.Orientation;
-				if (spawnEntry.MountId != 0)
-				{
-					Mount(spawnEntry.MountId);
-				}
 
 				if (spawnEntry.DisplayIdOverride != 0)
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-
-				SetUInt32(UnitFields.BYTES_0, spawnEntry.Bytes);
-				SetUInt32(UnitFields.BYTES_2, spawnEntry.Bytes2);
 			}
 			else
 			{
@@ -111,7 +105,6 @@ namespace WCell.RealmServer.Entities
 				spawnEntry = entry.FirstSpawnEntry;
 			}
 
-			EmoteState = (spawnEntry != null && spawnEntry.EmoteState != 0) ? spawnEntry.EmoteState : entry.EmoteState;
 			Entry = entry;
 			NativeDisplayId = DisplayId;
 
@@ -207,6 +200,16 @@ namespace WCell.RealmServer.Entities
 			}
 
 			AddEquipment();
+			if (m_entry.AddonData != null)
+			{
+				// first add general addon data
+				AddAddonData(m_entry.AddonData);
+			}
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
+			{
+				// then override with per-spawn addon data
+				AddAddonData(m_spawnPoint.SpawnEntry.AddonData);
+			}
 
 			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
@@ -251,24 +254,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		/// <summary>
-		/// Uncontrolled NPCs that are not summoned can evade
-		/// </summary>
-		public bool CanEvade
-		{
-			get
-			{
-				return m_region.CanNPCsEvade &&
-					m_spawnPoint != null &&
-					(m_master == this || m_master == null);
-			}
-		}
-
 		private void AddEquipment()
 		{
 			NPCEquipmentEntry equipment;
 
-			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null)
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null && m_spawnPoint.SpawnEntry.Equipment != null)
 			{
 				equipment = m_spawnPoint.SpawnEntry.Equipment;
 			}
@@ -284,6 +274,33 @@ namespace WCell.RealmServer.Entities
 					var item = equipment.ItemIds[i];
 					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
 				}
+			}
+		}
+
+		private void AddAddonData(NPCAddonData data)
+		{
+			SetUInt32(UnitFields.BYTES_0, data.Bytes);
+			SetUInt32(UnitFields.BYTES_2, data.Bytes2);
+
+			EmoteState = data.EmoteState;
+
+			if (data.MountModelId != 0)
+			{
+				Mount(data.MountModelId);
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Uncontrolled NPCs that are not summoned can evade
+		/// </summary>
+		public bool CanEvade
+		{
+			get
+			{
+				return m_region.CanNPCsEvade &&
+					m_spawnPoint != null &&
+					(m_master == this || m_master == null);
 			}
 		}
 
@@ -915,17 +932,23 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnEnterRegion();
 
-			// default auras
-			if (m_auras.Count == 0 && m_spawnPoint != null)
+			if (m_auras.Count == 0)
 			{
-				foreach (var aura in m_entry.Auras)
+				// add auras
+				if (m_entry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_entry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 
-				foreach (var aura in m_spawnPoint.SpawnEntry.Auras)
+				if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_spawnPoint.SpawnEntry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 			}
 
@@ -1538,11 +1561,6 @@ namespace WCell.RealmServer.Entities
 			{
 				m_entry.Create(Region, Position);
 			}
-		}
-
-		protected internal override void DeleteNow()
-		{
-			base.DeleteNow();
 		}
 
 		public override void Dispose(bool disposing)

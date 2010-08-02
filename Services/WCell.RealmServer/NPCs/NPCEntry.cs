@@ -26,7 +26,6 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.Items;
-using NLog;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Constants.World;
@@ -40,10 +39,8 @@ namespace WCell.RealmServer.NPCs
 	/// NPC Entry
 	/// </summary>
 	[DataHolder]
-	public partial class NPCEntry : IQuestHolderEntry, IDataHolder
+	public partial class NPCEntry : IQuestHolderEntry, INPCDataHolder
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public uint Id
 		{
 			get;
@@ -169,7 +166,7 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-        public UnitExtraFlags ExtraFlags;
+		public UnitExtraFlags ExtraFlags;
 
 		public MovementType MovementType;
 
@@ -206,9 +203,20 @@ namespace WCell.RealmServer.NPCs
 
 		public RaceId RaceId;
 
-		public EmoteType EmoteState;
+		// addon data
+		public NPCAddonData AddonData
+		{
+			get;
+			set;
+		}
 
 		private GossipMenu m_DefaultGossip;
+
+		[NotPersistent]
+		public NPCEntry Entry
+		{
+			get { return this; }
+		}
 
 		[NotPersistent]
 		public bool GeneratesXp;
@@ -246,9 +254,6 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		[NotPersistent]
 		public Spell InteractionSpell;
-
-		[NotPersistent]
-		public readonly List<Spell> Auras = new List<Spell>();
 
 		[Persistent(ItemConstants.MaxResCount)]
 		public int[] Resistances = new int[ItemConstants.MaxResCount];
@@ -471,18 +476,6 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		public void AddAura(SpellId spellId)
-		{
-			var spell = SpellHandler.Get(spellId);
-			if (spell == null)
-			{
-				log.Warn("Tried to add invalid Aura-Spell \"{0}\" to NPCEntry: {1}", spellId, this);
-			}
-			else
-			{
-				Auras.Add(spell);
-			}
-		}
 		#endregion
 
 		#region Spawns
@@ -816,6 +809,11 @@ namespace WCell.RealmServer.NPCs
 				return;
 			}
 
+			if (AddonData != null)
+			{
+				AddonData.InitAddonData(this);
+			}
+
 			if (x < ModelInfos.Length)
 			{
 				Array.Resize(ref ModelInfos, x);
@@ -855,7 +853,7 @@ namespace WCell.RealmServer.NPCs
 
 		public bool IsExoticPet
 		{
-            get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
+			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
 		}
 
 		#region Creators
@@ -1059,11 +1057,19 @@ namespace WCell.RealmServer.NPCs
 									   LootId != 0 ? "Lootable " : "",
 									   SkinLootId != 0 ? "Skinnable " : "",
 									   PickPocketLootId != 0 ? "Pickpocketable" : "");
-			writer.WriteLineNotDefault(Auras.Count, "Auras: " + Auras.ToString(", "));
+			if (AddonData != null)
+			{
+				writer.WriteLineNotDefault(AddonData.MountModelId, "Mount: " + AddonData.MountModelId);
+				writer.WriteLineNotDefault(AddonData.Auras.Count, "Auras: " + AddonData.Auras.ToString(", "));
+			}
 			var spells = Spells;
 			if (spells != null && spells.Count > 0)
 			{
 				writer.WriteLine("Spells: " + Spells.ToString(", "));
+			}
+			if (Equipment != null)
+			{
+				writer.WriteLine("Equipment: {0}", Equipment.ItemIds.Where(id => id != 0).ToString(", "));
 			}
 			writer.WriteLineNotDefault(ExtraA9Flags, "ExtraA9Flags: " + ExtraA9Flags);
 			//if (inclFaction)	

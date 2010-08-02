@@ -31,7 +31,6 @@ namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
 	/// Represents the collection of all Auras of a Unit
-	/// TODO: Uniqueness of Auras?
 	/// </summary>
 	public class AuraCollection : IEnumerable<Aura>
 	{

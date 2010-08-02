@@ -194,7 +194,7 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-				if (value <= 0)
+                if(!m_template.UseSpell.ConsumesCharges || ((m_template.UseSpell.ConsumesCharges) && (value <= 0)))
 				{
 					Amount--;
 					return;

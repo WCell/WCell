@@ -482,6 +482,15 @@ namespace WCell.RealmServer.Entities
 			Mount(mount.DisplayIds[0]);
 		}
 
+		public void Mount(NPCId mountId)
+		{
+			var mount = NPCMgr.GetEntry(mountId);
+			if (mount != null)
+			{
+				Mount(mount.DisplayIds.GetRandom());
+			}
+		}
+
 		/// <summary>
 		/// Mounts the given displayId
 		/// </summary>
