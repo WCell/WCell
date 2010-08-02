@@ -724,9 +724,19 @@ namespace WCell.RealmServer.Spells
 				UsedItem.OnUse();
 			}
 
+			// update AuraState
 			if (m_spell.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
 			{
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
+			}
+
+			// generate new proc event
+			if (m_spell.GeneratesProcEventOnCast && CasterUnit != null)
+			{
+				var target = m_targets.FirstOrDefault() as Unit;
+				CasterUnit.Proc(ProcTriggerFlags.SpellCast, target,
+								new SimpleUnitAction { Attacker = CasterUnit, Victim = target, IsCritical = false, Spell = m_spell },
+								true);
 			}
 
 			if (!GodMode)

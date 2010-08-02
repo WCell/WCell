@@ -8,6 +8,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.Addons.Default.Spells.Priest
 {
@@ -19,17 +20,26 @@ namespace WCell.Addons.Default.Spells.Priest
 			// only proc on kill that rewards xp or honor
 			SpellLineId.PriestShadowSpiritTap.Apply(spell => spell.ProcTriggerFlags = ProcTriggerFlags.GainExperience);
 
-			// Holy Inspiration can be proced when priest casts the given spells
-			// TODO: Only cast on crit
-			SpellLineId.PriestHolyInspiration.Apply(spell => spell.AddCasterProcSpells(
-				SpellLineId.PriestFlashHeal,
-				SpellLineId.PriestHeal,
-				SpellLineId.PriestGreaterHeal,
-				SpellLineId.PriestBindingHeal,
-				SpellLineId.PriestDisciplinePenance,
-				SpellLineId.PriestPrayerOfMending,
-				SpellLineId.PriestPrayerOfHealing,
-				SpellLineId.PriestHolyCircleOfHealing));
+			// Holy Inspiration can be proced when priest crits with the given spells
+			SpellLineId.PriestHolyInspiration.Apply(spell => {
+				spell.ProcTriggerFlags = ProcTriggerFlags.HealOther;
+
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+
+				// only on crit
+				effect.AuraEffectHandlerCreator = () => new ProcTriggerSpellOnCritHandler();
+
+				// only when any of these spells are used
+				effect.AddAffectingSpells(
+					SpellLineId.PriestFlashHeal,
+					SpellLineId.PriestHeal,
+					SpellLineId.PriestGreaterHeal,
+					SpellLineId.PriestBindingHeal,
+					SpellLineId.PriestDisciplinePenance,
+					SpellLineId.PriestPrayerOfMending,
+					SpellLineId.PriestPrayerOfHealing,
+					SpellLineId.PriestHolyCircleOfHealing);
+			});
 
 			// Mind Flay: Assault the target's mind with Shadow energy, causing ${$m3*3} Shadow damage over $d and slowing their movement speed by $s2%.
 			SpellLineId.PriestShadowMindFlay.Apply(spell =>
@@ -56,14 +66,16 @@ namespace WCell.Addons.Default.Spells.Priest
 			// Vampiric Embrace can be proc'ed by a certain set of spells, and has a custom healing AuraEffectHandler
 			SpellLineId.PriestShadowVampiricEmbrace.Apply(spell =>
 			{
+				// only proc on damaging SpellCast
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
 				// change Dummy to proc effect
 				var effect = spell.Effects[0];
 				effect.IsProc = true;
 				effect.AuraEffectHandlerCreator = () => new AuraVampiricEmbracerHandler();
 
 				// Set correct flags and set of spells to trigger the proc
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-				spell.AddCasterProcSpells(
+				effect.AddAffectingSpells(
 					SpellLineId.PriestShadowMindFlay,
 					SpellLineId.PriestShadowWordPain,
 					SpellLineId.PriestShadowWordDeath,

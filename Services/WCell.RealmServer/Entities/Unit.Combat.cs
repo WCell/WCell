@@ -65,12 +65,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Used to determine melee distance
 		/// </summary>
-		public static float DefaultMeleeDistance = 3f;
+		public static float DefaultMeleeCombatDistance = 5f;
 
 		/// <summary>
 		/// Used to determine ranged attack distance
 		/// </summary>
-		public static float DefaultRangedDistance = 40f;
+		public static float DefaultRangedCombatDistance = 40f;
 		#endregion
 
 		/// <summary>

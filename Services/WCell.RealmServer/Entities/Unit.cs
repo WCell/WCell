@@ -541,8 +541,9 @@ namespace WCell.RealmServer.Entities
 			{
 				if (value != m_regenerates)
 				{
-					if (m_regenerates == value)
+					if (m_regenerates = value)
 					{
+						UnitFlags2 |= UnitFlags2.RegeneratePower;
 						if (IsRegenerating)
 						{
 							m_regenTimer.Start();
@@ -551,6 +552,7 @@ namespace WCell.RealmServer.Entities
 					else
 					{
 						m_regenTimer.Stop();
+						UnitFlags2 ^= UnitFlags2.RegeneratePower;
 					}
 				}
 			}
@@ -650,8 +652,7 @@ namespace WCell.RealmServer.Entities
 			this.UpdatePowerRegen();
 			m_RegenerationDelay = PowerFormulas.RegenTickDelaySeconds;
 			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regenerate);
-			m_regenTimer.Start();
-			m_regenerates = true;
+			Regenerates = true;
 		}
 
 		/// <summary>
