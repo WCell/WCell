@@ -1586,8 +1586,8 @@ namespace WCell.RealmServer.Spells
 					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.CostPerType[(int)RuneType.Unholy]));
 				if (RuneCostEntry.CostPerType[(int)RuneType.Frost] != 0)
 					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.CostPerType[(int)RuneType.Frost]));
-				writer.WriteLine(ind + "RuneCosts - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(" "));
-				writer.WriteLine(ind + "RunePowerGain: {0}", RuneCostEntry.RunicPowerGain);
+				writer.WriteLine(ind + "Runes - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(", "));
+				writer.WriteLine(ind + "RunicPowerGain: {0}", RuneCostEntry.RunicPowerGain);
 			}
 			if (MissileId != 0)
 			{

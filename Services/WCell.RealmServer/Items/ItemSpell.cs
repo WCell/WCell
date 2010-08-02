@@ -42,13 +42,13 @@ namespace WCell.RealmServer.Items
 		public int CategoryCooldown;
 
 		[NotPersistent]
-		public bool ConsumesCharges;
+		public bool HasCharges;
 
 
 		public void FinalizeAfterLoad()
 		{
 			Spell = SpellHandler.Get(Id);
-			ConsumesCharges = Charges != 0 && Charges != uint.MaxValue;
+			HasCharges = (int)Charges > 0;
 		}
 
 		public override string ToString()

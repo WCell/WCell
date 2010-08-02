@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants.Items;
@@ -8,6 +9,7 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.Constants.Looting;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Looting
 {
@@ -415,19 +417,28 @@ namespace WCell.RealmServer.Looting
 		/// <returns>The looted Item or null if Item could not be taken</returns>
 		public void TakeItem(LooterEntry entry, uint index, BaseInventory targetCont, int targetSlot)
 		{
-			var chr = entry.Owner;
-			if (chr != null && index < Items.Length)
+			LootItem lootItem = null;
+			try
 			{
-				var lootItem = Items[index];
-				var err = MayLoot(entry, lootItem);
-				if (err == InventoryError.OK)
+				var chr = entry.Owner;
+				if (chr != null && index < Items.Length)
 				{
-					HandoutItem(chr, lootItem, targetCont, targetSlot);
+					lootItem = Items[index];
+					var err = MayLoot(entry, lootItem);
+					if (err == InventoryError.OK)
+					{
+						HandoutItem(chr, lootItem, targetCont, targetSlot);
+					}
+					else
+					{
+						ItemHandler.SendInventoryError(chr.Client, null, null, err);
+					}
 				}
-				else
-				{
-					ItemHandler.SendInventoryError(chr.Client, null, null, err);
-				}
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "{0} threw an Exception while looting \"{1}\" (index = {2}) from {3}",
+					entry.Owner, lootItem, index, targetCont);
 			}
 		}
 

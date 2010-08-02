@@ -1,4 +1,3 @@
-- added DefaultNPCSpellCooldown, so they won't spam if their spells have no cooldown
-- fixed power & rune regeneration (thanks to TOM_RUS!)
-- fixed DefaultMeleeCombatDistance (thanks to ZaDarkSide)
-- implemented proc'ing of non-damage spell correctly (this fixes Holy Inspiration, Counterspell and some more)
+- fixed item creation with negative spell charges
+- fixed a routine unit mechanic check
+- fixed casting problem in SpellCast
