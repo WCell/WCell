@@ -1077,6 +1077,17 @@ namespace WCell.RealmServer.Spells
 			}
 			Effects = effects;
 		}
+
+		public void RemoveEffect(Func<SpellEffect, bool> predicate)
+		{
+			foreach (var effct in Effects.ToArray())
+			{
+				if (predicate(effct))
+				{
+					RemoveEffect(effct);
+				}
+			}
+		}
 		#endregion
 
 		#region Misc Methods & Props
