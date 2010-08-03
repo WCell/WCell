@@ -41,5 +41,9 @@ namespace WCell.RealmServer.Spells.Effects
 				return false;
 			}
 		}
+
+		public override void Apply()
+		{
+		}
 	}
 }

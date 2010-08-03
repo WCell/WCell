@@ -201,6 +201,11 @@ namespace WCell.RealmServer.Spells
 			m_lock = new object();
 			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
 
+			if (m_runes != null)
+			{
+				m_runes.OnOwnerLoggedOut();
+			}
+
 			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
 			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
 		}

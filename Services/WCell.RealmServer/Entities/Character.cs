@@ -346,44 +346,60 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnDamageAction(action);
 
-			var pvp = action.Attacker.IsPvPing;
-			var chr = action.Attacker.CharacterMaster;
-
-			var killingBlow = !IsAlive;
-
-			if (action.Attacker != null &&
-				m_activePet != null &&
-				m_activePet.CanBeAggroedBy(action.Attacker))
+			if (action.Attacker != null)
 			{
-				m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
-			}
-
-			if (pvp && chr.IsInBattleground)
-			{
-				// Add BG stats
-				var attackerStats = chr.Battlegrounds.Stats;
-				var victimStats = Battlegrounds.Stats;
-				attackerStats.TotalDamage += action.ActualDamage;
-				if (killingBlow)
+				if (m_activePet != null &&
+				    m_activePet.CanBeAggroedBy(action.Attacker))
 				{
+					m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
+				}
+
+				var pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					attackerStats.TotalDamage += action.ActualDamage;
+				}
+			}
+		}
+
+		protected override void OnKilled(IDamageAction action)
+		{
+			base.OnKilled(action);
+
+			bool pvp;
+			if (action.Attacker != null)
+			{
+				pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					var victimStats = Battlegrounds.Stats;
 					attackerStats.KillingBlows++;
-				}
-				if (victimStats != null)
-				{
-					victimStats.Deaths++;
+					if (victimStats != null)
+					{
+						victimStats.Deaths++;
+					}
 				}
 			}
-
-			if (killingBlow)
+			else
 			{
-				if (!pvp)
-				{
-					// durability loss
-					m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
-				}
-
-				m_region.RegionTemplate.NotifyPlayerDied(action);
+				pvp = false;
 			}
+
+			if (!pvp)
+			{
+				// durability loss
+				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+			}
+
+			m_region.RegionTemplate.NotifyPlayerDied(action);
 		}
 
 		/// <summary>

@@ -33,15 +33,17 @@ namespace WCell.RealmServer.Spells
 			get { return Owner.Record.RuneCooldowns; }
 		}
 
-		internal void InitRunes()
+		#region Init & Logout
+		internal void InitRunes(Character owner)
 		{
-			var runeSetMask = Owner.Record.RuneSetMask;
+			Owner = owner;
+			var runeSetMask = owner.Record.RuneSetMask;
 			UnpackRuneSetMask(runeSetMask);
 
 			var runeCooldowns = Cooldowns;
 			if (runeCooldowns == null || runeCooldowns.Length != SpellConstants.MaxRuneCount)
 			{
-				Owner.Record.RuneCooldowns = new float[SpellConstants.MaxRuneCount];
+				owner.Record.RuneCooldowns = new float[SpellConstants.MaxRuneCount];
 			}
 
 			for (RuneType i = 0; i < RuneType.End; i++)
@@ -49,6 +51,12 @@ namespace WCell.RealmServer.Spells
 				SetCooldownPerSecond(i, DefaultRuneCooldownPerSecond);
 			}
 		}
+
+		internal void OnOwnerLoggedOut()
+		{
+			Owner = null;
+		}
+		#endregion
 
 		#region Get
 		public int GetIndexOfFirstRuneOfType(RuneType type, bool onlyIfNotOnCooldown = false)
@@ -167,7 +175,7 @@ namespace WCell.RealmServer.Spells
 								cost--;
 								if (cost == 0)
 								{
-									break;
+									return;
 								}
 							}
 						}
@@ -185,7 +193,7 @@ namespace WCell.RealmServer.Spells
 								cost--;
 								if (cost == 0)
 								{
-									break;
+									return;
 								}
 							}
 						}
