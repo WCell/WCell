@@ -511,9 +511,10 @@ namespace WCell.RealmServer.Entities
 				action.Damage -= (action.Damage*AoEDamageModifierPct + 50)/100;
 			}
 
+			// last change
 			action.Victim.OnDamageAction(action);
 
-			// deal damage
+			// deal damage (no more changes to damage, from here on)
 			var dmg = action.ActualDamage;
 			if (dmg > 0)
 			{
@@ -546,7 +547,7 @@ namespace WCell.RealmServer.Entities
 					m_brain.OnDamageReceived(action);
 				}
 
-				var health = action.Victim.Health;
+				var health = Health;
 
 				if (dmg >= health)
 				{
@@ -554,8 +555,17 @@ namespace WCell.RealmServer.Entities
 					LastKiller = action.Attacker;
 				}
 
-				action.Victim.Health = health - dmg;
+				Health = health - dmg;
+
+				if (!IsAlive)
+				{
+					OnKilled(action);
+				}
 			}
+		}
+
+		protected virtual void OnKilled(IDamageAction action)
+		{
 		}
 	}
 }

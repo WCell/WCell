@@ -737,12 +737,11 @@ namespace WCell.RealmServer.Spells
 			var hasRunes = UsesRunes;
 			if (!GodMode)
 			{
-				// add cooldown (if not autoshot)
-				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
+				// add cooldown (if not autoshot & not triggered by another spell)
+				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && TriggerEffect == null)
 				{
 					caster.Spells.AddCooldown(m_spell, CasterItem);
 				}
-
 				if (Client != null)
 				{
 					if (!m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade) &&

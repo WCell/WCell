@@ -1,1 +1,2 @@
-- to test: DeathKnightFrostAcclimation, DeathKnightFrostTundraStalker, DeathKnightFrostHungeringCold, DeathKnightUnholyReaping
+- fixed more NPC cooldown issues / funky spellcast selection bug
+- fixed DeathKnightUnholyReaping, Corpse explosion, DeathKnightUnholyCryptFever

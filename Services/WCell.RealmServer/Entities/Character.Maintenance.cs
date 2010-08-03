@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Entities
 			// runes
 			if (((PlayerSpellCollection)m_spells).Runes != null)
 			{
-				((PlayerSpellCollection) m_spells).Runes.InitRunes();
+				((PlayerSpellCollection) m_spells).Runes.InitRunes(this);
 			}
 
 			// factions

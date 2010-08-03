@@ -977,7 +977,7 @@ namespace WCell.RealmServer.Spells
 				missedTargets = null;
 			}
 
-			if (m_spell.ShouldShowToClient())
+			if (m_spell.ShouldShowToClient() && !m_spell.IsAura)
 			{
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;
@@ -1748,8 +1748,10 @@ namespace WCell.RealmServer.Spells
 			SourceLoc = Vector3.Zero;
 			CasterObject = CasterUnit = null;
 			CasterReference = null;
-			SpellCastPool.Recycle(this);
 			Map = null;
+			Selected = null;
+			GodMode = false;
+			SpellCastPool.Recycle(this);
 			//Context = null;
 		}
 

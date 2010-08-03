@@ -89,13 +89,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		#region Unholy Fever
 		private static void FixUnholyFever()
 		{
-			var cryptFeverRanks = new[]
-			{
-				SpellId.CryptFeverRank1,
-				SpellId.CryptFever,
-				SpellId.CryptFever_2,
-			};
-
 			// Crypt Fever does not proc correctly
 			SpellLineId.DeathKnightUnholyCryptFever.Apply(spell =>
 			{
@@ -104,7 +97,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.AuraType = AuraType.ProcTriggerSpell;
-				effect.TriggerSpellId = cryptFeverRanks[spell.Rank - 1];
+				effect.TriggerSpellId = CryptFeverHandler.CryptFeverRanks[spell.Rank - 1];
 				effect.AuraEffectHandlerCreator = () => new CryptFeverHandler();
 				effect.ClearAffectMask();
 			});
@@ -114,7 +107,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				var effect = spell.Effects[0];
 				effect.AuraType = AuraType.ModDamageTakenPercent;
-			}, cryptFeverRanks);
+			}, CryptFeverHandler.CryptFeverRanks);
 		}
 
 		/// <summary>
@@ -122,9 +115,17 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		/// </summary>
 		internal class CryptFeverHandler : ProcTriggerSpellHandler
 		{
+			public static readonly SpellId[] CryptFeverRanks = new[]
+			{
+				SpellId.CryptFeverRank1,
+				SpellId.CryptFever,
+				SpellId.CryptFever_2,
+			};
+
 			public override bool CanProcBeTriggeredBy(IUnitAction action)
 			{
-				return action.Spell != null && action.Spell.DispelType == DispelType.Disease;
+				return action.Spell != null && action.Spell.DispelType == DispelType.Disease && 
+					action.Spell != m_spellEffect.TriggerSpell;	// prevent infinite loop
 			}
 		}
 		#endregion
@@ -201,6 +202,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			var corpse = m_cast.Selected as NPC;
 			if (!IsValidCorpse(corpse))
 			{
+				corpse = null;
+
 				// find corpse nearby
 				var target = m_cast.Selected ?? m_cast.CasterUnit;
 				if (target == null)
@@ -209,8 +212,12 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				}
 				target.IterateEnvironment(CorpseSearchRadius, obj =>
 				{
-					corpse = obj as NPC;
-					return !IsValidCorpse(corpse);
+					if (IsValidCorpse(obj as NPC))
+					{
+						corpse = (NPC)obj;
+						return false;
+					}
+					return true;
 				});
 			}
 
