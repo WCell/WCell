@@ -929,7 +929,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect ReplaceEffect(SpellEffectType type)
+		public SpellEffect ReplaceEffect(SpellEffectType type, ImplicitTargetType target)
 		{
 			for (var i = 0; i < Effects.Length; i++)
 			{
@@ -939,16 +939,7 @@ namespace WCell.RealmServer.Spells
 					return Effects[i] = new SpellEffect();
 				}
 			}
-			return AddEffect(SpellEffectType.None);
-		}
-
-		/// <summary>
-		/// Adds a new Effect to this Spell
-		/// </summary>
-		/// <returns></returns>
-		public SpellEffect AddEffect()
-		{
-			return AddEffect(SpellEffectType.None);
+			return AddEffect(type, target);
 		}
 
 		/// <summary>
@@ -968,17 +959,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type)
-		{
-			return AddEffect(type, ImplicitTargetType.None);
-		}
-
-		/// <summary>
-		/// Adds a new Effect to this Spell
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target = ImplicitTargetType.None)
+		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target)
 		{
 			var effect = new SpellEffect(this, Effects.Length > 0 ? Effects[Effects.Length - 1].EffectIndex : 0) { EffectType = type };
 			var effects = new SpellEffect[Effects.Length + 1];
@@ -1003,9 +984,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.TriggerSpell);
+			var effect = AddEffect(SpellEffectType.TriggerSpell, targetType);
 			effect.TriggerSpellId = triggerSpell;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
@@ -1041,9 +1021,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraType type, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.ApplyAura);
+			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = type;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
@@ -1060,10 +1039,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.ApplyAura);
+			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = AuraType.Dummy;
 			effect.AuraEffectHandlerCreator = creator;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
