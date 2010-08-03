@@ -1130,6 +1130,11 @@ namespace WCell.RealmServer.Spells
 			;
 		}
 
+		public void SetDuration(int duration)
+		{
+			Durations.Min = Durations.Max = duration;
+		}
+
 		/// <summary>
 		/// Returns the max duration for this Spell in milliseconds, 
 		/// including all modifiers.

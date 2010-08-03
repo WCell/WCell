@@ -46,7 +46,45 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 							   SpellId.ClassSkillCorpseExplosion);
 
 			FixUnholyBlight();
+
+			FixReaping();
 		}
+
+		#region Reaping
+		private static void FixReaping()
+		{
+			SpellLineId.DeathKnightUnholyReaping.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				var effect = spell.GetEffect(AuraType.Dummy2);
+				// should not have an amplitude 
+				// (although it's probably the timeout for when the death rune is converted back to its original but it's not mentioned in the tooltip)
+				effect.Amplitude = 0;
+				// "Blood Strike or Pestilence"
+				effect.SetAffectMask(SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence);
+				effect.IsProc = true;
+				effect.AuraEffectHandlerCreator = () => new ReapingConvertHandler();
+			});
+		}
+
+		public class ReapingConvertHandler : AuraEffectHandler
+		{
+			public override void OnProc(Unit triggerer, IUnitAction action)
+			{
+				var chr = action.Attacker as Character;
+				if (chr != null)
+				{
+					var runes = chr.PlayerSpells.Runes;
+					if (runes != null)
+					{
+						// convert blood rune to death rune (if not on cooldown)
+						runes.Convert(RuneType.Blood, RuneType.Death);
+					}
+				}
+			}
+		}
+		#endregion
 
 		#region Unholy Fever
 		private static void FixUnholyFever()
