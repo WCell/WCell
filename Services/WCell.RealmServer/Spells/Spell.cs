@@ -1077,6 +1077,17 @@ namespace WCell.RealmServer.Spells
 			}
 			Effects = effects;
 		}
+
+		public void RemoveEffect(Func<SpellEffect, bool> predicate)
+		{
+			foreach (var effct in Effects.ToArray())
+			{
+				if (predicate(effct))
+				{
+					RemoveEffect(effct);
+				}
+			}
+		}
 		#endregion
 
 		#region Misc Methods & Props
@@ -1128,6 +1139,11 @@ namespace WCell.RealmServer.Spells
 				   IsChanneled || CastDelay > 0 || HasCooldown;
 			// || (!IsPassive && IsAura)
 			;
+		}
+
+		public void SetDuration(int duration)
+		{
+			Durations.Min = Durations.Max = duration;
 		}
 
 		/// <summary>
