@@ -283,6 +283,7 @@
     <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
+    <Compile Include="Spells\Effects\Custom\RemoveCooldownEffectHandler.cs" />
     <Compile Include="Spells\Effects\RemoveImpairingEffects.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
     <Compile Include="Spells\RuneCostEntry.cs" />
@@ -1205,7 +1206,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Effects\Custom\Cannibalize.cs" />
-    <Compile Include="Spells\Effects\NotImplementedEffect.cs" />
+    <Compile Include="Spells\Effects\NotImplementedEffectHandler.cs" />
     <Compile Include="Spells\Effects\UnusedEffectHandler.cs" />
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />

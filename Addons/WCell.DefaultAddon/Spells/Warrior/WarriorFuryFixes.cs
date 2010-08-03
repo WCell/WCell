@@ -49,7 +49,8 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Intercept should also deal "${$AP*0.12} damage"
 			SpellLineId.WarriorIntercept.Apply(spell =>
 			{
-				var effect = spell.AddEffect(SpellEffectType.Dummy);
+				var effect = spell.AddEffect(SpellEffectType.SchoolDamage, ImplicitTargetType.SingleEnemy);
+				effect.APValueFactor = 0.12f;
 			});
 		}
 	}

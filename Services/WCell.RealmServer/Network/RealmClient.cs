@@ -206,11 +206,12 @@ namespace WCell.RealmServer.Network
 					var bytes = new byte[headerSize];
 					Array.Copy(recvBuffer, offset, bytes, 0, headerSize);
 					LogUtil.ErrorException("Client {0} sent corrupted packet (ID: {1}) with size {2} bytes, which exceeds maximum: " +
-						"{3} (packet #{4}, segment #{5}, LargePacket: {6}, Remaining: {7}, Header: {8})",
+						"{3} (packet #{4}, segment #{5}, LargePacket: {6}, Remaining: {7}, Header: {8} ({9}))",
 							  this, opcode, packetLength, BufferSize, i, segment.Number,
 							  isLargePacket,
 							  _remainingLength,
-							  bytes.ToString(" ", b => string.Format("{0:X2}", b)));
+							  bytes.ToString(" ", b => string.Format("{0:X2}", b)),
+								Encoding.ASCII.GetString(bytes));
 
 					Disconnect();
 

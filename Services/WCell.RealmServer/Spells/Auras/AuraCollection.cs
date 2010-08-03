@@ -814,6 +814,17 @@ namespace WCell.RealmServer.Spells.Auras
 				aura.Remove(true);
 			}
 		}
+
+		/// <summary>
+		/// Removes all auras, including passive auras, when owner is deleted.
+		/// </summary>
+		internal void ClearWithoutCleanup()
+		{
+			foreach (var aura in m_AuraArray)
+			{
+				aura.RemoveWithoutCleanup();
+			}
+		}
 		#endregion
 
 		#region Aura Indices

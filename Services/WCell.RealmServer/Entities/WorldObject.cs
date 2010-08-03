@@ -54,6 +54,7 @@ namespace WCell.RealmServer.Entities
 
 		public static readonly ObjectPool<HashSet<WorldObject>> WorldObjectSetPool = ObjectPoolMgr.CreatePool(() => new HashSet<WorldObject>());
 
+		#region Variables
 		/// <summary>
 		/// Default vision range. Characters will only receive packets of what happens within this range (unit: Yards)
 		/// </summary>
@@ -75,31 +76,24 @@ namespace WCell.RealmServer.Entities
 		public static float HighlightScale = 5f;
 
 		public static int HighlightTicks = 10;
+		#endregion
 
 		protected Vector3 m_position;
+
 		/// <summary>
 		/// never null
 		/// </summary>
 		protected Region m_region;
-
 		internal ZoneSpacePartitionNode Node;
-
 		protected bool HasNode { get { return Node != null; } }
-
 		protected Zone m_zone;
 		protected float m_orientation;
 		protected SpellCast m_spellCast;
-
 		protected List<AreaAura> m_areaAuras;
-
 		protected ObjectReference m_CasterReference;
-
 		protected Unit m_master;
-
 		protected int m_areaCharCount;
-
 		protected uint m_Phase = 1;
-
 		public readonly uint CreationTime;
 
 		/// <summary>
@@ -112,6 +106,7 @@ namespace WCell.RealmServer.Entities
 			CreationTime = Utility.GetSystemTime();
 		}
 
+		#region Misc Properties
 		/// <summary>
 		/// Time in seconds since creation
 		/// </summary>
@@ -190,6 +185,67 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_region != null; }
 		}
+
+		public abstract string Name
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// TODO: Find correct caster-level for non-units
+		/// </summary>
+		public virtual int CasterLevel
+		{
+			get { return 0; }
+		}
+
+		public ObjectReference SharedReference
+		{
+			get
+			{
+				if (m_CasterReference == null)
+				{
+					m_CasterReference = CreateCasterInfo();
+				}
+
+				m_CasterReference.Level = CasterLevel;
+				return m_CasterReference;
+			}
+		}
+
+		/// <summary>
+		/// Whether there are active Characters in the Area
+		/// </summary>
+		public bool IsAreaActive
+		{
+			get { return m_areaCharCount > 0; }
+		}
+
+		/// <summary>
+		/// The amount of Characters nearby.
+		/// </summary>
+		public int AreaCharCount
+		{
+			get { return m_areaCharCount; }
+			internal set { m_areaCharCount = value; }
+		}
+
+		public virtual bool IsTrap
+		{
+			get { return false; }
+		}
+
+		public bool IsCorpse
+		{
+			get { return this is Corpse || IsNPCCorpse; }
+		}
+
+		public bool IsNPCCorpse
+		{
+			get { return this is NPC && !((NPC)this).IsAlive; }
+		}
+		#endregion
 
 		#region Spells
 		/// <summary>
@@ -282,34 +338,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public abstract string Name
-		{
-			get;
-			set;
-		}
-
-		/// <summary>
-		/// TODO: Find correct caster-level for non-units
-		/// </summary>
-		public virtual int CasterLevel
-		{
-			get { return 0; }
-		}
-
-		public ObjectReference SharedReference
-		{
-			get
-			{
-				if (m_CasterReference == null)
-				{
-					m_CasterReference = CreateCasterInfo();
-				}
-
-				m_CasterReference.Level = CasterLevel;
-				return m_CasterReference;
-			}
-		}
-
 		/// <summary>
 		/// Can be used to determine whether a periodic Action should be
 		/// executed on this Tick.
@@ -367,23 +395,6 @@ namespace WCell.RealmServer.Entities
 			}
 
 			return false;
-		}
-
-		/// <summary>
-		/// Whether there are active Characters in the Area
-		/// </summary>
-		public bool IsAreaActive
-		{
-			get { return m_areaCharCount > 0; }
-		}
-
-		/// <summary>
-		/// The amount of Characters nearby.
-		/// </summary>
-		public int AreaCharCount
-		{
-			get { return m_areaCharCount; }
-			internal set { m_areaCharCount = value; }
 		}
 
 		#region Master
@@ -472,7 +483,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="radius"></param>
 		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration should continue (usually indicating that we did not find what we were looking for).</returns>
+		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
 		public bool IterateEnvironment(float radius, Func<WorldObject, bool> predicate)
 		{
 			return m_region.IterateObjects(ref m_position, radius, m_Phase, predicate);
@@ -482,7 +493,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="radius"></param>
 		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>Whether Iteration should continue (usually indicating that we did not find what we were looking for).</returns>
+		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
 		public bool IterateEnvironment<O>(float radius, Func<O, bool> predicate)
 			where O : WorldObject
 		{
@@ -1278,11 +1289,6 @@ namespace WCell.RealmServer.Entities
 			m_messageQueue.Enqueue(new Message(action));
 		}
 
-		public virtual bool IsTrap
-		{
-			get { return false; }
-		}
-
 		#region Factions/Hostility
 		public abstract Faction Faction
 		{
@@ -1662,10 +1668,17 @@ namespace WCell.RealmServer.Entities
 		/// <remarks>Requires region context</remarks>
 		protected internal virtual void DeleteNow()
 		{
-			m_Deleted = true;
-			OnDeleted();
+			try
+			{
+				m_Deleted = true;
+				OnDeleted();
 
-			Dispose();
+				Dispose();
+			}
+			catch (Exception e)
+			{
+				throw new Exception(string.Format("Failed to correctly delete object \"{0}\"", this), e);
+			}
 		}
 
 		protected void OnDeleted()

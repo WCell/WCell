@@ -137,7 +137,12 @@ namespace WCell.Constants.Spells
 		 * The Following effects were added to provide additional functionality:
 		 */
 		/// <summary>
-		/// Triggered when an Aura gets removed
+		/// Triggered for the caster, when an Aura is started on a target
+		/// </summary>
+		AuraStarted = 0x20000000,
+
+		/// <summary>
+		/// Triggered for the caster, when an Aura gets removed
 		/// </summary>
 		AuraRemoved = 0x40000000,
 

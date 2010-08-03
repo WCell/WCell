@@ -1429,23 +1429,23 @@ namespace WCell.RealmServer.Entities
 		protected void UpdateHealthAuraState()
 		{
 			// set health state
-			var pct = (Health * 100) / MaxHealth;
+			var pct = HealthPct;
 
-			if (pct < 20)
+			if (pct <= 20)
 			{
-				AuraState = (AuraState & ~
+				AuraState = (AuraState ^
 					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health35Percent)) |
 					AuraStateMask.Health20Percent;
 			}
-			else if (pct < 35)
+			else if (pct <= 35)
 			{
-				AuraState = (AuraState & ~
+				AuraState = (AuraState ^
 					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health20Percent)) |
 					AuraStateMask.Health35Percent;
 			}
 			else if (pct >= 75)
 			{
-				AuraState = (AuraState & ~
+				AuraState = (AuraState ^
 					(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
 					AuraStateMask.HealthAbove75Pct;
 			}
@@ -1625,6 +1625,12 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 		#endregion
+
+		public virtual float ParryChance
+		{
+			get { return 5f; }
+			internal set { }
+		}
 
 		/// <summary>
 		/// Amount of additional yards to be allowed to jump without having any damage inflicted.

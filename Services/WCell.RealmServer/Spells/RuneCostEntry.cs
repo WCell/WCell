@@ -14,6 +14,11 @@ namespace WCell.RealmServer.Spells
 
 		public int RequiredRuneAmount;
 
+		public int GetCost(RuneType type)
+		{
+			return CostPerType[(int) type];
+		}
+
 		public bool CostsRunes
 		{
 			get { return RequiredRuneAmount > 0;}

@@ -22,7 +22,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 		{
 			var entry = m_go.Entry as GODoorEntry;
 
-			m_go.IsState = !m_go.IsState;
+			m_go.IsEnabled = !m_go.IsEnabled;
 			return true;
 		}
 	}

@@ -34,7 +34,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				}
 
 				// add heal effect as the 4th effect
-				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura);
+				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura, ImplicitTargetType.AllPartyInArea);
 				healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
 				healEffect.Radius = firstEffect.Radius;
 				healEffect.AuraType = AuraType.ModHealingTakenPercent;
@@ -107,8 +107,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Hand of reckoning also deals 1 + 0.5 * AP damage
 			SpellLineId.PaladinHandOfReckoning.Apply(spell =>
 			{
-				var dmgEffect = spell.AddEffect(SpellEffectType.SchoolDamage);
-				dmgEffect.ImplicitTargetA = spell.Effects[0].ImplicitTargetA;
+				var dmgEffect = spell.AddEffect(SpellEffectType.SchoolDamage, spell.Effects[0].ImplicitTargetA);
 				dmgEffect.APValueFactor = 0.5f;
 			});
 

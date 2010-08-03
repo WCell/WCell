@@ -13,6 +13,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.Util;
 
 namespace WCell.Addons.Default.Spells.DeathKnight
 {
@@ -78,7 +79,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.AddToAffectMask(SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightBloodHeartStrike);
 				effect.AuraEffectHandlerCreator = () => new SuddenDoomAuraHandler();
 			});
-
 			SpellHandler.Apply(spell =>
 			{
 				// TODO: Scale bloodworm strength
@@ -88,6 +88,12 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.BasePoints = 1;
 				effect.DiceSides = 3;
 			}, SpellId.EffectBloodworm);
+
+			// Spell Deflection only has an Absorb effect, but should have a chance to reduce spell damage
+			SpellLineId.DeathKnightBloodSpellDeflection.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new SpellDeflectionHandler();
+			});
 		}
 
 		#region Scent of Blood
@@ -132,6 +138,27 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		#endregion
 	}
 
+	#region Spell Deflection
+	public class SpellDeflectionHandler : AuraEffectHandler
+	{
+		public override bool CanProcBeTriggeredBy(IUnitAction action)
+		{
+			// "You have a chance equal to your Parry chance"
+			return Utility.Random(0, 100) <= action.Victim.ParryChance;
+		}
+
+		public override void OnProc(Unit triggerer, IUnitAction action)
+		{
+			if (action is DamageAction)
+			{
+				// "taking $s1% less damage from a direct damage spell"
+				((DamageAction) action).ModDamagePercent(-EffectValue);
+			}
+		}
+	}
+	#endregion
+
+	#region Sudden Doom
 	public class SuddenDoomAuraHandler : AuraEffectHandler
 	{
 		/// <summary>
@@ -146,7 +173,9 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			action.Attacker.SpellCast.Trigger(deathCoil, action.Victim);
 		}
 	}
+	#endregion
 
+	#region Mark of Blood
 	public class MarkOfBloodAuraHandler : AuraEffectHandler
 	{
 		public override void OnProc(Unit triggerer, IUnitAction action)
@@ -155,4 +184,5 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			triggerer.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);	// who is the healer? caster or target?
 		}
 	}
+	#endregion
 }

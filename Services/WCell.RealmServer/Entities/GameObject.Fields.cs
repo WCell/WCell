@@ -70,10 +70,10 @@ namespace WCell.RealmServer.Entities
         
         #region BYTES_1
 
-        public bool IsState
+        public bool IsEnabled
         {
-            get { return GetByte(GameObjectFields.BYTES_1, 0) == 1; }
-            set { SetByte(GameObjectFields.BYTES_1, 0, (byte)(value ? 1 : 0)); } 
+			get { return (GameObjectState)GetByte(GameObjectFields.BYTES_1, 0) == GameObjectState.Enabled; }
+            set { SetByte(GameObjectFields.BYTES_1, 0, (byte)(value ? GameObjectState.Enabled : GameObjectState.Disabled)); } 
         }
 
         public GameObjectState State

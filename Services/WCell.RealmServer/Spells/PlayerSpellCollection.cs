@@ -583,7 +583,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory = true)
 		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)
