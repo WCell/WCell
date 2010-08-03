@@ -1,3 +1,4 @@
-- fixed some bugs with spell triggering
-- implemented DeathKnightBloodScentOfBlood (tested)
-- to test: DeathKnightBloodBloodyVengeance, DeathKnightBloodMarkOfBlood, DeathKnightBloodVendetta, DeathKnightBloodHysteria, DeathKnightBloodSuddenDoom, DeathKnightFrostMercilessCombat, DeathKnightUnholyCryptFever
+- added #go toggle command
+- added RemoveCooldownEffectHandler
+- to test: DeathKnightBloodSpellDeflection (do you get a packet when you deflect damage from this spell?), DeathKnightFrostChillOfTheGrave, DeathKnightUnholyCorpseExplosion, DeathKnightFrostImprovedIcyTouch, DeathKnightBloodBladeBarrier, DeathKnightFrostRime, DeathKnightUnholyUnholyBlight
+- NPC auras are now all removed when NPC gets deleted ( fixed #6 )

@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Misc
 	#endregion
 
 	#region AuraRemovedAction
-	public class AuraRemovedAction : IUnitAction
+	public class AuraAction : IUnitAction
 	{
 		public Unit Attacker
 		{
@@ -301,9 +301,9 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public void IncreaseDamagePercent(int pct)
+		public void ModDamagePercent(int pct)
 		{
-			m_Damage = (m_Damage * pct + 50) / 100;
+			m_Damage += (m_Damage * pct + 50) / 100;
 		}
 
 		private int m_Damage;

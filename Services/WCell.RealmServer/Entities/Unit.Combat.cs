@@ -652,17 +652,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public int CalcParryChance(Unit attacker)
 		{
-			float parryChance = 0;
-
-			if (this is Character)
-			{
-				var def = (Character)this;
-				parryChance += def.ParryChance;
-			}
-			else
-			{
-				return 5;
-			}
+			var parryChance = ParryChance;
 
 			if (attacker is Character)
 			{
@@ -1340,7 +1330,7 @@ namespace WCell.RealmServer.Entities
 				if (weapon.IsRanged)
 				{
 					var min = GetMinAttackRange(weapon, target);
-					if (distSq < min*min)
+					if (distSq < min * min)
 					{
 						return false;
 					}

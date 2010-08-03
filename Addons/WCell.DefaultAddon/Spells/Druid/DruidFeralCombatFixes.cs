@@ -420,7 +420,7 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 			// "Effects which increase Bleed damage also increase Maul damage."
 			var bleedBonusPct = action.Attacker.Auras.GetBleedBonusPercent();
-			action.IncreaseDamagePercent(bleedBonusPct);
+			action.ModDamagePercent(bleedBonusPct);
 		}
 	}
 	#endregion

@@ -234,9 +234,11 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool CanBeCancelled
 		{
-			get { return m_spell != null && m_beneficial && 
-					!m_spell.AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) &&
-					!m_spell.Attributes.HasAnyFlag(SpellAttributes.CannotRemove);
+			get
+			{
+				return m_spell != null && m_beneficial &&
+				  !m_spell.AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) &&
+				  !m_spell.Attributes.HasAnyFlag(SpellAttributes.CannotRemove);
 			}
 		}
 
@@ -525,12 +527,20 @@ namespace WCell.RealmServer.Spells.Auras
 			CheckActivation();
 
 			CanBeSaved = this != m_auras.GhostAura &&
-			             !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-			             UsedItem == null &&
-			             (!HasTimeout || TimeLeft > 10000);
-					
+						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
+						 UsedItem == null &&
+						 (!HasTimeout || TimeLeft > 10000);
+
 
 			m_auras.OnAuraChange(this);
+
+			var caster = Caster;
+			var owner = Owner;
+			if (caster != null)
+			{
+				caster.Proc(ProcTriggerFlags.AuraStarted, owner,
+					new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
+			}
 		}
 
 		#endregion
@@ -854,10 +864,19 @@ namespace WCell.RealmServer.Spells.Auras
 			return false;
 		}
 
+		internal void RemoveWithoutCleanup()
+		{
+			if (IsAdded)
+			{
+				IsAdded = false;
+				Deactivate(true);
+				OnRemove();
+			}
+		}
+
 		/// <summary>
 		/// Removes this Aura from the player
 		/// </summary>
-		/// <param name="cancelled"></param>
 		public void Remove(bool cancelled)
 		{
 			if (IsAdded)
@@ -865,11 +884,16 @@ namespace WCell.RealmServer.Spells.Auras
 				IsAdded = false;
 
 				var owner = m_auras.Owner;
+				if (owner == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn("Tried to remove Aura {0} but it's owner does not exist anymore.");
+					return;
+				}
 				var caster = Caster;
 				if (caster != null)
 				{
-					owner.Proc(ProcTriggerFlags.AuraRemoved, owner,
-						new AuraRemovedAction { Attacker = caster, Victim = owner, Aura = this }, true);
+					caster.Proc(ProcTriggerFlags.AuraRemoved, owner,
+						new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
 				}
 
 				var auras = m_auras;
@@ -878,21 +902,27 @@ namespace WCell.RealmServer.Spells.Auras
 				RemoveVisibleEffects(cancelled);
 
 				auras.Cancel(this);
-				if (m_controller != null)
-				{
-					m_controller.OnRemove(owner, this);
-				}
-
-				if (m_record != null)
-				{
-					m_record.DeleteLater();
-					m_record = null;
-				}
+				OnRemove();
 
 				if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId && owner.CancelAreaAura(m_spell))
 				{
 					//return;
 				}
+			}
+		}
+
+		void OnRemove()
+		{
+			var owner = m_auras.Owner;
+			if (m_controller != null)
+			{
+				m_controller.OnRemove(owner, this);
+			}
+
+			if (m_record != null)
+			{
+				m_record.DeleteLater();
+				m_record = null;
 			}
 		}
 
@@ -1028,9 +1058,9 @@ namespace WCell.RealmServer.Spells.Auras
 					if (handler.SpellEffect.IsProc)
 					{
 						// only trigger proc effects or all effects, if there arent any proc-specific effects
-						if (handler.CanProcBeTriggeredBy(action) && 
+						if (handler.CanProcBeTriggeredBy(action) &&
 								(!handler.SpellEffect.HasAffectMask ||
-								action.Spell == null || 
+								action.Spell == null ||
 								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{
 							// only trigger if no AffectMask or spell, or the trigger spell matches the affect mask
@@ -1062,7 +1092,7 @@ namespace WCell.RealmServer.Spells.Auras
 					{
 						// only trigger proc effects or all effects, if there arent any proc-specific effects
 						if (handler.CanProcBeTriggeredBy(action) &&
-								(action.Spell == null || 
+								(action.Spell == null ||
 								!handler.SpellEffect.HasAffectMask ||
 								handler.SpellEffect.MatchesSpell(action.Spell)))
 						{

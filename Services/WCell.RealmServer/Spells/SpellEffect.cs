@@ -73,6 +73,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public ShapeshiftMask RequiredShapeshiftMask;
 
+		/// <summary>
+		/// The spell line that determines this SpellEffect's effect value.
+		/// If set, it will use the effect value of the effect that proc'ed this SpellEffect (if any)
+		/// to override it's own value.
+		/// </summary>
+		public bool OverrideEffectValue;
+
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
 
@@ -537,22 +544,22 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Formulars
-		public int CalcEffectValue(ObjectReference casterReference)
+		public int CalcEffectValue(ObjectReference casterReference, SpellCast cast = null)
 		{
 			var caster = casterReference.UnitMaster;
 			if (caster != null)
 			{
-				return CalcEffectValue(caster);
+				return CalcEffectValue(caster, cast);
 			}
 			else
 			{
-				return CalcEffectValue(casterReference.Level, 0);
+				return CalcEffectValue(casterReference.Level, 0, cast);
 			}
 		}
 
-		public int CalcEffectValue(Unit caster)
+		public int CalcEffectValue(Unit caster, SpellCast cast = null)
 		{
-			var value = CalcEffectValue(caster != null ? caster.Level : 1, caster != null ? caster.ComboPoints : 0);
+			var value = CalcEffectValue(caster != null ? caster.Level : 1, caster != null ? caster.ComboPoints : 0, cast);
 			return CalcEffectValue(caster, value);
 		}
 
@@ -607,8 +614,22 @@ namespace WCell.RealmServer.Spells
 			return CalcEffectValue(0, 0);
 		}
 
-		public int CalcEffectValue(int level, int comboPoints)
+		public int CalcEffectValue(int level, int comboPoints, SpellCast cast = null)
 		{
+			// overriding effect value
+			if (cast != null && cast.TriggerEffect != null && 
+				(OverrideEffectValue || cast.TriggerEffect.AuraType == AuraType.ProcTriggerSpellWithOverride))
+			{
+				foreach (var effect in cast.TriggerEffect.Spell.Effects)
+				{
+					if (effect.TriggerSpellId == Spell.SpellId)
+					{
+						return effect.CalcEffectValue(level, comboPoints);
+					}
+				}
+			}
+
+			// calculate effect value
 			var value = BasePoints;
 
 			// apply Unit boni

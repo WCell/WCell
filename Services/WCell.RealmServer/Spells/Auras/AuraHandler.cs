@@ -280,7 +280,7 @@ namespace WCell.RealmServer.Spells.Auras
 			var handler = spellEffect.AuraEffectHandlerCreator();
 
 			handler.m_spellEffect = spellEffect;
-			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster);
+			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster, triggeringCast);
 
 			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
 			return handler;

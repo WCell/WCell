@@ -18,8 +18,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.Util.NLog;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -298,14 +300,27 @@ namespace WCell.RealmServer.Spells
 		public abstract bool IsReady(Spell spell);
 
 		/// <summary>
-		/// Clears the cooldown for this spell only
+		/// Clears the cooldown for the given spell
 		/// </summary>
-		public void ClearCooldown(Spell cooldownSpell)
+		public void ClearCooldown(SpellId spellId, bool alsoClearCategory = true)
 		{
-			ClearCooldown(cooldownSpell, true);
+			var spell = SpellHandler.Get(spellId);
+			if (spell == null)
+			{
+				try
+				{
+					throw new ArgumentException("No spell given for cooldown", "spellId");
+				}
+				catch (Exception e)
+				{
+					LogUtil.WarnException(e);
+				}
+				return;
+			}
+			ClearCooldown(spell, alsoClearCategory);
 		}
 
-		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory);
+		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
 
 		#region Special Spell Casting behavior
 

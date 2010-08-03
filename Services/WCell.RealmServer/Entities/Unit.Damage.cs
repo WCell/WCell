@@ -506,9 +506,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// AoE damage reduction
-			if (AoEDamageModifierPct != 0)
+			if (action.Spell != null && action.Spell.IsAreaSpell && AoEDamageModifierPct != 0)
 			{
-				action.Damage -= (action.Damage*AoEDamageModifierPct - 50)/100;
+				action.Damage -= (action.Damage*AoEDamageModifierPct + 50)/100;
 			}
 
 			action.Victim.OnDamageAction(action);

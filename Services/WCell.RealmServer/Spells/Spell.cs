@@ -437,6 +437,11 @@ namespace WCell.RealmServer.Spells
 				ProcHandlers = new List<ProcHandlerTemplate>();
 			}
 			ProcHandlers.Add(handler);
+			if (Effects.Length == 0)
+			{
+				// need at least one effect to make this work
+				AddAuraEffect(AuraType.Dummy);
+			}
 		}
 		#endregion
 
@@ -951,6 +956,18 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
+		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitTargetType target)
+		{
+			var effect = AddEffect(SpellEffectType.Dummy, target);
+			effect.SpellEffectHandlerCreator = creator;
+			return effect;
+		}
+
+		/// <summary>
+		/// Adds a new Effect to this Spell
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public SpellEffect AddEffect(SpellEffectType type)
 		{
 			return AddEffect(type, ImplicitTargetType.None);
@@ -961,7 +978,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target)
+		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target = ImplicitTargetType.None)
 		{
 			var effect = new SpellEffect(this, Effects.Length > 0 ? Effects[Effects.Length - 1].EffectIndex : 0) { EffectType = type };
 			var effects = new SpellEffect[Effects.Length + 1];

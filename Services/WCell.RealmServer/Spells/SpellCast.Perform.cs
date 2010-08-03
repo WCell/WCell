@@ -755,7 +755,7 @@ namespace WCell.RealmServer.Spells
 				// consume runes
 				if (hasRunes)
 				{
-					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell.RuneCostEntry);
+					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell);
 				}
 
 				// consume power (might cancel the cast due to dying)
@@ -782,7 +782,7 @@ namespace WCell.RealmServer.Spells
 				var spells = ((Character)caster).PlayerSpells;
 				if (spells != null)
 				{
-					spells.ClearCooldown(m_spell);
+					spells.ClearCooldown(m_spell, true);
 				}
 			}
 

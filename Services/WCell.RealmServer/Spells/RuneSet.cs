@@ -78,10 +78,32 @@ namespace WCell.RealmServer.Spells
 
 		#region Check & Consume Rune cost
 		/// <summary>
+		/// Returns how many runes of the given type are ready
+		/// </summary>
+		public int GetReadyRunes(RuneType type)
+		{
+			var count = 0;
+			for (var i = 0; i< SpellConstants.MaxRuneCount; i++)
+			{
+				if (ActiveRunes[i] == type && Cooldowns[i] <= 0)
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+
+		/// <summary>
 		/// Whether there are enough runes in this set to satisfy the given cost requirements
 		/// </summary>
-		public bool HasEnoughRunes(RuneCostEntry costs)
+		public bool HasEnoughRunes(Spell spell)
 		{
+			var costs = spell.RuneCostEntry;
+			if (costs == null || !costs.CostsRunes || Owner.Auras.GetModifiedInt(SpellModifierType.PowerCost, spell, 1) != 1)
+			{
+				// if we have any rune-related power cost modifier, we have no rune costs at all (only used for Freezing Fog right now)
+				return true;
+			}
 			for (RuneType type = 0; type < (RuneType)costs.CostPerType.Length; type++)
 			{
 				var cost = costs.CostPerType[(int)type];
@@ -107,8 +129,14 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Method is internal because we don't have a packet yet to signal the client spontaneous cooldown updates
 		/// </summary>
-		internal void ConsumeRunes(RuneCostEntry costs)
+		internal void ConsumeRunes(Spell spell)
 		{
+			var costs = spell.RuneCostEntry;
+			if (costs == null || !costs.CostsRunes || Owner.Auras.GetModifiedInt(SpellModifierType.PowerCost, spell, 1) != 1)
+			{
+				// if we have any rune-related power cost modifier, we have no rune costs at all (only used for Freezing Fog right now)
+				return;
+			}
 			for (RuneType type = 0; type < (RuneType)costs.CostPerType.Length; type++)
 			{
 				var cost = costs.CostPerType[(int)type];
@@ -235,8 +263,10 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-
-		public byte GetActiveRuneMask()
+		/// <summary>
+		/// Used for packets
+		/// </summary>
+		internal byte GetActiveRuneMask()
 		{
 			var mask = 0;
 			var cds = Cooldowns;

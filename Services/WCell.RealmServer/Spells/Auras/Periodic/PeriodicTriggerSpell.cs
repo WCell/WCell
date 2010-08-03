@@ -52,7 +52,8 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				}
 			}
 
-			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, channel, origCast != null ? origCast.UsedItem : null);
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, channel, origCast != null ? origCast.UsedItem : null,
+				null, m_spellEffect);
 		}
 
 		protected override void Remove(bool cancelled)

@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue()
 		{
-			return Effect.CalcEffectValue(m_cast.CasterReference);
+			return Effect.CalcEffectValue(m_cast.CasterReference, m_cast);
 		}
 
 		public float GetRadius()

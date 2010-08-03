@@ -796,10 +796,10 @@ namespace WCell.RealmServer.Entities
 			set { SetFloat(PlayerFields.DODGE_PERCENTAGE, value); }
 		}
 
-		public float ParryChance
+		public override float ParryChance
 		{
 			get { return GetFloat(PlayerFields.PARRY_PERCENTAGE); }
-			set { SetFloat(PlayerFields.PARRY_PERCENTAGE, value); }
+			internal set { SetFloat(PlayerFields.PARRY_PERCENTAGE, value); }
 		}
 
 		public uint Expertise

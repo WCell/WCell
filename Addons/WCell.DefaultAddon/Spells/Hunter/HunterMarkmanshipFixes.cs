@@ -59,7 +59,7 @@ namespace WCell.Addons.Default.Spells.Hunter
                 {
                     if (spell.Line.LineId != SpellLineId.HunterBeastMasteryBestialWrath && spell.SpellClassSet == SpellClassSet.Hunter)
                     {
-                        charSpells.ClearCooldown(spell);
+                        charSpells.ClearCooldown(spell, false);
                     }
                 }
             }

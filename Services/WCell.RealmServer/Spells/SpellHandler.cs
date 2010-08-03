@@ -497,7 +497,7 @@ namespace WCell.RealmServer.Spells
 			{
 				if (SpellEffectCreators[i] == null)
 				{
-					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffect(cast, effect);
+					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffectHandler(cast, effect);
 				}
 			}
 
@@ -515,7 +515,10 @@ namespace WCell.RealmServer.Spells
 
 		public static void UnsetHandler(SpellEffectType type)
 		{
-			SpellEffectCreators[(int)type] = null;
+			if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
+			{
+				SpellEffectCreators[(int) type] = null;
+			}
 		}
 
 		#endregion

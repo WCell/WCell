@@ -182,7 +182,7 @@ namespace WCell.RealmServer.Spells
 			int limit;
 			if (spell.MaxTargetEffect != null)
 			{
-				limit = spell.MaxTargetEffect.CalcEffectValue(Cast.CasterReference);
+				limit = spell.MaxTargetEffect.CalcEffectValue(Cast.CasterReference, Cast);
 			}
 			else
 			{
@@ -432,8 +432,8 @@ namespace WCell.RealmServer.Spells
 			//        null);
 
 			targetHandlers[(int)ImplicitTargetType.NatureSummonLocation] = new TargetDefinition(
-					TargetMethods.AddSelf,
-					null);
+					TargetMethods.AddAreaDest,
+					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.NetherDrakeSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,

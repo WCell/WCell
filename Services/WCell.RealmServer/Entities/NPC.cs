@@ -1101,6 +1101,12 @@ namespace WCell.RealmServer.Entities
 			Delete();
 		}
 
+		protected internal override void DeleteNow()
+		{
+			m_auras.ClearWithoutCleanup();
+			base.DeleteNow();
+		}
+
 		void StopDecayTimer()
 		{
 			if (m_decayTimer != null)

@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			//m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
 			//m_cast.Trigger(Effect.TriggerSpell, Effect);
-			m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
+			m_cast.Trigger(Effect.TriggerSpell, Effect, Targets != null ? Targets.ToArray() : null);
 		}
 
 		protected override void Apply(WorldObject target)
