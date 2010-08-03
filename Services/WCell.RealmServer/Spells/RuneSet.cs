@@ -50,12 +50,26 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+		#region Get
+		public int GetIndexOfFirstRuneOfType(RuneType type, bool onlyIfNotOnCooldown = false)
+		{
+			for (var i = 0; i < SpellConstants.MaxRuneCount; i++)
+			{
+				if (ActiveRunes[i] == type && (!onlyIfNotOnCooldown || Cooldowns[i] <= 0))
+				{
+					return i;
+				}
+			}
+			return -1;
+		}
+		#endregion
+
 		#region Convert between Rune types
-		public bool Convert(RuneType from, RuneType to)
+		public bool Convert(RuneType from, RuneType to, bool onlyIfNotOnCooldown = true)
 		{
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
 			{
-				if (ActiveRunes[i] == from)
+				if (ActiveRunes[i] == from && (!onlyIfNotOnCooldown || Cooldowns[i] <= 0))
 				{
 					Convert(i, to);
 					return true;

@@ -126,6 +126,10 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		public static Spell AddCustomSpell(uint id, string name)
 		{
+			if (Get(id) != null)
+			{
+				throw new ArgumentException("Invalid custom spell id is already in use: " + id + " - " + name);
+			}
 			var spell = new Spell
 			{
 				Id = id,
