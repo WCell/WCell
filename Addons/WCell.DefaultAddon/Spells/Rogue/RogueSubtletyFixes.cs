@@ -13,7 +13,7 @@ namespace WCell.Addons.Default.Spells.Rogue
 {
     public static class RogueSubtletyFixes
     {
-        private static readonly SpellId[] EffectVanishLine = new[]
+        public static readonly SpellId[] EffectVanishLine = new[]
         {
             SpellId.EffectVanishRank1,
             SpellId.EffectVanishRank2,
@@ -27,6 +27,18 @@ namespace WCell.Addons.Default.Spells.Rogue
             {
                 spell.AddTriggerSpellEffect(SpellId.ClassSkillStealth);
             }, EffectVanishLine);
+
+            SpellLineId.RogueVanish.Apply(spell =>
+            {
+                var effect = spell.GetEffectsWhere(eff => (int)eff.TriggerSpellId == 18461).First();
+                spell.RemoveEffect(effect);
+            });
+
+            SpellLineId.RogueStealth.Apply(spell =>
+            {
+                var effect = spell.GetEffect(AuraType.ModStealth);
+                effect.AuraEffectHandlerCreator = () => new StealthHandler();
+            });
 
             SpellLineId.RogueCloakOfShadows.Apply(spell =>
             {
@@ -42,6 +54,7 @@ namespace WCell.Addons.Default.Spells.Rogue
         }
     }
 
+    #region CloakOfShadowsHandler
     class CloakOfShadowsHandler : SpellEffectHandler
     {
         public CloakOfShadowsHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
@@ -58,7 +71,9 @@ namespace WCell.Addons.Default.Spells.Rogue
             }
         }
     }
+    #endregion
 
+    #region PreperationHandler
     class PreparationHandler : SpellEffectHandler
     {
         private SpellLineId[] spellsWithoutGlyph = new[]
@@ -112,4 +127,22 @@ namespace WCell.Addons.Default.Spells.Rogue
             }
         }
     }
+#endregion
+
+    #region StealthHandler
+    class StealthHandler : AuraEffectHandler
+    {
+        protected override void Remove(bool cancelled)
+        {
+            var chr = m_aura.Owner as Character;
+            if(chr != null)
+            {
+                foreach (var spell in RogueSubtletyFixes.EffectVanishLine)
+                {
+                    chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.Id == (uint)spell);
+                }
+            }
+        }
+    }
+    #endregion
 }
