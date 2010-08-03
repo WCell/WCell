@@ -45,7 +45,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.AuraType = AuraType.ProcTriggerSpell;
-				effect.TriggerSpellId = cryptFeverRanks[spell.Rank];
+				effect.TriggerSpellId = cryptFeverRanks[spell.Rank-1];
 				effect.AuraEffectHandlerCreator = () => new CryptFeverHandler();
 			});
 
