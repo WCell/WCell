@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				for (var i = spell.Effects.Length; i < 3; i++)
 				{
 					// add up to two filler effects, so the heal effect is at the 4th place
-					spell.AddEffect(SpellEffectType.Dummy);
+					spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.None);
 				}
 
 				if (spell.Effects.Length != 3)
