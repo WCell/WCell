@@ -129,7 +129,7 @@ namespace WCell.Addons.Default.Spells.Rogue
     }
 #endregion
 
-#region StealthHandler
+    #region StealthHandler
     class StealthHandler : AuraEffectHandler
     {
         protected override void Remove(bool cancelled)
@@ -144,5 +144,5 @@ namespace WCell.Addons.Default.Spells.Rogue
             }
         }
     }
-#endregion
+    #endregion
 }
