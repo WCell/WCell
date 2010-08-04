@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 
-			if (m_spell.DoesAuraHandleProc)
+			if (m_spell.IsAuraProcHandler)
 			{
 				// only add proc if there is not a custom handler for it
 				m_auras.Owner.AddProcHandler(this);
@@ -620,7 +620,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 
-			if (m_spell.DoesAuraHandleProc)
+			if (m_spell.IsAuraProcHandler)
 			{
 				// TODO: This causes an issue if we deactivate an Aura while proc handlers are iterated
 				m_auras.Owner.RemoveProcHandler(this);
@@ -1094,7 +1094,7 @@ namespace WCell.RealmServer.Spells.Auras
 				proced = true;
 			}
 
-			if (proced && m_spell.MaxStackCount > 1)
+			if (proced && m_spell.ProcCharges > 0)
 			{
 				// consume a charge
 				m_stackCount--;

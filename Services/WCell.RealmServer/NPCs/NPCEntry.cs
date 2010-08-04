@@ -469,11 +469,6 @@ namespace WCell.RealmServer.NPCs
 
 		private void OnSpellAdded(Spell spell)
 		{
-			if (spell.CooldownTime == 0)
-			{
-				// Quick fix:
-				spell.CooldownTime = 10000;
-			}
 		}
 
 		#endregion

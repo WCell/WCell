@@ -1537,10 +1537,10 @@ namespace WCell.RealmServer.Entities
 			var val = GetInt32(UnitFields.POWER1 + (int)PowerType);
 			if (m_region != null)
 			{
-				val += (m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0);
+				val += (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate) + 0.5f);
 				val = MathUtil.ClampMinMax(val, 0, MaxPower);
 				SetInt32(UnitFields.POWER1 + (int)PowerType, val);
-				MiscHandler.SendPowerUpdate(this, PowerType, val);
+				//MiscHandler.SendPowerUpdate(this, PowerType, val);
 				m_lastPowerUpdate = Region.CurrentTime;
 			}
 			return val;

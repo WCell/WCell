@@ -12,6 +12,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Database;
+using WCell.RealmServer.Achievement;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Talents;
 using WCell.Util.Threading;
@@ -1201,6 +1202,7 @@ namespace WCell.RealmServer.Database
 				RelationMgr.Instance.RemoveRelations(charId);
 				InstanceMgr.RemoveLog(charId);
 				GroupMgr.Instance.RemoveOfflineCharacter(charId);
+				AchievementRecord.DeleteAll("_characterGuid = " + charId);
 
 				return true;
 			}

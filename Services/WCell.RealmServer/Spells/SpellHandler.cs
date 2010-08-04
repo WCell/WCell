@@ -67,6 +67,12 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public static Spell[] ById = new Spell[70000];
 
+		public static uint HighestId
+		{
+			get;
+			internal set;
+		}
+
 		/// <summary>
 		/// All spells that require tools
 		/// </summary>
@@ -118,6 +124,21 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Add / Remove
+
+		internal static void AddSpell(Spell spell)
+		{
+			ArrayUtil.Set(ref ById, spell.Id, spell);
+			HighestId = Math.Max(spell.Id, HighestId);
+		}
+
+		/// <summary>
+		/// Can be used to add a Spell that does not exist.
+		/// </summary>
+		public static Spell AddCustomSpell(string name)
+		{
+			return AddCustomSpell(HighestId + 1, name);
+		}
+
 		/// <summary>
 		/// Can be used to add a Spell that does not exist.
 		/// Usually used for spells that are unknown to the client to signal a certain state.
@@ -138,7 +159,7 @@ namespace WCell.RealmServer.Spells
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};
-			ArrayUtil.Set(ref ById, id, spell);
+			AddSpell(spell);
 			return spell;
 		}
 
@@ -495,7 +516,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
-		    SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{
@@ -521,7 +542,7 @@ namespace WCell.RealmServer.Spells
 		{
 			//if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
 			{
-				SpellEffectCreators[(int) type] = null;
+				SpellEffectCreators[(int)type] = null;
 			}
 		}
 

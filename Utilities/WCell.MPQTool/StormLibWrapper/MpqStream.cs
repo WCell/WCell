@@ -103,7 +103,7 @@ namespace WCell.MPQTool.StormLibWrapper
                 if (newPosition == 0xFFFFFFFF)
                     throw new StormLibException("Could not set file pointer.");
 
-                position = (distanceToMoveHigh << 32) + newPosition;
+				position = ((long)distanceToMoveHigh << 32) + newPosition;
             }
         }
 
@@ -198,7 +198,7 @@ namespace WCell.MPQTool.StormLibWrapper
             if (newPosition == 0xFFFFFFFF)
                 throw new StormLibException("Could not set file pointer.");
 
-            return position = (distanceToMoveHigh << 32) + newPosition;
+			return position = ((long)distanceToMoveHigh << 32) + newPosition;
         }
 
         /// <summary>

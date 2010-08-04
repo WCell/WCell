@@ -1,4 +1,2 @@
-- made Aura restrictions a lot more transparent & fixed some bugs in the system: It is now all in PlayerAuraCollection.MayActivate
-- added LifeLeechEffectHandler
-- implemented & tested: DeathKnightBloodPresence, DeathKnightBloodImprovedBloodPresence, DeathKnightBloodPlaguePassive, DeathKnightFrostFeverPassive
-
+- fixed value override for non-aura spells / procs / general spell cooldowns / more aura bugs from the aura system rewrite
+- fixed DeathKnightUnholyBoneShield, DeathKnightUnholyDirge, DeathKnightFrostPresence

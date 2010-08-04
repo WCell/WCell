@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Entities
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
                     }
-                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    else if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
                     }
@@ -1145,16 +1145,16 @@ namespace WCell.RealmServer.Entities
 				evt(this);
 			}
 
-			// client might now do other things
-			m_client.ActiveCharacter = null;
-			Account.ActiveCharacter = null;
-
 			// take Player out of world context
 			if (!World.RemoveCharacter(this))
 			{
 				// was already removed
 				return;
 			}
+
+			// client might now do other things
+			m_client.ActiveCharacter = null;
+			Account.ActiveCharacter = null;
 
 			// set to false so it can't be cancelled anymore
 			m_isLoggingOut = false;
