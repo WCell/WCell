@@ -394,6 +394,54 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+		#region CreateAuraEffectHandlers
+		public List<AuraEffectHandler> CreateAuraEffectHandlers(
+			ObjectReference caster,
+			Unit target,
+			bool beneficial)
+		{
+			return CreateAuraEffectHandlers(AuraEffects, caster, target, beneficial);
+		}
+
+		public static List<AuraEffectHandler> CreateAuraEffectHandlers(SpellEffect[] effects, ObjectReference caster,
+			Unit target, bool beneficial)
+		{
+			if (effects == null)
+				return null;
+
+			try
+			{
+				List<AuraEffectHandler> effectHandlers = null;
+				var failReason = SpellFailedReason.Ok;
+
+				for (var i = 0; i < effects.Length; i++)
+				{
+					var effect = effects[i];
+					if (effect.HarmType == HarmType.Beneficial || !beneficial)
+					{
+						var effectHandler = effect.CreateAuraEffectHandler(caster, target, ref failReason);
+						if (failReason != SpellFailedReason.Ok)
+						{
+							return null;
+						}
+
+						if (effectHandlers == null)
+						{
+							effectHandlers = new List<AuraEffectHandler>(3);
+						}
+						effectHandlers.Add(effectHandler);
+					}
+				}
+				return effectHandlers;
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "Failed to create AuraEffectHandlers for: " + effects.GetWhere(effect => effect != null).Spell);
+				return null;
+			}
+		}
+		#endregion
+
 		public bool CanOverride(Spell spell)
 		{
 			if (CanOverrideEqualAuraRank)

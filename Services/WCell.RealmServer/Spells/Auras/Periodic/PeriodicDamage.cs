@@ -61,4 +61,4 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			TotalDamage -= BaseEffectValue;
 		}
 	}
-};
+}

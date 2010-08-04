@@ -13,6 +13,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
 
@@ -57,7 +58,42 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.ClearAffectMask();
 				effect.AddAffectingSpells(SpellLineId.DeathKnightAntiMagicShell);		// only affects Anti Magic Shell
 			});
+
+			FixRageOfRivendare();
 		}
+
+		#region Rage of Rivendare
+		private static void FixRageOfRivendare()
+		{
+			// Tundra Stalker needs a custom Attack event aura handler & correct effect value
+			SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
+				effect.BasePoints = spell.Rank*2;
+				effect.DiceSides = 0;
+				effect.AuraEffectHandlerCreator = () => new RageOfRivendareHandler();
+			});
+		}
+
+		public class RageOfRivendareHandler : AttackEventEffectHandler
+		{
+			public override void OnBeforeAttack(DamageAction action)
+			{ }
+
+			public override void OnAttack(DamageAction action)
+			{
+				// "Your spells and abilities deal 4% more damage to targets infected with Blood Plague."
+				if (action.SpellEffect != null && action.Victim.Auras.Contains(SpellLineId.DeathKnightBloodPlaguePassive))
+				{
+					action.ModDamagePercent(EffectValue);
+				}
+			}
+
+			public override void OnDefend(DamageAction action)
+			{
+			}
+		}
+		#endregion
 
 		private static void FixImpurity()
 		{
@@ -70,6 +106,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				oldEffect.CopyValuesTo(effect);				// copy values
 			});
 		}
+
 
 		#region Blood-Caked Strike
 		private static void FixBloodCakedStrike()
