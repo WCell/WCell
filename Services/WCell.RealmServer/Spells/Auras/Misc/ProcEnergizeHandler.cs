@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 	{
 		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
-			Owner.Energize(EffectValue, m_aura.Caster, m_spellEffect);
+			Owner.Energize(EffectValue, m_aura.CasterUnit, m_spellEffect);
 		}
 	}
 }

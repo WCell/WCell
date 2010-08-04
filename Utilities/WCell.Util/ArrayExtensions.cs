@@ -179,6 +179,17 @@ namespace WCell.Util
 		}
 
 		/// <summary>
+		/// Appends the given values to the end of arr
+		/// </summary>
+		/// <returns>The index at which it was added</returns>
+		public static void Concat<T>(ref T[] arr, T[] values)
+		{
+			var oldLen = arr.Length;
+			Array.Resize(ref arr, oldLen + values.Length);
+			Array.Copy(values, 0, arr, oldLen, values.Length);
+		}
+
+		/// <summary>
 		/// Adds the given value to the first slot that is not occupied in the given array
 		/// </summary>
 		/// <returns>The index at which it was added</returns>

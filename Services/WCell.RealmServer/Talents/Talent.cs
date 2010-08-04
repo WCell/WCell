@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Talents
 		/// </summary>
 		public void Remove()
 		{
-			Rank = 0;
+			Rank = -1;
 		}
 	}
 

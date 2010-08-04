@@ -403,7 +403,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 			// "Each point of rage is converted into ${$m2/10}.1% of max health"
 			var health = (rage * EffectValue * Owner.MaxHealth + 50) / 10000;
-			Owner.Heal(health, m_aura.Caster, m_spellEffect);
+			Owner.Heal(health, m_aura.CasterUnit, m_spellEffect);
 		}
 	}
 	#endregion
@@ -437,12 +437,12 @@ namespace WCell.Addons.Default.Spells.Druid
 		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			// "causes affected targets to heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack."
-			action.Attacker.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
+			action.Attacker.HealPercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
 
-			if (action.Attacker == m_aura.Caster)
+			if (action.Attacker == m_aura.CasterUnit)
 			{
 				// "In addition, you gain $s2% of your maximum mana when you benefit from this heal."
-				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.Caster, m_spellEffect);
+				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
 	}

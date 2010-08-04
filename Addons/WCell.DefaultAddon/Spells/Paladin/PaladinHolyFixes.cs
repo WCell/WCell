@@ -108,7 +108,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 	{
 		protected override void Apply()
 		{
-			if (Owner.SharedReference == m_aura.Caster.SharedReference)
+			if (Owner.SharedReference == m_aura.CasterUnit.SharedReference)
 			{
 				// apply Forbearance when casting on self
 				Owner.SpellCast.TriggerSelf(SpellId.Forbearance);

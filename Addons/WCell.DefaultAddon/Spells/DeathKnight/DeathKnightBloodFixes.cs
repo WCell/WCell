@@ -96,9 +96,24 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			// "the Frost and Unholy Runes will become Death Runes when they activate"
-			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightBloodDeathRuneMastery, 
+			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightBloodDeathRuneMastery,
 				SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate,
 				RuneType.Death, RuneType.Frost, RuneType.Unholy);
+
+			// Blood Presence is missing 4% life leech
+			SpellLineId.DeathKnightBloodPresence.Apply(spell =>
+			{
+				var effect = spell.AddAuraEffect(() => new LifeLeechPercentAuraHandler());
+				effect.BasePoints = 4;
+			});
+
+			// Improved Blood Presence also applies the 4% life leech to the other two presences
+			SpellLineId.DeathKnightBloodImprovedBloodPresence.Apply(spell =>
+			{
+				var leechEffect = spell.GetEffect(AuraType.Dummy);
+				leechEffect.AuraEffectHandlerCreator = () => new LifeLeechPercentAuraHandler();
+				leechEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightUnholyPresence, SpellLineId.DeathKnightFrostPresence);
+			});
 		}
 
 		#region Death Rune Mastery
@@ -160,7 +175,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			if (action is DamageAction)
 			{
 				// "taking $s1% less damage from a direct damage spell"
-				((DamageAction) action).ModDamagePercent(-EffectValue);
+				((DamageAction)action).ModDamagePercent(-EffectValue);
 			}
 		}
 	}
@@ -189,7 +204,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			// "target is healed for $49005s2% of its maximum health"
-			triggerer.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);	// who is the healer? caster or target?
+			triggerer.HealPercent(EffectValue, m_aura.CasterUnit, m_spellEffect);	// who is the healer? caster or target?
 		}
 	}
 	#endregion

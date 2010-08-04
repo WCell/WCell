@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 				//}
 				//else
 				{
-					var spell = m_spellEffect.Spell;
+					var spell = m_aura.Spell;
 					var hasSingleFriendTarget = spell.HasBeneficialEffects && !spell.IsAreaSpell && spell.HasTargets;
 					if (hasSingleFriendTarget && caster.Target != null && caster.IsFriendlyWith(caster.Target))
 					{
@@ -46,7 +46,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 		protected override void Apply()
 		{
 			var npc = (NPC)Owner;
-			var caster = m_aura.Caster;
+			var caster = m_aura.CasterUnit;
 			if (caster != null)
 			{
 				npc.ThreatCollection.Taunter = caster;
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 		protected override void Remove(bool cancelled)
 		{
 			var npc = (NPC)Owner;
-			if (npc.ThreatCollection.Taunter == m_aura.Caster)
+			if (npc.ThreatCollection.Taunter == m_aura.CasterUnit)
 			{
 				npc.ThreatCollection.Taunter = null;
 			}

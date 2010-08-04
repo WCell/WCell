@@ -255,6 +255,7 @@
     <Compile Include="Instances\ZulAman.cs" />
     <Compile Include="Instances\ZulFarrak.cs" />
     <Compile Include="Instances\ZulGurub.cs" />
+    <Compile Include="Spells\DeathKnight\DeathKnightDiseases.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightFrostFixes.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightBloodFixes.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightUnholyFixes.cs" />

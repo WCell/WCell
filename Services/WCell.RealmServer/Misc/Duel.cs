@@ -434,7 +434,7 @@ namespace WCell.RealmServer.Misc
 		{
 			// don't die
 			duelist.Health = 1;
-			duelist.Auras.RemoveWhere(aura => aura.Caster == duelist.DuelOpponent);
+			duelist.Auras.RemoveWhere(aura => aura.CasterUnit == duelist.DuelOpponent);
 			Finish(DuelWin.Knockout, duelist);
 		}
 

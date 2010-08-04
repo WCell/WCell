@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			mechanic = SpellEffect.Mechanic;
 			if (mechanic == SpellMechanic.None)
 			{
-				mechanic = SpellEffect.Spell.Mechanic;
+				mechanic = m_aura.Spell.Mechanic;
 				if (mechanic == SpellMechanic.None || mechanic == SpellMechanic.Invulnerable || mechanic == SpellMechanic.Invulnerable_2)
 				{
 					mechanic = SpellMechanic.Stunned;

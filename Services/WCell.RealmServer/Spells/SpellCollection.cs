@@ -355,7 +355,7 @@ namespace WCell.RealmServer.Spells
 					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
 					spell != effect.TriggerSpell)	// prevent inf loops
 				{
-					var caster = triggerHandler.Aura.Caster;
+					var caster = triggerHandler.Aura.CasterUnit;
 					if (caster != null)
 					{
 						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());

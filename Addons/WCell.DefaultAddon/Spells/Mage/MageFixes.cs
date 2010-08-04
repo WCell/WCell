@@ -92,7 +92,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				{
 					var triggerSpell = m_spellEffect.TriggerSpell;
 
-					var caster = m_aura.Caster;
+					var caster = m_aura.CasterUnit;
 					if (caster != null)
 					{
 						var loc = m_aura.Auras.Owner.Position;

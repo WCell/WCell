@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
-			m_aura.Auras.Owner.IncMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue, m_spellEffect.Spell);
+			m_aura.Auras.Owner.IncMechImmunityCount((SpellMechanic)m_spellEffect.MiscValue, m_aura.Spell);
 		}
 
 		protected override void Remove(bool cancelled)

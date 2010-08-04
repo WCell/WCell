@@ -97,7 +97,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 				// We set the original proc chance to that of of the more often occuring effect (Wrath) 
 				// and do a second chance check for the other proc when proc'ing
-				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;
+				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;			// "${$h*0.6}% chance"
 				effect1.IsProc = true;
 				effect1.SetAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
 				effect1.AuraEffectHandlerCreator = () => new DruidEclipseHandler();
@@ -134,7 +134,7 @@ namespace WCell.Addons.Default.Spells.Druid
 	{
 		protected override void Apply()
 		{
-			var caster = m_aura.Caster;
+			var caster = m_aura.CasterUnit;
 			if (caster != null)
 			{
 				BaseEffectValue = (caster.BasePower * EffectValue + 50) / 100;
@@ -224,7 +224,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				}
 
 				// starfire has less of a chance than wrath, so we need to make a second proc chance check here:
-				var wrathChance = m_spellEffect.Spell.ProcChance;
+				var wrathChance = m_aura.Spell.ProcChance;
 				var starfireChance = m_spellEffect.MiscValue;
 				var sfToWrathProportion = starfireChance / wrathChance;
 

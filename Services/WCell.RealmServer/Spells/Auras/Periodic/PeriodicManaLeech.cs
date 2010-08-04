@@ -35,12 +35,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			var val = EffectValue;
 			var target = m_aura.Auras.Owner;
-			if (m_spellEffect.Spell.HasEffectWith((effect) => effect.AuraType == AuraType.Dummy))
+			if (m_aura.Spell.HasEffectWith((effect) => effect.AuraType == AuraType.Dummy))
 			{
 				// ugly fix around
 				val = target.BasePower * val / 100;
 			}
-			target.LeechPower(val, 1f, m_aura.Caster, m_spellEffect);
+			target.LeechPower(val, 1f, m_aura.CasterUnit, m_spellEffect);
 		}
 	}
 };
