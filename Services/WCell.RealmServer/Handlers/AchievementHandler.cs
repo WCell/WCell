@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					foreach (AchievementRecord completedAchievement in chr.Achievements.m_completedAchievements.Values)
 					{
-						packet.WriteUInt((uint) completedAchievement.AchievementEntryId);
+						packet.WriteUInt((uint)completedAchievement.AchievementEntryId);
 						packet.WriteDateTime(completedAchievement.CompleteDate);
 					}
 					packet.Write(0xFFFFFFFFu);
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr, AchievementProgressRecord progress)
+		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 30))
 			{

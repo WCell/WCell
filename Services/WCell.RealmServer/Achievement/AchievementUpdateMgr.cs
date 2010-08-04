@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Achievements;
+using WCell.Constants.NPCs;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
+using WCell.Util;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -143,15 +146,51 @@ namespace WCell.RealmServer.Achievement
 		}
 		#endregion
 
+		private static void SetCriteriaProgress(AchievementCriteriaEntry entry, Character chr, uint newValue)
+		{
+			AchievementProgressRecord achievementProgressRecord = null;
+			var achievementRecord = chr.Achievements.GetAchievementProgress(entry.AchievementCriteriaId);
+			if(achievementRecord == null)
+			{
+				if(newValue == 0)
+					return;
+				achievementProgressRecord = AchievementProgressRecord.CreateAchievementProgressRecord(chr,
+																					  entry.AchievementCriteriaId,
+																					  newValue);
+			}
+			else
+			{
+				achievementProgressRecord = achievementRecord;
+				achievementProgressRecord.Counter = newValue;
+			}
+
+			if(entry.TimeLimit > 0)
+			{
+				DateTime now = DateTime.Now;
+				if(Utility.GetEpochTimeFromDT(achievementProgressRecord.Date) + entry.TimeLimit < Utility.GetEpochTimeFromDT(now))					
+					achievementProgressRecord.Counter = 1;
+				achievementProgressRecord.Date = now;
+			}
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord.AchievementCriteriaId, chr);
+		}
+
 		#region Default Achievement Event Updaters
 		private static void OnKillCreature(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
+			var killCreatureAchievementCriteriaEntry = entry as KillCreatureAchievementCriteriaEntry;
+			if (killCreatureAchievementCriteriaEntry == null || killCreatureAchievementCriteriaEntry.CreatureId != (NPCId)value1)
+			{
+				return;
+			}
+			SetCriteriaProgress(entry, chr, value2);
+
 		}
 		private static void OnWinBg(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
 		}
 		private static void OnReachLevel(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
+			SetCriteriaProgress(entry, chr, (uint)chr.Level);
 		}
 		private static void OnReachSkillLevel(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{

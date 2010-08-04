@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			get
 			{
-				return _characterGuid | (_achievementEntryId << 32);
+				return _characterGuid | (long)(_achievementEntryId << 32);
 			}
 			set
 			{
