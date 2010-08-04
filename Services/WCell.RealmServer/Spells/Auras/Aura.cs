@@ -737,6 +737,13 @@ namespace WCell.RealmServer.Spells.Auras
 		public void ReApplyNonPeriodicEffects()
 		{
 			RemoveNonPeriodicEffects();
+
+			// update effect values
+			foreach (var handler in m_handlers)
+			{
+				handler.UpdateEffectValue();
+			}
+
 			ApplyPeriodicEffects();
 		}
 
@@ -790,9 +797,10 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Add one more application to the stack
+		/// Refreshes this aura. If this Aura is stackable, will also increase the
+		/// StackCount by one.
 		/// </summary>
-		public void Stack(ObjectReference caster)
+		public void RefreshOrStack(ObjectReference caster)
 		{
 			if (IsAdded)
 			{
@@ -803,6 +811,12 @@ namespace WCell.RealmServer.Spells.Auras
 				if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
+				}
+
+				// update effect values
+				foreach (var handler in m_handlers)
+				{
+					handler.UpdateEffectValue();
 				}
 
 				// re-apply non-periodic effects:

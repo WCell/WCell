@@ -226,67 +226,6 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 		#endregion
 
-		#region EffectHandlers
-
-		public static List<AuraEffectHandler> CreateEffectHandlers(Spell spell,
-			ObjectReference caster,
-			Unit target,
-			bool beneficial)
-		{
-			return CreateEffectHandlers(spell.AuraEffects, caster, target, beneficial);
-		}
-
-		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, ObjectReference caster,
-			Unit target, bool beneficial)
-		{
-			if (effects == null)
-				return null;
-
-			try
-			{
-				List<AuraEffectHandler> effectHandlers = null;
-				var failReason = SpellFailedReason.Ok;
-
-				for (var i = 0; i < effects.Length; i++)
-				{
-					var effect = effects[i];
-					if (effect.HarmType == HarmType.Beneficial || !beneficial)
-					{
-						var effectHandler = CreateEffectHandler(effect, caster, target, ref failReason);
-						if (failReason != SpellFailedReason.Ok)
-						{
-							return null;
-						}
-
-						if (effectHandlers == null)
-						{
-							effectHandlers = new List<AuraEffectHandler>(3);
-						}
-						effectHandlers.Add(effectHandler);
-					}
-				}
-				return effectHandlers;
-			}
-			catch (Exception e)
-			{
-				LogUtil.ErrorException(e, "Failed to create AuraEffectHandlers for: " + effects.GetWhere(effect => effect != null).Spell);
-				return null;
-			}
-		}
-
-		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, 
-			Unit target, ref SpellFailedReason failedReason, SpellCast triggeringCast = null)
-		{
-			var handler = spellEffect.AuraEffectHandlerCreator();
-
-			handler.m_spellEffect = spellEffect;
-			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster, triggeringCast);
-
-			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
-			return handler;
-		}
-		#endregion
-
 		#region Unique Auras and Aura Groups
 		internal static uint lastAuraUid;
 

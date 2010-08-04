@@ -1,4 +1,4 @@
-- added correct skeleton for CE
-- added SpellEffect.MakeProc* methods
-- added support for AuraState-dependent Auras
-- to test: DeathKnightUnholyWanderingPlague, DeathKnightUnholyBloodCakedBlade, DeathKnightUnholyImpurity, DeathKnightUnholyDirge, DeathKnightUnholyMagicSuppression, DeathKnightFrostNervesOfColdSteel, DeathKnightBloodDeathRuneMastery, DeathKnightFrostGlacierRot, DeathKnightBloodBloodGorged
+- to test: DeathKnightUnholyRageOfRivendare
+- fixed Auras to refresh instead of recreating the Aura when the same Rank is re-applied / updated Aura's effect value when stacked or refreshed
+- improved overridable SpellEffects
+- fixed spell cast packet sending

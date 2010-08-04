@@ -17,6 +17,7 @@ namespace WCell.RealmServer.Spells.Auras
 	/// </summary>
 	public class PlayerAuraCollection : AuraCollection
 	{
+		#region Fields
 		/// <summary>
 		/// Amount of currently added modifiers that require charges.
 		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
@@ -24,18 +25,18 @@ namespace WCell.RealmServer.Spells.Auras
 		public int ModifierWithChargesCount
 		{
 			get;
-			protected internal set;
+			protected set;
 		}
 
 		/// <summary>
 		/// Flat modifiers of spells
 		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
+		internal readonly List<AddModifierEffectHandler> SpellModifiersFlat = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
 		/// Percent modifiers of spells
 		/// </summary>
-		public readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
+		internal readonly List<AddModifierEffectHandler> SpellModifiersPct = new List<AddModifierEffectHandler>(5);
 
 		/// <summary>
 		/// Mask of spells that are allowed to crit hit, although they are not allowed to, by default
@@ -56,6 +57,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Set of Auras that are only applied in certain AuraStates
 		/// </summary>
 		List<Aura> auraStateRestrictedAuras;
+		#endregion
 
 		public PlayerAuraCollection(Character owner)
 			: base(owner)
