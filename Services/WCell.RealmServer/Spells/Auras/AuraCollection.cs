@@ -982,6 +982,66 @@ namespace WCell.RealmServer.Spells.Auras
 			return FindFirst(aura => !aura.IsBeneficial) != null;
 		}
 
+		/// <summary>
+		/// Returns whether the given spell was modified to be casted 
+		/// in any shapeshift form, (even if it usually requires a specific one).
+		/// </summary>
+		public bool IsShapeshiftRequirementIgnored(Spell spell)
+		{
+			foreach (var aura in m_AuraArray)
+			{
+				if (aura.Spell.SpellClassSet != spell.SpellClassSet)
+				{
+					// must be same class
+					continue;
+				}
+				foreach (var handler in aura.Handlers)
+				{
+					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
+					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
+						handler.SpellEffect.MatchesSpell(spell))
+					{
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Extra damage to be applied against a bleeding target
+		/// </summary>
+		public int GetBleedBonusPercent()
+		{
+			var bonus = 0;
+			{
+				foreach (var aura in m_AuraArray)
+				{
+					foreach (var handler in aura.Handlers)
+					{
+						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
+						{
+							bonus += handler.EffectValue;
+						}
+					}
+				}
+			}
+			return bonus;
+		}
+
+		public int GetVisibleAuraCount(DispelType type)
+		{
+			var count = 0;
+			foreach (var aura in m_visibleAuras)
+			{
+				if (aura != null && aura.Spell.DispelType == type)
+				{
+					count++;
+				}
+			}
+			return count;
+		}
+
 		#region Persistence
 		/// <summary>
 		/// Called after Character entered world to load all it's active Auras
@@ -1054,53 +1114,6 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 		#endregion
-
-		/// <summary>
-		/// Returns whether the given spell was modified to be casted 
-		/// in any shapeshift form, (even if it usually requires a specific one).
-		/// </summary>
-		public bool IsShapeshiftRequirementIgnored(Spell spell)
-		{
-			foreach (var aura in m_AuraArray)
-			{
-				if (aura.Spell.SpellClassSet != spell.SpellClassSet)
-				{
-					// must be same class
-					continue;
-				}
-				foreach (var handler in aura.Handlers)
-				{
-					// check whether there is a IgnoreShapeshiftRequirement aura effect and it's AffectMask matches the spell mask
-					if (handler.SpellEffect.AuraType == AuraType.IgnoreShapeshiftRequirement &&
-						handler.SpellEffect.MatchesSpell(spell))
-					{
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Extra damage to be applied against a bleeding target
-		/// </summary>
-		public int GetBleedBonusPercent()
-		{
-			var bonus = 0;
-			{
-				foreach (var aura in m_AuraArray)
-				{
-					foreach (var handler in aura.Handlers)
-					{
-						if (handler.SpellEffect.AuraType == AuraType.IncreaseBleedEffectPct)
-						{
-							bonus += handler.EffectValue;
-						}
-					}
-				}
-			}
-			return bonus;
-		}
 
 		#region Enumerators
 		/// <summary>

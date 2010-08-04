@@ -486,6 +486,9 @@ namespace WCell.Constants.Spells
 		Unused_264 = 264,
 		Unused_265 = 265,
 		Unused_266 = 266,
+		/// <summary>
+		/// Only used in Anti-Magic Shell (Id: 48707)
+		/// </summary>
 		Aura_267 = 267,
 		ModMeleeAttackPowerByPercentOfStat = 268,
 		Aura_269 = 269,

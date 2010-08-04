@@ -45,15 +45,38 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixBladeBarrier();
-
 			FixRime();
-
 			FixDeathKnightFrostAcclimation();
-
 			FixTundraStalker();
-
 			FixDeathKnightFrostHungeringCold();
+			FixGlacierRot();
+
 		}
+
+		#region Glacier Rot
+		private static void FixGlacierRot()
+		{
+			// "Diseased enemies take $s1% more damage from your Icy Touch, Howling Blast and Frost Strike"
+			SpellLineId.DeathKnightFrostGlacierRot.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.MakeProc(() => new GlacierRotProcHandler(), SpellLineId.DeathKnightIcyTouch,
+				                SpellLineId.DeathKnightFrostHowlingBlast, SpellLineId.DeathKnightFrostFrostStrike);
+			});
+		}
+
+		internal class GlacierRotProcHandler : ProcOnDiseaseTriggerSpellHandler
+		{
+			public override void OnProc(Unit triggerer, IUnitAction action)
+			{
+				if (action is DamageAction)
+				{
+					// "enemies take $s1% more damage"
+					((DamageAction)action).ModDamagePercent(EffectValue);
+				}
+			}
+		}
+		#endregion
 
 		#region Hungering Cold
 		private static void FixDeathKnightFrostHungeringCold()
@@ -77,10 +100,10 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		internal class HungeringColdDebuffHandler : AttackEventEffectHandler
 		{
 			public override void OnBeforeAttack(DamageAction action)
-			{}
+			{ }
 
 			public override void OnAttack(DamageAction action)
-			{}
+			{ }
 
 			public override void OnDefend(DamageAction action)
 			{

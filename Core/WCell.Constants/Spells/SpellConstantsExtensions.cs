@@ -1,7 +1,7 @@
 
 namespace WCell.Constants.Spells
 {
-	public static class Extensions
+	public static class SpellConstantsExtensions
 	{
 		#region HasAnyFlag
 		public static bool HasAnyFlag(this SpellTargetFlags flags, SpellTargetFlags otherFlags)

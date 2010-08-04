@@ -996,13 +996,14 @@ namespace WCell.RealmServer.Entities
 
 		public AuraStateMask AuraState
 		{
-			get
-			{
-				return (AuraStateMask)GetUInt32(UnitFields.AURASTATE);
-			}
+			get { return (AuraStateMask)GetUInt32(UnitFields.AURASTATE); }
 			set
 			{
 				SetUInt32(UnitFields.AURASTATE, (uint)value);
+				if (m_auras is PlayerAuraCollection && AuraState != value)
+				{
+					((PlayerAuraCollection)m_auras).OnAuraStateChanged();
+				}
 			}
 		}
 

@@ -1,2 +1,4 @@
-- fixed more NPC cooldown issues / funky spellcast selection bug
-- fixed DeathKnightUnholyReaping, Corpse explosion, DeathKnightUnholyCryptFever
+- added correct skeleton for CE
+- added SpellEffect.MakeProc* methods
+- added support for AuraState-dependent Auras
+- to test: DeathKnightUnholyWanderingPlague, DeathKnightUnholyBloodCakedBlade, DeathKnightUnholyImpurity, DeathKnightUnholyDirge, DeathKnightUnholyMagicSuppression, DeathKnightFrostNervesOfColdSteel, DeathKnightBloodDeathRuneMastery, DeathKnightFrostGlacierRot, DeathKnightBloodBloodGorged

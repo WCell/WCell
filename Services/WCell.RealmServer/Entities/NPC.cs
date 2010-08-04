@@ -199,7 +199,7 @@ namespace WCell.RealmServer.Entities
 				m_Movement.MayMove = false;
 			}
 
-			AddEquipment();
+			AddStandardEquipment();
 			if (m_entry.AddonData != null)
 			{
 				// first add general addon data
@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private void AddEquipment()
+		private void AddStandardEquipment()
 		{
 			NPCEquipmentEntry equipment;
 
@@ -269,11 +269,7 @@ namespace WCell.RealmServer.Entities
 
 			if (equipment != null)
 			{
-				for (var i = 0; i < equipment.ItemIds.Length; i++)
-				{
-					var item = equipment.ItemIds[i];
-					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
-				}
+				SetEquipment(equipment);
 			}
 		}
 
@@ -783,6 +779,53 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region NPC Items
+		/// <summary>
+		/// Sets this NPC's equipment to the given entry
+		/// </summary>
+		public void SetEquipment(NPCEquipmentEntry equipment)
+		{
+			for (var i = 0; i < equipment.ItemIds.Length; i++)
+			{
+				var item = equipment.ItemIds[i];
+				SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
+			}
+		}
+
+		public void SetMainWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID, (uint)item);
+		}
+
+		public void SetOffhandWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_2, (uint)item);
+		}
+
+		public void SetRangedWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_3, (uint)item);
+		}
+
+		/// <summary>
+		/// NPCs only have their default items which may always be used, so no invalidation
+		/// takes place.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					return m_entry.CreateMainHandWeapon();
+				case InventorySlotType.WeaponRanged:
+					return m_entry.CreateRangedWeapon();
+				case InventorySlotType.WeaponOffHand:
+					return m_entry.CreateOffhandWeapon();
+			}
+			return null;
+		}
+		#endregion
+
 		public override float GetCritChance(DamageSchool school)
 		{
 			var value = m_entry.Rank > CreatureRank.Normal ? BossSpellCritChance : 0;
@@ -1121,24 +1164,6 @@ namespace WCell.RealmServer.Entities
 		public override float MaxAttackRange
 		{
 			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
-		}
-
-		/// <summary>
-		/// NPCs only have their default items which may always be used, so no invalidation
-		/// takes place.
-		/// </summary>
-		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
-		{
-			switch (slot)
-			{
-				case InventorySlotType.WeaponMainHand:
-					return m_entry.CreateMainHandWeapon();
-				case InventorySlotType.WeaponRanged:
-					return m_entry.CreateRangedWeapon();
-				case InventorySlotType.WeaponOffHand:
-					return m_entry.CreateOffhandWeapon();
-			}
-			return null;
 		}
 
 		protected override void OnEnterCombat()

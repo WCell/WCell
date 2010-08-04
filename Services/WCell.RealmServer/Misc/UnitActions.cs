@@ -306,6 +306,11 @@ namespace WCell.RealmServer.Misc
 			m_Damage += (m_Damage * pct + 50) / 100;
 		}
 
+		public int GetDamagePercent(int percent)
+		{
+			return (m_Damage * percent + 50) / 100;
+		}
+
 		private int m_Damage;
 
 		public int Damage

@@ -342,11 +342,13 @@ namespace WCell.RealmServer.Spells
 		/// <param name="spell"></param>
 		internal void TriggerSpellsFor(SpellCast cast)
 		{
+			if (m_TargetTriggers == null) return;
+
 			int val;
 			var spell = cast.Spell;
-			for (var i = 0; i < TargetTriggers.Count; i++)
+			for (var i = 0; i < m_TargetTriggers.Count; i++)
 			{
-				var triggerHandler = TargetTriggers[i];
+				var triggerHandler = m_TargetTriggers[i];
 				var effect = triggerHandler.SpellEffect;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
 					effect.MatchesSpell(spell) &&

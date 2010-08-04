@@ -227,7 +227,7 @@
     <Compile Include="Skills\SkillTierId.cs" />
     <Compile Include="Spells\AuraType.cs" />
     <Compile Include="Spells\Constants.Spells.cs" />
-    <Compile Include="Spells\Extensions.cs" />
+    <Compile Include="Spells\SpellConstantsExtensions.cs" />
     <Compile Include="Spells\ProcTriggerFlags.cs" />
     <Compile Include="Spells\Range.cs" />
     <Compile Include="Spells\RuneType.cs" />
