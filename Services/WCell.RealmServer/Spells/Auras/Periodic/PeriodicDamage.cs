@@ -3,7 +3,7 @@
  *   file		: PeriodicDamage.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sÃ¸, 10 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sø, 10 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1185 $
  *
@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					value += ((value * bonus) + 50) / 100;
 				}
 
-				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value);
+				holder.DoSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
 			}
 		}
 	}

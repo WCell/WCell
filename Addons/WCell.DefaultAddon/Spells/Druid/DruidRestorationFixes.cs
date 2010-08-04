@@ -236,11 +236,11 @@ namespace WCell.Addons.Default.Spells.Druid
 			if (!cancelled)
 			{
 				// "When Lifebloom completes its duration or is dispelled, the target instantly heals themself for $s2 and the Druid regains half the cost of the spell."
-				var caster = m_aura.Caster;
+				var caster = m_aura.CasterUnit;
 				Owner.Heal(EffectValue, caster, m_spellEffect);
 				if (caster != null)
 				{
-					caster.Energize((m_spellEffect.Spell.CalcBasePowerCost(caster) + 1) / 2, caster, m_spellEffect);
+					caster.Energize((m_aura.Spell.CalcBasePowerCost(caster) + 1) / 2, caster, m_spellEffect);
 				}
 			}
 		}
@@ -353,7 +353,7 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 			// heal (and dispose automatically, since the single ProcCharge is used up)
 			// "30% of the amount healed"
-			Owner.Heal((damageAmount * 3 + 5) / 10, m_aura.Caster, m_spellEffect);
+			Owner.Heal((damageAmount * 3 + 5) / 10, m_aura.CasterUnit, m_spellEffect);
 		}
 	}
 	#endregion

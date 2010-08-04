@@ -1267,7 +1267,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var aura in m_auras)
 			{
-				if (aura.Caster != this)
+				if (aura.CasterUnit != this)
 				{
 					aura.Remove(true);
 				}

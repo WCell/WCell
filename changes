@@ -1,4 +1,4 @@
-- to test: DeathKnightUnholyRageOfRivendare
-- fixed Auras to refresh instead of recreating the Aura when the same Rank is re-applied / updated Aura's effect value when stacked or refreshed
-- improved overridable SpellEffects
-- fixed spell cast packet sending
+- made Aura restrictions a lot more transparent & fixed some bugs in the system: It is now all in PlayerAuraCollection.MayActivate
+- added LifeLeechEffectHandler
+- implemented & tested: DeathKnightBloodPresence, DeathKnightBloodImprovedBloodPresence, DeathKnightBloodPlaguePassive, DeathKnightFrostFeverPassive
+

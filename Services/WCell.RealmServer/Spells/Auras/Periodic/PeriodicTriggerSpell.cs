@@ -46,7 +46,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				if (spell == null)
 				{
 					LogManager.GetCurrentClassLogger().Warn("Found invalid periodic TriggerSpell in Spell {0} ({1}) ",
-						m_spellEffect.Spell, 
+						m_aura.Spell, 
 						(uint)m_spellEffect.TriggerSpellId);
 					return;
 				}
