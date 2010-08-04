@@ -1,2 +1,1 @@
-- fixed value override for non-aura spells / procs / general spell cooldowns / more aura bugs from the aura system rewrite
-- fixed DeathKnightUnholyBoneShield, DeathKnightUnholyDirge, DeathKnightFrostPresence
+- fixed Arcane Missiles / delayed trigger spells / channel-selection spells

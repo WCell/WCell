@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Spells
 			cast.ExecuteInContext(() =>
 			{
 				cast.Start(spell, true);
-				cast.Dispose();
+				//cast.Dispose();
 			});
 		}
 
@@ -1377,7 +1377,7 @@ namespace WCell.RealmServer.Spells
 			ExecuteInContext(() =>
 			{
 				cast.Start(spell, true, singleTarget);
-				cast.Dispose();
+				//cast.Dispose();
 			});
 		}
 
@@ -1396,7 +1396,7 @@ namespace WCell.RealmServer.Spells
 					{
 						passiveCast.Start(spell, true, singleTarget);
 					}
-					passiveCast.Dispose();
+					//passiveCast.Dispose();
 				}));
 			}
 			else
@@ -1405,7 +1405,7 @@ namespace WCell.RealmServer.Spells
 				{
 					passiveCast.Start(spell, true, singleTarget);
 				}
-				passiveCast.Dispose();
+				//passiveCast.Dispose();
 			}
 		}
 
@@ -1458,7 +1458,7 @@ namespace WCell.RealmServer.Spells
 			ExecuteInContext(() =>
 			{
 				cast.Start(spell, triggerEffect, true, initialTargets);
-				cast.Dispose();
+				//cast.Dispose();
 			});
 		}
 
@@ -1473,7 +1473,7 @@ namespace WCell.RealmServer.Spells
 			ExecuteInContext(() =>
 			{
 				cast.Start(spell, true, targets != null && targets.Length > 0 ? targets : null);
-				cast.Dispose();
+				//cast.Dispose();
 			});
 		}
 
@@ -1489,7 +1489,7 @@ namespace WCell.RealmServer.Spells
 			ExecuteInContext(() =>
 			{
 				cast.Start(spell, true);
-				cast.Dispose();
+				//cast.Dispose();
 			});
 		}
 
@@ -1615,7 +1615,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			Start(spell, triggerEffect, true, targets);
-			Dispose();
+			//Dispose();
 		}
 
 		#endregion
@@ -1697,10 +1697,6 @@ namespace WCell.RealmServer.Spells
 
 			Id = 0;
 			m_casting = false;
-			if (finalCleanup)
-			{
-				DoFinalCleanup(m_handlers);
-			}
 			if (m_spell.IsTame && Selected is NPC)
 			{
 				((NPC)Selected).CurrentTamer = null;
@@ -1720,6 +1716,10 @@ namespace WCell.RealmServer.Spells
 			if (m_targets != null)
 			{
 				m_targets.Clear();
+			}
+			if (finalCleanup)
+			{
+				DoFinalCleanup(m_handlers);
 			}
 		}
 
@@ -1741,6 +1741,12 @@ namespace WCell.RealmServer.Spells
 						handler.Cleanup();
 					}
 				}
+			}
+
+			if (CasterObject == null || CasterObject.SpellCast != this)
+			{
+				// TODO: Improve dispose strategy
+				Dispose();
 			}
 		}
 
