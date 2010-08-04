@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Entities
 			EntityId = m_record.EntityId;
 
 			// set charges to max
-			if (m_template.UseSpell != null && m_template.UseSpell.Charges != 0)
+			if (m_template.UseSpell != null && m_template.UseSpell.HasCharges)
 			{
 				SpellCharges = m_template.UseSpell.Charges;
 			}
@@ -1240,7 +1240,7 @@ namespace WCell.RealmServer.Entities
 				Flags |= ItemFlags.Soulbound;
 			}
 
-			if (m_template.UseSpell != null && m_template.UseSpell.ConsumesCharges)
+            if (m_template.UseSpell != null)
 			{
 				// consume a charge
 				if (m_template.Class == ItemClass.Consumable)

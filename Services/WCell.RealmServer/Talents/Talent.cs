@@ -77,9 +77,13 @@ namespace WCell.RealmServer.Talents
 					//    Talents.Owner.Spells.Remove(Entry.Spells[m_rank - 1]);
 					//    Talents.CurrentSpec.Remove(Entry.Id);
 					//}
-					for (var i = m_rank; i >= value; i--)
+					if (value >= 0)
 					{
-						Talents.Owner.Spells.Remove(Entry.Spells[i]);
+						Talents.Owner.Spells.Replace(Spell, Entry.Spells[value]);
+					}
+					else
+					{
+						Talents.Owner.Spells.Remove(Entry.Spells[value]);
 					}
 				}
 				else if (value > m_rank)

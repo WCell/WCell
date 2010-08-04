@@ -49,7 +49,7 @@ namespace WCell.Addons.Default.Spells.Warlock
             teleReqSpell.Durations = new Spell.DurationEntry { Min = 360000, Max = 360000 };
             SpellHandler.Apply(spell =>
             {
-                var efct = spell.AddEffect(SpellEffectType.Dummy);
+				var efct = spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.None);
                 efct.MiscValue = (int)GOEntryId.DemonicCircleSummon;
                 efct.SpellEffectHandlerCreator = (cast, effect) => new RecallToGOHandler(cast, effect);
                 spell.AddCasterTriggerSpells(teleReqSpell);

@@ -436,8 +436,12 @@ namespace WCell.RealmServer.Spells
 			{
 				ProcHandlers = new List<ProcHandlerTemplate>();
 			}
-			handler.IsAttackerTriggerer = false;
 			ProcHandlers.Add(handler);
+			if (Effects.Length == 0)
+			{
+				// need at least one effect to make this work
+				AddAuraEffect(AuraType.Dummy);
+			}
 		}
 		#endregion
 
@@ -488,7 +492,6 @@ namespace WCell.RealmServer.Spells
 						{
 							IsTeachSpell = GetEffect(SpellEffectType.LearnSpell) != null;
 						}
-						Effects[i].IsUsed = true;
 					}
 				}
 			}
@@ -920,42 +923,35 @@ namespace WCell.RealmServer.Spells
 			return effects != null ? effects.ToArray() : null;
 		}
 
-		/// <summary>
-		/// Removes the first Effect of the given Type and replace it with a new one which will be returned.
-		/// Appends a new one if none of the given type was found.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public SpellEffect ReplaceEffect(SpellEffectType type)
-		{
-			for (var i = 0; i < Effects.Length; i++)
-			{
-				var effect = Effects[i];
-				if (effect.EffectType == type)
-				{
-					return Effects[i] = new SpellEffect();
-				}
-			}
-			return AddEffect(SpellEffectType.None);
-		}
-
-		/// <summary>
-		/// Adds a new Effect to this Spell
-		/// </summary>
-		/// <returns></returns>
-		public SpellEffect AddEffect()
-		{
-			return AddEffect(SpellEffectType.None);
-		}
+		///// <summary>
+		///// Removes the first Effect of the given Type and replace it with a new one which will be returned.
+		///// Appends a new one if none of the given type was found.
+		///// </summary>
+		///// <param name="type"></param>
+		///// <returns></returns>
+		//public SpellEffect ReplaceEffect(SpellEffectType type, SpellEffectType newType, ImplicitTargetType target)
+		//{
+		//    for (var i = 0; i < Effects.Length; i++)
+		//    {
+		//        var effect = Effects[i];
+		//        if (effect.EffectType == type)
+		//        {
+		//            return Effects[i] = new SpellEffect();
+		//        }
+		//    }
+		//    return AddEffect(type, target);
+		//}
 
 		/// <summary>
 		/// Adds a new Effect to this Spell
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type)
+		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitTargetType target)
 		{
-			return AddEffect(type, ImplicitTargetType.None);
+			var effect = AddEffect(SpellEffectType.Dummy, target);
+			effect.SpellEffectHandlerCreator = creator;
+			return effect;
 		}
 
 		/// <summary>
@@ -988,9 +984,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.TriggerSpell);
+			var effect = AddEffect(SpellEffectType.TriggerSpell, targetType);
 			effect.TriggerSpellId = triggerSpell;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
@@ -1026,9 +1021,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraType type, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.ApplyAura);
+			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = type;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
@@ -1045,10 +1039,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitTargetType targetType)
 		{
-			var effect = AddEffect(SpellEffectType.ApplyAura);
+			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = AuraType.Dummy;
 			effect.AuraEffectHandlerCreator = creator;
-			effect.ImplicitTargetA = targetType;
 			return effect;
 		}
 
@@ -1084,9 +1077,25 @@ namespace WCell.RealmServer.Spells
 			}
 			Effects = effects;
 		}
+
+		public void RemoveEffect(Func<SpellEffect, bool> predicate)
+		{
+			foreach (var effct in Effects.ToArray())
+			{
+				if (predicate(effct))
+				{
+					RemoveEffect(effct);
+				}
+			}
+		}
 		#endregion
 
 		#region Misc Methods & Props
+		public bool IsAffectedBy(Spell spell)
+		{
+			return MatchesMask(spell.AllAffectingMasks);
+		}
+
 		public bool MatchesMask(uint[] masks)
 		{
 			for (var i = 0; i < SpellClassMask.Length; i++)
@@ -1130,6 +1139,11 @@ namespace WCell.RealmServer.Spells
 				   IsChanneled || CastDelay > 0 || HasCooldown;
 			// || (!IsPassive && IsAura)
 			;
+		}
+
+		public void SetDuration(int duration)
+		{
+			Durations.Min = Durations.Max = duration;
 		}
 
 		/// <summary>
@@ -1337,11 +1351,11 @@ namespace WCell.RealmServer.Spells
 			}
 			if ((int)RequiredCasterAuraState != 0)
 			{
-				writer.WriteLine(indent + "CasterAuraState: " + RequiredCasterAuraState);
+				writer.WriteLine(indent + "RequiredCasterAuraState: " + RequiredCasterAuraState);
 			}
 			if ((int)RequiredTargetAuraState != 0)
 			{
-				writer.WriteLine(indent + "TargetAuraState: " + RequiredTargetAuraState);
+				writer.WriteLine(indent + "RequiredTargetAuraState: " + RequiredTargetAuraState);
 			}
 			if ((int)ExcludeCasterAuraState != 0)
 			{
@@ -1581,8 +1595,8 @@ namespace WCell.RealmServer.Spells
 					rcosts.Add(string.Format("Unholy: {0}", RuneCostEntry.CostPerType[(int)RuneType.Unholy]));
 				if (RuneCostEntry.CostPerType[(int)RuneType.Frost] != 0)
 					rcosts.Add(string.Format("Frost: {0}", RuneCostEntry.CostPerType[(int)RuneType.Frost]));
-				writer.WriteLine(ind + "RuneCosts - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(" "));
-				writer.WriteLine(ind + "RunePowerGain: {0}", RuneCostEntry.RunicPowerGain);
+				writer.WriteLine(ind + "Runes - {0}", rcosts.Count == 0 ? "<None>" : rcosts.ToString(", "));
+				writer.WriteLine(ind + "RunicPowerGain: {0}", RuneCostEntry.RunicPowerGain);
 			}
 			if (MissileId != 0)
 			{

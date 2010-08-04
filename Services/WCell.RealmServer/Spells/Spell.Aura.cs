@@ -151,7 +151,30 @@ namespace WCell.RealmServer.Spells
 		#region InitAura
 		private void InitAura()
 		{
-			IsAura = HasEffectWith(effect =>
+			// procs
+			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
+			{
+				ProcTriggerEffects = Effects.Where(effect => effect.IsProc).ToArray();
+				if (ProcTriggerEffects.Length == 0)
+				{
+					// no proc-specific effects -> all effects are triggered on proc
+					ProcTriggerEffects = null;
+				}
+				//else if (ProcTriggerEffects.Length > 1)
+				//{
+				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
+				//}
+
+				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.SpellCast))
+				{
+					// we don't want any SpellCast to trigger on that
+					ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
+				}
+
+				IsProc = ProcTriggerEffects != null || ProcHandlers != null || CasterProcSpells != null;
+			}
+
+			IsAura = IsProc || HasEffectWith(effect =>
 			{
 				if (effect.AuraType != AuraType.None)
 				{
@@ -159,19 +182,6 @@ namespace WCell.RealmServer.Spells
 				}
 				return false;
 			});
-
-			if (!IsAura)
-			{
-				if (ProcHandlers != null)
-				{
-					throw new InvalidSpellDataException("Invalid Non-Aura spell has ProcHandlers: {0}", this);
-				}
-				//if (CasterProcHandlers != null)
-				//{
-				//    throw new InvalidSpellDataException("Invalid Non-Aura spell has CasterProcHandlers: {0}", this);
-				//}
-				return;
-			}
 
 			ForeachEffect(effect =>
 			{
@@ -209,8 +219,8 @@ namespace WCell.RealmServer.Spells
 				return effect.AuraType == AuraType.ModShapeshift || effect.AuraType == AuraType.Transform;
 			});
 
+			// charges and stacks:
 			CanStack = MaxStackCount > 0;
-			// procs and stacking:
 			if (ProcCharges > 0)
 			{
 				// applications will be used up by procs
@@ -235,29 +245,6 @@ namespace WCell.RealmServer.Spells
 
 			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);
 			IsModalShapeshiftDependentAura = IsPassive && (RequiredShapeshiftMask != 0 || HasShapeshiftDependentEffects);
-
-			// procs
-			if (ProcTriggerFlags != ProcTriggerFlags.None || CasterProcSpells != null)
-			{
-				ProcTriggerEffects = Effects.Where(effect => effect.IsProc).ToArray();
-				if (ProcTriggerEffects.Length == 0)
-				{
-					// no proc-specific effects -> all effects are triggered on proc
-					ProcTriggerEffects = null;
-				}
-				//else if (ProcTriggerEffects.Length > 1)
-				//{
-				//    log.Warn("Spell {0} had more than one ProcTriggerEffect", this);
-				//}
-
-				if (ProcTriggerFlags == (ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.SpellCast))
-				{
-					// we don't want any SpellCast to trigger on that
-					ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
-				}
-
-				IsProc = ProcTriggerEffects != null;
-			}
 
 			if (AuraUID == 0)
 			{
@@ -300,6 +287,7 @@ namespace WCell.RealmServer.Spells
 		#region Caster Proc Spells
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params SpellId[] spellIds)
 		{
@@ -319,6 +307,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -333,6 +322,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by the owner of this Aura, can cause it to trigger this spell's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddCasterProcSpells(params Spell[] spells)
 		{
@@ -340,14 +330,19 @@ namespace WCell.RealmServer.Spells
 			{
 				CasterProcSpells = new HashSet<Spell>();
 			}
+			foreach (var spell in spells)
+			{
+				spell.GeneratesProcEventOnCast = true;
+			}
 			CasterProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 		}
 		#endregion
 
 		#region Target Proc Spells
 		/// <summary>
-		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs.
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params SpellId[] spellIds)
 		{
@@ -367,6 +362,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params SpellLineId[] spellSetIds)
 		{
@@ -381,6 +377,7 @@ namespace WCell.RealmServer.Spells
 
 		/// <summary>
 		/// Add Spells which, when casted by others on the owner of this Aura, can cause it to trigger it's procs
+		/// Don't add damage spells (they will generate a Proc event anyway).
 		/// </summary>
 		public void AddTargetProcSpells(params Spell[] spells)
 		{
@@ -388,8 +385,60 @@ namespace WCell.RealmServer.Spells
 			{
 				TargetProcSpells = new HashSet<Spell>();
 			}
+			foreach (var spell in spells)
+			{
+				spell.GeneratesProcEventOnCast = true;
+			}
 			TargetProcSpells.AddRange(spells);
-			ProcTriggerFlags |= ProcTriggerFlags.SpellCast;
+			ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+		}
+		#endregion
+
+		#region CreateAuraEffectHandlers
+		public List<AuraEffectHandler> CreateAuraEffectHandlers(
+			ObjectReference caster,
+			Unit target,
+			bool beneficial)
+		{
+			return CreateAuraEffectHandlers(AuraEffects, caster, target, beneficial);
+		}
+
+		public static List<AuraEffectHandler> CreateAuraEffectHandlers(SpellEffect[] effects, ObjectReference caster,
+			Unit target, bool beneficial)
+		{
+			if (effects == null)
+				return null;
+
+			try
+			{
+				List<AuraEffectHandler> effectHandlers = null;
+				var failReason = SpellFailedReason.Ok;
+
+				for (var i = 0; i < effects.Length; i++)
+				{
+					var effect = effects[i];
+					if (effect.HarmType == HarmType.Beneficial || !beneficial)
+					{
+						var effectHandler = effect.CreateAuraEffectHandler(caster, target, ref failReason);
+						if (failReason != SpellFailedReason.Ok)
+						{
+							return null;
+						}
+
+						if (effectHandlers == null)
+						{
+							effectHandlers = new List<AuraEffectHandler>(3);
+						}
+						effectHandlers.Add(effectHandler);
+					}
+				}
+				return effectHandlers;
+			}
+			catch (Exception e)
+			{
+				LogUtil.ErrorException(e, "Failed to create AuraEffectHandlers for: " + effects.GetWhere(effect => effect != null).Spell);
+				return null;
+			}
 		}
 		#endregion
 

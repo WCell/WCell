@@ -201,6 +201,8 @@
     <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="NPCs\INPCDataHolder.cs" />
+    <Compile Include="NPCs\NPCAddonData.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -244,10 +246,11 @@
     <Compile Include="Res\Resources.cs" />
     <Compile Include="Res\WCell.RealmServer.Designer.cs" />
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
-    <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddEffectToPassiveAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
@@ -280,10 +283,13 @@
     <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
+    <Compile Include="Spells\Effects\Custom\RemoveCooldownEffectHandler.cs" />
+    <Compile Include="Spells\Effects\RemoveImpairingEffects.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
     <Compile Include="Spells\RuneCostEntry.cs" />
     <Compile Include="Spells\RuneSet.cs" />
     <Compile Include="Spells\SpellException.cs" />
+    <Compile Include="Spells\SpellExtensions.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
@@ -1200,7 +1206,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Effects\Custom\Cannibalize.cs" />
-    <Compile Include="Spells\Effects\NotImplementedEffect.cs" />
+    <Compile Include="Spells\Effects\NotImplementedEffectHandler.cs" />
     <Compile Include="Spells\Effects\UnusedEffectHandler.cs" />
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />

@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (m_spellEffect.Spell.SchoolMask.HasAnyFlag(action.UsedSchool))
 			{
-				action.IncreaseDamagePercent(EffectValue);
+				action.ModDamagePercent(EffectValue);
 			}
 		}
 	}

@@ -79,6 +79,7 @@ namespace WCell.RealmServer.Entities
 			m_threatCollection = new ThreatCollection();
 		}
 
+		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
 			// auras
@@ -92,18 +93,11 @@ namespace WCell.RealmServer.Entities
 				m_spawnPoint = spawnPoint;
 				Phase = spawnEntry.PhaseMask;
 				m_orientation = spawnEntry.Orientation;
-				if (spawnEntry.MountId != 0)
-				{
-					Mount(spawnEntry.MountId);
-				}
 
 				if (spawnEntry.DisplayIdOverride != 0)
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-
-				SetUInt32(UnitFields.BYTES_0, spawnEntry.Bytes);
-				SetUInt32(UnitFields.BYTES_2, spawnEntry.Bytes2);
 			}
 			else
 			{
@@ -111,7 +105,6 @@ namespace WCell.RealmServer.Entities
 				spawnEntry = entry.FirstSpawnEntry;
 			}
 
-			EmoteState = (spawnEntry != null && spawnEntry.EmoteState != 0) ? spawnEntry.EmoteState : entry.EmoteState;
 			Entry = entry;
 			NativeDisplayId = DisplayId;
 
@@ -206,7 +199,17 @@ namespace WCell.RealmServer.Entities
 				m_Movement.MayMove = false;
 			}
 
-			AddEquipment();
+			AddStandardEquipment();
+			if (m_entry.AddonData != null)
+			{
+				// first add general addon data
+				AddAddonData(m_entry.AddonData);
+			}
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
+			{
+				// then override with per-spawn addon data
+				AddAddonData(m_spawnPoint.SpawnEntry.AddonData);
+			}
 
 			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
@@ -251,24 +254,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		/// <summary>
-		/// Uncontrolled NPCs that are not summoned can evade
-		/// </summary>
-		public bool CanEvade
-		{
-			get
-			{
-				return m_region.CanNPCsEvade &&
-					m_spawnPoint != null &&
-					(m_master == this || m_master == null);
-			}
-		}
-
-		private void AddEquipment()
+		private void AddStandardEquipment()
 		{
 			NPCEquipmentEntry equipment;
 
-			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null)
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null && m_spawnPoint.SpawnEntry.Equipment != null)
 			{
 				equipment = m_spawnPoint.SpawnEntry.Equipment;
 			}
@@ -279,11 +269,34 @@ namespace WCell.RealmServer.Entities
 
 			if (equipment != null)
 			{
-				for (var i = 0; i < equipment.ItemIds.Length; i++)
-				{
-					var item = equipment.ItemIds[i];
-					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
-				}
+				SetEquipment(equipment);
+			}
+		}
+
+		private void AddAddonData(NPCAddonData data)
+		{
+			SetUInt32(UnitFields.BYTES_0, data.Bytes);
+			SetUInt32(UnitFields.BYTES_2, data.Bytes2);
+
+			EmoteState = data.EmoteState;
+
+			if (data.MountModelId != 0)
+			{
+				Mount(data.MountModelId);
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Uncontrolled NPCs that are not summoned can evade
+		/// </summary>
+		public bool CanEvade
+		{
+			get
+			{
+				return m_region.CanNPCsEvade &&
+					m_spawnPoint != null &&
+					(m_master == this || m_master == null);
 			}
 		}
 
@@ -766,6 +779,53 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region NPC Items
+		/// <summary>
+		/// Sets this NPC's equipment to the given entry
+		/// </summary>
+		public void SetEquipment(NPCEquipmentEntry equipment)
+		{
+			for (var i = 0; i < equipment.ItemIds.Length; i++)
+			{
+				var item = equipment.ItemIds[i];
+				SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
+			}
+		}
+
+		public void SetMainWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID, (uint)item);
+		}
+
+		public void SetOffhandWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_2, (uint)item);
+		}
+
+		public void SetRangedWeaponVisual(ItemId item)
+		{
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_3, (uint)item);
+		}
+
+		/// <summary>
+		/// NPCs only have their default items which may always be used, so no invalidation
+		/// takes place.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
+		{
+			switch (slot)
+			{
+				case InventorySlotType.WeaponMainHand:
+					return m_entry.CreateMainHandWeapon();
+				case InventorySlotType.WeaponRanged:
+					return m_entry.CreateRangedWeapon();
+				case InventorySlotType.WeaponOffHand:
+					return m_entry.CreateOffhandWeapon();
+			}
+			return null;
+		}
+		#endregion
+
 		public override float GetCritChance(DamageSchool school)
 		{
 			var value = m_entry.Rank > CreatureRank.Normal ? BossSpellCritChance : 0;
@@ -915,17 +975,23 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnEnterRegion();
 
-			// default auras
-			if (m_auras.Count == 0 && m_spawnPoint != null)
+			if (m_auras.Count == 0)
 			{
-				foreach (var aura in m_entry.Auras)
+				// add auras
+				if (m_entry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_entry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 
-				foreach (var aura in m_spawnPoint.SpawnEntry.Auras)
+				if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_spawnPoint.SpawnEntry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 			}
 
@@ -1078,6 +1144,12 @@ namespace WCell.RealmServer.Entities
 			Delete();
 		}
 
+		protected internal override void DeleteNow()
+		{
+			m_auras.ClearWithoutCleanup();
+			base.DeleteNow();
+		}
+
 		void StopDecayTimer()
 		{
 			if (m_decayTimer != null)
@@ -1092,24 +1164,6 @@ namespace WCell.RealmServer.Entities
 		public override float MaxAttackRange
 		{
 			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
-		}
-
-		/// <summary>
-		/// NPCs only have their default items which may always be used, so no invalidation
-		/// takes place.
-		/// </summary>
-		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
-		{
-			switch (slot)
-			{
-				case InventorySlotType.WeaponMainHand:
-					return m_entry.CreateMainHandWeapon();
-				case InventorySlotType.WeaponRanged:
-					return m_entry.CreateRangedWeapon();
-				case InventorySlotType.WeaponOffHand:
-					return m_entry.CreateOffhandWeapon();
-			}
-			return null;
 		}
 
 		protected override void OnEnterCombat()
@@ -1129,19 +1183,6 @@ namespace WCell.RealmServer.Entities
 			base.OnLeaveCombat();
 
 			InitializeRegeneration();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		protected internal override void OnDamageAction(IDamageAction action)
-		{
-			if (!action.Victim.IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor)
-			{
-				action.Attacker.Proc(ProcTriggerFlags.GainExperience, this, action, true);
-			}
-
-			base.OnDamageAction(action);
 		}
 		#endregion
 
@@ -1538,11 +1579,6 @@ namespace WCell.RealmServer.Entities
 			{
 				m_entry.Create(Region, Position);
 			}
-		}
-
-		protected internal override void DeleteNow()
-		{
-			base.DeleteNow();
 		}
 
 		public override void Dispose(bool disposing)

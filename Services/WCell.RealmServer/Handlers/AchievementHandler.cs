@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Handlers
 						packet.WriteUInt((uint) completedAchievement.AchievementEntryId);
 						packet.WriteDateTime(completedAchievement.CompleteDate);
 					}
-					packet.WriteUInt(0xFFFFFFFF);
+					packet.Write(0xFFFFFFFFu);
 					chr.Client.Send(packet);
 				}
             }
@@ -44,24 +44,25 @@ namespace WCell.RealmServer.Handlers
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ACHIEVEMENT_EARNED, 30))
 			{
 				chr.EntityId.WritePacked(packet);
-				packet.WriteUInt((uint)achievementEntryId);
+				packet.Write((uint)achievementEntryId);
 				packet.WriteDateTime(DateTime.Now);
-				packet.WriteUInt(0);
+				packet.Write(0);
 				chr.Client.Send(packet);
 			}
 		}
 
-		public static void SendAchievmentStatus(AchievementProgressRecord achievementProgressRecord, Character chr)
+		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr, AchievementProgressRecord progress)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 8+4+8))
 			{
 				packet.WriteUInt((uint)achievementProgressRecord.AchievementCriteriaId);
-				packet.WriteULong(achievementProgressRecord.Counter); // data.appendPackGUID(progress->counter); we need this.
+				packet.WritePackedUInt64(1);					//	amount
+
 				chr.EntityId.WritePacked(packet);
-				packet.WriteUInt(0);
-				packet.WriteDateTime(achievementProgressRecord.Date);
-				packet.WriteUInt(0); // Duration
-				packet.WriteUInt(0); // Duration left
+				packet.Write(0);
+				packet.WriteDateTime(DateTime.Now);				// start time?
+				packet.Write(0);								// Duration
+				packet.Write(0);								// Duration left
 
 				chr.Client.Send(packet);
 			}

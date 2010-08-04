@@ -126,6 +126,10 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		public static Spell AddCustomSpell(uint id, string name)
 		{
+			if (Get(id) != null)
+			{
+				throw new ArgumentException("Invalid custom spell id is already in use: " + id + " - " + name);
+			}
 			var spell = new Spell
 			{
 				Id = id,
@@ -491,12 +495,13 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
+		    SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{
 				if (SpellEffectCreators[i] == null)
 				{
-					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffect(cast, effect);
+					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffectHandler(cast, effect);
 				}
 			}
 
@@ -514,7 +519,10 @@ namespace WCell.RealmServer.Spells
 
 		public static void UnsetHandler(SpellEffectType type)
 		{
-			SpellEffectCreators[(int)type] = null;
+			if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
+			{
+				SpellEffectCreators[(int) type] = null;
+			}
 		}
 
 		#endregion

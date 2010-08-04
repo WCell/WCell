@@ -26,11 +26,13 @@ using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells
 {
@@ -50,15 +52,21 @@ namespace WCell.RealmServer.Spells
 			ImplicitTargetType.ScriptedObjectLocation
 		};
 
+		public static HashSet<AuraType> ProcAuraTypes = new HashSet<AuraType>
+		                                                	{
+		                                                		AuraType.ProcTriggerSpell,
+		                                                		AuraType.ProcTriggerDamage,
+		                                                		AuraType.ProcTriggerSpellWithOverride
+		                                                	};
+
 		#region Variables
 		/// <summary>
-		/// Factor of the amount of AP to be added to the EffectValue
-		/// TODO: Change to int (%)
+		/// Factor of the amount of AP to be added to the EffectValue (1.0f = +100%)
 		/// </summary>
 		public float APValueFactor;
 
 		/// <summary>
-		/// Amount of Spell Power to be added to the EffectValue in %
+		/// Amount of Spell Power to be added to the EffectValue in % (1 = +1%)
 		/// </summary>
 		public int SpellPowerValuePct;
 
@@ -67,18 +75,31 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public float APPerComboPointValueFactor;
 
-		public bool IsUsed;
-
 		/// <summary>
 		/// Only use this effect if the caster is in the given form (if given)
 		/// </summary>
 		public ShapeshiftMask RequiredShapeshiftMask;
+
+		/// <summary>
+		/// The spell line that determines this SpellEffect's effect value.
+		/// If set, it will use the effect value of the effect that proc'ed this SpellEffect (if any)
+		/// to override it's own value.
+		/// </summary>
+		public bool OverrideEffectValue;
 
 		[NotPersistent]
 		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
 
 		[NotPersistent]
 		public AuraEffectHandlerCreator AuraEffectHandlerCreator;
+
+		/// <summary>
+		/// Explicitely defined spells that are somehow related to this effect.
+		/// Is used for procs, talent-modifiers and AddTargetTrigger-relations mostly. 
+		/// Can be used for other things.
+		/// </summary>
+		[NotPersistent]
+		public HashSet<Spell> AffectSpellSet;
 		#endregion
 
 		#region Auto generated Fields
@@ -411,8 +432,10 @@ namespace WCell.RealmServer.Spells
 					  HasTarget(ImplicitTargetType.TotemFire) ||
 					  HasTarget(ImplicitTargetType.TotemWater);
 
-			IsProc = IsProc || (AuraType == AuraType.ProcTriggerSpell && TriggerSpell != null) ||
-					 AuraType == AuraType.ProcTriggerDamage;
+			IsProc = IsProc || ProcAuraTypes.Contains(AuraType);
+
+			OverrideEffectValue = OverrideEffectValue || 
+				AuraType == AuraType.ProcTriggerSpellWithOverride;
 
 			IsHealEffect = EffectType == SpellEffectType.Heal ||
 						   EffectType == SpellEffectType.HealMaxHealth ||
@@ -435,7 +458,7 @@ namespace WCell.RealmServer.Spells
 				AffectMaskBitSet = Utility.GetSetIndices(AffectMask);
 			}
 
-			if (SpellEffectHandlerCreator == null && !IsUsed)
+			if (SpellEffectHandlerCreator == null)
 			{
 				SpellEffectHandlerCreator = SpellHandler.SpellEffectCreators[(int)EffectType];
 			}
@@ -478,41 +501,6 @@ namespace WCell.RealmServer.Spells
 			return ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB;
 		}
 
-		public override bool Equals(object obj)
-		{
-			return obj is SpellEffect && ((SpellEffect)obj).EffectType == EffectType;
-		}
-
-		public override int GetHashCode()
-		{
-			return EffectType.GetHashCode();
-		}
-
-		public override string ToString()
-		{
-			string triggerSpell;
-			if (TriggerSpell != null)
-			{
-				triggerSpell = " (" + TriggerSpell + ")";
-			}
-			else
-			{
-				triggerSpell = "";
-			}
-
-			string aura;
-			if (AuraType != AuraType.None)
-			{
-				aura = " (" + AuraType + ")";
-			}
-			else
-			{
-				aura = "";
-			}
-
-			return EffectType + triggerSpell + aura;
-		}
-
 		public bool HasTarget(ImplicitTargetType target)
 		{
 			return ImplicitTargetA == target || ImplicitTargetB == target;
@@ -528,6 +516,41 @@ namespace WCell.RealmServer.Spells
 			effect.BasePoints = BasePoints;
 			effect.DiceSides = DiceSides;
 		}
+
+		#region Auras
+		public AuraEffectHandler CreateAuraEffectHandler(ObjectReference caster,
+															  Unit target, ref SpellFailedReason failedReason)
+		{
+			return CreateAuraEffectHandler(caster, target, ref failedReason, null);
+		}
+
+		internal AuraEffectHandler CreateAuraEffectHandler(ObjectReference caster,
+			Unit target, ref SpellFailedReason failedReason, SpellCast triggeringCast)
+		{
+			var handler = AuraEffectHandlerCreator();
+
+			if (triggeringCast != null &&
+				triggeringCast.TriggerEffect != null &&
+				OverrideEffectValue)
+			{
+				if (Spell.Effects.Length > 1)
+				{
+					// it does not make sense to override multiple effects with a single effect...
+					log.Warn("Spell {0} had overriding SpellEffect although the spell that was triggered had {2} (> 1) effects",
+						Spell, Spell.Effects.Length);
+				}
+				handler.m_spellEffect = triggeringCast.TriggerEffect;
+			}
+			else
+			{
+				handler.m_spellEffect = this;
+			}
+
+			handler.BaseEffectValue = CalcEffectValue(caster);
+			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
+			return handler;
+		}
+		#endregion
 
 		#region Formulars
 		public int CalcEffectValue(ObjectReference casterReference)
@@ -558,16 +581,16 @@ namespace WCell.RealmServer.Spells
 
 			if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 			{
-				var apFactor = APValueFactor + (APPerComboPointValueFactor*caster.ComboPoints);
+				var apFactor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
 				var ap = Spell.IsRanged ? caster.TotalRangedAP : caster.TotalMeleeAP;
 
-				value += (int) (ap*apFactor + 0.5f); // implicit rounding
+				value += (int)(ap * apFactor + 0.5f); // implicit rounding
 			}
 			if (caster is Character)
 			{
 				if (SpellPowerValuePct != 0)
 				{
-					value += (SpellPowerValuePct*((Character) caster).GetDamageDoneMod(Spell.Schools[0]) + 50)/100;
+					value += (SpellPowerValuePct * ((Character)caster).GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
 				}
 			}
 			if (EffectIndex <= 2)
@@ -602,6 +625,7 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue(int level, int comboPoints)
 		{
+			// calculate effect value
 			var value = BasePoints;
 
 			// apply Unit boni
@@ -620,6 +644,25 @@ namespace WCell.RealmServer.Spells
 			return value;
 		}
 
+		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
+		{
+			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
+			{
+				return val;
+			}
+
+			var dmgMod = Spell.DamageMultipliers[EffectIndex];
+			if (caster != null)
+			{
+				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
+			}
+			if (dmgMod != 1)
+			{
+				return val = ((float)(Math.Pow(dmgMod, currentTargetNo) * val)).RoundInt();
+			}
+			return val;
+		}
+
 		public float GetRadius(ObjectReference caster)
 		{
 			var radius = Radius;
@@ -633,6 +676,144 @@ namespace WCell.RealmServer.Spells
 				return 5;
 			}
 			return radius;
+		}
+		#endregion
+
+		#region Modify Effects
+		public void ClearAffectMask()
+		{
+			AffectMask = new uint[3];
+		}
+
+		public void SetAffectMask(params SpellLineId[] abilities)
+		{
+			ClearAffectMask();
+			AddToAffectMask(abilities);
+		}
+
+		/// <summary>
+		/// Adds a set of spells to the explicite relationship set of this effect, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Only adds the spells, will not work on the spells' trigger spells.
+		/// </summary>
+		/// <param name="abilities"></param>
+		public void AddAffectingSpells(params SpellLineId[] abilities)
+		{
+			if (AffectSpellSet == null)
+			{
+				AffectSpellSet = new HashSet<Spell>();
+			}
+			foreach (var ability in abilities)
+			{
+				AffectSpellSet.AddRange(SpellLines.GetLine(ability));
+			}
+		}
+
+		/// <summary>
+		/// Adds a set of spells to the explicite relationship set of this effect, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Only adds the spells, will not work on the spells' trigger spells.
+		/// </summary>
+		/// <param name="abilities"></param>
+		public void AddAffectingSpells(params SpellId[] spells)
+		{
+			if (AffectSpellSet == null)
+			{
+				AffectSpellSet = new HashSet<Spell>();
+			}
+			foreach (var spellId in spells)
+			{
+				AffectSpellSet.AddRange(SpellHandler.Get(spellId));
+			}
+		}
+
+		/// <summary>
+		/// Adds a set of spells to this Effect's AffectMask, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Usually the mask also contains any spell that is triggered by the original spell.
+		/// 
+		/// If you get a warning that the wrong set is affected, use AddAffectingSpells instead.
+		/// </summary>
+		public void AddToAffectMask(params SpellLineId[] abilities)
+		{
+			var newMask = new uint[SpellConstants.SpellClassMaskSize];
+
+			// build new mask from abilities
+			if (abilities.Length != 1)
+			{
+				foreach (var ability in abilities)
+				{
+					var spell = SpellLines.GetLine(ability).FirstRank;
+					for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+					{
+						newMask[i] |= spell.SpellClassMask[i];
+					}
+				}
+			}
+			else
+			{
+				SpellLines.GetLine(abilities[0]).FirstRank.SpellClassMask.CopyTo(newMask, 0);
+			}
+
+			// verification
+			var affectedLines = SpellHandler.GetAffectedSpellLines(Spell.ClassId, newMask);
+			if (affectedLines.Count() != abilities.Length)
+			{
+				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
+					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
+					"You might want to use AddAffectingSpells instead!",
+					Spell, affectedLines.ToString(", "), abilities.ToString(", "));
+			}
+
+			for (int i = 0; i < SpellConstants.SpellClassMaskSize; i++)
+			{
+				AffectMask[i] |= newMask[i];
+			}
+		}
+
+		public void CopyAffectMaskTo(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] |= AffectMask[i];
+			}
+		}
+
+		public void RemoveAffectMaskFrom(uint[] mask)
+		{
+			for (var i = 0; i < AffectMask.Length; i++)
+			{
+				mask[i] ^= AffectMask[i];
+			}
+		}
+
+		public bool MatchesSpell(Spell spell)
+		{
+			return (spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask)) ||
+				(AffectSpellSet != null && AffectSpellSet.Contains(spell));
+		}
+
+		public void MakeProc(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
+		{
+			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+			IsProc = true;
+			ClearAffectMask();
+			AddAffectingSpells(exclusiveTriggers);
+			AuraEffectHandlerCreator = creator;
+		}
+
+		/// <summary>
+		/// Uses the AffectMask, rather than exclusive trigger spells. This is important if also spells
+		/// that are triggerd by the triggered spells are allowed to trigger this proc.
+		/// </summary>
+		public void MakeProcWithMask(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
+		{
+			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+			IsProc = true;
+			SetAffectMask(exclusiveTriggers);
+			AuraEffectHandlerCreator = creator;
 		}
 		#endregion
 
@@ -938,70 +1119,39 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-		#region Modify Effects
-		public void ClearAffectMask()
+		public override bool Equals(object obj)
 		{
-			AffectMask = new uint[3];
+			return obj is SpellEffect && ((SpellEffect)obj).EffectType == EffectType;
 		}
 
-		public void SetAffectMask(params SpellLineId[] abilities)
+		public override int GetHashCode()
 		{
-			ClearAffectMask();
-			AddToAffectMask(abilities);
+			return EffectType.GetHashCode();
 		}
 
-		public void AddToAffectMask(params SpellLineId[] abilities)
+		public override string ToString()
 		{
-			foreach (var ability in abilities)
+			string triggerSpell;
+			if (TriggerSpell != null)
 			{
-				var spell = SpellLines.GetLine(ability).FirstRank;
-				for (int i = 0; i < AffectMask.Length; i++)
-				{
-					AffectMask[i] |= spell.SpellClassMask[i];
-				}
+				triggerSpell = " (" + TriggerSpell + ")";
 			}
-		}
-
-		public void CopyAffectMaskTo(uint[] mask)
-		{
-			for (var i = 0; i < AffectMask.Length; i++)
+			else
 			{
-				mask[i] |= AffectMask[i];
-			}
-		}
-
-		public void RemoveAffectMaskFrom(uint[] mask)
-		{
-			for (var i = 0; i < AffectMask.Length; i++)
-			{
-				mask[i] ^= AffectMask[i];
-			}
-		}
-
-		#endregion
-
-		public bool MatchesSpell(Spell spell)
-		{
-			return spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask);
-		}
-
-		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
-		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
-			{
-				return val;
+				triggerSpell = "";
 			}
 
-			var dmgMod = Spell.DamageMultipliers[EffectIndex];
-			if (caster != null)
+			string aura;
+			if (AuraType != AuraType.None)
 			{
-				dmgMod = caster.Auras.GetModifiedFloat(SpellModifierType.ChainValueFactor, Spell, dmgMod);
+				aura = " (" + AuraType + ")";
 			}
-			if (dmgMod != 1)
+			else
 			{
-				return val = ((float)(Math.Pow(dmgMod, currentTargetNo) * val)).RoundInt();
+				aura = "";
 			}
-			return val;
+
+			return EffectType + triggerSpell + aura;
 		}
 	}
 }

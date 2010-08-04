@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Misc
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return Template.IsAttackerTriggerer == (triggerer == action.Attacker) && Template.Validator(triggerer, action);
+			return Template.Validator(triggerer, action);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)
@@ -228,8 +228,6 @@ namespace WCell.RealmServer.Misc
 			ProcAction = procAction;
 			m_stackCount = stackCount;
 		}
-
-		public bool IsAttackerTriggerer { get; internal set; }
 
 		public ProcValidator Validator { get; set; }
 
@@ -308,7 +306,7 @@ namespace WCell.RealmServer.Misc
 		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
 		{
 			//if (triggerer != null)
-			creator.SpellCast.ValidateAndTrigger(Spell, creator, triggerer, action);
+			SpellCast.ValidateAndTriggerNew(Spell, creator, triggerer, null, null, action);
 			return false;
 		}
 	}

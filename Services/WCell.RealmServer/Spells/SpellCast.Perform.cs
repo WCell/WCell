@@ -249,11 +249,6 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var isAutoShot = IsPlayerCast && m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat);
-			if (IsInstant && !m_spell.IsPhysicalAbility)
-			{
-				// send start packet (the logic for this is rather complicated)
-				SendCastStart();
-			}
 
 			// check immunities
 			if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
@@ -426,7 +421,8 @@ namespace WCell.RealmServer.Spells
 					{
 						OnCasted();
 					}
-					CheckHitAndSendSpellGo(!delayedImpact, runeMask);
+					// TODO: Fix this in case the spellcast got cancelled
+					CheckHitAndSendSpellGo(false, runeMask);
 				}
 
 				if (m_casting)
@@ -723,19 +719,29 @@ namespace WCell.RealmServer.Spells
 				UsedItem.OnUse();
 			}
 
+			// update AuraState
 			if (m_spell.RequiredCasterAuraState == AuraState.DodgeOrBlockOrParry)
 			{
 				caster.AuraState &= ~AuraStateMask.DodgeOrBlockOrParry;
 			}
 
+			// generate new proc event
+			if (m_spell.GeneratesProcEventOnCast && CasterUnit != null)
+			{
+				var target = m_targets.FirstOrDefault() as Unit;
+				CasterUnit.Proc(ProcTriggerFlags.SpellCast, target,
+								new SimpleUnitAction { Attacker = CasterUnit, Victim = target, IsCritical = false, Spell = m_spell },
+								true);
+			}
+
+			var hasRunes = UsesRunes;
 			if (!GodMode)
 			{
-				// add cooldown (if not autoshot)
-				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && !m_spell.IsTriggeredSpell)
+				// add cooldown (if not autoshot & not triggered by another spell)
+				if (!m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat) && TriggerEffect == null)
 				{
 					caster.Spells.AddCooldown(m_spell, CasterItem);
 				}
-
 				if (Client != null)
 				{
 					if (!m_spell.Attributes.HasFlag(SpellAttributes.StartCooldownAfterEffectFade) &&
@@ -746,10 +752,9 @@ namespace WCell.RealmServer.Spells
 				}
 
 				// consume runes
-				var hasRunes = UsesRunes;
 				if (hasRunes)
 				{
-					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell.RuneCostEntry);
+					((Character)caster).PlayerSpells.Runes.ConsumeRunes(Spell);
 				}
 
 				// consume power (might cancel the cast due to dying)
@@ -769,12 +774,6 @@ namespace WCell.RealmServer.Spells
 						return; // we dead!
 					}
 				}
-
-				// add runic power
-				if (hasRunes)
-				{
-					caster.Power += m_spell.RuneCostEntry.RunicPowerGain;
-				}
 			}
 			else if (!m_passiveCast && caster is Character)
 			{
@@ -782,8 +781,14 @@ namespace WCell.RealmServer.Spells
 				var spells = ((Character)caster).PlayerSpells;
 				if (spells != null)
 				{
-					spells.ClearCooldown(m_spell);
+					spells.ClearCooldown(m_spell, true);
 				}
+			}
+
+			// add runic power
+			if (hasRunes)
+			{
+				caster.Power += m_spell.RuneCostEntry.RunicPowerGain;
 			}
 
 			// trigger spells after casting spells (used for Forbearance etc)

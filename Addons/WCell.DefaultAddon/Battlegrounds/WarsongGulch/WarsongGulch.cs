@@ -498,16 +498,10 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		public static void AddFlagEffectHandler()
 		{
 			var hordeFlagSpell = SpellHandler.Get(SpellId.WarsongFlag);
-			var effect = hordeFlagSpell.AddEffect(SpellEffectType.ApplyAura);
-			effect.AuraType = AuraType.Dummy;
-			effect.ImplicitTargetA = ImplicitTargetType.Duel;
-			effect.AuraEffectHandlerCreator = () => new WarsongFlagsHandler();
+			var heffect = hordeFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
 
 			var allianceFlagSpell = SpellHandler.Get(SpellId.SilverwingFlag);
-			var efct = allianceFlagSpell.AddEffect(SpellEffectType.ApplyAura);
-			efct.AuraType = AuraType.Dummy;
-			efct.ImplicitTargetA = ImplicitTargetType.Duel;
-			efct.AuraEffectHandlerCreator = () => new WarsongFlagsHandler();
+			var aeffect = allianceFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
 
 			// Replacing the spelleffectHandler
 			SpellHandler.Apply(spell =>

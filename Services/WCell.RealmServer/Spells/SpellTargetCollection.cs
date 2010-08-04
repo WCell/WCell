@@ -63,6 +63,7 @@ namespace WCell.RealmServer.Spells
 			m_handlers = new List<SpellEffectHandler>(3);
 		}
 
+		#region Find & Validate Targets
 		public SpellFailedReason FindAllTargets()
 		{
 			if (m_initialized)
@@ -252,6 +253,7 @@ namespace WCell.RealmServer.Spells
 				RemoveRange(limit, Count - limit);
 			}
 		}
+		#endregion
 
 		#region Handlers
 		public delegate void TargetAdder(SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason);
@@ -432,8 +434,8 @@ namespace WCell.RealmServer.Spells
 			//        null);
 
 			targetHandlers[(int)ImplicitTargetType.NatureSummonLocation] = new TargetDefinition(
-					TargetMethods.AddSelf,
-					null);
+					TargetMethods.AddAreaDest,
+					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.NetherDrakeSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,

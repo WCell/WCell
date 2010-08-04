@@ -98,11 +98,18 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// The SpellEffect which triggered this AuraEffect
+		/// The SpellEffect which created this AuraEffect OR:
+		/// If the Aura was triggered by another Spell and the original SpellEffect had OverrideEffectValue = true,
+		/// this is the SpellEffect that triggered the creation of the Aura (through TriggerSpell, ProcTriggerSpell etc).
 		/// </summary>
 		public SpellEffect SpellEffect
 		{
 			get { return m_spellEffect; }
+		}
+
+		public void UpdateEffectValue()
+		{
+			BaseEffectValue = m_spellEffect.CalcEffectValue(m_aura.Caster);
 		}
 
 		/// <summary>		

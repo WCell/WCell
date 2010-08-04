@@ -10,7 +10,6 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Items.Enchanting;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.RacesClasses;

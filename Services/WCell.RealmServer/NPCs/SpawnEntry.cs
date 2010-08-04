@@ -16,7 +16,6 @@ using WCell.Util.Data;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
-using NLog;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -24,7 +23,7 @@ namespace WCell.RealmServer.NPCs
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public partial class SpawnEntry : IDataHolder, IWorldLocation
+	public partial class SpawnEntry : INPCDataHolder, IWorldLocation
 	{
 		private static uint highestSpawnId;
 		public static uint GenerateSpawnId()
@@ -39,6 +38,13 @@ namespace WCell.RealmServer.NPCs
 
 		public uint SpawnId;
 		public NPCId EntryId;
+
+		[NotPersistent]
+		public NPCEntry Entry
+		{
+			get;
+			set;
+		}
 
 		private MapId m_RegionId = MapId.End;
 
@@ -67,11 +73,6 @@ namespace WCell.RealmServer.NPCs
 		public float Orientation;
 		public AIMovementType MoveType;
 
-		public uint Bytes;
-		public uint Bytes2;
-		public EmoteType EmoteState;
-		public uint MountId;
-
 		/// <summary>
 		/// The amount of units to be spawned max
 		/// </summary>
@@ -93,19 +94,21 @@ namespace WCell.RealmServer.NPCs
 
 		public uint DisplayIdOverride;
 
-		public string AuraIdStr;
-
 		public uint EquipmentId;
 
 		public uint EventId;
 
 		public bool AutoSpawn = true;
 
-		[NotPersistent]
-		public NPCEquipmentEntry Equipment;
+		// addon data
+		public NPCAddonData AddonData
+		{
+			get;
+			set;
+		}
 
 		[NotPersistent]
-		public SpellId[] AuraIds;
+		public NPCEquipmentEntry Equipment;
 
 		/// <summary>
 		/// If the number of spawned creatures drops below this limit, the critical respawn-delay is used
@@ -120,10 +123,7 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// Max Delay when amount of spawned NPCs drops below CriticalAmount
 		/// </summary>
-		//public uint CriticalDelayMax;
-
-		[NotPersistent]
-		public NPCEntry Entry;
+		//public uint CriticalDelayMax;;
 
 		[NotPersistent]
 		public readonly LinkedList<WaypointEntry> Waypoints = new LinkedList<WaypointEntry>();
@@ -142,24 +142,6 @@ namespace WCell.RealmServer.NPCs
 				m_HasDefaultWaypoints = value;
 				Entry.MovesRandomly = false;
 			}
-		}
-
-		[NotPersistent]
-		public List<Spell> Auras;
-
-		public void AddAura(SpellId spellId)
-		{
-			var spell = SpellHandler.Get(spellId);
-			if (spell == null)
-			{
-				throw new ArgumentException("Trying to add invalid Spell: " + spellId);
-			}
-			Auras.Add(spell);
-		}
-
-		public void RemoveAura(SpellId spellId)
-		{
-			Auras.RemoveFirst(spell => spell.SpellId == spellId);
 		}
 
 		public int GetRandomRespawnMillis()
@@ -229,7 +211,7 @@ namespace WCell.RealmServer.NPCs
 				WaypointEntry wp;
 				if (i < len - 1)
 				{
-					wp = CreateWP(pos, pos.GetAngleTowards(wps[i+1]));
+					wp = CreateWP(pos, pos.GetAngleTowards(wps[i + 1]));
 				}
 				else if (i > 0)
 				{
@@ -335,8 +317,6 @@ namespace WCell.RealmServer.NPCs
 				DisplayIdOverride = 0;
 			}
 
-			SetAuras();
-
 			if (SpawnId > highestSpawnId)
 			{
 				highestSpawnId = SpawnId;
@@ -344,6 +324,11 @@ namespace WCell.RealmServer.NPCs
 			else if (SpawnId == 0)
 			{
 				SpawnId = GenerateSpawnId();
+			}
+
+			if (AddonData != null)
+			{
+				AddonData.InitAddonData(this);
 			}
 
 			if (RegionId != MapId.End)
@@ -372,50 +357,6 @@ namespace WCell.RealmServer.NPCs
 						rgn.ExecuteInContext(() => rgn.AddSpawn(this));
 					}
 				}
-			}
-		}
-
-		private void SetAuras()
-		{
-			if (!string.IsNullOrEmpty(AuraIdStr))
-			{
-				AuraIds = AuraIdStr.Split(new [] {' '}, StringSplitOptions.RemoveEmptyEntries).TransformArray(idStr =>
-				{
-					uint id;
-					if (!uint.TryParse(idStr.Trim(), out id))
-					{
-						LogManager.GetCurrentClassLogger().Warn("Invalidly formatted Aura ({0}) in AuraString for SpawnEntry: {1}", idStr, this);
-					}
-					return (SpellId)id;
-				});
-			}
-
-			if (AuraIds != null)
-			{
-				Auras = new List<Spell>(AuraIds.Length);
-				foreach (var auraId in AuraIds)
-				{
-					var spell = SpellHandler.Get(auraId);
-					if (spell != null)
-					{
-						if (spell.Durations.Min > 0 && spell.Durations.Min < int.MaxValue)
-						{
-							// not permanent -> Spell
-							if (Entry.Spells == null || !Entry.Spells.ContainsKey(spell.Id))
-							{
-								Entry.AddSpell(spell);
-							}
-						}
-						else
-						{
-							Auras.Add(spell);
-						}
-					}
-				}
-			}
-			else
-			{
-				Auras = new List<Spell>(1);
 			}
 		}
 

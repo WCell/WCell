@@ -660,6 +660,8 @@ namespace WCell.RealmServer.Global
 						if (World.Paused)
 						{
 							// must ensure that IsRunning does not change during World Pause
+							// in order to prevent dead-locks, we cannot allow to wait for the World to unpause
+							// at this point
 							throw new InvalidOperationException("Tried to start Region while World is paused.");
 						}
 
@@ -1236,14 +1238,14 @@ namespace WCell.RealmServer.Global
 						var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
 
 						// Update Object
-						var ticks = UpdatePriorityTicks[(int)priority];
-						if (tickMatch % ticks == 0)
+						//var ticks = UpdatePriorityTicks[(int)priority];
+						//if (tickMatch % ticks == 0)
 						{
-							if (ticks > 1)
-							{
-								obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
-							}
-							else
+							//if (ticks > 1)
+							//{
+							//    obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
+							//}
+							//else
 							{
 								obj.Update(objUpdateDelta);
 							}
@@ -2446,7 +2448,6 @@ namespace WCell.RealmServer.Global
 				if (action.Victim.YieldsXpOrHonor)
 				{
 					var attacker = ((Character)action.Attacker);
-					attacker.Proc(ProcTriggerFlags.GainExperience, action.Victim, action, true);
 					attacker.OnHonorableKill(action);
 					OnHonorableKill(action);
 				}

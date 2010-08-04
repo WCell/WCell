@@ -188,10 +188,6 @@ namespace WCell.RealmServer.Spells
 				OwnerChar.Talents.Remove(spell.Talent.Id);
 			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
-			if (spell.IsPassive)
-			{
-				Owner.Auras.Cancel(spell);
-			}
 		}
 
 		/// <summary>
@@ -204,6 +200,11 @@ namespace WCell.RealmServer.Spells
 			m_sendPackets = false;
 			m_lock = new object();
 			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
+
+			if (m_runes != null)
+			{
+				m_runes.OnOwnerLoggedOut();
+			}
 
 			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
 			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
@@ -236,7 +237,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			m_byId.Clear();
+			base.Clear();
 		}
 		#endregion
 
@@ -587,7 +588,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory = true)
 		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)

@@ -38,6 +38,28 @@ namespace WCell.RealmServer.Spells.Effects
 	}
 
 	/// <summary>
+	/// Deal EffectValue% damage (don't add further modifiers)
+	/// </summary>
+	public class SchoolDamagePercentEffectHandler : SpellEffectHandler
+	{
+		public SchoolDamagePercentEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		protected override void Apply(WorldObject target)
+		{
+			var value = (CalcDamageValue() * ((Unit)target).MaxHealth + 50) / 100;
+			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, value, false);
+		}
+
+		public override ObjectTypes TargetType
+		{
+			get { return ObjectTypes.Unit; }
+		}
+	}
+
+	/// <summary>
 	/// Deals EffectValue in % of Melee AP
 	/// </summary>
 	public class SchoolDamageByAPPctEffectHandler : SchoolDamageEffectHandler

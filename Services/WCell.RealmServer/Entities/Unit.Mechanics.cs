@@ -535,6 +535,10 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		private bool IsAnySetNoCheck(bool[] set)
 		{
+			if (m_mechanics == null)
+			{
+				return false;
+			}
 			for (var i = 0; i < set.Length; i++)
 			{
 				if (set[i] && m_mechanics[i] > 0)
@@ -693,7 +697,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds immunity against given SpellMechanic-school
 		/// </summary>
-		public void IncMechImmunityCount(SpellMechanic mechanic)
+		public void IncMechImmunityCount(SpellMechanic mechanic, Spell exclude)
 		{
 			if (m_mechanicImmunities == null)
 			{
@@ -705,6 +709,9 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
+					aura.Spell != exclude &&
+					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
+					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
 					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 

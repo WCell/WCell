@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Misc
 	#endregion
 
 	#region AuraRemovedAction
-	public class AuraRemovedAction : IUnitAction
+	public class AuraAction : IUnitAction
 	{
 		public Unit Attacker
 		{
@@ -301,9 +301,14 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public void IncreaseDamagePercent(int pct)
+		public void ModDamagePercent(int pct)
 		{
-			m_Damage = (m_Damage * pct + 50) / 100;
+			m_Damage += (m_Damage * pct + 50) / 100;
+		}
+
+		public int GetDamagePercent(int percent)
+		{
+			return (m_Damage * percent + 50) / 100;
 		}
 
 		private int m_Damage;
@@ -477,7 +482,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.RangedHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -485,7 +490,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.MeleeHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
@@ -520,7 +525,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackOther;
+					flags |= ProcTriggerFlags.RangedHitOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -528,7 +533,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackOther;
+					flags |= ProcTriggerFlags.MeleeHitOther;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHitOther;

@@ -314,8 +314,12 @@ namespace WCell.RealmServer.Modifiers
 					regen = unit.BasePower / 20;
 				}
 
-				regen += unit.IntMods[(int)StatModifierInt.PowerRegen];
-				regen = GetMultiMod((int)unit.FloatMods[(int)StatModifierFloat.PowerRegen], regen);
+				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat)
+				{
+					// runic power bonuses only apply during combat
+					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
+					regen = GetMultiMod((int) unit.FloatMods[(int) StatModifierFloat.PowerRegen], regen);
+				}
 			}
 
 			unit.PowerRegenPerTick = regen;
@@ -508,14 +512,14 @@ namespace WCell.RealmServer.Modifiers
 		{
 			if (unit.OffHandWeapon != null)
 			{
-				var apBonus = (unit.TotalMeleeAP * unit.OffHandAttackTime) / 14000;
+				var apBonus = (unit.TotalMeleeAP * unit.OffHandAttackTime + 7000) / 14000;	// rounded
 				var min = (unit.OffHandWeapon.Damages.TotalMin() + apBonus) / 2;
 				var max = (unit.OffHandWeapon.Damages.TotalMax() + apBonus) / 2;
 				if (unit is Character)
 				{
 					var bonus = ((Character)unit).OffhandDmgPctMod;
-					min = ((min * bonus) + 50) / 100; // rounded
-					max = ((max * bonus) + 50) / 100; // rounded
+					min += ((min * bonus) + 50) / 100; // rounded
+					max += ((max * bonus) + 50) / 100; // rounded
 				}
 				unit.MinOffHandDamage = min;
 				unit.MaxOffHandDamage = max;

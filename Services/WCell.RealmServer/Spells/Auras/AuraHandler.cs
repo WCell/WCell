@@ -87,6 +87,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.DamageImmunity] = () => new DamageImmunityHandler();
 			EffectHandlers[(int)AuraType.DispelImmunity] = () => new DispelImmunityHandler();
 			EffectHandlers[(int)AuraType.ProcTriggerSpell] = () => new ProcTriggerSpellHandler();
+			EffectHandlers[(int)AuraType.ProcTriggerSpellWithOverride] = () => new ProcTriggerSpellHandler();		// TODO: Might need some tweaks
 			EffectHandlers[(int)AuraType.ProcTriggerDamage] = () => new ProcTriggerDamageHandler();
 			EffectHandlers[(int)AuraType.TrackCreatures] = () => new TrackCreaturesHandler();
 			EffectHandlers[(int)AuraType.TrackResources] = () => new TrackResourcesHandler();
@@ -212,6 +213,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.EnableCritical] = () => new EnableCriticalHandler();
 			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
 			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
+			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)
@@ -221,67 +223,6 @@ namespace WCell.RealmServer.Spells.Auras
 					EffectHandlers[i] = () => new AuraVoidHandler();
 				}
 			}
-		}
-		#endregion
-
-		#region EffectHandlers
-
-		public static List<AuraEffectHandler> CreateEffectHandlers(Spell spell,
-			ObjectReference caster,
-			Unit target,
-			bool beneficial)
-		{
-			return CreateEffectHandlers(spell.AuraEffects, caster, target, beneficial);
-		}
-
-		public static List<AuraEffectHandler> CreateEffectHandlers(SpellEffect[] effects, ObjectReference caster,
-			Unit target, bool beneficial)
-		{
-			if (effects == null)
-				return null;
-
-			try
-			{
-				List<AuraEffectHandler> effectHandlers = null;
-				var failReason = SpellFailedReason.Ok;
-
-				for (var i = 0; i < effects.Length; i++)
-				{
-					var effect = effects[i];
-					if (effect.HarmType == HarmType.Beneficial || !beneficial)
-					{
-						var effectHandler = CreateEffectHandler(effect, caster, target, ref failReason);
-						if (failReason != SpellFailedReason.Ok)
-						{
-							return null;
-						}
-
-						if (effectHandlers == null)
-						{
-							effectHandlers = new List<AuraEffectHandler>(3);
-						}
-						effectHandlers.Add(effectHandler);
-					}
-				}
-				return effectHandlers;
-			}
-			catch (Exception e)
-			{
-				LogUtil.ErrorException(e, "Failed to create AuraEffectHandlers for: " + effects.GetWhere(effect => effect != null).Spell);
-				return null;
-			}
-		}
-
-		public static AuraEffectHandler CreateEffectHandler(SpellEffect spellEffect, ObjectReference caster, 
-			Unit target, ref SpellFailedReason failedReason, SpellCast triggeringCast = null)
-		{
-			var handler = spellEffect.AuraEffectHandlerCreator();
-
-			handler.m_spellEffect = spellEffect;
-			handler.BaseEffectValue = spellEffect.CalcEffectValue(caster);
-
-			handler.CheckInitialize(triggeringCast, caster, target, ref failedReason);
-			return handler;
 		}
 		#endregion
 

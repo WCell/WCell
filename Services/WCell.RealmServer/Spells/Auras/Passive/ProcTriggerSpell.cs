@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			else
 			{
 				SpellCast.ValidateAndTriggerNew(m_spellEffect.TriggerSpell, m_aura.CasterReference, Owner, triggerer, 
-					m_aura.Controller as SpellChannel, m_aura.UsedItem, action);
+					m_aura.Controller as SpellChannel, m_aura.UsedItem, action, m_spellEffect);
 			}
 		}
 	}

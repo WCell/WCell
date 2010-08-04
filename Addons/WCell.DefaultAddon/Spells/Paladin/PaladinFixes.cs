@@ -21,7 +21,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		/// </summary>
 		public static readonly SpellLineId[] PaladinAuras = new[]
 		{
-		                                           		SpellLineId.PaladinDevotionAura, SpellLineId.PaladinCrusaderAura,
+			SpellLineId.PaladinDevotionAura, SpellLineId.PaladinCrusaderAura,
 		                                           		SpellLineId.PaladinConcentrationAura,
 		                                           		SpellLineId.PaladinFireResistanceAura,
 		                                           		SpellLineId.PaladinFrostResistanceAura,
@@ -84,7 +84,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// Custom proc (target = the one who is blessed): 
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
 				spell.AddProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.RangedAttackOther,
+					ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.BlessingOfSanctuary)
 					));
@@ -130,6 +130,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 							   SpellId.AvengingWrathMarker, SpellId.Forbearance);
 		}
 
+		#region Holy Shock
 		private static void FixHolyShock()
 		{
 			AddHolyShockSpell(SpellId.PaladinHolyHolyShockRank1, SpellId.ClassSkillHolyShockRank1_2, SpellId.ClassSkillHolyShockRank1);
@@ -146,7 +147,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new HolyShockHandler(cast, effect, heal, dmg); }, spellid);
 		}
 
-		#region Holy Shock
 		public class HolyShockHandler : SpellEffectHandler
 		{
 			SpellId heal;

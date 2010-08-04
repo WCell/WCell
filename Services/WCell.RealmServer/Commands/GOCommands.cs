@@ -149,6 +149,11 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
+				Select(trigger);
+			}
+
+			public static void Select(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
 				var go = GOSelectMgr.Instance.SelectClosest(trigger.Args.Character);
 				if (go != null)
 				{
@@ -294,6 +299,40 @@ namespace WCell.RealmServer.Commands
 				{
 					var value = trigger.Text.NextUInt(1);
 					go.SendCustomAnim(value);
+				}
+			}
+		}
+		#endregion
+
+		#region Toggle
+		public class GoToggleCommand : SubCommand
+		{
+			protected GoToggleCommand() { }
+
+			protected override void Initialize()
+			{
+				Init("Toggle", "T");
+				EnglishParamInfo = "[<value>]";
+				EnglishDescription = "Toggles the state on the selected GO or the one in front of you";
+			}
+
+			public override RoleStatus DefaultRequiredStatus
+			{
+				get { return RoleStatus.Staff; }
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var go = trigger.Args.Character.ExtraInfo.SelectedGO;
+				if (go == null)
+				{
+					SelectCommand.Select(trigger);
+				}
+				if (go != null)
+				{
+					var state = trigger.Text.HasNext ? trigger.Text.NextBool() : !go.IsEnabled;
+					go.IsEnabled = state;
+					trigger.Reply("{0} is now {1}", go, state);
 				}
 			}
 		}

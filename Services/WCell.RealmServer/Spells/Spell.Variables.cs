@@ -47,11 +47,6 @@ namespace WCell.RealmServer.Spells
 		public HashSet<Spell> TargetProcSpells;
 
 		/// <summary>
-		/// Set of Spells which can be proc'ed, when removed from the owner of this aura (if the owner owns those spells).
-		/// </summary>
-		public HashSet<Spell> RemovalProcSpells;
-
-		/// <summary>
 		/// Custom proc handlers to be added to targets of this Aura (this spell must be an Aura).
 		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
 		/// </summary>
@@ -66,6 +61,13 @@ namespace WCell.RealmServer.Spells
 		/// Wheter this Aura can proc
 		/// </summary>
 		public bool IsProc;
+
+		/// <summary>
+		/// Whether this spell is supposed to proc something.
+		/// If set to true, this Spell will generate a SpellCast proc event when casted.
+		/// Don't use for damage spells, else they will generate 2 events!
+		/// </summary>
+		public bool GeneratesProcEventOnCast;
 
 		/// <summary>
 		/// Amount of millis before this Spell may proc another time (if it is a proc)

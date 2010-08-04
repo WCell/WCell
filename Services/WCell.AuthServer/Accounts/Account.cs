@@ -244,7 +244,6 @@ namespace WCell.AuthServer.Accounts
 
 		#endregion
 
-
 		public string LastIPStr
 		{
 			get

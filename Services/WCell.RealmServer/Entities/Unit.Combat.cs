@@ -65,12 +65,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Used to determine melee distance
 		/// </summary>
-		public static float DefaultMeleeDistance = 3f;
+		public static float DefaultMeleeCombatDistance = 5f;
 
 		/// <summary>
 		/// Used to determine ranged attack distance
 		/// </summary>
-		public static float DefaultRangedDistance = 40f;
+		public static float DefaultRangedCombatDistance = 40f;
 		#endregion
 
 		/// <summary>
@@ -652,17 +652,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public int CalcParryChance(Unit attacker)
 		{
-			float parryChance = 0;
-
-			if (this is Character)
-			{
-				var def = (Character)this;
-				parryChance += def.ParryChance;
-			}
-			else
-			{
-				return 5;
-			}
+			var parryChance = ParryChance;
 
 			if (attacker is Character)
 			{
@@ -1207,9 +1197,15 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
+					// Procs
 					if (action.Weapon == null || action.Weapon != OffHandWeapon)
 					{
-						// proc (if not offhand)
+						var gainExpProc = !IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor;
+						if (gainExpProc)
+						{
+							attackerProcTriggerFlags |= ProcTriggerFlags.GainExperience;
+						}
+
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
 						Proc(targetProcTriggerFlags, action.Attacker, action, false);
 					}
@@ -1334,7 +1330,7 @@ namespace WCell.RealmServer.Entities
 				if (weapon.IsRanged)
 				{
 					var min = GetMinAttackRange(weapon, target);
-					if (distSq < min*min)
+					if (distSq < min * min)
 					{
 						return false;
 					}

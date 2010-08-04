@@ -15,6 +15,10 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		public Spell ToggleAuraSpell { get; set; }
 		private Aura activeToggleAura;
 
+		public ToggleAuraHandler()
+		{
+		}
+
 		public ToggleAuraHandler(SpellId auraId)
 		{
 			ToggleAuraSpell = SpellHandler.Get(auraId);
@@ -24,6 +28,11 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 		{
 			// add aura
 			// first check, if Aura already exists (eg. because it was loaded from DB)
+			if (ToggleAuraSpell == null)
+			{
+				ToggleAuraSpell = m_spellEffect.TriggerSpell;
+			}
+
 			activeToggleAura = Owner.Auras[ToggleAuraSpell];
 			if (activeToggleAura == null)
 			{

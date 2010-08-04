@@ -1,2 +1,4 @@
-- fixed some more regen issues / some more rune issues (but still misbehaving)
-- fixed weapon range mods / hit chance mods
+- to test: DeathKnightUnholyRageOfRivendare
+- fixed Auras to refresh instead of recreating the Aura when the same Rank is re-applied / updated Aura's effect value when stacked or refreshed
+- improved overridable SpellEffects
+- fixed spell cast packet sending

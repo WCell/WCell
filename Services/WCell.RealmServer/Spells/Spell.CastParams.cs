@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells
 
 			// Power Type			
 			if (CostsPower && 
-				PowerType != caster.PowerType && 
+				PowerType != caster.PowerType &&
 				PowerType != PowerType.Health &&
 				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
 			{

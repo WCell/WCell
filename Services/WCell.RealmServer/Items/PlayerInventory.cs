@@ -2482,6 +2482,7 @@ namespace WCell.RealmServer.Items
 			// ItemMgr was initialized after login 
 			// which can only happen once and usually only on developing machines
 			var records = m_owner.Record.LoadedItems;
+			if (records == null) return;
 			var containers = new List<BaseInventory>(7) { this };
 			var items = new List<Item>(records.Count);
 
