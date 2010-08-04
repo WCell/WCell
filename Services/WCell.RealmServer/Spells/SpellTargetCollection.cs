@@ -82,10 +82,8 @@ namespace WCell.RealmServer.Spells
 			var firstEffect = FirstHandler.Effect;
 			if (firstEffect.Spell.IsPreventionDebuff)
 			{
-				// need to call CheckValidTarget nevertheless
+				// need to call InitializeTarget nevertheless
 				var err = SpellFailedReason.Ok;
-
-
 
 				foreach (var handler in m_handlers)
 				{
@@ -465,7 +463,7 @@ namespace WCell.RealmServer.Spells
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.SelectedEnemyChanneled] = new TargetDefinition(
-					TargetMethods.AddSelection,
+					TargetMethods.AddChannelObject,
 					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.Self] = new TargetDefinition(
@@ -716,6 +714,26 @@ namespace WCell.RealmServer.Spells.Extensions
 			}
 		}
 
+		public static void AddChannelObject(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
+		{
+			var caster = targets.Cast.CasterUnit;
+			if (caster != null)
+			{
+				if (caster.ChannelObject != null)
+				{
+					if ((failReason = targets.ValidateTarget(caster.ChannelObject, filter)) == SpellFailedReason.Ok)
+					{
+						targets.Add(caster.ChannelObject);
+					}
+				}
+				else
+				{
+					failReason = SpellFailedReason.BadTargets;
+				}
+			}
+		}
+
+
 		/// <summary>
 		/// Adds targets around the caster
 		/// </summary>
@@ -801,6 +819,10 @@ namespace WCell.RealmServer.Spells.Extensions
 			if (!(targets.Cast.Selected is GameObject))
 			{
 				failReason = SpellFailedReason.BadTargets;
+			}
+			else
+			{
+				targets.Add(targets.Cast.Selected);
 			}
 		}
 
