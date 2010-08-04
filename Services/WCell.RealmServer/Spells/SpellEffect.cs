@@ -52,223 +52,11 @@ namespace WCell.RealmServer.Spells
 			ImplicitTargetType.ScriptedObjectLocation
 		};
 
-		public static HashSet<AuraType> ProcAuraTypes = new HashSet<AuraType>
-		                                                	{
+		public static HashSet<AuraType> ProcAuraTypes = new HashSet<AuraType> {
 		                                                		AuraType.ProcTriggerSpell,
 		                                                		AuraType.ProcTriggerDamage,
 		                                                		AuraType.ProcTriggerSpellWithOverride
 		                                                	};
-
-		#region Variables
-		/// <summary>
-		/// Factor of the amount of AP to be added to the EffectValue (1.0f = +100%)
-		/// </summary>
-		public float APValueFactor;
-
-		/// <summary>
-		/// Amount of Spell Power to be added to the EffectValue in % (1 = +1%)
-		/// </summary>
-		public int SpellPowerValuePct;
-
-		/// <summary>
-		/// Factor of the amount of AP to be added to the EffectValue per combo point
-		/// </summary>
-		public float APPerComboPointValueFactor;
-
-		/// <summary>
-		/// Only use this effect if the caster is in the given form (if given)
-		/// </summary>
-		public ShapeshiftMask RequiredShapeshiftMask;
-
-		/// <summary>
-		/// The spell line that determines this SpellEffect's effect value.
-		/// If set, it will use the effect value of the effect that proc'ed this SpellEffect (if any)
-		/// to override it's own value.
-		/// </summary>
-		public bool OverrideEffectValue;
-
-		[NotPersistent]
-		public SpellEffectHandlerCreator SpellEffectHandlerCreator;
-
-		[NotPersistent]
-		public AuraEffectHandlerCreator AuraEffectHandlerCreator;
-
-		/// <summary>
-		/// Explicitely defined spells that are somehow related to this effect.
-		/// Is used for procs, talent-modifiers and AddTargetTrigger-relations mostly. 
-		/// Can be used for other things.
-		/// </summary>
-		[NotPersistent]
-		public HashSet<Spell> AffectSpellSet;
-		#endregion
-
-		#region Auto generated Fields
-		/// <summary>
-		/// The spell to which this effect belongs
-		/// </summary>
-		[NotPersistent]
-		public Spell Spell;
-
-		public int EffectIndex;
-
-		[NotPersistent]
-		public int ValueMin, ValueMax;
-
-		[NotPersistent]
-		public bool IsAuraEffect;
-
-		/// <summary>
-		/// Applies to targets in a specific area
-		/// </summary>
-		[NotPersistent]
-		public bool IsAreaEffect;
-
-		/// <summary>
-		/// Whether this requires the caster to target the area
-		/// </summary>
-		[NotPersistent]
-		public bool IsTargetAreaEffect;
-
-		[NotPersistent]
-		public bool HasSingleTarget;
-
-		/// <summary>
-		/// Applies to targets in a specific area
-		/// </summary>
-		[NotPersistent]
-		public bool IsAreaAuraEffect;
-
-		/// <summary>
-		/// Summons something
-		/// </summary>
-		[NotPersistent]
-		public bool IsSummon;
-
-		/// <summary>
-		/// Whether it happens multiple times (certain Auras or channeled effects)
-		/// </summary>
-		[NotPersistent]
-		public bool IsPeriodic;
-
-		/// <summary>
-		/// Probably useless
-		/// </summary>
-		[NotPersistent]
-		public bool _IsPeriodicAura;
-
-		/// <summary>
-		/// Whether this effect has actual Objects as targets
-		/// </summary>
-		[NotPersistent]
-		public bool HasTargets;
-
-		/// <summary>
-		/// Whether this is a heal-effect
-		/// </summary>
-		[NotPersistent]
-		public bool IsHealEffect;
-
-		/// <summary>
-		/// Whether this Effect is triggered by Procs
-		/// </summary>
-		[NotPersistent]
-		public bool IsProc;
-
-		/// <summary>
-		/// Harmful, neutral or beneficial
-		/// </summary>
-		[NotPersistent]
-		public HarmType HarmType;
-
-		/// <summary>
-		/// Whether this effect gives a flat bonus to your strike's damage
-		/// </summary>
-		[NotPersistent]
-		public bool IsStrikeEffectFlat;
-
-		/// <summary>
-		/// Whether this effect gives a percent bonus to your strike's damage
-		/// </summary>
-		[NotPersistent]
-		public bool IsStrikeEffectPct;
-
-		public bool IsStrikeEffect
-		{
-			get { return IsStrikeEffectFlat || IsStrikeEffectPct; }
-		}
-
-		/// <summary>
-		/// Wheter this Effect enchants an Item
-		/// </summary>
-		public bool IsEnchantmentEffect;
-
-		/// <summary>
-		/// All set bits of the MiscValue field. 
-		/// This is useful for all SpellEffects whose MiscValue is a flag field.
-		/// </summary>
-		[NotPersistent]
-		public uint[] MiscBitSet;
-
-		/// <summary>
-		/// Set to the actual (min) EffectValue
-		/// </summary>
-		[NotPersistent]
-		public int MinValue;
-
-		/// <summary>
-		/// Whether this effect boosts other Spells
-		/// </summary>
-		[NotPersistent]
-		public bool IsEnhancer;
-
-		/// <summary>
-		/// Whether this Effect summons a Totem
-		/// </summary>
-		[NotPersistent]
-		public bool IsTotem;
-
-		public bool HasAffectMask;
-
-		public bool IsModifierEffect;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public uint[] AffectMaskBitSet;
-
-		/// <summary>
-		/// Whether this spell effect (probably needs special handling)
-		/// </summary>
-		[NotPersistent]
-		public bool IsScripted
-		{
-			get { return EffectType == SpellEffectType.Dummy || EffectType == SpellEffectType.ScriptEffect; }
-		}
-		#endregion
-
-		public Type MiscValueType
-		{
-			get
-			{
-				if (IsAuraEffect)
-				{
-					return GetAuraEffectMiscValueType(AuraType);
-				}
-				return GetSpellEffectEffectMiscValueType(EffectType);
-			}
-		}
-
-		public Type MiscValueBType
-		{
-			get
-			{
-				if (IsAuraEffect)
-				{
-					return GetAuraEffectMiscValueBType(AuraType);
-				}
-				return GetSpellEffectEffectMiscValueBType(EffectType);
-			}
-		}
 
 		/// <summary>
 		/// Only valid for SpellEffects of type Summon
@@ -434,7 +222,7 @@ namespace WCell.RealmServer.Spells
 
 			IsProc = IsProc || ProcAuraTypes.Contains(AuraType);
 
-			OverrideEffectValue = OverrideEffectValue || 
+			OverrideEffectValue = OverrideEffectValue ||
 				AuraType == AuraType.ProcTriggerSpellWithOverride;
 
 			IsHealEffect = EffectType == SpellEffectType.Heal ||
@@ -518,6 +306,45 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Auras
+		/// <summary>
+		/// Adds a set of Auras of which at least one need to be active for this SpellEffect to activate
+		/// </summary>
+		public void AddRequiredActivationAuras(params SpellLineId[] lines)
+		{
+			foreach (var id in lines)
+			{
+				AddRequiredActivationAuras(id.GetLine().ToArray());
+			}
+		}
+
+		public void AddRequiredActivationAuras(params SpellId[] ids)
+		{
+			var spells = new Spell[ids.Length];
+			for (var i = 0; i < ids.Length; i++)
+			{
+				var spellId = ids[i];
+				var spell = SpellHandler.Get(spellId);
+				if (spell == null)
+				{
+					throw new ArgumentException("Invalid spell in AddRequiredActivationAuras: " + spellId);
+				}
+				spells[i] = spell;
+			}
+			AddRequiredActivationAuras(spells);
+		}
+
+		public void AddRequiredActivationAuras(params Spell[] spells)
+		{
+			if (RequiredActivationAuras == null)
+			{
+				RequiredActivationAuras = spells;
+			}
+			else
+			{
+				ArrayUtil.Concat(ref RequiredActivationAuras, spells);
+			}
+		}
+
 		public AuraEffectHandler CreateAuraEffectHandler(ObjectReference caster,
 															  Unit target, ref SpellFailedReason failedReason)
 		{
@@ -1041,6 +868,30 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region MiscValue Types
+		public Type MiscValueType
+		{
+			get
+			{
+				if (IsAuraEffect)
+				{
+					return GetAuraEffectMiscValueType(AuraType);
+				}
+				return GetSpellEffectEffectMiscValueType(EffectType);
+			}
+		}
+
+		public Type MiscValueBType
+		{
+			get
+			{
+				if (IsAuraEffect)
+				{
+					return GetAuraEffectMiscValueBType(AuraType);
+				}
+				return GetSpellEffectEffectMiscValueBType(EffectType);
+			}
+		}
+
 		internal static void InitMiscValueTypes()
 		{
 			AuraEffectMiscValueTypes[(int)AuraType.AddModifierPercent] = typeof(SpellModifierType);

@@ -57,6 +57,11 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Set of Auras that are only applied in certain AuraStates
 		/// </summary>
 		List<Aura> auraStateRestrictedAuras;
+
+		/// <summary>
+		/// Set of Auras which have effects that depend on other Auras
+		/// </summary>
+		List<Aura> aurasWithAuraDependentEffects;
 		#endregion
 
 		public PlayerAuraCollection(Character owner)
@@ -68,6 +73,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public override void AddAura(Aura aura, bool start)
 		{
 			base.AddAura(aura, start);
+			OnAuraAddedOrRemoved();
 			if (aura.Spell.IsPassive)
 			{
 				if (aura.Spell.HasItemRequirements)
@@ -83,11 +89,17 @@ namespace WCell.RealmServer.Spells.Auras
 					AuraStateRestrictedAuras.Add(aura);
 				}
 			}
+			if (aura.Spell.HasAuraDependentEffects)
+			{
+				AurasWithAuraDependentEffects.Add(aura);
+			}
+
 		}
 
 		protected internal override void Cancel(Aura aura)
 		{
 			base.Cancel(aura);
+			OnAuraAddedOrRemoved();
 			if (aura.Spell.IsPassive)
 			{
 				if (aura.Spell.HasItemRequirements)
@@ -102,6 +114,10 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					AuraStateRestrictedAuras.Remove(aura);
 				}
+			}
+			if (aura.Spell.HasAuraDependentEffects)
+			{
+				AurasWithAuraDependentEffects.Remove(aura);
 			}
 		}
 		#endregion
@@ -129,7 +145,7 @@ namespace WCell.RealmServer.Spells.Auras
 					if (!aura.IsActivated)
 					{
 						aura.IsActivated = 
-							CheckRestrictions(aura, false) &&
+							MayActivate(aura, false) &&
 							aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
 					}
 				}
@@ -146,7 +162,7 @@ namespace WCell.RealmServer.Spells.Auras
 					if (aura.IsActivated)
 					{
 						aura.IsActivated =
-							CheckRestrictions(aura, false) &&
+							MayActivate(aura, false) &&
 							aura.Spell.CheckItemRestrictionsWithout(plr.Inventory, item) == SpellFailedReason.Ok;
 					}
 				}
@@ -175,21 +191,13 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					if (aura.Spell.RequiredShapeshiftMask != 0)
 					{
-						// the entire Aura is toggled
-						if (CheckRestrictions(aura))
-						{
-							aura.IsActivated = true; // Aura is running
-						}
-						else
-						{
-							aura.IsActivated = false;	// Aura is off
-							continue;
-						}
+						// toggle Aura
+						aura.IsActivated = MayActivate(aura);
 					}
 					else if (aura.Spell.HasShapeshiftDependentEffects)
 					{
-						// the Aura state itself did not change
-						aura.ReEvaluateNonPeriodicEffects();
+						// the Aura activation state itself did not change
+						aura.ReEvaluateNonPeriodicHandlerRequirements();
 					}
 				}
 			}
@@ -213,25 +221,53 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (auraStateRestrictedAuras != null)
 			{
-				var state = Owner.AuraState;
 				foreach (var aura in auraStateRestrictedAuras)
 				{
-					// Is Aura not in the right state?
-					if (state.HasAnyFlag(aura.Spell.RequiredCasterAuraState) != aura.IsActivated)
+					aura.IsActivated = MayActivate(aura);
+				}
+			}
+		}
+		#endregion
+
+		#region Auras dependent on other Auras
+		List<Aura> AurasWithAuraDependentEffects
+		{
+			get
+			{
+				if (aurasWithAuraDependentEffects == null)
+				{
+					aurasWithAuraDependentEffects = new List<Aura>(2);
+				}
+				return aurasWithAuraDependentEffects;
+			}
+		}
+
+		internal void OnAuraAddedOrRemoved()
+		{
+			if (aurasWithAuraDependentEffects != null)
+			{
+				foreach (var aura in aurasWithAuraDependentEffects)
+				{
+					foreach (var handler in aura.Handlers)
 					{
 						// Toggle activation
-						aura.IsActivated = !aura.IsActivated;
+						if (handler.SpellEffect.IsDependentOnOtherAuras)
+						{
+							handler.IsActivated = MayActivate(handler);
+						}
 					}
 				}
 			}
 		}
 		#endregion
 
+		#region Actual restriction checks
 		/// <summary>
-		/// Check all restrictions on that aura (optionally, exclude item check)
+		/// Check all restrictions on the given Aura (optionally, exclude item check)
 		/// </summary>
-		private bool CheckRestrictions(Aura aura, bool inclItemCheck = true)
+		private bool MayActivate(Aura aura, bool inclItemCheck)
 		{
+			// ShapeShiftMask & Items & AuraState
 			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
 				return false;
@@ -240,8 +276,35 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				return false;
 			}
+			if (m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
+			{
+				return true;
+			}
 			return true;
 		}
+
+		protected internal override bool MayActivate(Aura aura)
+		{
+			if (MayActivate(aura, true))
+			{
+				return true;
+			}
+			return base.MayActivate(aura);
+		}
+
+		protected internal override bool MayActivate(AuraEffectHandler handler)
+		{
+			// ShapeShiftMask & RequiredActivationAuras
+			var effect = handler.SpellEffect;
+			if ((effect.RequiredShapeshiftMask == 0 ||
+						(effect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))) &&
+				(effect.RequiredActivationAuras == null || ContainsAny(effect.RequiredActivationAuras)))
+			{
+				return true;
+			}
+			return base.MayActivate(handler);
+		}
+		#endregion
 
 		#region Spell Modifiers
 		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)

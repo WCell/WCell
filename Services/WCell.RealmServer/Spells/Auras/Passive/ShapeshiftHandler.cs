@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					form != ShapeshiftForm.BerserkerStance &&
 					form != ShapeshiftForm.DefensiveStance)
 				{
-					target.Auras.RemoveWhere(aura => aura.Spell.Id == m_spellEffect.Spell.Id);
+					target.Auras.RemoveWhere(aura => aura.Spell.Id == m_aura.Spell.Id);
 					failReason = SpellFailedReason.DontReport;
 				}
 			}

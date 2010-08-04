@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			else
 			{
 				LogManager.GetCurrentClassLogger().Warn("Invalid damage effect on Spell {0} was triggered by {1} who cannot be attacked by Aura-Owner {2}.",
-					m_spellEffect.Spell, triggerer, Owner);
+					m_aura.Spell, triggerer, Owner);
 			}
 		}
 	}

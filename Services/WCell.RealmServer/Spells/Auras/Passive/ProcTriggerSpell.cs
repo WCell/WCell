@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (m_spellEffect.TriggerSpell == null)
 			{
 				log.Warn("Tried to trigger invalid Spell \"{0}\" from Aura {1}",
-					SpellEffect.TriggerSpellId, m_spellEffect.Spell);
+					SpellEffect.TriggerSpellId, m_aura.Spell);
 			}
 			else
 			{

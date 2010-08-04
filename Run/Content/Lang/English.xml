@@ -85,10 +85,10 @@
       <Value>&lt;spell&gt;</Value>
     </Item>
     <Item Key="CmdSpellRemoveResponse">
-      <Value>Spell removed: </Value>
+      <Value>Spell removed: {0}</Value>
     </Item>
     <Item Key="CmdSpellRemoveError">
-      <Value>Spell {0} doesn't exist.</Value>
+      <Value>No valid spells were given</Value>
     </Item>
 
     <Item Key="CmdSpellPurgeDescription">

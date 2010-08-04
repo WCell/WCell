@@ -327,7 +327,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return Health > 0;
 			}
-			set
+			internal set
 			{
 				MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 			}

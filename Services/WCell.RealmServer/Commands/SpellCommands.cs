@@ -312,30 +312,32 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var id = trigger.Text.NextEnum(SpellId.None);
-				var spell = SpellHandler.Get(id);
+				var spells = SpellGetCommand.RetrieveSpells(trigger);
 
-				if (spell != null)
+				if (spells.Length > 0)
 				{
-					if (trigger.Args.Target.HasSpells)
+					foreach (var spell in spells)
 					{
-						var chr = trigger.Args.Target as Character;
-						if (spell.Talent != null && chr != null)
+						if (trigger.Args.Target.HasSpells)
 						{
-							// talent
-							chr.Talents.Remove(spell.Talent.Id);
+							var chr = trigger.Args.Target as Character;
+							if (spell.Talent != null && chr != null)
+							{
+								// talent
+								chr.Talents.Remove(spell.Talent.Id);
+							}
+							else
+							{
+								// normal spell
+								trigger.Args.Target.EnsureSpells().Remove(spell);
+							}
+							trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 						}
-						else
-						{
-							// normal spell
-							trigger.Args.Target.EnsureSpells().Remove(spell);
-						}
-						trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 					}
 				}
 				else
 				{
-					trigger.Reply(RealmLangKey.CmdSpellRemoveError, id);
+					trigger.Reply(RealmLangKey.CmdSpellRemoveError);
 				}
 			}
 		}
@@ -384,14 +386,15 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var target = trigger.Args.Target;
-				var id = trigger.Text.NextEnum(SpellId.None);
-				var spell = SpellHandler.Get(id);
+				var spells = SpellGetCommand.RetrieveSpells(trigger);
 
-				if (spell != null)
+				if (spells.Length > 0)
 				{
-					target.SpellCast.TriggerSelf(spell);
-					trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
+					foreach (var spell in spells)
+					{
+						trigger.Args.Target.SpellCast.TriggerSelf(spell);
+						trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
+					}
 				}
 				else
 				{

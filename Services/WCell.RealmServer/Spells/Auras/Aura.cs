@@ -269,7 +269,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// The actual Caster (returns null if caster went offline or disappeared for some other reason)
 		/// </summary>
-		public Unit Caster
+		public Unit CasterUnit
 		{
 			get
 			{
@@ -524,7 +524,10 @@ namespace WCell.RealmServer.Spells.Auras
 				handler.Init(this);
 			}
 
-			CheckActivation();
+			if (m_auras.MayActivate(this))
+			{
+				IsActivated = true;
+			}
 
 			CanBeSaved = this != m_auras.GhostAura &&
 						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
@@ -534,7 +537,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			m_auras.OnAuraChange(this);
 
-			var caster = Caster;
+			var caster = CasterUnit;
 			var owner = Owner;
 			if (caster != null)
 			{
@@ -571,31 +574,14 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		/// <summary>
-		/// These checks coincide with the checks in <see cref="PlayerAuraCollection"/>
-		/// </summary>
-		internal void CheckActivation()
-		{
-			var owner = Owner as Character;
-			if (owner == null ||
-				!m_spell.IsPassive ||
-				((!m_spell.HasItemRequirements || m_spell.CheckItemRestrictions(owner.Inventory) == SpellFailedReason.Ok) &&
-				(!m_spell.IsModalShapeshiftDependentAura ||
-					m_spell.RequiredShapeshiftMask == 0 ||
-					m_spell.RequiredShapeshiftMask.HasAnyFlag(owner.ShapeshiftMask))))
-			{
-				IsActivated = true;
-			}
-		}
-
 		private void Activate()
 		{
 			// custom prochandlers to be applied when spell is casted
-			if (m_spell.IsProc && Caster != null && m_spell.ProcHandlers != null)
+			if (m_spell.IsProc && CasterUnit != null && m_spell.ProcHandlers != null)
 			{
 				foreach (var templ in m_spell.ProcHandlers)
 				{
-					Owner.AddProcHandler(new ProcHandler(Caster, Owner, templ));
+					Owner.AddProcHandler(new ProcHandler(CasterUnit, Owner, templ));
 				}
 			}
 
@@ -626,7 +612,7 @@ namespace WCell.RealmServer.Spells.Auras
 		private void Deactivate(bool cancelled)
 		{
 			// custom prochandlers to be applied when spell is casted
-			if (m_spell.ProcHandlers != null && Caster != null)
+			if (m_spell.ProcHandlers != null && CasterUnit != null)
 			{
 				foreach (var templ in m_spell.ProcHandlers)
 				{
@@ -677,13 +663,10 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				OnApply();
 
-				if (!expired || m_spell.HasPeriodicAuraEffects)
+				ApplyPeriodicEffects();
+				if (!IsAdded)
 				{
-					ApplyPeriodicEffects();
-					if (!IsAdded)
-					{
-						return;
-					}
+					return;
 				}
 
 				if (!expired && m_timer != null)
@@ -695,39 +678,6 @@ namespace WCell.RealmServer.Spells.Auras
 			if (expired)
 			{
 				Remove(false);
-			}
-		}
-
-		/// <summary>
-		/// Toggles all effects that need to be toggled
-		/// (currently only based on Shapeshift mask)
-		/// </summary>
-		internal void ReEvaluateNonPeriodicEffects()
-		{
-			if (m_spell.HasNonPeriodicAuraEffects)
-			{
-				foreach (var handler in Handlers)
-				{
-					if (!handler.SpellEffect.IsPeriodic)
-					{
-						if (!handler.IsActive)
-						{
-							if (handler.SpellEffect.RequiredShapeshiftMask == 0 ||
-								(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
-							{
-								handler.IsActive = true;
-							}
-						}
-						else
-						{
-							if (handler.SpellEffect.RequiredShapeshiftMask != 0 &&
-								(!handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask)))
-							{
-								handler.IsActive = false;
-							}
-						}
-					}
-				}
 			}
 		}
 
@@ -744,7 +694,7 @@ namespace WCell.RealmServer.Spells.Auras
 				handler.UpdateEffectValue();
 			}
 
-			ApplyPeriodicEffects();
+			ApplyNonPeriodicEffects();
 		}
 
 		/// <summary>
@@ -756,11 +706,14 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				foreach (var handler in Handlers)
 				{
-					if (!handler.SpellEffect.IsPeriodic &&
-						(handler.SpellEffect.RequiredShapeshiftMask == 0 ||
-						(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))))
+					if (!handler.SpellEffect.IsPeriodic && m_auras.MayActivate(handler))
 					{
-						handler.IsActive = true;
+						handler.DoApply();
+						if (!IsAdded)
+						{
+							// aura got removed by handler (maybe owner died etc)
+							return;
+						}
 					}
 				}
 			}
@@ -768,25 +721,26 @@ namespace WCell.RealmServer.Spells.Auras
 
 		internal void ApplyPeriodicEffects()
 		{
-			foreach (var handler in m_handlers)
+			if (m_spell.HasPeriodicAuraEffects)
 			{
-				if (handler.SpellEffect.IsPeriodic &&
-				(handler.SpellEffect.RequiredShapeshiftMask == 0 ||
-						(handler.SpellEffect.RequiredShapeshiftMask.HasAnyFlag(Owner.ShapeshiftMask))))
+				foreach (var handler in m_handlers)
 				{
-					handler.DoApply();
-				}
-
-				if (!IsAdded)
-				{
-					// aura got removed by handler
-					return;
+					if (handler.SpellEffect.IsPeriodic && m_auras.MayActivate(handler))
+					{
+						handler.DoApply();
+						if (!IsAdded)
+						{
+							// aura got removed by handler (maybe owner died etc)
+							return;
+						}
+					}
 				}
 			}
 		}
 
 		/// <summary>
-		/// Do certain special behavior everytime Aura is applied
+		/// Do certain special behavior everytime an Aura is applied
+		/// for very basic Aura categories.
 		/// </summary>
 		private void OnApply()
 		{
@@ -797,10 +751,10 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Refreshes this aura. If this Aura is stackable, will also increase the
-		/// StackCount by one.
+		/// Refreshes this aura. 
+		/// If this Aura is stackable, will also increase the StackCount by one.
 		/// </summary>
-		public void RefreshOrStack(ObjectReference caster)
+		public void Refresh(ObjectReference caster)
 		{
 			if (IsAdded)
 			{
@@ -831,6 +785,23 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 		}
+
+		/// <summary>
+		/// Checks all handlers and toggles those whose requirements aren't met
+		/// </summary>
+		internal void ReEvaluateNonPeriodicHandlerRequirements()
+		{
+			if (Spell.HasNonPeriodicAuraEffects)
+			{
+				foreach (var handler in Handlers)
+				{
+					if (!handler.SpellEffect.IsPeriodic)
+					{
+						handler.IsActivated = m_auras.MayActivate(handler);
+					}
+				}
+			}
+		}
 		#endregion
 
 		#region Remove & Cancel
@@ -845,7 +816,7 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					if (!handler.SpellEffect.IsPeriodic)
 					{
-						handler.IsActive = false;
+						handler.IsActivated = false;
 					}
 				}
 			}
@@ -865,7 +836,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				// can only cancel AreaAuras if you are the one causing it or if it can time-out
 				var owner = m_auras.Owner;
-				if (owner.EntityId.Low == CasterReference.EntityId || Caster == null || Caster.UnitMaster == owner)
+				if (owner.EntityId.Low == CasterReference.EntityId || CasterUnit == null || CasterUnit.UnitMaster == owner)
 				{
 					return owner.CancelAreaAura(m_spell);
 				}
@@ -903,7 +874,7 @@ namespace WCell.RealmServer.Spells.Auras
 					LogManager.GetCurrentClassLogger().Warn("Tried to remove Aura {0} but it's owner does not exist anymore.");
 					return;
 				}
-				var caster = Caster;
+				var caster = CasterUnit;
 				if (caster != null)
 				{
 					caster.Proc(ProcTriggerFlags.AuraRemoved, owner,

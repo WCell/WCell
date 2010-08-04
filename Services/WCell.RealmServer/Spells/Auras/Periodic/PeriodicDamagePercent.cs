@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					var bonus = m_aura.Auras.GetBleedBonusPercent();
 					value += ((value * bonus) + 50) / 100;
 				}
-				holder.DoSpellDamage(m_aura.Caster, m_spellEffect, value, false);
+				holder.DoSpellDamage(m_aura.CasterUnit, m_spellEffect, value, false);
 			}
 		}
 

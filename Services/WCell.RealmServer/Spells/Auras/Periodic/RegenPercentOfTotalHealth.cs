@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (!owner.IsAlive)
 				return;
 
-			owner.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
+			owner.HealPercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
 		}
 
 	}

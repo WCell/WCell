@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				Charges = m_spellEffect.Spell.ProcCharges;
+				Charges = m_aura.Spell.ProcCharges;
 				owner.PlayerAuras.AddSpellModifierFlat(this);
 			}
 		}
@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var owner = m_aura.Auras.Owner as Character;
 			if (owner != null)
 			{
-				Charges = m_spellEffect.Spell.ProcCharges;
+				Charges = m_aura.Spell.ProcCharges;
 				owner.PlayerAuras.AddSpellModifierPercent(this);
 			}
 		}

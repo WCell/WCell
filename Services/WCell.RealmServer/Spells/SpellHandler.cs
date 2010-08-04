@@ -519,7 +519,7 @@ namespace WCell.RealmServer.Spells
 
 		public static void UnsetHandler(SpellEffectType type)
 		{
-			if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
+			//if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
 			{
 				SpellEffectCreators[(int) type] = null;
 			}

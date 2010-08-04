@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
+using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
@@ -82,6 +83,11 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get { return m_owner; }
 			internal set { m_owner = value; }
+		}
+
+		public Character OwnerChar
+		{
+			get { return m_owner as Character; }
 		}
 
 		public int Count
@@ -344,9 +350,19 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public bool Contains(SpellId id)
 		{
-			foreach (var aura in m_AuraArray)
+			return this[id] != null;
+		}
+
+		public bool Contains(Spell spell)
+		{
+			return this[spell] != null;
+		}
+
+		public bool ContainsAny(params Spell[] spells)
+		{
+			foreach (var spell in spells)
 			{
-				if (aura.Spell.SpellId == id)
+				if (this[spell] != null)
 				{
 					return true;
 				}
@@ -579,7 +595,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				// refresh and (if applicable) increase StackCount
 				err = SpellFailedReason.Ok;
-				oldAura.RefreshOrStack(caster);
+				oldAura.Refresh(caster);
 			}
 			else
 			{
@@ -782,7 +798,7 @@ namespace WCell.RealmServer.Spells.Auras
 			for (var i = 0; i < m_visibleAuras.Length; i++)
 			{
 				var aura = m_visibleAuras[i];
-				if (aura != null && aura.Caster != m_owner)
+				if (aura != null && aura.CasterUnit != m_owner)
 				{
 					aura.Remove(true);
 				}
@@ -939,7 +955,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			if (Owner.Master is Character)
 			{
-				return ((Character) Owner.Master).PlayerAuras.GetModifiedInt(type, spell, value);
+				return ((Character)Owner.Master).PlayerAuras.GetModifiedInt(type, spell, value);
 			}
 			return value;
 		}
@@ -1144,5 +1160,21 @@ namespace WCell.RealmServer.Spells.Auras
 			return GetEnumerator();
 		}
 		#endregion
+
+		/// <summary>
+		/// Checks whether the given Aura may be activated (see PlayerAuraCollection)
+		/// </summary>
+		internal protected virtual bool MayActivate(Aura aura)
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Checks whether the given Handler may be activated (see PlayerAuraCollection)
+		/// </summary>
+		internal protected virtual bool MayActivate(AuraEffectHandler handler)
+		{
+			return true;
+		}
 	}
 }

@@ -65,15 +65,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return EffectValue >= 0; }
 		}
 
-		private bool m_IsActive;
+		private bool m_IsActivated;
 
-		public bool IsActive
+		public bool IsActivated
 		{
-			get { return m_IsActive; }
+			get { return m_IsActivated; }
 			internal set
 			{
-				if (m_IsActive == value) return;
-				if ((m_IsActive = value))
+				if (m_IsActivated == value) return;
+				if ((m_IsActivated = value))
 				{
 					Apply();
 				}
@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public void UpdateEffectValue()
 		{
-			BaseEffectValue = m_spellEffect.CalcEffectValue(m_aura.Caster);
+			BaseEffectValue = m_spellEffect.CalcEffectValue(m_aura.CasterUnit);
 		}
 
 		/// <summary>		
@@ -125,6 +125,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void DoApply()
 		{
+			if (m_IsActivated) return;
+			m_IsActivated = true;
 			Apply();
 		}
 
@@ -133,6 +135,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void DoRemove(bool cancelled)
 		{
+			if (!m_IsActivated) return;
+			m_IsActivated = false;
 			Remove(cancelled);
 		}
 

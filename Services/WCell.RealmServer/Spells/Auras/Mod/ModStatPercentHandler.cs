@@ -17,14 +17,14 @@ namespace WCell.RealmServer.Spells.Auras
 				{
 					val = (Owner.GetUnmodifiedBaseStatValue(stat) * EffectValue + 50) / 100;
 					vals[(int)stat] = val;
-					Owner.AddStatMod(stat, val, SpellEffect.Spell.IsPassive);
+					Owner.AddStatMod(stat, val, m_aura.Spell.IsPassive);
 				}
 			}
 			else
 			{
 				var stat = (StatType)SpellEffect.MiscValue;
 				val = (Owner.GetUnmodifiedBaseStatValue(stat) * EffectValue + 50) / 100;
-				Owner.AddStatMod(stat, val, SpellEffect.Spell.IsPassive);
+				Owner.AddStatMod(stat, val, m_aura.Spell.IsPassive);
 			}
 		}
 
@@ -35,12 +35,12 @@ namespace WCell.RealmServer.Spells.Auras
 				// all stats
 				for (var stat = StatType.Strength; stat <= StatType.Spirit; stat++)
 				{
-					Owner.RemoveStatMod(stat, vals[(int)stat], SpellEffect.Spell.IsPassive);
+					Owner.RemoveStatMod(stat, vals[(int)stat], m_aura.Spell.IsPassive);
 				}
 			}
 			else
 			{
-				Owner.RemoveStatMod((StatType)SpellEffect.MiscValue, val, SpellEffect.Spell.IsPassive);
+				Owner.RemoveStatMod((StatType)SpellEffect.MiscValue, val, m_aura.Spell.IsPassive);
 			}
 		}
 	}
