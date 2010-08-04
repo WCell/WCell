@@ -174,14 +174,14 @@ namespace WCell.RealmServer.Spells
 					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, UsedItem, !m_spell.IsPreventionDebuff && !hostile);
 					if (newAura != null)
 					{
-						auras.Add(newAura);
-
 						// check for debuff
-						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld)
+						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld && target.IsAlive)
 						{
 							// force combat mode
 							target.IsInCombat = true;
 						}
+						// add Aura now
+						auras.Add(newAura);
 					}
 				}
 			}

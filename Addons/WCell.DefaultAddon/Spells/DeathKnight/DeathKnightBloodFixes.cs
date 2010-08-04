@@ -94,7 +94,15 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new SpellDeflectionHandler();
 			});
+
+			// "the Frost and Unholy Runes will become Death Runes when they activate"
+			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightBloodDeathRuneMastery, 
+				SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate,
+				RuneType.Death, RuneType.Frost, RuneType.Unholy);
 		}
+
+		#region Death Rune Mastery
+		#endregion
 
 		#region Scent of Blood
 		private static void FixScentOfBlood()

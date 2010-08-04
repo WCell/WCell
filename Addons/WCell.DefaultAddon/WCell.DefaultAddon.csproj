@@ -258,6 +258,7 @@
     <Compile Include="Spells\DeathKnight\DeathKnightFrostFixes.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightBloodFixes.cs" />
     <Compile Include="Spells\DeathKnight\DeathKnightUnholyFixes.cs" />
+    <Compile Include="Spells\DeathKnight\ProcOnDiseaseTriggerSpellHandler.cs" />
     <Compile Include="Spells\Druid\DruidBalanceFixes.cs" />
     <Compile Include="Spells\Druid\DruidFeralCombatFixes.cs" />
     <Compile Include="Spells\Druid\DruidRestorationFixes.cs" />

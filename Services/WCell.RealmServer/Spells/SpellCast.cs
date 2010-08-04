@@ -1415,17 +1415,26 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void Trigger(SpellId spell, params WorldObject[] targets)
 		{
-			Trigger(SpellHandler.Get(spell), targets);
+			Trigger(spell, null, targets);
 		}
 
-		///// <summary>
-		///// Casts the given spell on the given targets within this SpellCast's context.
-		///// Determines targets and hostility, based on the given triggerEffect.
-		///// </summary>
-		//public void Trigger(Spell spell, SpellEffect triggerEffect)
-		//{
-		//    Trigger(spell, triggerEffect, null);
-		//}
+		/// <summary>
+		/// Casts the given spell on the given targets within this SpellCast's context.
+		/// Finds targets automatically if the given targets are null.
+		/// </summary>
+		public void Trigger(SpellId spell, SpellEffect triggerEffect, params WorldObject[] targets)
+		{
+			Trigger(spell, triggerEffect, null, targets);
+		}
+
+		/// <summary>
+		/// Casts the given spell on the given targets within this SpellCast's context.
+		/// Finds targets automatically if the given targets are null.
+		/// </summary>
+		public void Trigger(SpellId spell, SpellEffect triggerEffect, IUnitAction triggerAction = null, params WorldObject[] targets)
+		{
+			Trigger(SpellHandler.Get(spell), triggerEffect, triggerAction, targets);
+		}
 
 		/// <summary>
 		/// Casts the given spell on the given targets within this SpellCast's context.
@@ -1433,8 +1442,18 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void Trigger(Spell spell, SpellEffect triggerEffect, params WorldObject[] initialTargets)
 		{
+			Trigger(spell, triggerEffect, null, initialTargets);
+		}
+
+		/// <summary>
+		/// Casts the given spell on the given targets within this SpellCast's context.
+		/// Determines targets and hostility, based on the given triggerEffect.
+		/// </summary>
+		public void Trigger(Spell spell, SpellEffect triggerEffect, IUnitAction triggerAction, params WorldObject[] initialTargets)
+		{
 			var cast = InheritSpellCast();
-			cast.TriggerEffect = triggerEffect;
+			//cast.TriggerEffect = triggerEffect;
+			cast.TriggerAction = triggerAction;
 
 			ExecuteInContext(() =>
 			{

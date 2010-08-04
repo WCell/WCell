@@ -923,24 +923,24 @@ namespace WCell.RealmServer.Spells
 			return effects != null ? effects.ToArray() : null;
 		}
 
-		/// <summary>
-		/// Removes the first Effect of the given Type and replace it with a new one which will be returned.
-		/// Appends a new one if none of the given type was found.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public SpellEffect ReplaceEffect(SpellEffectType type, ImplicitTargetType target)
-		{
-			for (var i = 0; i < Effects.Length; i++)
-			{
-				var effect = Effects[i];
-				if (effect.EffectType == type)
-				{
-					return Effects[i] = new SpellEffect();
-				}
-			}
-			return AddEffect(type, target);
-		}
+		///// <summary>
+		///// Removes the first Effect of the given Type and replace it with a new one which will be returned.
+		///// Appends a new one if none of the given type was found.
+		///// </summary>
+		///// <param name="type"></param>
+		///// <returns></returns>
+		//public SpellEffect ReplaceEffect(SpellEffectType type, SpellEffectType newType, ImplicitTargetType target)
+		//{
+		//    for (var i = 0; i < Effects.Length; i++)
+		//    {
+		//        var effect = Effects[i];
+		//        if (effect.EffectType == type)
+		//        {
+		//            return Effects[i] = new SpellEffect();
+		//        }
+		//    }
+		//    return AddEffect(type, target);
+		//}
 
 		/// <summary>
 		/// Adds a new Effect to this Spell
@@ -1351,11 +1351,11 @@ namespace WCell.RealmServer.Spells
 			}
 			if ((int)RequiredCasterAuraState != 0)
 			{
-				writer.WriteLine(indent + "CasterAuraState: " + RequiredCasterAuraState);
+				writer.WriteLine(indent + "RequiredCasterAuraState: " + RequiredCasterAuraState);
 			}
 			if ((int)RequiredTargetAuraState != 0)
 			{
-				writer.WriteLine(indent + "TargetAuraState: " + RequiredTargetAuraState);
+				writer.WriteLine(indent + "RequiredTargetAuraState: " + RequiredTargetAuraState);
 			}
 			if ((int)ExcludeCasterAuraState != 0)
 			{

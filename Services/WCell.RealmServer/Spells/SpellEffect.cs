@@ -572,16 +572,16 @@ namespace WCell.RealmServer.Spells
 
 			if (APValueFactor != 0 || APPerComboPointValueFactor != 0)
 			{
-				var apFactor = APValueFactor + (APPerComboPointValueFactor*caster.ComboPoints);
+				var apFactor = APValueFactor + (APPerComboPointValueFactor * caster.ComboPoints);
 				var ap = Spell.IsRanged ? caster.TotalRangedAP : caster.TotalMeleeAP;
 
-				value += (int) (ap*apFactor + 0.5f); // implicit rounding
+				value += (int)(ap * apFactor + 0.5f); // implicit rounding
 			}
 			if (caster is Character)
 			{
 				if (SpellPowerValuePct != 0)
 				{
-					value += (SpellPowerValuePct*((Character) caster).GetDamageDoneMod(Spell.Schools[0]) + 50)/100;
+					value += (SpellPowerValuePct * ((Character)caster).GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
 				}
 			}
 			if (EffectIndex <= 2)
@@ -617,16 +617,10 @@ namespace WCell.RealmServer.Spells
 		public int CalcEffectValue(int level, int comboPoints, SpellCast cast = null)
 		{
 			// overriding effect value
-			if (cast != null && cast.TriggerEffect != null && 
+			if (cast != null && cast.TriggerEffect != null &&
 				(OverrideEffectValue || cast.TriggerEffect.AuraType == AuraType.ProcTriggerSpellWithOverride))
 			{
-				foreach (var effect in cast.TriggerEffect.Spell.Effects)
-				{
-					if (effect.TriggerSpellId == Spell.SpellId)
-					{
-						return effect.CalcEffectValue(level, comboPoints);
-					}
-				}
+				return cast.TriggerEffect.CalcEffectValue(level, comboPoints);
 			}
 
 			// calculate effect value
@@ -997,6 +991,24 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
+		/// Adds a set of spells to the explicite relationship set of this effect, which is used to determine whether
+		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
+		/// Only adds the spells, will not work on the spells' trigger spells.
+		/// </summary>
+		/// <param name="abilities"></param>
+		public void AddAffectingSpells(params SpellId[] spells)
+		{
+			if (AffectSpellSet == null)
+			{
+				AffectSpellSet = new HashSet<Spell>();
+			}
+			foreach (var spellId in spells)
+			{
+				AffectSpellSet.AddRange(SpellHandler.Get(spellId));
+			}
+		}
+
+		/// <summary>
 		/// Adds a set of spells to this Effect's AffectMask, which is used to determine whether
 		/// a certain Spell and this effect have some kind of influence on one another (for procs, talent modifiers etc).
 		/// Usually the mask also contains any spell that is triggered by the original spell.
@@ -1030,7 +1042,7 @@ namespace WCell.RealmServer.Spells
 			{
 				LogManager.GetCurrentClassLogger().Warn("[SPELL Inconsistency for {0}] " +
 					"Invalid affect mask affects a different set than the one intended: {1} (intended: {2}) - " +
-					"You might want to use AddAffectingSpells instead!", 
+					"You might want to use AddAffectingSpells instead!",
 					Spell, affectedLines.ToString(", "), abilities.ToString(", "));
 			}
 
@@ -1060,6 +1072,29 @@ namespace WCell.RealmServer.Spells
 		{
 			return (spell.SpellClassSet == Spell.SpellClassSet && spell.MatchesMask(AffectMask)) ||
 				(AffectSpellSet != null && AffectSpellSet.Contains(spell));
+		}
+
+		public void MakeProc(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
+		{
+			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+			IsProc = true;
+			ClearAffectMask();
+			AddAffectingSpells(exclusiveTriggers);
+			AuraEffectHandlerCreator = creator;
+		}
+
+		/// <summary>
+		/// Uses the AffectMask, rather than exclusive trigger spells. This is important if also spells
+		/// that are triggerd by the triggered spells are allowed to trigger this proc.
+		/// </summary>
+		public void MakeProcWithMask(AuraEffectHandlerCreator creator, params SpellLineId[] exclusiveTriggers)
+		{
+			Spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+			IsProc = true;
+			SetAffectMask(exclusiveTriggers);
+			AuraEffectHandlerCreator = creator;
 		}
 		#endregion
 

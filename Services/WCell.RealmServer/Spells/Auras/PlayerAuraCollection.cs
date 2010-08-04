@@ -11,13 +11,17 @@ using WCell.RealmServer.Spells.Auras.Misc;
 
 namespace WCell.RealmServer.Spells.Auras
 {
+	/// <summary>
+	/// AuraCollection for Character objects. 
+	/// Contains a lot of modifications and bookkeeping that is not required for NPCs.
+	/// </summary>
 	public class PlayerAuraCollection : AuraCollection
 	{
 		/// <summary>
 		/// Amount of currently added modifiers that require charges.
 		/// If > 0, will iterate over modifiers and remove charges after SpellCasts.
 		/// </summary>
-		public int ModifiersWithCharges
+		public int ModifierWithChargesCount
 		{
 			get;
 			protected internal set;
@@ -48,34 +52,238 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		List<Aura> shapeshiftRestrictedAuras;
 
+		/// <summary>
+		/// Set of Auras that are only applied in certain AuraStates
+		/// </summary>
+		List<Aura> auraStateRestrictedAuras;
+
 		public PlayerAuraCollection(Character owner)
 			: base(owner)
 		{
 		}
-		#region Enhancers
 
+		#region Overrides
+		public override void AddAura(Aura aura, bool start)
+		{
+			base.AddAura(aura, start);
+			if (aura.Spell.IsPassive)
+			{
+				if (aura.Spell.HasItemRequirements)
+				{
+					ItemRestrictedAuras.Add(aura);
+				}
+				if (aura.Spell.IsModalShapeshiftDependentAura)
+				{
+					ShapeshiftRestrictedAuras.Add(aura);
+				}
+				if (aura.Spell.RequiredCasterAuraState != 0)
+				{
+					AuraStateRestrictedAuras.Add(aura);
+				}
+			}
+		}
+
+		protected internal override void Cancel(Aura aura)
+		{
+			base.Cancel(aura);
+			if (aura.Spell.IsPassive)
+			{
+				if (aura.Spell.HasItemRequirements)
+				{
+					ItemRestrictedAuras.Remove(aura);
+				}
+				if (aura.Spell.IsModalShapeshiftDependentAura)
+				{
+					ShapeshiftRestrictedAuras.Remove(aura);
+				}
+				if (aura.Spell.RequiredCasterAuraState != 0)
+				{
+					AuraStateRestrictedAuras.Remove(aura);
+				}
+			}
+		}
+		#endregion
+
+		#region Item Restrictions
+		List<Aura> ItemRestrictedAuras
+		{
+			get
+			{
+				if (itemRestrictedAuras == null)
+				{
+					itemRestrictedAuras = new List<Aura>(3);
+				}
+				return itemRestrictedAuras;
+			}
+		}
+
+		internal void OnEquip(Item item)
+		{
+			if (itemRestrictedAuras != null)
+			{
+				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
+				foreach (var aura in itemRestrictedAuras)
+				{
+					if (!aura.IsActivated)
+					{
+						aura.IsActivated = 
+							CheckRestrictions(aura, false) &&
+							aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
+					}
+				}
+			}
+		}
+
+		internal void OnBeforeUnEquip(Item item)
+		{
+			if (itemRestrictedAuras != null)
+			{
+				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
+				foreach (var aura in itemRestrictedAuras)
+				{
+					if (aura.IsActivated)
+					{
+						aura.IsActivated =
+							CheckRestrictions(aura, false) &&
+							aura.Spell.CheckItemRestrictionsWithout(plr.Inventory, item) == SpellFailedReason.Ok;
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Shapeshift Restrictions
+		List<Aura> ShapeshiftRestrictedAuras
+		{
+			get
+			{
+				if (shapeshiftRestrictedAuras == null)
+				{
+					shapeshiftRestrictedAuras = new List<Aura>(3);
+				}
+				return shapeshiftRestrictedAuras;
+			}
+		}
+
+		internal void OnShapeshiftFormChanged()
+		{
+			if (shapeshiftRestrictedAuras != null)
+			{
+				foreach (var aura in shapeshiftRestrictedAuras)
+				{
+					if (aura.Spell.RequiredShapeshiftMask != 0)
+					{
+						// the entire Aura is toggled
+						if (CheckRestrictions(aura))
+						{
+							aura.IsActivated = true; // Aura is running
+						}
+						else
+						{
+							aura.IsActivated = false;	// Aura is off
+							continue;
+						}
+					}
+					else if (aura.Spell.HasShapeshiftDependentEffects)
+					{
+						// the Aura state itself did not change
+						aura.ReEvaluateNonPeriodicEffects();
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region AuraState Restrictions
+		List<Aura> AuraStateRestrictedAuras
+		{
+			get
+			{
+				if (auraStateRestrictedAuras == null)
+				{
+					auraStateRestrictedAuras = new List<Aura>(2);
+				}
+				return auraStateRestrictedAuras;
+			}
+		}
+
+		internal void OnAuraStateChanged()
+		{
+			if (auraStateRestrictedAuras != null)
+			{
+				var state = Owner.AuraState;
+				foreach (var aura in auraStateRestrictedAuras)
+				{
+					// Is Aura not in the right state?
+					if (state.HasAnyFlag(aura.Spell.RequiredCasterAuraState) != aura.IsActivated)
+					{
+						// Toggle activation
+						aura.IsActivated = !aura.IsActivated;
+					}
+				}
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Check all restrictions on that aura (optionally, exclude item check)
+		/// </summary>
+		private bool CheckRestrictions(Aura aura, bool inclItemCheck = true)
+		{
+			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+			{
+				return false;
+			}
+			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		#region Spell Modifiers
 		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
 		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount++;
+			}
 			SpellModifiersFlat.Add(modifier);
 			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
 
 		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
 		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount++;
+			}
 			SpellModifiersFlat.Add(modifier);
 			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
 
 		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
 		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount--;
+			}
 			SpellModifiersFlat.Add(modifier);
 			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
 		}
 
 		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
 		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount--;
+			}
 			SpellModifiersFlat.Add(modifier);
 			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
 		}
 
 		private void OnModifierChange(AddModifierEffectHandler modifier)
@@ -161,7 +369,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public override void OnCasted(SpellCast cast)
 		{
 			var spell = cast.Spell;
-			if (ModifiersWithCharges > 0)
+			if (ModifierWithChargesCount > 0)
 			{
 				var toRemove = new List<Aura>(3);
 				for (var i = 0; i < SpellModifiersFlat.Count; i++)
@@ -210,146 +418,6 @@ namespace WCell.RealmServer.Spells.Auras
 		public bool CanSpellCrit(Spell spell)
 		{
 			return spell.MatchesMask(CriticalStrikeEnabledMask);
-		}
-
-		#region Overrides
-		public override void AddAura(Aura aura, bool start)
-		{
-			base.AddAura(aura, start);
-			if (aura.Spell.IsPassive)
-			{
-				if (aura.Spell.HasItemRequirements)
-				{
-					ItemRestrictedAuras.Add(aura);
-				}
-				if (aura.Spell.IsModalShapeshiftDependentAura)
-				{
-					ShapeshiftRestrictedAuras.Add(aura);
-				}
-			}
-		}
-
-		protected internal override void Cancel(Aura aura)
-		{
-			base.Cancel(aura);
-			if (aura.Spell.IsPassive)
-			{
-				if (aura.Spell.HasItemRequirements)
-				{
-					ItemRestrictedAuras.Remove(aura);
-				}
-				if (aura.Spell.RequiredShapeshiftMask != 0)
-				{
-					ShapeshiftRestrictedAuras.Add(aura);
-				}
-			}
-		}
-		#endregion
-
-		#region Item Restrictions
-		List<Aura> ItemRestrictedAuras
-		{
-			get
-			{
-				if (itemRestrictedAuras == null)
-				{
-					itemRestrictedAuras = new List<Aura>(3);
-				}
-				return itemRestrictedAuras;
-			}
-		}
-
-		List<Aura> ShapeshiftRestrictedAuras
-		{
-			get
-			{
-				if (shapeshiftRestrictedAuras == null)
-				{
-					shapeshiftRestrictedAuras = new List<Aura>(3);
-				}
-				return shapeshiftRestrictedAuras;
-			}
-		}
-
-		internal void OnEquip(Item item)
-		{
-			if (itemRestrictedAuras != null)
-			{
-				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
-				foreach (var aura in itemRestrictedAuras)
-				{
-					if (!aura.IsActivated)
-					{
-						aura.IsActivated = 
-							CheckRestrictions(aura, false) &&
-							aura.Spell.CheckItemRestrictions(item, plr.Inventory) == SpellFailedReason.Ok;
-					}
-				}
-			}
-		}
-
-		internal void OnBeforeUnEquip(Item item)
-		{
-			if (itemRestrictedAuras != null)
-			{
-				var plr = (Character)m_owner;				// PlayerAuraCollection always has Character owner
-				foreach (var aura in itemRestrictedAuras)
-				{
-					if (aura.IsActivated)
-					{
-						aura.IsActivated =
-							CheckRestrictions(aura, false) &&
-							aura.Spell.CheckItemRestrictionsWithout(plr.Inventory, item) == SpellFailedReason.Ok;
-					}
-				}
-			}
-		}
-		#endregion
-
-		#region Shapeshift Restrictions
-		internal void OnShapeshiftFormChanged()
-		{
-			if (shapeshiftRestrictedAuras != null)
-			{
-				foreach (var aura in shapeshiftRestrictedAuras)
-				{
-					if (aura.Spell.RequiredShapeshiftMask != 0)
-					{
-						// the entire Aura is toggled
-						if (CheckRestrictions(aura))
-						{
-							aura.IsActivated = true; // Aura is running
-						}
-						else
-						{
-							aura.IsActivated = false;	// Aura is off
-							continue;
-						}
-					}
-					else if (aura.Spell.HasShapeshiftDependentEffects)
-					{
-						// the Aura state itself did not change
-						aura.ReEvaluateNonPeriodicEffects();
-					}
-				}
-			}
-		}
-		#endregion
-
-		/// <summary>
-		/// Check all restrictions on that aura (optionally, exclude item check)
-		/// </summary>
-		private bool CheckRestrictions(Aura aura, bool inclItemCheck = true)
-		{
-			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
-			{
-				return false;
-			}
-			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
-			{
-				return false;
-			}
-			return true;
 		}
 	}
 }

@@ -6,6 +6,7 @@ using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
@@ -13,6 +14,7 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Effects;
+using WCell.Util;
 
 namespace WCell.Addons.Default.Spells.DeathKnight
 {
@@ -29,11 +31,154 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixUnholyFever();
+			FixCorpseExplosion();
+			FixUnholyBlight();
+			// "Blood Strike or Pestilence" "the Blood Rune becomes a Death Rune"
+			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightUnholyReaping, 
+				SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
+				RuneType.Death, RuneType.Blood);
+			FixWanderingPlague();
+			FixBloodCakedStrike();
+			FixImpurity();
 
-			// Corpse explosion does not explode a corpse
+			// Dirge is only triggered by "Death Strike, Plague Strike and Scourge Strike"
+			SpellLineId.DeathKnightUnholyDirge.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
+				effect.ClearAffectMask();
+				effect.AddAffectingSpells(SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightPlagueStrike, SpellLineId.DeathKnightUnholyScourgeStrike);
+			});
+
+			SpellLineId.DeathKnightUnholyMagicSuppression.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.AddModifierFlat);
+				effect.ClearAffectMask();
+				effect.AddAffectingSpells(SpellLineId.DeathKnightAntiMagicShell);		// only affects Anti Magic Shell
+			});
+		}
+
+		private static void FixImpurity()
+		{
+			// TODO Impurity needs to increase AP bonus in %
+			SpellLineId.DeathKnightUnholyImpurity.Apply(spell =>
+			{
+				var oldEffect = spell.RemoveEffect(SpellEffectType.Dummy);
+				var effect = spell.AddAuraEffect(AuraType.ModDamageDonePercent);
+				effect.MiscValue = (int)DamageSchoolMask.MagicSchools;
+				oldEffect.CopyValuesTo(effect);				// copy values
+			});
+		}
+
+		#region Blood-Caked Strike
+		private static void FixBloodCakedStrike()
+		{
+			SpellLineId.DeathKnightUnholyBloodCakedBlade.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.AuraType = AuraType.ProcTriggerSpell;
+			});
+
+			SpellHandler.Apply(spell =>
+			{
+				// "hits for $50463s1% weapon damage plus ${$50463m1/2}.1% for each of your diseases on the target"
+				spell.GetEffect(SpellEffectType.WeaponDamage).SpellEffectHandlerCreator =
+					(cast, effct) => new BloodCakedStrikeHandler(cast, effct);
+			}, SpellId.EffectBloodCakedStrike);
+		}
+
+		class BloodCakedStrikeHandler : WeaponDamageEffectHandler
+		{
+			public BloodCakedStrikeHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override void OnHit(DamageAction action)
+			{
+				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(DispelType.Disease);
+				action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
+			}
+		}
+		#endregion
+
+		#region Wandering Plague
+		private static void FixWanderingPlague()
+		{
+			SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.IsProc = true;
+				effect.AuraEffectHandlerCreator = () => new WanderingPlagueProcHandler();
+			});
+			SpellHandler.Apply(spell =>
+			{
+				spell.GetEffect(SpellEffectType.SchoolDamage).SpellEffectHandlerCreator =
+					(cast, effct) => new WanderingPlagueDamageHandler(cast, effct);
+			}, SpellId.WanderingPlague_2);
+		}
+
+		/// <summary>
+		/// WP only procs on disease
+		/// </summary>
+		internal class WanderingPlagueProcHandler : ProcOnDiseaseTriggerSpellHandler
+		{
+			public override bool CanProcBeTriggeredBy(IUnitAction action)
+			{
+				if (base.CanProcBeTriggeredBy(action))
+				{
+					// "there is a chance equal to your melee critical strike chance" 
+					var chr = action.Attacker as Character;
+					if (chr != null)
+					{
+						return Utility.RandomFloat() < chr.CritChanceMeleePct;
+					}
+				}
+				return false;
+			}
+
+			public override void OnProc(Unit triggerer, IUnitAction action)
+			{
+				// gives the proc action to the actual damage spell
+				Owner.SpellCast.Trigger(SpellHandler.Get(SpellId.WanderingPlague_2), m_spellEffect, action);
+			}
+		}
+
+		internal class WanderingPlagueDamageHandler : SpellEffectHandler
+		{
+			public WanderingPlagueDamageHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				// TODO: "Ignores any target under the effect of a spell that is cancelled by taking damage."
+				var daction = m_cast.TriggerAction as DamageAction;
+				if (daction != null && m_cast.TriggerEffect != null)
+				{
+					// "will cause $s1% additional damage to the target and all enemies within 8 yards"
+					var damage = daction.GetDamagePercent(m_cast.TriggerEffect.CalcEffectValue());
+					((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, damage, false);
+				}
+			}
+
+			public override ObjectTypes TargetType
+			{
+				get { return ObjectTypes.Unit; }
+			}
+		}
+		#endregion
+
+		#region Corpse Explosion
+		private static void FixCorpseExplosion()
+		{
+			// Corpse explosion transforms a corpse and applies damage to enemies in the area
 			SpellLineId.DeathKnightUnholyCorpseExplosion.Apply(spell =>
 			{
-				// TODO: Animation
 				var effect1 = spell.Effects[0];
 				effect1.TriggerSpellId = SpellId.ClassSkillCorpseExplosion;
 				effect1.SpellEffectHandlerCreator = (cast, effct) => new CorpseExplosionHandler(cast, effct);
@@ -45,48 +190,77 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellHandler.Apply(spell => spell.GetEffect(SpellEffectType.SchoolDamage).OverrideEffectValue = true,
 							   SpellId.ClassSkillCorpseExplosion);
 
-			FixUnholyBlight();
-
-			FixReaping();
 		}
 
-		#region Reaping
-		private static void FixReaping()
+		/// <summary>
+		/// TODO: Explosion animation
+		/// </summary>
+		public class CorpseExplosionHandler : TriggerSpellEffectHandler
 		{
-			SpellLineId.DeathKnightUnholyReaping.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+			public const float CorpseSearchRadius = 10;
 
-				var effect = spell.GetEffect(AuraType.Dummy2);
-				// should not have an amplitude 
-				// (although it's probably the timeout for when the death rune is converted back to its original but it's not mentioned in the tooltip)
-				effect.Amplitude = 0;
-				// "Blood Strike or Pestilence"
-				effect.SetAffectMask(SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence);
-				effect.IsProc = true;
-				effect.AuraEffectHandlerCreator = () => new ReapingConvertHandler();
-			});
-		}
-
-		public class ReapingConvertHandler : AuraEffectHandler
-		{
-			public override void OnProc(Unit triggerer, IUnitAction action)
+			public CorpseExplosionHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
 			{
-				var chr = action.Attacker as Character;
-				if (chr != null)
+			}
+
+			public override bool HasOwnTargets
+			{
+				get { return false; }
+			}
+
+			static bool IsValidCorpse(NPC corpse)
+			{
+				// this check won't let us use the spell on corpses of NPCs that by default have the CorpseDisplayId
+				return corpse != null && !corpse.IsAlive && !corpse.Auras.Contains(SpellId.CorpseExploded);
+			}
+
+			public override void Apply()
+			{
+				// find corpse
+				var corpse = m_cast.Selected as NPC;
+				if (!IsValidCorpse(corpse))
 				{
-					var runes = chr.PlayerSpells.Runes;
-					if (runes != null)
+					corpse = null;
+
+					// find corpse nearby
+					var target = m_cast.Selected ?? m_cast.CasterUnit;
+					if (target == null)
 					{
-						// convert blood rune to death rune (if not on cooldown)
-						runes.Convert(RuneType.Blood, RuneType.Death);
+						return;		// should not happen
 					}
+					target.IterateEnvironment(CorpseSearchRadius, obj =>
+					{
+						if (IsValidCorpse(obj as NPC))
+						{
+							corpse = (NPC)obj;
+							return false;
+						}
+						return true;
+					});
+				}
+
+				if (corpse != null)
+				{
+					m_cast.Selected = corpse;
+					m_cast.TargetLoc = corpse.Position;
+
+					m_cast.Trigger(SpellId.CorpseExploded, corpse);	// "explode" & convert corpse
+
+					base.Apply();
 				}
 			}
 		}
 		#endregion
 
 		#region Unholy Fever
+		static readonly SpellId[] CryptFeverRanks = new[]
+		{
+			SpellId.CryptFeverRank1,
+			SpellId.CryptFever,
+			SpellId.CryptFever_2,
+		};
+
 		private static void FixUnholyFever()
 		{
 			// Crypt Fever does not proc correctly
@@ -97,8 +271,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
 				effect.AuraType = AuraType.ProcTriggerSpell;
-				effect.TriggerSpellId = CryptFeverHandler.CryptFeverRanks[spell.Rank - 1];
-				effect.AuraEffectHandlerCreator = () => new CryptFeverHandler();
+				effect.TriggerSpellId = CryptFeverRanks[spell.Rank - 1];
+				effect.AuraEffectHandlerCreator = () => new ProcOnDiseaseTriggerSpellHandler();
 				effect.ClearAffectMask();
 			});
 
@@ -107,26 +281,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				var effect = spell.Effects[0];
 				effect.AuraType = AuraType.ModDamageTakenPercent;
-			}, CryptFeverHandler.CryptFeverRanks);
-		}
-
-		/// <summary>
-		/// CF may only proc on diseases
-		/// </summary>
-		internal class CryptFeverHandler : ProcTriggerSpellHandler
-		{
-			public static readonly SpellId[] CryptFeverRanks = new[]
-			{
-				SpellId.CryptFeverRank1,
-				SpellId.CryptFever,
-				SpellId.CryptFever_2,
-			};
-
-			public override bool CanProcBeTriggeredBy(IUnitAction action)
-			{
-				return action.Spell != null && action.Spell.DispelType == DispelType.Disease && 
-					action.Spell != m_spellEffect.TriggerSpell;	// prevent infinite loop
-			}
+			}, CryptFeverRanks);
 		}
 		#endregion
 
@@ -173,62 +328,4 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		}
 		#endregion
 	}
-
-	#region Corpse Explosion
-	public class CorpseExplosionHandler : TriggerSpellEffectHandler
-	{
-		public const float CorpseSearchRadius = 10;
-		public static uint CorpseDisplayId = 11401;
-
-		public CorpseExplosionHandler(SpellCast cast, SpellEffect effect)
-			: base(cast, effect)
-		{
-		}
-
-		public override bool HasOwnTargets
-		{
-			get { return false; }
-		}
-
-		static bool IsValidCorpse(NPC corpse)
-		{
-			// this check won't let us use the spell on corpses of NPCs that by default have the CorpseDisplayId
-			return corpse != null && !corpse.IsAlive && corpse.DisplayId != CorpseDisplayId;
-		}
-
-		public override void Apply()
-		{
-			// find corpse
-			var corpse = m_cast.Selected as NPC;
-			if (!IsValidCorpse(corpse))
-			{
-				corpse = null;
-
-				// find corpse nearby
-				var target = m_cast.Selected ?? m_cast.CasterUnit;
-				if (target == null)
-				{
-					return;		// should not happen
-				}
-				target.IterateEnvironment(CorpseSearchRadius, obj =>
-				{
-					if (IsValidCorpse(obj as NPC))
-					{
-						corpse = (NPC)obj;
-						return false;
-					}
-					return true;
-				});
-			}
-
-			if (corpse != null)
-			{
-				corpse.DisplayId = CorpseDisplayId;
-				m_cast.Selected = corpse;
-				m_cast.TargetLoc = corpse.Position;
-				base.Apply();
-			}
-		}
-	}
-	#endregion
 }
