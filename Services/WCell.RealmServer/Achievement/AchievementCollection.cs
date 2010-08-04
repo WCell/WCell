@@ -34,9 +34,11 @@ namespace WCell.RealmServer.Achievement
 			return m_completedAchievements.ContainsKey(achievementEntry);
 		}
 
-		public AchievementProgressRecord GetAchievementProgress(AchievementCriteriaId achievementEntryId)
+		public AchievementProgressRecord GetAchievementProgress(AchievementCriteriaId achievementCriteriaId)
 		{
-			return m_achivement_progress[achievementEntryId];
+			AchievementProgressRecord entry;
+			m_achivement_progress.TryGetValue(achievementCriteriaId, out entry);
+			return entry;
 		}
 
         /// <summary>
@@ -55,26 +57,6 @@ namespace WCell.RealmServer.Achievement
             get { return m_completedAchievements.Count; }
         }
 
-        /// <summary>
-        /// Sets or overrides an existing achievement record;
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public AchievementRecord this[AchievementEntryId key]
-        {
-            get
-            {
-                AchievementRecord achievementRecord;
-                m_completedAchievements.TryGetValue(key, out achievementRecord);
-                return achievementRecord;
-            }
-            set
-            {
-                if (m_completedAchievements.ContainsKey(key))
-                    Remove(key);
-                Add(value);
-            }
-        }
         #endregion
 
         #region Add / Set

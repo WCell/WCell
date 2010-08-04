@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Achievement
 					achievementProgressRecord.Counter = 1;
 				achievementProgressRecord.Date = now;
 			}
-			AchievementHandler.SendAchievmentStatus(achievementProgressRecord, chr);
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord.AchievementCriteriaId, chr);
 		}
 
 		#region Default Achievement Event Updaters

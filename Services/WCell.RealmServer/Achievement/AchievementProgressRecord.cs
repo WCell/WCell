@@ -65,10 +65,13 @@ namespace WCell.RealmServer.Achievement
 
 		#endregion
 
+		/// <summary>
+		/// Encode char id and achievement id into RecordId
+		/// </summary>
 		[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long RecordId { get; set; }
 
-		[Field("Guid", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterGuid;
 
 		[Field("Criteria", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -79,7 +82,6 @@ namespace WCell.RealmServer.Achievement
 
 		[Property]
 		public DateTime Date { get; set; }
-
 
 		public uint CharacterGuid
 		{
@@ -99,9 +101,9 @@ namespace WCell.RealmServer.Achievement
 			set { _counter = (int)value; }
 		}
 
-		public static AchievementProgressRecord[] Load(long chrRecordId)
+		public static AchievementProgressRecord[] Load(int chrRecordId)
 		{
-			return FindAllByProperty("Guid", chrRecordId);
+			return FindAll(Restrictions.Eq("_characterGuid", chrRecordId));
 		}
 
 
