@@ -407,7 +407,7 @@ namespace WCell.RealmServer.Spells
 				}
 				#endregion
 
-				ArrayUtil.Set(ref SpellHandler.ById, spell.Id, spell);
+				SpellHandler.AddSpell(spell);
 			}
 
 			private void ReadReagent(byte[] rawData, int reagentStart, int reagentNum, out int currentIndex, ref List<ItemStackDescription> list)

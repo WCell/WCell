@@ -193,13 +193,19 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 			protected override void Apply(WorldObject target)
 			{
-				// TODO: "Ignores any target under the effect of a spell that is cancelled by taking damage."
+				var unit = (Unit) target;
+				if (unit.Auras.Contains(aura => aura.Spell.InterruptFlags.HasFlag(AuraInterruptFlags.OnDamage)))
+				{
+					// "Ignores any target under the effect of a spell that is cancelled by taking damage."
+					return;
+				}
+
 				var daction = m_cast.TriggerAction as DamageAction;
 				if (daction != null && m_cast.TriggerEffect != null)
 				{
 					// "will cause $s1% additional damage to the target and all enemies within 8 yards"
 					var damage = daction.GetDamagePercent(m_cast.TriggerEffect.CalcEffectValue());
-					((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, damage, false);
+					unit.DoSpellDamage(m_cast.CasterUnit, Effect, damage, false);
 				}
 			}
 
@@ -218,14 +224,14 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				var effect1 = spell.Effects[0];
 				effect1.TriggerSpellId = SpellId.ClassSkillCorpseExplosion;
+				effect1.OverrideEffectValue = true;
 				effect1.SpellEffectHandlerCreator = (cast, effct) => new CorpseExplosionHandler(cast, effct);
 
 				spell.Effects[1].SpellEffectHandlerCreator = (cast, effct) => new VoidEffectHandler(cast, effct);
 			});
 
 			// needs to override effect value with the value of the effect that triggered it
-			SpellHandler.Apply(spell => spell.GetEffect(SpellEffectType.SchoolDamage).OverrideEffectValue = true,
-							   SpellId.ClassSkillCorpseExplosion);
+			// SpellHandler.Apply(spell => {}, SpellId.ClassSkillCorpseExplosion);
 
 		}
 

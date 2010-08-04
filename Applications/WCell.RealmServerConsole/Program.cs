@@ -23,26 +23,26 @@ using WCell.RealmServer.Content;
 
 namespace WCell.RealmServerConsole
 {
-    internal class Program
-    {
+	internal class Program
+	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-        private static void Main(string[] args)
-		{	
-        	if (GCSettings.IsServerGC)
-        	{
-        		GCSettings.LatencyMode = GCLatencyMode.Batch;
-        	}
-        	else
-        	{
-        		GCSettings.LatencyMode = GCLatencyMode.Interactive;
-        	}
+		private static void Main(string[] args)
+		{
+			if (GCSettings.IsServerGC)
+			{
+				GCSettings.LatencyMode = GCLatencyMode.Batch;
+			}
+			else
+			{
+				GCSettings.LatencyMode = GCLatencyMode.Interactive;
+			}
 
-        	Thread.CurrentThread.IsBackground = true;
+			Thread.CurrentThread.IsBackground = true;
 
 			ContentHandler.ForceDataPresence = true;
-        	RealmServer.Program.Start();
-        	RealmServerConsole.Run();
+			RealmServer.Program.Start();
+			RealmServerConsole.Run();
 		}
-    }
+	}
 }

@@ -358,7 +358,7 @@ namespace WCell.RealmServer.Spells
 
 			if (triggeringCast != null &&
 				triggeringCast.TriggerEffect != null &&
-				OverrideEffectValue)
+				triggeringCast.TriggerEffect.OverrideEffectValue)
 			{
 				if (Spell.Effects.Length > 1)
 				{

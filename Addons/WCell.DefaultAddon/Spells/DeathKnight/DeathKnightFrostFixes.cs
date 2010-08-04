@@ -50,7 +50,17 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixTundraStalker();
 			FixDeathKnightFrostHungeringCold();
 			FixGlacierRot();
+			FixFrostPresence();
 
+		}
+
+		private static void FixFrostPresence()
+		{
+			// Frost Presence toggles a second aura
+			SpellLineId.DeathKnightFrostPresence.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FrostPresence));
+			});
 		}
 
 		#region Glacier Rot
@@ -61,7 +71,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				var effect = spell.GetEffect(AuraType.Dummy);
 				effect.MakeProc(() => new GlacierRotProcHandler(), SpellLineId.DeathKnightIcyTouch,
-				                SpellLineId.DeathKnightFrostHowlingBlast, SpellLineId.DeathKnightFrostFrostStrike);
+								SpellLineId.DeathKnightFrostHowlingBlast, SpellLineId.DeathKnightFrostFrostStrike);
 			});
 		}
 

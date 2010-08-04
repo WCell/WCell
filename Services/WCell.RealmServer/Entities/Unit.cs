@@ -695,7 +695,7 @@ namespace WCell.RealmServer.Entities
 
 
 			// Power is interpolated automagically
-			UpdatePower();
+			MiscHandler.SendPowerUpdate(this, PowerType, Power);
 
 			//if (Health == MaxHealth)
 			//{
@@ -958,7 +958,7 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					Power += value;
+					Power = power + value;
 				}
 
 				CombatLogHandler.SendEnergizeLog(energizer, this, effect != null ? effect.Spell.Id : 0, PowerType, value);
