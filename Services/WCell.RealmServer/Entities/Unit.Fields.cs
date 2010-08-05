@@ -1337,7 +1337,10 @@ namespace WCell.RealmServer.Entities
 				var oldHealth = Health;
 				var maxHealth = MaxHealth;
 
-				m_lastHealthUpdate = Region.CurrentTime;
+				if (m_region != null)
+				{
+					m_lastHealthUpdate = m_region.CurrentTime;
+				}
 
 				if (value >= maxHealth)
 				{
@@ -1352,7 +1355,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value < 1)
 					{
-						Die();
+						Die(false);
 					}
 					else
 					{

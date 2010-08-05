@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Entities
 
 		public int MeleeAttackPowerModsNeg
 		{
-			get { return GetUInt16Low(UnitFields.ATTACK_POWER_MODS); }
+			get { return GetUInt16High(UnitFields.ATTACK_POWER_MODS); }
 			set
 			{
 				SetUInt16High(UnitFields.ATTACK_POWER_MODS, (ushort)value);

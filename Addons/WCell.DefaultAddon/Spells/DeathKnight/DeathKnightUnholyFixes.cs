@@ -10,6 +10,7 @@ using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
@@ -35,7 +36,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixCorpseExplosion();
 			FixUnholyBlight();
 			// "Blood Strike or Pestilence" "the Blood Rune becomes a Death Rune"
-			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightUnholyReaping, 
+			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightUnholyReaping,
 				SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
 				RuneType.Death, RuneType.Blood);
 			FixWanderingPlague();
@@ -60,7 +61,119 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixRageOfRivendare();
+			FixUnholyPresence();
+
+			// Improved Unholy Presence also applies the s1% movement speed to the other two presences and increases rune cooldown
+			SpellLineId.DeathKnightUnholyImprovedUnholyPresence.Apply(spell =>
+			{
+				var retainEffect = spell.GetEffect(AuraType.Dummy);
+				retainEffect.AuraType = AuraType.ModIncreaseSpeed;
+				retainEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightBloodPresence, SpellLineId.DeathKnightFrostPresence);
+
+				// "your runes finish their cooldowns $s2% faster in Unholy Presence"
+				spell.GetEffect(AuraType.None).AuraEffectHandlerCreator = () => new ModAllRuneCooldownsPercentHandler();
+			});
+
+			FixAntiMagicZone();
 		}
+
+		#region Anti Magic Zone
+		private static void FixAntiMagicZone()
+		{
+			SpellLineId.DeathKnightUnholyAntiMagicZone.Apply(spell =>
+			{
+				// "The Anti-Magic Zone lasts for $51052d or until it absorbs ${$51052m1+2*$AP} spell damage."
+				spell.SetDuration(0);									// this spell has no duration (the area aura decides that)
+				var effect = spell.GetEffect(SpellEffectType.Summon);
+				effect.APValueFactor = 2;								// value is used for NPC health
+			});
+			
+			// The AreaAura of the AMZ must reduce the NPC's health as damage gets absorbed
+			SpellHandler.Apply(spell => spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new AMZAuraHandler(),
+				SpellId.AntiMagicZone);
+		}
+
+		[Initialization]
+		[DependentInitialization(typeof(NPCMgr))]
+		public static void FixAntiMagicZoneNPC()
+		{
+			// make AMZ non-attackable
+			var amz = NPCMgr.GetEntry(NPCId.AntiMagicZone);
+			amz.UnitFlags |= UnitFlags.NotAttackable | UnitFlags.NotSelectable;
+			amz.Died += npc => npc.Delete();	// delete on death
+		}
+
+		public class AMZAuraHandler : AttackEventEffectHandler
+		{
+			public int RemainingValue
+			{
+				get
+				{
+					var caster = m_aura.CasterUnit;
+					if (caster != null)
+					{
+						return caster.Health;
+					}
+					return 0;
+				}
+				set
+				{
+					var caster = m_aura.CasterUnit;
+					if (caster != null)
+					{
+						caster.Health = value;
+					}
+				}
+			}
+
+			protected override void Remove(bool cancelled)
+			{
+				var owner = Owner;
+				if (owner == m_aura.CasterUnit && !owner.IsPlayer)
+				{
+					Owner.Delete(); // delete totem when removed
+				}
+				base.Remove(cancelled);
+			}
+
+			public override void OnBeforeAttack(DamageAction action)
+			{
+			}
+
+			public override void OnAttack(DamageAction action)
+			{
+			}
+
+			public override void OnDefend(DamageAction action)
+			{
+				// absorb EffectValue % from the damage
+				var absorbed = Math.Min(action.GetDamagePercent(EffectValue), RemainingValue);
+
+				RemainingValue -= absorbed;
+				action.Absorbed += absorbed;
+
+				if (RemainingValue == 0)
+				{
+					var caster = m_aura.CasterUnit;
+					if (caster != null)
+					{
+						caster.CancelAreaAura(m_aura.Spell);
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Unholy Presence
+		private static void FixUnholyPresence()
+		{
+			// Unholy Presence toggles a second aura
+			SpellLineId.DeathKnightUnholyPresence.Apply(spell =>
+			{
+				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.UnholyPresence));
+			});
+		}
+		#endregion
 
 		#region Rage of Rivendare
 		private static void FixRageOfRivendare()
@@ -69,7 +182,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellLineId.DeathKnightFrostTundraStalker.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.BasePoints = spell.Rank*2;
+				effect.BasePoints = spell.Rank * 2;
 				effect.DiceSides = 0;
 				effect.AuraEffectHandlerCreator = () => new RageOfRivendareHandler();
 			});
@@ -97,7 +210,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 		private static void FixImpurity()
 		{
-			// TODO Impurity needs to increase AP bonus in %
+			// TODO Impurity needs to increase AP damage bonus in %
 			SpellLineId.DeathKnightUnholyImpurity.Apply(spell =>
 			{
 				var oldEffect = spell.RemoveEffect(SpellEffectType.Dummy);
@@ -193,7 +306,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 			protected override void Apply(WorldObject target)
 			{
-				var unit = (Unit) target;
+				var unit = (Unit)target;
 				if (unit.Auras.Contains(aura => aura.Spell.InterruptFlags.HasFlag(AuraInterruptFlags.OnDamage)))
 				{
 					// "Ignores any target under the effect of a spell that is cancelled by taking damage."

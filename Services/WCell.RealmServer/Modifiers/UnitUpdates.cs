@@ -66,6 +66,7 @@ namespace WCell.RealmServer.Modifiers
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
+			FlatIntModHandlers[(int)StatModifierInt.PowerRegenPercent] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockValue] = UpdateBlockChance;
 			FlatIntModHandlers[(int)StatModifierInt.BlockChance] = UpdateBlockChance;
@@ -79,7 +80,6 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
-			MultiModHandlers[(int)StatModifierFloat.PowerRegen] = UpdatePowerRegen;
 		}
 		#endregion
 
@@ -318,7 +318,7 @@ namespace WCell.RealmServer.Modifiers
 				{
 					// runic power bonuses only apply during combat
 					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
-					regen = GetMultiMod((int) unit.FloatMods[(int) StatModifierFloat.PowerRegen], regen);
+					regen = ((100 + unit.IntMods[(int) StatModifierInt.PowerRegen])*regen + 50)/100;	// rounding
 				}
 			}
 

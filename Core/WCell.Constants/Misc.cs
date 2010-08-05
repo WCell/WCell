@@ -444,7 +444,6 @@ namespace WCell.Constants
 		AttackerCritChance,
         BlockValue,
 		AttackTime,
-		PowerRegen,
 		HealthRegen,
 	}
 
@@ -468,6 +467,7 @@ namespace WCell.Constants
 		HealthRegenNoCombat,
 		
 		PowerRegen,
+		PowerRegenPercent,
 		BlockChance,
 		BlockValue,
         ParryChance,

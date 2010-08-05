@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
@@ -194,9 +195,9 @@ namespace WCell.RealmServer.Entities
 				EnsureSpells();
 			}
 
-			if (m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None)
+			if (IsImmovable)
 			{
-				m_Movement.MayMove = false;
+				InitImmovable();
 			}
 
 			AddStandardEquipment();
@@ -227,9 +228,13 @@ namespace WCell.RealmServer.Entities
 			{
 				if (
 					flags.HasAnyFlag(UnitFlags.SelectableNotAttackable | UnitFlags.SelectableNotAttackable_2 |
-								  UnitFlags.SelectableNotAttackable_3))
+								  UnitFlags.SelectableNotAttackable_3 | UnitFlags.NotAttackable))
 				{
 					Invulnerable++;
+				}
+				if (flags.HasAnyFlag(UnitFlags.NotSelectable))
+				{
+					IsEvading = true;
 				}
 				if (flags.HasFlag(UnitFlags.Combat))
 				{
@@ -250,6 +255,21 @@ namespace WCell.RealmServer.Entities
 				if (flags.HasFlag(UnitFlags.Silenced))
 				{
 					IncMechanicCount(SpellMechanic.Silenced);
+				}
+			}
+		}
+
+		private void InitImmovable()
+		{
+			m_Movement.MayMove = false;
+
+			// if immovables have a single AreaAura, better cast it
+			if (HasSpells && Spells.Count == 1)
+			{
+				var spell = Spells.First();
+				if (spell.IsAreaAura)
+				{
+					AddMessage(() => SpellCast.Start(spell, true));
 				}
 			}
 		}
@@ -298,6 +318,11 @@ namespace WCell.RealmServer.Entities
 					m_spawnPoint != null &&
 					(m_master == this || m_master == null);
 			}
+		}
+
+		public bool IsImmovable
+		{
+			get { return m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None; }
 		}
 
 		#region Properties
@@ -881,9 +906,19 @@ namespace WCell.RealmServer.Entities
 		{
 			m_brain.IsRunning = false;
 
+			// reset spawn timer
+			if (m_spawnPoint != null)
+			{	
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
+
+			// hand out experience
+			m_region.OnNPCDied(this);
+
 			var looter = m_FirstAttacker;
 			UnitFlags |= UnitFlags.SelectableNotAttackable;
 
+			// generate loot
 			if (looter is Character && LootMgr.GetOrCreateLoot(this, (Character)looter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
 			{
 				// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
@@ -896,22 +931,17 @@ namespace WCell.RealmServer.Entities
 				EnterFinalState();
 			}
 
-			m_region.OnNPCDied(this);
-
+			// send off the tamer
 			if (m_currentTamer != null)
 			{
 				PetHandler.SendTameFailure(m_currentTamer, TameFailReason.TargetDead);
 				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
 			}
 
-			// reset spawn point if mob died
-			if (m_spawnPoint != null)
-			{
-				m_spawnPoint.SignalSpawnlingDied(this);
-			}
-
+			// notify events
 			m_entry.NotifyDied(this);
 
+			// notify master
 			if (m_master != null)
 			{
 				if (m_master.IsInWorld)

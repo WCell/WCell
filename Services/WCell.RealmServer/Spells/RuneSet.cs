@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spells
 
 			for (RuneType i = 0; i < RuneType.End; i++)
 			{
-				SetCooldownPerSecond(i, DefaultRuneCooldownPerSecond);
+				SetCooldown(i, DefaultRuneCooldownPerSecond);
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace WCell.RealmServer.Spells
 			var cds = Cooldowns;
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
 			{
-				var cd = cds[i] - (dt * GetCooldownPerSecond(ActiveRunes[i]));
+				var cd = cds[i] - (dt * GetCooldown(ActiveRunes[i]));
 				if (cd > 0)
 				{
 					cds[i] = cd;
@@ -237,14 +237,43 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public float GetCooldownPerSecond(RuneType type)
+		/// <summary>
+		/// Gets the cooldown of the given RuneType in rune refreshment per second.
+		/// For example:
+		/// 1 = a rune refreshes in one second;
+		/// 0.1 = a rune refrehes in 10 seconds.
+		/// </summary>
+		public float GetCooldown(RuneType type)
 		{
 			return Owner.GetFloat(PlayerFields.RUNE_REGEN_1 + (int)type);
 		}
 
-		public void SetCooldownPerSecond(RuneType type, float cdPerSecond)
+		public void SetCooldown(RuneType type, float cdPerSecond)
 		{
 			Owner.SetFloat(PlayerFields.RUNE_REGEN_1 + (int)type, cdPerSecond);
+		}
+
+		public void ModCooldown(RuneType type, float delta)
+		{
+			SetCooldown(type, GetCooldown(type) + delta);
+		}
+
+		/// <summary>
+		/// Modifies all cooldowns by the given percentage
+		/// </summary>
+		/// <param name="percentDelta">If this value is 100, runes will cooldown in half the time</param>
+		/// <returns>The delta of all rune types</returns>
+		public float[] ModAllCooldownsPercent(int percentDelta)
+		{
+			var deltas = new float[(int) RuneType.End];
+			for (RuneType i = 0; i < RuneType.End; i++)
+			{
+				var val = GetCooldown(i);
+				var newVal = val + (val*percentDelta)/100;
+				SetCooldown(i, newVal);
+				deltas[(int) i] = newVal - val;
+			}
+			return deltas;
 		}
 		#endregion
 

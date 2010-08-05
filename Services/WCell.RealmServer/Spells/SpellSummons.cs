@@ -106,6 +106,7 @@ namespace WCell.RealmServer.Spells
 		public SpellSummonTotemHandler(uint index)
 		{
 			Index = index;
+			
 		}
 
 		public uint Index
@@ -136,6 +137,9 @@ namespace WCell.RealmServer.Spells
 		public uint Slot;
 		public SummonFlags Flags;
 
+		/// <summary>
+		/// If set to false, the amount determines health
+		/// </summary>
 		public bool DetermineAmountBySpellEffect = true;
 
 		public SpellSummonHandler Handler;

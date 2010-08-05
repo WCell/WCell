@@ -550,7 +550,7 @@ namespace WCell.RealmServer.Spells
 			}
 			foreach (var spellId in spells)
 			{
-				AffectSpellSet.AddRange(SpellHandler.Get(spellId));
+				AffectSpellSet.Add(SpellHandler.Get(spellId));
 			}
 		}
 

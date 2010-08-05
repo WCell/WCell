@@ -1331,7 +1331,7 @@ namespace WCell.Util
 			{
 				var current = m_Current;
 				m_Current = null;
-				return Current;
+				return current;
 			}
 			private set { m_Current = value; }
 		}
