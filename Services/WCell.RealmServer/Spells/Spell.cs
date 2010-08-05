@@ -345,6 +345,11 @@ namespace WCell.RealmServer.Spells
 						EquipmentSlot = EquipmentSlot.ExtraWeapon;
 					}
 				}
+				else if (IsPhysicalAbility)
+				{
+					// OnNextMelee is set but no equipment slot -> select main hand
+					EquipmentSlot = EquipmentSlot.MainHand;
+				}
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||

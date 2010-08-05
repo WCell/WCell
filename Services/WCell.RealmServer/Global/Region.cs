@@ -1232,20 +1232,21 @@ namespace WCell.RealmServer.Global
 						}
 						else
 						{
-							priority = obj.UpdatePriority;
+							//priority = obj.UpdatePriority;
+							priority = UpdatePriority.Active;
 						}
 
 						var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
 
 						// Update Object
-						//var ticks = UpdatePriorityTicks[(int)priority];
-						//if (tickMatch % ticks == 0)
+						var ticks = UpdatePriorityTicks[(int)priority];
+						if (tickMatch % ticks == 0)
 						{
-							//if (ticks > 1)
-							//{
-							//    obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
-							//}
-							//else
+							if (ticks > 1)
+							{
+								obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
+							}
+							else
 							{
 								obj.Update(objUpdateDelta);
 							}
