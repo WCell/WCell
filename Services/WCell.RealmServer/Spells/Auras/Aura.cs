@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				var caster = m_CasterReference.UnitMaster;
-				if (caster != null && caster.ContextHandler == Owner.ContextHandler)
+				if (caster != null && caster.IsInContext)
 				{
 					return caster;
 				}
@@ -855,6 +855,12 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				IsAdded = false;
 				Deactivate(true);
+
+				if (m_controller != null)
+				{
+					m_controller.OnRemove(Owner, this);
+				}
+
 				OnRemove();
 			}
 		}
@@ -874,14 +880,21 @@ namespace WCell.RealmServer.Spells.Auras
 					LogManager.GetCurrentClassLogger().Warn("Tried to remove Aura {0} but it's owner does not exist anymore.");
 					return;
 				}
-				var caster = CasterUnit;
-				if (caster != null)
+
+				if (m_controller != null)
 				{
-					caster.Proc(ProcTriggerFlags.AuraRemoved, owner,
-						new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);
+					m_controller.OnRemove(owner, this);
 				}
 
 				var auras = m_auras;
+				var caster = CasterUnit;
+
+				if (caster != null)
+				{
+					//caster.Proc(ProcTriggerFlags.AuraRemoved, owner,
+					//    new AuraAction { Attacker = caster, Victim = owner, Aura = this }, true);	
+					m_spell.NotifyAuraRemoved(this);
+				}
 
 				Deactivate(cancelled);
 				RemoveVisibleEffects(cancelled);
@@ -889,7 +902,7 @@ namespace WCell.RealmServer.Spells.Auras
 				auras.Cancel(this);
 				OnRemove();
 
-				if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId && owner.CancelAreaAura(m_spell))
+				if (m_spell.IsAreaAura && owner.EntityId == CasterReference.EntityId && owner.CancelAreaAura(m_spell))
 				{
 					//return;
 				}
@@ -898,12 +911,6 @@ namespace WCell.RealmServer.Spells.Auras
 
 		void OnRemove()
 		{
-			var owner = m_auras.Owner;
-			if (m_controller != null)
-			{
-				m_controller.OnRemove(owner, this);
-			}
-
 			if (m_record != null)
 			{
 				m_record.DeleteLater();

@@ -95,6 +95,11 @@ namespace WCell.Constants.Spells
 		ChainValueFactor = 20,
 
 		/// <summary>
+		/// 
+		/// </summary>
+		GlobalCooldown = 21,
+
+		/// <summary>
 		/// Modifies the EffectValue (positive) for periodic aura effects
 		/// </summary>
 		PeriodicEffectValue = 22,

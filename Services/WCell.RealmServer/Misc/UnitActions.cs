@@ -804,40 +804,50 @@ namespace WCell.RealmServer.Misc
 					ResistPct = 0;
 				}
 
-				Victim.OnDefend(this);
-				Attacker.OnAttack(this);
-
-				Resisted = (ResistPct * Damage / 100f).RoundInt();
-				Absorbed = Victim.Absorb(UsedSchool, Damage);
-				if (Absorbed > 0)
+				Victim.DeathPrevention++;
+				Attacker.DeathPrevention++;
+				try
 				{
-					HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					Victim.OnDefend(this);
+					Attacker.OnAttack(this);
+
+					Resisted = (ResistPct * Damage / 100f).RoundInt();
+					if (Absorbed > 0)
+					{
+						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					}
+					else
+					{
+						Absorbed = Resisted = 0;
+					}
+
+					if (Weapon == Attacker.OffHandWeapon)
+					{
+						HitFlags |= HitFlags.LeftSwing;
+					}
+
+					Victim.DoRawDamage(this);
+
+					//if ()
+					//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
+					//(uint)absorbed, (uint)resisted, (uint)blocked, victimState);
+					if (SpellEffect != null)
+					{
+						CombatLogHandler.SendMagicDamage(this);
+					}
+					else
+					{
+						CombatHandler.SendAttackerStateUpdate(this);
+					}
+				}
+				finally
+				{
+					Victim.DeathPrevention--;
+					Attacker.DeathPrevention--;
 				}
 			}
-			else
-			{
-				Absorbed = Resisted = 0;
-			}
-
-			if (Weapon == Attacker.OffHandWeapon)
-			{
-				HitFlags |= HitFlags.LeftSwing;
-			}
-
-			Victim.DoRawDamage(this);
-
-			//if ()
-			//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
-			//(uint)absorbed, (uint)resisted, (uint)blocked, victimState);
-			if (SpellEffect != null)
-			{
-				CombatLogHandler.SendMagicDamage(this);
-			}
-			else
-			{
-				CombatHandler.SendAttackerStateUpdate(this);
-			}
 		}
+
 		#endregion
 
 		#region Chances

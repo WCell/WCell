@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Handlers
 		public static void SendPeriodicAuraLog(IPacketReceiver client, WorldObject caster, WorldObject target,
 			uint spellId, uint extra, AuraTickFlags flags, int amount)
 		{
-			// TODO: Update struct for 3.0.2
+			// TODO: Update struct
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PERIODICAURALOG, 32))
 			{
 				caster.EntityId.WritePacked(packet);

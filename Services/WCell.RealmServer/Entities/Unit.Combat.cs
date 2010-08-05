@@ -165,8 +165,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual void OnAttack(DamageAction action)
 		{
-			foreach (var mod in AttackEventHandlers)
+			for (var i = AttackEventHandlers.Count - 1; i >= 0; i--)
 			{
+				var mod = AttackEventHandlers[i];
 				mod.OnAttack(action);
 			}
 		}
@@ -176,8 +177,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual void OnDefend(DamageAction action)
 		{
-			foreach (var mod in AttackEventHandlers)
+			for (var i = AttackEventHandlers.Count - 1; i >= 0; i--)
 			{
+				var mod = AttackEventHandlers[i];
 				mod.OnDefend(action);
 			}
 		}
@@ -483,40 +485,55 @@ namespace WCell.RealmServer.Entities
 			action.SpellEffect = effect;
 
 			action.Victim = this;
-
 			if (attacker != null)
 			{
-				// the damage is caused by someone else (i.e. not environmental damage etc)
-
-				// critical hits
-				if (action.CalcCritChance() > Utility.Random(0, 10000))
-				{
-					action.IsCritical = true;
-					action.SetCriticalDamage();
-				}
-				else
-				{
-					action.IsCritical = false;
-				}
-
-				// add mods and call events
-				OnDefend(action);
-				attacker.OnAttack(action);
-
-				if (addDamageBonuses && attacker is Character)
-				{
-					((Character)attacker).AddDamageModsToAction(action);
-				}
+				attacker.DeathPrevention++;
 			}
 
-			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
-			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
-			action.Blocked = 0; // TODO: Deflect
+			DeathPrevention++;
+			try
+			{
+				if (attacker != null)
+				{
+					// the damage is caused by someone else (i.e. not environmental damage etc)
 
-			DoRawDamage(action);
+					// critical hits
+					if (action.CalcCritChance() > Utility.Random(0, 10000))
+					{
+						action.IsCritical = true;
+						action.SetCriticalDamage();
+					}
+					else
+					{
+						action.IsCritical = false;
+					}
 
-			CombatLogHandler.SendMagicDamage(action);
-			action.OnFinished();
+					// add mods and call events
+					if (addDamageBonuses && attacker is Character)
+					{
+						((Character)attacker).AddDamageModsToAction(action);
+					}
+
+					OnDefend(action);
+					attacker.OnAttack(action);
+				}
+
+				action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
+				action.Blocked = 0; // TODO: Deflect
+
+				DoRawDamage(action);
+
+				CombatLogHandler.SendMagicDamage(action);
+			}
+			finally
+			{
+				DeathPrevention--;
+				if (attacker != null)
+				{
+					attacker.DeathPrevention--;
+				}
+				action.OnFinished();
+			}
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
 			//There's also a fairly good chance of having 100% of the spell's damage be resisted, a slightly lower chance of 50% of its damage being resisted, a small chances of only 25%, or even 0% of the damage being resisted. 
 			//It's a weighted average. Visualize it as a bell curve around your average resistance.

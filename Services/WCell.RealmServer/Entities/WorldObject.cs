@@ -1532,9 +1532,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Cancels the first AreaAura of the given spell
+		/// Cancels the first <see cref="AreaAura"/> of the given spell
 		/// </summary>
-		/// <returns>Wheter it found & removed one</returns>
+		/// <returns>Whether it found & removed one</returns>
 		public bool CancelAreaAura(Spell spell)
 		{
 			var aura = GetAreaAura(spell);

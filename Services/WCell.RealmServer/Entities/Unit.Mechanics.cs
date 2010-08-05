@@ -123,11 +123,6 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_dmgImmunities;
 
 		/// <summary>
-		/// List of <see cref="IDamageAbsorber"/> which absorb any damage taken
-		/// </summary>
-		protected List<IDamageAbsorber> m_absorbers;
-
-		/// <summary>
 		/// Whether the physical state of this Unit allows it to move
 		/// </summary>
 		protected bool m_canMove;
@@ -793,63 +788,6 @@ namespace WCell.RealmServer.Entities
 				val = 0;
 			}
 			m_mechanicDurationMods[(int)mechanic] = val;
-		}
-		#endregion
-
-		#region Absorb
-		/// <summary>
-		/// Absorbs the given school and amount of damage
-		/// </summary>
-		/// <returns>The amount of damage absorbed</returns>
-		public int Absorb(DamageSchool school, int amount)
-		{
-			if (m_absorbers == null || m_absorbers.Count == 0)
-			{
-				return 0;
-			}
-			if (m_DamageAction != null)
-			{
-				if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
-					return 0;
-			}
-			var absorb = 0;
-
-			// count backwards so removal of elements won't disturb anything
-			for (var i = m_absorbers.Count - 1; i >= 0; i--)
-			{
-				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.HasAnyFlag(school))
-				{
-					var abs = Math.Min(amount, absorber.AbsorbValue);
-					absorb += abs;
-					absorber.AbsorbValue -= abs;
-				}
-			}
-			return absorb;
-		}
-
-		/// <summary>
-		/// Adds a new <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void AddDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers == null)
-			{
-				m_absorbers = new List<IDamageAbsorber>(1);
-			}
-
-			m_absorbers.Add(absorber);
-		}
-
-		/// <summary>
-		/// Removes an existing <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void RemoveDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers != null)
-			{
-				m_absorbers.Remove(absorber);
-			}
 		}
 		#endregion
 

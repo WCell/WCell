@@ -386,9 +386,9 @@ namespace WCell.Constants.Spells
 		AttrExD_10_0x400 = 0x400,//10
 
 		/// <summary>
-		/// This spell can't be absorbed
+		/// This spell can't be absorbed.
 		/// ClassSkillChaosBoltRank1 has this, is it correct though?
-		/// However, does this mean Entangling Roots DoT can't be absorbed?
+		/// Does this mean Entangling Roots DoT can't be absorbed?
 		/// </summary>
 		CannotBeAbsorbed = 0x800,//11
 

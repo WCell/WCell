@@ -338,13 +338,35 @@ namespace WCell.RealmServer.Entities
 			get { return m_auras.GhostAura != null; }
 		}
 
+		private uint m_DeathPrevention;
+
+		protected internal uint DeathPrevention
+		{
+			get { return m_DeathPrevention; }
+			set
+			{
+				if (m_DeathPrevention != value)
+				{
+					m_DeathPrevention = value;
+					if (value == 0)
+					{
+						// disable death prevention
+						if (Health == 0)
+						{
+							Die(true);
+						}
+					}
+				}
+			}
+		}
+
 		/// <summary>
 		/// Different from <see cref="Kill"/> which actively kills the Unit.
 		/// Is called when this Unit dies, i.e. Health gets smaller than 1.
 		/// </summary>
-		protected void Die()
+		protected void Die(bool force)
 		{
-			if (!IsAlive)
+			if (force || !IsAlive)
 			{
 				return;
 			}
@@ -950,18 +972,11 @@ namespace WCell.RealmServer.Entities
 			if (value != 0)
 			{
 				var power = Power;
-				var max = MaxPower;
-				if (power + value > max)
-				{
-					value = max - power;
-					Power = max;
-				}
-				else
-				{
-					Power = power + value;
-				}
+
+				value = MathUtil.ClampMinMax(value, -power, MaxPower - value);
 
 				CombatLogHandler.SendEnergizeLog(energizer, this, effect != null ? effect.Spell.Id : 0, PowerType, value);
+				Power = power + value;
 			}
 		}
 

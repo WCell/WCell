@@ -52,6 +52,24 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixGlacierRot();
 			FixFrostPresence();
 
+			// Improved Frost Presence also applies the s1% stamina to the other two presences
+			SpellLineId.DeathKnightFrostImprovedFrostPresence.Apply(spell =>
+			{
+				var retainEffect = spell.GetEffect(AuraType.Dummy);
+				retainEffect.AuraType = AuraType.ModTotalStatPercent;
+				retainEffect.MiscValue = -1;
+				retainEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightUnholyPresence, SpellLineId.DeathKnightBloodPresence);
+			});
+
+			// Icy Talons applies a buff, when casting FrostFever
+			SpellLineId.DeathKnightFrostIcyTalons.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpellWithOverride);
+				effect.ClearAffectMask();
+				effect.AddAffectingSpells(SpellId.EffectFrostFever);
+			});
 		}
 
 		private static void FixFrostPresence()
