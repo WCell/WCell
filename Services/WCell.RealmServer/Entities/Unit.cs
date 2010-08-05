@@ -485,7 +485,7 @@ namespace WCell.RealmServer.Entities
 				log.Warn("Invalid Mount Entry-Id {0} ({1})", mountEntry, (int)mountEntry);
 				return;
 			}
-			Mount(mount.DisplayIds[0]);
+			Mount(mount.DisplayIds.GetRandom());
 		}
 
 		public void Mount(NPCId mountId)

@@ -1,5 +1,1 @@
-- added ModAllRuneCooldownsPercentHandler
-- fixed Attack Power bonuses
-- re-did SchoolAbsorbHandler using AttackEventEffectHandler
-- implemented & tested Anti-Magic Zone
-- to test: DeathKnightFrostImprovedFrostPresence, DeathKnightUnholyImprovedUnholyPresence, DeathKnightFrostIcyTalons
+- fixed NPC combat melee distance / NPC NativeDisplayId / 

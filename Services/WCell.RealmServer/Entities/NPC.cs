@@ -99,6 +99,10 @@ namespace WCell.RealmServer.Entities
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
+				else if (m_entry.ModelInfos.Length > 0)
+				{
+					DisplayId = m_entry.DisplayIds.GetRandom();
+				}
 			}
 			else
 			{

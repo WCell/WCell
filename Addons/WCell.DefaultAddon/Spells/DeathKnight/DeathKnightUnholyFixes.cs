@@ -100,11 +100,14 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// make AMZ non-attackable
 			var amz = NPCMgr.GetEntry(NPCId.AntiMagicZone);
 			amz.UnitFlags |= UnitFlags.NotAttackable | UnitFlags.NotSelectable;
-			amz.Died += npc => npc.Delete();	// delete on death
 		}
 
 		public class AMZAuraHandler : AttackEventEffectHandler
 		{
+			/// <summary>
+			/// The caster's health is used as value by everony within the zone, where
+			/// caster = totem.
+			/// </summary>
 			public int RemainingValue
 			{
 				get
@@ -151,15 +154,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 				RemainingValue -= absorbed;
 				action.Absorbed += absorbed;
-
-				if (RemainingValue == 0)
-				{
-					var caster = m_aura.CasterUnit;
-					if (caster != null)
-					{
-						caster.CancelAreaAura(m_aura.Spell);
-					}
-				}
 			}
 		}
 		#endregion
