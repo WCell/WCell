@@ -83,7 +83,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			SpellLineId.DeathKnightAntiMagicShell.Apply(spell =>
 			{
-
+				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new AMSAuraHandler();
 			});
 		}
 
@@ -92,33 +92,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			protected override void Apply()
 			{
 				base.Apply();
-			}
 
-			protected override void Remove(bool cancelled)
-			{
-				var owner = Owner;
-				if (owner == m_aura.CasterUnit && !owner.IsPlayer)
-				{
-					Owner.Delete(); // delete totem when removed
-				}
-				base.Remove(cancelled);
-			}
+				// the amount to be absorbed is determined by another effect
+				var handler = m_aura.GetHandler(AuraType.LimitAbsorbToCasterMaxHealthPercent);
+				var healthPct = handler != null ? handler.EffectValue : 1;
 
-			public override void OnBeforeAttack(DamageAction action)
-			{
-			}
-
-			public override void OnAttack(DamageAction action)
-			{
-			}
-
-			public override void OnDefend(DamageAction action)
-			{
-				// absorb EffectValue % from the damage
-				var absorbed = Math.Min(action.GetDamagePercent(EffectValue), RemainingValue);
-
-				RemainingValue -= absorbed;
-				action.Absorbed += absorbed;
+				// "up to a maximum of $s2% of the Death Knight's health"
+				RemainingValue = (Owner.Health*healthPct + 50)/100;
 			}
 		}
 		#endregion

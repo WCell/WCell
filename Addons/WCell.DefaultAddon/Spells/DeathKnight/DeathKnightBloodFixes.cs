@@ -114,7 +114,52 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				leechEffect.AuraEffectHandlerCreator = () => new LifeLeechPercentAuraHandler();
 				leechEffect.AddRequiredActivationAuras(SpellLineId.DeathKnightUnholyPresence, SpellLineId.DeathKnightFrostPresence);
 			});
+
+			FixBloodBoil();
+			FixDeathPact();
 		}
+
+		#region Death Pact
+		private static void FixDeathPact()
+		{
+			SpellLineId.DeathKnightDeathPact.Apply(spell =>
+			{
+				// Heals in % 
+				spell.GetEffect(SpellEffectType.Heal).EffectType = SpellEffectType.RestoreHealthPercent;
+			});
+		}
+		#endregion
+
+		#region Blood Boil
+		private static void FixBloodBoil()
+		{
+			SpellLineId.DeathKnightBloodBoil.Apply(spell =>
+			{
+				spell.GetEffect(SpellEffectType.SchoolDamage).SpellEffectHandlerCreator =
+					(cast, effct) => new BloodBoilDamageHandler(cast, effct);
+			});
+		}
+
+		internal class BloodBoilDamageHandler : SchoolDamageEffectHandler
+		{
+			public BloodBoilDamageHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var unit = ((Unit)target);
+
+				// "Deals additional damage to targets infected with Blood Plague or Frost Fever."
+				if (unit.Auras.Contains(SpellId.EffectBloodPlague) ||
+					unit.Auras.Contains(SpellId.EffectFrostFever))
+				{
+					unit.DealSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + 100);
+				}
+			}
+		}
+		#endregion
 
 		#region Death Rune Mastery
 		#endregion
