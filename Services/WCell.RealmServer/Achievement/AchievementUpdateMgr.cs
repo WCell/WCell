@@ -148,9 +148,8 @@ namespace WCell.RealmServer.Achievement
 
 		private static void SetCriteriaProgress(AchievementCriteriaEntry entry, Character chr, uint newValue)
 		{
-			AchievementProgressRecord achievementProgressRecord = null;
-			var achievementRecord = chr.Achievements.GetAchievementProgress(entry.AchievementCriteriaId);
-			if(achievementRecord == null)
+			AchievementProgressRecord achievementProgressRecord = chr.Achievements.GetAchievementProgress(entry.AchievementCriteriaId);
+			if (achievementProgressRecord == null)
 			{
 				if(newValue == 0)
 					return;
@@ -160,7 +159,6 @@ namespace WCell.RealmServer.Achievement
 			}
 			else
 			{
-				achievementProgressRecord = achievementRecord;
 				achievementProgressRecord.Counter = newValue;
 			}
 
@@ -172,6 +170,7 @@ namespace WCell.RealmServer.Achievement
 				achievementProgressRecord.Date = now;
 			}
 			AchievementHandler.SendAchievmentStatus(achievementProgressRecord.AchievementCriteriaId, chr);
+			chr.Achievements.AddAchievementProgress(achievementProgressRecord);
 		}
 
 		#region Default Achievement Event Updaters
@@ -190,7 +189,7 @@ namespace WCell.RealmServer.Achievement
 		}
 		private static void OnReachLevel(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{
-			SetCriteriaProgress(entry, chr, (uint)chr.Level);
+			SetCriteriaProgress(entry, chr, value1);
 		}
 		private static void OnReachSkillLevel(AchievementCriteriaEntry entry, Character chr, uint value1, uint value2, ObjectBase involved)
 		{

@@ -17,7 +17,6 @@ namespace WCell.RealmServer.Achievement
     {
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
 
 		/// <summary>
 		/// Character will not have Ids below this threshold. 
@@ -29,14 +28,14 @@ namespace WCell.RealmServer.Achievement
 		/// that none of the ids below this threshold are in the DB.
 		/// </remarks>
 
-		protected static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(AchievementRecord), "RecordId");
+		protected static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(AchievementProgressRecord), "RecordId");
 
 		/// <summary>
-		/// Creates a new AchievementRecord row in the database with the given information.
+		/// Creates a new AchievementProgressRecord row in the database with the given information.
 		/// </summary>
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
+		/// <returns>the <seealso cref="AchievementProgressRecord"/> object</returns>
 		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, AchievementCriteriaId achievementCriteriaId, uint counter)
 		{
 			AchievementProgressRecord record;

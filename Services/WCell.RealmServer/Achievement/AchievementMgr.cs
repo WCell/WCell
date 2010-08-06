@@ -120,5 +120,63 @@ namespace WCell.RealmServer.Achievement
 		{
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
+
+		public static bool IsCompletedAchievement(AchievementEntry achievementEntry, Character chr)
+		{
+			// Counter achievement were never meant to be completed.
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+				return false;
+
+			AchievementEntryId achievementForTestId = (achievementEntry.RefAchievement != 0)
+			                                          	? achievementEntry.RefAchievement
+			                                          	: achievementEntry.ID;
+			uint achievementForTestCount = achievementEntry.Count;
+
+
+			List<AchievementCriteriaEntry> achievementCriteriaIds = achievementEntry.Criteria;
+
+			if (achievementCriteriaIds.Count == 0)
+				return false;
+
+			uint count = 0;
+
+
+
+			// Default case
+			bool completedAll = true;
+
+			foreach (var achievementCriteriaEntry in achievementCriteriaIds)
+			{
+				if (IsCompletedCriteria(achievementCriteriaEntry,chr))
+					++count;
+				else
+					completedAll = false;
+
+				if (achievementForTestCount > 0 && achievementForTestCount <= count)
+					return true;
+			}
+			// all criterias completed requirement
+			return (completedAll && achievementForTestCount == 0);
+		}
+
+		public static bool IsCompletedCriteria(AchievementCriteriaEntry achievementCriteriaEntry, Character chr)
+		{
+			AchievementEntry achievementEntry = achievementCriteriaEntry.AchievementEntry;
+
+			// Counter achievement were never meant to be completed.
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+				return false;
+			
+			//TODO: Add support for realm first.
+
+			// We never completed the criteria befoer.
+			AchievementProgressRecord achievementProgressRecord =
+				chr.Achievements.GetAchievementProgress(achievementCriteriaEntry.AchievementCriteriaId);
+			if(achievementProgressRecord == null)
+				return false;
+
+			return achievementCriteriaEntry.HasCompleted(achievementProgressRecord);
+
+		}
 	}
 }

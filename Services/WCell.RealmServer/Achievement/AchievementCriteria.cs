@@ -28,6 +28,11 @@ namespace WCell.RealmServer.Achievement
 		{
 			get { return AchievementMgr.GetAchievementEntry(AchievementEntryId); }
 		}
+
+		public virtual bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return false;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -36,6 +41,11 @@ namespace WCell.RealmServer.Achievement
 		// 0
 		public NPCId CreatureId;
 		public int CreatureCount;
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= CreatureCount;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -56,6 +66,11 @@ namespace WCell.RealmServer.Achievement
 		// 5
 		public uint Unused;
 		public uint Level;
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= Level;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

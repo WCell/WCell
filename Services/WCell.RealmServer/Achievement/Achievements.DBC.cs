@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Achievement
 			achievementEntry.Category = AchievementMgr.GetCategoryEntry(category);
 
 			achievementEntry.Points = GetUInt32(rawData, 39);
-			achievementEntry.Flags = GetUInt32(rawData, 41);
+			achievementEntry.Flags = (AchievementFlags)GetUInt32(rawData, 41);
 			achievementEntry.Count = GetUInt32(rawData, 60);
 			achievementEntry.RefAchievement = (AchievementEntryId)GetUInt32(rawData, 61);
 
