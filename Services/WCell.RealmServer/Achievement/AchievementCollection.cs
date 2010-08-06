@@ -232,7 +232,7 @@ namespace WCell.RealmServer.Achievement
 				}
 				achievementProgressRecord.StartOrUpdateTime = now;
 			}
-			AchievementHandler.SendAchievmentStatus(achievementProgressRecord.AchievementCriteriaId, Owner);
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
 			AddAchievementProgress(achievementProgressRecord);
 		}
 		#endregion
