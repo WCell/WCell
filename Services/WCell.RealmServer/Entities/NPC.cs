@@ -99,9 +99,9 @@ namespace WCell.RealmServer.Entities
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-				else if (m_entry.ModelInfos.Length > 0)
+				else if (m_entry.ModelInfos != null && m_entry.ModelInfos.Length > 0)
 				{
-					DisplayId = m_entry.DisplayIds.GetRandom();
+					Model = m_entry.ModelInfos.GetRandom();
 				}
 			}
 			else
