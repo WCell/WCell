@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.Spells
 {
@@ -23,6 +24,11 @@ namespace WCell.RealmServer.Spells
 		/// Is called after a SpellCast has been casted.
 		/// </summary>
 		public event Action<SpellCast> Casted;
+
+		/// <summary>
+		/// Is called before SpellCast is cancelled for the given reason.
+		/// </summary>
+		public event Action<Aura> AuraRemoved;
 
 		/// <summary>
 		/// Triggers the Casting event
@@ -59,6 +65,15 @@ namespace WCell.RealmServer.Spells
 				evt(cast);
 			}
 			
+		}
+
+		internal void NotifyAuraRemoved(Aura aura)
+		{
+			var evt = AuraRemoved;
+			if (evt != null)
+			{
+				evt(aura);
+			}
 		}
 	}
 }

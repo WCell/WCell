@@ -211,7 +211,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			m_controller = controller;
 
-			if (m_controller == null)
+			if (m_controller == null || m_controller.MaxTicks == 1)
 			{
 				if (m_params != null)
 				{

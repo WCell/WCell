@@ -1,4 +1,1 @@
-- made Aura restrictions a lot more transparent & fixed some bugs in the system: It is now all in PlayerAuraCollection.MayActivate
-- added LifeLeechEffectHandler
-- implemented & tested: DeathKnightBloodPresence, DeathKnightBloodImprovedBloodPresence, DeathKnightBloodPlaguePassive, DeathKnightFrostFeverPassive
-
+- fixed NPC combat melee distance / NPC NativeDisplayId / 

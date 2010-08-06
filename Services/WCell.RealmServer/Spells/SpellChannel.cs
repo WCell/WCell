@@ -142,9 +142,6 @@ namespace WCell.RealmServer.Spells
 		{
 			if (!m_channeling && m_cast != null)
 			{
-#if DEBUG
-				log.Info("Opening " + this);
-#endif
 				m_channeling = true;
 				m_auras = auras;
 

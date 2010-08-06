@@ -207,6 +207,10 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue()
 		{
+			if (m_cast.TriggerEffect != null && m_cast.TriggerEffect.OverrideEffectValue)
+			{
+				return m_cast.TriggerEffect.CalcEffectValue(m_cast.CasterReference);
+			}
 			return Effect.CalcEffectValue(m_cast.CasterReference);
 		}
 

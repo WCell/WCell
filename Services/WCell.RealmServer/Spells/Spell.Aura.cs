@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Whether this is a proc and whether its own effects handle procs (or false, if not a proc or custom proc handlers have been added)
 		/// </summary>
-		public bool DoesAuraHandleProc
+		public bool IsAuraProcHandler
 		{
 			get { return IsProc && ProcHandlers == null; }
 		}
@@ -171,7 +171,8 @@ namespace WCell.RealmServer.Spells
 					ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
 				}
 
-				IsProc = ProcTriggerEffects != null || ProcHandlers != null || CasterProcSpells != null;
+				IsProc = ProcTriggerEffects != null || ProcHandlers != null || CasterProcSpells != null ||
+					ProcCharges > 0;
 			}
 
 			IsAura = IsProc || HasEffectWith(effect =>

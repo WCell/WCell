@@ -105,7 +105,7 @@ namespace WCell.MPQTool.StormLibWrapper
             uint highBits;
             uint lowBits = NativeMethods.GetFileSize(fileHandle, out highBits);
 
-            return (highBits << 32) + lowBits;
+			return ((long)highBits << 32) + lowBits;
         }
     }
 }

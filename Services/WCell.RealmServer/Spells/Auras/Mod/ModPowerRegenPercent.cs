@@ -23,24 +23,21 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ModPowerRegenPercentHandler : AuraEffectHandler
 	{
-		float val;
-
-		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-		{
-			var type = (PowerType)m_spellEffect.MiscValue;
-			if (target.PowerType != type)
-			{
-				failReason = SpellFailedReason.BadTargets;
-			}
-		}
+		//protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
+		//{
+		//    var type = (PowerType)m_spellEffect.MiscValue;
+		//    if (target.PowerType != type)
+		//    {
+		//        failReason = SpellFailedReason.BadTargets;
+		//    }
+		//}
 
 		protected override void Apply()
 		{
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)
 			{
-				val = EffectValue / 100f;
-				m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.PowerRegen, val);
+				m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, EffectValue);
 			}
 		}
 
@@ -49,7 +46,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var type = (PowerType)m_spellEffect.MiscValue;
 			if (m_aura.Auras.Owner.PowerType == type)
 			{
-				m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.PowerRegen, -val);
+				m_aura.Auras.Owner.ChangeModifier(StatModifierInt.PowerRegenPercent, -EffectValue);
 			}
 		}
 	}

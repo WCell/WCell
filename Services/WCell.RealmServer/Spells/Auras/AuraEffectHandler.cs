@@ -125,7 +125,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void DoApply()
 		{
-			if (m_IsActivated) return;
+			if (m_IsActivated && !m_spellEffect.IsPeriodic) return;
 			m_IsActivated = true;
 			Apply();
 		}
@@ -148,7 +148,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Is called by Aura to remove the effect from its holder
+		/// Removes the effect from its holder
 		/// </summary>
 		protected virtual void Remove(bool cancelled)
 		{

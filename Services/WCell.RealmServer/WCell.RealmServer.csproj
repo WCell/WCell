@@ -253,6 +253,7 @@
     <Compile Include="Spells\Auras\Misc\LifeLeechPercentAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModAllRuneCooldownsPercentHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModMeleeAttackPowerByPercentOfStatHandler.cs" />
