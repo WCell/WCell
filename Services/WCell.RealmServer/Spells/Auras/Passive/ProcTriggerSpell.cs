@@ -25,6 +25,10 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
+		/// <summary>
+		/// Called when a matching proc event triggers this proc handler with the given
+		/// triggerer and action.
+		/// </summary>
 		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			if (m_spellEffect.TriggerSpell == null)

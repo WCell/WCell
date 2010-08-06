@@ -140,7 +140,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 					{
 						dmg = max;
 					}
-					action.Attacker.DoSpellDamage(action.Victim, effect, dmg);
+					action.Attacker.DealSpellDamage(action.Victim, effect, dmg);
 				}
 			});
 		}

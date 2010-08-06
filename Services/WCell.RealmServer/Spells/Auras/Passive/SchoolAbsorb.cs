@@ -40,36 +40,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			base.Apply();
 		}
 
-		public override void OnBeforeAttack(DamageAction action)
-		{
-		}
-
-		public override void OnAttack(DamageAction action)
-		{
-		}
-
 		public override void OnDefend(DamageAction action)
 		{
+			RemainingValue = action.Absorb(RemainingValue, (DamageSchoolMask)m_spellEffect.MiscValue);
 			if (RemainingValue <= 0)
 			{
-				return;
-			}
-
-			if (action.Spell != null && action.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
-			{
-				return;
-			}
-
-			var schools = (DamageSchoolMask) m_spellEffect.MiscValue;
-			if (schools.HasAnyFlag(action.UsedSchool))
-			{
-				var value = Math.Min(action.Damage, RemainingValue);
-				RemainingValue -= value;
-				action.Absorbed += value;
-				if (RemainingValue <= 0)
-				{
-					Owner.AddMessage(m_aura.Cancel);
-				}
+				Owner.AddMessage(m_aura.Cancel);
 			}
 		}
 	}

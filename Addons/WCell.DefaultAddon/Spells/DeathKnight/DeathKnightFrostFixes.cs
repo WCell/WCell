@@ -12,7 +12,9 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Effects;
 using WCell.RealmServer.Spells.Effects.Custom;
+using WCell.Util;
 
 namespace WCell.Addons.Default.Spells.DeathKnight
 {
@@ -70,7 +72,56 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect.ClearAffectMask();
 				effect.AddAffectingSpells(SpellId.EffectFrostFever);
 			});
+
+			// Killing Machine: Proc chance scales with rank (10% per rank)
+			SpellLineId.DeathKnightFrostKillingMachine.Apply(spell => spell.ProcChance = (uint)(10 * spell.Rank));
+
+			FixObliterate();
 		}
+
+		#region Obliterate
+		private static void FixObliterate()
+		{
+			// Obliterate adds damage per disease and consumes diseases
+			SpellLineId.DeathKnightObliterate.Apply(spell =>
+			{
+				var consumeEffect = spell.GetEffect(SpellEffectType.Dummy);
+				consumeEffect.SpellEffectHandlerCreator = (cast, effct) => new ObliterateStrikeHandler(cast, effct);
+			});
+		}
+
+		class ObliterateStrikeHandler : WeaponDamageEffectHandler
+		{
+			public ObliterateStrikeHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override void OnHit(DamageAction action)
+			{
+				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(DispelType.Disease);
+				action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
+
+				// consume diseases if the Annihilation talent does not save them
+				var annihilation = action.Attacker.Auras[SpellLineId.DeathKnightFrostAnnihilation];
+				if (annihilation != null)
+				{
+					var dummy = annihilation.GetHandler(AuraType.Dummy);
+					if (dummy != null)
+					{
+						if (Utility.Random(0, 101) < dummy.EffectValue)
+						{
+							// diseases remain
+							return;
+						}
+					}
+				}
+
+				// consume diseases
+				action.Victim.Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Disease);
+			}
+		}
+		#endregion
 
 		private static void FixFrostPresence()
 		{

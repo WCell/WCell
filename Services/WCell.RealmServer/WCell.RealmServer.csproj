@@ -189,7 +189,6 @@
     <Compile Include="Achievement\AchievementCollection.cs" />
     <Compile Include="Achievement\AchievementRecord.cs" />
     <Compile Include="Achievement\AchievementProgressRecord.cs" />
-    <Compile Include="Achievement\AchievementUpdateMgr.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
@@ -248,6 +247,7 @@
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AddEffectToPassiveAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnAutoAttackHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\LifeLeechPercentAuraHandler.cs" />

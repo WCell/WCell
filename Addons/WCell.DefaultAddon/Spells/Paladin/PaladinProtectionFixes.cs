@@ -146,7 +146,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				dmg += (int)m_cast.CasterChar.BlockValue;
 			}
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, dmg);
 		}
 	}
 }

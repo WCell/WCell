@@ -1,1 +1,5 @@
-- fixed NPC combat melee distance / NPC NativeDisplayId / 
+- cleaned up Achievement system -> will need to redo DB on login (or change column name in DB)
+- added events and more consistency to AuthenticationServer methods
+- fixed several potential threading issues in combat
+- implemented DeathKnightUnholyEbonPlaguebringer
+- to test: DeathKnightFrostKillingMachine, DeathKnightUnholyNecrosis, DeathKnightObliterate, DeathKnightFrostAnnihilation

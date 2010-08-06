@@ -489,7 +489,7 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Only used in Anti-Magic Shell (Id: 48707)
 		/// </summary>
-		Aura_267 = 267,
+		LimitAbsorbToCasterMaxHealthPercent = 267,
 		ModMeleeAttackPowerByPercentOfStat = 268,
 		Aura_269 = 269,
 		Aura_270 = 270,

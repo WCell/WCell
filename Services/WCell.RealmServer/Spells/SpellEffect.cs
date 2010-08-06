@@ -401,6 +401,11 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue(Unit caster, int value)
 		{
+			if (EffectValueOverrideEffect != null)
+			{
+				return EffectValueOverrideEffect.CalcEffectValue(caster, value);
+			}
+
 			if (caster == null)
 			{
 				return value;
@@ -452,6 +457,11 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue(int level, int comboPoints)
 		{
+			if (EffectValueOverrideEffect != null)
+			{
+				return EffectValueOverrideEffect.CalcEffectValue(level, comboPoints);
+			}
+
 			// calculate effect value
 			var value = BasePoints;
 

@@ -1046,6 +1046,9 @@ namespace WCell.RealmServer.Spells.Auras
 			return bonus;
 		}
 
+		/// <summary>
+		/// Returns the amount of visible Auras that have the given DispelType
+		/// </summary>
 		public int GetVisibleAuraCount(DispelType type)
 		{
 			var count = 0;

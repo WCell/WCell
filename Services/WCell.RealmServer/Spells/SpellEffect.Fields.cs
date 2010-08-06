@@ -154,9 +154,8 @@ namespace WCell.RealmServer.Spells
 		public ShapeshiftMask RequiredShapeshiftMask;
 
 		/// <summary>
-		/// The spell line that determines this SpellEffect's effect value.
-		/// If set, it will use the effect value of the effect that proc'ed this SpellEffect (if any)
-		/// to override it's own value.
+		/// If set, it will use the SpellEffect that triggered or proc'ed this SpellEffect (if any)
+		/// instead of this one.
 		/// </summary>
 		public bool OverrideEffectValue;
 
@@ -183,6 +182,11 @@ namespace WCell.RealmServer.Spells
 		{
 			get { return RequiredActivationAuras != null; }
 		}
+
+		/// <summary>
+		/// The SpellEffect to be used for EffectValue calculation
+		/// </summary>
+		public SpellEffect EffectValueOverrideEffect;
 		#endregion
 
 		#region Auto generated Fields
