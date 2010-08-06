@@ -226,7 +226,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			if (calc != null)
 			{
 				var dmg = calc(m_cast, (Unit)target);
-				((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, dmg);
+				((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, dmg);
 			}
 		}
 

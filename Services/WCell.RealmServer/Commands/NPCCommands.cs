@@ -406,7 +406,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Respawn");
 			EnglishParamInfo = "[<radius>]";
-			EnglishDescription = "Respawns all NPCs in the area. Radius by default = 50";
+			EnglishDescription = "Respawns all NPCs in the area. Default Radius = 50";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)

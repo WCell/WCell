@@ -7,6 +7,7 @@ using NLog;
 using WCell.Constants.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.Util;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -190,7 +191,8 @@ namespace WCell.RealmServer.Achievement
 
         #endregion
 
-		public void Update(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
+		#region Update
+		internal void Update(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
 		{
 			var list = AchievementMgr.GetEntriesByCriterion(type);
 			if (list != null)
@@ -198,12 +200,42 @@ namespace WCell.RealmServer.Achievement
 				foreach (var entry in list)
 				{
 					// TODO: Add preliminary checks, if necessary
-					AchievementUpdateMgr.GetUpdater(type)(entry, Owner, value1, value2, involved);
+					entry.OnUpdate(this, value1, value2, involved);
 					if (IsCompletedAchievement(entry.AchievementEntry) && !HasCompleted(entry.AchievementEntryId))
 						EarnAchievement(entry.AchievementEntry);
 				}
 			}
 		}
+
+		internal void SetCriteriaProgress(AchievementCriteriaEntry entry, uint newValue)
+		{
+			AchievementProgressRecord achievementProgressRecord = GetAchievementProgress(entry.AchievementCriteriaId);
+			if (achievementProgressRecord == null)
+			{
+				if (newValue == 0)
+					return;
+				achievementProgressRecord = AchievementProgressRecord.CreateAchievementProgressRecord(Owner,
+																					  entry.AchievementCriteriaId,
+																					  newValue);
+			}
+			else
+			{
+				achievementProgressRecord.Counter = newValue;
+			}
+
+			if (entry.TimeLimit > 0)
+			{
+				DateTime now = DateTime.Now;
+				if (achievementProgressRecord.StartOrUpdateTime.AddSeconds(entry.TimeLimit) < now)
+				{
+					achievementProgressRecord.Counter = 1;
+				}
+				achievementProgressRecord.StartOrUpdateTime = now;
+			}
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord.AchievementCriteriaId, Owner);
+			AddAchievementProgress(achievementProgressRecord);
+		}
+		#endregion
 
 		#region Save & Load
 		public void SaveNow()

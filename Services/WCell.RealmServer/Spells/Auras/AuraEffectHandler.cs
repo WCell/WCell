@@ -33,6 +33,11 @@ namespace WCell.RealmServer.Spells.Auras
 		protected internal SpellEffect m_spellEffect;
 		public int BaseEffectValue;
 
+		/// <summary>
+		/// The value of the underlying SpellEffect that was calculated when
+		/// this Aura was last applied or refreshed (see <see cref="SpellEffect.CalcEffectValue(Unit)"/>).
+		/// The value is multiplied by the StackCount of the Aura (<see cref="Aura.StackCount"/>).
+		/// </summary>
 		public int EffectValue
 		{
 			get
@@ -163,9 +168,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Triggers a proc on this EffectHandler with the given target.
+		/// Called when a matching proc event triggers this proc handler with the given
+		/// triggerer and action.
 		/// </summary>
-		/// <param name="triggerer"></param>
 		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}

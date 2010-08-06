@@ -247,6 +247,10 @@ namespace WCell.RealmServer.Entities
 			get { return m_region; }
 		}
 
+		/// <summary>
+		/// Whether this object is in the world and within the current
+		/// execution context.
+		/// </summary>
 		public bool IsInContext
 		{
 			get { return IsInWorld && ContextHandler != null && ContextHandler.IsInContext; }

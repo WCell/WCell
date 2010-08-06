@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 			if (Owner.MayAttack(triggerer))
 			{
-				Owner.DoSpellDamage(triggerer, m_spellEffect, val);
+				Owner.DealSpellDamage(triggerer, m_spellEffect, val);
 			}
 			else
 			{

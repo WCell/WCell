@@ -306,6 +306,9 @@ namespace WCell.RealmServer.Misc
 			m_Damage += (m_Damage * pct + 50) / 100;
 		}
 
+		/// <summary>
+		/// Returns the given percentage of the applied damage
+		/// </summary>
 		public int GetDamagePercent(int percent)
 		{
 			return (m_Damage * percent + 50) / 100;
@@ -1233,6 +1236,29 @@ namespace WCell.RealmServer.Misc
 			return chance;
 		}
 
+		#endregion
+
+		#region Absorb
+		public int Absorb(int absorbAmount, DamageSchoolMask schools)
+		{
+			if (absorbAmount <= 0)
+			{
+				return 0;
+			}
+
+			if (SpellEffect != null && Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+			{
+				return 0 ;
+			}
+
+			if (schools.HasAnyFlag(UsedSchool))
+			{
+				var value = Math.Min(Damage, absorbAmount);
+				absorbAmount -= value;
+				Absorbed += value;
+			}
+			return absorbAmount;
+		}
 		#endregion
 
 		internal void Reset(Unit attacker, Unit target, IWeapon weapon)

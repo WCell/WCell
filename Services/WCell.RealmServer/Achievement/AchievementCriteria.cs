@@ -10,6 +10,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
+using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -33,6 +34,10 @@ namespace WCell.RealmServer.Achievement
 		{
 			return false;
 		}
+
+		public virtual void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -45,6 +50,15 @@ namespace WCell.RealmServer.Achievement
 		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= CreatureCount;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (CreatureId != (NPCId)value1)
+			{
+				return;
+			}
+			achievements.SetCriteriaProgress(this, value2);
 		}
 	}
 
@@ -70,6 +84,11 @@ namespace WCell.RealmServer.Achievement
 		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= Level;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, value1);
 		}
 	}
 
