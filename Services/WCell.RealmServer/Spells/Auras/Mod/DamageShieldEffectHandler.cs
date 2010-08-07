@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			{
 				if (action.Victim.MayAttack(action.Attacker))
 				{
-					action.Attacker.DoSpellDamage(action.Victim, SpellEffect, EffectValue);
+					action.Attacker.DealSpellDamage(action.Victim, SpellEffect, EffectValue);
 				}
 			});
 		}

@@ -293,7 +293,13 @@ namespace WCell.RealmServer.Entities
 		/// <param name="action"></param>
 		public bool Strike(IWeapon weapon, DamageAction action, Unit target, SpellCast ability)
 		{
-			if (!target.IsInWorld)
+			EnsureContext();
+			if (!IsAlive)
+			{
+				return false;
+			}
+
+			if (!target.IsInContext || !target.IsAlive)
 			{
 				return false;
 			}
@@ -424,8 +430,18 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Does spell-damage to this Unit
 		/// </summary>
-		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true)
+		public void DealSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true, bool mayCrit = true)
 		{
+			EnsureContext();
+			if (!IsAlive)
+			{
+				return;
+			}
+			if (!attacker.IsInContext)
+			{
+				attacker = null;
+			}
+
 			DamageSchool school;
 			if (effect != null)
 			{

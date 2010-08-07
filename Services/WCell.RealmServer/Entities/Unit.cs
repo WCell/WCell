@@ -340,6 +340,12 @@ namespace WCell.RealmServer.Entities
 
 		private uint m_DeathPrevention;
 
+		/// <summary>
+		/// This is used to prevent this Unit from dying during a
+		/// critical process, such as damage application.
+		/// If health is at 0 this Unit won't "<see cref="Die"/>" until
+		/// DeathPrevention is set to 0 again. This prevents certain problems from happening.
+		/// </summary>
 		protected internal uint DeathPrevention
 		{
 			get { return m_DeathPrevention; }
@@ -940,7 +946,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var initialHealth = Health;
 
-			DoSpellDamage(receiver != null ? receiver.Master : this, effect, amount);
+			DealSpellDamage(receiver != null ? receiver.Master : this, effect, amount);
 
 			// only apply as much as was leeched
 			amount = initialHealth - Health;
@@ -1017,7 +1023,7 @@ namespace WCell.RealmServer.Entities
 			}
 			Power = currentPower - amount;
 
-			DoSpellDamage(attacker, effect, (int)(amount * dmgFactor));
+			DealSpellDamage(attacker, effect, (int)(amount * dmgFactor));
 		}
 		#endregion
 

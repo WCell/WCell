@@ -18,10 +18,16 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			Owner.AttackEventHandlers.Remove(this);
 		}
 
-		public abstract void OnBeforeAttack(DamageAction action);
+		public virtual void OnBeforeAttack(DamageAction action)
+		{
+		}
 
-		public abstract void OnAttack(DamageAction action);
+		public virtual void OnAttack(DamageAction action)
+		{
+		}
 		
-		public abstract void OnDefend(DamageAction action);
+		public virtual void OnDefend(DamageAction action)
+		{
+		}
 	}
 }

@@ -12,31 +12,22 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
 {
+	/// <summary>
+	/// Represents the progress in one criterion of one Achievement.
+	/// One Achievement can have many criteria.
+	/// </summary>
 	[ActiveRecord(Access = PropertyAccess.Property)]
 	public class AchievementProgressRecord : WCellRecord<AchievementProgressRecord>
     {
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
 
 		/// <summary>
-		/// Character will not have Ids below this threshold. 
-		/// You can use those unused ids for self-implemented mechanisms, eg to fake participants in chat-channels etc.
-		/// </summary>
-		/// <remarks>
-		/// Do not change this value once the first Character exists.
-		/// If you want to change this value to reserve more (or less) ids for other use, make sure
-		/// that none of the ids below this threshold are in the DB.
-		/// </remarks>
-
-		protected static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(AchievementRecord), "RecordId");
-
-		/// <summary>
-		/// Creates a new AchievementRecord row in the database with the given information.
+		/// Creates a new AchievementProgressRecord row in the database with the given information.
 		/// </summary>
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
-		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
+		/// <returns>the <seealso cref="AchievementProgressRecord"/> object</returns>
 		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, AchievementCriteriaId achievementCriteriaId, uint counter)
 		{
 			AchievementProgressRecord record;
@@ -45,11 +36,10 @@ namespace WCell.RealmServer.Achievement
 			{
 				record = new AchievementProgressRecord
 				{
-					RecordId = _idGenerator.Next(),
 					_characterGuid = (int)chr.EntityId.Low,
 					_achievementCriteriaId = (int)achievementCriteriaId,
 					_counter = (int)counter,
-					Date = DateTime.Now,
+					StartOrUpdateTime = DateTime.Now,
 					New = true
 				};
 			}
@@ -58,7 +48,6 @@ namespace WCell.RealmServer.Achievement
 				s_log.Error("AchievementProgressRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
 				record = null;
 			}
-
 
 			return record;
 		}
@@ -69,7 +58,18 @@ namespace WCell.RealmServer.Achievement
 		/// Encode char id and achievement id into RecordId
 		/// </summary>
 		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long RecordId { get; set; }
+		public long RecordId
+		{
+			get
+			{
+				return _characterGuid | ((long)_achievementCriteriaId << 32);
+			}
+			set
+			{
+				_characterGuid = (int)value;
+				_achievementCriteriaId = (int)(value >> 32);
+			}
+		}
 
 		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterGuid;
@@ -80,8 +80,11 @@ namespace WCell.RealmServer.Achievement
 		[Field("Counter", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _counter;
 
+		/// <summary>
+		/// The time when this record was inserted or last updated (depends on the kind of criterion)
+		/// </summary>
 		[Property]
-		public DateTime Date { get; set; }
+		public DateTime StartOrUpdateTime { get; set; }
 
 		public uint CharacterGuid
 		{

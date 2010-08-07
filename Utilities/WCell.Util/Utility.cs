@@ -211,7 +211,7 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT()
 		{
 			return GetEpochTimeFromDT(DateTime.Now);
@@ -221,7 +221,7 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT(DateTime time)
 		{
 			return (uint)((time.Ticks - TICKS_SINCE_1970) / 10000000L);

@@ -633,6 +633,8 @@ namespace WCell.RealmServer.Entities
 					FreeTalentPoints++;
 				}
 
+				m_achievements.Update(AchievementCriteriaType.ReachLevel, (uint)Level, 0, this);
+
 				var evt = LeveledUp;
 				if (evt != null)
 				{
@@ -643,7 +645,6 @@ namespace WCell.RealmServer.Entities
 
 			if (leveled)
 			{
-				m_achievements.Update(AchievementCriteriaType.ReachLevel, (uint)Level, 0, this);
 				ModStatsForLevel(level);
 				m_auras.ReapplyAllAuras();
 				SaveLater();

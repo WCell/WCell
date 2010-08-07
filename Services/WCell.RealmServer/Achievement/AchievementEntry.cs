@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Achievement
         public AchievementCategoryEntry Category;                                   // 38
         public uint Points;                                       // 39 reward points
         //public uint OrderInCategory;                               // 40
-        public uint Flags;                                        // 41
+        public AchievementFlags Flags;                                        // 41
         //public uint Icon;                                       // 42 icon (from SpellIcon.dbc)
         //public string TitleReward[16];                                // 43-58
         //public string TitleRewardFlags;                             // 59

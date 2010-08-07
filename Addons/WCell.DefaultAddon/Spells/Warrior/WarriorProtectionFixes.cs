@@ -121,7 +121,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 					{
 						if (victim.MayAttack(attacker))
 						{
-							attacker.DoSpellDamage(victim, SpellEffect, dmg);
+							attacker.DealSpellDamage(victim, SpellEffect, dmg);
 						}
 					});
 				}

@@ -384,7 +384,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// "each extra point (...) into ${$f1+$AP/410}.1 additional damage"
 			var bonusDmg = toConsume * (int)(Effect.Spell.DamageMultipliers[0] + ((unit.TotalMeleeAP + 210) / 410f));
 
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + bonusDmg);
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + bonusDmg);
 		}
 	}
 	#endregion

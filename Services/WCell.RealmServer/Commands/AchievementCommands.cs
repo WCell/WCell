@@ -9,6 +9,9 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
+	/// <summary>
+	/// TODO: Localize
+	/// </summary>
 	public class AchievementCommands : RealmServerCommand
 	{
 		protected override void Initialize()
@@ -33,7 +36,7 @@ namespace WCell.RealmServer.Commands
 				if (achivementEntry != null)
 				{
 					AddAchievement((Character) trigger.Args.Target, achievementId);
-					trigger.ReplyFormat("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
+					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
 				}
 				else
 				{

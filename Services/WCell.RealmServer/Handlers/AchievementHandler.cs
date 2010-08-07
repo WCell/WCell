@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using NLog;
@@ -23,16 +24,12 @@ namespace WCell.RealmServer.Handlers
         //SMSG_ALL_ACHIEVEMENT_DATA
         public static void SendAchievementData(Character chr)
         {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ALL_ACHIEVEMENT_DATA, chr.Achievements.AchievementsCount * 3 * 4 + 4))
+//			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ALL_ACHIEVEMENT_DATA, 4 * 2 + chr.Achievements.AchievementsCount * 4 * 2 + chr.Achievements.m_achivement_progress .Count* 7 * 4))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ALL_ACHIEVEMENT_DATA, chr.Achievements.AchievementsCount * 2 * 4 + 4))
             {
 				if (chr.Achievements.AchievementsCount > 0)
 				{
-					foreach (AchievementRecord completedAchievement in chr.Achievements.m_completedAchievements.Values)
-					{
-						packet.WriteUInt((uint)completedAchievement.AchievementEntryId);
-						packet.WriteDateTime(completedAchievement.CompleteDate);
-					}
-					packet.Write(0xFFFFFFFFu);
+					CreateAchievementData(packet, chr);
 					chr.Client.Send(packet);
 				}
             }
@@ -41,22 +38,23 @@ namespace WCell.RealmServer.Handlers
 		//SMSG_ACHIEVEMENT_EARNED
 		public static void SendAchievementEarned(AchievementEntryId achievementEntryId, Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ACHIEVEMENT_EARNED, 30))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ACHIEVEMENT_EARNED, 8+4+4))
 			{
 				chr.EntityId.WritePacked(packet);
-				packet.Write((uint)achievementEntryId);
+				packet.WriteUInt((uint)achievementEntryId);
 				packet.WriteDateTime(DateTime.Now);
-				packet.Write(0);
-				chr.Client.Send(packet);
+				packet.WriteUInt(0);
+				chr.SendPacketToArea(packet, true);
 			}
 		}
 
-		public static void SendAchievmentStatus(AchievementCriteriaId achievementCriteriaId, Character chr)
+		// SMSG_CRITERIA_UPDATE
+		public static void SendAchievmentStatus(AchievementProgressRecord achievementProgressRecord, Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 30))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CRITERIA_UPDATE, 4*5+8*2))
 			{
-				packet.WriteUInt((uint)achievementCriteriaId);
-				packet.WritePackedUInt64(1);					//	amount
+				packet.WriteUInt((uint)achievementProgressRecord.AchievementCriteriaId);
+				packet.WritePackedUInt64(achievementProgressRecord.Counter);					//	amount
 				chr.EntityId.WritePacked(packet);
 				packet.Write(0);
 				packet.WriteDateTime(DateTime.Now);				// start time?
@@ -65,6 +63,42 @@ namespace WCell.RealmServer.Handlers
 
 				chr.Client.Send(packet);
 			}
+		}
+
+		// SMSG_RESPOND_INSPECT_ACHIEVEMENTS
+		public static void SendRespondInspectAchievements(Character inspectedChar, Character inspectingChar)
+		{
+			//using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 4 * 2 + inspectedChar.Achievements.AchievementsCount * 4 * 2 + inspectedChar.Achievements.m_achivement_progress.Count * 7 * 4))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 8 + inspectedChar.Achievements.AchievementsCount * 2 * 4 + 4))
+			{
+				inspectingChar.EntityId.WritePacked(packet);
+				CreateAchievementData(packet, inspectedChar);
+				inspectingChar.Client.Send(packet);
+			}
+		}
+
+		public static void CreateAchievementData(RealmPacketOut packet, Character chr)
+		{
+			foreach (AchievementRecord completedAchievement in chr.Achievements.m_completedAchievements.Values)
+			{
+				packet.WriteUInt((uint)completedAchievement.AchievementEntryId);
+				packet.WriteDateTime(completedAchievement.CompleteDate);
+			}
+			packet.WriteInt(0xFFFFFFFFu);
+
+			/*foreach (AchievementProgressRecord achievementProgressRecord in chr.Achievements.m_achivement_progress.Values)
+			{
+
+				packet.WriteUInt((uint)achievementProgressRecord.AchievementCriteriaId);
+				packet.WritePackedUInt64(achievementProgressRecord.Counter);					//	amount
+				chr.EntityId.WritePacked(packet);
+				packet.Write(0);
+				packet.WriteDateTime(DateTime.Now);				// start time?
+				packet.Write(0);								// Duration
+				packet.Write(0);
+
+			}
+			packet.Write(0xFFFFFFFFu);*/
 		}
 	}
 }

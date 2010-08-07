@@ -82,7 +82,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                 {
                     Effect.BasePoints += Effect.BasePoints / 4;
                 }
-                ((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
+                ((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
                 Effect.BasePoints = oldVal;
             }
 

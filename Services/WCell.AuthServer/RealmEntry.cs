@@ -213,6 +213,11 @@ namespace WCell.AuthServer
 		//    }
 		//}
 
+		/// <summary>
+		/// Disconnects the given Realm and flags it as offline, or removes it from the RealmList entirely.
+		/// Also removes all logged in accounts.
+		/// </summary>
+		/// <param name="remove">Whether to remove it entirely (true) or only show as offline (false)</param>
 		public void Disconnect(bool remove)
 		{
 			if (Channel != null)
@@ -223,9 +228,10 @@ namespace WCell.AuthServer
 		}
 
         /// <summary>
-        /// Removes this realm from the RealmList
+        /// Flags this realm as offline, or removes it from the RealmList entirely.
+        /// Also removes all logged in accounts.
         /// </summary>
-        public void SetOffline(bool remove)
+        internal void SetOffline(bool remove)
         {
             var serv = AuthenticationServer.Instance;
 
@@ -236,7 +242,7 @@ namespace WCell.AuthServer
 
 			if (remove)
 			{
-				AuthenticationServer.RemoveRealmById(ChannelId);
+				AuthenticationServer.RemoveRealm(this);
 			}
 			else
 			{

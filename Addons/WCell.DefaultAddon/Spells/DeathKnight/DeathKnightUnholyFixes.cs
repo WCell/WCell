@@ -32,14 +32,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				spell.GetEffect(AuraType.ModSpellHitChance).MiscValue = 0;
 			});
 
-			FixUnholyFever();
 			FixCorpseExplosion();
-			FixUnholyBlight();
-			// "Blood Strike or Pestilence" "the Blood Rune becomes a Death Rune"
+
+			// "Blood Strike or Pestilence" -> "the Blood Rune becomes a Death Rune"
 			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightUnholyReaping,
 				SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
 				RuneType.Death, RuneType.Blood);
-			FixWanderingPlague();
+
 			FixBloodCakedStrike();
 			FixImpurity();
 
@@ -75,7 +74,63 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixAntiMagicZone();
+			FixNecrosis();
+			FixAntiMagicShell();
 		}
+
+		#region Anti Magic Shell
+		private static void FixAntiMagicShell()
+		{
+			SpellLineId.DeathKnightAntiMagicShell.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new AMSAuraHandler();
+			});
+		}
+
+		public class AMSAuraHandler : SchoolAbsorbHandler
+		{
+			protected override void Apply()
+			{
+				base.Apply();
+
+				// the amount to be absorbed is determined by another effect
+				var handler = m_aura.GetHandler(AuraType.LimitAbsorbToCasterMaxHealthPercent);
+				var healthPct = handler != null ? handler.EffectValue : 1;
+
+				// "up to a maximum of $s2% of the Death Knight's health"
+				RemainingValue = (Owner.Health*healthPct + 50)/100;
+			}
+		}
+		#endregion
+
+		#region Necrosis
+		private static void FixNecrosis()
+		{
+			// Necrosis deals shadow damage on top of every attack that was performed
+			SpellLineId.DeathKnightUnholyNecrosis.Apply(spell =>
+			{
+				spell.SchoolMask = DamageSchoolMask.Shadow;		// "Shadow damage"
+
+				var effect = spell.GetEffect(AuraType.Dummy);
+				effect.AuraEffectHandlerCreator = () => new NecrosisDamageHandler();
+			});
+		}
+
+		/// <summary>
+		/// TODO: The applied damage should not be dependent on the order of 
+		/// AttackEventEffectHandler execution (which it currently is).
+		/// </summary>
+		internal class NecrosisDamageHandler : AttackEventEffectHandler
+		{
+			public override void OnAttack(DamageAction action)
+			{
+				var attacker = action.Attacker;		// same as Owner
+				var victim = action.Victim;
+				var dmg = action.GetDamagePercent(EffectValue);
+				victim.AddMessage(() => victim.DealSpellDamage(attacker, m_spellEffect, dmg, false, false));	// may not crit
+			}
+		}
+		#endregion
 
 		#region Anti Magic Zone
 		private static void FixAntiMagicZone()
@@ -87,17 +142,22 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				var effect = spell.GetEffect(SpellEffectType.Summon);
 				effect.APValueFactor = 2;								// value is used for NPC health
 			});
-			
+
 			// The AreaAura of the AMZ must reduce the NPC's health as damage gets absorbed
-			SpellHandler.Apply(spell => spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new AMZAuraHandler(),
-				SpellId.AntiMagicZone);
+			SpellHandler.Apply(spell =>
+			{
+				spell.AttributesExC ^= SpellAttributesExC.PersistsThroughDeath;				// remove when the totem's health is 0
+				spell.GetEffect(AuraType.SchoolAbsorb).AuraEffectHandlerCreator = () => new AMZAuraHandler();
+			}, SpellId.AntiMagicZone);
 		}
 
+		/// <summary>
+		/// Make AMZ non-attackable
+		/// </summary>
 		[Initialization]
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void FixAntiMagicZoneNPC()
 		{
-			// make AMZ non-attackable
 			var amz = NPCMgr.GetEntry(NPCId.AntiMagicZone);
 			amz.UnitFlags |= UnitFlags.NotAttackable | UnitFlags.NotSelectable;
 		}
@@ -106,7 +166,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		{
 			/// <summary>
 			/// The caster's health is used as value by everony within the zone, where
-			/// caster = totem.
+			/// caster = totem. When it's dead, Aura will get removed.
 			/// </summary>
 			public int RemainingValue
 			{
@@ -151,9 +211,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				// absorb EffectValue % from the damage
 				var absorbed = Math.Min(action.GetDamagePercent(EffectValue), RemainingValue);
-
-				RemainingValue -= absorbed;
-				action.Absorbed += absorbed;
+				RemainingValue = action.Absorb(absorbed, (DamageSchoolMask)m_spellEffect.MiscValue);
 			}
 		}
 		#endregion
@@ -221,18 +279,19 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellLineId.DeathKnightUnholyBloodCakedBlade.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraType = AuraType.ProcTriggerSpell;
+				effect.IsProc = true;
+				effect.AuraEffectHandlerCreator = () => new ProcTriggerSpellOnAutoAttackHandler();
 			});
 
 			SpellHandler.Apply(spell =>
 			{
 				// "hits for $50463s1% weapon damage plus ${$50463m1/2}.1% for each of your diseases on the target"
-				spell.GetEffect(SpellEffectType.WeaponDamage).SpellEffectHandlerCreator =
+				spell.GetEffect(SpellEffectType.WeaponPercentDamage).SpellEffectHandlerCreator =
 					(cast, effct) => new BloodCakedStrikeHandler(cast, effct);
 			}, SpellId.EffectBloodCakedStrike);
 		}
 
-		class BloodCakedStrikeHandler : WeaponDamageEffectHandler
+		class BloodCakedStrikeHandler : WeaponPercentDamageEffectHandler
 		{
 			public BloodCakedStrikeHandler(SpellCast cast, SpellEffect effect)
 				: base(cast, effect)
@@ -243,82 +302,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(DispelType.Disease);
 				action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
-			}
-		}
-		#endregion
-
-		#region Wandering Plague
-		private static void FixWanderingPlague()
-		{
-			SpellLineId.DeathKnightUnholyWanderingPlague.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.IsProc = true;
-				effect.AuraEffectHandlerCreator = () => new WanderingPlagueProcHandler();
-			});
-			SpellHandler.Apply(spell =>
-			{
-				spell.GetEffect(SpellEffectType.SchoolDamage).SpellEffectHandlerCreator =
-					(cast, effct) => new WanderingPlagueDamageHandler(cast, effct);
-			}, SpellId.WanderingPlague_2);
-		}
-
-		/// <summary>
-		/// WP only procs on disease
-		/// </summary>
-		internal class WanderingPlagueProcHandler : ProcOnDiseaseTriggerSpellHandler
-		{
-			public override bool CanProcBeTriggeredBy(IUnitAction action)
-			{
-				if (base.CanProcBeTriggeredBy(action))
-				{
-					// "there is a chance equal to your melee critical strike chance" 
-					var chr = action.Attacker as Character;
-					if (chr != null)
-					{
-						return Utility.RandomFloat() < chr.CritChanceMeleePct;
-					}
-				}
-				return false;
-			}
-
-			public override void OnProc(Unit triggerer, IUnitAction action)
-			{
-				// gives the proc action to the actual damage spell
-				Owner.SpellCast.Trigger(SpellHandler.Get(SpellId.WanderingPlague_2), m_spellEffect, action);
-			}
-		}
-
-		internal class WanderingPlagueDamageHandler : SpellEffectHandler
-		{
-			public WanderingPlagueDamageHandler(SpellCast cast, SpellEffect effect)
-				: base(cast, effect)
-			{
-			}
-
-			protected override void Apply(WorldObject target)
-			{
-				var unit = (Unit)target;
-				if (unit.Auras.Contains(aura => aura.Spell.InterruptFlags.HasFlag(AuraInterruptFlags.OnDamage)))
-				{
-					// "Ignores any target under the effect of a spell that is cancelled by taking damage."
-					return;
-				}
-
-				var daction = m_cast.TriggerAction as DamageAction;
-				if (daction != null && m_cast.TriggerEffect != null)
-				{
-					// "will cause $s1% additional damage to the target and all enemies within 8 yards"
-					var damage = daction.GetDamagePercent(m_cast.TriggerEffect.CalcEffectValue());
-					unit.DoSpellDamage(m_cast.CasterUnit, Effect, damage, false);
-				}
-			}
-
-			public override ObjectTypes TargetType
-			{
-				get { return ObjectTypes.Unit; }
 			}
 		}
 		#endregion
@@ -399,81 +382,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 					base.Apply();
 				}
-			}
-		}
-		#endregion
-
-		#region Unholy Fever
-		static readonly SpellId[] CryptFeverRanks = new[]
-		{
-			SpellId.CryptFeverRank1,
-			SpellId.CryptFever,
-			SpellId.CryptFever_2,
-		};
-
-		private static void FixUnholyFever()
-		{
-			// Crypt Fever does not proc correctly
-			SpellLineId.DeathKnightUnholyCryptFever.Apply(spell =>
-			{
-				// proc when a new Aura is applied to a target
-				spell.ProcTriggerFlags = ProcTriggerFlags.AuraStarted;
-
-				var effect = spell.GetEffect(AuraType.OverrideClassScripts);
-				effect.AuraType = AuraType.ProcTriggerSpell;
-				effect.TriggerSpellId = CryptFeverRanks[spell.Rank - 1];
-				effect.AuraEffectHandlerCreator = () => new ProcOnDiseaseTriggerSpellHandler();
-				effect.ClearAffectMask();
-			});
-
-			// The Crypt fever effect should increase damage taken %
-			SpellHandler.Apply(spell =>
-			{
-				var effect = spell.Effects[0];
-				effect.AuraType = AuraType.ModDamageTakenPercent;
-			}, CryptFeverRanks);
-		}
-		#endregion
-
-		#region Unholy Blight
-		static void FixUnholyBlight()
-		{
-			// Unholy Blight needs to proc an Aura when Death Coil is casted
-			SpellLineId.DeathKnightUnholyUnholyBlight.Apply(spell =>
-			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
-
-				var effect = spell.GetEffect(AuraType.Dummy);
-				effect.AuraType = AuraType.ProcTriggerSpell;
-				effect.AddToAffectMask(SpellLineId.DeathKnightDeathCoil);
-				effect.TriggerSpellId = SpellId.ClassSkillUnholyBlight;
-				//effect.AuraEffectHandlerCreator = () => new UnholyBlightHandler();
-			});
-			SpellHandler.Apply(spell =>
-			{
-				// add periodic damage
-				spell.GetEffect(AuraType.PeriodicDamage).AuraEffectHandlerCreator = () => new UnholyBlightDamageHandler();
-
-				// "preventing any diseases on the victim from being dispelled"
-				var dispelImmEffect = spell.AddAuraEffect(AuraType.DispelImmunity);
-				dispelImmEffect.MiscValue = (int)DispelType.Disease;
-			}, SpellId.ClassSkillUnholyBlight);
-		}
-
-		public class UnholyBlightDamageHandler : ParameterizedPeriodicDamageHandler
-		{
-			protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-			{
-				if (creatingCast == null || !(creatingCast.TriggerAction is DamageAction))
-				{
-					failReason = SpellFailedReason.Error;
-					return;
-				}
-
-				var daction = ((DamageAction)creatingCast.TriggerAction);
-
-				// "taking $49194s1% of the damage done by the Death Coil over $50536d"
-				TotalDamage = daction.ActualDamage;
 			}
 		}
 		#endregion

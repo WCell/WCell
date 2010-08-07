@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					value += ((value * bonus) + 50) / 100;
 				}
 
-				holder.DoSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
+				holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
 			}
 		}
 	}

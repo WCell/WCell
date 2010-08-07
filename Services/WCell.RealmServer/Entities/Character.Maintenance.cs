@@ -261,8 +261,7 @@ namespace WCell.RealmServer.Entities
 				catch (Exception e)
 				{
 					RealmDBUtil.OnDBError(e);
-					m_client.Disconnect();
-					return;
+					throw new Exception("Failed to load Character " + Name + " for Client: " + Client, e);
 				}
 
 				// existing Character
@@ -1340,29 +1339,50 @@ namespace WCell.RealmServer.Entities
 			m_minions = null;
 			m_activePet = null;
 
-			m_skills.m_owner = null;
-			m_skills = null;
+			if (m_skills != null)
+			{
+				m_skills.m_owner = null;
+				m_skills = null;
+			}
 
-			m_talents.Owner = null;
-			m_talents = null;
+			if (m_talents != null)
+			{
+				m_talents.Owner = null;
+				m_talents = null;
+			}
 
-			m_inventory.m_container = null;
-			m_inventory.m_owner = null;
-			m_inventory.m_ammo = null;
-			m_inventory.m_currentBanker = null;
-			m_inventory = null;
+			if (m_inventory != null)
+			{
+				m_inventory.m_container = null;
+				m_inventory.m_owner = null;
+				m_inventory.m_ammo = null;
+				m_inventory.m_currentBanker = null;
+				m_inventory = null;
+			}
 
-			m_mailAccount.Owner = null;
-			m_mailAccount = null;
+			if (m_mailAccount != null)
+			{
+				m_mailAccount.Owner = null;
+				m_mailAccount = null;
+			}
 
 			m_groupMember = null;
 
-			m_reputations.Owner = null;
-			m_reputations = null;
+			if (m_reputations != null)
+			{
+				m_reputations.Owner = null;
+				m_reputations = null;
+			}
 
 			if (m_InstanceCollection != null)
 			{
 				m_InstanceCollection.Dispose();
+			}
+
+			if (m_achievements != null)
+			{
+				m_achievements.m_owner = null;
+				m_achievements = null;
 			}
 
 			if (m_CasterReference != null)

@@ -7,6 +7,7 @@ using NLog;
 using WCell.Constants.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
+using WCell.Util;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -57,6 +58,64 @@ namespace WCell.RealmServer.Achievement
             get { return m_completedAchievements.Count; }
         }
 
+		public bool IsCompletedAchievement(AchievementEntry achievementEntry)
+		{
+			// Counter achievement were never meant to be completed.
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+				return false;
+
+			AchievementEntryId achievementForTestId = (achievementEntry.RefAchievement != 0)
+														? achievementEntry.RefAchievement
+														: achievementEntry.ID;
+			uint achievementForTestCount = achievementEntry.Count;
+
+
+			List<AchievementCriteriaEntry> achievementCriteriaIds = achievementEntry.Criteria;
+
+			if (achievementCriteriaIds.Count == 0)
+				return false;
+
+			uint count = 0;
+
+
+
+			// Default case
+			bool completedAll = true;
+
+			foreach (var achievementCriteriaEntry in achievementCriteriaIds)
+			{
+				if (IsCompletedCriteria(achievementCriteriaEntry))
+					++count;
+				else
+					completedAll = false;
+
+				if (achievementForTestCount > 0 && achievementForTestCount <= count)
+					return true;
+			}
+			// all criterias completed requirement
+			return (completedAll && achievementForTestCount == 0);
+		}
+
+		public bool IsCompletedCriteria(AchievementCriteriaEntry achievementCriteriaEntry)
+		{
+			AchievementEntry achievementEntry = achievementCriteriaEntry.AchievementEntry;
+
+			// Counter achievement were never meant to be completed.
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+				return false;
+
+			//TODO: Add support for realm first.
+			
+			// We never completed the criteria befoer.
+			AchievementProgressRecord achievementProgressRecord =
+				m_owner.Achievements.GetAchievementProgress(achievementCriteriaEntry.AchievementCriteriaId);
+			if (achievementProgressRecord == null)
+				return false;
+
+			return achievementCriteriaEntry.HasCompleted(achievementProgressRecord);
+
+		}
+
         #endregion
 
         #region Add / Set
@@ -64,12 +123,9 @@ namespace WCell.RealmServer.Achievement
 		/// Adds a new achievement to the list.
 		/// </summary>
 		/// <param name="achievementRecord"></param>
-		public void Add(AchievementRecord achievementRecord)
+		public void AddAchievement(AchievementRecord achievementRecord)
 		{
 			m_completedAchievements.Add(achievementRecord.AchievementEntryId, achievementRecord);
-			
-			// No need bercause here we load achievements
-			//AchievementHandler.SendAchievementEarned(achievementRecord.AchievementEntryId,m_owner);
 		}
 
     	/// <summary>
@@ -87,33 +143,56 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="achievementEntry"></param>
 		public void EarnAchievement(AchievementEntry achievement)
 		{
-			Add(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
+			AddAchievement(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
 			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
+		}
+
+		public void AddAchievementProgress(AchievementProgressRecord achievementProgressRecord)
+		{
+			RemoveAchievementProgress(achievementProgressRecord);
+			m_achivement_progress.Add(achievementProgressRecord.AchievementCriteriaId, achievementProgressRecord);
 		}
 
         #endregion
 
         #region Remove
 
-		public bool Remove(AchievementEntryId achievementEntry)
+		public bool RemoveAchievement(AchievementEntryId achievementEntryId)
 		{
 			AchievementRecord achievementRecord;
-			if(m_completedAchievements.TryGetValue(achievementEntry, out achievementRecord))
+			if (m_completedAchievements.TryGetValue(achievementEntryId, out achievementRecord))
 			{
-				Remove(achievementRecord);
+				RemoveAchievement(achievementRecord);
 				return true;
 			}
 			return false;
 		}
 
-		public void Remove(AchievementRecord achievementRecord)
+		public void RemoveAchievement(AchievementRecord achievementRecord)
 		{
 			m_completedAchievements.Remove(achievementRecord.AchievementEntryId);
 		}
 
+		public bool RemoveAchievementProgress(AchievementCriteriaId achievementCriteriaId)
+		{
+			AchievementProgressRecord achievementProgressRecord;
+			if (m_achivement_progress.TryGetValue(achievementCriteriaId, out achievementProgressRecord))
+			{
+				RemoveAchievementProgress(achievementProgressRecord);
+				return true;
+			}
+			return false;
+		}
+
+		public void RemoveAchievementProgress(AchievementProgressRecord achievementProgressRecord)
+		{
+			m_achivement_progress.Remove(achievementProgressRecord.AchievementCriteriaId);
+		}
+
         #endregion
 
-		public void Update(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
+		#region Update
+		internal void Update(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
 		{
 			var list = AchievementMgr.GetEntriesByCriterion(type);
 			if (list != null)
@@ -121,11 +200,42 @@ namespace WCell.RealmServer.Achievement
 				foreach (var entry in list)
 				{
 					// TODO: Add preliminary checks, if necessary
-					AchievementUpdateMgr.GetUpdater(type)(entry, Owner, value1, value2, involved);
+					entry.OnUpdate(this, value1, value2, involved);
+					if (IsCompletedAchievement(entry.AchievementEntry) && !HasCompleted(entry.AchievementEntryId))
+						EarnAchievement(entry.AchievementEntry);
 				}
-				// TODO: Anything to do after running over all entries?
 			}
 		}
+
+		internal void SetCriteriaProgress(AchievementCriteriaEntry entry, uint newValue)
+		{
+			AchievementProgressRecord achievementProgressRecord = GetAchievementProgress(entry.AchievementCriteriaId);
+			if (achievementProgressRecord == null)
+			{
+				if (newValue == 0)
+					return;
+				achievementProgressRecord = AchievementProgressRecord.CreateAchievementProgressRecord(Owner,
+																					  entry.AchievementCriteriaId,
+																					  newValue);
+			}
+			else
+			{
+				achievementProgressRecord.Counter = newValue;
+			}
+
+			if (entry.TimeLimit > 0)
+			{
+				DateTime now = DateTime.Now;
+				if (achievementProgressRecord.StartOrUpdateTime.AddSeconds(entry.TimeLimit) < now)
+				{
+					achievementProgressRecord.Counter = 1;
+				}
+				achievementProgressRecord.StartOrUpdateTime = now;
+			}
+			AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
+			AddAchievementProgress(achievementProgressRecord);
+		}
+		#endregion
 
 		#region Save & Load
 		public void SaveNow()
@@ -153,7 +263,7 @@ namespace WCell.RealmServer.Achievement
 					}
 					else
 					{
-						Add(mCompletedAchievement);
+						AddAchievement(mCompletedAchievement);
 					}
 				}
 				else

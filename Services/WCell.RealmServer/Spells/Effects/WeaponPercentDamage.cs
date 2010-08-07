@@ -19,7 +19,7 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Spells.Effects
 {
-	public class WeaponPercentDamageEffectHandler : SpellEffectHandler
+	public class WeaponPercentDamageEffectHandler : WeaponDamageEffectHandler
 	{
 		public WeaponPercentDamageEffectHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
