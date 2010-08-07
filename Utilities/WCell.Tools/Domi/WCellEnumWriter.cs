@@ -388,7 +388,7 @@ namespace WCell.Tools.Domi
 
 				foreach (var spells in map.Values)
 				{
-					list.Add(SpellLine.GetSpellLineName(spells.First()));
+					list.Add(SpellLineWriter.GetSpellLineName(spells.First()));
 				}
 			}
 
@@ -590,47 +590,7 @@ namespace WCell.Tools.Domi
 							throw new Exception(string.Format("Name for Item {0} in {1}/{2} was null.", item, group, enumName));
 						}
 
-						name = name.
-							Replace("'s", "s").
-							Replace("%", "Percent");
-
-						var parts = Regex.Split(name, @"\s+|[^\w\d_]+", RegexOptions.None);
-
-						for (int i = 0; i < parts.Length; i++)
-						{
-							string part = parts[i];
-							if (part.Length == 0)
-							{
-								continue;
-							}
-							//if (part.Length > 1) {
-							//    part = part.ToLower();
-							string firstChar = part[0] + "";
-							part = firstChar.ToUpper() + part.Substring(1);
-							//}
-							//else {
-							//    part = part.ToUpper();
-							//}
-
-							parts[i] = part;
-						}
-
-						name = string.Join("", parts);
-
-						// don't allow digits at the start
-						Match numMatch = NumRegex.Match(name);
-						if (numMatch.Success)
-						{
-							string num = GetNumString(numMatch.Value);
-							if (name.Length > num.Length)
-							{
-								name = num + name.Substring(numMatch.Value.Length, 1).ToUpper() + name.Substring(numMatch.Value.Length + 1);
-							}
-							else
-							{
-								name = num;
-							}
-						}
+						name = BeautifyName(name);
 
 						int count;
 						if (!names.TryGetValue(name, out count))
@@ -826,5 +786,50 @@ namespace WCell.Tools.Domi
 		#endregion
 
 		#endregion
+
+		public static string BeautifyName(string name)
+		{
+			name = name.Replace("'s", "s").
+						Replace("%", "Percent");
+
+			var parts = Regex.Split(name, @"\s+|[^\w\d_]+", RegexOptions.None);
+
+			for (int i = 0; i < parts.Length; i++)
+			{
+				string part = parts[i];
+				if (part.Length == 0)
+				{
+					continue;
+				}
+				//if (part.Length > 1) {
+				//    part = part.ToLower();
+				string firstChar = part[0] + "";
+				part = firstChar.ToUpper() + part.Substring(1);
+				//}
+				//else {
+				//    part = part.ToUpper();
+				//}
+
+				parts[i] = part;
+			}
+
+			name = string.Join("", parts);
+
+			// don't allow digits at the start
+			Match numMatch = NumRegex.Match(name);
+			if (numMatch.Success)
+			{
+				string num = GetNumString(numMatch.Value);
+				if (name.Length > num.Length)
+				{
+					name = num + name.Substring(numMatch.Value.Length, 1).ToUpper() + name.Substring(numMatch.Value.Length + 1);
+				}
+				else
+				{
+					name = num;
+				}
+			}
+			return name;
+		}
 	}
 }

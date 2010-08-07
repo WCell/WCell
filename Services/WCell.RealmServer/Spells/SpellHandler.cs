@@ -316,27 +316,27 @@ namespace WCell.RealmServer.Spells
 		[Initialization(InitializationPass.First, "Initialize Spells")]
 		public static void LoadSpells()
 		{
-			InitEffectHandlers();
-			LoadOtherDBCs();
-
 			LoadSpells(false);
-			SkillHandler.Initialize();
-			TalentMgr.Initialize();
-
-			SpellLines.InitSpellLines();
 		}
 
 		public static void LoadSpells(bool init)
 		{
-			SpellEffect.InitMiscValueTypes();
 			if (!loaded)
 			{
+				InitEffectHandlers();
+				LoadOtherDBCs();
+
+				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
 				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
 				ContentHandler.Load<SpellLearnRelation>();
 				InitSummonHandlers();
+				SkillHandler.Initialize();
+				TalentMgr.Initialize();
+
+				SpellLines.InitSpellLines();
 			}
 
 			if (init)

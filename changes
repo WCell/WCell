@@ -1,1 +1,2 @@
-- to test: DeathKnightFrostBloodOfTheNorth, DeathKnightBloodHeartStrike, DeathKnightUnholyScourgeStrike, DeathKnightBloodVampiricBlood, DeathKnightFrostImprovedIcyTalons, DeathKnightUnholyDesecration, DeathKnightDeathStrike, DeathKnightBloodImprovedDeathStrike, DeathKnightFrostThreatOfThassarian
+- improved SpellLineWriter a lot and got much more accurate SpellLineId enum and spell line generator correspondingly
+- to test: DeathKnightUnholyDesolation

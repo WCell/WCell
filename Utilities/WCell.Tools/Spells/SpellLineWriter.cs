@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Skills;
+using WCell.RealmServer.Database;
 using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
@@ -30,6 +32,8 @@ namespace WCell.Tools.Spells
 			private set;
 		}
 
+		private static HashSet<SkillId> LineSkills = new HashSet<SkillId>();
+
 		[Tool]
 		public static void WriteSpellLines()
 		{
@@ -38,7 +42,6 @@ namespace WCell.Tools.Spells
 
 		public static void WriteSpellLines(string outputFileName)
 		{
-			CreateMaps();
 			WCellEnumWriter.WriteSpellLinesEnum();
 
 			using (writer = new CodeFileWriter(outputFileName, "WCell.RealmServer.Spells", "SpellLines", "static partial class", "",
@@ -71,9 +74,11 @@ namespace WCell.Tools.Spells
 					foreach (var set in map.Values)
 					{
 						var spells = set.ToList();
+						var lineName = GetSpellLineName(spells.First());
+
+						spells.Sort((a, b) => a.Id.CompareTo(b.Id));		// first sort by rank and then by id
 						spells.Sort((a, b) => a.Rank.CompareTo(b.Rank));
 
-						var lineName = SpellLine.GetSpellLineName(spells.First());
 						writer.WriteLine("new SpellLine(SpellLineId." + lineName + ", ");
 						writer.IndentLevel++;
 						var j = 0;
@@ -102,6 +107,36 @@ namespace WCell.Tools.Spells
 			}
 		}
 
+		public static string GetSpellLineName(Spell spell)
+		{
+			var name = spell.Name;
+			
+			if (spell.Skill != null && spell.Talent != null)
+			{
+				name = spell.Skill.Name + name;
+			}
+
+			var clss = spell.ClassId;
+			if (clss == 0)
+			{
+				var ids = spell.Ability.ClassMask.GetIds();
+				if (ids.Length == 1)
+				{
+					clss = ids.First();
+				}
+			}
+			if (clss == ClassId.PetTalents && spell.Talent != null)
+			{
+				name = "HunterPet" + name;
+			}
+			else
+			{
+				name = spell.ClassId + name;
+			}
+
+			return WCellEnumWriter.BeautifyName(name);
+		}
+
 		public static void CreateMaps()
 		{
 			if (Maps != null)
@@ -109,10 +144,13 @@ namespace WCell.Tools.Spells
 				return;
 			}
 
+			RealmDBUtil.Initialize();
+			ContentHandler.Initialize();
 			SpellHandler.LoadSpells();
 			SpellHandler.Initialize2();
 
 			World.InitializeWorld();
+			World.LoadDefaultRegions();
 			ArchetypeMgr.EnsureInitialize();		// for default spells
 
 			NPCMgr.LoadNPCDefs();					// for trainers
@@ -121,6 +159,14 @@ namespace WCell.Tools.Spells
 
 			FindTalents();
 			FindAbilities();
+
+			foreach (var spell in SpellHandler.ById)
+			{
+				if (spell != null && spell.Skill != null && LineSkills.Contains(spell.Skill.Id))
+				{
+					AddSpell(spell, true);
+				}
+			}
 		}
 
 		/// <summary>
@@ -148,7 +194,7 @@ namespace WCell.Tools.Spells
 				}
 			}
 
-			// Add Trainer abilities
+			// Add trainable abilities
 			foreach (var npc in NPCMgr.GetAllEntries())
 			{
 				if (npc.TrainerEntry != null)
@@ -156,10 +202,21 @@ namespace WCell.Tools.Spells
 					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
 					{
 						var spell = spellEntry.Spell;
-						if (spell.Id == 24866)
+						if (spell.Ability != null && spell.Skill.Category == SkillCategory.ClassSkill)
 						{
-							spell.ToString();
+							AddSpell(spell);
 						}
+					}
+				}
+			}
+
+			foreach (var npc in NPCMgr.GetAllEntries())
+			{
+				if (npc.TrainerEntry != null)
+				{
+					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
+					{
+						var spell = spellEntry.Spell;
 						if (spell.Ability != null && spell.Skill.Category == SkillCategory.ClassSkill)
 						{
 							AddSpell(spell);
@@ -187,11 +244,11 @@ namespace WCell.Tools.Spells
 				var clss = spell.ClassId;
 				if (spell.Ability == null || spell.Ability.ClassMask == 0 || spell.Ability.ClassMask.HasAnyFlag(clss))
 				{
-					if (spell.SpellId.ToString().Contains("_"))
-					{
-						log.Warn("Duplicate: " + spell);
-						continue;
-					}
+					//if (spell.SpellId.ToString().Contains("_"))
+					//{
+					//    log.Warn("Duplicate: " + spell);
+					//    continue;
+					//}
 					if (string.IsNullOrEmpty(spell.Description))
 					{
 						continue;
@@ -202,26 +259,52 @@ namespace WCell.Tools.Spells
 			}
 		}
 
-		private static void AddSpell(Spell spell)
+		private static void AddSpell(Spell spell, bool force = false)
 		{
+			if (!force)
+			{
+				if (spell.Skill == null ||
+				    (spell.Skill.Category != SkillCategory.ClassSkill && spell.Skill.Category != SkillCategory.Invalid))
+				{
+					return;
+				}
+
+				LineSkills.Add(spell.Skill.Id);
+			}
+
 			var clss = spell.ClassId;
+			if (clss == 0)
+			{
+				var ids = spell.Ability.ClassMask.GetIds();
+				if (ids.Length == 1)
+				{
+					clss = ids.First();
+				}
+				else
+				{
+					// not a single class spell
+					return;
+				}
+			}
 			if (clss == ClassId.PetTalents && spell.Talent != null)
 			{
 				clss = ClassId.Hunter;
 			}
 
+			var name = GetSpellLineName(spell);
 			var map = Maps[(int)clss];
 			if (map == null)
 			{
 				Maps[(int)clss] = map = new Dictionary<string, HashSet<Spell>>(100);
 			}
-
-			var name = spell.Name;
-			if (!string.IsNullOrEmpty(spell.RankDesc) && !spell.RankDesc.Contains("Rank"))
-			{
-				name += " " + spell.RankDesc;
-			}
 			var line = map.GetOrCreate(name);
+
+			if (spell.IsTriggeredSpell && line.Count > 0 && !line.Any(spll => spll.IsTriggeredSpell))
+			{
+				// This one is not part of the group
+				return;
+			}
+
 			line.Add(spell);
 		}
 	}

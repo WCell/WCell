@@ -266,7 +266,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void OnAttack(DamageAction action)
 			{
 				// "spells and abilities deal $s1% more damage to targets infected with Frost Fever"
-				if (action.SpellEffect != null && action.Victim.Auras.Contains(SpellLineId.DeathKnightFrostFeverPassive))
+				if (action.SpellEffect != null && action.Victim.Auras.Contains(SpellId.EffectFrostFever))
 				{
 					action.ModDamagePercent(EffectValue);
 				}

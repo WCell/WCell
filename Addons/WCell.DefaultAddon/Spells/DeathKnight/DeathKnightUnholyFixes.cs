@@ -99,6 +99,10 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixDeathStrike();
+
+			// Desolation has no AffectMask
+			SpellLineId.DeathKnightUnholyDesolation.Apply(spell =>
+				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodStrike));
 		}
 
 		#region Death Strike
@@ -322,7 +326,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			public override void OnAttack(DamageAction action)
 			{
 				// "Your spells and abilities deal 4% more damage to targets infected with Blood Plague."
-				if (action.SpellEffect != null && action.Victim.Auras.Contains(SpellLineId.DeathKnightBloodPlaguePassive))
+				if (action.SpellEffect != null && action.Victim.Auras.Contains(SpellId.EffectBloodPlague))
 				{
 					action.ModDamagePercent(EffectValue);
 				}

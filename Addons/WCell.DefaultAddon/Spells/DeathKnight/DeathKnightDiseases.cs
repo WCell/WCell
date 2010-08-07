@@ -27,8 +27,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 		[Initialization(InitializationPass.Second)]
 		public static void FixDiseases()
 		{
-			FixPassiveDiseaseTalent(SpellLineId.DeathKnightBloodPlaguePassive, SpellId.EffectBloodPlague);
-			FixPassiveDiseaseTalent(SpellLineId.DeathKnightFrostFeverPassive, SpellId.EffectFrostFever);
+			FixPassiveDiseaseTalent(SpellLineId.DeathKnightBloodPlague, SpellId.EffectBloodPlague);
+			FixPassiveDiseaseTalent(SpellLineId.DeathKnightFrostFever, SpellId.EffectFrostFever);
 
 			FixUnholyFeverAndEbonPlague();
 			FixUnholyBlight();

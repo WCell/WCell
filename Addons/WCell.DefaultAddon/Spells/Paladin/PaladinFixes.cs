@@ -43,13 +43,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 				SpellLineId.PaladinHandOfReckoning,
 				SpellLineId.PaladinHandOfSacrifice,
 				SpellLineId.PaladinHandOfSalvation);
-
-			// Gift of the Naaru: "The amount healed is increased by your spell power or attack power, whichever is higher."
-			SpellLineId.PaladinSecondarySkillGiftOfTheNaaruRacial.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.PeriodicHeal);
-				effect.AuraEffectHandlerCreator = () => new GiftOfTheNaaruPaladinHandler();
-			});
 		}
 
 		#region Blessings
@@ -172,44 +165,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 						chr.SpellCast.Trigger(heal, target);
 					}
 				}
-			}
-		}
-		#endregion
-
-		#region GiftOfTheNaaruPaladinHandler
-		public class GiftOfTheNaaruPaladinHandler : PeriodicHealHandler
-		{
-			private int totalBonus;
-			public GiftOfTheNaaruPaladinHandler()
-			{
-			}
-
-			protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-			{
-				if (target is Character)
-				{
-					var chr = (Character)target;
-					var ap = target.TotalMeleeAP;
-					var sp = chr.GetDamageDoneMod(DamageSchool.Holy);
-					if (ap > sp)
-					{
-						totalBonus = ap;
-					}
-					else
-					{
-						totalBonus = sp;
-					}
-				}
-			}
-
-			protected override void Apply()
-			{
-				var val = totalBonus / (m_aura.TicksLeft + 1);
-				totalBonus -= val;
-
-				val += EffectValue;
-
-				Owner.Heal(val, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
 		#endregion
