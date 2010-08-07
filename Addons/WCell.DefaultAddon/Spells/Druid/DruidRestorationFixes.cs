@@ -222,8 +222,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.PeriodicHeal);
 
 				// TODO: Implement <mult> from "${$m1*5*$<mult>}"
-				var ticks = spell.Durations.Max / effect.Amplitude;
-				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicHealHandler(effect.CalcEffectValue() * ticks);
 			});
 		}
 	}

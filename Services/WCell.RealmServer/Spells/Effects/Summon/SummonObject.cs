@@ -37,9 +37,9 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (Targets != null && Targets.Count > 0)
+			if (m_targets != null && m_targets.Count > 0)
 			{
-				firstTarget = (Unit)Targets[0];
+				firstTarget = (Unit)m_targets[0];
 			}
 		}
 

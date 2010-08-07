@@ -17,7 +17,7 @@ using WCell.Util;
 
 namespace WCell.Addons.Default.Spells.DeathKnight
 {
-	public class DeathKnightBloodFixes
+	public class DeathKnightBloodPresenceDeathKnightBloodFixes
 	{
 		[Initialization(InitializationPass.Second)]
 		public static void FixIt()

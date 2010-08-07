@@ -31,6 +31,7 @@ namespace WCell.RealmServer.Handlers
 {
 	/// <summary>
 	/// Sequence in Quest packets upon completion:
+	/// 
 	/// CMSG_QUESTGIVER_COMPLETE_QUEST
 	/// SMSG_QUESTGIVER_OFFER_REWARD
 	/// CMSG_QUESTGIVER_REQUEST_REWARD

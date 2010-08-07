@@ -303,7 +303,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 		public override void Apply()
 		{
-			if (Targets == null) return;					// must have targets
+			if (m_targets == null) return;					// must have targets
 
 			var caster = m_cast.CasterUnit;
 			if (caster == null) return;
@@ -314,14 +314,14 @@ namespace WCell.Addons.Default.Spells.Druid
 			var handler = aura.Handlers.First(handlr => handlr is StarfallAuraHandler) as StarfallAuraHandler;
 			if (handler == null) return;					// we need the handler for counting
 
-			if (handler.FallenStars + Targets.Count >= MaxStars)
+			if (handler.FallenStars + m_targets.Count >= MaxStars)
 			{
 				// reached the max amount of stars
 				var amount = MaxStars - handler.FallenStars;
 				if (amount > 0)
 				{
 					var spellTargets = new WorldObject[amount];
-					Targets.CopyTo(0, spellTargets, 0, amount);
+					m_targets.CopyTo(0, spellTargets, 0, amount);
 
 					m_cast.Trigger(Effect.TriggerSpell, spellTargets);
 				}
@@ -330,8 +330,8 @@ namespace WCell.Addons.Default.Spells.Druid
 			else
 			{
 				// we can still keep going
-				handler.FallenStars += Targets.Count;
-				m_cast.Trigger(Effect.TriggerSpell, Targets.ToArray());
+				handler.FallenStars += m_targets.Count;
+				m_cast.Trigger(Effect.TriggerSpell, m_targets.ToArray());
 			}
 		}
 	}

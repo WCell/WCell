@@ -43,8 +43,10 @@ namespace WCell.RealmServer.Spells
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		public readonly SpellEffect Effect;
+
 		protected SpellCast m_cast;
-		internal protected SpellTargetCollection Targets;
+		internal protected SpellTargetCollection m_targets;
+
 		private int CurrentTargetNo;
 
 		protected SpellEffectHandler(SpellCast cast, SpellEffect effect)
@@ -57,6 +59,11 @@ namespace WCell.RealmServer.Spells
 		public SpellCast Cast
 		{
 			get { return m_cast; }
+		}
+
+		public SpellTargetCollection Targets
+		{
+			get { return m_targets; }
 		}
 
 		/// <summary>
@@ -84,8 +91,19 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
+		#region Validate & Initialize
+		internal SpellFailedReason ValidateTarget(WorldObject target)
+		{
+			if (!target.CheckObjType(TargetType))
+			{
+				return SpellFailedReason.BadTargets;
+			}
+
+			return InitializeTarget(target);
+		}
+
 		/// <summary>
-		/// Initializes this effect and checks whether the effect can be casted before Targets have been initialized.
+		/// Initializes this effect and checks whether the effect can be casted *before* Targets have been initialized.
 		/// Use CheckValidTarget to validate Targets.
 		/// </summary>
 		public virtual void Initialize(ref SpellFailedReason failReason) { }
@@ -99,6 +117,7 @@ namespace WCell.RealmServer.Spells
 		{
 			return SpellFailedReason.Ok;
 		}
+		#endregion
 
 		/// <summary>
 		/// Apply the effect (by default to all targets of the targettype)
@@ -106,11 +125,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public virtual void Apply()
 		{
-			if (Targets != null)
+			if (m_targets != null)
 			{
-				for (CurrentTargetNo = 0; CurrentTargetNo < Targets.Count; CurrentTargetNo++)
+				for (CurrentTargetNo = 0; CurrentTargetNo < m_targets.Count; CurrentTargetNo++)
 				{
-					var target = Targets[CurrentTargetNo];
+					var target = m_targets[CurrentTargetNo];
 					if (!target.IsInContext)
 					{
 						continue;
@@ -157,10 +176,10 @@ namespace WCell.RealmServer.Spells
 		internal protected virtual void Cleanup()
 		{
 			m_cast = null;
-			if (Targets != null)
+			if (m_targets != null)
 			{
-				Targets.Dispose();
-				Targets = null;
+				m_targets.Dispose();
+				m_targets = null;
 			}
 		}
 

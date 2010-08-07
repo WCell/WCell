@@ -830,24 +830,24 @@ namespace WCell.RealmServer.Misc
 					}
 
 					Victim.DoRawDamage(this);
-
-					//if ()
-					//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
-					//(uint)absorbed, (uint)resisted, (uint)blocked, victimState);
-					if (SpellEffect != null)
-					{
-						CombatLogHandler.SendMagicDamage(this);
-					}
-					else
-					{
-						CombatHandler.SendAttackerStateUpdate(this);
-					}
 				}
 				finally
 				{
 					Victim.DeathPrevention--;
 					Attacker.DeathPrevention--;
 				}
+			}
+
+			//if ()
+			//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
+			//(uint)absorbed, (uint)resisted, (uint)blocked, victimState);
+			if (SpellEffect != null)
+			{
+				CombatLogHandler.SendMagicDamage(this);
+			}
+			else
+			{
+				CombatHandler.SendAttackerStateUpdate(this);
 			}
 		}
 

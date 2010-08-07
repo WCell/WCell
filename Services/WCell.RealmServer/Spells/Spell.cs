@@ -224,7 +224,8 @@ namespace WCell.RealmServer.Spells
 
 			foreach (var effect in Effects)
 			{
-				if (effect.EffectType == SpellEffectType.PersistantAreaAura || effect.HasTarget(ImplicitTargetType.DynamicObject))
+				if (effect.EffectType == SpellEffectType.PersistantAreaAura// || effect.HasTarget(ImplicitTargetType.DynamicObject)
+					)
 				{
 					DOEffect = effect;
 					break;

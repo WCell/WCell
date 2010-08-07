@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -317,7 +317,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				effect1.OverrideEffectValue = true;
 				effect1.SpellEffectHandlerCreator = (cast, effct) => new CorpseExplosionHandler(cast, effct);
 
-				spell.Effects[1].SpellEffectHandlerCreator = (cast, effct) => new VoidEffectHandler(cast, effct);
+				spell.Effects[1].SpellEffectHandlerCreator = (cast, effct) => new VoidNoTargetsEffectHandler(cast, effct);
 			});
 
 			// needs to override effect value with the value of the effect that triggered it

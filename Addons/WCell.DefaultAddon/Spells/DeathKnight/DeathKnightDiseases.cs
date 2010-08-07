@@ -33,7 +33,85 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixUnholyFeverAndEbonPlague();
 			FixUnholyBlight();
 			FixWanderingPlague();
+			FixPestilence();
 		}
+
+		#region Pestilence
+		private static void FixPestilence()
+		{
+			// Pestilence uses the first target as starter for a disease
+			SpellLineId.DeathKnightPestilence.Apply(spell =>
+			{
+				var spreadEffect = spell.GetEffect(SpellEffectType.ScriptEffect);
+				spreadEffect.SpellEffectHandlerCreator = (cast, effct) => new SpreadPestilenceHandler(cast, effct);
+
+				// make sure we only have one Dummy effect, so we can access it unambiguously in the effect handler
+				spell.GetFirstEffectWith(effect => effect.ImplicitTargetA == ImplicitTargetType.DynamicObject).EffectType = SpellEffectType.None;
+
+				// make the dummy handler collect the single enemy target
+				spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator =
+					(cast, effct) => new VoidWithTargetsEffectHandler(cast, effct);
+			});
+		}
+
+		internal class SpreadPestilenceHandler : SpellEffectHandler
+		{
+			private Spell infectionSpell;
+
+			public SpreadPestilenceHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override ObjectTypes TargetType
+			{
+				get { return ObjectTypes.Unit; }
+			}
+
+			/// <summary>
+			/// Find the source of the pestilence infection, determine the disease to be spread
+			/// and infect all targets.
+			/// </summary>
+			public override void Apply()
+			{
+				// get the initial target
+				var startHandler = m_cast.GetHandler(SpellEffectType.Dummy);
+				if (startHandler == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn("Spell {0} does not have a Dummy handler anymore.", Effect.Spell);
+					return;
+				}
+
+				var source = startHandler.Targets.FirstOrDefault() as Unit;
+				if (source != null)
+				{
+					var aura = source.Auras[SpellId.EffectBloodPlague];
+					if (aura == null)
+					{
+						aura = source.Auras[SpellId.EffectFrostFever];
+					}
+					if (aura != null)
+					{
+						infectionSpell = aura.Spell;
+					}
+				}
+
+				if (infectionSpell != null)
+				{
+					base.Apply();
+				}
+				else
+				{
+					m_cast.Cancel(SpellFailedReason.TargetAurastate);
+				}
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				m_cast.Trigger(infectionSpell, Effect, target);
+			}
+		}
+		#endregion
 
 		#region Blood Plague & Frost Fever
 		private static void FixPassiveDiseaseTalent(SpellLineId passiveSpell, SpellId effectId)
@@ -194,7 +272,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				}
 
 				SpellCast.ValidateAndTriggerNew(SpellHandler.Get(spell), m_aura.CasterReference, Owner, triggerer,
-				                                m_aura.Controller as SpellChannel, m_aura.UsedItem, action, m_spellEffect);
+												m_aura.Controller as SpellChannel, m_aura.UsedItem, action, m_spellEffect);
 			}
 		}
 

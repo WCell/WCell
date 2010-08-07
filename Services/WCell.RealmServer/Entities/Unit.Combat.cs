@@ -437,7 +437,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return;
 			}
-			if (!attacker.IsInContext)
+			if (attacker != null && !attacker.IsInContext)
 			{
 				attacker = null;
 			}

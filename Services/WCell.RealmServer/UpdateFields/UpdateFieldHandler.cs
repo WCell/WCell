@@ -128,7 +128,7 @@ namespace WCell.RealmServer.UpdateFields
 			var flags = unit.DynamicFlags;
 
 			var loot = obj.Loot;
-			if (loot != null && receiver.LooterEntry.MayLoot(loot))
+			if (loot != null && receiver.LooterEntry.MayLoot(loot) && !unit.IsAlive)
 			{
 				flags |= UnitDynamicFlags.Lootable;
 			}

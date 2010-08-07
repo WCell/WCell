@@ -328,7 +328,7 @@ namespace WCell.AuthServer
 					SendAuthProofErrorReply(client, AccountStatus.Failure);
 					return;
 				}
-				acc = AutoCreateAccount(client);
+				client.Account = acc = AutoCreateAccount(client);
 			}
 
 			var authInfo = new AuthenticationInfo

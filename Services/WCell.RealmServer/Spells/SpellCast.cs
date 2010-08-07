@@ -1091,7 +1091,7 @@ namespace WCell.RealmServer.Spells
 						for (var i = 0; i < m_handlers.Length; i++)
 						{
 							var handler = m_handlers[i];
-							handler.Targets.Remove(target);
+							handler.m_targets.Remove(target);
 						}
 						return true;
 					}
@@ -1108,7 +1108,7 @@ namespace WCell.RealmServer.Spells
 							for (var i = 0; i < m_handlers.Length; i++)
 							{
 								var handler = m_handlers[i];
-								handler.Targets.Remove(target);
+								handler.m_targets.Remove(target);
 							}
 							return true;
 						}
