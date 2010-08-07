@@ -103,7 +103,19 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Desolation has no AffectMask
 			SpellLineId.DeathKnightUnholyDesolation.Apply(spell =>
 				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodStrike));
+
+			FixDeathCoil();
 		}
+
+		#region Death Coil
+		private static void FixDeathCoil()
+		{
+			SpellLineId.DeathKnightDeathCoil.Apply(spell =>
+			{
+				
+			});
+		}
+		#endregion
 
 		#region Death Strike
 		private static void FixDeathStrike()
@@ -320,9 +332,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 		public class RageOfRivendareHandler : AttackEventEffectHandler
 		{
-			public override void OnBeforeAttack(DamageAction action)
-			{ }
-
 			public override void OnAttack(DamageAction action)
 			{
 				// "Your spells and abilities deal 4% more damage to targets infected with Blood Plague."
@@ -330,10 +339,6 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				{
 					action.ModDamagePercent(EffectValue);
 				}
-			}
-
-			public override void OnDefend(DamageAction action)
-			{
 			}
 		}
 		#endregion

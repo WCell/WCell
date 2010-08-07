@@ -74,7 +74,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// ToL triggers a passive area aura
-			SpellLineId.DruidTreeOfLife.Apply(spell =>
+			SpellLineId.DruidRestorationTreeOfLife.Apply(spell =>
 			{
 				spell.AddTriggerSpellEffect(SpellId.TreeOfLifePassive);
 			});

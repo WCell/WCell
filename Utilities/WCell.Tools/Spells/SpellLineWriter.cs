@@ -167,6 +167,21 @@ namespace WCell.Tools.Spells
 					AddSpell(spell, true);
 				}
 			}
+
+			// remove empty lines
+			foreach (var dict in Maps)
+			{
+				if (dict != null)
+				{
+					foreach (var pair in dict.ToArray())
+					{
+						if (pair.Value.Count == 0)
+						{
+							dict.Remove(pair.Key);
+						}
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -233,6 +248,11 @@ namespace WCell.Tools.Spells
 		{
 			foreach (var spell in SpellHandler.ById)
 			{
+				if (spell != null && spell.Id == 9799)
+				{
+					spell.ToString();
+				}
+
 				if (spell == null ||
 					((spell.Talent == null || spell.ClassId == 0) && (spell.Skill == null || spell.Rank == 0 || spell.Skill.Category != SkillCategory.Profession)) ||
 					spell.IsTriggeredSpell ||
@@ -291,7 +311,8 @@ namespace WCell.Tools.Spells
 				clss = ClassId.Hunter;
 			}
 
-			var name = GetSpellLineName(spell);
+			//var name = GetSpellLineName(spell);
+			var name = spell.Name;
 			var map = Maps[(int)clss];
 			if (map == null)
 			{
@@ -299,10 +320,50 @@ namespace WCell.Tools.Spells
 			}
 			var line = map.GetOrCreate(name);
 
-			if (spell.IsTriggeredSpell && line.Count > 0 && !line.Any(spll => spll.IsTriggeredSpell))
+			// don't add triggered spells
+			if (spell.IsTriggeredSpell)
 			{
-				// This one is not part of the group
 				return;
+			}
+
+			if (line.Count > 0)
+			{
+				if (line.Contains(spell))
+				{	
+					// already added
+					return;
+				}
+
+				// must have a rank
+				if (spell.Rank == 0 && line.Any(spll => spll.Rank != 0))
+				{
+					return;
+				}
+				if (spell.Rank > 0)
+				{
+					if (line.Any(spll => spll.Rank == spell.Rank && spll.Talent != null))
+					{
+						// already has one with the same rank and a talent
+						return;
+					}
+					line.RemoveWhere(spll => spll.Rank == 0 && spll.Talent == null);
+				}
+
+				// must not have a rank
+				if (line.Any(spll => spll.Rank == 0 && spll.Talent != null))
+				{
+					// there is only one
+					return;
+				}
+
+				 // don't add weird copies or unknown anonymous triggered effects
+				if (line.Any(spll => spell.Rank == spll.Rank &&
+					(spll.Description.Contains(spell.Id.ToString()) || spll.CategoryCooldownTime > 0)))
+				{
+					return;
+				}
+				line.RemoveWhere(spll => spell.Rank == spll.Rank && 
+					(spell.Description.Contains(spll.Id.ToString()) || spll.CategoryCooldownTime == 0));
 			}
 
 			line.Add(spell);

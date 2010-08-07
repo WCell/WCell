@@ -193,6 +193,12 @@ namespace WCell.RealmServer.Spells
 				IsTeachSpell = true;
 			}
 
+
+			if (Id == 14179)
+			{
+				ToString();
+			}
+
 			// figure out Trigger spells
 			for (var i = 0; i < Effects.Length; i++)
 			{

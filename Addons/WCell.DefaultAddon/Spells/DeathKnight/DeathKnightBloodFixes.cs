@@ -134,6 +134,13 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				var effect = spell.GetEffect(AuraType.ModIncreaseHealth);
 				effect.AuraType = AuraType.ModIncreaseHealthPercent;
 			});
+
+			// Blood Strike: "total damage increased by ${$m3/2}.1% for each of your diseases on the target"
+			SpellLineId.DeathKnightBloodStrike.Apply(spell =>
+			{
+				spell.GetEffect(SpellEffectType.None).SpellEffectHandlerCreator =
+					(cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
+			});
 		}
 
 		#region Death Pact

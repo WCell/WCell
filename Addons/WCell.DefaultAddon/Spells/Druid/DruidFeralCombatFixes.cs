@@ -35,7 +35,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Primal Fury is triggered by critical hits and only active in "in Bear and Dire Bear Form"
-			SpellLineId.DruidPrimalFury.Apply(spell =>
+			SpellLineId.DruidFeralCombatPrimalFury.Apply(spell =>
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHit | ProcTriggerFlags.RangedCriticalHit;
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;

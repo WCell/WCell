@@ -1,2 +1,2 @@
-- improved SpellLineWriter a lot and got much more accurate SpellLineId enum and spell line generator correspondingly
-- to test: DeathKnightUnholyDesolation
+- fixed startup & spellline heuristics
+- to test: DeathKnightBloodStrike
