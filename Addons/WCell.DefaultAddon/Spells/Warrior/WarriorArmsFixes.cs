@@ -40,7 +40,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 			});
 
 			// Your next 5 melee attacks strike an additional nearby opponent.
-			SpellLineId.WarriorSweepingStrikes.Apply(spell =>
+			SpellLineId.WarriorArmsSweepingStrikes.Apply(spell =>
 			{
 				var effect = spell.GetEffect(AuraType.Dummy);
 				if (effect != null)
