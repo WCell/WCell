@@ -1,3 +1,1 @@
-- fixed auto account creation
-- fixed order of spellcast target initialization / combat packet conditions
-- to test: DeathKnightPestilence
+- to test: DeathKnightFrostBloodOfTheNorth, DeathKnightBloodHeartStrike, DeathKnightUnholyScourgeStrike, DeathKnightBloodVampiricBlood, DeathKnightFrostImprovedIcyTalons, DeathKnightUnholyDesecration, DeathKnightDeathStrike, DeathKnightBloodImprovedDeathStrike, DeathKnightFrostThreatOfThassarian

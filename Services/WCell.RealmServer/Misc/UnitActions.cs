@@ -719,7 +719,7 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeCrushing()
 		{
-			Damage = (Damage * 1.5f).RoundInt();
+			Damage = (Damage * 10 + 5) / 15;		// == Damage * 1.5f
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Crushing;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
@@ -740,7 +740,7 @@ namespace WCell.RealmServer.Misc
 
 		public void SetCriticalDamage()
 		{
-			Damage = Attacker.CalcCritDamage(Damage, Victim, SpellEffect).RoundInt();
+			Damage = MathUtil.RoundInt(Attacker.CalcCritDamage(Damage, Victim, SpellEffect));
 		}
 
 		public void StrikeGlancing()
@@ -814,7 +814,7 @@ namespace WCell.RealmServer.Misc
 					Victim.OnDefend(this);
 					Attacker.OnAttack(this);
 
-					Resisted = (ResistPct * Damage / 100f).RoundInt();
+					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
 					if (Absorbed > 0)
 					{
 						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;

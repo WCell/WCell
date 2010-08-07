@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
@@ -77,7 +78,57 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellLineId.DeathKnightFrostKillingMachine.Apply(spell => spell.ProcChance = (uint)(10 * spell.Rank));
 
 			FixObliterate();
+
+			// Blood of the north converts runes when using "Blood Strike or Pestilence"
+			DeathKnightFixes.MakeRuneConversionProc(SpellLineId.DeathKnightFrostBloodOfTheNorth,
+													SpellLineId.DeathKnightBloodStrike, SpellLineId.DeathKnightPestilence,
+													RuneType.Death, RuneType.Blood);
+
+			// Improved Icy Talons only increases melee haste (not also ranged haste)
+			SpellLineId.DeathKnightFrostImprovedIcyTalons.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.ModHaste).AuraType = AuraType.ModMeleeHastePercent;
+			});
+
+			FixThreatOfThassarian();
 		}
+
+		#region Threat of Thassarian
+		private static void FixThreatOfThassarian()
+		{
+			// Threat of Thassarian
+			SpellLineId.DeathKnightFrostThreatOfThassarian.Apply(spell =>
+			{
+				// "When dual-wielding"
+				spell.EquipmentSlot = EquipmentSlot.OffHand;
+
+				var effect = spell.GetEffect(AuraType.Dummy);
+
+				// "your Death Strikes, Obliterates, Plague Strikes, Rune Strikes, Blood Strikes and Frost Strikes"
+				effect.AddAffectingSpells(SpellLineId.DeathKnightDeathStrike, SpellLineId.DeathKnightObliterate, SpellLineId.DeathKnightPlagueStrike,
+					SpellLineId.DeathKnightRuneStrike, SpellLineId.DeathKnightFrostFrostStrike);
+
+				effect.AuraEffectHandlerCreator = () => new ThreatOfThassarianHandler();
+			});
+		}
+
+		internal class ThreatOfThassarianHandler : AttackEventEffectHandler
+		{
+			public override void OnAttack(DamageAction action)
+			{
+				var owner = action.Attacker; // also equal to the Owner property
+				if (action.Weapon == owner.MainWeapon && owner.OffHandWeapon != null &&
+					Utility.Random(0, 100) <= m_spellEffect.CalcEffectValue(owner))	// must recalculate probability every time
+				{
+					// "have a $s1% chance to also deal damage with your offhand weapon"
+					// TODO: Auto attack or cast same spell with offhand weapon?
+					var victim = action.Victim;
+					var weapon = owner.OffHandWeapon;
+					owner.AddMessage(() => owner.Strike(weapon, victim));
+				}
+			}
+		}
+		#endregion
 
 		#region Obliterate
 		private static void FixObliterate()
@@ -99,7 +150,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 			public override void OnHit(DamageAction action)
 			{
-				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(DispelType.Disease);
+				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(action.Attacker.SharedReference, DispelType.Disease);
 				action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
 
 				// consume diseases if the Annihilation talent does not save them

@@ -300,7 +300,7 @@ namespace WCell.Constants.Spells
 		ModFactionReputationGainPercent = 190,
 		UseNormalMovementSpeed = 191,
 		ModMeleeHastePercent = 192,
-		ModHastePct = 193,
+		ModHastePercent = 193,
 		/// <summary>
 		/// No longer unused as of 3.0.2
 		/// Function may have changed though

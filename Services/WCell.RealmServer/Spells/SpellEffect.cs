@@ -503,7 +503,7 @@ namespace WCell.RealmServer.Spells
 			}
 			if (dmgMod != 1)
 			{
-				return val = ((float)(Math.Pow(dmgMod, currentTargetNo) * val)).RoundInt();
+				return val = MathUtil.RoundInt((float)(Math.Pow(dmgMod, currentTargetNo) * val));
 			}
 			return val;
 		}

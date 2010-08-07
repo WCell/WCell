@@ -890,7 +890,7 @@ namespace WCell.RealmServer.Spells
 					// calc exact cast delay
 					if (CasterUnit != null)
 					{
-						m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
+						m_castDelay = MathUtil.RoundInt(CasterUnit.CastSpeedFactor * m_castDelay);
 						m_castDelay = CasterUnit.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
 					}
 				}

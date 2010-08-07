@@ -41,17 +41,17 @@ namespace WCell.Util
 		/// </summary>
 		/// <param name="value"></param>
 		/// <returns></returns>
-		public static float Round(this float value)
+		public static float Round(float value)
 		{
 			return (int)(value + 0.5f);
 		}
 
-		public static uint RoundUInt(this float value)
+		public static uint RoundUInt(float value)
 		{
 			return (uint)(value + 0.5f);
 		}
 
-		public static int RoundInt(this float value)
+		public static int RoundInt(float value)
 		{
 			return (int)(value + 0.5f);
 		}

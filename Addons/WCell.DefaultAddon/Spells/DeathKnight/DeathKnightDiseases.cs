@@ -331,5 +331,40 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			}
 		}
 		#endregion
+
+	}
+
+	/// <summary>
+	/// Increases weapon damage by EffectValue% "for each of your diseases on the target"
+	/// </summary>
+	public class WeaponDiseaseDamagePercentHandler : WeaponDamageEffectHandler
+	{
+		public WeaponDiseaseDamagePercentHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		public override void OnHit(DamageAction action)
+		{
+			var bonusPercent = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(m_cast.CasterReference, DispelType.Disease);
+			action.Damage += (action.Damage * bonusPercent + 50) / 100;	// rounded
+		}
+	}
+
+	/// <summary>
+	/// Increases weapon damage by "${$...mX/2}.1% for each of your diseases on the target"
+	/// </summary>
+	public class WeaponDiseaseDamageHalfPercentHandler : WeaponDamageEffectHandler
+	{
+		public WeaponDiseaseDamageHalfPercentHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
+		}
+
+		public override void OnHit(DamageAction action)
+		{
+			var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(m_cast.CasterReference, DispelType.Disease);
+			action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
+		}
 	}
 }

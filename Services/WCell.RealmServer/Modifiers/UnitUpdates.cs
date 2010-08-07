@@ -78,7 +78,8 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
-			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
+			MultiModHandlers[(int)StatModifierFloat.MeleeAttackTime] = UpdateMeleeAttackTimes;
+			MultiModHandlers[(int)StatModifierFloat.RangedAttackTime] = UpdateRangedAttackTime;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 		}
 		#endregion
@@ -564,13 +565,19 @@ namespace WCell.RealmServer.Modifiers
 			unit.UpdateRangedAttackTime();
 		}
 
+		internal static void UpdateMeleeAttackTimes(this Unit unit)
+		{
+			unit.UpdateMainAttackTime();
+			unit.UpdateOffHandAttackTime();
+		}
+
 		/// <summary>
 		/// Re-calculates the mainhand melee damage of this Unit
 		/// </summary>
 		internal static void UpdateMainAttackTime(this Unit unit)
 		{
 			var baseTime = unit.MainWeapon.AttackTime;
-			baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+			baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.MeleeAttackTime], baseTime);
 			if (baseTime < 30)
 			{
 				baseTime = 30;
@@ -587,7 +594,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.MeleeAttackTime], baseTime);
 				unit.OffHandAttackTime = baseTime;
 			}
 			else
@@ -602,7 +609,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null && weapon.IsRanged)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.RangedAttackTime], baseTime);
 				unit.RangedAttackTime = baseTime;
 			}
 			else
@@ -655,7 +662,7 @@ namespace WCell.RealmServer.Modifiers
 																				 chr.GetCombatRatingMod(CombatRating.Dodge),
 																				 chr.GetCombatRatingMod(CombatRating.DefenseSkill)
 																				 );
-				dodgeChance += unit.IntMods[(int)StatModifierInt.DodgeChance];
+				dodgeChance += (dodgeChance * unit.IntMods[(int)StatModifierInt.DodgeChance] + 50) / 100;
 				chr.DodgeChance = dodgeChance;
 			}
 		}

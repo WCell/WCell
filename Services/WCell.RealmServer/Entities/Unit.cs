@@ -829,6 +829,11 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Healing & Leeching & Burning
+		public int GetHealthPercent(int value)
+		{
+			return (value*MaxHealth + 50)/100;
+		}
+
 		/// <summary>
 		/// Heals this unit and sends the corresponding animation (healer might be null)
 		/// </summary>
@@ -994,7 +999,7 @@ namespace WCell.RealmServer.Entities
 			var currentPower = Power;
 
 			// Resilience reduces mana drain by 2.2%, amount is rounded.
-			amount -= (amount * GetResiliencePct() * 2.2f).RoundInt();
+			amount -= MathUtil.RoundInt(amount * GetResiliencePct() * 2.2f);
 			if (amount > currentPower)
 			{
 				amount = currentPower;
@@ -1016,7 +1021,7 @@ namespace WCell.RealmServer.Entities
 			int currentPower = Power;
 
 			// Resilience reduces mana drain by 2.2%, amount is rounded.
-			amount -= (amount * GetResiliencePct() * 2.2f).RoundInt();
+			amount -= MathUtil.RoundInt(amount * GetResiliencePct() * 2.2f);
 			if (amount > currentPower)
 			{
 				amount = currentPower;

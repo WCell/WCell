@@ -1047,14 +1047,15 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Returns the amount of visible Auras that have the given DispelType
+		/// Returns the amount of visible Auras that are casted by the given caster
+		/// and have the given DispelType.
 		/// </summary>
-		public int GetVisibleAuraCount(DispelType type)
+		public int GetVisibleAuraCount(ObjectReference caster, DispelType type)
 		{
 			var count = 0;
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && aura.Spell.DispelType == type)
+				if (aura != null && aura.CasterReference == caster && aura.Spell.DispelType == type)
 				{
 					count++;
 				}

@@ -76,7 +76,81 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			FixAntiMagicZone();
 			FixNecrosis();
 			FixAntiMagicShell();
+
+			// Scourge Strike adds damage per disease on target
+			SpellLineId.DeathKnightUnholyScourgeStrike.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
+			});
+
+			// Night of the Dead "Also reduces the damage your pet takes from creature area of effect attacks by $s3%."
+			SpellLineId.DeathKnightUnholyNightOfTheDead.Apply(spell =>
+			{
+				// TODO: Pet-aura on owner
+			});
+
+			// Desecration has no affect mask
+			SpellLineId.DeathKnightUnholyDesecration.Apply(spell =>
+			{
+				// "Plague Strikes and Scourge Strikes cause the Desecrated Ground effect"
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				effect.SetAffectMask(SpellLineId.DeathKnightPlagueStrike, SpellLineId.DeathKnightUnholyScourgeStrike);
+			});
+
+			FixDeathStrike();
 		}
+
+		#region Death Strike
+		private static void FixDeathStrike()
+		{
+			// Death Strike heals for each disease on the target
+			SpellLineId.DeathKnightDeathStrike.Apply(spell =>
+			{
+				spell.AddEffect((cast, effct) => new DeathStrikeHealHandler(cast, effct), ImplicitTargetType.SingleEnemy);
+			});
+		}
+
+		internal class DeathStrikeHealHandler : SpellEffectHandler
+		{
+			public DeathStrikeHealHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var caster = m_cast.CasterUnit;
+				if (caster != null)
+				{
+					var unit = (Unit)target;
+					// see http://www.wowwiki.com/Death_Strike
+					// "heals the Death Knight for up to 5% of maximum health, plus 5% for each disease on the target for a maximum of 15% for two or more diseases."
+					var healPctPerDisease = m_cast.Spell.DamageMultipliers[0];
+					var mult = Math.Min(3, 1 + unit.Auras.GetVisibleAuraCount(m_cast.CasterReference, DispelType.Disease));
+					var percent = MathUtil.RoundInt(mult * healPctPerDisease);
+
+					// add bonus damage from the Improved Death Strike talent
+					var talent = caster.Auras[SpellLineId.DeathKnightBloodImprovedDeathStrike];
+					if (talent != null)
+					{
+						var handler = talent.GetHandler(AuraType.None);
+						if (handler != null)
+						{
+							// Improved Death Strike "increases the healing granted by $s3%."
+							percent += (percent * handler.EffectValue) / 100;
+						}
+					}
+					caster.HealPercent(percent, caster, Effect);
+				}
+			}
+
+			public override ObjectTypes TargetType
+			{
+				get { return ObjectTypes.Unit; }
+			}
+		}
+		#endregion
 
 		#region Anti Magic Shell
 		private static void FixAntiMagicShell()
@@ -98,7 +172,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				var healthPct = handler != null ? handler.EffectValue : 1;
 
 				// "up to a maximum of $s2% of the Death Knight's health"
-				RemainingValue = (Owner.Health*healthPct + 50)/100;
+				RemainingValue = (Owner.Health * healthPct + 50) / 100;
 			}
 		}
 		#endregion
@@ -287,22 +361,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				// "hits for $50463s1% weapon damage plus ${$50463m1/2}.1% for each of your diseases on the target"
 				spell.GetEffect(SpellEffectType.WeaponPercentDamage).SpellEffectHandlerCreator =
-					(cast, effct) => new BloodCakedStrikeHandler(cast, effct);
+					(cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
 			}, SpellId.EffectBloodCakedStrike);
-		}
-
-		class BloodCakedStrikeHandler : WeaponPercentDamageEffectHandler
-		{
-			public BloodCakedStrikeHandler(SpellCast cast, SpellEffect effect)
-				: base(cast, effect)
-			{
-			}
-
-			public override void OnHit(DamageAction action)
-			{
-				var doubleBonus = CalcEffectValue() * action.Victim.Auras.GetVisibleAuraCount(DispelType.Disease);
-				action.Damage += (action.Damage * doubleBonus + 100) / 200;	// + <1/2 of effect value> percent per disease
-			}
 		}
 		#endregion
 
