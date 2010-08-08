@@ -98,6 +98,18 @@ namespace WCell.RealmServer.Achievement
 		// 7
 		public SkillId SkillId;
 		public uint SkillValue;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1== 0 || (SkillId)value1!=SkillId)
+				return;
+			achievements.SetCriteriaProgress(this,value1);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= SkillValue;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -105,6 +117,17 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 8
 		public AchievementEntryId AchievementToCompleteId;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (AchievementMgr.AchievementEntries.ContainsKey(AchievementToCompleteId))
+				achievements.SetCriteriaProgress(this, 1);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -113,6 +136,16 @@ namespace WCell.RealmServer.Achievement
 		// 9
 		public uint Unused;
 		public uint CompletedQuestCount;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, value1);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= CompletedQuestCount;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -121,6 +154,13 @@ namespace WCell.RealmServer.Achievement
 		// 10
 		public uint Unused;
 		public uint NumberOfDays;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 == 0)
+				return;
+			achievements.SetCriteriaProgress(this,1);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

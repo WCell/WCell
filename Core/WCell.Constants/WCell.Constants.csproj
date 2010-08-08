@@ -142,6 +142,7 @@
     <Compile Include="Achievements\AchievementCriteriaId.cs" />
     <Compile Include="Achievements\AchievementEntryId.cs" />
     <Compile Include="Achievements\AchievementFlags.cs" />
+    <Compile Include="Achievements\ProgressType.cs" />
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="Battlegrounds.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />

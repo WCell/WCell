@@ -633,7 +633,7 @@ namespace WCell.RealmServer.Entities
 					FreeTalentPoints++;
 				}
 
-				m_achievements.Update(AchievementCriteriaType.ReachLevel, (uint)Level, 0, this);
+				m_achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Level, 0, this);
 
 				var evt = LeveledUp;
 				if (evt != null)
