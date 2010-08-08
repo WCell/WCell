@@ -306,6 +306,8 @@
     <Compile Include="Network\RealmClient.cs" />
     <Compile Include="RealmServer.cs" />
     <Compile Include="Entities\Unit.cs" />
+    <Compile Include="Trade\TradeMgr.cs" />
+    <Compile Include="Trade\TradeWindow.cs" />
     <Compile Include="UpdateFields\UpdateMask.cs" />
     <Compile Include="UpdateFields\UpdatePacket.cs" />
     <Compile Include="UpdateFields\UpdateFieldHandler.cs" />
@@ -519,7 +521,7 @@
     <Compile Include="Misc\SummonRequest.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionSearch.cs" />
     <Compile Include="NPCs\CreatureFamily.cs" />
-    <Compile Include="Misc\Trade.cs" />
+    <Compile Include="Trade\Trade.cs" />
     <Compile Include="Network\CompressedPacket.cs" />
     <Compile Include="NPCs\Figurines\Figurine.cs" />
     <Compile Include="NPCs\Figurines\WaypointFigurine.cs" />
