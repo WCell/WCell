@@ -200,14 +200,15 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Sends the new state of the trading window to other party
 		/// </summary>
+		/// <param name="otherParty">Whether this is sending the own info to the other party (or, if false, to oneself)</param>
 		/// <param name="client">receiving party</param>
 		/// <param name="money">new amount of money</param>
 		/// <param name="items">new items</param>
-		public static void SendTradeUpdate(IPacketReceiver client, uint money, Item[] items)
+		public static void SendTradeUpdate(IPacketReceiver client, bool otherParty, uint money, Item[] items)
 		{
-			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS_EXTENDED))
+			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS_EXTENDED, 30 + 18 * 4 * items.Length))
 			{
-				pkt.WriteByte(1);
+				pkt.Write(otherParty);
 				pkt.Write(0);					// Trade id
 				pkt.Write(items.Length);
 				pkt.Write(items.Length);

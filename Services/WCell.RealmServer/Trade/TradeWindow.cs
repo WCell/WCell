@@ -381,10 +381,10 @@ namespace WCell.RealmServer.Trade
 		{
 			if (updateSelf)
 			{
-				TradeHandler.SendTradeUpdate(m_chr.Client, OtherWindow.m_money, OtherWindow.m_items);
+				TradeHandler.SendTradeUpdate(m_chr.Client, true, OtherWindow.m_money, OtherWindow.m_items);
 				// TODO: Send own data to self again
 			}
-			TradeHandler.SendTradeUpdate(OtherWindow.m_chr.Client, m_money, m_items);
+			TradeHandler.SendTradeUpdate(OtherWindow.m_chr.Client, true, m_money, m_items);
 		}
 
 		/// <summary>
