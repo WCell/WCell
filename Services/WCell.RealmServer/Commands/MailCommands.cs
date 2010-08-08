@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Commands
 				{
 					trigger.Reply("Cannot read Mails if no Character is given (yet).");
 				}
-				chr.Mail.SendMailList();
+				chr.MailAccount.SendMailList();
 			}
 		}
 

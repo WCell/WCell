@@ -17,7 +17,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 				return false;
 			}
 			var chr = (Character)user;
-			chr.Mail.MailBox = m_go;
+			chr.MailAccount.MailBox = m_go;
 			return true;
 		}
 	}

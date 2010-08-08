@@ -253,7 +253,18 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsInContext
 		{
-			get { return IsInWorld && ContextHandler != null && ContextHandler.IsInContext; }
+			get
+			{
+				if (IsInWorld)
+				{
+					var context = ContextHandler;	// thread-safe
+					if (context != null && context.IsInContext)
+					{
+						return true;
+					}
+				}
+				return false;
+			}
 		}
 
 		public void EnsureContext()

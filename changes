@@ -1,4 +1,2 @@
-- implemented UnitFlags.Passive
-- added the #pushback command
-- fixed some quest bugs / channel pushback / taming
-- to test: DeathKnightDeathCoil, DeathKnightDeathAndDecay, DeathKnightChainsOfIce, DeathKnightBloodTap, DeathKnightStrangulate
+- changed stormlib to it's 32 bit version
+- started redoing trade, added missing checks (not quite done yet)

@@ -12,6 +12,7 @@ using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -178,6 +179,11 @@ namespace WCell.RealmServer.Entities
 			if (m_currentRitual != null)
 			{
 				m_currentRitual.Remove(this);
+			}
+
+			if (IsTrading && !IsInRadius(m_tradeWindow.OtherWindow.Owner, TradeMgr.MaxTradeRadius))
+			{
+				m_tradeWindow.Cancel(TradeStatus.TooFarAway);
 			}
 
 			var now = Environment.TickCount;
@@ -368,6 +374,42 @@ namespace WCell.RealmServer.Entities
 			}
 
 			base.OnLeavingRegion();
+		}
+
+		private StandState m_standState;
+
+		/// <summary>
+		/// Changes the character's stand state and notifies the client.
+		/// </summary>
+		public override StandState StandState
+		{
+			get { return m_standState; }
+			set
+			{
+				if (value != StandState)
+				{
+					m_standState = value;
+					base.StandState = value;
+
+					if (m_looterEntry != null &&
+						m_looterEntry.Loot != null &&
+						value != StandState.Kneeling &&
+						m_looterEntry.Loot.MustKneelWhileLooting)
+					{
+						CancelLooting();
+					}
+
+					if (value == StandState.Stand)
+					{
+						m_auras.RemoveByFlag(AuraInterruptFlags.OnStandUp);
+					}
+
+					if (IsInWorld)
+					{
+						CharacterHandler.SendStandStateUpdate(this, value);
+					}
+				}
+			}
 		}
 		#endregion
 

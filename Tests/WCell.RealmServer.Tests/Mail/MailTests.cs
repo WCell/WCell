@@ -106,33 +106,33 @@ namespace WCell.RealmServer.Tests.Mail
 		[TestCleanup]
 		public void MailTestCleanup()
 		{
-			var mailArray = alliance1.Mail.AllMail.Values.ToArray();
+			var mailArray = alliance1.MailAccount.AllMail.Values.ToArray();
 			for(var i = 0; i < mailArray.Length; ++i)
 			{
 				mailArray[i].Delete();
 			}
-			alliance1.Mail.AllMail.Clear();
+			alliance1.MailAccount.AllMail.Clear();
 
-			mailArray = alliance2.Mail.AllMail.Values.ToArray();
+			mailArray = alliance2.MailAccount.AllMail.Values.ToArray();
 			for (var i = 0; i < mailArray.Length; ++i)
 			{
 				mailArray[i].Delete();
 			}
-			alliance2.Mail.AllMail.Clear();
+			alliance2.MailAccount.AllMail.Clear();
 
-			mailArray = horde1.Mail.AllMail.Values.ToArray();
+			mailArray = horde1.MailAccount.AllMail.Values.ToArray();
 			for (var i = 0; i < mailArray.Length; ++i)
 			{
 				mailArray[i].Delete();
 			}
-			horde1.Mail.AllMail.Clear();
+			horde1.MailAccount.AllMail.Clear();
 
-			mailArray = horde2.Mail.AllMail.Values.ToArray();
+			mailArray = horde2.MailAccount.AllMail.Values.ToArray();
 			for (var i = 0; i < mailArray.Length; ++i)
 			{
 				mailArray[i].Delete();
 			}
-			horde2.Mail.AllMail.Clear();
+			horde2.MailAccount.AllMail.Clear();
 		}
 
 		[TestMethod]
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Tests.Mail
 		[TestMethod]
 		public void TestGetMail()
 		{
-			var count = alliance2.Mail.GetMail().Count;
+			var count = alliance2.MailAccount.GetMail().Count;
 			TestSendMail();
 
 			GetMail(alliance2);

@@ -19,8 +19,11 @@
     <Item Key="PlayerNotOnline">
       <Value>Player is not online: {0}</Value>
     </Item>
-    <Item Key="NoValidtarget">
+    <Item Key="NoValidTarget">
       <Value>There is no valid target.</Value>
+    </Item>
+    <Item Key="InvalidSelection">
+      <Value>Invalid selection.</Value>
     </Item>
 
     <Item Key="SubCommandNotFound">

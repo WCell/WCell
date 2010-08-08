@@ -19,7 +19,8 @@ namespace WCell.RealmServer.Lang
 		Library,
 		NotConnectedToAuthServer,
 		PlayerNotOnline,
-		NoValidtarget,
+		NoValidTarget,
+		InvalidSelection,
 
 		// #######################################################################
 		// Commands

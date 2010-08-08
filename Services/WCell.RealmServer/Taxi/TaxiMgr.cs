@@ -364,7 +364,7 @@ namespace WCell.RealmServer.Taxi
 			}
 
 			// Cheat check -- can't fly while trading
-			if (curChar.TradeInfo != null)
+			if (curChar.TradeWindow != null)
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.PlayerBusy);
 				return false;

@@ -9,6 +9,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Tests.Misc;
+using WCell.RealmServer.Trade;
 
 namespace WCell.RealmServer.Tests.Trade
 {
@@ -85,7 +86,7 @@ namespace WCell.RealmServer.Tests.Trade
 		{
 			StartTrade();
 
-			chr1.TradeInfo.SetMoney(1000);
+			chr1.TradeWindow.SetMoney(1000);
 
 			Accept();
 
@@ -119,11 +120,11 @@ namespace WCell.RealmServer.Tests.Trade
 
             StartTrade();
 
-            chr1.TradeInfo.SetTradeItem(0x00, silverOre.Container.Slot, (byte)silverOre.Slot);
-            chr1.TradeInfo.SetTradeItem(0x01, goldOre.Container.Slot, (byte)goldOre.Slot);
+            chr1.TradeWindow.SetTradeItem(0x00, silverOre.Container.Slot, (byte)silverOre.Slot);
+            chr1.TradeWindow.SetTradeItem(0x01, goldOre.Container.Slot, (byte)goldOre.Slot);
 
-            chr2.TradeInfo.SetTradeItem(0x00, silkCloth.Container.Slot, (byte)silkCloth.Slot);
-            chr2.TradeInfo.SetTradeItem(0x01, mageCloth.Container.Slot, (byte)mageCloth.Slot);
+            chr2.TradeWindow.SetTradeItem(0x00, silkCloth.Container.Slot, (byte)silkCloth.Slot);
+            chr2.TradeWindow.SetTradeItem(0x01, mageCloth.Container.Slot, (byte)mageCloth.Slot);
 
             Accept();
 
@@ -164,7 +165,7 @@ namespace WCell.RealmServer.Tests.Trade
 
 		private void StartTrade()
 		{
-			WCell.RealmServer.Misc.TradeInfo.Propose(chr1, chr2);
+			TradeMgr.Propose(chr1, chr2);
 
 			//var proposalPacket = chr1.FakeClient.DequeueSMSG(RealmServerOpCode.SMSG_TRADE_STATUS);
 			//var proposersEntityId = proposalPacket["Proposer"].EntityIdValue;
@@ -174,9 +175,9 @@ namespace WCell.RealmServer.Tests.Trade
 
 			//chr2.FakeClient.ReceiveCMSG(beginTradePacket);
 
-			Assert.IsNotNull(chr2.TradeInfo);
+			Assert.IsNotNull(chr2.TradeWindow);
 
-			chr2.TradeInfo.AcceptTradeProposal();
+			chr2.TradeWindow.AcceptTradeProposal();
 
 			CheckTrade();
 		}
@@ -185,20 +186,20 @@ namespace WCell.RealmServer.Tests.Trade
 		{
 			CheckTrade();
 
-			chr1.TradeInfo.AcceptTrade();
-			chr2.TradeInfo.AcceptTrade();
+			chr1.TradeWindow.AcceptTrade();
+			chr2.TradeWindow.AcceptTrade();
 
-			Assert.IsNull(chr1.TradeInfo);
-			Assert.IsNull(chr2.TradeInfo);
+			Assert.IsNull(chr1.TradeWindow);
+			Assert.IsNull(chr2.TradeWindow);
 		}
 
 		private void CheckTrade()
 		{
-			Assert.IsNotNull(chr1.TradeInfo);
-			Assert.IsNotNull(chr2.TradeInfo);
+			Assert.IsNotNull(chr1.TradeWindow);
+			Assert.IsNotNull(chr2.TradeWindow);
 
-			Assert.AreEqual(chr1.TradeInfo.Other, chr2.TradeInfo);
-			Assert.AreEqual(chr1.TradeInfo, chr2.TradeInfo.Other);
+			Assert.AreEqual(chr1.TradeWindow.OtherWindow, chr2.TradeWindow);
+			Assert.AreEqual(chr1.TradeWindow, chr2.TradeWindow.OtherWindow);
 		}
 	}
 }

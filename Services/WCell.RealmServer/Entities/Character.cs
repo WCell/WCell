@@ -1319,9 +1319,9 @@ namespace WCell.RealmServer.Entities
 			{
 				ClearTarget();
 			}
-			if (TradeInfo != null)
+			if (TradeWindow != null)
 			{
-				TradeInfo.Cancel();
+				TradeWindow.Cancel();
 			}
 		}
 

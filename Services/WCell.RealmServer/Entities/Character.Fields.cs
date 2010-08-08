@@ -56,6 +56,7 @@ using WCell.RealmServer.Taxi;
 using WCell.Core;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.NPCs.Vehicles;
+using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Achievement;
 
@@ -177,7 +178,7 @@ namespace WCell.RealmServer.Entities
 		private LooterEntry m_looterEntry;
 		private ExtraInfo m_ExtraInfo;
 
-		protected TradeInfo m_TradeInfo;
+		protected TradeWindow m_tradeWindow;
 		#endregion
 
 		/// <summary>
@@ -1739,13 +1740,21 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Character is currently trading with someone
+		/// </summary>
+		public bool IsTrading
+		{
+			get { return m_tradeWindow != null; }
+		}
+
+		/// <summary>
 		/// Current trading progress of the character
 		/// Null if none
 		/// </summary>
-		public TradeInfo TradeInfo
+		public TradeWindow TradeWindow
 		{
-			get { return m_TradeInfo; }
-			set { m_TradeInfo = value; }
+			get { return m_tradeWindow; }
+			set { m_tradeWindow = value; }
 		}
 
 		/// <summary>
@@ -1887,6 +1896,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		#region AFK & DND etc
 		/// <summary>
 		/// Whether or not this character is AFK.
 		/// </summary>
@@ -1960,7 +1970,9 @@ namespace WCell.RealmServer.Entities
 				return ChatTag.None;
 			}
 		}
+		#endregion
 
+		#region Interfaces & Collections
 		/// <summary>
 		/// Collection of reputations with all factions known to this Character
 		/// </summary>
@@ -1992,31 +2004,6 @@ namespace WCell.RealmServer.Entities
 	    {
             get { return m_achievements; }
 	    }
-
-		/// <summary>
-		/// Unused talent-points for this Character
-		/// </summary>
-		public int FreeTalentPoints
-		{
-			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS1); }
-			set
-			{
-				if (value < 0)
-					value = 0;
-
-				//m_record.FreeTalentPoints = value;
-				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
-				TalentHandler.SendTalentGroupList(this);
-			}
-		}
-
-		/// <summary>
-		/// Doesn't send a packet to the client
-		/// </summary>
-		public void UpdateFreeTalentPointsSilently(int delta)
-		{
-			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
-		}
 
 		/// <summary>
 		/// All spells known to this chr
@@ -2071,6 +2058,48 @@ namespace WCell.RealmServer.Entities
 			get { return m_inventory; }
 		}
 
+
+		/// <summary>
+		/// The Character's MailAccount
+		/// </summary>
+		public MailAccount MailAccount
+		{
+			get { return m_mailAccount; }
+			set
+			{
+				if (m_mailAccount != value)
+				{
+					m_mailAccount = value;
+				}
+			}
+		}
+		#endregion
+
+		/// <summary>
+		/// Unused talent-points for this Character
+		/// </summary>
+		public int FreeTalentPoints
+		{
+			get { return (int)GetUInt32(PlayerFields.CHARACTER_POINTS1); }
+			set
+			{
+				if (value < 0)
+					value = 0;
+
+				//m_record.FreeTalentPoints = value;
+				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
+				TalentHandler.SendTalentGroupList(this);
+			}
+		}
+
+		/// <summary>
+		/// Doesn't send a packet to the client
+		/// </summary>
+		public void UpdateFreeTalentPointsSilently(int delta)
+		{
+			SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)(FreeTalentPoints + delta));
+		}
+
 		/// <summary>
 		/// Forced logout must not be cancelled
 		/// </summary>
@@ -2106,58 +2135,6 @@ namespace WCell.RealmServer.Entities
 		public bool IsInvitedToGuild
 		{
 			get { return RelationMgr.Instance.HasPassiveRelations(EntityId.Low, CharacterRelationType.GuildInvite); }
-		}
-
-
-		/// <summary>
-		/// The Character's MailAccount
-		/// </summary>
-		public MailAccount Mail
-		{
-			get { return m_mailAccount; }
-			set
-			{
-				if (m_mailAccount != value)
-				{
-					m_mailAccount = value;
-				}
-			}
-		}
-
-		private StandState m_standState;
-
-		/// <summary>
-		/// Changes the character's stand state and notifies the client.
-		/// </summary>
-		public override StandState StandState
-		{
-			get { return m_standState; }
-			set
-			{
-				if (value != StandState)
-				{
-					m_standState = value;
-					base.StandState = value;
-
-					if (m_looterEntry != null &&
-						m_looterEntry.Loot != null &&
-						value != StandState.Kneeling &&
-						m_looterEntry.Loot.MustKneelWhileLooting)
-					{
-						CancelLooting();
-					}
-
-					if (value == StandState.Stand)
-					{
-						m_auras.RemoveByFlag(AuraInterruptFlags.OnStandUp);
-					}
-
-					if (IsInWorld)
-					{
-						CharacterHandler.SendStandStateUpdate(this, value);
-					}
-				}
-			}
 		}
 
 		#endregion

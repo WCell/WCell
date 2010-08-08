@@ -190,7 +190,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanMove
 		{
-			get{return m_canMove && HasOwnerPermissionToMove;}
+			get { return m_canMove && HasOwnerPermissionToMove; }
 		}
 
 		/// <summary>
@@ -1275,10 +1275,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual bool MayTeleport
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		/// <summary>
@@ -1408,6 +1405,7 @@ namespace WCell.RealmServer.Entities
 
 			// must not be moving or logging out when being teleported
 			CancelMovement();
+			CancelAllActions();
 			if (this is Character)
 			{
 				((Character)this).CancelLogout();
