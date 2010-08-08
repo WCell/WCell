@@ -28,6 +28,7 @@ namespace WCell.RealmServer.Handlers
 {
 	public class TradeHandler
 	{
+		#region Incoming Packets
 		[ClientPacketHandler(RealmServerOpCode.CMSG_INITIATE_TRADE)]
 		public static void HandleProposeTrade(IRealmClient client, RealmPacketIn packet)
 		{
@@ -67,7 +68,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			tradeInfo.DeclineBusy();
+			tradeInfo.StopTrade(TradeStatus.PlayerBusy, false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_IGNORE_TRADE)]
@@ -82,7 +83,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			tradeInfo.DeclineIgnore();
+			tradeInfo.StopTrade(TradeStatus.PlayerIgnored, false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_CANCEL_TRADE, IsGamePacket = false, RequiresLogin = false)]
@@ -149,7 +150,7 @@ namespace WCell.RealmServer.Handlers
 			var bag = packet.ReadByte();
 			var slot = packet.ReadByte();
 
-			trade.SetTradeItem(tradeSlot, bag, slot);
+			trade.SetTradeItem(tradeSlot, bag, slot, false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_CLEAR_TRADE_ITEM)]
@@ -162,9 +163,11 @@ namespace WCell.RealmServer.Handlers
 
 			var tradeSlot = packet.ReadByte();
 
-			tradeInfo.ClearTradeItem(tradeSlot);
+			tradeInfo.ClearTradeItem(tradeSlot, false);
 		}
+		#endregion
 
+		#region Outgoing Packets
 		public static void SendTradeProposal(IPacketReceiver client, Character initiater)
 		{
 			using (var pkt = new RealmPacketOut(RealmServerOpCode.SMSG_TRADE_STATUS))
@@ -254,5 +257,6 @@ namespace WCell.RealmServer.Handlers
 				client.Send(pkt);
 			}
 		}
+		#endregion
 	}
 }

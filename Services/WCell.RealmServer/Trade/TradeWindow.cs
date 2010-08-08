@@ -54,26 +54,6 @@ namespace WCell.RealmServer.Trade
 		public void AcceptTradeProposal()
 		{
 			SendStatus(TradeStatus.Initiated);
-			//Other.m_status = m_status = TradeStatus.Initiated;
-
-			//TradeHandler.SendTradeProposalAccepted(m_chr.Client);
-			//TradeHandler.SendTradeProposalAccepted(Other.m_chr.Client);
-		}
-
-		/// <summary>
-		/// Declines the trade request because one party is busy
-		/// </summary>
-		public void DeclineBusy()
-		{
-			StopTrade(TradeStatus.PlayerBusy, false);
-		}
-
-		/// <summary>
-		/// Declines the trade request because one party ignores another
-		/// </summary>
-		public void DeclineIgnore()
-		{
-			StopTrade(TradeStatus.PlayerIgnored, false);
 		}
 
 		/// <summary>
@@ -98,12 +78,12 @@ namespace WCell.RealmServer.Trade
 			var inv = m_chr.Inventory;
 			var item = inv.GetItem((InventorySlot)bag, slot, inv.IsBankOpen);
 
-			if (item == null || tradeSlot == TradeMgr.NontradeSlot || !item.CanBeTraded)
+			if (item == null || (tradeSlot != TradeMgr.NontradeSlot && !item.CanBeTraded))
 				return; // possible cheating
 
 			for (var i = 0; i < TradeMgr.MaxSlotCount; i++)
 				if (item == m_items[i])
-					return;
+					return;		// cheating
 
 			m_items[tradeSlot] = item;
 
@@ -172,7 +152,7 @@ namespace WCell.RealmServer.Trade
 		/// </summary>
 		/// <param name="status">new status</param>
 		/// <param name="notifySelf">whether to notify the caller himself</param>
-		private void StopTrade(TradeStatus status, bool notifySelf)
+		internal void StopTrade(TradeStatus status, bool notifySelf)
 		{
 			SendStatus(status, notifySelf);
 
@@ -235,11 +215,8 @@ namespace WCell.RealmServer.Trade
 				return;
 			}
 
-			RemoveTradedItems();
-			m_otherWindow.RemoveTradedItems();
-
-			AddItems(myFreeSlots, m_otherWindow.m_items);
-			m_otherWindow.AddItems(othersFreeSlots, m_items);
+			TransferItems(myFreeSlots, m_otherWindow.m_items);
+			m_otherWindow.TransferItems(othersFreeSlots, m_items);
 
 			GiveMoney();
 			m_otherWindow.GiveMoney();
@@ -333,19 +310,7 @@ namespace WCell.RealmServer.Trade
 				m_otherWindow.m_chr.AddMoney(m_money);
 		}
 
-		private void RemoveTradedItems()
-		{
-			for (var i = 0; i < TradeMgr.TradeSlotCount; i++)
-			{
-				if (m_items[i] != null)
-				{
-					//m_items[i].GiftCreator = m_chr;
-					m_items[i].Remove(true); // ownerChange = true
-				}
-			}
-		}
-
-		private void AddItems(IList<SimpleSlotId> simpleSlots, Item[] items)
+		private void TransferItems(IList<SimpleSlotId> simpleSlots, Item[] items)
 		{
 			var slotId = 0;
 
@@ -361,13 +326,14 @@ namespace WCell.RealmServer.Trade
 				simpleSlot.Container.Distribute(item.Template, ref amount);
 				if (amount < item.Amount)
 				{
+					item.Remove(true);
 					item.Amount -= amount;
 					simpleSlot.Container.AddUnchecked(simpleSlot.Slot, item, true);
 				}
 				else
 				{
-					// The whole stack was added to the other stacks, we can dispose of the item.
-					item.Amount = 0;  // destroys the item.
+					// The whole stack was added to the other stacks, so we can delete the item
+					item.Destroy(); 
 				}
 
 				slotId++;
@@ -381,8 +347,8 @@ namespace WCell.RealmServer.Trade
 		{
 			if (updateSelf)
 			{
+				TradeHandler.SendTradeUpdate(m_chr.Client, false, m_money, m_items);
 				TradeHandler.SendTradeUpdate(m_chr.Client, true, OtherWindow.m_money, OtherWindow.m_items);
-				// TODO: Send own data to self again
 			}
 			TradeHandler.SendTradeUpdate(OtherWindow.m_chr.Client, true, m_money, m_items);
 		}

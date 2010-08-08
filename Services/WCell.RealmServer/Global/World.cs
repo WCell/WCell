@@ -1169,6 +1169,7 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		#region Broadcast
 		public static void Broadcast(string message, params object[] args)
 		{
 			Broadcast(string.Format(message, args));
@@ -1203,6 +1204,12 @@ namespace WCell.RealmServer.Global
 				evt(broadCaster, message);
 			}
 		}
+
+		public static void Broadcast(RealmPacketOut packet)
+		{
+			CallOnAllChars(chr => chr.Send(packet));
+		}
+		#endregion
 
 		#region Events
 		#endregion

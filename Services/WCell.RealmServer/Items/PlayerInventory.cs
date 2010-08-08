@@ -592,6 +592,7 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		internal void OnAdd(Item item)
 		{
+			item.m_owner = m_owner;
 			if (!item.IsBuyback)
 			{
 				ItemHandler.SendItemPushResult(Owner, item, true, item.Container.Slot, item.Slot);
@@ -623,9 +624,9 @@ namespace WCell.RealmServer.Items
 
 		/// <summary>
 		/// Called when the given Item is removed for good.
+		/// Don't use this method - but use item.Remove instead.
 		/// </summary>
-		/// <param name="item"></param>
-		public void OnRemove(Item item)
+		internal void OnRemove(Item item)
 		{
 			if (item.IsBuyback) return;
 			m_totalCount--;
@@ -634,8 +635,9 @@ namespace WCell.RealmServer.Items
 				// look for more ammo if the old stack is done:
 				SetAmmo(m_ammo.Template.Id);
 			}
-
-			m_owner.QuestLog.OnItemAmountChanged(item, -(int)item.Amount);
+			
+			m_owner.RemoveOwnedItem(item);
+			m_owner.QuestLog.OnItemAmountChanged(item, -(int) item.Amount);
 			RemoveItemUniqueCount(item);
 		}
 

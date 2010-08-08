@@ -1,2 +1,3 @@
-- changed stormlib to it's 32 bit version
-- started redoing trade, added missing checks (not quite done yet)
+- added World.Broadcast and renamed Guild.SendAll to Guild.Broadcast
+- finished up the changes for the trade system
+- fixed minor inconsistencies in the items API

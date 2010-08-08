@@ -99,7 +99,11 @@ namespace WCell.RealmServer.Entities
 			m_itemsRequiringUpdates.Add(item);
 		}
 
-		internal void RemoveOwnedObject(Item item)
+		/// <summary>
+		/// Removes the given item visually from the Client.
+		/// Do not call this method - but use Item.Remove instead.
+		/// </summary>
+		internal void RemoveOwnedItem(Item item)
 		{
 			//if (m_itemsRequiringUpdates.Remove(item))
 			m_itemsRequiringUpdates.Remove(item);

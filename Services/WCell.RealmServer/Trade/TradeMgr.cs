@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Trade
 		public const int NontradeSlot = 6;
 		public const int TradeSlotCount = 6;
 
-		public static int MaxTradeRadius = 10;
+		public static float MaxTradeRadius = 10;
 
 		/// <summary>
 		/// Makes initChr propose trading to targetChr
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Trade
 			{
 				tradeStatus = TradeStatus.PlayerDead;
 			}
-			else if (!targetChr.IsInRadius(initChr, 10.0f))
+			else if (!targetChr.IsInRadius(initChr, MaxTradeRadius))
 			{
 				tradeStatus = TradeStatus.TooFarAway;
 			}

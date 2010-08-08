@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Entities
 
 		public override UpdateFieldFlags GetVisibilityFor(Character chr)
 		{
-			if (chr == m_owningCharacter)
+			if (chr == m_owner)
 			{
 				return UpdateFieldFlags.Private | UpdateFieldFlags.OwnerOnly | UpdateFieldFlags.GroupOnly | UpdateFieldFlags.Public;
 			}
