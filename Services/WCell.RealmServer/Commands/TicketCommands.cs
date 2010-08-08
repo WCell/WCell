@@ -1,5 +1,6 @@
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Help.Tickets;
+using WCell.RealmServer.Lang;
 using WCell.Util.Commands;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
@@ -98,10 +99,7 @@ namespace WCell.RealmServer.Commands
 
 			public override bool RequiresActiveTicket
 			{
-				get
-				{
-					return true;
-				}
+				get { return true; }
 			}
 		}
 		#endregion
@@ -118,14 +116,15 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var ticket = trigger.Args.TicketHandler.HandlingTicket;
-				if (ticket.Owner == null)
+				var owner = ticket.Owner;
+				if (owner == null)
 				{
 					trigger.Reply("The owner of this Ticket is offline.");
 					trigger.Args.Target.TeleportTo(ticket.Region, ticket.Position);
 				}
 				else
 				{
-					trigger.Args.Target.TeleportTo(ticket.Owner);
+					trigger.Args.Target.TeleportTo(owner);
 				}
 			}
 
@@ -139,10 +138,44 @@ namespace WCell.RealmServer.Commands
 
 			public override bool RequiresIngameTarget
 			{
-				get
+				get { return true; }
+			}
+		}
+		#endregion
+
+		#region Notify
+		public class NotifyTicketCommand : TicketSubCmd
+		{
+			protected override void Initialize()
+			{
+				Init("Notify", "Msg", "M");
+				EnglishDescription = "Sends a notification to the person who issued the current ticket.";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var ticket = trigger.Args.TicketHandler.HandlingTicket;
+				var owner = ticket.Owner;
+				if (owner == null)
 				{
-					return true;
+					trigger.Reply("The owner of this Ticket is offline.");
 				}
+				else
+				{
+					var text = trigger.Text.Remainder;
+					owner.ExecuteInContext(() => owner.Notify(text));
+					trigger.Reply(RealmLangKey.Done);
+				}
+			}
+
+			public override bool RequiresActiveTicket
+			{
+				get { return true; }
+			}
+
+			public override bool RequiresIngameTarget
+			{
+				get { return true; }
 			}
 		}
 		#endregion
@@ -168,7 +201,7 @@ namespace WCell.RealmServer.Commands
 					foreach (var ticket in tickets)
 					{
 						trigger.Reply("{0} by {1}{2} (age: {3})", ticket.Type, ticket.OwnerName,
-						              ticket.Owner != null ? "" : ChatUtility.Colorize(" (Offline)", Color.Red, true), ticket.Age);
+									  ticket.Owner != null ? "" : ChatUtility.Colorize(" (Offline)", Color.Red, true), ticket.Age);
 					}
 				}
 			}
@@ -222,7 +255,7 @@ namespace WCell.RealmServer.Commands
 				var target = trigger.Args.Target as Character;
 				if (target == null)
 				{
-					trigger.Reply("Only Characters can have Tickets.");
+					trigger.Reply("Invalid selection.");
 					return;
 				}
 
@@ -239,10 +272,7 @@ namespace WCell.RealmServer.Commands
 
 			public override bool RequiresIngameTarget
 			{
-				get
-				{
-					return true;
-				}
+				get { return true; }
 			}
 		}
 		#endregion
@@ -259,16 +289,13 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var ticket = trigger.Args.TicketHandler.HandlingTicket;
-				trigger.Reply(ticket.OwnerName + "'s Ticket was deleted.");
+				trigger.Reply(ticket.OwnerName + "'s Ticket has been deleted.");
 				ticket.Delete();
 			}
 
 			public override bool RequiresActiveTicket
 			{
-				get
-				{
-					return true;
-				}
+				get { return true; }
 			}
 		}
 		#endregion

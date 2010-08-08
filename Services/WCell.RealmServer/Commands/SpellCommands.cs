@@ -423,7 +423,7 @@ namespace WCell.RealmServer.Commands
 			var target = trigger.Args.Target;
 			if (target == null)
 			{
-				trigger.Reply(RealmLangKey.NoValidtarget);
+				trigger.Reply(RealmLangKey.NoValidTarget);
 			}
 			else
 			{

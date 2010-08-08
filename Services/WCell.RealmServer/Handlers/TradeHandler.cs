@@ -108,7 +108,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			tradeInfo.AcceptTrade();
+			tradeInfo.AcceptTrade(false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_UNACCEPT_TRADE)]
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			tradeInfo.UnacceptTrade();
+			tradeInfo.UnacceptTrade(false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_GOLD)]
@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Handlers
 
 			var money = packet.ReadUInt32();
 
-			trade.SetMoney(money);
+			trade.SetMoney(money, false);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_TRADE_ITEM)]

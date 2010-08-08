@@ -21,14 +21,12 @@ namespace WCell.RealmServer.Trade
 		private bool m_accepted;
 		private Character m_chr;
 		private uint m_money;
-		private TradeStatus m_status;
 
 		internal TradeWindow m_otherWindow;
 
 		internal TradeWindow(Character owner)
 		{
 			m_chr = owner;
-			m_status = TradeStatus.Proposed;
 			m_items = new Item[TradeMgr.MaxSlotCount];
 		}
 
@@ -37,13 +35,9 @@ namespace WCell.RealmServer.Trade
 			get { return m_chr; }
 		}
 
-		/// <summary>
-		/// Status of the trading progress
-		/// </summary>
-		public TradeStatus Status
+		public bool Accepted
 		{
-			get { return m_status; }
-			internal set { m_status = value; }
+			get { return m_accepted; }
 		}
 
 		/// <summary>
@@ -59,7 +53,7 @@ namespace WCell.RealmServer.Trade
 		/// </summary>
 		public void AcceptTradeProposal()
 		{
-			SetTradeStatus(TradeStatus.Initiated);
+			SendStatus(TradeStatus.Initiated);
 			//Other.m_status = m_status = TradeStatus.Initiated;
 
 			//TradeHandler.SendTradeProposalAccepted(m_chr.Client);
@@ -96,7 +90,7 @@ namespace WCell.RealmServer.Trade
 		/// <param name="tradeSlot">slot in the trading window</param>
 		/// <param name="bag">inventory bag number</param>
 		/// <param name="slot">inventory slot number</param>
-		public void SetTradeItem(byte tradeSlot, byte bag, byte slot)
+		public void SetTradeItem(byte tradeSlot, byte bag, byte slot, bool updateSelf = true)
 		{
 			if (tradeSlot >= TradeMgr.MaxSlotCount)
 				return;
@@ -104,7 +98,7 @@ namespace WCell.RealmServer.Trade
 			var inv = m_chr.Inventory;
 			var item = inv.GetItem((InventorySlot)bag, slot, inv.IsBankOpen);
 
-			if (item == null || (tradeSlot != TradeMgr.NontradeSlot && !item.CanBeTraded))
+			if (item == null || tradeSlot == TradeMgr.NontradeSlot || !item.CanBeTraded)
 				return; // possible cheating
 
 			for (var i = 0; i < TradeMgr.MaxSlotCount; i++)
@@ -113,40 +107,40 @@ namespace WCell.RealmServer.Trade
 
 			m_items[tradeSlot] = item;
 
-			UpdateTrade();
+			SendTradeInfo(updateSelf);
 		}
 
 		/// <summary>
 		/// Removes an item from the trading window
 		/// </summary>
 		/// <param name="tradeSlot">slot in the trading window</param>
-		public void ClearTradeItem(byte tradeSlot)
+		public void ClearTradeItem(byte tradeSlot, bool updateSelf = true)
 		{
 			if (tradeSlot >= TradeMgr.MaxSlotCount)
 				return;
 
 			m_items[tradeSlot] = null;
 
-			UpdateTrade();
+			SendTradeInfo(updateSelf);
 		}
 
 		/// <summary>
 		/// Changes the amount of money to trade
 		/// </summary>
 		/// <param name="money">new amount of coins</param>
-		public void SetMoney(uint money)
+		public void SetMoney(uint money, bool updateSelf = true)
 		{
 			// Amount checked at CommitTrade
 			m_money = money;
 
-			UpdateTrade();
+			SendTradeInfo(updateSelf);
 		}
 
 		/// <summary>
 		/// Accepts the trade
 		/// If both parties have accepted, commits the trade
 		/// </summary>
-		public void AcceptTrade()
+		public void AcceptTrade(bool updateSelf = true)
 		{
 			m_accepted = true;
 
@@ -159,26 +153,18 @@ namespace WCell.RealmServer.Trade
 			}
 			else
 			{
-				TradeHandler.SendTradeStatus(OtherWindow.m_chr.Client, TradeStatus.Accepted);
+				SendStatus(TradeStatus.Accepted, updateSelf);
 			}
 		}
 
 		/// <summary>
 		/// Unaccepts the trade (usually due to change of traded items or amount of money)
 		/// </summary>
-		public void UnacceptTrade()
+		public void UnacceptTrade(bool updateSelf = true)
 		{
-			TradeHandler.SendTradeStatus(OtherWindow.m_chr.Client, TradeStatus.StateChanged);
-
 			m_accepted = false;
-		}
 
-		/// <summary>
-		/// Sends new information about the trading process to other party
-		/// </summary>
-		private void UpdateTrade()
-		{
-			TradeHandler.SendTradeUpdate(OtherWindow.m_chr.Client, m_money, m_items);
+			SendStatus(TradeStatus.StateChanged, updateSelf);
 		}
 
 		/// <summary>
@@ -188,17 +174,11 @@ namespace WCell.RealmServer.Trade
 		/// <param name="notifySelf">whether to notify the caller himself</param>
 		private void StopTrade(TradeStatus status, bool notifySelf)
 		{
-			OtherWindow.Status = m_status = status;
-
-			if (notifySelf)
-			{
-				TradeHandler.SendTradeStatus(m_chr.Client, m_status);
-			}
+			SendStatus(status, notifySelf);
 
 			m_chr.TradeWindow = null;
 			m_chr = null;
 
-			TradeHandler.SendTradeStatus(OtherWindow.m_chr.Client, m_status);
 			OtherWindow.m_chr.TradeWindow = null;
 			OtherWindow.m_chr = null;
 		}
@@ -319,7 +299,7 @@ namespace WCell.RealmServer.Trade
 				m_chr.SendSystemMessage("You don't have enough free slots");
 				m_otherWindow.m_chr.SendSystemMessage("Other party doesn't have enough free slots");
 
-				SetTradeStatus(TradeStatus.StateChanged);
+				SendStatus(TradeStatus.StateChanged);
 			}
 
 			return hasSlots;
@@ -395,15 +375,29 @@ namespace WCell.RealmServer.Trade
 		}
 
 		/// <summary>
+		/// Sends new information about the trading process to other party
+		/// </summary>
+		private void SendTradeInfo(bool updateSelf)
+		{
+			if (updateSelf)
+			{
+				TradeHandler.SendTradeUpdate(m_chr.Client, OtherWindow.m_money, OtherWindow.m_items);
+				// TODO: Send own data to self again
+			}
+			TradeHandler.SendTradeUpdate(OtherWindow.m_chr.Client, m_money, m_items);
+		}
+
+		/// <summary>
 		/// Sets new status of trade and sends notification about the change to both parties
 		/// </summary>
 		/// <param name="status">new status</param>
-		private void SetTradeStatus(TradeStatus status)
+		private void SendStatus(TradeStatus status, bool notifySelf = true)
 		{
-			m_otherWindow.m_status = m_status = status;
-
-			TradeHandler.SendTradeStatus(m_chr.Client, m_status);
-			TradeHandler.SendTradeStatus(m_otherWindow.m_chr.Client, m_status);
+			if (notifySelf)
+			{
+				TradeHandler.SendTradeStatus(m_chr.Client, status);
+			}
+			TradeHandler.SendTradeStatus(OtherWindow.m_chr.Client, status);
 		}
 	}
 }
