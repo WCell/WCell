@@ -10,6 +10,7 @@ using WCell.Core.Network;
 using WCell.PacketAnalysis;
 using WCell.RealmServer.Achievement;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
 
 namespace WCell.RealmServer.Handlers
@@ -65,15 +66,26 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		// SMSG_RESPOND_INSPECT_ACHIEVEMENTS
-		public static void SendRespondInspectAchievements(Character inspectedChar, Character inspectingChar)
+		// CMSG_QUERY_INSPECT_ACHIEVEMENTS
+		[PacketHandler(RealmServerOpCode.CMSG_QUERY_INSPECT_ACHIEVEMENTS)]
+		public static void HandleInspectAchievements(IRealmClient client, RealmPacketIn packet)
 		{
-			//using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 4 * 2 + inspectedChar.Achievements.AchievementsCount * 4 * 2 + inspectedChar.Achievements.m_achivement_progress.Count * 7 * 4))
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RESPOND_INSPECT_ACHIEVEMENTS, 8 + inspectedChar.Achievements.AchievementsCount * 2 * 4 + 4))
+			var targetGuid = packet.ReadPackedEntityId();
+			var targetChr = World.GetCharacter(targetGuid.Low);
+			if (targetChr != null && targetChr.IsInContext)
 			{
-				inspectingChar.EntityId.WritePacked(packet);
-				CreateAchievementData(packet, inspectedChar);
-				inspectingChar.Client.Send(packet);
+				SendRespondInspectAchievements(targetChr);
+			}
+		}
+
+		// SMSG_RESPOND_INSPECT_ACHIEVEMENTS
+		public static void SendRespondInspectAchievements(Character chr)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_RESPOND_INSPECT_ACHIEVEMENTS, chr.Achievements.AchievementsCount * 2 * 4 + 4 + 8))
+			{
+				chr.EntityId.WritePacked(packet);
+				CreateAchievementData(packet, chr);
+				chr.Client.Send(packet);
 			}
 		}
 
