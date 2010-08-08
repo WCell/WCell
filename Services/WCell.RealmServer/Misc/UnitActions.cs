@@ -648,8 +648,7 @@ namespace WCell.RealmServer.Misc
 					}
 					else
 					{
-						var blockchance = CalcBlockChance();
-						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - blockchance))
+						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - CalcBlockChance()))
 						{
 							// block
 							Block();

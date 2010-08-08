@@ -628,7 +628,7 @@ namespace WCell.RealmServer.Handlers
 
 			var action = actionAndType & 0x00FFFFFF;
 			var type = (byte)((actionAndType & 0xFF000000) >> 24);
-			client.ActiveCharacter.SetActionButton(index, action, type);
+			client.ActiveCharacter.BindActionButton(index, action, type, false);
 		}
 
 		public static void SendActionButtons(Character chr)

@@ -91,7 +91,34 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 
 			FixThreatOfThassarian();
+			FixChainsOfIce();
 		}
+
+		#region Chains of Ice
+		private static void FixChainsOfIce()
+		{
+			// "The target regains $s2% of their movement each second for $d."
+			SpellLineId.DeathKnightChainsOfIce.Apply(spell =>
+			{
+				spell.GetEffect(AuraType.Dummy2).AuraEffectHandlerCreator = () => new ChainsOfIceThawEffect();
+			});
+		}
+
+		internal class ChainsOfIceThawEffect : AuraEffectHandler
+		{
+			protected override void Apply()
+			{
+				var decreaseSpeedHandler = m_aura.GetHandler(AuraType.ModDecreaseSpeed) as ModDecreaseSpeedHandler;
+				if (decreaseSpeedHandler != null)
+				{
+					// need to reduce, else upon removal, owner would be faster than before
+					var thawValue = EffectValue/100f;
+					decreaseSpeedHandler.Value += thawValue;
+					Owner.SpeedFactor += thawValue;
+				}
+			}
+		}
+		#endregion
 
 		#region Threat of Thassarian
 		private static void FixThreatOfThassarian()

@@ -1290,6 +1290,18 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Pushback
+		public void Pushback(int millis)
+		{
+			if (IsChanneling)
+			{
+				m_channel.Pushback(millis);
+			}
+			else
+			{
+				RemainingCastTime += millis;
+			}
+		}
+
 		/// <summary>
 		/// Caused by damage.
 		/// Delays the cast and might result in interruption (only if not DoT).

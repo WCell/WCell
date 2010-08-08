@@ -141,6 +141,9 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				spell.GetEffect(SpellEffectType.None).SpellEffectHandlerCreator =
 					(cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
 			});
+
+			// "Non-player victim spellcasting is also interrupted for $32747d."
+			SpellLineId.DeathKnightStrangulate.Apply(spell => spell.AddTargetTriggerSpells(SpellId.InterruptRank1));
 		}
 
 		#region Death Pact

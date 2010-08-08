@@ -791,7 +791,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Removes all auras that are casted by anyone but myself
+		/// Removes all auras that are casted by anyone but this unit itself
 		/// </summary>
 		public void RemoveOthersAuras()
 		{

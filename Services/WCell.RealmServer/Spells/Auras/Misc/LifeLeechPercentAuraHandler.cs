@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 
 		public override void OnAttack(DamageAction action)
 		{
-			if (!action.IsDot)
+			//if (!action.IsDot)
 			{
 				var amount = action.GetDamagePercent(EffectValue);
 				Owner.Heal(amount, m_aura.CasterUnit, m_spellEffect);

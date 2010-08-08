@@ -1,2 +1,4 @@
-- fixed startup & spellline heuristics
-- to test: DeathKnightBloodStrike
+- implemented UnitFlags.Passive
+- added the #pushback command
+- fixed some quest bugs / channel pushback / taming
+- to test: DeathKnightDeathCoil, DeathKnightDeathAndDecay, DeathKnightChainsOfIce, DeathKnightBloodTap, DeathKnightStrangulate

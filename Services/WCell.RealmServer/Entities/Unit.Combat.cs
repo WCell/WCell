@@ -1288,13 +1288,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the target is in reach to be attacked
+		/// Whether the suitable target is in reach to be attacked
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
 		public bool CanReachForCombat(Unit target)
 		{
-			return MayMove || IsInAttackRange(target);
+			return CanMove || IsInAttackRange(target);
 		}
 
 		public bool IsInAttackRangeSq(Unit target, float distSq)

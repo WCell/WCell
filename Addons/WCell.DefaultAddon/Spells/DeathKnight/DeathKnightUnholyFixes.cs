@@ -105,15 +105,82 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodStrike));
 
 			FixDeathCoil();
+
+			// Death & Decay simply does periodic damage
+			// TODO: "This ability produces a high amount of threat."
+			SpellLineId.DeathKnightDeathAndDecay.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.Dummy2);
+				effect.AuraType = AuraType.PeriodicDamage;
+			});
+
+			SpellLineId.DeathKnightRaiseAlly.Apply(spell =>
+			{
+				// TODO: Find corpse
+				// TODO: Mark corpse unusable
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				effect.EffectType = SpellEffectType.TriggerSpell;
+				effect.TriggerSpellId = (SpellId)effect.CalcEffectValue();
+			});
 		}
 
 		#region Death Coil
 		private static void FixDeathCoil()
 		{
+			// Death Coil needs to heal or harm, depending on the target
 			SpellLineId.DeathKnightDeathCoil.Apply(spell =>
 			{
-				
+				var effect = spell.GetEffect(SpellEffectType.Dummy);
+				effect.SpellEffectHandlerCreator = (cast, effct) => new DeathCoilHandler(cast, effct);
 			});
+		}
+
+		internal class DeathCoilHandler : SpellEffectHandler
+		{
+			private bool heal;
+
+			public DeathCoilHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override SpellFailedReason InitializeTarget(WorldObject target)
+			{
+				var caster = m_cast.CasterObject;
+				if (caster == null) return SpellFailedReason.CasterDead;	// message doesn't matter, if the caster isn't there, since no one will see it
+
+				if (target is NPC && ((NPC)target).Entry.Type == CreatureType.Undead && caster.IsInSameDivision(target))
+				{
+					heal = true;
+				}
+				else if (!caster.MayAttack(target))
+				{
+					return SpellFailedReason.BadTargets;
+				}
+				return base.InitializeTarget(target);
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var caster = m_cast.CasterUnit;
+
+				var unit = (Unit)target;
+				if (heal)
+				{
+					// "healing ${$m1*1.5} damage from a friendly Undead target"
+					unit.Heal((CalcEffectValue() * 15 + 5) / 10, caster, Effect);
+				}
+				else
+				{
+					// "causing $s1 Shadow damage to an enemy target"
+					unit.DealSpellDamage(caster, Effect, CalcEffectValue());
+				}
+			}
+
+			public override ObjectTypes TargetType
+			{
+				get { return ObjectTypes.Unit; }
+			}
 		}
 		#endregion
 

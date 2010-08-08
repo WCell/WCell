@@ -100,7 +100,7 @@ namespace WCell.Tools.Commands
             {
                 trigger.Reply("Dumping Items...");
                 ItemOutput.WriteAllItemInfo();
-                trigger.Reply("Dumped Items to: " + ItemOutput.DumpFile);
+                trigger.Reply("Dumped Items to: " + ItemOutput.DefaultDumpFile);
             }
 		}
 

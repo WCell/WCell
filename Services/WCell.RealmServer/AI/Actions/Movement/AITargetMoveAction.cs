@@ -83,7 +83,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 				}
 			}
 
-			if (!m_owner.Movement.Update() && !m_owner.MayMove)
+			if (!m_owner.Movement.Update() && !m_owner.CanMove)
 			{
 				return;
 			}

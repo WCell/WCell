@@ -152,9 +152,7 @@ namespace WCell.RealmServer.Spells
 
 		public SpellFailedReason ValidateTargetForHandlers(WorldObject target)
 		{
-			var cast = Cast;
-
-			foreach (var handler in cast.Handlers)
+			foreach (var handler in m_handlers)
 			{
 				if (!target.CheckObjType(handler.TargetType))
 				{

@@ -37,6 +37,14 @@ namespace WCell.Util
 		public const float E = (float)Math.E;
 
 		/// <summary>
+		/// TODO: Implement faster version
+		/// </summary>
+		public static int CeilingInt(float value)
+		{
+			return (int) Math.Ceiling(value);
+		}
+
+		/// <summary>
 		/// Unprecise but fast (don't use for values greater or smaller than integer range (+-2 billion))
 		/// </summary>
 		/// <param name="value"></param>

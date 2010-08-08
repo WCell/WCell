@@ -16,8 +16,11 @@ namespace WCell.Addons
 	/// </summary>
 	public class DefaultAddon : WCellAddonBase
 	{
-		public const SpellId TeleSpellId = //SpellId.UnusedNPCPORTTEST;
-			SpellId.UnusedDistractTest;
+		/// <summary>
+		/// The id of the unique teleport spell that can be used by staff
+		/// to instantly teleport them to the target location.
+		/// </summary>
+		public const SpellId TeleSpellId = SpellId.UnusedPassengerProxyTest;
 
 		public override bool UseConfig
 		{

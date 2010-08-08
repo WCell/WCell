@@ -58,6 +58,7 @@ namespace WCell.RealmServer.Entities
 						if (m_activePet == value)
 						{
 							PetHandler.SendSpells(this, m_activePet, PetAction.Follow);
+							PetHandler.SendPetGUIDs(this);
 						}
 					});
 				}

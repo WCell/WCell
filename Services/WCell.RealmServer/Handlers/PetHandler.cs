@@ -259,12 +259,15 @@ namespace WCell.RealmServer.Handlers
 
 
 		#region Spells
-		public static void SendPetGUIDs(IPacketReceiver receiver)
+		public static void SendPetGUIDs(Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 8))
+			if (chr.ActivePet == null) return;
+
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 12))
 			{
-				packet.Write(0);
-				receiver.Send(packet);
+				packet.Write(1);		// list count
+				packet.Write(chr.ActivePet.EntityId);
+				chr.Send(packet);
 			}
 		}
 

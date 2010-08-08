@@ -190,18 +190,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanMove
 		{
-			get
-			{
-				return m_canMove;
-			}
+			get{return m_canMove && HasOwnerPermissionToMove;}
 		}
 
 		/// <summary>
-		/// Whether the owner (if any) allows this unit to move
+		/// Whether the owner or controlling AI allows this unit to move.
+		/// Always returns true for uncontrolled players.
 		/// </summary>
-		public bool MayMove
+		public bool HasOwnerPermissionToMove
 		{
-			get { return CanMove && (m_Movement == null || m_Movement.MayMove); }
+			get { return m_Movement == null || m_Movement.MayMove; }
 			set
 			{
 				if (m_Movement != null)
@@ -212,7 +210,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the Unit is currently evading (cannot be hit etc)
+		/// Whether the Unit is currently evading (cannot be hit, generate threat etc)
 		/// </summary>
 		public bool IsEvading
 		{

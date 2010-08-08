@@ -52,7 +52,10 @@ namespace WCell.Constants
 
         NotAttackable = 0x100,
 
-        Flag_0x200 = 0x200,
+		/// <summary>
+		/// 
+		/// </summary>
+        Passive = 0x200,
 
         /// <summary>
         /// Looting animation is shown

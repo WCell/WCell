@@ -260,6 +260,10 @@ namespace WCell.RealmServer.Entities
 				{
 					IncMechanicCount(SpellMechanic.Silenced);
 				}
+				if (flags.HasFlag(UnitFlags.Passive))
+				{
+					HasOwnerPermissionToMove = false;
+				}
 			}
 		}
 

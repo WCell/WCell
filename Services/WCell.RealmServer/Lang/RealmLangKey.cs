@@ -19,6 +19,7 @@ namespace WCell.RealmServer.Lang
 		Library,
 		NotConnectedToAuthServer,
 		PlayerNotOnline,
+		NoValidtarget,
 
 		// #######################################################################
 		// Commands
@@ -64,6 +65,9 @@ namespace WCell.RealmServer.Lang
         CmdSpellVisualParamInfo,
         CmdSpellVisualError,
         CmdSpellNotExists,
+
+		CmdPushbackParams,
+		CmdPushbackDescription,
 
         // ########################################################################
         // Skill Commands

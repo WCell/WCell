@@ -1030,8 +1030,18 @@ namespace WCell.RealmServer.Quests
 
         public int CalcRewardXp(Character character)
         {
-            var fullxp = QuestMgr.QuestXpInfos[Level].RewXP[RewXPId-1];
-            fullxp = fullxp + (fullxp*character.QuestExperienceGainModifierPercent/100);
+            var info = QuestMgr.QuestXpInfos.Get(Level);
+        	int fullxp;
+			if (info != null)
+			{
+				fullxp = info.RewXP.Get((uint)RewXPId - 1u);
+			}
+			else
+			{
+				// TODO: What to do with quests with funky levels
+				fullxp = (int) (MinLevel*100);
+			}
+            fullxp = (fullxp*character.QuestExperienceGainModifierPercent/100);
 
             int playerLevel = character.Level;
             

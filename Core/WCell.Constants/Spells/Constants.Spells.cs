@@ -769,7 +769,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		InFrontOfCaster = 24,
 		/// <summary>
-		/// Enemy target apparently
+		/// Friend or Foe
 		/// </summary>
 		Duel = 25,
 		/// <summary>

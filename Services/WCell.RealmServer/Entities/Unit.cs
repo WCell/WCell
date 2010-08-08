@@ -1837,6 +1837,12 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		protected internal override void DeleteNow()
+		{
+			Target = null;
+			base.DeleteNow();
+		}
+
 		protected virtual HighId HighId
 		{
 			get { return HighId.Unit; }

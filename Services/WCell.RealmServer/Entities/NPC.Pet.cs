@@ -385,13 +385,13 @@ namespace WCell.RealmServer.Entities
 					}
 					break;
 				case PetAction.Follow:
-					MayMove = true;
+					HasOwnerPermissionToMove = true;
 					break;
 				case PetAction.Stay:
-					MayMove = false;
+					HasOwnerPermissionToMove = false;
 					break;
 				case PetAction.Attack:
-					MayMove = true;
+					HasOwnerPermissionToMove = true;
 					var target = m_master.Target;
 					if (target != null && MayAttack(target))
 					{

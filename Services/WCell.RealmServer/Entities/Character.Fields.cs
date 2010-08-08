@@ -1214,11 +1214,10 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Action Buttons
-
 		/// <summary>
 		/// Sets an ActionButton with the given information.
 		/// </summary>
-		public void SetActionButton(uint btnIndex, uint action, byte type)
+		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
 			var actions = m_record.ActionButtons;
 			btnIndex = btnIndex * 4;
@@ -1234,11 +1233,34 @@ namespace WCell.RealmServer.Entities
 				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
 		}
 
-		public void SetActionButton(ActionButton btn)
+		/// <summary>
+		/// Sets the given button to the given spell and resends it to the client
+		/// </summary>
+		public void BindSpellToActionButton(uint btnIndex, SpellId spell, bool update = true)
+		{
+			BindActionButton(btnIndex, (uint) spell, 0);
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
+		}
+
+		/// <summary>
+		/// Sets the given action button
+		/// </summary>
+		public void BindActionButton(ActionButton btn, bool update = true)
 		{
 			btn.Set(m_record.ActionButtons);
+			if (update)
+			{
+				CharacterHandler.SendActionButtons(this);
+			}
 		}
 
 		/// <summary>

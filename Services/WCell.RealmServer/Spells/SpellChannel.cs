@@ -23,6 +23,7 @@ using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -62,7 +63,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// The duration for the current or last Channel
+		/// The total duration of this Channel
 		/// </summary>
 		public int Duration
 		{
@@ -91,16 +92,16 @@ namespace WCell.RealmServer.Spells
 			set
 			{
 				m_until = value;
-				var timeLeft = (m_until - Environment.TickCount);
+				var timeLeft = TimeLeft;
 				if (timeLeft < 0)
 				{
-					Cancel();
+					//Cancel();
+					timeLeft = 1;
 				}
-				else
-				{
-					m_ticks = m_maxTicks - (timeLeft / m_amplitude);
-					SpellHandler.SendChannelUpdate(m_cast, (uint)timeLeft);
-				}
+
+				m_ticks = MathUtil.CeilingInt(timeLeft/(float) m_amplitude);
+				m_timer.Start(0, timeLeft%m_amplitude);
+				SpellHandler.SendChannelUpdate(m_cast, (uint) timeLeft);
 			}
 		}
 
@@ -127,9 +128,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void Pushback(int millis)
 		{
-			if (m_channeling && m_cast != null && m_maxTicks > 1)
+			if (m_channeling && m_cast != null)
 			{
-				Until -= millis;
+				Until += millis;
 			}
 		}
 
@@ -178,7 +179,7 @@ namespace WCell.RealmServer.Spells
 
 				if (m_channeling)
 				{
-					m_timer.Start(0, m_amplitude);
+					m_timer.Start(m_amplitude, m_amplitude);
 				}
 				// Send Initial Tick? 
 				// Keep in mind: Aura is not initialized at this point!
@@ -224,12 +225,12 @@ namespace WCell.RealmServer.Spells
 			// apply effects
 			foreach (var handler in handlers)
 			{
+				handler.OnChannelTick();
 				if (!m_channeling)
 				{
 					// cancelling a handler might cancel the SpellChannel
 					return;
 				}
-				handler.OnChannelTick();
 			}
 
 			// apply all Auras remove those that went inactive in the meantime

@@ -171,7 +171,6 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Spell", "Spells", "Sp");
-			EnglishParamInfo = "";
 			Description = new TranslatableItem(RealmLangKey.CmdSpellDescription);
 		}
 
@@ -407,6 +406,29 @@ namespace WCell.RealmServer.Commands
 		public override ObjectTypeCustom TargetTypes
 		{
 			get { return ObjectTypeCustom.Unit; }
+		}
+	}
+
+	public class PushbackCommand : RealmServerCommand
+	{
+		protected override void Initialize()
+		{
+			Init("Pushback");
+			ParamInfo = new TranslatableItem(RealmLangKey.CmdPushbackParams);
+			Description = new TranslatableItem(RealmLangKey.CmdPushbackDescription);
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var target = trigger.Args.Target;
+			if (target == null)
+			{
+				trigger.Reply(RealmLangKey.NoValidtarget);
+			}
+			else
+			{
+				target.SpellCast.Pushback(trigger.Text.NextInt(1000));
+			}
 		}
 	}
 
