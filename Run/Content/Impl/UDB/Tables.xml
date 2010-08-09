@@ -79,12 +79,6 @@
     <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>
 
-  <!--################ Pets ############-->
-  <Table Name="pet_levelstats">
-    <PrimaryColumn Name="creature_entry"/>
-    <PrimaryColumn Name="level"/>
-  </Table>
-
   <Table Name="disenchant_loot_template">
     <PrimaryColumn Name="entry"/>
     <PrimaryColumn Name="item"/>
