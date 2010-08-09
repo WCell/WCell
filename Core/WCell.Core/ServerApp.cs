@@ -228,7 +228,7 @@ namespace WCell.Core
 			return type;
 		}
 
-		#region Timers
+		#region Updatables
 
 		/// <summary>
 		/// Registers an updatable object in the server timer pool.

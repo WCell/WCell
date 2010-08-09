@@ -1,2 +1,4 @@
 - moved responsibility of NPCAttackerCount to AICombatAction
 - set SheathType correctly
+- added PetLevelStatInfo
+- missing files!

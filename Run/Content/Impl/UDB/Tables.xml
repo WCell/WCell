@@ -80,8 +80,9 @@
   </Table>
 
   <!--################ Pets ############-->
-  <Table Name="pet_levelstats" MainDataHolder="NPCEntry">
-    <PrimaryColumn Name="entry" TypeName="UInt32"/>
+  <Table Name="pet_levelstats">
+    <PrimaryColumn Name="creature_entry"/>
+    <PrimaryColumn Name="level"/>
   </Table>
 
   <Table Name="disenchant_loot_template">
