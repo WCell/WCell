@@ -19,11 +19,16 @@ namespace WCell.Util.NLog
 
 		public static event Action<string, Exception> ExceptionRaised;
 
+		private static bool init;
+
 		/// <summary>
 		/// Will enable logging to the console
 		/// </summary>
 		public static void SetupConsoleLogging()
 		{
+			if (init)return;
+
+			init = true;
 			var config = LogManager.Configuration ?? new LoggingConfiguration();
 
 			var consoleTarget = new ColoredConsoleTarget

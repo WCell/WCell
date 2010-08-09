@@ -152,6 +152,14 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Unit is currently attacking with a ranged weapon
+		/// </summary>
+		public bool IsUsingRangedWeapon
+		{
+			get { return m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility; }
+		}
+
+		/// <summary>
 		/// Amount of extra attacks to hit on next thit
 		/// </summary>
 		public int ExtraAttacks
@@ -908,7 +916,7 @@ namespace WCell.RealmServer.Entities
 			var now = Environment.TickCount;
 			var usesOffHand = UsesDualWield;
 
-			var isRanged = m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility;
+			var isRanged = IsUsingRangedWeapon;
 			var mainHandDelay = m_lastStrike + (isRanged ? RangedAttackTime : MainHandAttackTime) - now;
 			int offhandDelay;
 
@@ -1105,6 +1113,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnEnterCombat()
 		{
+			SheathType = IsUsingRangedWeapon ? SheathType.Ranged : SheathType.Melee;
 			StandState = StandState.Stand;
 			m_lastCombatTime = Environment.TickCount;
 			if (m_brain != null)
@@ -1118,6 +1127,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnLeaveCombat()
 		{
+			//SheathType = SheathType.None;
 			ResetComboPoints();
 			if (m_brain != null)
 			{

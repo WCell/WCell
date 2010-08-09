@@ -202,6 +202,7 @@
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />
+    <Compile Include="NPCs\Pets\PetLevelStatInfo.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -719,7 +720,7 @@
     <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
-    <Compile Include="NPCs\PetMgr.cs" />
+    <Compile Include="NPCs\Pets\PetMgr.cs" />
     <Compile Include="NPCs\Pets\PetSpell.cs" />
     <Compile Include="NPCs\Vendors\VendorEntry.cs" />
     <Compile Include="Paths\PathVertex.cs" />

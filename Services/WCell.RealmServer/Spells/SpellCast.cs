@@ -916,7 +916,11 @@ namespace WCell.RealmServer.Spells
 			{
 				if (!IsInstant)
 				{
-					// send Start packet
+					// put away weapon and send Start packet
+					if (CasterObject is Unit)
+					{
+						((Unit) CasterObject).SheathType = SheathType.None;
+					}
 					SendCastStart();
 					m_castTimer.Start(m_castDelay);
 					return SpellFailedReason.Ok;

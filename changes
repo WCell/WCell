@@ -1,2 +1,2 @@
-- fixed npc decay time (by overriding the config)
-- fixed dbc exporter error feedback
+- moved responsibility of NPCAttackerCount to AICombatAction
+- set SheathType correctly

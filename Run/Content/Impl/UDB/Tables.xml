@@ -79,6 +79,11 @@
     <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>
 
+  <!--################ Pets ############-->
+  <Table Name="pet_levelstats" MainDataHolder="NPCEntry">
+    <PrimaryColumn Name="entry" TypeName="UInt32"/>
+  </Table>
+
   <Table Name="disenchant_loot_template">
     <PrimaryColumn Name="entry"/>
     <PrimaryColumn Name="item"/>

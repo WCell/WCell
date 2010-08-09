@@ -822,8 +822,16 @@ namespace WCell.RealmServer.Entities
 		{
 			for (var i = 0; i < equipment.ItemIds.Length; i++)
 			{
-				var item = equipment.ItemIds[i];
-				SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
+				var itemId = equipment.ItemIds[i];
+				if (itemId != 0)
+				{
+					var item = ItemMgr.GetTemplate(itemId);
+					if (item != null)
+					{
+						SheathType = item.SheathType;		// TODO: How to use the sheath type of all items?
+					}
+					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)itemId);
+				}
 			}
 		}
 
