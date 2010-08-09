@@ -416,10 +416,10 @@ namespace WCell.MPQTool
 
         public DBCTool()
         {
-            var config = Config.Instance;
+            var config = MPQToolConfig.Instance;
 
-            DBCDir = Config.DBCDirPrefix;
-            DefaultDBCOutputDir = Config.DefaultDBCOutputDir;
+            DBCDir = MPQToolConfig.DBCDirPrefix;
+            DefaultDBCOutputDir = MPQToolConfig.DefaultDBCOutputDir;
             DBCOutputDir = DefaultDBCOutputDir;
         }
 	}
@@ -428,7 +428,7 @@ namespace WCell.MPQTool
     {
         static void Main(string[] args)
         {
-            var config = Config.Instance;
+            var config = MPQToolConfig.Instance;
             new DBCTool().Dump();
             
             // Compare(40f, 90f);

@@ -9,7 +9,7 @@ using WCell.Util;
 
 namespace WCell.MPQTool
 {
-	public class Config : XmlFile<Config>
+	public class MPQToolConfig : XmlFile<MPQToolConfig>
 	{
 		public static readonly string ConfigFile = "WCell.MPQTool.Config.xml";
 
@@ -19,9 +19,9 @@ namespace WCell.MPQTool
 			get { return DBCDirPrefix + WCellInfo.RequiredVersion.BasicString + "/"; }
 		}
 
-		private static Config s_instance;
+		private static MPQToolConfig s_instance;
 
-		public static Config Instance
+		public static MPQToolConfig Instance
 		{
 			get
 			{
@@ -34,7 +34,7 @@ namespace WCell.MPQTool
 					}
 					else
 					{
-						s_instance = new Config
+						s_instance = new MPQToolConfig
 						{
 							m_filename = ConfigFile
 						};

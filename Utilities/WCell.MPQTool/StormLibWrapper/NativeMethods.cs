@@ -27,11 +27,11 @@ namespace WCell.MPQTool.StormLibWrapper
 		{
 			if (Environment.Is64BitProcess)
 			{
-				File.Copy(StormLib64, StormLibDllName, true);
+				File.Copy(Path.GetFullPath(StormLib64), StormLibDllName, true);
 			}
 			else
 			{
-				File.Copy(StormLib32, StormLibDllName, true);
+				File.Copy(Path.GetFullPath(StormLib32), StormLibDllName, true);
 			}
 		}
         
