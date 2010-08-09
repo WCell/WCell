@@ -144,28 +144,15 @@ namespace WCell.RealmServer.Entities
 					if (value != null)
 					{
 						SetEntityId(UnitFields.TARGET, value.EntityId);
-						if (this is NPC)
-						{
-							value.NPCAttackerCount++;
-						}
 					}
 					else
 					{
-						OnTargetNull();
 						SetEntityId(UnitFields.TARGET, EntityId.Zero);
 						IsFighting = false;
 					}
 					m_target = value;
 					CancelPendingAbility();
 				}
-			}
-		}
-
-		private void OnTargetNull()
-		{
-			if (this is NPC)
-			{
-				m_target.NPCAttackerCount--;
 			}
 		}
 

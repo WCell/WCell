@@ -1,5 +1,2 @@
-- fixed the stormlib 32/64 bit issue
-- changed timer and general delta arguments from float seconds to int millis
--> This changed the chaos that was the timer code into a pleasant and consistent API
-- made more use of object pools
-- fixed regeneration, as well as a multitude of timer- and timer-related- bugs / some minor pet bugs
+- fixed npc decay time (by overriding the config)
+- fixed dbc exporter error feedback

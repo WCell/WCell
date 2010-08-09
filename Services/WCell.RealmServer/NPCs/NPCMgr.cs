@@ -40,19 +40,19 @@ namespace WCell.RealmServer.NPCs
 	public static class NPCMgr
 	{
 		#region Global Variables
-		[Variable("NormalCorpseDecayDelay")]
+		[Variable("NormalCorpseDecayDelayMillis")]
 		/// <summary>
 		/// Delay before Corpse of normal NPC starts to decay without being looted in millis (Default: 1 minute)
 		/// </summary>
 		public static int DecayDelayNormalMillis = 60 * 1000;
 
-		[Variable("RareCorpseDecayDelay")]
+		[Variable("RareCorpseDecayDelayMillis")]
 		/// <summary>
 		/// Delay before Corpse of rare NPC starts to decay without being looted in millis (Default: 5 minutes)
 		/// </summary>
 		public static int DecayDelayRareMillis = 300000;
 
-		[Variable("EpicCorpseDecayDelay")]
+		[Variable("EpicCorpseDecayDelayMillis")]
 		/// <summary>
 		/// Delay before Corpse of epic NPC starts to decay without being looted in millis (Default: 1 h)
 		/// </summary>

@@ -146,9 +146,7 @@ namespace WCell.RealmServer.AI.Actions.States
 						// check if something came up again
 						if (!m_owner.Brain.CheckCombat())
 						{
-#if DEV
-							owner.Say("No one left to attack.");
-#endif
+							// run back
 							owner.Brain.State = BrainState.Evade;
 						}
 					}
@@ -158,6 +156,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					// cannot evade -> Just go back to default if there are no more targets
 					if (!owner.Brain.CheckCombat())
 					{
+						// go back to what we did before
 						owner.Brain.EnterDefaultState();
 					}
 				}

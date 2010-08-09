@@ -1759,12 +1759,7 @@ namespace WCell.RealmServer.Entities
 			base.Dispose(disposing);
 
 			m_attackTimer = null;
-
-			if (m_target != null)
-			{
-				OnTargetNull();
-				m_target = null;
-			}
+			m_target = null;
 
 			if (m_brain != null)
 			{
@@ -1784,6 +1779,7 @@ namespace WCell.RealmServer.Entities
 			m_charm = null;
 			m_channeled = null;
 		}
+
 		#endregion
 
 		protected internal override void DeleteNow()

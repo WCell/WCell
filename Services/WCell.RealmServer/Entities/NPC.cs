@@ -909,19 +909,6 @@ namespace WCell.RealmServer.Entities
 			var looter = m_FirstAttacker;
 			UnitFlags |= UnitFlags.SelectableNotAttackable;
 
-			// generate loot
-			if (looter is Character && LootMgr.GetOrCreateLoot(this, (Character)looter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
-			{
-				// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
-				//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
-				EnterLootableState();
-			}
-			else
-			{
-				// no loot
-				EnterFinalState();
-			}
-
 			// send off the tamer
 			if (m_currentTamer != null)
 			{
@@ -929,12 +916,28 @@ namespace WCell.RealmServer.Entities
 				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
 			}
 
+			if (!HasPlayerMaster)	// not player-owned NPC
+			{
+				if (looter is Character &&
+				    LootMgr.GetOrCreateLoot(this, (Character) looter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+				{
+					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
+					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
+					EnterLootableState();
+				}
+				else
+				{
+					// no loot
+					EnterFinalState();
+				}
+			}
+
 			// notify events
 			m_entry.NotifyDied(this);
 
-			// notify master
 			if (m_master != null)
 			{
+				// notify master
 				if (m_master.IsInWorld)
 				{
 					m_master.OnMinionDied(this);
@@ -1162,6 +1165,7 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
+			Target = null;
 			m_auras.ClearWithoutCleanup();
 			base.DeleteNow();
 		}

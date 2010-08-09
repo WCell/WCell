@@ -23,6 +23,7 @@ using Microsoft.Win32;
 using WCell.Constants;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
+using WCell.Util.NLog;
 
 namespace WCell.MPQTool
 {
@@ -282,10 +283,7 @@ namespace WCell.MPQTool
 
 			catch (Exception ex)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(ex.Message);
-				Console.WriteLine("Export failed. Make sure, you configured your build correctly.");
-				Console.ResetColor();
+				LogUtil.ErrorException(ex, "Export failed. Make sure, you configured your build correctly.");
 			}
 		}
 
