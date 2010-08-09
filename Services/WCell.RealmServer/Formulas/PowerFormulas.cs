@@ -21,17 +21,15 @@ namespace WCell.RealmServer.Formulas
 		public static int RegenRateFactor = 1;
 
 		/// <summary>
-		/// The delay between 2 regeneration ticks in seconds
+		/// The delay between 2 regeneration ticks in millis
 		/// </summary>
-		public static float RegenTickDelaySeconds = 1.0f;
+		public static int RegenTickDelayMillis = 1000;
 
 		/// <summary>
 		/// The amount of milliseconds for the time of "Interrupted" power regen
 		/// See: http://www.wowwiki.com/Formulas:Mana_Regen#Five_Second_Rule
 		/// </summary>
 		public static uint PowerRegenInterruptedCooldown = 5000;
-
-		public static int PowerRegenInterruptedPct = 25;
 		#endregion
 
 		public static readonly PowerCalculator[] PowerRegenCalculators = new PowerCalculator[(int)PowerType.End];
@@ -83,11 +81,10 @@ namespace WCell.RealmServer.Formulas
 		public static int CalculateManaRegen(Unit unit)
 		{
 			// default mana generation
-			//return (10f + (spirit / 7f));
-			var regen = (float)(0.001f + (float)Math.Sqrt(unit.Intellect) * unit.Spirit * GameTables.BaseRegen[unit.Level]);
-			if (unit.IsInCombat)
+			var regen = 0.001f + (float)Math.Sqrt(unit.Intellect) * unit.Spirit * GameTables.BaseRegen[unit.Level];
+			if (unit.IsManaRegenInterrupted)
 			{
-				regen = (regen * unit.ManaRegenPerTickInterruptedPct) / 100;
+				regen = (regen * unit.ManaRegenPerTickInterruptedPct + 50) / 100;
 			}
 			return (int)regen * RegenRateFactor;
 		}
@@ -122,7 +119,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalculateFocusRegen(Unit unit)
 		{
-			return RegenRateFactor;
+			return 5 * RegenRateFactor;	// 5 focus per second
 		}
 		#endregion
 

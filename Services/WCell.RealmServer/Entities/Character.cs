@@ -66,9 +66,9 @@ namespace WCell.RealmServer.Entities
 		public static new readonly List<Character> EmptyArray = new List<Character>();
 
 		/// <summary>
-		/// The delay until a normal player may logout in seconds.
+		/// The delay until a normal player may logout in millis.
 		/// </summary>
-		public static float DefaultLogoutDelay = 20.0f;
+		public static int DefaultLogoutDelayMillis = 20000;
 
 		/// <summary>
 		/// Speed increase when dead and in Ghost form
@@ -800,16 +800,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public void Send(RealmPacketOut packet)
-		{
-			m_client.Send(packet);
-		}
-
-		public void Send(byte[] packet)
-		{
-			m_client.Send(packet);
-		}
-
 		#region Interaction with NPCs & GameObjects
 		/// <summary>
 		/// Called whenever this Character interacts with any WorldObject
@@ -1272,17 +1262,10 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region AI
-		public override LinkedList<WaypointEntry> Waypoints
+		public override int GetBasePowerRegen()
 		{
-			get { return null; }
+			return PowerFormulas.GetPowerRegen(this);
 		}
-
-		public override SpawnPoint SpawnPoint
-		{
-			get { return null; }
-		}
-		#endregion
 
 		public void ActivateAllTaxiNodes()
 		{
@@ -1302,7 +1285,7 @@ namespace WCell.RealmServer.Entities
 			base.SetZone(newZone);
 			if (newZone != null)
 			{
-				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelay, () =>
+				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
 				{
 					if (IsInWorld && Zone == newZone)
 					{
@@ -1722,6 +1705,18 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region AI
+		public override LinkedList<WaypointEntry> Waypoints
+		{
+			get { return null; }
+		}
+
+		public override SpawnPoint SpawnPoint
+		{
+			get { return null; }
+		}
+		#endregion
+
 		#region ITicketHandler
 		/// <summary>
 		/// The ticket that is currently being handled by this <see cref="ITicketHandler"/>
@@ -1770,6 +1765,16 @@ namespace WCell.RealmServer.Entities
 			return new[] { this };
 		}
 		#endregion
+
+		public void Send(RealmPacketOut packet)
+		{
+			m_client.Send(packet);
+		}
+
+		public void Send(byte[] packet)
+		{
+			m_client.Send(packet);
+		}
 
 		public override string ToString()
 		{

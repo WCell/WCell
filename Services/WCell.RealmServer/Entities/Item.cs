@@ -1286,11 +1286,6 @@ namespace WCell.RealmServer.Entities
 				m_record.OwnerId = 0;
 				m_record = null;
 
-				if (m_owner != null)
-				{
-					m_owner.RemoveOwnedItem(this);
-					m_owner = null;
-				}
 				Dispose();
 			}
 		}

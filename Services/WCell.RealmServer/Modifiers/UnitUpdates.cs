@@ -234,6 +234,8 @@ namespace WCell.RealmServer.Modifiers
 			var value = unit.BaseHealth + stamBonus + unit.MaxHealthMod;
 
 			unit.SetInt32(UnitFields.MAXHEALTH, value);
+
+			unit.UpdateHealthRegen();
 		}
 
 		internal static void UpdateMaxPower(this Unit unit)
@@ -251,6 +253,8 @@ namespace WCell.RealmServer.Modifiers
 			}
 
 			unit.MaxPower = value;
+
+			unit.UpdatePowerRegen();
 		}
 
 		#region Regen
@@ -297,7 +301,7 @@ namespace WCell.RealmServer.Modifiers
 
 
 		/// <summary>
-		/// Updates the amount of Power regenerated per regen-tick (while not being "interrupted")
+		/// Updates the amount of Power regenerated per regen-tick
 		/// </summary>
 		internal static void UpdatePowerRegen(this Unit unit)
 		{
@@ -305,21 +309,12 @@ namespace WCell.RealmServer.Modifiers
 
 			if (unit.IsAlive)
 			{
-				if (unit is Character)
-				{
-					regen = PowerFormulas.GetPowerRegen(unit);
-				}
-				else
-				{
-					// TODO: NPC regen
-					regen = unit.BasePower / 20;
-				}
+				regen = unit.GetBasePowerRegen();
 
-				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat)
+				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat) // runic power bonuses only apply during combat
 				{
-					// runic power bonuses only apply during combat
 					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
-					regen = ((100 + unit.IntMods[(int) StatModifierInt.PowerRegen])*regen + 50)/100;	// rounding
+					regen += (unit.IntMods[(int) StatModifierInt.PowerRegenPercent]*regen + 50)/100;	// rounding
 				}
 			}
 

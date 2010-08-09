@@ -231,7 +231,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 

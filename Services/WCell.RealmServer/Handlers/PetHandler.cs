@@ -289,7 +289,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(pet.EntityId);
 				packet.Write((ushort)pet.Entry.FamilyId);
 				//packet.Write((ushort)0);
-				packet.Write((int)(pet.RemainingDecayDelay * 1000));			// duration
+				packet.Write(pet.RemainingDecayDelayMillis);			// duration
 				packet.Write((byte)record.AttackMode);
 				packet.Write((byte)currentAction);
 				packet.Write((ushort)record.Flags);

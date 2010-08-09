@@ -220,19 +220,20 @@ namespace WCell.RealmServer.Spells
 			Cooldowns[index] = 0;
 		}
 
-		internal void UpdateCooldown(float dt)
+		internal void UpdateCooldown(int dtMillis)
 		{
 			var cds = Cooldowns;
 			for (var i = 0u; i < SpellConstants.MaxRuneCount; i++)
 			{
-				var cd = cds[i] - (dt * GetCooldown(ActiveRunes[i]));
+				var cd = cds[i] - (dtMillis * GetCooldown(ActiveRunes[i]) + 500) / 1000;
 				if (cd > 0)
 				{
 					cds[i] = cd;
 				}
 				else
 				{
-					UnsetCooldown(i);
+					//UnsetCooldown(i);
+					cds[i] = 0;
 				}
 			}
 		}

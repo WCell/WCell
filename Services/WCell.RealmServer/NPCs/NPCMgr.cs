@@ -39,26 +39,24 @@ namespace WCell.RealmServer.NPCs
 	[GlobalMgr]
 	public static class NPCMgr
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		#region Global Variables
 		[Variable("NormalCorpseDecayDelay")]
 		/// <summary>
-		/// Delay before Corpse of normal NPC starts to decay without being looted in seconds (Default: 1 minute)
+		/// Delay before Corpse of normal NPC starts to decay without being looted in millis (Default: 1 minute)
 		/// </summary>
-		public static float DecayDelayNormal = 60f;
+		public static int DecayDelayNormalMillis = 60 * 1000;
 
 		[Variable("RareCorpseDecayDelay")]
 		/// <summary>
-		/// Delay before Corpse of rare NPC starts to decay without being looted in seconds (Default: 5 minutes)
+		/// Delay before Corpse of rare NPC starts to decay without being looted in millis (Default: 5 minutes)
 		/// </summary>
-		public static float DecayDelayRare = 300f;
+		public static int DecayDelayRareMillis = 300000;
 
 		[Variable("EpicCorpseDecayDelay")]
 		/// <summary>
-		/// Delay before Corpse of epic NPC starts to decay without being looted in seconds (Default: 1 h)
+		/// Delay before Corpse of epic NPC starts to decay without being looted in millis (Default: 1 h)
 		/// </summary>
-		public static float DecayDelayEpic = 3600f;
+		public static int DecayDelayEpicMillis = 3600000;
 
 		public static float DefaultNPCFlySpeed = 16;
 

@@ -22,6 +22,15 @@ namespace WCell.RealmServer.Lang
 		NoValidTarget,
 		InvalidSelection,
 
+		// ########################################################################
+		// Time
+		Second,
+		Seconds,
+		Minute,
+		Minutes,
+		Hour,
+		Hours,
+
 		// #######################################################################
 		// Commands
 		SubCommandNotFound,

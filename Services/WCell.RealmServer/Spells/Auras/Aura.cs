@@ -646,13 +646,13 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		public void Apply()
 		{
-			Apply(0.0f);
+			Apply(0);
 		}
 
 		/// <summary>
 		/// Applies one of this Aura's Ticks to its holder
 		/// </summary>
-		public void Apply(float timeElapsed)
+		internal void Apply(int timeElapsed)
 		{
 			m_ticks++;
 
@@ -995,7 +995,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region IUpdatable
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_timer != null)
 			{

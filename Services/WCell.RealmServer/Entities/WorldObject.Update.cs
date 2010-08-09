@@ -174,7 +174,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Make sure to call this before updating anything else (required for reseting UpdateInfo)
 		/// </summary>
-		public virtual void Update(float dt)
+		public virtual void Update(int dt)
 		{
 			m_ticks++;
 

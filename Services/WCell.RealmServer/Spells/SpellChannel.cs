@@ -54,7 +54,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private SpellChannel()
 		{
-			m_timer = new TimerEntry(0.0f, 0.0f, Tick);
+			m_timer = new TimerEntry(Tick);
 		}
 
 		public SpellCast Cast
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Triggers a new tick
 		/// </summary>
-		protected void Tick(float timeElapsed)
+		protected void Tick(int timeElapsed)
 		{
 			m_ticks++;
 
@@ -350,7 +350,7 @@ namespace WCell.RealmServer.Spells
 
 		#region IUpdatable
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_timer == null)
 			{

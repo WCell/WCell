@@ -249,7 +249,7 @@ namespace WCell.RealmServer.Spells
 		/// <param name="caster">The GameObject (in case of traps etc) or Unit casting</param>
 		private SpellCast()
 		{
-			m_castTimer = new TimerEntry(0f, 0f, Perform);
+			m_castTimer = new TimerEntry(Perform);
 		}
 
 		/// <summary>
@@ -260,7 +260,7 @@ namespace WCell.RealmServer.Spells
 		{
 			SetCaster(caster);
 
-			m_castTimer = new TimerEntry(0f, 0f, Perform);
+			m_castTimer = new TimerEntry(Perform);
 		}
 
 		void SetCaster(ObjectReference caster, Region map, uint phase)
@@ -410,7 +410,7 @@ namespace WCell.RealmServer.Spells
 				var delta = Math.Max(0, value - RemainingCastTime);
 
 				m_startTime = Environment.TickCount + delta;
-				m_castTimer.RemainingInitialDelay = value / 1000f;
+				m_castTimer.RemainingInitialDelayMillis = value;
 
 				SpellHandler.SendCastDelayed(this, delta);
 			}
@@ -1687,7 +1687,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region IUpdatable
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			// gotta update the cast timer.
 			m_castTimer.Update(dt);

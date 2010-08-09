@@ -24,6 +24,7 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
@@ -56,7 +57,6 @@ namespace WCell.RealmServer.Entities
 		protected Vector3 m_transportPosition;
 		protected float m_transportOrientation;
 		protected uint m_transportTime;
-		protected float m_lastHealthUpdate, m_lastPowerUpdate;
 
 		#region Objects
 		public Unit Charm
@@ -1337,11 +1337,6 @@ namespace WCell.RealmServer.Entities
 				var oldHealth = Health;
 				var maxHealth = MaxHealth;
 
-				if (m_region != null)
-				{
-					m_lastHealthUpdate = m_region.CurrentTime;
-				}
-
 				if (value >= maxHealth)
 				{
 					value = maxHealth;
@@ -1516,16 +1511,11 @@ namespace WCell.RealmServer.Entities
 				// TODO: fix this thing
 				// power is now calculated and regenerated continuously client-side
 				// so we also need to interpolate power values server-side
-				return UpdatePower();
+				return GetInt32(UnitFields.POWER1 + (int)PowerType);
 			}
 			set
 			{
 				value = MathUtil.ClampMinMax(value, 0, MaxPower);
-
-				if (m_region != null)
-				{
-					m_lastPowerUpdate = Region.CurrentTime;
-				}
 
 				if (value != Power)
 				{
@@ -1535,17 +1525,12 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		internal int UpdatePower()
+		internal int UpdatePower(int delayMillis)
 		{
-			var val = GetInt32(UnitFields.POWER1 + (int)PowerType);
-			if (m_region != null)
-			{
-				val += (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate) + 0.5f);
-				val = MathUtil.ClampMinMax(val, 0, MaxPower);
-				SetInt32(UnitFields.POWER1 + (int)PowerType, val);
-				//MiscHandler.SendPowerUpdate(this, PowerType, val);
-				m_lastPowerUpdate = Region.CurrentTime;
-			}
+			var val = Power;
+			val += (m_PowerRegenPerTick * delayMillis + 500) / PowerFormulas.RegenTickDelayMillis;	// rounding
+			val = MathUtil.ClampMinMax(val, 0, MaxPower);
+			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
 			return val;
 		}
 
@@ -1555,14 +1540,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual int MaxPower
 		{
-			get
-			{
-				return GetInt32(UnitFields.MAXPOWER1 + (int)PowerType);
-			}
-			internal set
-			{
-				SetInt32(UnitFields.MAXPOWER1 + (int)PowerType, value);
-			}
+			get { return GetInt32(UnitFields.MAXPOWER1 + (int)PowerType); }
+			internal set { SetInt32(UnitFields.MAXPOWER1 + (int)PowerType, value); }
 		}
 
 		#region Power Types

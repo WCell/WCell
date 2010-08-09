@@ -38,9 +38,9 @@ namespace WCell.RealmServer.Handlers
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
-		/// Delay (in seconds) to wait until a new zone is considered as discovered
+		/// Delay (in seconds) to wait until a new zone is considered as discovered (Default: 3s)
 		/// </summary>
-		public static float ZoneUpdateDelay = 3f;
+		public static int ZoneUpdateDelayMillis = 3000;
 
 		/// <summary>
 		/// Whether to notify everyone on the server when players log in/out
@@ -744,7 +744,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendCorpseReclaimDelay(IPacketReceiver client, uint millis)
+		public static void SendCorpseReclaimDelay(IPacketReceiver client, int millis)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_CORPSE_RECLAIM_DELAY, 4))
 			{

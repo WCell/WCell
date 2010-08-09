@@ -637,7 +637,7 @@ namespace WCell.RealmServer.Items
 			}
 			
 			m_owner.RemoveOwnedItem(item);
-			m_owner.QuestLog.OnItemAmountChanged(item, -(int) item.Amount);
+			m_owner.QuestLog.OnItemAmountChanged(item, -item.Amount);
 			RemoveItemUniqueCount(item);
 		}
 

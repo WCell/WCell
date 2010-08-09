@@ -13,8 +13,8 @@ namespace WCell.Core.Timers
 		/// <summary>
 		/// Updates the object.
 		/// </summary>
-		/// <param name="dt">the time since the last update in seconds</param>
-		void Update(float dt);
+		/// <param name="dt">the time since the last update in millis</param>
+		void Update(int dt);
 	}
 
 	/// <summary>
@@ -44,7 +44,7 @@ namespace WCell.Core.Timers
 
 		#region IUpdatable Members
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			Callback();
 		}

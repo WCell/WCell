@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Spells.Effects
 				else if (Effect.Spell.Durations.Min > 0)
 				{
 					// not channelled: Activate decay delay
-					GO.RemainingDecayDelay = Effect.Spell.Durations.Random();
+					GO.RemainingDecayDelayMillis = Effect.Spell.Durations.Random();
 				}
 			}
 			else

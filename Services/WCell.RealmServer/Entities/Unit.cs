@@ -88,11 +88,6 @@ namespace WCell.RealmServer.Entities
 		/// Indicates whether regeneration of Health and Power is currently activated
 		/// </summary>
 		protected bool m_regenerates;
-		/// <summary>
-		/// The delay in seconds between 2 Regeneration-ticks
-		/// </summary>
-		protected float m_RegenerationDelay;
-		protected TimerEntry m_regenTimer;
 
 		/// <summary>
 		/// Flat, school-specific PowerCostMods
@@ -125,7 +120,7 @@ namespace WCell.RealmServer.Entities
 
 			// combat
 			m_isInCombat = false;
-			m_attackTimer = new TimerEntry(0.0f, 0.0f, CombatTick);
+			m_attackTimer = new TimerEntry(CombatTick);
 
 			CastSpeedFactor = 1f;
 
@@ -561,25 +556,18 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool Regenerates
 		{
-			get
-			{
-				return m_regenerates;
-			}
+			get{return m_regenerates;}
 			set
 			{
 				if (value != m_regenerates)
 				{
 					if (m_regenerates = value)
 					{
+						this.UpdatePowerRegen();
 						UnitFlags2 |= UnitFlags2.RegeneratePower;
-						if (IsRegenerating)
-						{
-							m_regenTimer.Start();
-						}
 					}
 					else
 					{
-						m_regenTimer.Stop();
 						UnitFlags2 ^= UnitFlags2.RegeneratePower;
 					}
 				}
@@ -592,23 +580,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// The delay between 2 Regeneration ticks in seconds.
-		/// </summary>
-		public float RegenerationDelay
-		{
-			get { return m_RegenerationDelay; }
-			set
-			{
-				if (m_RegenerationDelay != value && m_regenTimer != null)
-				{
-					m_RegenerationDelay = value;
-					m_regenTimer.Start();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Mana regen is in the "interrupted" state for Spell-Casters 5 seconds after a SpellCast and during SpellChanneling
+		/// Mana regen is in the "interrupted" state for Spell-Casters 5 seconds after a SpellCast and during SpellChanneling.
+		/// See http://www.wowwiki.com/Mana_regeneration#Five-Second_Rule
 		/// </summary>
 		public bool IsManaRegenInterrupted
 		{
@@ -632,16 +605,15 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_PowerRegenPerTick != value)
 				{
-					Power += 0;	// update Power before updating the regeneration
 					m_PowerRegenPerTick = value;
 					SetFloat(UnitFields.POWER_REGEN_FLAT_MODIFIER + (int)PowerType, value);
 				}
 			}
 		}
 
-		public float PowerRegenPerSecond
+		public float PowerRegenPerMillis
 		{
-			get { return m_PowerRegenPerTick / m_RegenerationDelay; }
+			get { return m_PowerRegenPerTick / (float)PowerFormulas.RegenTickDelayMillis; }
 		}
 
 		/// <summary>
@@ -672,21 +644,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Initializes the regeneration-timers.
-		/// Gets called automatically for default NPCs.
-		/// </summary>
-		public void InitializeRegeneration()
-		{
-			this.UpdatePowerRegen();
-			m_RegenerationDelay = PowerFormulas.RegenTickDelaySeconds;
-			m_regenTimer = new TimerEntry(0.0f, m_RegenerationDelay, Regenerate);
-			Regenerates = true;
-		}
-
-		/// <summary>
 		/// Is called on Regeneration ticks
 		/// </summary>
-		protected void Regenerate(float timeElapsed)
+		protected void Regenerate(int dt)
 		{
 			if (!IsRegenerating)
 			{
@@ -723,16 +683,12 @@ namespace WCell.RealmServer.Entities
 
 
 			// Power is interpolated automagically
-			MiscHandler.SendPowerUpdate(this, PowerType, Power);
+			UpdatePower(dt);
+		}
 
-			//if (Health == MaxHealth)
-			//{
-			//    // done regenerating?
-			//    var negativeRegen = PowerRegenPerTick < 0;
-			//    if ((!negativeRegen && Power == MaxPower) ||
-			//        negativeRegen && Power == 0)
-			//        m_regenTimer.Stop();
-			//}
+		public virtual int GetBasePowerRegen()
+		{
+			return 0;
 		}
 		#endregion
 
@@ -831,7 +787,7 @@ namespace WCell.RealmServer.Entities
 		#region Healing & Leeching & Burning
 		public int GetHealthPercent(int value)
 		{
-			return (value*MaxHealth + 50)/100;
+			return (value * MaxHealth + 50) / 100;
 		}
 
 		/// <summary>
@@ -853,7 +809,6 @@ namespace WCell.RealmServer.Entities
 		/// <param name="effect">The effect of the spell that triggered the healing (or null)</param>
 		public void Heal(int value, Unit healer = null, SpellEffect effect = null)
 		{
-			var critChance = 0f;
 			var crit = false;
 			int overheal = 0;
 
@@ -880,7 +835,7 @@ namespace WCell.RealmServer.Entities
 					value += (int)((oldVal * ((Character)this).HealingTakenModPct) / 100);
 				}
 
-				critChance = GetCritChance((DamageSchool)effect.Spell.Schools[0]) * 100;
+				var critChance = GetCritChance(effect.Spell.Schools[0]) * 100;
 
 				// do a critcheck
 				if (!effect.Spell.AttributesExB.HasFlag(SpellAttributesExB.CannotCrit) && critChance != 0)
@@ -912,7 +867,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var action = new HealAction
 				{
-					Attacker = (Unit)healer,
+					Attacker = healer,
 					Victim = this,
 					Spell = effect != null ? effect.Spell : null,
 					IsCritical = crit,
@@ -1036,7 +991,6 @@ namespace WCell.RealmServer.Entities
 		internal protected override void OnEnterRegion()
 		{
 			m_lastMoveTime = Environment.TickCount;
-			m_lastPowerUpdate = m_lastHealthUpdate = Region.CurrentTime;
 
 			if (Flying > 0)
 			{
@@ -1315,7 +1269,7 @@ namespace WCell.RealmServer.Entities
 
 			//taxi interpolation timer
 			taxiTime = 0;
-			m_TaxiMovementTimer = new TimerEntry(0, TaxiMgr.InterpolationDelay, TaxiTimerCallback);
+			m_TaxiMovementTimer = new TimerEntry(0, TaxiMgr.InterpolationDelayMillis, TaxiTimerCallback);
 			m_TaxiMovementTimer.Start();
 			IsEvading = true;
 		}
@@ -1340,7 +1294,7 @@ namespace WCell.RealmServer.Entities
 			get { return taxiTime; }
 		}
 
-		protected virtual void TaxiTimerCallback(float elapsedTime)
+		protected virtual void TaxiTimerCallback(int elapsedTime)
 		{
 			// if (!IsOnTaxi) return;
 			// if (TaxiPaths.Count < 1) return;
@@ -1534,7 +1488,7 @@ namespace WCell.RealmServer.Entities
 			var minion = entry.Create();
 			minion.Phase = Phase;
 			minion.Zone = Zone;
-			minion.RemainingDecayDelay = durationMillis;
+			minion.RemainingDecayDelayMillis = durationMillis;
 			minion.Brain.IsRunning = true;
 
 			if (Health > 0)
@@ -1595,7 +1549,7 @@ namespace WCell.RealmServer.Entities
 			if (durationMillis != 0)
 			{
 				// ReSharper disable PossibleLossOfFraction
-				minion.RemainingDecayDelay = durationMillis / 1000;
+				minion.RemainingDecayDelayMillis = durationMillis;
 				// ReSharper restore PossibleLossOfFraction
 			}
 		}
@@ -1810,11 +1764,6 @@ namespace WCell.RealmServer.Entities
 			{
 				OnTargetNull();
 				m_target = null;
-			}
-
-			if (m_regenTimer != null)
-			{
-				m_regenTimer.Dispose();
 			}
 
 			if (m_brain != null)

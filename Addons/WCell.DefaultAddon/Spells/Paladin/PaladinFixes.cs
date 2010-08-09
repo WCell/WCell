@@ -137,18 +137,21 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 		static void AddHolyShockSpell(SpellId spellid, SpellId heal, SpellId dmg)
 		{
-			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new HolyShockHandler(cast, effect, heal, dmg); }, spellid);
+			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new FriendFoeTriggerSpellHandler(cast, effect, heal, dmg); }, spellid);
 		}
 
-		public class HolyShockHandler : SpellEffectHandler
+		/// <summary>
+		/// Triggers a different spell, depending on whether the target is friendly or hostile
+		/// </summary>
+		public class FriendFoeTriggerSpellHandler : SpellEffectHandler
 		{
-			SpellId heal;
-			SpellId dmg;
-			public HolyShockHandler(SpellCast cast, SpellEffect eff, SpellId heal, SpellId dmg)
+			readonly SpellId beneficialSpell;
+			readonly SpellId harmfulSpell;
+			public FriendFoeTriggerSpellHandler(SpellCast cast, SpellEffect eff, SpellId beneficialSpell, SpellId harmfulSpell)
 				: base(cast, eff)
 			{
-				this.heal = heal;
-				this.dmg = dmg;
+				this.beneficialSpell = beneficialSpell;
+				this.harmfulSpell = harmfulSpell;
 			}
 
 			protected override void Apply(WorldObject target)
@@ -158,11 +161,11 @@ namespace WCell.Addons.Default.Spells.Paladin
 				{
 					if (chr.MayAttack(target))
 					{
-						chr.SpellCast.Trigger(dmg, target);
+						chr.SpellCast.Trigger(harmfulSpell, target);
 					}
 					else
 					{
-						chr.SpellCast.Trigger(heal, target);
+						chr.SpellCast.Trigger(beneficialSpell, target);
 					}
 				}
 			}

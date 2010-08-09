@@ -30,9 +30,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// below minimum in seconds
 		/// </summary>
 		[Variable("BGDefaultShutdownDelay")]
-		public static float DefaultShutdownDelay = 200;
-
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		public static int DefaultShutdownDelayMillis = 200000;
 
 		/// <summary>
 		/// Start the BG once this many % of players joined
@@ -41,7 +39,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public static uint StartPlayerPct = 80;
 
 		[Variable("BGUpdateQueueSeconds")]
-		public static uint UpdateQueueSeconds = 10;
+		public static int UpdateQueueMillis = 10000;
 
 		protected readonly BattlegroundTeam[] _teams;
 
@@ -139,7 +137,7 @@ namespace WCell.RealmServer.Battlegrounds
 			{
 				if (value)
 				{
-					RemainingShutdownDelay = DefaultShutdownDelay;
+					RemainingShutdownDelay = DefaultShutdownDelayMillis;
 				}
 				else
 				{
@@ -175,18 +173,18 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Preparation time of this BG
 		/// </summary>
-		public virtual float PreparationTimeSeconds
+		public virtual int PreparationTimeMillis
 		{
-			get { return 120; }
+			get { return 2 * 60 * 1000; }
 		}
 
 		/// <summary>
 		/// Time until shutdown.
 		/// Non-positive value cancels shutdown.
 		/// </summary>
-		public float RemainingShutdownDelay
+		public int RemainingShutdownDelay
 		{
-			get { return _shutdownTimer.RemainingInitialDelay; }
+			get { return _shutdownTimer.RemainingInitialDelayMillis; }
 			set
 			{
 				EnsureContext();
@@ -266,9 +264,9 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// Starts the shutdown timer with the given delay
 		/// </summary>
-		protected virtual void StartShutdown(float seconds)
+		protected virtual void StartShutdown(int millis)
 		{
-			_shutdownTimer.Start(seconds);
+			_shutdownTimer.Start(millis);
 
 			foreach (var chr in m_characters)
 			{
@@ -284,21 +282,21 @@ namespace WCell.RealmServer.Battlegrounds
 		public virtual void StartPreparation()
 		{
 			ExecuteInContext(() =>
-								{
-									_status = BattlegroundStatus.Preparing;
+			{
+				_status = BattlegroundStatus.Preparing;
 
-									if (_preparationSpell != null)
-									{
-										foreach (Character chr in m_characters)
-										{
-											chr.SpellCast.TriggerSelf(_preparationSpell);
-										}
-									}
+				if (_preparationSpell != null)
+				{
+					foreach (Character chr in m_characters)
+					{
+						chr.SpellCast.TriggerSelf(_preparationSpell);
+					}
+				}
 
-									CallDelayed(PreparationTimeSeconds / 2, () => { OnPrepareHalftime(); });
+				CallDelayed(PreparationTimeMillis / 2, OnPrepareHalftime);
 
-									OnPrepare();
-								});
+				OnPrepare();
+			});
 		}
 
 		public virtual void StartFight()
@@ -528,7 +526,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnPrepareHalftime()
 		{
-			CallDelayed(PreparationTimeSeconds / 2, () => { StartFight(); });
+			CallDelayed(PreparationTimeMillis / 2, StartFight);
 		}
 
 		protected virtual void OnPrepare()
@@ -558,7 +556,7 @@ namespace WCell.RealmServer.Battlegrounds
 			if (HasQueue)
 			{
 				_instanceQueue = new InstanceBattlegroundQueue(this);
-				_queueTimer.Start(0, UpdateQueueSeconds * 1000);
+				_queueTimer.Start(0, UpdateQueueMillis);
 			}
 
 			_teams[(int)BattlegroundSide.Alliance] = CreateAllianceTeam();

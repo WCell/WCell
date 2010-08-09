@@ -129,7 +129,19 @@ namespace WCell.Util
 			}
 		}
 
+		#region Times
+		public const int TicksPerSecond = 10000;
 		private const long TICKS_SINCE_1970 = 621355968000000000; // .NET ticks for 1970
+
+		public static int GetMilliSecondsInt(this DateTime time)
+		{
+			return (int)(time.Ticks / TicksPerSecond);
+		}
+
+		public static int GetMilliSecondsInt(this TimeSpan time)
+		{
+			return (int)(time.Ticks + TicksPerSecond/2) / TicksPerSecond;
+		}
 
 		/// <summary>
 		/// Gets the system uptime.
@@ -226,6 +238,7 @@ namespace WCell.Util
 		{
 			return (uint)((time.Ticks - TICKS_SINCE_1970) / 10000000L);
 		}
+		#endregion
 
 		/// <summary>
 		/// Reverses the contents of an array.

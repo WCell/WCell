@@ -30,13 +30,11 @@ namespace WCell.RealmServer.Taxi
 	/// </summary>
 	public static class TaxiMgr
 	{
-		private static Logger sLog = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
-		/// The delay in seconds between position updates of Units that are on Taxis.
+		/// The delay in millis between position updates of Units that are on Taxis.
 		/// </summary>
 		[Variable("TaxiInterpolationMillis")]
-		public static int InterpolationDelay = 400;
+		public static int InterpolationDelayMillis = 800;
 
 		private static int airSpeed = 32;
 
@@ -571,10 +569,10 @@ namespace WCell.RealmServer.Taxi
 		/// Interpolates the position of the given Unit along the Path given the elapsed flight time.
 		/// </summary>
 		/// <param name="elapsedTime">Time that elapsed since the given unit passed by the last PathVertex</param>
-		internal static void InterpolatePosition(Unit unit, float elapsedTime)
+		internal static void InterpolatePosition(Unit unit, int elapsedTime)
 		{
 			var latestNode = unit.LatestTaxiPathNode;
-			unit.taxiTime += InterpolationDelay;
+			unit.taxiTime += elapsedTime;
 
 			if (latestNode.Next == null)
 			{
@@ -585,6 +583,8 @@ namespace WCell.RealmServer.Taxi
 
 			while (latestNode.Next.Value.TimeFromStart <= unit.taxiTime)
 			{
+				// arrived at a node
+
 				//if (unit is Character)
 				//{
 				//    var chr = (Character) unit;

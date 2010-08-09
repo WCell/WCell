@@ -85,21 +85,23 @@ namespace WCell.RealmServer.Entities
 			GhostVisibilityRadius = 60f;
 		}
 
+		[Variable("CorpseMinReclaimDelayMillis")]
 		/// <summary>
 		/// The delay between last res and when the Character is allowed to claim his/her corpse again in millis (Default: 30 sec)
 		/// </summary>
-		public static uint MinReclaimDelay = 30 * 1000;
+		public static int MinReclaimDelay = 30 * 1000;
 
+		[Variable("CorpseAutoReleaseDelayMillis")]
 		/// <summary>
 		/// The delay between death and when the Character auto-revives in millis (Default: 6 min)
 		/// </summary>
-		public static uint AutoReleaseDelay = 60 * 6 * 1000;
+		public static int AutoReleaseDelay = 60 * 6 * 1000;
 
-		[Variable("BonesDecayTime")]
+		[Variable("BonesDecayTimeMillis")]
 		/// <summary>
 		/// Time before bones disappear in seconds (Default: 1 minute)
 		/// </summary>
-		public static float DecayTime = 60f;
+		public static int DecayTimeMillis = 60 * 1000;
 
 		public static readonly UpdateFieldCollection UpdateFieldInfos = UpdateFieldMgr.Get(ObjectTypeId.Corpse);
 
@@ -295,7 +297,7 @@ namespace WCell.RealmServer.Entities
 				RemoveItems();
 				//Flags = CorpseFlags.Bones;
 				DynamicFlags = CorpseDynamicFlags.None;
-				m_region.CallDelayed(DecayTime, Delete);
+				m_region.CallDelayed(DecayTimeMillis, Delete);
 			}
 			else
 			{

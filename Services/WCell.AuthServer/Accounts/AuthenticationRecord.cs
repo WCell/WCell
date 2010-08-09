@@ -13,7 +13,7 @@ namespace WCell.AuthServer.Accounts
 	/// </summary>
 	public class AuthenticationRecord
 	{
-		public static float AuthenticationStoreSeconds = 30;
+		public static int AuthenticationStoreMillis = 30000;
 
 		public readonly string AccName;
 		public readonly AuthenticationInfo AuthInfo;
@@ -28,7 +28,7 @@ namespace WCell.AuthServer.Accounts
 
 		internal void StartTimer()
 		{
-			m_timer = new TimerEntry(AuthenticationStoreSeconds, 0f, dl => Remove());
+			m_timer = new TimerEntry(AuthenticationStoreMillis, 0, dl => Remove());
 			m_timer.Start();
 			AuthenticationServer.Instance.RegisterUpdatable(m_timer);
 		}

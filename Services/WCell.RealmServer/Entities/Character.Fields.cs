@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 		/// Don't manipulate this collection.
 		/// </summary>
 		/// <remarks>Requires region context.</remarks>
-		public readonly HashSet<WorldObject> KnownObjects = new HashSet<WorldObject>();
+		internal HashSet<WorldObject> KnownObjects = WorldObjectSetPool.Obtain();
 
 		/// <summary>
 		/// All objects that are currently in BroadcastRadius of this Character.

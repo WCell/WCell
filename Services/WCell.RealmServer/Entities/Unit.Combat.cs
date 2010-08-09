@@ -878,7 +878,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Tries to land a mainhand hit + maybe offhand hit on the current Target
 		/// </summary>
-		protected virtual void CombatTick(float timeElapsed)
+		protected virtual void CombatTick(int timeElapsed)
 		{
 			// if currently casting a spell, skip this
 			if (IsUsingSpell && !m_spellCast.IsPending)
@@ -1031,7 +1031,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			m_attackTimer.Start(delay / 1000f);
+			m_attackTimer.Start(delay);
 		}
 
 		/// <summary>
@@ -1092,7 +1092,7 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// start
-				m_attackTimer.Start(delay / 1000f);
+				m_attackTimer.Start(delay);
 			}
 			else
 			{

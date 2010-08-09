@@ -230,7 +230,7 @@ namespace WCell.RealmServer.AI.Brains
 		/// Updates the AIAction by calling Perform. Called every tick by the Region
 		/// </summary>
 		/// <param name="dt">not used</param>
-		public virtual void Update(float dt)
+		public virtual void Update(int dt)
 		{
 			if (!m_IsRunning)
 				return;

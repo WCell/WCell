@@ -26,6 +26,25 @@
       <Value>Invalid selection.</Value>
     </Item>
 
+    <Item Key="Second">
+      <Value>Second</Value>
+    </Item>
+    <Item Key="Seconds">
+      <Value>Seconds</Value>
+    </Item>
+    <Item Key="Minute">
+      <Value>Minute</Value>
+    </Item>
+    <Item Key="Minutes">
+      <Value>Minutes</Value>
+    </Item>
+    <Item Key="Hour">
+      <Value>Hour</Value>
+    </Item>
+    <Item Key="Hours">
+      <Value>Hours</Value>
+    </Item>
+
     <Item Key="SubCommandNotFound">
       <Value>SubCommand not found: {0}</Value>
     </Item>

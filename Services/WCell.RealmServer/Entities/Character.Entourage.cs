@@ -477,14 +477,20 @@ namespace WCell.RealmServer.Entities
 					if (entry == null)
 					{
 						log.Warn("{0} has invalid PetEntryId: {1} ({2})", this, m_record.PetEntryId, (uint)m_record.PetEntryId);
-						return;
+
+						// put back for later (maybe NPCs were not loaded or loaded incorrectly):
+						AddPetRecord(activePetRecord);
 					}
-					SpawnActivePet(activePetRecord);
+					else
+					{
+						SpawnActivePet(activePetRecord);
+					}
 				}
 				else
 				{
 					// active Pet does not exist in DB
 					m_record.PetEntryId = 0;
+					m_record.IsPetActive = false;
 				}
 			}
 		}
@@ -501,6 +507,22 @@ namespace WCell.RealmServer.Entities
 				pet.Health = petSettings.PetHealth;
 				pet.Power = petSettings.PetPower;
 			});
+		}
+
+		void AddPetRecord(IPetRecord record)
+		{
+			if (record is SummonedPetRecord)
+			{
+				SummonedPetRecords.Add((SummonedPetRecord) record);
+			}
+			else if (record is PermanentPetRecord)
+			{
+				StabledPetRecords.Add((PermanentPetRecord)record);
+			}
+			else
+			{
+				log.Warn("Unclassified PetRecord: " + record);
+			}
 		}
 
 		internal void SaveEntourage()

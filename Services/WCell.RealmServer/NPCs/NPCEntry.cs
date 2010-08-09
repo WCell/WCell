@@ -605,7 +605,7 @@ namespace WCell.RealmServer.NPCs
 		/// The default decay delay in seconds.
 		/// </summary>
 		[NotPersistent]
-		public float DefaultDecayDelay;
+		public int DefaultDecayDelayMillis;
 
 		[NotPersistent]
 		public ResolvedLootItemList SkinningLoot;
@@ -626,19 +626,19 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// The default delay before removing the NPC after it died when not looted.
 		/// </summary>
-		float _DefaultDecayDelay
+		int _DefaultDecayDelayMillis
 		{
 			get
 			{
 				if (Rank == CreatureRank.Normal)
 				{
-					return NPCMgr.DecayDelayNormal;
+					return NPCMgr.DecayDelayNormalMillis;
 				}
 				if (Rank == CreatureRank.Rare)
 				{
-					return NPCMgr.DecayDelayRare;
+					return NPCMgr.DecayDelayRareMillis;
 				}
-				return NPCMgr.DecayDelayEpic;
+				return NPCMgr.DecayDelayEpicMillis;
 			}
 		}
 
@@ -706,7 +706,7 @@ namespace WCell.RealmServer.NPCs
 
 			NPCId = (NPCId)Id;
 
-			DefaultDecayDelay = _DefaultDecayDelay;
+			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
 			Family = NPCMgr.GetFamily(FamilyId);
 
 			if (Type == CreatureType.NotSpecified)

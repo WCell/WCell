@@ -240,7 +240,7 @@ namespace WCell.RealmServer.Entities
 			settings.PetEntryId = Entry.NPCId;
 			settings.PetHealth = Health;
 			settings.PetPower = Power;
-			settings.PetDuration = (int)(RemainingDecayDelay * 1000);
+			settings.PetDuration = RemainingDecayDelayMillis;
 			settings.PetSummonSpellId = CreationSpellId;
 
 			UpdateTalentSpellRecords();

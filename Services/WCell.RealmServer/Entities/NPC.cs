@@ -315,24 +315,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		/// <summary>
-		/// Uncontrolled NPCs that are not summoned can evade
-		/// </summary>
-		public bool CanEvade
-		{
-			get
-			{
-				return m_region.CanNPCsEvade &&
-					m_spawnPoint != null &&
-					(m_master == this || m_master == null);
-			}
-		}
-
-		public bool IsImmovable
-		{
-			get { return m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None; }
-		}
-
 		#region Properties
 		public NPCEntry Entry
 		{
@@ -351,7 +333,7 @@ namespace WCell.RealmServer.Entities
 				GenerateId(value.Id);
 				if (m_entry.Regenerates)
 				{
-					InitializeRegeneration();
+					Regenerates = true;
 					HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
 				}
 				m_name = m_entry.DefaultName;
@@ -376,6 +358,24 @@ namespace WCell.RealmServer.Entities
 		{
 			m_name = name;
 			PetNameTimestamp = timeStamp;
+		}
+
+		/// <summary>
+		/// Uncontrolled NPCs that are not summoned can evade
+		/// </summary>
+		public bool CanEvade
+		{
+			get
+			{
+				return m_region.CanNPCsEvade &&
+					m_spawnPoint != null &&
+					(m_master == this || m_master == null);
+			}
+		}
+
+		public bool IsImmovable
+		{
+			get { return m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None; }
 		}
 
 		public override UpdatePriority UpdatePriority
@@ -498,7 +498,7 @@ namespace WCell.RealmServer.Entities
 				}
 				else if (value && !IsDecaying)
 				{
-					RemainingDecayDelay = m_entry.DefaultDecayDelay;
+					RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
 				}
 			}
 		}
@@ -509,15 +509,15 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Remaining time until the NPC decay (or 0.0f if already decaying or if decaying was not initialized yet).
+		/// Remaining time until the NPC decay (or 0 if already decayed or decaying did not start yet).
 		/// Deactivates the timer if set to a value smaller or equal to 0
 		/// </summary>
 		/// <remarks>Requires region-context</remarks>
-		public float RemainingDecayDelay
+		public int RemainingDecayDelayMillis
 		{
 			get
 			{
-				return m_decayTimer != null ? m_decayTimer.RemainingInitialDelay : 0;
+				return m_decayTimer != null ? m_decayTimer.RemainingInitialDelayMillis : 0;
 			}
 			set
 			{
@@ -527,8 +527,11 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					m_decayTimer = new TimerEntry(DecayNow);
-					m_decayTimer.Start(value, 0);
+					if (m_decayTimer == null)
+					{
+						m_decayTimer = new TimerEntry(DecayNow);
+					}
+					m_decayTimer.Start(value);
 				}
 			}
 		}
@@ -548,7 +551,6 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region NPC-specific Fields
-
 		public override uint DisplayId
 		{
 			get { return base.DisplayId; }
@@ -876,25 +878,6 @@ namespace WCell.RealmServer.Entities
 			return minion;
 		}
 
-		public override uint GetLootId(LootEntryType lootType)
-		{
-			switch (lootType)
-			{
-				case LootEntryType.NPCCorpse:
-					return m_entry.LootId;
-				case LootEntryType.Skinning:
-					return m_entry.SkinLootId;
-				case LootEntryType.PickPocketing:
-					return m_entry.PickPocketLootId;
-			}
-			return 0;
-		}
-
-		public override bool UseGroupLoot
-		{
-			get { return true; }
-		}
-
 		#region Death
 		protected override bool OnBeforeDeath()
 		{
@@ -916,7 +899,7 @@ namespace WCell.RealmServer.Entities
 
 			// reset spawn timer
 			if (m_spawnPoint != null)
-			{	
+			{
 				m_spawnPoint.SignalSpawnlingDied(this);
 			}
 
@@ -1093,11 +1076,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override void OnFinishedLooting()
-		{
-			EnterFinalState();
-		}
-
 		public bool CanInteractWith(Character chr)
 		{
 			if (chr.Region != m_region ||
@@ -1141,7 +1119,7 @@ namespace WCell.RealmServer.Entities
 		private void EnterLootableState()
 		{
 			FirstAttacker = null;
-			RemainingDecayDelay = m_entry.DefaultDecayDelay * 2;
+			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis * 2;
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
@@ -1151,7 +1129,7 @@ namespace WCell.RealmServer.Entities
 		private void EnterFinalState()
 		{
 			FirstAttacker = null;
-			RemainingDecayDelay = m_entry.DefaultDecayDelay;
+			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
 			if (m_entry.SkinningLoot != null)
 			{
 				UnitFlags |= UnitFlags.Skinnable;
@@ -1166,7 +1144,7 @@ namespace WCell.RealmServer.Entities
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
-		void DecayNow(float delay)
+		void DecayNow(int delay)
 		{
 			//if (IsAlive && m_master != null && !IsSummoned)
 			//{
@@ -1219,8 +1197,6 @@ namespace WCell.RealmServer.Entities
 		protected override void OnLeaveCombat()
 		{
 			base.OnLeaveCombat();
-
-			InitializeRegeneration();
 		}
 		#endregion
 
@@ -1587,7 +1563,46 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override void Update(float dt)
+		#region Loot
+		public override uint GetLootId(LootEntryType lootType)
+		{
+			switch (lootType)
+			{
+				case LootEntryType.NPCCorpse:
+					return m_entry.LootId;
+				case LootEntryType.Skinning:
+					return m_entry.SkinLootId;
+				case LootEntryType.PickPocketing:
+					return m_entry.PickPocketLootId;
+			}
+			return 0;
+		}
+
+		public override bool UseGroupLoot
+		{
+			get { return true; }
+		}
+
+		public override void OnFinishedLooting()
+		{
+			EnterFinalState();
+		}
+		#endregion
+
+		public override int GetBasePowerRegen()
+		{
+			if (IsOwnedByPlayer)
+			{
+				return PowerFormulas.GetPowerRegen(this);
+			}
+			else
+			{
+				// TODO: NPC power regen
+				return BasePower / 50;
+			}
+		}
+
+		public override void Update(int dt)
 		{
 			if (m_decayTimer != null)
 			{

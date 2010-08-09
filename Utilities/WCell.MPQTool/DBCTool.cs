@@ -20,6 +20,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 //using MpqReader;
+using WCell.Constants;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
 
@@ -217,7 +218,7 @@ namespace WCell.MPQTool
 				if (checkClient)
 				{
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine("Required Client Version: " + Config.RequiredClientVersion);
+					Console.WriteLine("Required Client Version: " + WCellInfo.RequiredVersion.BasicString);
 					Console.ResetColor();
 				}
 				Console.WriteLine();
@@ -273,7 +274,7 @@ namespace WCell.MPQTool
 					{
 						Console.ForegroundColor = ConsoleColor.Red;
 						Console.WriteLine();
-						Console.WriteLine("Please make sure that you were exporting from Client v" + Config.RequiredClientVersion);
+						Console.WriteLine("Please make sure that you were exporting from Client v" + WCellInfo.RequiredVersion.BasicString);
 					}
 					Console.ResetColor();
 				}
@@ -419,7 +420,7 @@ namespace WCell.MPQTool
         {
             var config = Config.Instance;
 
-            DBCDir = Config.DBCDir;
+            DBCDir = Config.DBCDirPrefix;
             DefaultDBCOutputDir = Config.DefaultDBCOutputDir;
             DBCOutputDir = DefaultDBCOutputDir;
         }

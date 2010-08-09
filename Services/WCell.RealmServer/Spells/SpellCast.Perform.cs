@@ -217,7 +217,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Perform
-		private void Perform(float elapsed)
+		private void Perform(int elapsed)
 		{
 			CheckCasterValidity();
 			Perform();

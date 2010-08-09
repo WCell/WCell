@@ -159,7 +159,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal void UpdateEnvironment(HashSet<WorldObject> updatedObjects)
 		{
-			var toRemove = new HashSet<WorldObject>();
+			var toRemove = WorldObjectSetPool.Obtain();
 			toRemove.AddRange(KnownObjects);
 
 			NearbyObjects.Clear();
@@ -269,6 +269,9 @@ namespace WCell.RealmServer.Entities
 			{
 				UpdateRestState();
 			}
+
+			toRemove.Clear();
+			WorldObjectSetPool.Recycle(toRemove);
 		}
 
 		void UpdateRestState()
@@ -396,7 +399,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region IUpdatable
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 
