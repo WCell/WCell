@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants.Spells;
@@ -316,27 +317,27 @@ namespace WCell.RealmServer.Spells
 		[Initialization(InitializationPass.First, "Initialize Spells")]
 		public static void LoadSpells()
 		{
-			InitEffectHandlers();
-			LoadOtherDBCs();
-
 			LoadSpells(false);
-			SkillHandler.Initialize();
-			TalentMgr.Initialize();
-
-			SpellLines.InitSpellLines();
 		}
 
 		public static void LoadSpells(bool init)
 		{
-			SpellEffect.InitMiscValueTypes();
 			if (!loaded)
 			{
+				InitEffectHandlers();
+				LoadOtherDBCs();
+
+				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
 				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
 				ContentHandler.Load<SpellLearnRelation>();
 				InitSummonHandlers();
+				SkillHandler.Initialize();
+				TalentMgr.Initialize();
+
+				SpellLines.InitSpellLines();
 			}
 
 			if (init)
@@ -456,7 +457,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.PersistantAreaAura] = (cast, effect) => new PersistantAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Summon] = (cast, effect) => new SummonEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Energize] = (cast, effect) => new EnergizeEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponPercentDamageEffectHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.OpenLock] = (cast, effect) => new OpenLockEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyAreaAura] = (cast, effect) => new ApplyAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyGroupAura] = (cast, effect) => new ApplyAreaAura2EffectHandler(cast, effect);

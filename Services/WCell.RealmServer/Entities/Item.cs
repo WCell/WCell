@@ -41,7 +41,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal bool m_unknown;
 
-		protected Character m_owningCharacter;
+		protected internal Character m_owner;
 		protected BaseInventory m_container;
 		protected ItemEnchantment[] m_enchantments;
 		protected IProcHandler m_hitProc;
@@ -324,7 +324,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public Unit Owner
 		{
-			get { return m_owningCharacter; }
+			get { return m_owner; }
 		}
 
 		/// <summary>
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_container == m_owningCharacter.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
+				return m_container == m_owner.Inventory && m_record.Slot <= (int)InventorySlot.BagLast;
 			}
 		}
 
@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				if (m_container != null)
-					return m_container == m_owningCharacter.Inventory && m_record.Slot < (int)InventorySlot.Bag1;
+					return m_container == m_owner.Inventory && m_record.Slot < (int)InventorySlot.Bag1;
 				else
 					return false;
 			}
@@ -358,7 +358,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsEquippedContainer
 		{
-			get { return m_container == m_owningCharacter.Inventory && ItemMgr.ContainerSlotsWithBank[Slot]; }
+			get { return m_container == m_owner.Inventory && ItemMgr.ContainerSlotsWithBank[Slot]; }
 		}
 
 		/// <summary>
@@ -376,7 +376,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_record.Slot >= (int)InventorySlot.BuyBack1 &&
 					   m_record.Slot <= (int)InventorySlot.BuyBackLast &&
-					   m_container == m_owningCharacter.Inventory;
+					   m_container == m_owner.Inventory;
 			}
 		}
 
@@ -398,7 +398,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// The container information was updated during the container's add function
-			m_owningCharacter = m_container.Owner;
+			m_owner = m_container.Owner;
 		}
 
 		/// <summary>
@@ -870,9 +870,9 @@ namespace WCell.RealmServer.Entities
 						if (IsEquipped)
 						{
 							// check uniqueness
-							if (!m_owningCharacter.Inventory.CheckEquippedGems(gem.Template))
+							if (!m_owner.Inventory.CheckEquippedGems(gem.Template))
 							{
-								ItemHandler.SendInventoryError(m_owningCharacter, this, null, InventoryError.ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
+								ItemHandler.SendInventoryError(m_owner, this, null, InventoryError.ITEM_MAX_COUNT_EQUIPPED_SOCKETED);
 								return false;
 							}
 						}
@@ -929,12 +929,12 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public InventoryError Equip()
 		{
-			return m_owningCharacter.Inventory.TryEquip(m_container, Slot);
+			return m_owner.Inventory.TryEquip(m_container, Slot);
 		}
 
 		public bool Unequip()
 		{
-			var inv = m_owningCharacter.Inventory;
+			var inv = m_owner.Inventory;
 			var slotId = inv.FindFreeSlot(this, Amount);
 			if (slotId.Slot == BaseInventory.INVALID_SLOT)
 			{
@@ -979,13 +979,13 @@ namespace WCell.RealmServer.Entities
 				switch (slot)
 				{
 					case InventorySlot.MainHand:
-						m_owningCharacter.MainWeapon = this;
+						m_owner.MainWeapon = this;
 						return;
 					case InventorySlot.OffHand:
-						m_owningCharacter.OffHandWeapon = this;
+						m_owner.OffHandWeapon = this;
 						return;
 					case InventorySlot.ExtraWeapon:
-						m_owningCharacter.RangedWeapon = this;
+						m_owner.RangedWeapon = this;
 						return;
 				}
 			}
@@ -1000,13 +1000,13 @@ namespace WCell.RealmServer.Entities
 				switch (slot)
 				{
 					case InventorySlot.MainHand:
-						m_owningCharacter.MainWeapon = null;
+						m_owner.MainWeapon = null;
 						return;
 					case InventorySlot.OffHand:
-						m_owningCharacter.OffHandWeapon = null;
+						m_owner.OffHandWeapon = null;
 						return;
 					case InventorySlot.ExtraWeapon:
-						m_owningCharacter.RangedWeapon = null;
+						m_owner.RangedWeapon = null;
 						return;
 				}
 			}
@@ -1104,10 +1104,10 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			m_owningCharacter.PlayerAuras.OnEquip(this);
-			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			m_owner.PlayerAuras.OnEquip(this);
+			if (m_owner.Inventory.m_ItemEquipmentEventHandlers != null)
 			{
-				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				foreach (var handler in m_owner.Inventory.m_ItemEquipmentEventHandlers)
 				{
 					handler.OnEquip(this);
 				}
@@ -1125,12 +1125,11 @@ namespace WCell.RealmServer.Entities
 			if (!IsApplied) return;
 			IsApplied = false;
 
-			var chr = OwningCharacter;
 			if (!m_template.IsAmmo)
 			{
-				chr.SetVisibleItem(slot, null);
+				m_owner.SetVisibleItem(slot, null);
 			}
-			m_template.RemoveStatMods(chr);
+			m_template.RemoveStatMods(m_owner);
 
 			// remove triggered buffs
 			if (m_template.EquipSpells != null)
@@ -1139,7 +1138,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (spell.IsAura)
 					{
-						chr.Auras.Cancel(spell);
+						m_owner.Auras.Cancel(spell);
 					}
 				}
 			}
@@ -1149,7 +1148,7 @@ namespace WCell.RealmServer.Entities
 			{
 				foreach (var spell in m_template.HitSpells)
 				{
-					chr.RemoveProcHandler(spell.SpellId);
+					m_owner.RemoveProcHandler(spell.SpellId);
 				}
 			}
 
@@ -1159,7 +1158,7 @@ namespace WCell.RealmServer.Entities
 				var res = m_template.Resistances[i];
 				if (res > 0)
 				{
-					chr.ModBaseResistance((DamageSchool)i, -res);
+					m_owner.ModBaseResistance((DamageSchool)i, -res);
 				}
 			}
 
@@ -1167,25 +1166,25 @@ namespace WCell.RealmServer.Entities
 			if (slot == InventorySlot.Invalid)
 			{
 				// ammo
-				chr.UpdateRangedDamage();
+				m_owner.UpdateRangedDamage();
 			}
 
 			// block rating
 			else if (m_template.InventorySlotType == InventorySlotType.Shield)
 			{
-				chr.UpdateBlockChance();
+				m_owner.UpdateBlockChance();
 			}
 
 			// set boni
 			if (m_template.Set != null)
 			{
-				var setCount = chr.Inventory.GetSetCount(m_template.Set);
+				var setCount = m_owner.Inventory.GetSetCount(m_template.Set);
 				var boni = m_template.Set.Boni.Get(setCount - 1);
 				if (boni != null)
 				{
 					foreach (var bonus in boni)
 					{
-						var aura = chr.Auras[bonus, true];
+						var aura = m_owner.Auras[bonus, true];
 						if (aura != null)
 						{
 							aura.Remove(false);
@@ -1209,14 +1208,14 @@ namespace WCell.RealmServer.Entities
 			// hit proc
 			if (m_hitProc != null)
 			{
-				m_owningCharacter.RemoveProcHandler(m_hitProc);
+				m_owner.RemoveProcHandler(m_hitProc);
 				m_hitProc = null;
 			}
 
-			m_owningCharacter.PlayerAuras.OnBeforeUnEquip(this);
-			if (m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers != null)
+			m_owner.PlayerAuras.OnBeforeUnEquip(this);
+			if (m_owner.Inventory.m_ItemEquipmentEventHandlers != null)
 			{
-				foreach (var handler in m_owningCharacter.Inventory.m_ItemEquipmentEventHandlers)
+				foreach (var handler in m_owner.Inventory.m_ItemEquipmentEventHandlers)
 				{
 					handler.OnBeforeUnEquip(this);
 				}
@@ -1287,11 +1286,6 @@ namespace WCell.RealmServer.Entities
 				m_record.OwnerId = 0;
 				m_record = null;
 
-				if (m_owningCharacter != null)
-				{
-					m_owningCharacter.RemoveOwnedObject(this);
-					m_owningCharacter = null;
-				}
 				Dispose();
 			}
 		}
@@ -1321,13 +1315,13 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanGiveQuestTo(Character chr)
 		{
-			return m_owningCharacter == chr;
+			return m_owner == chr;
 		}
 		#endregion
 
 		public override void Dispose(bool disposing)
 		{
-			m_owningCharacter = null;
+			m_owner = null;
 			m_isInWorld = false;
 			IsDeleted = true;
 		}

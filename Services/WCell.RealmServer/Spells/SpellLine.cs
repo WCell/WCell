@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Spells
 
 		public string Name
 		{
-			get { return GetSpellLineName(m_firstSpell); }
+			get { return LineId.ToString(); }
 		}
 
 		public ClassId ClassId
@@ -101,31 +101,6 @@ namespace WCell.RealmServer.Spells
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
-		}
-
-		public static SpellLineId GetSpellLineId(Spell spell)
-		{
-			return EnumUtil.Parse<SpellLineId>(GetSpellLineName(spell));
-		}
-
-		public static string GetSpellLineName(Spell spell)
-		{
-			var name = spell.SpellId.ToString().Replace("ClassSkill", "").Replace("Rank", "");
-
-			var len = name.Length;
-
-			char c;
-			while (Char.IsDigit(c = name[len - 1]) || c == '_')
-			{
-				len--;
-			}
-
-			name = name.Substring(0, len);
-			if (spell.ClassId != 0 && !name.StartsWith(spell.ClassId.ToString()))
-			{
-				name = spell.ClassId + name;
-			}
-			return name;
 		}
 
 		public override string ToString()

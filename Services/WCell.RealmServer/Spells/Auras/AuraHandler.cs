@@ -143,6 +143,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModManaRegenInterrupt] = () => new ModManaRegenInterruptHandler();
 			EffectHandlers[(int)AuraType.ModHealingDonePct] = () => new ModHealingDonePctHandler();
 			EffectHandlers[(int)AuraType.ModHaste] = () => new ModHasteHandler();
+			EffectHandlers[(int)AuraType.ModHastePercent] = () => new ModHastePercentHandler();
+			EffectHandlers[(int)AuraType.ModMeleeHastePercent] = () => new ModMeleeHastePercentHandler();
 			EffectHandlers[(int)AuraType.ModSpecificCombatRating] = () => new ModCombatRatingStat();
 			EffectHandlers[(int)AuraType.ModBaseResistancePercent] = () => new ModBaseResistancePercentHandler();
 			EffectHandlers[(int)AuraType.ModResistanceExclusive] = () => new ModResistanceExclusiveHandler();
@@ -153,7 +155,6 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.PowerBurn] = () => new PowerBurnHandler();
 			EffectHandlers[(int)AuraType.ModDebuffResistancePercent] = () => new ModDebuffResistancePercentHandler();
 			EffectHandlers[(int)AuraType.ModRating] = () => new ModRatingHandler();
-			EffectHandlers[(int)AuraType.ModHastePct] = () => new ModHastePctHandler();
 			EffectHandlers[(int)AuraType.ModAllCooldownDuration] = () => new ModAllCooldownDurationHandler();
 			EffectHandlers[(int)AuraType.ModAttackerCritChancePercent] = () => new ModAttackerCritChancePercentHandler();
 			EffectHandlers[(int)AuraType.Fly] = () => new FlyHandler();

@@ -1202,7 +1202,8 @@ namespace WCell.RealmServer.Database
 				RelationMgr.Instance.RemoveRelations(charId);
 				InstanceMgr.RemoveLog(charId);
 				GroupMgr.Instance.RemoveOfflineCharacter(charId);
-				AchievementRecord.DeleteAll("_characterGuid = " + charId);
+				AchievementRecord.DeleteAll("CharacterId = " + charId);
+				AchievementProgressRecord.DeleteAll("CharacterId = " + charId);
 
 				return true;
 			}

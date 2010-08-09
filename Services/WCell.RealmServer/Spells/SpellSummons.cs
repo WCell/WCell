@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var npc = base.Summon(cast, ref targetLoc, entry);
-			npc.MayMove = false;
+			npc.HasOwnerPermissionToMove = false;
 			return npc;
 		}
 	}
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var npc = entry.Create(cast.Map, targetLoc);
-			npc.RemainingDecayDelay = cast.Spell.GetDuration(cast.CasterReference);
+			npc.RemainingDecayDelayMillis = cast.Spell.GetDuration(cast.CasterReference);
 			npc.Creator = cast.CasterReference.EntityId;	// should be right
 			return npc;
 		}

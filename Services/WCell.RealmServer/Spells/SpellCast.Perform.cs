@@ -37,7 +37,6 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected SpellFailedReason InitHandlers()
 		{
-			SpellTargetCollection targets;
 			var failReason = SpellFailedReason.Ok;
 
 			if (m_targets == null)
@@ -50,6 +49,7 @@ namespace WCell.RealmServer.Spells
 			//var hasExtraEffects = extraEffects != null;
 			var handlers = new SpellEffectHandler[m_spell.EffectHandlerCount];// + (hasExtraEffects ? extraEffects.Count : 0)];
 			var h = 0;
+			SpellTargetCollection targets = null;
 			foreach (var effect in m_spell.Effects)
 			{
 				if (effect.SpellEffectHandlerCreator == null)
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Spells
 					continue;
 				}
 
-				InitHandler(effect, h, handlers, out targets, ref failReason);
+				CreateHandler(effect, h, handlers, ref targets, ref failReason);
 				if (failReason != SpellFailedReason.Ok)
 				{
 					return failReason;
@@ -82,40 +82,89 @@ namespace WCell.RealmServer.Spells
 			//    }
 			//}
 
-			// Initialize Targets
-			for (var i = 0; i < h; i++)
-			{
-				var handler = handlers[i];
-				if (handler.Targets != null)
-				{
-					var handlerTargets = handler.Targets;
-					// find all targets and init
-					if (m_initialTargets == null || m_initialTargets.Length == 0)
-					{
-						// only search if we don't have initial targets
-						if ((failReason = handlerTargets.FindAllTargets()) != SpellFailedReason.Ok)
-						{
-							return failReason;
-						}
-					}
-
-					foreach (var target in handlerTargets)
-					{
-						m_targets.Add(target);
-					}
-				}
-			}
 			if (failReason == SpellFailedReason.Ok)
 			{
 				m_handlers = handlers;
+
+				// initialize handlers
+				foreach (var handler in m_handlers)
+				{
+					handler.Initialize(ref failReason);
+					if (failReason != SpellFailedReason.Ok)
+					{
+						m_handlers = null;
+						return failReason;
+					}
+				}
+
+				// initialize targets
+				foreach (var handler in m_handlers)
+				{
+					if (m_initialTargets != null)
+					{
+						// initialize forced targets
+						for (var j = 0; j < m_initialTargets.Length; j++)
+						{
+							var target = m_initialTargets[j];
+							if (target.IsInContext)
+							{
+								// must call ValidateTarget anyway
+								var err = handler.ValidateTarget(target);
+								if (err != SpellFailedReason.Ok)
+								{
+									LogManager.GetCurrentClassLogger().Warn(
+										"{0} tried to cast spell \"{1}\" with forced target {2} which is not valid: {3}",
+										CasterObject, Spell, target, err);
+									if (!IsAoE)
+									{
+										m_handlers = null;
+										return err;
+									}
+								}
+								else if (handler.m_targets != null)
+								{
+									handler.m_targets.Add(target);
+								}
+								m_targets.Add(target);
+							}
+							else if (target.IsInWorld)
+							{
+								LogManager.GetCurrentClassLogger().Warn(
+									"{0} tried to cast spell \"{1}\" with forced target {2} which is not in context",
+									CasterObject, Spell, target);
+							}
+						}
+					}
+					else
+					{
+						// Initialize standard Targets
+						if (handler.m_targets != null)
+						{
+							var handlerTargets = handler.m_targets;
+
+							if (!handlerTargets.IsInitialized)
+							{
+								// find all targets and initialize them
+								if ((failReason = handlerTargets.FindAllTargets()) != SpellFailedReason.Ok)
+								{
+									return failReason;
+								}
+							}
+
+							foreach (var target in handlerTargets)
+							{
+								m_targets.Add(target);
+							}
+						}
+					}
+				}
 			}
+
 			return failReason;
 		}
 
-		private void InitHandler(SpellEffect effect, int h, SpellEffectHandler[] handlers, out SpellTargetCollection targets, ref SpellFailedReason failReason)
+		private void CreateHandler(SpellEffect effect, int h, SpellEffectHandler[] handlers, ref SpellTargetCollection targets, ref SpellFailedReason failReason)
 		{
-			targets = null;
-
 			var handler = effect.SpellEffectHandlerCreator(this, effect);
 			handlers[h] = handler;
 
@@ -126,48 +175,27 @@ namespace WCell.RealmServer.Spells
 				return;
 			}
 
-			handler.Initialize(ref failReason);
-			if (failReason != SpellFailedReason.Ok)
-			{
-				return;
-			}
-
 			// find targets and amount SpellTargetCollection if effects have same ImplicitTargetTypes
 			if (m_initialTargets != null)
 			{
 				// do we have given targets?
 				//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
-				targets = new SpellTargetCollection();
-				for (var j = 0; j < m_initialTargets.Length; j++)
+				if (targets == null)
 				{
-					var target = m_initialTargets[j];
-					if (target.IsInWorld)
-					{
-						var err = handler.InitializeTarget(target);
-						if (err != SpellFailedReason.Ok)
-						{
-							if (!IsAoE)
-							{
-								failReason = err;
-								return;
-							}
-						}
-						else
-						{
-							targets.Add(target);
-						}
-					}
+					targets = new SpellTargetCollection();
 				}
 			}
 			else if (handler.HasOwnTargets)
 			{
+				targets = null;
+
 				// check if we have same target-types, else collect targets specifically for this Effect
 				for (var j = 0; j < h; j++)
 				{
 					var handler2 = handlers[j];
 					if (handler.Effect.TargetsEqual(handler2.Effect))
 					{
-						targets = handler2.Targets;
+						targets = handler2.m_targets;
 						break;
 					}
 				}
@@ -181,7 +209,7 @@ namespace WCell.RealmServer.Spells
 
 			if (targets != null)
 			{
-				handler.Targets = targets;
+				handler.m_targets = targets;
 				targets.m_handlers.Add(handler);
 			}
 		}
@@ -189,7 +217,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Perform
-		private void Perform(float elapsed)
+		private void Perform(int elapsed)
 		{
 			CheckCasterValidity();
 			Perform();
@@ -509,7 +537,7 @@ namespace WCell.RealmServer.Spells
 				{
 					if (target is Unit)
 					{
-						((Unit) CasterObject).Strike(GetWeapon(), (Unit)target, this);
+						((Unit)CasterObject).Strike(GetWeapon(), (Unit)target, this);
 					}
 				}
 			}

@@ -13,6 +13,7 @@ using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
 
 namespace WCell.Addons.Default.Battlegrounds.AlteracValley
@@ -72,34 +73,25 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
         protected override void OnFinish(bool disposing)
         {
-            base.OnFinish(disposing);
-            foreach (var character in Characters)
-            {
-                character.SendSystemMessage("The battle has ended!");
-            }
+        	base.OnFinish(disposing);
+        	Characters.SendSystemMessage("The battle has ended!");
         }
-        protected override void OnPrepareHalftime()
+
+		protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            var msg = "The battle for Alterac Valley begins in " + PreparationTimeSeconds / 2f + " seconds.";
-            Characters.SendSystemMessage(msg);
+
+			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
+			Characters.SendSystemMessage("The battle for Alterac Valley begins in {0}.", time);
         }
 
 
         protected override void OnPrepare()
         {
             base.OnPrepare();
-            var msg = "The battle for Alterac Valley begins in ";
-            if ((int)PreparationTimeSeconds / 60 < 1)
-            {
-                msg += (int)PreparationTimeSeconds + " seconds.";
-            }
-            else
-            {
-                msg += PreparationTimeSeconds / 60f + (int)PreparationTimeSeconds / 60 == 1 ? "minute." : "minutes.";
-            }
 
-            Characters.SendSystemMessage(msg);
+			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
+			Characters.SendSystemMessage("The battle for Alterac Valley begins in {0}.", time);
         }
 
         /// <summary>

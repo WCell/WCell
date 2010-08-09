@@ -150,5 +150,10 @@ namespace WCell.RealmServer.Entities
 			writer.Write(Position);
 			writer.WriteFloat(Orientation);
 		}
+
+		public override string ToString()
+		{
+			return GetType() + " " + base.ToString();
+		}
 	}
 }

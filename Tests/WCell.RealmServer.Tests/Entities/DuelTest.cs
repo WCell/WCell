@@ -142,11 +142,11 @@ namespace WCell.RealmServer.Tests.Entities
 			}
 
 			Assert.IsFalse(duel.IsActive);
-			if (Duel.DefaultStartDelay > 0)
+			if (Duel.DefaultStartDelayMillis > 0)
 			{
-				Asser.InBetween(0.001f, Duel.DefaultStartDelay, duel.StartDelay);
+				Asser.InBetween(0.001f, Duel.DefaultStartDelayMillis, duel.StartDelay);
 				// lets speed it up
-				duel.StartDelay = 0.00001f;
+				duel.StartDelay = 1;
 			}
 
 			region.WaitTicks(2);

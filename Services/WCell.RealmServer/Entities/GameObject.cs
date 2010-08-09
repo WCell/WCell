@@ -380,7 +380,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Decay
-		void DecayNow(float dt)
+		void DecayNow(int dt)
 		{
 			Delete();
 		}
@@ -415,12 +415,13 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Can be set to initialize Decay after the given delay in seconds.
+		/// Will stop the timer if set to a value less than 0
 		/// </summary>
-		public float RemainingDecayDelay
+		public int RemainingDecayDelayMillis
 		{
 			get
 			{
-				return m_decayTimer.RemainingInitialDelay;
+				return m_decayTimer.RemainingInitialDelayMillis;
 			}
 			set
 			{
@@ -436,7 +437,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 			if (m_decayTimer != null)

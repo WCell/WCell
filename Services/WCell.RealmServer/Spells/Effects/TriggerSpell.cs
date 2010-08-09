@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 			//m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
 			//m_cast.Trigger(Effect.TriggerSpell, Effect);
-			m_cast.Trigger(Effect.TriggerSpell, Effect, Targets != null ? Targets.ToArray() : null);
+			m_cast.Trigger(Effect.TriggerSpell, Effect, (Effect.TriggerSpell.Effects.Length == 1 && m_targets != null) ? m_targets.ToArray() : null);
 		}
 
 		protected override void Apply(WorldObject target)

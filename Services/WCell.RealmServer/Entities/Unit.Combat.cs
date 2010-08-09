@@ -152,6 +152,14 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
+		/// Whether this Unit is currently attacking with a ranged weapon
+		/// </summary>
+		public bool IsUsingRangedWeapon
+		{
+			get { return m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility; }
+		}
+
+		/// <summary>
 		/// Amount of extra attacks to hit on next thit
 		/// </summary>
 		public int ExtraAttacks
@@ -437,7 +445,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return;
 			}
-			if (!attacker.IsInContext)
+			if (attacker != null && !attacker.IsInContext)
 			{
 				attacker = null;
 			}
@@ -878,7 +886,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Tries to land a mainhand hit + maybe offhand hit on the current Target
 		/// </summary>
-		protected virtual void CombatTick(float timeElapsed)
+		protected virtual void CombatTick(int timeElapsed)
 		{
 			// if currently casting a spell, skip this
 			if (IsUsingSpell && !m_spellCast.IsPending)
@@ -908,7 +916,7 @@ namespace WCell.RealmServer.Entities
 			var now = Environment.TickCount;
 			var usesOffHand = UsesDualWield;
 
-			var isRanged = m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility;
+			var isRanged = IsUsingRangedWeapon;
 			var mainHandDelay = m_lastStrike + (isRanged ? RangedAttackTime : MainHandAttackTime) - now;
 			int offhandDelay;
 
@@ -1031,7 +1039,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			m_attackTimer.Start(delay / 1000f);
+			m_attackTimer.Start(delay);
 		}
 
 		/// <summary>
@@ -1092,7 +1100,7 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// start
-				m_attackTimer.Start(delay / 1000f);
+				m_attackTimer.Start(delay);
 			}
 			else
 			{
@@ -1105,6 +1113,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnEnterCombat()
 		{
+			SheathType = IsUsingRangedWeapon ? SheathType.Ranged : SheathType.Melee;
 			StandState = StandState.Stand;
 			m_lastCombatTime = Environment.TickCount;
 			if (m_brain != null)
@@ -1118,6 +1127,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnLeaveCombat()
 		{
+			//SheathType = SheathType.None;
 			ResetComboPoints();
 			if (m_brain != null)
 			{
@@ -1288,13 +1298,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the target is in reach to be attacked
+		/// Whether the suitable target is in reach to be attacked
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
 		public bool CanReachForCombat(Unit target)
 		{
-			return MayMove || IsInAttackRange(target);
+			return CanMove || IsInAttackRange(target);
 		}
 
 		public bool IsInAttackRangeSq(Unit target, float distSq)

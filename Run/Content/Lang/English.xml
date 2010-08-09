@@ -19,6 +19,31 @@
     <Item Key="PlayerNotOnline">
       <Value>Player is not online: {0}</Value>
     </Item>
+    <Item Key="NoValidTarget">
+      <Value>There is no valid target.</Value>
+    </Item>
+    <Item Key="InvalidSelection">
+      <Value>Invalid selection.</Value>
+    </Item>
+
+    <Item Key="Second">
+      <Value>Second</Value>
+    </Item>
+    <Item Key="Seconds">
+      <Value>Seconds</Value>
+    </Item>
+    <Item Key="Minute">
+      <Value>Minute</Value>
+    </Item>
+    <Item Key="Minutes">
+      <Value>Minutes</Value>
+    </Item>
+    <Item Key="Hour">
+      <Value>Hour</Value>
+    </Item>
+    <Item Key="Hours">
+      <Value>Hours</Value>
+    </Item>
 
     <Item Key="SubCommandNotFound">
       <Value>SubCommand not found: {0}</Value>
@@ -142,6 +167,13 @@
     </Item>
     <Item Key="CmdSpellNotExists">
       <Value>Spell doesn't exist.</Value>
+    </Item>
+
+    <Item Key="CmdPushbackParams">
+      <Value>&lt;pushback in millis&gt;</Value>
+    </Item>
+    <Item Key="CmdPushbackDescription">
+      <Value>Pushbacks the spellcaster target by the given amount in milliseconds (Default: 1000 - Can be negative to speed up casting).</Value>
     </Item>
 
     <!-- End of Spell Commands -->

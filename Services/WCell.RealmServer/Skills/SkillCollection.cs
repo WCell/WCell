@@ -245,16 +245,6 @@ namespace WCell.RealmServer.Skills
 				m_skills.TryGetValue(key, out skill);
 				return skill;
 			}
-
-			set
-			{
-				if (m_skills.ContainsKey(key))
-				{
-					Remove(key);
-				}
-
-				Add(value, true);
-			}
 		}
 
 		/// <summary>

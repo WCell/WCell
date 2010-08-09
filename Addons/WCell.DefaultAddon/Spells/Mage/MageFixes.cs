@@ -72,7 +72,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			}, SpellId.ClassSkillLivingBombRank3);
 
 			// These spells cancel eachother
-			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageArmor);
+			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageMageArmor);
 
 			// Mana gems don't have a limit
 			SpellHandler.Apply(spell =>

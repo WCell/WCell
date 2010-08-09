@@ -16,6 +16,7 @@
 
 using System;
 using NLog;
+using WCell.Constants.Achievements;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
@@ -88,6 +89,7 @@ namespace WCell.RealmServer.Skills
 				{
 					m_skills.Owner.UpdateDefense();
 				}
+				m_skills.Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachSkillLevel,m_record.CurrentValue);
 			}
 		}
 

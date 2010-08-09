@@ -1587,11 +1587,19 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// This or it's master is a player
+		/// Whether this or it's master is a player
 		/// </summary>
 		public bool IsOwnedByPlayer
 		{
 			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
+		}
+
+		/// <summary>
+		/// Whether this object's master is a player
+		/// </summary>
+		public bool HasPlayerMaster
+		{
+			get { return m_master != null && m_master.IsPlayer; }
 		}
 
 		/// <summary>

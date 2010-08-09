@@ -249,7 +249,7 @@ namespace WCell.RealmServer.Spells
 		/// <param name="caster">The GameObject (in case of traps etc) or Unit casting</param>
 		private SpellCast()
 		{
-			m_castTimer = new TimerEntry(0f, 0f, Perform);
+			m_castTimer = new TimerEntry(Perform);
 		}
 
 		/// <summary>
@@ -260,7 +260,7 @@ namespace WCell.RealmServer.Spells
 		{
 			SetCaster(caster);
 
-			m_castTimer = new TimerEntry(0f, 0f, Perform);
+			m_castTimer = new TimerEntry(Perform);
 		}
 
 		void SetCaster(ObjectReference caster, Region map, uint phase)
@@ -410,7 +410,7 @@ namespace WCell.RealmServer.Spells
 				var delta = Math.Max(0, value - RemainingCastTime);
 
 				m_startTime = Environment.TickCount + delta;
-				m_castTimer.RemainingInitialDelay = value / 1000f;
+				m_castTimer.RemainingInitialDelayMillis = value;
 
 				SpellHandler.SendCastDelayed(this, delta);
 			}
@@ -890,7 +890,7 @@ namespace WCell.RealmServer.Spells
 					// calc exact cast delay
 					if (CasterUnit != null)
 					{
-						m_castDelay = (CasterUnit.CastSpeedFactor*m_castDelay).RoundInt();
+						m_castDelay = MathUtil.RoundInt(CasterUnit.CastSpeedFactor * m_castDelay);
 						m_castDelay = CasterUnit.Auras.GetModifiedInt(SpellModifierType.CastTime, m_spell, m_castDelay);
 					}
 				}
@@ -916,7 +916,11 @@ namespace WCell.RealmServer.Spells
 			{
 				if (!IsInstant)
 				{
-					// send Start packet
+					// put away weapon and send Start packet
+					if (CasterObject is Unit)
+					{
+						((Unit) CasterObject).SheathType = SheathType.None;
+					}
 					SendCastStart();
 					m_castTimer.Start(m_castDelay);
 					return SpellFailedReason.Ok;
@@ -1091,7 +1095,7 @@ namespace WCell.RealmServer.Spells
 						for (var i = 0; i < m_handlers.Length; i++)
 						{
 							var handler = m_handlers[i];
-							handler.Targets.Remove(target);
+							handler.m_targets.Remove(target);
 						}
 						return true;
 					}
@@ -1108,7 +1112,7 @@ namespace WCell.RealmServer.Spells
 							for (var i = 0; i < m_handlers.Length; i++)
 							{
 								var handler = m_handlers[i];
-								handler.Targets.Remove(target);
+								handler.m_targets.Remove(target);
 							}
 							return true;
 						}
@@ -1290,6 +1294,18 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Pushback
+		public void Pushback(int millis)
+		{
+			if (IsChanneling)
+			{
+				m_channel.Pushback(millis);
+			}
+			else
+			{
+				RemainingCastTime += millis;
+			}
+		}
+
 		/// <summary>
 		/// Caused by damage.
 		/// Delays the cast and might result in interruption (only if not DoT).
@@ -1675,7 +1691,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region IUpdatable
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			// gotta update the cast timer.
 			m_castTimer.Update(dt);

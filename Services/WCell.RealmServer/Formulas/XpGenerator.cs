@@ -6,6 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Util.Variables;

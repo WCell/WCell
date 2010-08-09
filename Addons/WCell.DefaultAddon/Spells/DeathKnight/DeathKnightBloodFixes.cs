@@ -117,6 +117,33 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 
 			FixBloodBoil();
 			FixDeathPact();
+
+			// Heart Strike adds damage per disease on target
+			SpellLineId.DeathKnightBloodHeartStrike.Apply(spell =>
+			{
+				var effect = spell.GetEffect(SpellEffectType.None);
+				effect.SpellEffectHandlerCreator = (cast, effct) => new WeaponDiseaseDamagePercentHandler(cast, effct);
+			});
+			// The HS glyph procs on the wrong spell
+			SpellHandler.Apply(spell => spell.GetEffect(AuraType.ProcTriggerSpell).SetAffectMask(SpellLineId.DeathKnightBloodHeartStrike),
+				SpellId.GlyphOfHeartStrike);
+
+			// Vampiric blood increases health in %
+			SpellLineId.DeathKnightBloodVampiricBlood.Apply(spell =>
+			{
+				var effect = spell.GetEffect(AuraType.ModIncreaseHealth);
+				effect.AuraType = AuraType.ModIncreaseHealthPercent;
+			});
+
+			// Blood Strike: "total damage increased by ${$m3/2}.1% for each of your diseases on the target"
+			SpellLineId.DeathKnightBloodStrike.Apply(spell =>
+			{
+				spell.GetEffect(SpellEffectType.None).SpellEffectHandlerCreator =
+					(cast, effct) => new WeaponDiseaseDamageHalfPercentHandler(cast, effct);
+			});
+
+			// "Non-player victim spellcasting is also interrupted for $32747d."
+			SpellLineId.DeathKnightStrangulate.Apply(spell => spell.AddTargetTriggerSpells(SpellId.InterruptRank1));
 		}
 
 		#region Death Pact

@@ -1052,11 +1052,16 @@ namespace WCell.RealmServer.Items
 			}
 			return item;
 		}
-
-		public void Remove(Item item, bool ownerChange)
+		/// <summary>
+		/// Don't use this method - but use item.Remove instead.
+		/// </summary>
+		/// <param name="item"></param>
+		/// <param name="ownerChange"></param>
+		internal void Remove(Item item, bool ownerChange)
 		{
 			if (ownerChange)
 			{
+				item.m_unknown = true;
 				OwnerInventory.OnRemove(item);
 			}
 

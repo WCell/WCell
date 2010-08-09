@@ -19,11 +19,16 @@ namespace WCell.Util.NLog
 
 		public static event Action<string, Exception> ExceptionRaised;
 
+		private static bool init;
+
 		/// <summary>
 		/// Will enable logging to the console
 		/// </summary>
 		public static void SetupConsoleLogging()
 		{
+			if (init)return;
+
+			init = true;
 			var config = LogManager.Configuration ?? new LoggingConfiguration();
 
 			var consoleTarget = new ColoredConsoleTarget
@@ -153,7 +158,14 @@ namespace WCell.Util.NLog
 			if (addSystemInfo)
 			{
 				logger("");
-				SystemInfoLogger(logger);
+				if (SystemInfoLogger != null)
+				{
+					SystemInfoLogger(logger);
+				}
+				else
+				{
+					LogSystemInfo(logger);
+				}
 			}
 
 			if (e != null)
@@ -172,6 +184,19 @@ namespace WCell.Util.NLog
 		public static void LogStacktrace(Action<string> logger)
 		{
 			logger(new StackTrace(Thread.CurrentThread, true).GetFrames().ToString("\n\t", frame => frame.ToString().Trim()));
+		}
+
+
+		private static void LogSystemInfo(Action<string> logger)
+		{
+			var title = "WCell component";
+#if DEBUG
+			title += " - Debug";
+#else
+			title += " - Release";
+#endif
+			logger(title);
+			logger(string.Format("OS: {0} - CLR: {1}", Environment.OSVersion, Environment.Version));
 		}
 	}
 }

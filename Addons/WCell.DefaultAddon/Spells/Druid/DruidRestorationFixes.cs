@@ -34,9 +34,9 @@ namespace WCell.Addons.Default.Spells.Druid
 				// Add all "of the Druid's damage, healing spells and auto attacks" to the affect mask
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				effect.AddToAffectMask(
-					SpellLineId.DruidBalanceInsectSwarm, SpellLineId.DruidFeralCombatFeralChargeBear,
+					SpellLineId.DruidBalanceInsectSwarm, SpellLineId.DruidFeralChargeBear,
 					SpellLineId.DruidRestorationSwiftmend, SpellLineId.DruidBalanceForceOfNature,
-					SpellLineId.DruidFeralCombatMangleBear, SpellLineId.DruidRestorationWildGrowth,
+					SpellLineId.DruidMangleBear, SpellLineId.DruidRestorationWildGrowth,
 					SpellLineId.DruidBalanceStarfall, SpellLineId.DruidBalanceTyphoon, SpellLineId.DruidWrath,
 					SpellLineId.DruidHealingTouch, SpellLineId.DruidRip, SpellLineId.DruidClaw, SpellLineId.DruidRegrowth,
 					SpellLineId.DruidStarfire, SpellLineId.DruidDemoralizingRoar, SpellLineId.DruidTranquility,
@@ -74,13 +74,13 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// ToL triggers a passive area aura
-			SpellLineId.DruidRestorationTreeOfLifeShapeshift.Apply(spell =>
+			SpellLineId.DruidRestorationTreeOfLife.Apply(spell =>
 			{
 				spell.AddTriggerSpellEffect(SpellId.TreeOfLifePassive);
 			});
 
 			// Master Shapeshifter "Grants an effect which lasts while the Druid is within the respective shapeshift form."
-			SpellLineId.DruidRestorationMasterShapeshifter.Apply(spell =>
+			SpellLineId.DruidFeralCombatMasterShapeshifter.Apply(spell =>
 			{
 				var bearEffect = spell.GetEffect(AuraType.Dummy);
 
@@ -222,8 +222,6 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.PeriodicHeal);
 
 				// TODO: Implement <mult> from "${$m1*5*$<mult>}"
-				var ticks = spell.Durations.Max / effect.Amplitude;
-				effect.AuraEffectHandlerCreator = () => new ParameterizedPeriodicHealHandler(effect.CalcEffectValue() * ticks);
 			});
 		}
 	}

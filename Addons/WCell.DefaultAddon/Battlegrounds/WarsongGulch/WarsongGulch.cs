@@ -12,6 +12,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Core.Timers;
@@ -45,19 +46,19 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			}
 		}
 
-		[Variable("WSGFlagRespawnTime")]
-		public static int FlagRespawnTime = 20;
+		[Variable("WSGFlagRespawnTimeMillis")]
+		public static int FlagRespawnTimeMillis = 20 * 1000;
 
-		[Variable("WSGPrepTimeSecs")]
-		public static int PreparationTimeSecs = 60;
+		[Variable("WSGPrepTimeMillis")]
+		public static int WSGPreparationTimeMillis = 60 * 1000;
 
 		/// <summary>
 		/// The time in which the BG will be ended, no matter the score. If 0, will last til score reaches max.
 		/// </summary>
 		[Variable("WSGMaxDurationMinutes")]
-		public static float MaxDuration = 20;
+		public static int MaxDuration = 20;
 
-		public static float PowerUpRespawnTime = 2 * 60;
+		public static int PowerUpRespawnTimeMillis = 2 * 60 * 1000;
 
 		/// <summary>
 		/// The delay after which a flag carrier will receive the flag carrier debuff (0 if deactivated)
@@ -97,9 +98,9 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		}
 
 		#region Props
-		public override float PreparationTimeSeconds
+		public override int PreparationTimeMillis
 		{
-			get { return PreparationTimeSecs; }
+			get { return WSGPreparationTimeMillis; }
 		}
 
 		public WSGFaction GetFaction(BattlegroundSide side)
@@ -161,45 +162,30 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			{
 				CallDelayed(MaxDuration * 60, FinishFight);
 			}
-			ChatMgr.SendSystemMessage(Characters, "Let the battle for Warsong Gulch begin!");
+			Characters.SendSystemMessage("Let the battle for Warsong Gulch begin!");
 		}
 
-		protected override void OnFinish(bool disposing)
-		{
-			base.OnFinish(disposing);
-			foreach (var character in Characters)
-			{
-				character.SendSystemMessage("The battle has ended!");
-			}
-		}
 		protected override void OnPrepareHalftime()
 		{
 			base.OnPrepareHalftime();
-			var msg = "The battle for Warsong Gulch begins in " + PreparationTimeSeconds / 2f + " seconds.";
-			ChatMgr.SendSystemMessage(Characters, msg);
+
+			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
+			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
 		}
 
 
 		protected override void OnPrepare()
 		{
 			base.OnPrepare();
-			var msg = "The battle for Warsong Gulch begins in ";
-			var secs = PreparationTimeSeconds;
-			var mins = (int)secs / 60;
-			if (mins < 1)
-			{
-				msg += (int)secs + " seconds";
-			}
-			else
-			{
-				msg += mins + (mins == 1 ? "minute" : "minutes");
-				if (secs % 60 != 0)
-				{
-					msg += " and " + secs + (secs == 1 ? "second" : "seconds");
-				}
-			}
 
-			Characters.SendSystemMessage(msg + ".");
+			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
+			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
+		}
+
+		protected override void OnFinish(bool disposing)
+		{
+			base.OnFinish(disposing);
+			Characters.SendSystemMessage("The battle has ended!");
 		}
 
 		/// <summary>
@@ -321,7 +307,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				_hordeDoor2.SendDespawn();
 
 				// In about ~5s the doors are deleted (confirmed)
-				CallDelayed(5f, () =>
+				CallDelayed(5000, () =>
 									{
 										if (_allianceDoor1 != null)
 										{
@@ -607,7 +593,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 					unit.SpellCast.TriggerSelf(spell);
 				}
 				go.Delete();
-				CallDelayed(PowerUpRespawnTime, respawnCallback);
+				CallDelayed(PowerUpRespawnTimeMillis, respawnCallback);
 			}
 		}
 

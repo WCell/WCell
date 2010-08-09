@@ -193,20 +193,17 @@ namespace WCell.RealmServer.Entities
 
 		#region Update()
 
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 
+			Regenerate(dt);
 			if (m_brain != null)
 			{
 				m_brain.Update(dt);
 			}
 
 			m_attackTimer.Update(dt);
-			if (m_regenTimer != null)
-			{
-				m_regenTimer.Update(dt);
-			}
 
 			if (m_TaxiMovementTimer != null)
 			{

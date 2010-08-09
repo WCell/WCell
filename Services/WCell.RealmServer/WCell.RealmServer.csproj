@@ -202,6 +202,7 @@
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />
+    <Compile Include="NPCs\Pets\PetLevelStatInfo.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -306,6 +307,8 @@
     <Compile Include="Network\RealmClient.cs" />
     <Compile Include="RealmServer.cs" />
     <Compile Include="Entities\Unit.cs" />
+    <Compile Include="Trade\TradeMgr.cs" />
+    <Compile Include="Trade\TradeWindow.cs" />
     <Compile Include="UpdateFields\UpdateMask.cs" />
     <Compile Include="UpdateFields\UpdatePacket.cs" />
     <Compile Include="UpdateFields\UpdateFieldHandler.cs" />
@@ -519,7 +522,7 @@
     <Compile Include="Misc\SummonRequest.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionSearch.cs" />
     <Compile Include="NPCs\CreatureFamily.cs" />
-    <Compile Include="Misc\Trade.cs" />
+    <Compile Include="Trade\Trade.cs" />
     <Compile Include="Network\CompressedPacket.cs" />
     <Compile Include="NPCs\Figurines\Figurine.cs" />
     <Compile Include="NPCs\Figurines\WaypointFigurine.cs" />
@@ -717,7 +720,7 @@
     <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
-    <Compile Include="NPCs\PetMgr.cs" />
+    <Compile Include="NPCs\Pets\PetMgr.cs" />
     <Compile Include="NPCs\Pets\PetSpell.cs" />
     <Compile Include="NPCs\Vendors\VendorEntry.cs" />
     <Compile Include="Paths\PathVertex.cs" />

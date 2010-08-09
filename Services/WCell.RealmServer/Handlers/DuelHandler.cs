@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendOutOfBounds(Character duelist, uint cancelDelayMillis)
+		public static void SendOutOfBounds(Character duelist, int cancelDelayMillis)
 		{
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_DUEL_OUTOFBOUNDS, 4))
             {

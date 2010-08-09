@@ -108,12 +108,10 @@ namespace WCell.RealmServer.AI.Actions.States
 							{
 								if (owner.Target != target || !m_init)
 								{
-									m_init = true;
-
 									// change target and start Action again
+									var oldTarget = owner.Target;
 									owner.Target = target;
-									owner.IsFighting = true;
-									m_Strategy.Start();
+									StartEngagingCurrentTarget(oldTarget);
 								}
 								else
 								{
@@ -128,7 +126,7 @@ namespace WCell.RealmServer.AI.Actions.States
 				{
 					if (!m_init)
 					{
-						m_Strategy.Start();
+						StartEngagingCurrentTarget(null);
 					}
 					else
 					{
@@ -146,9 +144,7 @@ namespace WCell.RealmServer.AI.Actions.States
 						// check if something came up again
 						if (!m_owner.Brain.CheckCombat())
 						{
-#if DEV
-							owner.Say("No one left to attack.");
-#endif
+							// run back
 							owner.Brain.State = BrainState.Evade;
 						}
 					}
@@ -158,6 +154,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					// cannot evade -> Just go back to default if there are no more targets
 					if (!owner.Brain.CheckCombat())
 					{
+						// go back to what we did before
 						owner.Brain.EnterDefaultState();
 					}
 				}
@@ -173,9 +170,44 @@ namespace WCell.RealmServer.AI.Actions.States
 			}
 
 			m_owner.IsInCombat = false;
+
+			if (m_init && m_owner.Target != null)
+			{
+				Disengage(m_owner.Target);
+			}
 			m_owner.Target = null;
 
 			m_owner.MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+		}
+
+		/// <summary>
+		/// Start attacking a new target
+		/// </summary>
+		private void StartEngagingCurrentTarget(Unit oldTarget)
+		{
+			if (m_init)
+			{
+				if (oldTarget != null)
+				{
+					// had a previous target
+					Disengage(oldTarget);
+				}
+			}
+			else
+			{
+				m_init = true;
+			}
+			m_owner.IsFighting = true;
+			m_owner.Target.NPCAttackerCount++;
+			m_Strategy.Start();
+		}
+
+		/// <summary>
+		/// Stop attacking the old guy
+		/// </summary>
+		private void Disengage(Unit oldTarget)
+		{
+			oldTarget.NPCAttackerCount--;
 		}
 
 		public override UpdatePriority Priority

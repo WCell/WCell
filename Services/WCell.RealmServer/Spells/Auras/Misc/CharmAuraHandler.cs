@@ -35,10 +35,10 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 				{
 					failReason = SpellFailedReason.CantBeCharmed;
 				}
-				else if (caster.Level > EffectValue)
-				{
-					failReason = SpellFailedReason.Highlevel;
-				}
+				//else if (caster.Level < EffectValue)
+				//{
+				//    failReason = SpellFailedReason.Highlevel;
+				//}
 				else if (caster.HasMaster)
 				{
 					failReason = SpellFailedReason.Charmed;

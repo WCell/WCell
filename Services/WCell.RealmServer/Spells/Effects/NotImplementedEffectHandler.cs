@@ -23,23 +23,33 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 		}
 
-    	public override void Apply()
+		public override void Apply()
 		{
 		}
 	}
 
-	public class VoidEffectHandler : SpellEffectHandler
+	public class VoidNoTargetsEffectHandler : SpellEffectHandler
 	{
-		public VoidEffectHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
+		public VoidNoTargetsEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
 		{
 		}
 
 		public override bool HasOwnTargets
 		{
-			get
-			{
-				return false;
-			}
+			get { return false; }
+		}
+
+		public override void Apply()
+		{
+		}
+	}
+
+	public class VoidWithTargetsEffectHandler : SpellEffectHandler
+	{
+		public VoidWithTargetsEffectHandler(SpellCast cast, SpellEffect effect)
+			: base(cast, effect)
+		{
 		}
 
 		public override void Apply()

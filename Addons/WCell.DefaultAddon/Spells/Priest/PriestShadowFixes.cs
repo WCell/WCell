@@ -17,32 +17,32 @@ namespace WCell.Addons.Default.Spells.Priest
         public static void FixPriest()
         {
             // only proc on kill that rewards xp or honor
-            SpellLineId.PriestShadowSpiritTap.Apply(spell => spell.ProcTriggerFlags = ProcTriggerFlags.GainExperience);
+            SpellLineId.PriestShadowMagicSpiritTap.Apply(spell => spell.ProcTriggerFlags = ProcTriggerFlags.GainExperience);
 
             // Shadow Weaving applies to caster and can also be proc'ed by Mind Flay
-            SpellLineId.PriestShadowShadowWeaving.Apply(spell =>
+            SpellLineId.PriestShadowMagicShadowWeaving.Apply(spell =>
             {
                 var effect = spell.GetEffect(AuraType.AddTargetTrigger);
                 effect.ImplicitTargetA = ImplicitTargetType.Self;
-                effect.AddAffectingSpells(SpellLineId.PriestShadowMindFlay);
+                effect.AddAffectingSpells(SpellLineId.PriestShadowMagicMindFlay);
             });
 
             // Mind Flay: Assault the target's mind with Shadow energy, causing ${$m3*3} Shadow damage over $d and slowing their movement speed by $s2%.
-            SpellLineId.PriestShadowMindFlay.Apply(spell =>
+			SpellLineId.PriestShadowMagicMindFlay.Apply(spell =>
             {
                 var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
                 effect.Amplitude = spell.Effects[2].Amplitude;
             });
 
             // Dispersion also regenerates Mana
-            SpellLineId.PriestShadowDispersion.Apply(spell =>
+            SpellLineId.PriestShadowMagicDispersion.Apply(spell =>
             {
                 var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
                 effect.Amplitude = 1000;
             });
 
             // Vampiric Embrace can be proc'ed by a certain set of spells, and has a custom healing AuraEffectHandler
-            SpellLineId.PriestShadowVampiricEmbrace.Apply(spell =>
+			SpellLineId.PriestShadowMagicVampiricEmbrace.Apply(spell =>
             {
                 // only proc on damaging SpellCast
                 spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
@@ -54,13 +54,13 @@ namespace WCell.Addons.Default.Spells.Priest
 
                 // Set correct flags and set of spells to trigger the proc
                 effect.AddAffectingSpells(
-                    SpellLineId.PriestShadowMindFlay,
+					SpellLineId.PriestShadowMagicMindFlay,
                     SpellLineId.PriestShadowWordPain,
                     SpellLineId.PriestShadowWordDeath,
                     SpellLineId.PriestMindBlast,
                     SpellLineId.PriestManaBurn,
                     SpellLineId.PriestDevouringPlague,
-                    SpellLineId.PriestShadowVampiricTouch,
+					SpellLineId.PriestShadowMagicVampiricTouch,
                     SpellLineId.PriestMindSear);
             });
         }

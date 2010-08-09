@@ -389,19 +389,27 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				return CalcEffectValue(casterReference.Level, 0);
+				return CalcEffectValue(casterReference.Level, 0, false);
 			}
 		}
 
 		public int CalcEffectValue(Unit caster)
 		{
-			var value = CalcEffectValue(caster != null ? caster.Level : 1, caster != null ? caster.ComboPoints : 0);
+			int value;
+			if (caster != null)
+			{
+				value = CalcEffectValue(caster.Level, caster.ComboPoints, true);
+			}
+			else
+			{
+				value = CalcEffectValue(1, 0, false);
+			}
 			return CalcEffectValue(caster, value);
 		}
 
 		public int CalcEffectValue(Unit caster, int value)
 		{
-			if (EffectValueOverrideEffect != null)
+			if (EffectValueOverrideEffect != null && caster.Spells.Contains(EffectValueOverrideEffect.Spell))
 			{
 				return EffectValueOverrideEffect.CalcEffectValue(caster, value);
 			}
@@ -452,14 +460,14 @@ namespace WCell.RealmServer.Spells
 
 		public int CalcEffectValue()
 		{
-			return CalcEffectValue(0, 0);
+			return CalcEffectValue(0, 0, false);
 		}
 
-		public int CalcEffectValue(int level, int comboPoints)
+		public int CalcEffectValue(int level, int comboPoints, bool useOverride)
 		{
-			if (EffectValueOverrideEffect != null)
+			if (EffectValueOverrideEffect != null && useOverride)
 			{
-				return EffectValueOverrideEffect.CalcEffectValue(level, comboPoints);
+				return EffectValueOverrideEffect.CalcEffectValue(level, comboPoints, false);
 			}
 
 			// calculate effect value
@@ -495,7 +503,7 @@ namespace WCell.RealmServer.Spells
 			}
 			if (dmgMod != 1)
 			{
-				return val = ((float)(Math.Pow(dmgMod, currentTargetNo) * val)).RoundInt();
+				return val = MathUtil.RoundInt((float)(Math.Pow(dmgMod, currentTargetNo) * val));
 			}
 			return val;
 		}

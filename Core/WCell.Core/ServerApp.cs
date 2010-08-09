@@ -228,7 +228,7 @@ namespace WCell.Core
 			return type;
 		}
 
-		#region Timers
+		#region Updatables
 
 		/// <summary>
 		/// Registers an updatable object in the server timer pool.
@@ -326,7 +326,7 @@ namespace WCell.Core
 			{
 				// get the time at the start of our task processing
 				var timerStart = m_queueTimer.ElapsedMilliseconds;
-				var updateDt = (timerStart - m_lastUpdate) / 1000.0f;
+				var updateDt = (int)(timerStart - m_lastUpdate);
 
 				// run timers!
 				foreach (var updatable in m_updatables)
@@ -521,7 +521,7 @@ namespace WCell.Core
 		/// <param name="delayMillis">the time to wait before shutting down</param>
 		public virtual void ShutdownIn(uint delayMillis)
 		{
-			m_shutdownTimer = new TimerEntry(delayMillis / 1000f, 0f, upd =>
+			m_shutdownTimer = new TimerEntry((int) delayMillis, 0, upd =>
 			{
 				AppUtil.UnhookAll();
 				if (IsRunning)

@@ -10,12 +10,11 @@ using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.RealmServer.Database;
 
-namespace WCell.RealmServer.NPCs
+namespace WCell.RealmServer.NPCs.Pets
 {
 	public static class PetMgr
 	{

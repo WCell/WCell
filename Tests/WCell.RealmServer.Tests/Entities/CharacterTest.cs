@@ -189,9 +189,8 @@ namespace WCell.RealmServer.Tests.Entities
 			chr.EnsureInWorld();
 			chr.EnsureHealth(100);
 			chr.EnsurePower(100);
-			chr.Power = (int)chr.MaxPower - 10;
+			chr.Power = chr.MaxPower - 10;
 			chr.PowerRegenPerTick = 20;
-			chr.RegenerationDelay = 0.0001f;
 
 			// wait one region tick to regen
 			chr.Region.AddMessageAndWait(new Message(() => {

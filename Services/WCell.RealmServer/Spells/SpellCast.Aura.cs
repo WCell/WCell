@@ -45,9 +45,9 @@ namespace WCell.RealmServer.Spells
 					lastHandler = spellHandler;
 
 					var doubleTarget = false;
-					if (spellHandler.Targets != null)
+					if (spellHandler.m_targets != null)
 					{
-						foreach (var target in spellHandler.Targets)
+						foreach (var target in spellHandler.m_targets)
 						{
 							if (target is Unit)
 							{

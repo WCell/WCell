@@ -156,13 +156,13 @@ namespace WCell.RealmServer.Global
 
 		protected static Logger s_log = LogManager.GetCurrentClassLogger();
 
-		private static int avgUpdateTime;
+		private static float _avgUpdateTime;
 
 		public static string LoadAvgStr
 		{
 			get
 			{
-				return string.Format("{0}/{1} ({2} %)", avgUpdateTime, DefaultUpdateDelay, (avgUpdateTime / (float)DefaultUpdateDelay) * 100);
+				return string.Format("{0:0.00}/{1} ({2} %)", _avgUpdateTime, DefaultUpdateDelay, (_avgUpdateTime / DefaultUpdateDelay) * 100);
 			}
 		}
 
@@ -174,10 +174,9 @@ namespace WCell.RealmServer.Global
 		protected ITerrain m_Terrain;
 
 		protected volatile bool m_running;
-		protected float m_lastRegionUpdate, m_lastUpdate;
+		protected DateTime m_lastUpdateTime;
 		protected int m_tickCount;
 
-		protected Stopwatch m_regionTime = new Stopwatch();
 		protected int m_updateDelay;
 		protected bool m_updateInactiveAreas, m_ScanInactiveAreas;
 		protected bool m_canNPCsEvade;
@@ -191,7 +190,6 @@ namespace WCell.RealmServer.Global
 		protected int m_currentThreadId;
 
 		bool m_npcsSpawned, m_gosSpawned, m_isUpdating;
-		private float m_lastUpdateDT;
 		internal protected GameObject[] m_gos = new GameObject[0];
 		internal protected SpawnPoint[] m_spawnPoints = new SpawnPoint[0];
 		private int m_spawnPointCount;
@@ -649,7 +647,7 @@ namespace WCell.RealmServer.Global
 			if (!m_running)
 			{
 				// lock and check again, so Region won't be started twice or start while stoping
-				lock (m_regionTime)
+				lock (m_objects)
 				{
 					if (m_running)
 						return;
@@ -670,8 +668,6 @@ namespace WCell.RealmServer.Global
 
 					s_log.Debug(Resources.RegionStarted, m_RegionTemplate.Id);
 
-					m_regionTime.Start();
-
 					// start updating
 					Task.Factory.StartNewDelayed(m_updateDelay, RegionUpdateCallback, this);
 
@@ -679,6 +675,8 @@ namespace WCell.RealmServer.Global
 					{
 						SpawnRegionLater();
 					}
+
+					m_lastUpdateTime = DateTime.Now;
 
 					m_RegionTemplate.NotifyStarted(this);
 				}
@@ -698,7 +696,7 @@ namespace WCell.RealmServer.Global
 				}
 
 				// lock and check again, so region won't be stopped twice or stopped while starting
-				lock (m_regionTime)
+				lock (m_objects)
 				{
 					if (!m_running)
 					{
@@ -707,10 +705,6 @@ namespace WCell.RealmServer.Global
 					m_running = false;
 
 					s_log.Debug(Resources.RegionStopped, m_RegionTemplate.Id);
-
-					m_regionTime.Reset();
-					m_lastRegionUpdate = 0;
-					m_lastUpdate = 0;
 
 					m_RegionTemplate.NotifyStopped(this);
 				}
@@ -1014,25 +1008,12 @@ namespace WCell.RealmServer.Global
 
 		#region Messages & Updates
 		/// <summary>
-		/// The time delay in seconds between the last 2 updates
-		/// </summary>
-		public float LastUpdateDT
-		{
-			get { return m_lastUpdateDT; }
-		}
-
-		public float CurrentTime
-		{
-			get { return m_regionTime.ElapsedMilliseconds / 1000f; }
-		}
-
-		/// <summary>
 		/// The time in seconds when the last 
 		/// Update started.
 		/// </summary>
-		public float LastUpdateTime
+		public DateTime LastUpdateTime
 		{
-			get { return m_lastUpdate; }
+			get { return m_lastUpdateTime; }
 		}
 
 		/// <summary>
@@ -1078,7 +1059,7 @@ namespace WCell.RealmServer.Global
 		/// Executes the given action after the given delay within this Region's context.
 		/// </summary>
 		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Region's context.</remarks>
-		public TimerEntry CallDelayed(float seconds, Action action)
+		public TimerEntry CallDelayed(int millis, Action action)
 		{
 			var timer = new TimerEntry();
 			timer.Action = delay =>
@@ -1086,7 +1067,7 @@ namespace WCell.RealmServer.Global
 				action();
 				UnregisterUpdatableLater(timer);
 			};
-			timer.Start(seconds, 0f);
+			timer.Start(millis, 0);
 			RegisterUpdatableLater(timer);
 			return timer;
 		}
@@ -1095,13 +1076,13 @@ namespace WCell.RealmServer.Global
 		/// Executes the given action after the given delay within this Region's context.
 		/// </summary>
 		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Region's context.</remarks>
-		public TimerEntry CallPeriodically(float seconds, Action action)
+		public TimerEntry CallPeriodically(int seconds, Action action)
 		{
 			var timer = new TimerEntry
-							{
-								Action = (delay => { action(); })
-							};
-			timer.Start(seconds, 0f);
+			{
+				Action = (delay => { action(); })
+			};
+			timer.Start(seconds, seconds);
 			RegisterUpdatableLater(timer);
 			return timer;
 		}
@@ -1133,12 +1114,13 @@ namespace WCell.RealmServer.Global
 		/// <param name="state">the <see cref="Region" /> to update</param>
 		private void RegionUpdateCallback(object state)
 		{
-			// we need some locking here because for some reason sometimes RegionUpdateCallback would be called twice
+			// we need some locking here because else RegionUpdateCallback could be called twice
 			if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
 			//lock (m_regionTime)
 			{
 				// get the time at the start of our callback
-				var updateStart = m_regionTime.ElapsedMilliseconds;
+				var updateStart = DateTime.Now;
+				var updateDelta = (updateStart - m_lastUpdateTime).GetMilliSecondsInt();
 
 				// see if we have any messages to execute
 				if (m_messageQueue.Count > 0)
@@ -1159,7 +1141,7 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				for (var i = 0; i < m_characters.Count; i++)
+				for (var i = m_characters.Count - 1; i >= 0; i--)
 				{
 					var chr = m_characters[i];
 
@@ -1184,30 +1166,21 @@ namespace WCell.RealmServer.Global
 				//if (m_lastRegionUpdate + DefaultUpdateDelay <= now)
 
 				m_isUpdating = true;
+
 				// Updatables
-				var updatablesStart = m_regionTime.ElapsedMilliseconds / 1000f;
-
-				// see if we have any pending updates
-
-				// update delta in seconds
-				m_lastUpdateDT = updatablesStart - m_lastUpdate;
-
+				// progress pending updates
 				foreach (var updatable in m_updatables)
 				{
 					try
 					{
-						updatable.Update(m_lastUpdateDT);
+						updatable.Update(updateDelta);
 					}
 					catch (Exception e)
 					{
 						LogUtil.ErrorException(e, "Exception raised when updating Updatable: " + updatable);
+						UnregisterUpdatableLater(updatable);
 					}
 				}
-
-				m_lastUpdate = updatablesStart;
-
-				// update delta in seconds
-				var objUpdateDelta = updatablesStart - m_lastRegionUpdate;
 
 				// update all Objects in the Region
 				// copy objects, so object-internal message processing won't interfere with updating
@@ -1219,36 +1192,37 @@ namespace WCell.RealmServer.Global
 						continue;
 					}
 
+					UpdatePriority priority;
+					if (!obj.IsAreaActive)
+					{
+						if (!m_updateInactiveAreas)
+						{
+							continue;
+						}
+						priority = UpdatePriority.Inactive;
+					}
+					else
+					{
+						//priority = obj.UpdatePriority;
+						priority = UpdatePriority.Active;
+					}
+
+					var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
+
 					try
 					{
-						UpdatePriority priority;
-						if (!obj.IsAreaActive)
-						{
-							if (!m_updateInactiveAreas)
-							{
-								continue;
-							}
-							priority = UpdatePriority.Inactive;
-						}
-						else
-						{
-							//priority = obj.UpdatePriority;
-							priority = UpdatePriority.Active;
-						}
-
-						var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
-
 						// Update Object
 						var ticks = UpdatePriorityTicks[(int)priority];
 						if (tickMatch % ticks == 0)
 						{
 							if (ticks > 1)
 							{
-								obj.Update(objUpdateDelta + (((ticks - 1) * m_updateDelay) / 1000f));
+								// TODO: Fix exact amount of passed time
+								obj.Update(updateDelta + (((ticks - 1) * m_updateDelay)));
 							}
 							else
 							{
-								obj.Update(objUpdateDelta);
+								obj.Update(updateDelta);
 							}
 						}
 					}
@@ -1281,38 +1255,38 @@ namespace WCell.RealmServer.Global
 					UpdateCharacters();
 				}
 
-				UpdateRegion();
+				UpdateRegion();	// region specific stuff
 
 				// we updated the region, so set our last update time to now
-				m_lastRegionUpdate = updatablesStart;
+				m_lastUpdateTime = updateStart;
+				m_tickCount++;
 				m_isUpdating = false;
 
 				// get the time, now that we've finished our update callback
-				var updateEnd = m_regionTime.ElapsedMilliseconds;
+				var updateEnd = DateTime.Now;
+				var newUpdateDelta = updateEnd - updateStart;
 
 				// weigh old update-time 9 times and new update-time once
-				avgUpdateTime = (int)((avgUpdateTime * 9) + (updateEnd - updateStart)) / 10;
-
-				m_tickCount++;
+				_avgUpdateTime = ((_avgUpdateTime * 9) + (float)(newUpdateDelta).TotalMilliseconds) / 10;
 
 				// make sure to unset the ID *before* enqueuing the task in the ThreadPool again
 				Interlocked.Exchange(ref m_currentThreadId, 0);
 				if (m_running)
 				{
-					var callbackTimeout = (updateStart + m_updateDelay) - updateEnd;
+					var callbackTimeout = m_updateDelay - newUpdateDelta.GetMilliSecondsInt();
 					if (callbackTimeout < 0)
 					{
 						// even if we are in a hurry: For the sake of load-balance we have to give control back to the ThreadPool
 						callbackTimeout = 0;
 					}
 
-					Task.Factory.StartNewDelayed((int)callbackTimeout, RegionUpdateCallback, this);
+					Task.Factory.StartNewDelayed(callbackTimeout, RegionUpdateCallback, this);
 				}
 				else
 				{
 					if (IsDisposed)
 					{
-						// thats it
+						// the Region was marked as disposed and can now be trashed
 						Dispose();
 					}
 				}
@@ -1328,7 +1302,7 @@ namespace WCell.RealmServer.Global
 
 		internal void UpdateCharacters()
 		{
-			var updatedObjs = new HashSet<WorldObject>();
+			var updatedObjs = WorldObject.WorldObjectSetPool.Obtain();
 			var count = m_characters.Count;
 			for (var i = 0; i < count; i++)
 			{
@@ -1347,6 +1321,8 @@ namespace WCell.RealmServer.Global
 			{
 				updated.ResetUpdateInfo();
 			}
+			updatedObjs.Clear();
+			WorldObject.WorldObjectSetPool.Recycle(updatedObjs);
 		}
 
 		/// <summary>

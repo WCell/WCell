@@ -37,15 +37,10 @@ namespace WCell.Addons.Default.Spells
 
 		static void FixTameSpell(SpellId id, SpellId triggerId)
 		{
-			// convert the Dummy aura into a spell-trigger
+			// add a spell-trigger
 			var spell = SpellHandler.Get(id);
-			var effect = spell.GetEffect(SpellEffectType.ApplyAura);
-			effect.AuraType = AuraType.None;
-			effect.EffectType = SpellEffectType.TriggerSpell;
-			//spell.Durations.Min = 200;
-			//spell.Durations.Max = 200;
+			var effect = spell.AddTriggerSpellEffect(triggerId, ImplicitTargetType.SingleEnemy);
 			effect.Amplitude = spell.Durations.Min;
-			effect.TriggerSpellId = triggerId;
 		}
 	}
 }

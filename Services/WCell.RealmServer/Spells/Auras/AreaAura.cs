@@ -32,8 +32,8 @@ namespace WCell.RealmServer.Spells.Auras
 		ITickTimer m_controller;
 		TimerEntry m_timer;
 		ObjectReference m_CasterReference;
-		float m_duration;
-		float m_elapsed;
+		int m_duration;
+		int m_elapsed;
 		ISpellParameters m_params;
 		private int m_remainingCharges;
 		private bool m_IsActivated;
@@ -132,7 +132,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (m_controller == null)
 				{
-					return (int)((m_duration - m_elapsed) * 1000);
+					return m_duration - m_elapsed;
 				}
 
 				return m_controller.TimeLeft;
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			else
 			{
-				m_duration = m_spell.GetDuration(m_CasterReference)/1000f;
+				m_duration = m_spell.GetDuration(m_CasterReference);
 				if (m_duration < 1)
 				{
 					m_duration = int.MaxValue;
@@ -267,11 +267,11 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Check for all targets in radius, kick out invalid ones and add new ones
 		/// </summary>
-		protected internal void RevalidateTargetsAndApply(float timeElapsed)
+		protected internal void RevalidateTargetsAndApply(int timeElapsed)
 		{
 			if (m_controller == null)
 			{
-				m_elapsed += m_timer.Interval;
+				m_elapsed += timeElapsed;
 				if (m_elapsed >= m_duration)
 				{
 					Remove(false);
@@ -419,7 +419,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region IUpdatable
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_timer != null)
 			{

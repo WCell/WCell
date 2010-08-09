@@ -78,7 +78,8 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.AttackerCritChance] = NothingHandler;
 			//MultiModHandlers[(int)ModifierMulti.BlockChance] = UpdateBlockChance;
 			MultiModHandlers[(int)StatModifierFloat.BlockValue] = UpdateBlockChance;
-			MultiModHandlers[(int)StatModifierFloat.AttackTime] = UpdateAllAttackTimes;
+			MultiModHandlers[(int)StatModifierFloat.MeleeAttackTime] = UpdateMeleeAttackTimes;
+			MultiModHandlers[(int)StatModifierFloat.RangedAttackTime] = UpdateRangedAttackTime;
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 		}
 		#endregion
@@ -233,6 +234,8 @@ namespace WCell.RealmServer.Modifiers
 			var value = unit.BaseHealth + stamBonus + unit.MaxHealthMod;
 
 			unit.SetInt32(UnitFields.MAXHEALTH, value);
+
+			unit.UpdateHealthRegen();
 		}
 
 		internal static void UpdateMaxPower(this Unit unit)
@@ -250,6 +253,8 @@ namespace WCell.RealmServer.Modifiers
 			}
 
 			unit.MaxPower = value;
+
+			unit.UpdatePowerRegen();
 		}
 
 		#region Regen
@@ -296,7 +301,7 @@ namespace WCell.RealmServer.Modifiers
 
 
 		/// <summary>
-		/// Updates the amount of Power regenerated per regen-tick (while not being "interrupted")
+		/// Updates the amount of Power regenerated per regen-tick
 		/// </summary>
 		internal static void UpdatePowerRegen(this Unit unit)
 		{
@@ -304,21 +309,12 @@ namespace WCell.RealmServer.Modifiers
 
 			if (unit.IsAlive)
 			{
-				if (unit is Character)
-				{
-					regen = PowerFormulas.GetPowerRegen(unit);
-				}
-				else
-				{
-					// TODO: NPC regen
-					regen = unit.BasePower / 20;
-				}
+				regen = unit.GetBasePowerRegen();
 
-				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat)
+				if (unit.PowerType != PowerType.RunicPower || unit.IsInCombat) // runic power bonuses only apply during combat
 				{
-					// runic power bonuses only apply during combat
 					regen += unit.IntMods[(int) StatModifierInt.PowerRegen];
-					regen = ((100 + unit.IntMods[(int) StatModifierInt.PowerRegen])*regen + 50)/100;	// rounding
+					regen += (unit.IntMods[(int) StatModifierInt.PowerRegenPercent]*regen + 50)/100;	// rounding
 				}
 			}
 
@@ -564,13 +560,19 @@ namespace WCell.RealmServer.Modifiers
 			unit.UpdateRangedAttackTime();
 		}
 
+		internal static void UpdateMeleeAttackTimes(this Unit unit)
+		{
+			unit.UpdateMainAttackTime();
+			unit.UpdateOffHandAttackTime();
+		}
+
 		/// <summary>
 		/// Re-calculates the mainhand melee damage of this Unit
 		/// </summary>
 		internal static void UpdateMainAttackTime(this Unit unit)
 		{
 			var baseTime = unit.MainWeapon.AttackTime;
-			baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+			baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.MeleeAttackTime], baseTime);
 			if (baseTime < 30)
 			{
 				baseTime = 30;
@@ -587,7 +589,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.MeleeAttackTime], baseTime);
 				unit.OffHandAttackTime = baseTime;
 			}
 			else
@@ -602,7 +604,7 @@ namespace WCell.RealmServer.Modifiers
 			if (weapon != null && weapon.IsRanged)
 			{
 				var baseTime = weapon.AttackTime;
-				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.AttackTime], baseTime);
+				baseTime = GetMultiMod(unit.FloatMods[(int)StatModifierFloat.RangedAttackTime], baseTime);
 				unit.RangedAttackTime = baseTime;
 			}
 			else
@@ -655,7 +657,7 @@ namespace WCell.RealmServer.Modifiers
 																				 chr.GetCombatRatingMod(CombatRating.Dodge),
 																				 chr.GetCombatRatingMod(CombatRating.DefenseSkill)
 																				 );
-				dodgeChance += unit.IntMods[(int)StatModifierInt.DodgeChance];
+				dodgeChance += (dodgeChance * unit.IntMods[(int)StatModifierInt.DodgeChance] + 50) / 100;
 				chr.DodgeChance = dodgeChance;
 			}
 		}

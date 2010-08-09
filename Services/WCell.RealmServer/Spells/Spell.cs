@@ -224,7 +224,8 @@ namespace WCell.RealmServer.Spells
 
 			foreach (var effect in Effects)
 			{
-				if (effect.EffectType == SpellEffectType.PersistantAreaAura || effect.HasTarget(ImplicitTargetType.DynamicObject))
+				if (effect.EffectType == SpellEffectType.PersistantAreaAura// || effect.HasTarget(ImplicitTargetType.DynamicObject)
+					)
 				{
 					DOEffect = effect;
 					break;
@@ -248,15 +249,15 @@ namespace WCell.RealmServer.Spells
 			}
 			init2 = true;
 
-			IsChanneled = AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
-				// don't use Enum.HasFlag!
-						  ChannelInterruptFlags > 0;
-
-			IsPassive = (!IsChanneled && Attributes.HasFlag(SpellAttributes.Passive)) ||
+			IsPassive = (Attributes.HasFlag(SpellAttributes.Passive)) ||
 				// tracking spells are also passive		     
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
 						HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+
+			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
+				// don't use Enum.HasFlag!
+						  ChannelInterruptFlags > 0;
 
 			foreach (var effect in Effects)
 			{
@@ -314,10 +315,9 @@ namespace WCell.RealmServer.Spells
 
 			IsEnchantment = HasEffectWith(effect => effect.IsEnchantmentEffect);
 
-			if (!IsEnchantment)
+			if (!IsEnchantment && EquipmentSlot == EquipmentSlot.End)
 			{
 				// Required Item slot for weapon abilities
-				EquipmentSlot = EquipmentSlot.End;
 				if (RequiredItemClass == ItemClass.Armor && RequiredItemSubClassMask == ItemSubClassMask.Shield)
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;

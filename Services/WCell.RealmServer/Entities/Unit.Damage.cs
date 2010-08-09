@@ -393,7 +393,7 @@ namespace WCell.RealmServer.Entities
 				value += MeleeAttackPowerModsPos;
 				value -= MeleeAttackPowerModsNeg;
 
-				value = ((1 + MeleeAttackPowerMultiplier) * value).RoundInt();
+				value = MathUtil.RoundInt((1 + MeleeAttackPowerMultiplier) * value);
 				return value;
 			}
 		}
@@ -448,7 +448,7 @@ namespace WCell.RealmServer.Entities
 				value += RangedAttackPowerModsPos;
 				value -= RangedAttackPowerModsNeg;
 
-				value = ((1 + RangedAttackPowerMultiplier) * value).RoundInt();
+				value = MathUtil.RoundInt((1 + RangedAttackPowerMultiplier) * value);
 				return value;
 			}
 		}

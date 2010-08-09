@@ -37,9 +37,9 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (Targets != null && Targets.Count > 0)
+			if (m_targets != null && m_targets.Count > 0)
 			{
-				firstTarget = (Unit)Targets[0];
+				firstTarget = (Unit)m_targets[0];
 			}
 		}
 
@@ -70,7 +70,7 @@ namespace WCell.RealmServer.Spells.Effects
 				else if (Effect.Spell.Durations.Min > 0)
 				{
 					// not channelled: Activate decay delay
-					GO.RemainingDecayDelay = Effect.Spell.Durations.Random();
+					GO.RemainingDecayDelayMillis = Effect.Spell.Durations.Random();
 				}
 			}
 			else

@@ -327,7 +327,10 @@ namespace WCell.RealmServer.Spells
 
 		public SpellEffect[] ProcTriggerEffects;
 
-		public EquipmentSlot EquipmentSlot;
+		/// <summary>
+		/// The equipment slot where to look for a required item
+		/// </summary>
+		public EquipmentSlot EquipmentSlot = EquipmentSlot.End;
 
 		public bool IsFinishingMove;
 

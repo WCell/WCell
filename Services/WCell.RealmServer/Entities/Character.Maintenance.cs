@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Entities
 			Type |= ObjectTypes.Player;
 			ChatChannels = new List<ChatChannel>();
 
-			m_logoutTimer = new TimerEntry(0.0f, DefaultLogoutDelay, totalTime => FinishLogout());
+			m_logoutTimer = new TimerEntry(0, DefaultLogoutDelayMillis, totalTime => FinishLogout());
 
 			Account = acc;
 			m_client = client;
@@ -376,13 +376,12 @@ namespace WCell.RealmServer.Entities
 					{
 						log.Warn("Player {0}'s Corpse was spawned in invalid region: {1}", this, m_record.CorpseRegion);
 					}
-
 				}
 			}
 			else if (m_record.Health == 0)
 			{
 				// we were dead and did not release yet
-				var diff = (float)DateTime.Now.Subtract(m_record.LastDeathTime.AddMilliseconds(Corpse.AutoReleaseDelay)).TotalSeconds;
+				var diff = DateTime.Now.Subtract(m_record.LastDeathTime).GetMilliSecondsInt() + Corpse.AutoReleaseDelay;
 				m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 
 				if (diff > 0)
@@ -488,7 +487,7 @@ namespace WCell.RealmServer.Entities
 
 			try
 			{
-				InitializeRegeneration();
+				Regenerates = true;
 				((PlayerSpellCollection)m_spells).PlayerInitialize();
 
 				OnLogin();
@@ -982,7 +981,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="forced"></param>
 		public void Logout(bool forced)
 		{
-			Logout(forced, CanLogoutInstantly ? 0 : DefaultLogoutDelay);
+			Logout(forced, CanLogoutInstantly ? 0 : DefaultLogoutDelayMillis);
 		}
 
 		/// <summary>
@@ -992,7 +991,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="forced">whether the Character is forced to logout (as opposed to initializing logout oneself)</param>
 		/// <param name="delay">The delay until the client will be disconnected in seconds</param>
-		public void Logout(bool forced, float delay)
+		public void Logout(bool forced, int delay)
 		{
 			if (!m_isLoggingOut)
 			{
@@ -1292,14 +1291,14 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void Kick(Character kicker, string reason)
 		{
-			Kick(kicker, reason, DefaultLogoutDelay);
+			Kick(kicker, reason, DefaultLogoutDelayMillis);
 		}
 
 		/// <summary>
 		/// Broadcasts a kick message and then kicks this Character after the default delay.
 		/// Requires region context.
 		/// </summary>
-		public void Kick(INamed kicker, string reason, float delay)
+		public void Kick(INamed kicker, string reason, int delay)
 		{
 			var other = (kicker != null ? " by " + kicker.Name : "") +
 				(!string.IsNullOrEmpty(reason) ? " (" + reason + ")" : ".");
@@ -1404,7 +1403,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			KnownObjects.Clear();
-
+			WorldObjectSetPool.Recycle(KnownObjects);
 		}
 
 		/// <summary>

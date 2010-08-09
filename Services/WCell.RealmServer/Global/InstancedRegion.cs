@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Global
 			return chr.Role.IsStaff;
 		}
 
-		protected virtual void OnTimeout(float timeElapsed)
+		protected virtual void OnTimeout(int timeElapsed)
 		{
 			s_log.Debug("{0} #{1} timeout.", Name, m_InstanceId);
 			Delete();

@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Mail
 			{
 				// receiving character is online, get info from the character object
 				recipientFaction = recipient.Faction.Group;
-				recipientMailCount = recipient.Mail.AllMail.Count;
+				recipientMailCount = recipient.MailAccount.AllMail.Count;
 				recipientRecord = recipient.Record;
 			}
 			else

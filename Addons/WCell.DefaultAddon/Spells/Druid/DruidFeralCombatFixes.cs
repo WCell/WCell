@@ -118,7 +118,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
 				// can only be proc'ed by a certain set of spells:
-				effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidFeralCombatMangleBear, SpellLineId.DruidMangleCat);
+				effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidMangleBear, SpellLineId.DruidMangleCat);
 			});
 
 			// King of the Jungle has 2 dummies for shapeshift-restricted aura effects
@@ -251,7 +251,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Cat Form has a periodic effect that should trigger a passive aura
-			SpellLineId.DruidCatFormShapeshift.Apply(spell =>
+			SpellLineId.DruidCatForm.Apply(spell =>
 			{
 				spell.RemoveEffect(AuraType.PeriodicTriggerSpell);
 
@@ -268,7 +268,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			}, SpellId.ClassSkillCatFormPassivePassive);
 
 			// Flight form also toggles a passive Aura while activated
-			SpellLineId.DruidSwiftFlightFormShapeshift.Apply(spell =>
+			SpellLineId.DruidSwiftFlightForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.SwiftFlightFormPassivePassive));
 			});
@@ -283,7 +283,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Aqua form also toggles a passive Aura while activated
-			SpellLineId.DruidAquaticFormShapeshift.Apply(spell =>
+			SpellLineId.DruidAquaticForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.ClassSkillAquaticFormPassivePassive));
 			});
@@ -309,19 +309,19 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Dire Bear is missing it's passive Aura
-			SpellLineId.DruidDireBearFormShapeshift.Apply(spell =>
+			SpellLineId.DruidDireBearForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.ClassSkillDireBearFormPassivePassive));
 			});
 
 			// Travel form also requires it's passive Aura
-			SpellLineId.DruidTravelFormShapeshift.Apply(spell =>
+			SpellLineId.DruidTravelForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.TravelFormPassivePassive));
 			});
 
 			// Savage Defense has wrong trigger flags & it's buff has wrong effect type 
-			SpellLineId.DruidSavageDefensePassive.Apply(spell =>
+			SpellLineId.DruidSavageDefense.Apply(spell =>
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
 			});
@@ -331,7 +331,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			}, SpellId.EffectSavageDefense);
 
 			// Flight Form is also missing it's passive Aura
-			SpellLineId.DruidFlightFormShapeshift.Apply(spell =>
+			SpellLineId.DruidFlightForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FlightFormPassivePassive));
 			});

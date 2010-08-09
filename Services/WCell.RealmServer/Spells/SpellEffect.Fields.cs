@@ -184,7 +184,8 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// The SpellEffect to be used for EffectValue calculation
+		/// If the caster has the spell of the EffectValueOverrideEffect it uses it for EffectValue calculation.
+		/// If not it uses this Effect's original value.
 		/// </summary>
 		public SpellEffect EffectValueOverrideEffect;
 		#endregion

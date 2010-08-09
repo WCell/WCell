@@ -808,7 +808,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateGuildQueryResponsePacket(guild))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1071,7 +1071,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, null))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1086,7 +1086,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, affectedMember, influencer))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1100,7 +1100,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = CreateEventPacket(guild, guildEvent, affectedMember))
 			{
-				guild.SendAll(packet);
+				guild.Broadcast(packet);
 			}
 		}
 
@@ -1114,7 +1114,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (RealmPacketOut packet = CreateEventPacket(guild, guildEvent, null))
 			{
-				guild.SendAll(packet, ignoredCharacter);
+				guild.Broadcast(packet, ignoredCharacter);
 			}
 		}
 
@@ -1129,7 +1129,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (RealmPacketOut packet = CreateEventPacket(guild, guildEvent, affectedMember))
 			{
-				guild.SendAll(packet, ignoredCharacter);
+				guild.Broadcast(packet, ignoredCharacter);
 			}
 		}
 
