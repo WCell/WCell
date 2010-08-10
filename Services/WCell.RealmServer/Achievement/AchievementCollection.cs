@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using NLog;
 using WCell.Constants.Achievements;
+using WCell.Constants.Factions;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
@@ -281,6 +282,10 @@ namespace WCell.RealmServer.Achievement
 				{
 					// Skip achievements we have completed
 					if (HasCompleted(entry.AchievementEntryId))
+						continue;
+					if (entry.AchievementEntry.FactionFlag == 1 && Owner.FactionGroup != FactionGroup.Alliance)
+						continue;
+					if (entry.AchievementEntry.FactionFlag == 0 && Owner.FactionGroup != FactionGroup.Horde)
 						continue;
 
 					entry.OnUpdate(this, value1, value2, involved);
