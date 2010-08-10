@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Achievements;
+using WCell.Constants.Factions;
 using WCell.Constants.World;
 
 namespace WCell.RealmServer.Achievement
@@ -10,7 +11,7 @@ namespace WCell.RealmServer.Achievement
     public class AchievementEntry
     {
 		public AchievementEntryId ID;                                           // 0
-        public uint FactionFlag;                                  // 1 -1=all, 0=horde, 1=alliance
+		public int FactionFlag;                                  // 1 -1=all, 0=horde, 1=alliance
         public MapId MapID;                                        // 2 -1=none
         //public uint ParentAchievement;                             // 3 its Achievement parent (can`t start while parent uncomplete, use its Criteria if don`t have own, use its progress on begin)
         public string[] Name;                                         // 4-19
