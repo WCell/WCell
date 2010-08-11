@@ -26,6 +26,18 @@ namespace WCell.Util
 		/// <summary>
 		/// Returns the entry in this array at the given index, or null if the index is out of bounds
 		/// </summary>
+		public static T Get<T>(this T[] arr, int index)
+		{
+			if (index >= arr.Length || index < 0)
+			{
+				return default(T);
+			}
+			return arr[index];
+		}
+
+		/// <summary>
+		/// Returns the entry in this array at the given index, or null if the index is out of bounds
+		/// </summary>
 		public static T Get<T>(this T[] arr, uint index)
 		{
 			if (index >= arr.Length)

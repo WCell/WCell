@@ -607,9 +607,10 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		/// <param name="target">the character to receieve the combat log message</param>
 		/// <param name="message">the message to display in the characters combat log</param>
-		public static void SendCombatLogExperienceMessage(IPacketReceiver target, string message)
+		public static void SendCombatLogExperienceMessage(IPacketReceiver target, ClientLocale locale, RealmLangKey key, params object[] args)
 		{
-			using (var packet = CreateCharChatMessage(ChatMsgType.CombatXPGain, ChatLanguage.Universal, EntityId.Zero, EntityId.Zero, null, message, ChatTag.None))
+			using (var packet = CreateCharChatMessage(ChatMsgType.CombatXPGain, ChatLanguage.Universal, EntityId.Zero, EntityId.Zero, null,
+				RealmLocalizer.Instance.Translate(locale, key, args), ChatTag.None))
 			{
 				target.Send(packet);
 			}

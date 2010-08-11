@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Taxi
 				return false;
 			}
 
-			if (vendor == null || !vendor.CanInteractWith(chr))
+			if (vendor == null || !vendor.CheckVendorInteraction(chr))
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.NotAvailable);
 			}

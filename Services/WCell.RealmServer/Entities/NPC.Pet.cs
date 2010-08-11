@@ -10,6 +10,7 @@ using WCell.RealmServer.AI.Actions.Combat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
@@ -35,9 +36,21 @@ namespace WCell.RealmServer.Entities
 			get { return m_PetRecord as PermanentPetRecord; }
 		}
 
+		/// <summary>
+		/// Whether this is the active pet of it's master (with an action bar)
+		/// </summary>
 		public bool IsActivePet
 		{
 			get { return m_master is Character && ((Character)m_master).ActivePet == this; }
+		}
+
+		/// <summary>
+		/// Whether this is a Hunter pet.
+		/// See http://www.wowwiki.com/Hunter_pet
+		/// </summary>
+		public bool IsHunterPet
+		{
+			get { return m_PetRecord is PermanentPetRecord; }
 		}
 
 		#region Names
@@ -57,7 +70,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			var response = PetMgr.IsPetNameValid(ref name);
+			var response = PetMgr.ValidatePetName(ref name);
 			if (response != PetNameInvalidReason.Ok)
 			{
 				return response;
@@ -70,14 +83,14 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanEat(PetFoodType petFoodType)
 		{
-			return m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
+			return m_entry.Family != null && m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
 		}
 
 		public int GetHappinessGain(ItemTemplate food)
 		{
 			if (food == null) return 0;
 
-			// TODO: Replace constants with named Variables
+			// TODO: Replace unnamed with named constants
 			var diff = (Level - (int)food.Level);
 			if (diff > 0)
 			{
@@ -107,7 +120,7 @@ namespace WCell.RealmServer.Entities
 		#region Talents
 		public PetTalentType PetTalentType
 		{
-			get { return Entry.Family.PetTalentType; }
+			get { return Entry.Family != null ? Entry.Family.PetTalentType : PetTalentType.None; }
 		}
 
 		public DateTime? LastTalentResetTime
@@ -269,89 +282,139 @@ namespace WCell.RealmServer.Entities
 
 		#region Pet Scaling and levels
 		/// <summary>
-		/// TODO: Need formulas for Levelling PetStats.
+		/// Whether this NPC currently may gain levels and experience (usually only true for pets and certain kinds of minions)
 		/// </summary>
-		internal void TryPetLevelUp()
+		public bool MayGainExperience
 		{
-			// reset casterinfo
-			m_CasterReference = null;
+			get { return IsHunterPet && PetExperience < NextPetLevelExperience; }
+		}
 
-			var nextLevelXp = PetNextLevelExp;
-			var level = Level;
-			if ((PetExperience >= nextLevelXp) &&
-				(level < RealmServerConfiguration.MaxCharacterLevel) &&
-				level < m_master.Level)
+		public bool MayGainLevels
+		{
+			get { return HasPlayerMaster && Level <= MaxLevel; }
+		}
+
+		public override int MaxLevel
+		{
+			get
 			{
-				PetExperience -= nextLevelXp;
-				Level++;
-				level++;
-				nextLevelXp = XpGenerator.GetPetXPForLevel(level + 1);
-
-				var oldPower = BasePower;
-				var oldHealth = BaseHealth;
-
-				// includes boni through stat-changes
-				ModPetStatsPerLevel(level);
-
-				// Make the pet grow in size
-				SetScale();
-
-				/*
-				var evt = LeveledUp;
-				if (evt != null)
+				if (HasPlayerMaster)
 				{
-					evt(this);
+					return m_master.Level;
 				}
-				*/
-
-				PetNextLevelExp = nextLevelXp;
-				if (PetExperience >= nextLevelXp)
-				{
-					TryPetLevelUp();
-					return;
-				}
+				return base.MaxLevel;
 			}
 		}
 
-		internal void ModPetStatsPerLevel(int level)
+		internal bool TryLevelUp()
 		{
-			var family = m_entry.Family;
-			if (family != null)
+			if (MayGainLevels)
 			{
-				var strBonus = family.GetStrengthBonus(level);
-				var agiBonus = family.GetAgilityBonus(level);
-				var staBonus = family.GetStaminaBonus(m_master.Stamina, level);
-				var intBonus = family.GetIntellectBonus(level);
-				var sprBonus = family.GetSpiritBonus(level);
+				var level = Level;
+				var xp = PetExperience;
+				var nextLevelXp = NextPetLevelExperience;
+				var leveled = false;
 
-				var armBonus = family.GetArmorBonus(m_master.Armor, level);
-				var dmgBonus = family.GetDamageBonus(m_master.MeleeAttackPower, level);
+				while (xp >= nextLevelXp && level < MaxLevel)
+				{
+					++level;
+					xp -= nextLevelXp;
+					nextLevelXp = XpGenerator.GetPetXPForLevel(level + 1);
 
-				ModBaseStat(StatType.Strength, strBonus);
-				ModBaseStat(StatType.Agility, agiBonus);
-				ModBaseStat(StatType.Stamina, staBonus);
-				ModBaseStat(StatType.Intellect, intBonus);
-				ModBaseStat(StatType.Spirit, sprBonus);
+					leveled = true;
+				}
 
-				BasePower += family.GetPowerGain(level);
-				BaseHealth += family.GetHealthGain(level);
-				//Armor += armBonus;
-				MeleeAttackPower += dmgBonus;
+				if (leveled)
+				{
+					PetExperience = xp;
+					NextPetLevelExperience = nextLevelXp;
+					Level = level;
+					return true;
+				}
+			}
+			return false;
+		}
+
+		protected override void OnLevelChanged()
+		{
+			SetScale();
+			PetExperience = 0;
+			if (HasPlayerMaster)
+			{
+				var level = Level;
+				if (HasTalents)
+				{
+					var freeTalentPoints = Talents.GetFreePetTalentPoints(level);
+					if (freeTalentPoints < 0)
+					{
+						// need to remove talent points
+						if (!((Character)m_master).GodMode)
+						{
+							// remove the extra talents
+							Talents.RemoveTalents(-freeTalentPoints);
+						}
+						freeTalentPoints = 0;
+					}
+					FreeTalentPoints = freeTalentPoints;
+				}
+
+				var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
+				if (levelStatInfo != null)
+				{
+					ModPetStatsPerLevel(levelStatInfo);
+					m_auras.ReapplyAllAuras();
+				}
+				m_entry.NotifyLeveledChanged(this);
+			}
+		}
+
+		internal void ModPetStatsPerLevel(PetLevelStatInfo levelStatInfo)
+		{
+			BaseHealth = levelStatInfo.Health;
+			if (PowerType == PowerType.Mana && levelStatInfo.Mana > 0)
+			{
+				BasePower = levelStatInfo.Mana;
 			}
 
-			//var healthGain = (BaseHealth - oldHealth);
-			//var powerGain = (BasePower - oldPower);
+			for (StatType stat = 0; stat < StatType.End; stat++)
+			{
+				SetBaseStat(stat, levelStatInfo.BaseStats[(int)stat]);
+			}
+
+			this.UpdatePetResistance(DamageSchool.Physical);
+
+			// update spell ranks
+			var done = true;
+			do
+			{
+				foreach (var spell in m_spells)
+				{
+					if (spell.Talent == null && spell.NextRank != null && spell.NextRank.Level <= Level)
+					{
+						done = false;
+						m_spells.Remove(spell);
+						m_spells.AddSpell(spell.NextRank);
+						break; // start new iteration because iterator was invalidated
+					}
+				}
+			} while (!done);
 			SetInt32(UnitFields.HEALTH, MaxHealth);
-
-			// Hunter pets can now learn all skills at their level. 
-			//They will get new ranks automatically as they gain levels.
-
-			if ((Level > 19) && ((Level % 4) == 0))
-			{
-				FreeTalentPoints++;
-			}
 		}
+
 		#endregion
+
+		public override int GetUnmodifiedBaseStatValue(StatType stat)
+		{
+			if (HasPlayerMaster)
+			{
+				var levelStatInfo = m_entry.GetPetLevelStatInfo(Level);
+				if (levelStatInfo != null)
+				{
+					return levelStatInfo.BaseStats[(int)stat];
+				}
+			}
+			return base.GetUnmodifiedBaseStatValue(stat);
+		}
 
 		#region Behavior
 		public void SetPetAttackMode(PetAttackMode mode)

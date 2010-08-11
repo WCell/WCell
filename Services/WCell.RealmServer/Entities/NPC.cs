@@ -138,10 +138,6 @@ namespace WCell.RealmServer.Entities
 			RangedWeapon = m_entry.CreateRangedWeapon();
 			OffHandWeapon = entry.CreateOffhandWeapon();
 
-			// Set Level/Scale *after* MainWeapon is set:
-			var level = entry.GetRandomLevel();
-			Level = level;
-
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
 
@@ -220,6 +216,20 @@ namespace WCell.RealmServer.Entities
 
 			m_brain = m_entry.BrainCreator(this);
 			m_brain.IsRunning = true;
+
+			AddMessage(() =>
+			{
+				// Set Level/Scale after NPC is in world:
+				if (!HasPlayerMaster)
+				{
+					var level = entry.GetRandomLevel();
+					Level = level;
+				}
+				else
+				{
+					Level = m_master.Level;
+				}
+			});
 		}
 
 		/// <summary>
@@ -548,6 +558,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public override int StaminaWithoutHealthContribution
+		{
+			get
+			{
+				if (IsHunterPet)
+				{
+					// hunter pets gain no health from their base stamina
+					return GetBaseStatValue(StatType.Stamina);
+				}
+				// TODO: NPC stats
+				return 0;
+			}
+		}
 		#endregion
 
 		#region NPC-specific Fields
@@ -638,178 +661,6 @@ namespace WCell.RealmServer.Entities
 				//Update Group Update flags
 				if (m_PetRecord != null && m_master is Character)
 					((Character)m_master).GroupUpdateFlags |= GroupUpdateFlags.PetMaxPower;
-			}
-		}
-
-
-		public override int Stamina
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.Stamina * PetMgr.StaminaScaler) / 100), 0);
-					return (base.Stamina + bonus);
-				}
-				return base.Stamina;
-			}
-		}
-
-		public override int Armor
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.Armor * PetMgr.ArmorScaler) / 100), 0);
-					return (base.Armor + bonus);
-				}
-				return base.Armor;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.Armor * PetMgr.ArmorScaler) / 100), 0);
-					base.Armor = Math.Max(value - bonus, 0);
-				}
-				base.Armor = value;
-			}
-		}
-
-		public override int MeleeAttackPower
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.MeleeAttackPower * PetMgr.MeleeAttackPowerScaler) / 100), 0);
-					return (base.MeleeAttackPower + bonus);
-				}
-				return base.MeleeAttackPower;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.MeleeAttackPower * PetMgr.MeleeAttackPowerScaler) / 100), 0);
-					base.Armor = Math.Max(value - bonus, 0);
-				}
-				base.MeleeAttackPower = value;
-			}
-		}
-
-		//
-		// Todo: Pets get about 7.5% of the hunter�s ranged attack power added to their spell damage.
-		//
-
-		public override int FireResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FireResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.FireResist + bonus);
-				}
-				return base.FireResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FireResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.FireResist = Math.Max(value - bonus, 0);
-				}
-				base.FireResist = value;
-			}
-		}
-
-		public override int NatureResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.NatureResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.NatureResist + bonus);
-				}
-				return base.NatureResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.NatureResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.NatureResist = Math.Max(value - bonus, 0);
-				}
-				base.NatureResist = value;
-			}
-		}
-
-		public override int FrostResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FrostResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.FrostResist + bonus);
-				}
-				return base.FrostResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FrostResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.FrostResist = Math.Max(value - bonus, 0);
-				}
-				base.FrostResist = value;
-			}
-		}
-
-		public override int ArcaneResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.ArcaneResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.ArcaneResist + bonus);
-				}
-				return base.ArcaneResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.ArcaneResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.ArcaneResist = Math.Max(value - bonus, 0);
-				}
-				base.ArcaneResist = value;
-			}
-		}
-
-		public override int ShadowResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = (Master.ShadowResist * PetMgr.ResistanceScaler) / 100;
-					return (base.ShadowResist + bonus);
-				}
-				return base.ShadowResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = ((Master.ShadowResist * PetMgr.ResistanceScaler) / 100);
-					base.ShadowResist = Math.Max(value - bonus, 0);
-				}
-				base.ShadowResist = value;
 			}
 		}
 		#endregion
@@ -915,19 +766,12 @@ namespace WCell.RealmServer.Entities
 			m_region.OnNPCDied(this);
 
 			var looter = m_FirstAttacker;
-			UnitFlags |= UnitFlags.SelectableNotAttackable;
-
-			// send off the tamer
-			if (m_currentTamer != null)
-			{
-				PetHandler.SendTameFailure(m_currentTamer, TameFailReason.TargetDead);
-				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
-			}
 
 			if (!HasPlayerMaster)	// not player-owned NPC
 			{
-				if (looter is Character &&
-				    LootMgr.GetOrCreateLoot(this, (Character) looter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+				var playerLooter = looter != null ? looter.PlayerOwner : null;
+				if (playerLooter != null &&
+					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
 				{
 					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
 					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
@@ -942,6 +786,15 @@ namespace WCell.RealmServer.Entities
 
 			// notify events
 			m_entry.NotifyDied(this);
+
+			UnitFlags |= UnitFlags.SelectableNotAttackable;
+
+			// send off the tamer
+			if (m_currentTamer != null)
+			{
+				PetHandler.SendTameFailure(m_currentTamer, TameFailReason.TargetDead);
+				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
+			}
 
 			if (m_master != null)
 			{
@@ -1087,42 +940,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public bool CanInteractWith(Character chr)
-		{
-			if (chr.Region != m_region ||
-				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
-				!chr.CanSee(this))
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.TooFarAway);
-				return false;
-			}
-
-			if (chr.IsAlive == IsSpiritHealer)
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.YouDead);
-				return false;
-			}
-
-			if (chr.IsOnTaxi || m_isInCombat || IsOnTaxi)
-			{
-				return false;
-			}
-
-			if (!chr.CanInteract || !CanInteract)
-			{
-				return false;
-			}
-
-			var reputation = chr.Reputations.GetOrCreate(Faction.ReputationIndex);
-			if (reputation != null && !reputation.CanInteract)
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.BadRep);
-				return false;
-			}
-
-			return true;
-		}
-
 		#region Decay & Dispose
 		/// <summary>
 		/// Marks this NPC lootable (usually when dead)
@@ -1211,6 +1028,46 @@ namespace WCell.RealmServer.Entities
 			base.OnLeaveCombat();
 		}
 		#endregion
+
+		/// <summary>
+		/// Also sends a message to the Character, if not valid
+		/// </summary>
+		internal bool CheckVendorInteraction(Character chr)
+		{
+			if (chr.Region != m_region ||
+				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
+				!chr.CanSee(this))
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.TooFarAway);
+				return false;
+			}
+
+			if (!IsAlive)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.VendorDead);
+				return false;
+			}
+
+			if (chr.IsAlive == IsSpiritHealer)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.YouDead);
+				return false;
+			}
+
+			if (!chr.CanInteract || !CanInteract)
+			{
+				return false;
+			}
+
+			var reputation = chr.Reputations.GetOrCreate(Faction.ReputationIndex);
+			if (reputation != null && !reputation.CanInteract)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.BadRep);
+				return false;
+			}
+
+			return true;
+		}
 
 		#region Talk
 		public override void Say(string message)
@@ -1482,7 +1339,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanGiveQuestTo(Character chr)
 		{
-			return CanInteractWith(chr);
+			return CheckVendorInteraction(chr);
 		}
 		#endregion
 
@@ -1558,15 +1415,10 @@ namespace WCell.RealmServer.Entities
 		{
 			if (m_master != null)
 			{
-				SetEntityId(UnitFields.CREATEDBY, EntityId.Zero);
-				if (Summoner != null)
-				{
-					Summoner = null;
-				}
-				if (Charmer != null)
-				{
-					Charmer = null;
-				}
+				//SetEntityId(UnitFields.CREATEDBY, EntityId.Zero);
+				SetEntityId(UnitFields.SUMMONEDBY, EntityId.Zero);
+				SetEntityId(UnitFields.CHARMEDBY, EntityId.Zero);
+				Master = null;
 			}
 			if (m_PetRecord != null)
 			{
@@ -1628,22 +1480,6 @@ namespace WCell.RealmServer.Entities
 			}
 
 			base.Update(dt);
-		}
-
-		/// <summary>
-		/// Deletes this NPC and spawns a new instance of it.
-		/// </summary>
-		public void Reset()
-		{
-			Delete();
-			if (m_spawnPoint != null)
-			{
-				ContextHandler.ExecuteInContext(m_spawnPoint.SpawnOne);
-			}
-			else
-			{
-				m_entry.Create(Region, Position);
-			}
 		}
 
 		public override void Dispose(bool disposing)

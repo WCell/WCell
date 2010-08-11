@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
+using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 
 namespace WCell.RealmServer.Entities
@@ -35,6 +37,112 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return CombatReach + m_mainWeapon.MaxRange; }
 		}
+
+		#region Damage Mods
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		protected internal virtual void AddDamageDoneModSilently(DamageSchool school, int delta)
+		{
+			// do nothing
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		public void AddDamageDoneMod(DamageSchool school, int delta)
+		{
+			AddDamageDoneModSilently(school, delta);
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		protected internal virtual void RemoveDamageDoneModSilently(DamageSchool school, int delta)
+		{
+			// do nothing
+		}
+
+		/// <summary>
+		/// Modifies the damage for the given school by the given delta.
+		/// </summary>
+		public void RemoveDamageDoneMod(DamageSchool school, int delta)
+		{
+			RemoveDamageDoneModSilently(school, delta);
+		}
+
+		protected internal virtual void ModDamageDoneFactorSilently(DamageSchool school, float delta)
+		{
+			// do nothing
+		}
+
+		public virtual float GetDamageDoneFactor(DamageSchool school)
+		{
+			return 1;
+		}
+
+		public virtual int GetDamageDoneMod(DamageSchool school)
+		{
+			return 0;
+		}
+
+		/// <summary>
+		/// Adds/Removes a flat modifier to all of the given damage schools
+		/// </summary>
+		public void AddDamageDoneMod(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				AddDamageDoneModSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Adds/Removes a flat modifier to all of the given damage schools
+		/// </summary>
+		public void RemoveDamageDoneMod(uint[] schools, int delta)
+		{
+			foreach (var school in schools)
+			{
+				RemoveDamageDoneModSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		public void ModDamageDoneFactor(DamageSchool school, float delta)
+		{
+			ModDamageDoneFactorSilently(school, delta);
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Adds/Removes a percent modifier to all of the given damage schools
+		/// </summary>
+		public void ModDamageDoneFactor(uint[] schools, float delta)
+		{
+			foreach (var school in schools)
+			{
+				ModDamageDoneFactorSilently((DamageSchool)school, delta);
+			}
+			//this.UpdateAllDamages();
+		}
+
+		/// <summary>
+		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
+		/// </summary>
+		public int GetTotalDamageDoneMod(DamageSchool school, int dmg, Spell spell = null)
+		{
+			if (spell != null)
+			{
+				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
+			}
+			dmg += GetDamageDoneMod(school);
+			dmg += (int)(GetDamageDoneFactor(school) * dmg + 0.5f);
+			return dmg;
+		}
+		#endregion
 
 		#region Weapon Info
 		/// <summary>
@@ -346,13 +454,10 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Melee Attack Power
-		public virtual int MeleeAttackPower
+		public int MeleeAttackPower
 		{
 			get { return GetInt32(UnitFields.ATTACK_POWER); }
-			internal set
-			{
-				SetInt32(UnitFields.ATTACK_POWER, value);
-			}
+			internal set { SetInt32(UnitFields.ATTACK_POWER, value); }
 		}
 
 		public int MeleeAttackPowerModsPos
@@ -485,16 +590,10 @@ namespace WCell.RealmServer.Entities
 				FirstAttacker = action.Attacker;
 			}
 
-			if (action.Attacker != null && action.Victim.ManaShieldAmount > 0)
-			{
-				// deduct mana shield points
-				action.Damage -= action.Victim.DrainManaShield(action.Damage);
-			}
-
 			// damage taken modifiers
 			if (m_damageTakenMods != null)
 			{
-				action.Damage -= m_damageTakenMods[(int)action.UsedSchool];
+				action.Damage += m_damageTakenMods[(int)action.UsedSchool];
 			}
 			if (m_damageTakenPctMods != null)
 			{
@@ -508,7 +607,7 @@ namespace WCell.RealmServer.Entities
 			// AoE damage reduction
 			if (action.Spell != null && action.Spell.IsAreaSpell && AoEDamageModifierPct != 0)
 			{
-				action.Damage -= (action.Damage*AoEDamageModifierPct + 50)/100;
+				action.Damage -= (action.Damage * AoEDamageModifierPct + 50) / 100;
 			}
 
 			// last change
@@ -518,33 +617,14 @@ namespace WCell.RealmServer.Entities
 			var dmg = action.ActualDamage;
 			if (dmg > 0)
 			{
-				// events (changing the DamageAction won't have any effect anymore)
-				if (action.Attacker is Character)
-				{
-					Character.NotifyHitDeliver(action);
-				}
-				else if (action.Attacker is NPC)
-				{
-					((NPC)action.Attacker).Entry.NotifyHitDeliver(action);
-				}
-
-				if (action.Victim is Character)
-				{
-					Character.NotifyHitReceive(action);
-				}
-				else if (action.Victim is NPC)
-				{
-					((NPC)action.Victim).Entry.NotifyHitReceive(action);
-				}
-
-				if (action.Attacker != null && action.Attacker.Brain != null)
-				{
-					action.Attacker.Brain.OnDamageDealt(action);
-				}
-
 				if (m_brain != null)
 				{
 					m_brain.OnDamageReceived(action);
+				}
+
+				if (action.Attacker !=null && action.Attacker.Brain != null)
+				{
+					action.Attacker.m_brain.OnDamageDealt(action);
 				}
 
 				var health = Health;

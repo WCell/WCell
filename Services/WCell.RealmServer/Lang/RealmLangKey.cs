@@ -31,6 +31,11 @@ namespace WCell.RealmServer.Lang
 		Hour,
 		Hours,
 
+		// ########################################################################
+		// Ingame messages
+		LogCombatExp,
+		LogCombatExpRested,
+
 		// #######################################################################
 		// Commands
 		SubCommandNotFound,

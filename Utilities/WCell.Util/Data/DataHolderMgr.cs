@@ -54,6 +54,10 @@ namespace WCell.Util.Data
 			var dataHolderDefinitions = new List<DataHolderDefinition>();
 			foreach (var type in asm.GetTypes())
 			{
+			if (type.Name == "PetLevelStatInfo")
+			{
+				type.ToString();
+			}
 				if (type.GetCustomAttributes<DataHolderAttribute>().Count() > 0)
 				{
 					var holder = CreateDataHolderDefinition(type);

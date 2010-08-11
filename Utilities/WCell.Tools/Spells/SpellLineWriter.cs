@@ -111,9 +111,9 @@ namespace WCell.Tools.Spells
 		{
 			var name = spell.Name;
 			
-			if (spell.Skill != null && spell.Talent != null)
+			if (spell.Talent != null)
 			{
-				name = spell.Skill.Name + name;
+				name = spell.Ability.Skill.Name + name;
 			}
 
 			var clss = spell.ClassId;
@@ -162,7 +162,7 @@ namespace WCell.Tools.Spells
 
 			foreach (var spell in SpellHandler.ById)
 			{
-				if (spell != null && spell.Skill != null && LineSkills.Contains(spell.Skill.Id))
+				if (spell != null && spell.Ability != null && LineSkills.Contains(spell.Ability.Skill.Id))
 				{
 					AddSpell(spell, true);
 				}
@@ -217,7 +217,7 @@ namespace WCell.Tools.Spells
 					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
 					{
 						var spell = spellEntry.Spell;
-						if (spell.Ability != null && spell.Skill.Category == SkillCategory.ClassSkill)
+						if (spell.Ability != null && spell.Ability.Skill.Category == SkillCategory.ClassSkill)
 						{
 							AddSpell(spell);
 						}
@@ -232,7 +232,7 @@ namespace WCell.Tools.Spells
 					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
 					{
 						var spell = spellEntry.Spell;
-						if (spell.Ability != null && spell.Skill.Category == SkillCategory.ClassSkill)
+						if (spell.Ability != null && spell.Ability.Skill.Category == SkillCategory.ClassSkill)
 						{
 							AddSpell(spell);
 						}
@@ -254,7 +254,7 @@ namespace WCell.Tools.Spells
 				}
 
 				if (spell == null ||
-					((spell.Talent == null || spell.ClassId == 0) && (spell.Skill == null || spell.Rank == 0 || spell.Skill.Category != SkillCategory.Profession)) ||
+					((spell.Talent == null || spell.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
 					spell.IsTriggeredSpell ||
 					spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.LearnPetSpell || effect.EffectType == SpellEffectType.LearnSpell))
 				{
@@ -283,13 +283,13 @@ namespace WCell.Tools.Spells
 		{
 			if (!force)
 			{
-				if (spell.Skill == null ||
-				    (spell.Skill.Category != SkillCategory.ClassSkill && spell.Skill.Category != SkillCategory.Invalid))
+				if (spell.Ability.Skill == null ||
+					(spell.Ability.Skill.Category != SkillCategory.ClassSkill && spell.Ability.Skill.Category != SkillCategory.Invalid))
 				{
 					return;
 				}
 
-				LineSkills.Add(spell.Skill.Id);
+				LineSkills.Add(spell.Ability.Skill.Id);
 			}
 
 			var clss = spell.ClassId;

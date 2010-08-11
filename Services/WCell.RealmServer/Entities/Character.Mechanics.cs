@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Formulas;
@@ -11,8 +12,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Trade;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -413,6 +416,32 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region Overrides
+		protected override void OnResistanceChanged(DamageSchool school)
+		{
+			if (m_activePet != null && m_activePet.IsHunterPet)
+			{
+				m_activePet.UpdatePetResistance(school);
+			}
+		}
+
+		public override void ModSpellHitChance(DamageSchool school, int delta)
+		{
+			base.ModSpellHitChance(school, delta);
+
+			// also modify pet's hit chance
+			if (m_activePet != null)
+			{
+				m_activePet.ModSpellHitChance(school, delta);
+			}
+		}
+
+		public override float GetResiliencePct()
+		{
+			var resilience = GetCombatRating(CombatRating.MeleeResilience);
+			return resilience / GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)Level - 1);
+		}
+		#endregion
 
 		public BaseRelation GetRelationTo(Character chr, CharacterRelationType type)
 		{

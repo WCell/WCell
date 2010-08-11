@@ -138,7 +138,6 @@ namespace WCell.RealmServer.Skills
 					//AbilitiesBySpellId.Add((SpellId)ability.Spell.Id, ability.SkillLine);
 					//}
 					ability.Spell.Ability = ability;
-					ability.Spell.Skill = ability.Skill;
 				}
 				else
 				{

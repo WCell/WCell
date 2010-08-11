@@ -1602,6 +1602,11 @@ namespace WCell.RealmServer.Entities
 			get { return m_master != null && m_master.IsPlayer; }
 		}
 
+		public Character PlayerOwner
+		{
+			get { return this is Character ? (Character) this : m_master as Character; }
+		}
+
 		/// <summary>
 		/// Whether this is actively controlled by a player. 
 		/// Not to be confused with IsOwnedByPlayer.

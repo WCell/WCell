@@ -482,6 +482,7 @@ namespace WCell.RealmServer.NPCs
 
 			ContentHandler.Load<NPCEquipmentEntry>();
 			ContentHandler.Load<NPCEntry>();
+			ContentHandler.Load<NPCAiText>();
 
 			EntriesLoaded = true;
 
@@ -679,7 +680,7 @@ namespace WCell.RealmServer.NPCs
 			if (!trainer.IsTrainer)
 				return false;
 
-			if (!trainer.CanInteractWith(curChar))
+			if (!trainer.CheckVendorInteraction(curChar))
 				return false;
 
 			if (!trainer.CanTrain(curChar))
@@ -806,7 +807,7 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public static void TalkToFM(this NPC taxiVendor, Character chr)
 		{
-			if (!taxiVendor.CanInteractWith(chr))
+			if (!taxiVendor.CheckVendorInteraction(chr))
 				return;
 
 			// Get the taxi node associated with this Taxi Vendor

@@ -87,9 +87,10 @@ namespace WCell.RealmServer.Entities
 			HairColor = m_record.HairColor;
 			FacialHair = m_record.FacialHair;
 			UnitFlags = UnitFlags.PlayerControlled;
-			XP = m_record.Xp;
+			Experience = m_record.Xp;
 			RestXp = m_record.RestXp;
-			Level = m_record.Level;
+
+			SetInt32(UnitFields.LEVEL, m_record.Level);		// cannot use Level property, since it will trigger certain events that we don't want triggered
 			NextLevelXP = XpGenerator.GetXpForlevel(m_record.Level + 1);
 			MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
 
@@ -773,13 +774,17 @@ namespace WCell.RealmServer.Entities
 				m_record.Outfit = Outfit;
 				m_record.Name = Name;
 				m_record.Level = Level;
-				m_record.PositionX = Position.X;
-				m_record.PositionY = Position.Y;
-				m_record.PositionZ = Position.Z;
-				m_record.Orientation = Orientation;
-				m_record.RegionId = m_region.Id;
-				m_record.InstanceId = m_region.InstanceId;
-				m_record.Zone = ZoneId;
+				if (m_region != null)
+				{
+					// only save position information if we are in world
+					m_record.PositionX = Position.X;
+					m_record.PositionY = Position.Y;
+					m_record.PositionZ = Position.Z;
+					m_record.Orientation = Orientation;
+					m_record.RegionId = m_region.Id;
+					m_record.InstanceId = m_region.InstanceId;
+					m_record.Zone = ZoneId;
+				}
 				m_record.DisplayId = DisplayId;
 				m_record.BindX = m_bindLocation.Position.X;
 				m_record.BindY = m_bindLocation.Position.Y;
@@ -799,7 +804,7 @@ namespace WCell.RealmServer.Entities
 				m_record.BaseSpirit = GetBaseStatValue(StatType.Spirit);
 				m_record.BaseIntellect = GetBaseStatValue(StatType.Intellect);
 				m_record.BaseAgility = GetBaseStatValue(StatType.Agility);
-				m_record.Xp = XP;
+				m_record.Xp = Experience;
 				m_record.RestXp = RestXp;
 
 				// Honor and Arena

@@ -45,6 +45,15 @@
       <Value>Hours</Value>
     </Item>
 
+
+    <Item Key="LogCombatExp">
+      <Value>{0} dies, you gain {1} experience.</Value>
+    </Item>
+    <Item Key="LogCombatExpRested">
+      <Value>{0} dies, you gain {1} experience (+{2} exp Rested bonus)</Value>
+    </Item>
+
+
     <Item Key="SubCommandNotFound">
       <Value>SubCommand not found: {0}</Value>
     </Item>

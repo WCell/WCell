@@ -31,6 +31,13 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 			NPCFlags = NPCFlags.SpellClick;
 			SetupSeats();
+
+			AddMessage(() =>
+			{
+				// Set Level/Scale ingame:
+				var level = entry.GetRandomLevel();
+				Level = level;
+			});
 		}
 
 		private void SetupSeats()

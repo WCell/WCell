@@ -82,7 +82,7 @@ namespace WCell.Constants.Spells
 				}
 			}
 
-			InitRunes();
+			//InitRunes();
 		}
 
 		public static bool IsNegative(this SpellMechanic mech)
@@ -115,7 +115,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		public static readonly int SingleRuneFullBitMask = (1 << BitsPerRune) - 1;
 
-		public static readonly uint[,] IndicesPerType = new [,]
+		public static readonly uint[,] IndicesPerType = new[,]
 		{
 			{0u, 1u},
 			{2u, 3u},
@@ -133,8 +133,6 @@ namespace WCell.Constants.Spells
 		};
 		#endregion
 
-		static void InitRunes()
-		{
-		}
+		public static readonly uint[] MagicDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.MagicSchools);
 	}
 }

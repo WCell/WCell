@@ -283,16 +283,6 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// The id of the Skill that this Spell represents (if any)
-		/// </summary>
-		public SkillId SkillId;
-
-		/// <summary>
-		/// The Skill that this Spell represents (if any; is set during Initialization of Skills)
-		/// </summary>
-		public SkillLine Skill;
-
-		/// <summary>
 		/// The tier of the skill that this spell represents (if this is a Skill spell)
 		/// </summary>
 		public SkillTierId SkillTier;

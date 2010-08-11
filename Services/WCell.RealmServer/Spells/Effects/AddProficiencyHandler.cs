@@ -21,14 +21,14 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var chr = (Character) target;
-			if (Effect.Spell.Skill == null)
+			var chr = (Character)target;
+			if (Effect.Spell.Ability == null)
 			{
 				log.Warn("Spell {0} had Handler for Proficiency but Spell has no Skill associated with it.", Effect.Spell);
 			}
-			else if (!chr.Skills.Contains(Effect.Spell.Skill.Id))
+			else if (!chr.Skills.Contains(Effect.Spell.Ability.Skill.Id))
 			{
-				chr.Skills.Add(Effect.Spell.Skill, false);
+				chr.Skills.Add(Effect.Spell.Ability.Skill, false);
 			}
 
 			if (Effect.Spell.RequiredItemClass == ItemClass.Weapon)
@@ -43,10 +43,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override ObjectTypes TargetType
 		{
-			get
-			{
-				return ObjectTypes.Player;
-			}
+			get { return ObjectTypes.Player; }
 		}
 	}
 }

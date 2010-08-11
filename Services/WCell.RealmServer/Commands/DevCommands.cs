@@ -579,24 +579,6 @@ namespace WCell.RealmServer.Commands
 					FailNotify(trigger, ex);
 				}
 
-                try
-                {
-                    if (NPCAiTextMgr.Loaded)
-                    {
-                        trigger.Reply("NPC AI texts has already been loaded.");
-                    }
-                    else
-                    {
-                        trigger.Reply("Loading NPC AI texts...");
-                        NPCAiTextMgr.LoadEntries();
-                        trigger.Reply("Done.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    FailNotify(trigger, ex);
-                }
-
 				trigger.Reply("All done - Loading took: " + (DateTime.Now - start));
 				GC.Collect(2, GCCollectionMode.Optimized);
 

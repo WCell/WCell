@@ -430,14 +430,6 @@ namespace WCell.RealmServer.Spells
 
 			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
 
-			ForeachEffect(effect =>
-			{
-				if (effect.EffectType == SpellEffectType.Skill)
-				{
-					SkillId = (SkillId)effect.MiscValue;
-				}
-			});
-
 			// ResurrectFlat usually has no target type set
 			ForeachEffect(effect =>
 			{

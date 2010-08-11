@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			}
 
 			// run faster
-			owner.SpeedFactor += Character.DeathSpeedIncrease;
+			owner.SpeedFactor += Character.DeathSpeedFactorIncrease;
 
 			// walk on water
 			owner.WaterWalk++;
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (m_aura.Auras.GhostAura == m_aura)
 				m_aura.Auras.GhostAura = null;
 
-			owner.SpeedFactor -= Character.DeathSpeedIncrease;
+			owner.SpeedFactor -= Character.DeathSpeedFactorIncrease;
 			owner.WaterWalk--;
 			m_aura.Auras.Owner.OnResurrect();
 		}

@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Entities
 {
 	public partial class Unit
 	{
-		protected int[] m_baseStats = new int[5];
+		protected internal int[] m_baseStats = new int[5];
 		protected int[] m_baseResistances = new int[DamageSchoolCount];
 		protected UnitModelInfo m_model;
 
@@ -233,6 +233,15 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
+		public virtual int MaxLevel
+		{
+			get { return int.MaxValue; }
+			internal set
+			{
+				// do nothing
+			}
+		}
+
 		/// <summary>
 		/// The Level of this Unit.
 		/// </summary>
@@ -242,12 +251,12 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				SetInt32(UnitFields.LEVEL, value);
-				if (this is NPC)
-				{
-					var npc = (NPC)this;
-					npc.SetScale();
-				}
+				OnLevelChanged();
 			}
+		}
+
+		protected virtual void OnLevelChanged()
+		{
 		}
 
 		public override int CasterLevel
@@ -419,7 +428,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// 
 		/// </summary>
-		public int PetNextLevelExp
+		public int NextPetLevelExperience
 		{
 			get { return GetInt32(UnitFields.PETNEXTLEVELEXP); }
 			set { SetInt32(UnitFields.PETNEXTLEVELEXP, value); }
@@ -526,9 +535,17 @@ namespace WCell.RealmServer.Entities
 			get { return GetInt32(UnitFields.STAT1); }
 		}
 
-		public virtual int Stamina
+		public int Stamina
 		{
 			get { return GetInt32(UnitFields.STAT2); }
+		}
+
+		/// <summary>
+		/// The amount of stamina that does not contribute to health.
+		/// </summary>
+		public virtual int StaminaWithoutHealthContribution
+		{
+			get { return 20; }
 		}
 
 		public int Intellect
@@ -759,43 +776,43 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Physical resist
 		/// </summary>
-		public virtual int Armor
+		public int Armor
 		{
 			get { return GetInt32(UnitFields.RESISTANCES); }
 			internal set { SetInt32(UnitFields.RESISTANCES, value); }
 		}
 
-		public virtual int HolyResist
+		public int HolyResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_2); }
 			internal set { SetInt32(UnitFields.RESISTANCES_2, value); }
 		}
 
-		public virtual int FireResist
+		public int FireResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_3); }
 			internal set { SetInt32(UnitFields.RESISTANCES_3, value); }
 		}
 
-		public virtual int NatureResist
+		public int NatureResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_4); }
 			internal set { SetInt32(UnitFields.RESISTANCES_4, value); }
 		}
 
-		public virtual int FrostResist
+		public int FrostResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_5); }
 			internal set { SetInt32(UnitFields.RESISTANCES_5, value); }
 		}
 
-		public virtual int ShadowResist
+		public int ShadowResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_6); }
 			internal set { SetInt32(UnitFields.RESISTANCES_6, value); }
 		}
 
-		public virtual int ArcaneResist
+		public int ArcaneResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_7); }
 			internal set { SetInt32(UnitFields.RESISTANCES_7, value); }
@@ -837,21 +854,15 @@ namespace WCell.RealmServer.Entities
 			}
 			m_baseResistances[(uint)school] = value;
 			SetInt32(UnitFields.RESISTANCES + (int)school, value);
+			OnResistanceChanged(school);
 		}
 
 		/// <summary>
-		/// Adds the given amount to the base of the given resistance-schools
+		/// Adds the given amount to the base of the given resistance for the given school
 		/// </summary>
 		public void ModBaseResistance(DamageSchool school, int delta)
 		{
-			var val = m_baseResistances[(int)school] + delta;
-			if (val < 0)
-			{
-				val = 0;
-			}
-
-			m_baseResistances[(uint)school] = val;
-			SetInt32(UnitFields.RESISTANCES + (int)school, val);
+			SetBaseResistance(school, m_baseResistances[(int)school] + delta);
 		}
 
 		/// <summary>
@@ -876,14 +887,15 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, delta);
+				//ModBaseResistance(school, delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, -delta);
+				//ModBaseResistance(school, -delta);
 			}
+			OnResistanceChanged(school);
 		}
 
 		/// <summary>
@@ -900,14 +912,19 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, -delta);
+				//ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, delta);
+				//ModBaseResistance(school, delta);
 			}
+			OnResistanceChanged(school);
+		}
+
+		protected virtual void OnResistanceChanged(DamageSchool school)
+		{
 		}
 
 		public int ArmorBuffPositive
@@ -1394,19 +1411,38 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public int MaxHealthMod
+		private int m_maxHealthModFlat;
+
+		public int MaxHealthModFlat
 		{
-			get { return GetInt32(UnitFields.MAXHEALTHMODIFIER); }
+			get { return m_maxHealthModFlat; }
 			set
 			{
-				SetInt32(UnitFields.MAXHEALTHMODIFIER, value);
+				m_maxHealthModFlat = value;
 				this.UpdateHealth();
 			}
 		}
 
+		public float MaxHealthModScalar
+		{
+			get { return GetFloat(UnitFields.MAXHEALTHMODIFIER); }
+			set
+			{
+				SetFloat(UnitFields.MAXHEALTHMODIFIER, value);
+				this.UpdateHealth();
+			}
+		}
+
+		/// <summary>
+		/// Current amount of health in percent
+		/// </summary>
 		public int HealthPct
 		{
-			get { return (100 * Health + (1 >> MaxHealth)) / MaxHealth; }
+			get
+			{
+				var max = MaxHealth;
+				return (100 * Health + (max >> 1)) / max;
+			}
 			set { Health = ((value * MaxHealth) + 50) / 100; }
 		}
 
@@ -1419,21 +1455,22 @@ namespace WCell.RealmServer.Entities
 
 			if (pct <= 20)
 			{
-				AuraState = (AuraState ^
-					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health35Percent)) |
+				AuraState = (AuraState & ~(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health35Percent)) |
 					AuraStateMask.Health20Percent;
 			}
 			else if (pct <= 35)
 			{
-				AuraState = (AuraState ^
-					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health20Percent)) |
+				AuraState = (AuraState & ~(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health20Percent)) |
 					AuraStateMask.Health35Percent;
 			}
-			else if (pct >= 75)
+			else if (pct <= 75)
 			{
-				AuraState = (AuraState ^
-					(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
-					AuraStateMask.HealthAbove75Pct;
+				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent | AuraStateMask.HealthAbove75Pct));
+			}
+			else 
+			{
+				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
+				            AuraStateMask.HealthAbove75Pct;
 			}
 		}
 		#endregion

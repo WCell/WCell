@@ -30,8 +30,8 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			SkillId skillId = (SkillId)Effect.MiscValue;
-			var tier = Effect.BasePoints;
+			var skillId = (SkillId)Effect.MiscValue;
+			var tier = (SkillTierId)Effect.BasePoints;
 		}
 
 		public override bool HasOwnTargets

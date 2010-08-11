@@ -2444,24 +2444,27 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		protected internal virtual void OnNPCDied(NPC npc)
 		{
-			var looter = npc.FirstAttacker;
-			if (looter is Character && npc.YieldsXpOrHonor)
+			if (npc.YieldsXpOrHonor)
 			{
-				if (XpCalculator != null)
+				var playerLooter = npc.FirstAttacker != null ? npc.FirstAttacker.PlayerOwner : null;
+				if (playerLooter != null)
 				{
-					// distribute XP
-					// TODO: Consider reductions if someone else killed the mob
-					var chr = (Character)looter;
-					var baseXp = XpCalculator(looter.Level, npc);
-					XpGenerator.CombatXpDistributer(chr, npc, baseXp);
+					if (XpCalculator != null)
+					{
+						// distribute XP
+						// TODO: Consider reductions if someone else killed the mob
+						var chr = playerLooter;
+						var baseXp = XpCalculator(playerLooter.Level, npc);
+						XpGenerator.CombatXpDistributer(chr, npc, baseXp);
 
-					if (chr.Group != null)
-					{
-						chr.Group.DistributeGroupQuestKills(chr, npc);
-					}
-					else
-					{
-						chr.QuestLog.OnNPCInteraction(npc);
+						if (chr.Group != null)
+						{
+							chr.Group.DistributeGroupQuestKills(chr, npc);
+						}
+						else
+						{
+							chr.QuestLog.OnNPCInteraction(npc);
+						}
 					}
 				}
 			}

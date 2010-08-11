@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModSpellCritChanceHandler : AuraEffectHandler
 	{
-		private static uint[] AllDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.All);
+		private static uint[] AllDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.AllSchools);
 
 		protected override void Apply()
 		{
