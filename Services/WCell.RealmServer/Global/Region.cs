@@ -2459,7 +2459,7 @@ namespace WCell.RealmServer.Global
 
 						if (chr.Group != null)
 						{
-							chr.Group.DistributeGroupQuestKills(chr, npc);
+							chr.Group.OnKill(chr, npc);
 						}
 						else
 						{

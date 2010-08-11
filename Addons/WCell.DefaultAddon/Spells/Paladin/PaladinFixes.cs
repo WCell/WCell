@@ -102,7 +102,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			var avengingWrathMarker2 = SpellHandler.AddCustomSpell(61988, "Invul Prevention");
 			avengingWrathMarker2.IsPreventionDebuff = true;				// is prevention debuff
 			avengingWrathMarker2.AddAuraEffect(AuraType.Dummy);			// make Aura
-			avengingWrathMarker2.Attributes |= SpellAttributes.NoVisibleAura | SpellAttributes.UnaffectedByInvulnerability;
+			avengingWrathMarker2.Attributes |= SpellAttributes.InvisibleAura | SpellAttributes.UnaffectedByInvulnerability;
 			avengingWrathMarker2.AttributesExC |= SpellAttributesExC.PersistsThroughDeath;
 			//avengingWrathMarker2.Durations = new Spell.DurationEntry { Min = 180000, Max = 180000 };
 			avengingWrathMarker2.Durations = new Spell.DurationEntry { Min = 120000, Max = 120000 };

@@ -241,7 +241,7 @@ namespace WCell.RealmServer.Spells
 			IsFlyingMount = IsMount &&
 							HasEffectWith(effect => effect.AuraType == AuraType.ModSpeedMountedFlight);
 
-			CanApplyMultipleTimes = Attributes == (SpellAttributes.NoVisibleAura | SpellAttributes.Passive) &&
+			CanApplyMultipleTimes = Attributes == (SpellAttributes.InvisibleAura | SpellAttributes.Passive) &&
 									Ability == null && Talent == null;
 
 			HasShapeshiftDependentEffects = HasEffectWith(effect => effect.RequiredShapeshiftMask != 0);

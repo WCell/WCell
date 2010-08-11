@@ -45,7 +45,7 @@ namespace WCell.Addons.Default.Spells.Warlock
             var teleReqSpell = SpellHandler.AddCustomSpell(62388, "DemonicCircleTeleportRequirement");
             teleReqSpell.IsPreventionDebuff = false;
             teleReqSpell.AddAuraEffect(AuraType.Dummy);
-            teleReqSpell.Attributes |= SpellAttributes.NoVisibleAura;
+            teleReqSpell.Attributes |= SpellAttributes.InvisibleAura;
             teleReqSpell.Durations = new Spell.DurationEntry { Min = 360000, Max = 360000 };
             SpellHandler.Apply(spell =>
             {

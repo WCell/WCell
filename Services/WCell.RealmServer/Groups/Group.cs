@@ -1607,7 +1607,7 @@ namespace WCell.RealmServer.Groups
 			});
 		}
 
-		public void DistributeGroupQuestKills(Character killer, NPC victim)
+		public void OnKill(Character killer, NPC victim)
 		{
 			if (Count < 1) return;
 
