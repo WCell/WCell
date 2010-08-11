@@ -32,25 +32,4 @@ namespace WCell.RealmServer.Auras.Effects
 				owner.ModCombatRating(CombatRating.ArmorPenetration, -EffectValue);
 		}
 	}
-
-	///// <summary>
-	///// Reduces victim armor by the given value in %
-	///// </summary>
-	//public class ModArmorPenetrationHandler : AttackModifierHandler
-	//{
-	//    public override void ModAttack(DamageAction action)
-	//    {
-	//        var weapon = action.Weapon as Item;
-	//        var spell = m_spellEffect.Spell;
-
-	//        // Only for physical damage
-	//        // Weapon must match Spell requirements (if restricted)
-	//        if (action.UsedSchool == DamageSchool.Physical && (spell.RequiredItemClass == 0 || (weapon != null &&
-	//                (weapon.Template.Class == m_spellEffect.Spell.RequiredItemClass &&
-	//                    (spell.RequiredItemSubClassMask == 0 || spell.RequiredItemSubClassMask.HasAnyFlag(weapon.Template.SubClassMask))))))
-	//        {
-	//            action.ResistPct -= EffectValue;
-	//        }
-	//    }
-	//}
 }

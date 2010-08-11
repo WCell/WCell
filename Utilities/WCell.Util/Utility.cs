@@ -129,7 +129,19 @@ namespace WCell.Util
 			}
 		}
 
+		#region Times
+		public const int TicksPerSecond = 10000;
 		private const long TICKS_SINCE_1970 = 621355968000000000; // .NET ticks for 1970
+
+		public static int GetMilliSecondsInt(this DateTime time)
+		{
+			return (int)(time.Ticks / TicksPerSecond);
+		}
+
+		public static int GetMilliSecondsInt(this TimeSpan time)
+		{
+			return (int)(time.Ticks + TicksPerSecond/2) / TicksPerSecond;
+		}
 
 		/// <summary>
 		/// Gets the system uptime.
@@ -211,7 +223,7 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT()
 		{
 			return GetEpochTimeFromDT(DateTime.Now);
@@ -221,11 +233,12 @@ namespace WCell.Util
 		/// Gets the time between the Unix epich and a specific <see cref="DateTime">time</see>.
 		/// </summary>
 		/// <param name="time">the end time</param>
-		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in ticks</returns>
+		/// <returns>the time between the unix epoch and the supplied <see cref="DateTime">time</see> in seconds</returns>
 		public static uint GetEpochTimeFromDT(DateTime time)
 		{
 			return (uint)((time.Ticks - TICKS_SINCE_1970) / 10000000L);
 		}
+		#endregion
 
 		/// <summary>
 		/// Reverses the contents of an array.
@@ -1331,7 +1344,7 @@ namespace WCell.Util
 			{
 				var current = m_Current;
 				m_Current = null;
-				return Current;
+				return current;
 			}
 			private set { m_Current = value; }
 		}

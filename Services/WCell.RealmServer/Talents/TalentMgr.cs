@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Talents
 		public static TalentTree[][] TreesByClass = new TalentTree[12][];
 
 		[NotVariable]
-		public static TalentEntry[] Entries = new TalentEntry[1900];
+		public static TalentEntry[] Entries = new TalentEntry[2000];
 
 		/// <summary>
 		/// Returns all Trees of the given class
@@ -109,8 +109,9 @@ namespace WCell.RealmServer.Talents
 				}
 				talentRow[talent.Col] = talent;
 
-				foreach (var spell in talent.Spells)
+				for (var i = 0; i < talent.Spells.Length; i++)
 				{
+					var spell = talent.Spells[i];
 					if (spell != null)
 					{
 						//if (spell.Talent != null)
@@ -119,6 +120,7 @@ namespace WCell.RealmServer.Talents
 						//}
 						spell.Talent = talent;
 						spell.ClassId = talent.Tree.Class;
+						spell.Rank = i + 1;
 					}
 				}
 			}

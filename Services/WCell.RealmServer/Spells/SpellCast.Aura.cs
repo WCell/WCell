@@ -45,9 +45,9 @@ namespace WCell.RealmServer.Spells
 					lastHandler = spellHandler;
 
 					var doubleTarget = false;
-					if (spellHandler.Targets != null)
+					if (spellHandler.m_targets != null)
 					{
-						foreach (var target in spellHandler.Targets)
+						foreach (var target in spellHandler.m_targets)
 						{
 							if (target is Unit)
 							{
@@ -68,7 +68,7 @@ namespace WCell.RealmServer.Spells
 
 								var id = m_spell.GetAuraUID(CasterReference, target);
 								var failReason = SpellFailedReason.Ok;
-								if (((Unit)target).Auras.CheckStackOrOverride(CasterReference, id, m_spell, ref failReason))
+								if (((Unit)target).Auras.CheckStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
 								{
 									m_auraApplicationInfos.Add(new AuraApplicationInfo((Unit)target));
 								}
@@ -174,14 +174,14 @@ namespace WCell.RealmServer.Spells
 					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, UsedItem, !m_spell.IsPreventionDebuff && !hostile);
 					if (newAura != null)
 					{
-						auras.Add(newAura);
-
 						// check for debuff
-						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld)
+						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld && target.IsAlive)
 						{
 							// force combat mode
 							target.IsInCombat = true;
 						}
+						// add Aura now
+						auras.Add(newAura);
 					}
 				}
 			}

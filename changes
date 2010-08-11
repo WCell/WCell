@@ -1,2 +1,1 @@
-- fixed RuneCostEntry reading
-- enabled config entries to be anything that is IXmlSerializable
+- renamed Group.QuestSomethingSomething to Group.OnKill

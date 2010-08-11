@@ -9,7 +9,7 @@ using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Battlegrounds
 {
-    public struct PvPDifficultyEntry
+    public class PvPDifficultyEntry
     {
         public int Id;
         public MapId mapId;

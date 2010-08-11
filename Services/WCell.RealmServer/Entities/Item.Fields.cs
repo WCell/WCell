@@ -11,11 +11,11 @@ namespace WCell.RealmServer.Entities
 	{
 		public Character OwningCharacter
 		{
-			get { return m_owningCharacter; }
+			get { return m_owner; }
 			internal set
 			{
-				m_owningCharacter = value;
-				if (m_owningCharacter != null)
+				m_owner = value;
+				if (m_owner != null)
 				{
 					m_isInWorld = m_unknown = true;
 					SetEntityId(ItemFields.OWNER, value.EntityId);
@@ -116,12 +116,12 @@ namespace WCell.RealmServer.Entities
 		{
 			if (value != 0)
 			{
-				if (m_owningCharacter != null)
+				if (m_owner != null)
 				{
 					int uniqueCount;
 					if (value > 0 && m_template.UniqueCount > 0)
 					{
-						uniqueCount = m_owningCharacter.Inventory.GetUniqueCount(m_template.ItemId);
+						uniqueCount = m_owner.Inventory.GetUniqueCount(m_template.ItemId);
 					}
 					else
 					{
@@ -133,9 +133,8 @@ namespace WCell.RealmServer.Entities
 						value = uniqueCount;
 					}
 
-					m_owningCharacter.Inventory.OnAmountChanged(this, value);
+					m_owner.Inventory.OnAmountChanged(this, value);
 				}
-
 				m_record.Amount += value;
 				return value;
 			}
@@ -161,9 +160,9 @@ namespace WCell.RealmServer.Entities
 					var diff = value - m_record.Amount;
 					if (diff != 0)
 					{
-						if (m_owningCharacter != null)
+						if (m_owner != null)
 						{
-							m_owningCharacter.Inventory.OnAmountChanged(this, diff);
+							m_owner.Inventory.OnAmountChanged(this, diff);
 						}
 
 						SetInt32(ItemFields.STACK_COUNT, value);
@@ -194,7 +193,7 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-				if (value <= 0)
+                if(!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
 				{
 					Amount--;
 					return;
@@ -367,7 +366,7 @@ namespace WCell.RealmServer.Entities
 				{
 					return 0.0f;
 				}
-				return Unit.DefaultMeleeDistance;
+				return Unit.DefaultMeleeAttackRange;
 			}
 		}
 
@@ -381,9 +380,9 @@ namespace WCell.RealmServer.Entities
 			{
 				if (IsMelee)
 				{
-					return Unit.DefaultMeleeDistance;
+					return Unit.DefaultMeleeAttackRange;
 				}
-				return Unit.DefaultRangedDistance;
+				return Unit.DefaultRangedAttackRange;
 			}
 		}
 

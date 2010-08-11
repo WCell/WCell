@@ -17,7 +17,6 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
 {
-	// TODO: Combat mode triggered when pet starts combat - Complete, needs testing
 	public partial class Unit
 	{
 		#region Global Variables
@@ -65,12 +64,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Used to determine melee distance
 		/// </summary>
-		public static float DefaultMeleeDistance = 3f;
+		public static float DefaultMeleeAttackRange = 3f;
 
 		/// <summary>
 		/// Used to determine ranged attack distance
 		/// </summary>
-		public static float DefaultRangedDistance = 40f;
+		public static float DefaultRangedAttackRange = 40f;
 		#endregion
 
 		/// <summary>
@@ -101,11 +100,6 @@ namespace WCell.RealmServer.Entities
 		protected Spell m_AutorepeatSpell;
 
 		/// <summary>
-		/// A pending SpellCast to Impact on next combat hit
-		/// </summary>
-		protected internal SpellCast m_pendingCombatAbility;
-
-		/// <summary>
 		/// The last time when this Unit was still actively Fighting
 		/// </summary>
 		public int LastCombatTime
@@ -120,6 +114,14 @@ namespace WCell.RealmServer.Entities
 		public void ResetSwingDelay()
 		{
 			m_lastCombatTime = Environment.TickCount;
+		}
+
+		public void CancelPendingAbility()
+		{
+			if (m_spellCast != null && m_spellCast.IsPending)
+			{
+				m_spellCast.Cancel(SpellFailedReason.DontReport);
+			}
 		}
 
 		/// <summary>
@@ -149,11 +151,11 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// A pending ability waiting to be executed upon next hit
+		/// Whether this Unit is currently attacking with a ranged weapon
 		/// </summary>
-		public SpellCast PendingCombatAbility
+		public bool IsUsingRangedWeapon
 		{
-			get { return m_pendingCombatAbility; }
+			get { return m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility; }
 		}
 
 		/// <summary>
@@ -170,8 +172,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual void OnAttack(DamageAction action)
 		{
-			foreach (var mod in AttackEventHandlers)
+			for (var i = AttackEventHandlers.Count - 1; i >= 0; i--)
 			{
+				var mod = AttackEventHandlers[i];
 				mod.OnAttack(action);
 			}
 		}
@@ -181,8 +184,9 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual void OnDefend(DamageAction action)
 		{
-			foreach (var mod in AttackEventHandlers)
+			for (var i = AttackEventHandlers.Count - 1; i >= 0; i--)
 			{
+				var mod = AttackEventHandlers[i];
 				mod.OnDefend(action);
 			}
 		}
@@ -195,19 +199,6 @@ namespace WCell.RealmServer.Entities
 			return healValue;
 		}
 
-		/// <summary>
-		/// Pending combat abilities are triggered as SpellCast but will impact
-		/// upon next Strike in combat (eg Heroic Strike).
-		/// </summary>
-		public void CancelPendingAbility()
-		{
-			if (m_pendingCombatAbility != null)
-			{
-				m_pendingCombatAbility.Cancel();
-				m_pendingCombatAbility = null;
-			}
-		}
-
 		internal DamageAction GetUnusedAction()
 		{
 			if (m_DamageAction == null || m_DamageAction.ReferenceCount > 0)
@@ -215,6 +206,11 @@ namespace WCell.RealmServer.Entities
 				return new DamageAction(this);
 			}
 			return m_DamageAction;
+		}
+
+		public bool UsesPendingAbility(IWeapon weapon)
+		{
+			return m_spellCast != null && m_spellCast.IsPending && m_spellCast.GetWeapon() == weapon;
 		}
 
 		#region Standard Attack
@@ -235,23 +231,7 @@ namespace WCell.RealmServer.Entities
 		public void Strike(IWeapon weapon)
 		{
 			var action = GetUnusedAction();
-
-			Unit target;
-			if (m_pendingCombatAbility != null)
-			{
-				target = m_pendingCombatAbility.Selected as Unit;
-				if (target == null)
-				{
-					log.Warn("{0} tried to use Combat ability {1} without having a target selected.", this, m_pendingCombatAbility);
-					m_pendingCombatAbility.Cancel();
-					m_pendingCombatAbility = null;
-					return;
-				}
-			}
-			else
-			{
-				target = m_target;
-			}
+			var target = m_target;
 
 			Strike(weapon, action, target);
 		}
@@ -293,15 +273,48 @@ namespace WCell.RealmServer.Entities
 		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
-			if (!target.IsInWorld)
+			if (UsesPendingAbility(weapon))
 			{
-				return;
+				m_spellCast.Perform();
+			}
+			else
+			{
+				Strike(weapon, action, target, null);
+			}
+		}
+
+		/// <summary>
+		/// Do a single attack using the given Weapon and AttackAction.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
+		public bool Strike(IWeapon weapon, Unit target, SpellCast ability)
+		{
+			return Strike(weapon, GetUnusedAction(), target, ability);
+		}
+
+		/// <summary>
+		/// Do a single attack using the given Weapon and AttackAction.
+		/// </summary>
+		/// <param name="weapon"></param>
+		/// <param name="action"></param>
+		public bool Strike(IWeapon weapon, DamageAction action, Unit target, SpellCast ability)
+		{
+			EnsureContext();
+			if (!IsAlive)
+			{
+				return false;
+			}
+
+			if (!target.IsInContext || !target.IsAlive)
+			{
+				return false;
 			}
 
 			if (weapon == null)
 			{
 				log.Error("Trying to strike without weapon: " + this);
-				return;
+				return false;
 			}
 
 			//if (IsMovementConrolled)
@@ -316,77 +329,33 @@ namespace WCell.RealmServer.Entities
 			action.Attacker = this;
 			action.Weapon = weapon;
 
-			if (m_pendingCombatAbility != null && m_pendingCombatAbility.IsCasting)
+			bool hit;
+			if (ability != null)
 			{
-				// Pending combat ability
-				var ability = m_pendingCombatAbility;
-
-				// send pending animation
-				if (ability.IsInstant)
-				{
-					m_pendingCombatAbility.SendCastStart();
-				}
-
-				if (!ability.Spell.IsRangedAbility)
-				{
-					m_pendingCombatAbility.CheckHitAndSendSpellGo(true);
-				}
-
-				// prevent the ability from cancelling itself
-				m_pendingCombatAbility = null;
-
 				action.Schools = ability.Spell.SchoolMask;
 				action.SpellEffect = ability.Spell.Effects[0];
 
-				if (ability.Spell != null && ability.Spell.IsAreaSpell)
+				// calc damage
+				GetWeaponDamage(action, weapon, ability);
+				hit = action.DoAttack();
+				if (ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons) && m_offhandWeapon != null)
 				{
-					// AoE spell
-					action.IsDot = false;
-
-					var i = 0;
-					foreach (var targ in ability.Targets)
-					{
-						GetWeaponDamage(action, weapon, ability, i++);
-						action.Reset(this, (Unit)targ, weapon);
-						action.DoAttack();
-						if (ability.Spell.IsDualWieldAbility)
-						{
-							action.Damage = Utility.Random((int)MinOffHandDamage, (int)MaxOffHandDamage + 1);
-							action.Reset(this, (Unit)targ, weapon);
-							action.DoAttack();
-						}
-					}
-				}
-				else
-				{
-					// single target
-
-					// calc damage
-					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
-					if (!action.DoAttack() &&
-						ability.Spell != null &&
-						ability.Spell.AttributesExC.HasFlag(SpellAttributesExC.RequiresTwoWeapons))
-					{
-						// missed and is not attacking with both weapons -> don't trigger spell
-						CancelPendingAbility();
-						return;
-					}
-				}
-
-				// Impact and trigger remaining effects (if not cancelled)
-				if (ability.Spell != null && ability.Spell.IsRangedAbility)
-				{
-					ability.Impact(ability.Spell.IsOnNextStrike);
+					// also strike with offhand
+					action.Reset(this, target, m_offhandWeapon);
+					GetWeaponDamage(action, m_offhandWeapon, ability);
+					action.DoAttack();
+					m_lastOffhandStrike = Environment.TickCount;
 				}
 			}
 			else
 			{
 				// no combat ability
 				m_extraAttacks += 1;
+				hit = false;
 				do
 				{
 					// calc damage
-					GetWeaponDamage(action, weapon, m_pendingCombatAbility);
+					GetWeaponDamage(action, weapon, null);
 
 					action.Schools = weapon.Damages.AllSchools();
 					if (action.Schools == DamageSchoolMask.None)
@@ -395,16 +364,17 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// normal attack
-					action.DoAttack();
+					hit = hit || action.DoAttack();
 				} while (--m_extraAttacks > 0);
 			}
 			action.OnFinished();
+			return hit;
 		}
 
 		/// <summary>
 		/// Returns random damage for the given weapon
 		/// </summary>
-		public void GetWeaponDamage(DamageAction action, IWeapon weapon, SpellCast pendingAbility, int targetNo = 0)
+		public void GetWeaponDamage(DamageAction action, IWeapon weapon, SpellCast usedAbility, int targetNo = 0)
 		{
 			int damage;
 			if (weapon == m_offhandWeapon)
@@ -423,12 +393,12 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			if (pendingAbility != null && pendingAbility.IsCasting)
+			if (usedAbility != null && usedAbility.IsCasting)
 			{
-				// get bonuses, damage and let the Spell impact
+				// get damage modifiers from spell
 				var multiplier = 0;
 
-				foreach (var effectHandler in pendingAbility.Handlers)
+				foreach (var effectHandler in usedAbility.Handlers)
 				{
 					if (effectHandler.Effect.IsStrikeEffectFlat)
 					{
@@ -448,7 +418,7 @@ namespace WCell.RealmServer.Entities
 					action.Damage = damage;
 				}
 
-				foreach (var effectHandler in pendingAbility.Handlers)
+				foreach (var effectHandler in usedAbility.Handlers)
 				{
 					if (effectHandler is WeaponDamageEffectHandler)
 					{
@@ -467,8 +437,18 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Does spell-damage to this Unit
 		/// </summary>
-		public void DoSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true)
+		public void DealSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true, bool mayCrit = true)
 		{
+			EnsureContext();
+			if (!IsAlive)
+			{
+				return;
+			}
+			if (attacker != null && !attacker.IsInContext)
+			{
+				attacker = null;
+			}
+
 			DamageSchool school;
 			if (effect != null)
 			{
@@ -528,40 +508,55 @@ namespace WCell.RealmServer.Entities
 			action.SpellEffect = effect;
 
 			action.Victim = this;
-
 			if (attacker != null)
 			{
-				// the damage is caused by someone else (i.e. not environmental damage etc)
-
-				// critical hits
-				if (action.CalcCritChance() > Utility.Random(0, 10000))
-				{
-					action.IsCritical = true;
-					action.SetCriticalDamage();
-				}
-				else
-				{
-					action.IsCritical = false;
-				}
-
-				// add mods and call events
-				OnDefend(action);
-				attacker.OnAttack(action);
-
-				if (addDamageBonuses && attacker is Character)
-				{
-					((Character)attacker).AddDamageModsToAction(action);
-				}
+				attacker.DeathPrevention++;
 			}
 
-			action.Absorbed += Absorb(action.UsedSchool, action.Damage);
-			action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
-			action.Blocked = 0; // TODO: Deflect
+			DeathPrevention++;
+			try
+			{
+				if (attacker != null)
+				{
+					// the damage is caused by someone else (i.e. not environmental damage etc)
 
-			DoRawDamage(action);
+					// critical hits
+					if (action.CalcCritChance() > Utility.Random(0, 10000))
+					{
+						action.IsCritical = true;
+						action.SetCriticalDamage();
+					}
+					else
+					{
+						action.IsCritical = false;
+					}
 
-			CombatLogHandler.SendMagicDamage(action);
-			action.OnFinished();
+					// add mods and call events
+					if (addDamageBonuses)
+					{
+						action.AddDamageMods();
+					}
+
+					OnDefend(action);
+					attacker.OnAttack(action);
+				}
+
+				action.Resisted = (int)Math.Round(action.Damage * action.ResistPct / 100);
+				action.Blocked = 0; // TODO: Deflect
+
+				DoRawDamage(action);
+
+				CombatLogHandler.SendMagicDamage(action);
+			}
+			finally
+			{
+				DeathPrevention--;
+				if (attacker != null)
+				{
+					attacker.DeathPrevention--;
+				}
+				action.OnFinished();
+			}
 			//Your average resistance can still be anywhere betweeen 0% and 75%. If your average resistance is maxed out, then there's a really good chance of having 75% of the spell's damage be resisted. 
 			//There's also a fairly good chance of having 100% of the spell's damage be resisted, a slightly lower chance of 50% of its damage being resisted, a small chances of only 25%, or even 0% of the damage being resisted. 
 			//It's a weighted average. Visualize it as a bell curve around your average resistance.
@@ -622,6 +617,8 @@ namespace WCell.RealmServer.Entities
 			{
 				chance = GetCritChance(dmgSchool);
 			}
+
+			//chance -= defender.GetResiliencePct(this);
 			chance -= defender.GetResiliencePct();
 			return chance;
 		}
@@ -697,17 +694,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public int CalcParryChance(Unit attacker)
 		{
-			float parryChance = 0;
-
-			if (this is Character)
-			{
-				var def = (Character)this;
-				parryChance += def.ParryChance;
-			}
-			else
-			{
-				return 5;
-			}
+			var parryChance = ParryChance;
 
 			if (attacker is Character)
 			{
@@ -717,25 +704,6 @@ namespace WCell.RealmServer.Entities
 
 			parryChance *= 100;
 			return (int)parryChance;
-		}
-
-		public float GetResiliencePct()
-		{
-			float resiliencePercentage = 0;
-
-			if (this is Character)
-			{
-				var def = this as Character;
-				float resilience = def.GetCombatRatingMod(CombatRating.MeleeResilience);
-				resiliencePercentage += resilience / /*GameTables.ResilienceRating[def.Level]; */
-										GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)def.Level - 1);
-			}
-			else
-			{
-				resiliencePercentage = 0;
-			}
-
-			return resiliencePercentage;
 		}
 
 		/// <summary>
@@ -900,10 +868,10 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Tries to land a mainhand hit + maybe offhand hit on the current Target
 		/// </summary>
-		protected virtual void CombatTick(float timeElapsed)
+		protected virtual void CombatTick(int timeElapsed)
 		{
 			// if currently casting a spell, skip this
-			if (IsUsingSpell)
+			if (IsUsingSpell && !m_spellCast.IsPending)
 			{
 				m_attackTimer.Start(DamageAction.DefaultCombatTickDelay);
 				return;
@@ -930,7 +898,7 @@ namespace WCell.RealmServer.Entities
 			var now = Environment.TickCount;
 			var usesOffHand = UsesDualWield;
 
-			var isRanged = m_AutorepeatSpell != null && m_AutorepeatSpell.IsRangedAbility;
+			var isRanged = IsUsingRangedWeapon;
 			var mainHandDelay = m_lastStrike + (isRanged ? RangedAttackTime : MainHandAttackTime) - now;
 			int offhandDelay;
 
@@ -973,10 +941,10 @@ namespace WCell.RealmServer.Entities
 										SpellCast.Selected = target;
 										SpellCast.Start(m_AutorepeatSpell, false);
 										m_lastStrike = now;
-										mainHandDelay += OffHandAttackTime;
+										mainHandDelay += RangedAttackTime;
 									}
 								}
-								else if (!isRanged)
+								else
 								{
 									Strike(weapon);
 									m_lastStrike = now;
@@ -1004,7 +972,7 @@ namespace WCell.RealmServer.Entities
 						{
 							Strike(m_offhandWeapon);
 							m_lastOffhandStrike = now;
-							offhandDelay = OffHandAttackTime;
+							offhandDelay += OffHandAttackTime;
 						}
 					}
 				}
@@ -1053,7 +1021,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			m_attackTimer.Start(delay / 1000f);
+			m_attackTimer.Start(delay);
 		}
 
 		/// <summary>
@@ -1063,7 +1031,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual bool CheckCombatState()
 		{
-			if (m_comboTarget != null && !m_comboTarget.IsAlive)
+			if (m_comboTarget != null && (!m_comboTarget.IsInContext || !m_comboTarget.IsAlive))
 			{
 				ResetComboPoints();
 			}
@@ -1114,7 +1082,7 @@ namespace WCell.RealmServer.Entities
 				}
 
 				// start
-				m_attackTimer.Start(delay / 1000f);
+				m_attackTimer.Start(delay);
 			}
 			else
 			{
@@ -1127,6 +1095,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnEnterCombat()
 		{
+			SheathType = IsUsingRangedWeapon ? SheathType.Ranged : SheathType.Melee;
 			StandState = StandState.Stand;
 			m_lastCombatTime = Environment.TickCount;
 			if (m_brain != null)
@@ -1140,6 +1109,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnLeaveCombat()
 		{
+			//SheathType = SheathType.None;
 			ResetComboPoints();
 			if (m_brain != null)
 			{
@@ -1178,6 +1148,7 @@ namespace WCell.RealmServer.Entities
 					else if (aaction.VictimState == VictimState.Block ||
 							 aaction.VictimState == VictimState.Dodge)
 					{
+						// set
 						AuraState |= AuraStateMask.DodgeOrBlockOrParry;
 					}
 					else
@@ -1252,9 +1223,15 @@ namespace WCell.RealmServer.Entities
 						}
 					}
 
+					// Procs
 					if (action.Weapon == null || action.Weapon != OffHandWeapon)
 					{
-						// proc (if not offhand)
+						var gainExpProc = !IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor;
+						if (gainExpProc)
+						{
+							attackerProcTriggerFlags |= ProcTriggerFlags.GainExperience;
+						}
+
 						action.Attacker.Proc(attackerProcTriggerFlags, this, action, true);
 						Proc(targetProcTriggerFlags, action.Attacker, action, false);
 					}
@@ -1304,13 +1281,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the target is in reach to be attacked
+		/// Whether the suitable target is in reach to be attacked
 		/// </summary>
 		/// <param name="target"></param>
 		/// <returns></returns>
 		public bool CanReachForCombat(Unit target)
 		{
-			return MayMove || IsInAttackRange(target);
+			return CanMove || IsInAttackRange(target);
 		}
 
 		public bool IsInAttackRangeSq(Unit target, float distSq)
@@ -1369,15 +1346,24 @@ namespace WCell.RealmServer.Entities
 		public bool IsInAttackRangeSq(IWeapon weapon, Unit target, float distSq)
 		{
 			var max = GetAttackRange(weapon, target);
-			if (weapon.IsRanged)
+			if (UsesPendingAbility(weapon))
 			{
-				var min = GetMinAttackRange(weapon, target);
-				if (distSq < min * min)
-				{
-					return false;
-				}
+				max = GetSpellMaxRange(m_spellCast.Spell, max);
 			}
-			return distSq <= max * max;
+
+			if (distSq <= max * max)
+			{
+				if (weapon.IsRanged)
+				{
+					var min = GetMinAttackRange(weapon, target);
+					if (distSq < min * min)
+					{
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
 		}
 
 		public bool IsInRange(SimpleRange range, WorldObject obj)

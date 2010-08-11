@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -113,18 +114,10 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_damageTakenMods;
 		protected int[] m_damageTakenPctMods;
 
-		protected int m_ManaShieldAmount;
-		protected float m_ManaShieldFactor;
-
 		/// <summary>
 		/// Immunities against damage-schools
 		/// </summary>
 		protected int[] m_dmgImmunities;
-
-		/// <summary>
-		/// List of <see cref="IDamageAbsorber"/> which absorb any damage taken
-		/// </summary>
-		protected List<IDamageAbsorber> m_absorbers;
 
 		/// <summary>
 		/// Whether the physical state of this Unit allows it to move
@@ -194,18 +187,16 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanMove
 		{
-			get
-			{
-				return m_canMove;
-			}
+			get { return m_canMove && HasOwnerPermissionToMove; }
 		}
 
 		/// <summary>
-		/// Whether the owner (if any) allows this unit to move
+		/// Whether the owner or controlling AI allows this unit to move.
+		/// Always returns true for uncontrolled players.
 		/// </summary>
-		public bool MayMove
+		public bool HasOwnerPermissionToMove
 		{
-			get { return CanMove && (m_Movement == null || m_Movement.MayMove); }
+			get { return m_Movement == null || m_Movement.MayMove; }
 			set
 			{
 				if (m_Movement != null)
@@ -216,7 +207,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Whether the Unit is currently evading (cannot be hit etc)
+		/// Whether the Unit is currently evading (cannot be hit, generate threat etc)
 		/// </summary>
 		public bool IsEvading
 		{
@@ -534,6 +525,10 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		private bool IsAnySetNoCheck(bool[] set)
 		{
+			if (m_mechanics == null)
+			{
+				return false;
+			}
 			for (var i = 0; i < set.Length; i++)
 			{
 				if (set[i] && m_mechanics[i] > 0)
@@ -692,7 +687,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Adds immunity against given SpellMechanic-school
 		/// </summary>
-		public void IncMechImmunityCount(SpellMechanic mechanic)
+		public void IncMechImmunityCount(SpellMechanic mechanic, Spell exclude)
 		{
 			if (m_mechanicImmunities == null)
 			{
@@ -704,6 +699,9 @@ namespace WCell.RealmServer.Entities
 			{
 				// new immunity: Gets rid of all Auras that use this Mechanic
 				Auras.RemoveWhere(aura => aura.Spell.Mechanic == mechanic &&
+					aura.Spell != exclude &&
+					(aura.Spell.TargetTriggerSpells == null || !aura.Spell.TargetTriggerSpells.Contains(exclude)) &&
+					(aura.Spell.CasterTriggerSpells == null || !aura.Spell.CasterTriggerSpells.Contains(exclude)) &&
 					((mechanic != SpellMechanic.Invulnerable && mechanic != SpellMechanic.Invulnerable_2) || !aura.Spell.Attributes.HasFlag(SpellAttributes.UnaffectedByInvulnerability)));
 			}
 
@@ -785,63 +783,6 @@ namespace WCell.RealmServer.Entities
 				val = 0;
 			}
 			m_mechanicDurationMods[(int)mechanic] = val;
-		}
-		#endregion
-
-		#region Absorb
-		/// <summary>
-		/// Absorbs the given school and amount of damage
-		/// </summary>
-		/// <returns>The amount of damage absorbed</returns>
-		public int Absorb(DamageSchool school, int amount)
-		{
-			if (m_absorbers == null || m_absorbers.Count == 0)
-			{
-				return 0;
-			}
-			if (m_DamageAction != null)
-			{
-				if (m_DamageAction.Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
-					return 0;
-			}
-			var absorb = 0;
-
-			// count backwards so removal of elements won't disturb anything
-			for (var i = m_absorbers.Count - 1; i >= 0; i--)
-			{
-				var absorber = m_absorbers[i];
-				if (absorber.AbsorbSchool.HasAnyFlag(school))
-				{
-					var abs = Math.Min(amount, absorber.AbsorbValue);
-					absorb += abs;
-					absorber.AbsorbValue -= abs;
-				}
-			}
-			return absorb;
-		}
-
-		/// <summary>
-		/// Adds a new <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void AddDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers == null)
-			{
-				m_absorbers = new List<IDamageAbsorber>(1);
-			}
-
-			m_absorbers.Add(absorber);
-		}
-
-		/// <summary>
-		/// Removes an existing <see cref="IDamageAbsorber"/>
-		/// </summary>
-		public void RemoveDmgAbsorption(IDamageAbsorber absorber)
-		{
-			if (m_absorbers != null)
-			{
-				m_absorbers.Remove(absorber);
-			}
 		}
 		#endregion
 
@@ -1033,7 +974,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Spell avoidance
 		/// </summary>
-		public void ModSpellHitChance(DamageSchool school, int delta)
+		public virtual void ModSpellHitChance(DamageSchool school, int delta)
 		{
 			if (m_SpellHitChance == null)
 			{
@@ -1331,10 +1272,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual bool MayTeleport
 		{
-			get
-			{
-				return true;
-			}
+			get { return true; }
 		}
 
 		/// <summary>
@@ -1464,6 +1402,7 @@ namespace WCell.RealmServer.Entities
 
 			// must not be moving or logging out when being teleported
 			CancelMovement();
+			CancelAllActions();
 			if (this is Character)
 			{
 				((Character)this).CancelLogout();
@@ -1533,13 +1472,11 @@ namespace WCell.RealmServer.Entities
 					if (m_stealthed > 0 && value <= 0)
 					{
 						// deactivated stealth
-						ShapeshiftForm = ShapeshiftForm.Normal;
 						StateFlags &= ~StateFlag.Sneaking;
 					}
 					else if (m_stealthed <= 0 && value > 0)
 					{
 						// activated stealth
-						ShapeshiftForm = ShapeshiftForm.Stealth;
 						StateFlags |= StateFlag.Sneaking;
 
 						// some auras don't live through Stealth
@@ -1961,57 +1898,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Mana Shield
-		/// <summary>
-		/// Amount of remaining mana shield
-		/// </summary>
-		public int ManaShieldAmount
-		{
-			get { return m_ManaShieldAmount; }
-			set { m_ManaShieldAmount = value; }
-		}
-
-		/// <summary>
-		/// Amount of mana to be subtracted for each hit taken
-		/// </summary>
-		public float ManaShieldFactor
-		{
-			get { return m_ManaShieldFactor; }
-			set { m_ManaShieldFactor = value; }
-		}
-
-		/// <summary>
-		/// Drains as much damage from a currently active mana shield as possible.
-		/// Deactivates the mana shield once its used up.
-		/// </summary>
-		/// <param name="damage"></param>
-		/// <returns>The amount of damage drained</returns>
-		public int DrainManaShield(int damage)
-		{
-			var power = Power;
-			if (damage >= m_ManaShieldAmount)
-			{
-				damage = m_ManaShieldAmount;
-				m_auras.RemoveWhere(aura => aura.Spell.HasManaShield);
-			}
-
-			var powerPoints = (int)(power / m_ManaShieldFactor);
-
-			var amount = Math.Min(damage, powerPoints);
-			m_ManaShieldAmount -= powerPoints;
-			Power = power - (int)(amount * m_ManaShieldFactor);
-			damage -= amount;
-
-			return amount;
-		}
-
-		public void SetManaShield(float factor, int amount)
-		{
-			m_ManaShieldFactor = factor;
-			m_ManaShieldAmount = amount;
-		}
-		#endregion
-
 		#region Misc
 		public void ResetMechanicDefaults()
 		{
@@ -2030,6 +1916,13 @@ namespace WCell.RealmServer.Entities
 			m_flightBackSpeed = DefaultFlightBackSpeed;
 			m_turnSpeed = DefaultTurnSpeed;
 			m_pitchSpeed = DefaulPitchSpeed;
+		}
+		#endregion
+
+		#region Resilience
+		public virtual float GetResiliencePct()
+		{
+			return 0;
 		}
 		#endregion
 	}

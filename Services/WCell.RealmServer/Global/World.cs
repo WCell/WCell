@@ -24,6 +24,7 @@ using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Lang;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Content;
@@ -1169,19 +1170,24 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		#region Broadcast
+		public static void Broadcast(RealmLangKey key, params object[] args)
+		{
+			Broadcast(null, RealmLocalizer.Instance.Translate(key, args));
+		}
+
+		public static void Broadcast(IChatter broadCaster, RealmLangKey key, params object[] args)
+		{
+			Broadcast(broadCaster, RealmLocalizer.Instance.Translate(key, args));
+		}
 		public static void Broadcast(string message, params object[] args)
 		{
-			Broadcast(string.Format(message, args));
+			Broadcast(null, string.Format(message, args));
 		}
 
 		public static void Broadcast(IChatter broadCaster, string message, params object[] args)
 		{
 			Broadcast(broadCaster, string.Format(message, args));
-		}
-
-		public static void Broadcast(string message)
-		{
-			Broadcast(null, message);
 		}
 
 		public static void Broadcast(IChatter broadCaster, string message)
@@ -1203,6 +1209,12 @@ namespace WCell.RealmServer.Global
 				evt(broadCaster, message);
 			}
 		}
+
+		public static void Broadcast(RealmPacketOut packet)
+		{
+			CallOnAllChars(chr => chr.Send(packet));
+		}
+		#endregion
 
 		#region Events
 		#endregion

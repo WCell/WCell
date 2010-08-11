@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Mail
 						recipient.ExecuteInContext(() =>
 						{
 							letter.Recipient = recipient.Record;
-							recipient.Mail.AllMail.Add((uint)letter.Guid, letter);
+							recipient.MailAccount.AllMail.Add((uint)letter.Guid, letter);
 							MailHandler.SendNotify(recipient.Client);
 						});
 					}

@@ -59,7 +59,7 @@ namespace WCell.Constants.Spells
 		/// Does not show in buff/debuff pane. normally passive buffs
 		/// 0x80
 		/// </summary>
-		NoVisibleAura = 0x80,//7
+		InvisibleAura = 0x80,//7
 
 		/// <summary>
 		/// Every learn-spell has it, but also many other spells
@@ -386,9 +386,9 @@ namespace WCell.Constants.Spells
 		AttrExD_10_0x400 = 0x400,//10
 
 		/// <summary>
-		/// This spell can't be absorbed
+		/// This spell can't be absorbed.
 		/// ClassSkillChaosBoltRank1 has this, is it correct though?
-		/// However, does this mean Entangling Roots DoT can't be absorbed?
+		/// Does this mean Entangling Roots DoT can't be absorbed?
 		/// </summary>
 		CannotBeAbsorbed = 0x800,//11
 
@@ -769,7 +769,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		InFrontOfCaster = 24,
 		/// <summary>
-		/// Enemy target apparently
+		/// Friend or Foe
 		/// </summary>
 		Duel = 25,
 		/// <summary>
@@ -1199,13 +1199,13 @@ namespace WCell.Constants.Spells
 		Flag_0x100 = 0x100,
 		Flag_0x200 = 0x200,
 		Flag_0x400 = 0x400,
-		Flag_0x800 = 0x800,
+		RunicPowerGain = 0x800,
 		Flag_0x10000 = 0x10000,
 		Flag_0x20000 = 0x20000,
-		Flag_0x40000 = 0x40000,
+		RuneAbility = 0x40000,
 		Flag_0x80000 = 0x80000,
 		Flag_0x100000 = 0x100000,
-		Flag_0x200000 = 0x200000,
+		RuneCooldownList = 0x00200000,
 		Flag_0x4000000 = 0x04000000,
 	}
 

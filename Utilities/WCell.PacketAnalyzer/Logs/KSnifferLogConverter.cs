@@ -77,7 +77,7 @@ namespace WCell.PacketAnalysis.Logs
 					var timestamp = DateTime.Now;
 					var line = lines[lineNo];
 
-					if (singleLinePackets && !line.StartsWith("{"))
+					if (line.Length == 0 || (singleLinePackets && !line.StartsWith("{")))
 					{
 						continue;
 					}
@@ -144,8 +144,9 @@ namespace WCell.PacketAnalysis.Logs
 					else
 					{
 						// skip the column count
-						while ((line = lines[lineNo]).StartsWith("|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F") ||
-							   line.StartsWith("|------------------------------------------------"))
+						while (string.IsNullOrEmpty(line = lines[lineNo]) ||
+								line.StartsWith("|00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F") ||
+								line.StartsWith("|--------------------------------"))
 						{
 							lineNo++;
 						}
@@ -154,7 +155,7 @@ namespace WCell.PacketAnalysis.Logs
 						while (((line.Length > 5 && line[start = 4] == ':') || (start = line.IndexOf('|')) >= 0) &&
 							   (end = line.IndexOf('|', start += 1)) > 0)
 						{
-							lineNo++;
+							++lineNo;
 							if (buildPacket)
 							{
 								end -= 1;
@@ -168,7 +169,10 @@ namespace WCell.PacketAnalysis.Logs
 								}
 
 								sb.Append(str + " ");
-								line = lines[lineNo];
+								while ((line = lines[lineNo]).Length == 0)	// skip empty lines
+								{
+									++lineNo;
+								}	
 							}
 						}
 					}

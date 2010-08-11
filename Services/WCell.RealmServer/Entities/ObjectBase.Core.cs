@@ -174,14 +174,14 @@ namespace WCell.RealmServer.Entities
         {
             uint low = m_updateValues[field].UInt32;
             uint high = m_updateValues[field + 1].UInt32;
-            return low | (high << 32);
+			return low | ((ulong)high << 32);
         }
 
         public ulong GetUInt64(UpdateFieldId field)
         {
             uint low = m_updateValues[field.RawId].UInt32;
             uint high = m_updateValues[field.RawId + 1].UInt32;
-            return low | (high << 32);
+            return low | ((ulong)high << 32);
         }
 
         public EntityId GetEntityId(UpdateFieldId field)

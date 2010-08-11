@@ -3,7 +3,7 @@
  *   file		: ModDamageDonePercent.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sÃ¸, 10 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-10 13:00:10 +0100 (sø, 10 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1185 $
  *
@@ -22,18 +22,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			if (m_aura.Auras.Owner is Character)
-			{
-				((Character)m_aura.Auras.Owner).ModDamageModPct(m_spellEffect.MiscBitSet, EffectValue);
-			}
+			Owner.ModDamageDoneFactor(m_spellEffect.MiscBitSet, EffectValue/100f);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			if (m_aura.Auras.Owner is Character)
-			{
-				((Character)m_aura.Auras.Owner).ModDamageModPct(m_spellEffect.MiscBitSet, -EffectValue);
-			}
+			Owner.ModDamageDoneFactor(m_spellEffect.MiscBitSet, -EffectValue/100f);
 		}
 	}
 };

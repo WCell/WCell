@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
@@ -79,6 +80,7 @@ namespace WCell.RealmServer.Entities
 			m_threatCollection = new ThreatCollection();
 		}
 
+		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
 			// auras
@@ -92,18 +94,15 @@ namespace WCell.RealmServer.Entities
 				m_spawnPoint = spawnPoint;
 				Phase = spawnEntry.PhaseMask;
 				m_orientation = spawnEntry.Orientation;
-				if (spawnEntry.MountId != 0)
-				{
-					Mount(spawnEntry.MountId);
-				}
 
 				if (spawnEntry.DisplayIdOverride != 0)
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-
-				SetUInt32(UnitFields.BYTES_0, spawnEntry.Bytes);
-				SetUInt32(UnitFields.BYTES_2, spawnEntry.Bytes2);
+				else if (entry.ModelInfos != null && entry.ModelInfos.Length > 0)
+				{
+					Model = entry.ModelInfos.GetRandom();
+				}
 			}
 			else
 			{
@@ -111,7 +110,6 @@ namespace WCell.RealmServer.Entities
 				spawnEntry = entry.FirstSpawnEntry;
 			}
 
-			EmoteState = (spawnEntry != null && spawnEntry.EmoteState != 0) ? spawnEntry.EmoteState : entry.EmoteState;
 			Entry = entry;
 			NativeDisplayId = DisplayId;
 
@@ -139,10 +137,6 @@ namespace WCell.RealmServer.Entities
 			MainWeapon = m_entry.CreateMainHandWeapon();
 			RangedWeapon = m_entry.CreateRangedWeapon();
 			OffHandWeapon = entry.CreateOffhandWeapon();
-
-			// Set Level/Scale *after* MainWeapon is set:
-			var level = entry.GetRandomLevel();
-			Level = level;
 
 			// Set model after Scale
 			Model = m_entry.GetRandomModel();
@@ -201,17 +195,41 @@ namespace WCell.RealmServer.Entities
 				EnsureSpells();
 			}
 
-			if (m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None)
+			if (IsImmovable)
 			{
-				m_Movement.MayMove = false;
+				InitImmovable();
 			}
 
-			AddEquipment();
+			AddStandardEquipment();
+			if (m_entry.AddonData != null)
+			{
+				// first add general addon data
+				AddAddonData(m_entry.AddonData);
+			}
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
+			{
+				// then override with per-spawn addon data
+				AddAddonData(m_spawnPoint.SpawnEntry.AddonData);
+			}
 
 			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
 			m_brain = m_entry.BrainCreator(this);
 			m_brain.IsRunning = true;
+
+			AddMessage(() =>
+			{
+				// Set Level/Scale after NPC is in world:
+				if (!HasPlayerMaster)
+				{
+					var level = entry.GetRandomLevel();
+					Level = level;
+				}
+				else
+				{
+					Level = m_master.Level;
+				}
+			});
 		}
 
 		/// <summary>
@@ -224,9 +242,13 @@ namespace WCell.RealmServer.Entities
 			{
 				if (
 					flags.HasAnyFlag(UnitFlags.SelectableNotAttackable | UnitFlags.SelectableNotAttackable_2 |
-								  UnitFlags.SelectableNotAttackable_3))
+								  UnitFlags.SelectableNotAttackable_3 | UnitFlags.NotAttackable))
 				{
 					Invulnerable++;
+				}
+				if (flags.HasAnyFlag(UnitFlags.NotSelectable))
+				{
+					IsEvading = true;
 				}
 				if (flags.HasFlag(UnitFlags.Combat))
 				{
@@ -248,27 +270,33 @@ namespace WCell.RealmServer.Entities
 				{
 					IncMechanicCount(SpellMechanic.Silenced);
 				}
+				if (flags.HasFlag(UnitFlags.Passive))
+				{
+					HasOwnerPermissionToMove = false;
+				}
 			}
 		}
 
-		/// <summary>
-		/// Uncontrolled NPCs that are not summoned can evade
-		/// </summary>
-		public bool CanEvade
+		private void InitImmovable()
 		{
-			get
+			m_Movement.MayMove = false;
+
+			// if immovables have a single AreaAura, better cast it
+			if (HasSpells && Spells.Count == 1)
 			{
-				return m_region.CanNPCsEvade &&
-					m_spawnPoint != null &&
-					(m_master == this || m_master == null);
+				var spell = Spells.First();
+				if (spell.IsAreaAura)
+				{
+					AddMessage(() => SpellCast.Start(spell, true));
+				}
 			}
 		}
 
-		private void AddEquipment()
+		private void AddStandardEquipment()
 		{
 			NPCEquipmentEntry equipment;
 
-			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null)
+			if (m_spawnPoint != null && m_spawnPoint.SpawnEntry != null && m_spawnPoint.SpawnEntry.Equipment != null)
 			{
 				equipment = m_spawnPoint.SpawnEntry.Equipment;
 			}
@@ -279,13 +307,23 @@ namespace WCell.RealmServer.Entities
 
 			if (equipment != null)
 			{
-				for (var i = 0; i < equipment.ItemIds.Length; i++)
-				{
-					var item = equipment.ItemIds[i];
-					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)item);
-				}
+				SetEquipment(equipment);
 			}
 		}
+
+		private void AddAddonData(NPCAddonData data)
+		{
+			SetUInt32(UnitFields.BYTES_0, data.Bytes);
+			SetUInt32(UnitFields.BYTES_2, data.Bytes2);
+
+			EmoteState = data.EmoteState;
+
+			if (data.MountModelId != 0)
+			{
+				Mount(data.MountModelId);
+			}
+		}
+		#endregion
 
 		#region Properties
 		public NPCEntry Entry
@@ -305,7 +343,7 @@ namespace WCell.RealmServer.Entities
 				GenerateId(value.Id);
 				if (m_entry.Regenerates)
 				{
-					InitializeRegeneration();
+					Regenerates = true;
 					HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
 				}
 				m_name = m_entry.DefaultName;
@@ -330,6 +368,24 @@ namespace WCell.RealmServer.Entities
 		{
 			m_name = name;
 			PetNameTimestamp = timeStamp;
+		}
+
+		/// <summary>
+		/// Uncontrolled NPCs that are not summoned can evade
+		/// </summary>
+		public bool CanEvade
+		{
+			get
+			{
+				return m_region.CanNPCsEvade &&
+					m_spawnPoint != null &&
+					(m_master == this || m_master == null);
+			}
+		}
+
+		public bool IsImmovable
+		{
+			get { return m_entry.Type == CreatureType.Totem || m_entry.Type == CreatureType.None; }
 		}
 
 		public override UpdatePriority UpdatePriority
@@ -452,7 +508,7 @@ namespace WCell.RealmServer.Entities
 				}
 				else if (value && !IsDecaying)
 				{
-					RemainingDecayDelay = m_entry.DefaultDecayDelay;
+					RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
 				}
 			}
 		}
@@ -463,15 +519,15 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Remaining time until the NPC decay (or 0.0f if already decaying or if decaying was not initialized yet).
+		/// Remaining time until the NPC decay (or 0 if already decayed or decaying did not start yet).
 		/// Deactivates the timer if set to a value smaller or equal to 0
 		/// </summary>
 		/// <remarks>Requires region-context</remarks>
-		public float RemainingDecayDelay
+		public int RemainingDecayDelayMillis
 		{
 			get
 			{
-				return m_decayTimer != null ? m_decayTimer.RemainingInitialDelay : 0;
+				return m_decayTimer != null ? m_decayTimer.RemainingInitialDelayMillis : 0;
 			}
 			set
 			{
@@ -481,8 +537,11 @@ namespace WCell.RealmServer.Entities
 				}
 				else
 				{
-					m_decayTimer = new TimerEntry(DecayNow);
-					m_decayTimer.Start(value, 0);
+					if (m_decayTimer == null)
+					{
+						m_decayTimer = new TimerEntry(DecayNow);
+					}
+					m_decayTimer.Start(value);
 				}
 			}
 		}
@@ -499,10 +558,22 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public override int StaminaWithoutHealthContribution
+		{
+			get
+			{
+				if (IsHunterPet)
+				{
+					// hunter pets gain no health from their base stamina
+					return GetBaseStatValue(StatType.Stamina);
+				}
+				// TODO: NPC stats
+				return 0;
+			}
+		}
 		#endregion
 
 		#region NPC-specific Fields
-
 		public override uint DisplayId
 		{
 			get { return base.DisplayId; }
@@ -592,177 +663,60 @@ namespace WCell.RealmServer.Entities
 					((Character)m_master).GroupUpdateFlags |= GroupUpdateFlags.PetMaxPower;
 			}
 		}
+		#endregion
 
-
-		public override int Stamina
+		#region NPC Items
+		/// <summary>
+		/// Sets this NPC's equipment to the given entry
+		/// </summary>
+		public void SetEquipment(NPCEquipmentEntry equipment)
 		{
-			get
+			for (var i = 0; i < equipment.ItemIds.Length; i++)
 			{
-				if (HasMaster)
+				var itemId = equipment.ItemIds[i];
+				if (itemId != 0)
 				{
-					var bonus = Math.Max(((Master.Stamina * PetMgr.StaminaScaler) / 100), 0);
-					return (base.Stamina + bonus);
+					var item = ItemMgr.GetTemplate(itemId);
+					if (item != null)
+					{
+						SheathType = item.SheathType;		// TODO: How to use the sheath type of all items?
+					}
+					SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID + i, (uint)itemId);
 				}
-				return base.Stamina;
 			}
 		}
 
-		public override int Armor
+		public void SetMainWeaponVisual(ItemId item)
 		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.Armor * PetMgr.ArmorScaler) / 100), 0);
-					return (base.Armor + bonus);
-				}
-				return base.Armor;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.Armor * PetMgr.ArmorScaler) / 100), 0);
-					base.Armor = Math.Max(value - bonus, 0);
-				}
-				base.Armor = value;
-			}
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID, (uint)item);
 		}
 
-		public override int MeleeAttackPower
+		public void SetOffhandWeaponVisual(ItemId item)
 		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.MeleeAttackPower * PetMgr.MeleeAttackPowerScaler) / 100), 0);
-					return (base.MeleeAttackPower + bonus);
-				}
-				return base.MeleeAttackPower;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.MeleeAttackPower * PetMgr.MeleeAttackPowerScaler) / 100), 0);
-					base.Armor = Math.Max(value - bonus, 0);
-				}
-				base.MeleeAttackPower = value;
-			}
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_2, (uint)item);
 		}
 
-		//
-		// Todo: Pets get about 7.5% of the hunter�s ranged attack power added to their spell damage.
-		//
-
-		public override int FireResist
+		public void SetRangedWeaponVisual(ItemId item)
 		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FireResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.FireResist + bonus);
-				}
-				return base.FireResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FireResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.FireResist = Math.Max(value - bonus, 0);
-				}
-				base.FireResist = value;
-			}
+			SetUInt32(UnitFields.VIRTUAL_ITEM_SLOT_ID_3, (uint)item);
 		}
 
-		public override int NatureResist
+		/// <summary>
+		/// NPCs only have their default items which may always be used, so no invalidation
+		/// takes place.
+		/// </summary>
+		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
 		{
-			get
+			switch (slot)
 			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.NatureResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.NatureResist + bonus);
-				}
-				return base.NatureResist;
+				case InventorySlotType.WeaponMainHand:
+					return m_entry.CreateMainHandWeapon();
+				case InventorySlotType.WeaponRanged:
+					return m_entry.CreateRangedWeapon();
+				case InventorySlotType.WeaponOffHand:
+					return m_entry.CreateOffhandWeapon();
 			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.NatureResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.NatureResist = Math.Max(value - bonus, 0);
-				}
-				base.NatureResist = value;
-			}
-		}
-
-		public override int FrostResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FrostResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.FrostResist + bonus);
-				}
-				return base.FrostResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.FrostResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.FrostResist = Math.Max(value - bonus, 0);
-				}
-				base.FrostResist = value;
-			}
-		}
-
-		public override int ArcaneResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.ArcaneResist * PetMgr.ResistanceScaler) / 100), 0);
-					return (base.ArcaneResist + bonus);
-				}
-				return base.ArcaneResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = Math.Max(((Master.ArcaneResist * PetMgr.ResistanceScaler) / 100), 0);
-					base.ArcaneResist = Math.Max(value - bonus, 0);
-				}
-				base.ArcaneResist = value;
-			}
-		}
-
-		public override int ShadowResist
-		{
-			get
-			{
-				if (HasMaster)
-				{
-					var bonus = (Master.ShadowResist * PetMgr.ResistanceScaler) / 100;
-					return (base.ShadowResist + bonus);
-				}
-				return base.ShadowResist;
-			}
-			internal set
-			{
-				if (HasMaster)
-				{
-					var bonus = ((Master.ShadowResist * PetMgr.ResistanceScaler) / 100);
-					base.ShadowResist = Math.Max(value - bonus, 0);
-				}
-				base.ShadowResist = value;
-			}
+			return null;
 		}
 		#endregion
 
@@ -781,25 +735,6 @@ namespace WCell.RealmServer.Entities
 			var minion = base.SpawnMinion(entry, ref position, durationMillis);
 			minion.Group = Group;
 			return minion;
-		}
-
-		public override uint GetLootId(LootEntryType lootType)
-		{
-			switch (lootType)
-			{
-				case LootEntryType.NPCCorpse:
-					return m_entry.LootId;
-				case LootEntryType.Skinning:
-					return m_entry.SkinLootId;
-				case LootEntryType.PickPocketing:
-					return m_entry.PickPocketLootId;
-			}
-			return 0;
-		}
-
-		public override bool UseGroupLoot
-		{
-			get { return true; }
 		}
 
 		#region Death
@@ -821,39 +756,49 @@ namespace WCell.RealmServer.Entities
 		{
 			m_brain.IsRunning = false;
 
-			var looter = m_FirstAttacker;
-			UnitFlags |= UnitFlags.SelectableNotAttackable;
-
-			if (looter is Character && LootMgr.GetOrCreateLoot(this, (Character)looter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+			// reset spawn timer
+			if (m_spawnPoint != null)
 			{
-				// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
-				//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
-				EnterLootableState();
-			}
-			else
-			{
-				// no loot
-				EnterFinalState();
+				m_spawnPoint.SignalSpawnlingDied(this);
 			}
 
+			// hand out experience
 			m_region.OnNPCDied(this);
 
+			var looter = m_FirstAttacker;
+
+			if (!HasPlayerMaster)	// not player-owned NPC
+			{
+				var playerLooter = looter != null ? looter.PlayerOwner : null;
+				if (playerLooter != null &&
+					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+				{
+					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
+					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
+					EnterLootableState();
+				}
+				else
+				{
+					// no loot
+					EnterFinalState();
+				}
+			}
+
+			// notify events
+			m_entry.NotifyDied(this);
+
+			UnitFlags |= UnitFlags.SelectableNotAttackable;
+
+			// send off the tamer
 			if (m_currentTamer != null)
 			{
 				PetHandler.SendTameFailure(m_currentTamer, TameFailReason.TargetDead);
 				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
 			}
 
-			// reset spawn point if mob died
-			if (m_spawnPoint != null)
-			{
-				m_spawnPoint.SignalSpawnlingDied(this);
-			}
-
-			m_entry.NotifyDied(this);
-
 			if (m_master != null)
 			{
+				// notify master
 				if (m_master.IsInWorld)
 				{
 					m_master.OnMinionDied(this);
@@ -915,17 +860,23 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnEnterRegion();
 
-			// default auras
-			if (m_auras.Count == 0 && m_spawnPoint != null)
+			if (m_auras.Count == 0)
 			{
-				foreach (var aura in m_entry.Auras)
+				// add auras
+				if (m_entry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_entry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 
-				foreach (var aura in m_spawnPoint.SpawnEntry.Auras)
+				if (m_spawnPoint != null && m_spawnPoint.SpawnEntry.AddonData != null)
 				{
-					m_auras.CreateSelf(aura, true);
+					foreach (var aura in m_spawnPoint.SpawnEntry.AddonData.Auras)
+					{
+						m_auras.CreateSelf(aura, true);
+					}
 				}
 			}
 
@@ -989,47 +940,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override void OnFinishedLooting()
-		{
-			EnterFinalState();
-		}
-
-		public bool CanInteractWith(Character chr)
-		{
-			if (chr.Region != m_region ||
-				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
-				!chr.CanSee(this))
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.TooFarAway);
-				return false;
-			}
-
-			if (chr.IsAlive == IsSpiritHealer)
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.YouDead);
-				return false;
-			}
-
-			if (chr.IsOnTaxi || m_isInCombat || IsOnTaxi)
-			{
-				return false;
-			}
-
-			if (!chr.CanInteract || !CanInteract)
-			{
-				return false;
-			}
-
-			var reputation = chr.Reputations.GetOrCreate(Faction.ReputationIndex);
-			if (reputation != null && !reputation.CanInteract)
-			{
-				NPCHandler.SendNPCError(chr, this, VendorInventoryError.BadRep);
-				return false;
-			}
-
-			return true;
-		}
-
 		#region Decay & Dispose
 		/// <summary>
 		/// Marks this NPC lootable (usually when dead)
@@ -1037,7 +947,7 @@ namespace WCell.RealmServer.Entities
 		private void EnterLootableState()
 		{
 			FirstAttacker = null;
-			RemainingDecayDelay = m_entry.DefaultDecayDelay * 2;
+			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis * 2;
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
@@ -1047,7 +957,7 @@ namespace WCell.RealmServer.Entities
 		private void EnterFinalState()
 		{
 			FirstAttacker = null;
-			RemainingDecayDelay = m_entry.DefaultDecayDelay;
+			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
 			if (m_entry.SkinningLoot != null)
 			{
 				UnitFlags |= UnitFlags.Skinnable;
@@ -1062,7 +972,7 @@ namespace WCell.RealmServer.Entities
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
-		void DecayNow(float delay)
+		void DecayNow(int delay)
 		{
 			//if (IsAlive && m_master != null && !IsSummoned)
 			//{
@@ -1076,6 +986,13 @@ namespace WCell.RealmServer.Entities
 				m_loot = null;
 			}
 			Delete();
+		}
+
+		protected internal override void DeleteNow()
+		{
+			Target = null;
+			m_auras.ClearWithoutCleanup();
+			base.DeleteNow();
 		}
 
 		void StopDecayTimer()
@@ -1094,24 +1011,6 @@ namespace WCell.RealmServer.Entities
 			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
 		}
 
-		/// <summary>
-		/// NPCs only have their default items which may always be used, so no invalidation
-		/// takes place.
-		/// </summary>
-		protected override IWeapon GetOrInvalidateItem(InventorySlotType slot)
-		{
-			switch (slot)
-			{
-				case InventorySlotType.WeaponMainHand:
-					return m_entry.CreateMainHandWeapon();
-				case InventorySlotType.WeaponRanged:
-					return m_entry.CreateRangedWeapon();
-				case InventorySlotType.WeaponOffHand:
-					return m_entry.CreateOffhandWeapon();
-			}
-			return null;
-		}
-
 		protected override void OnEnterCombat()
 		{
 			base.OnEnterCombat();
@@ -1127,23 +1026,48 @@ namespace WCell.RealmServer.Entities
 		protected override void OnLeaveCombat()
 		{
 			base.OnLeaveCombat();
-
-			InitializeRegeneration();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		protected internal override void OnDamageAction(IDamageAction action)
-		{
-			if (!action.Victim.IsAlive && YieldsXpOrHonor && action.Attacker is Character && action.Attacker.YieldsXpOrHonor)
-			{
-				action.Attacker.Proc(ProcTriggerFlags.GainExperience, this, action, true);
-			}
-
-			base.OnDamageAction(action);
 		}
 		#endregion
+
+		/// <summary>
+		/// Also sends a message to the Character, if not valid
+		/// </summary>
+		internal bool CheckVendorInteraction(Character chr)
+		{
+			if (chr.Region != m_region ||
+				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
+				!chr.CanSee(this))
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.TooFarAway);
+				return false;
+			}
+
+			if (!IsAlive)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.VendorDead);
+				return false;
+			}
+
+			if (chr.IsAlive == IsSpiritHealer)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.YouDead);
+				return false;
+			}
+
+			if (!chr.CanInteract || !CanInteract)
+			{
+				return false;
+			}
+
+			var reputation = chr.Reputations.GetOrCreate(Faction.ReputationIndex);
+			if (reputation != null && !reputation.CanInteract)
+			{
+				NPCHandler.SendNPCError(chr, this, VendorInventoryError.BadRep);
+				return false;
+			}
+
+			return true;
+		}
 
 		#region Talk
 		public override void Say(string message)
@@ -1415,7 +1339,7 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanGiveQuestTo(Character chr)
 		{
-			return CanInteractWith(chr);
+			return CheckVendorInteraction(chr);
 		}
 		#endregion
 
@@ -1491,15 +1415,10 @@ namespace WCell.RealmServer.Entities
 		{
 			if (m_master != null)
 			{
-				SetEntityId(UnitFields.CREATEDBY, EntityId.Zero);
-				if (Summoner != null)
-				{
-					Summoner = null;
-				}
-				if (Charmer != null)
-				{
-					Charmer = null;
-				}
+				//SetEntityId(UnitFields.CREATEDBY, EntityId.Zero);
+				SetEntityId(UnitFields.SUMMONEDBY, EntityId.Zero);
+				SetEntityId(UnitFields.CHARMEDBY, EntityId.Zero);
+				Master = null;
 			}
 			if (m_PetRecord != null)
 			{
@@ -1508,41 +1427,59 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public override void Update(float dt)
+		#region Loot
+		public override uint GetLootId(LootEntryType lootType)
+		{
+			switch (lootType)
+			{
+				case LootEntryType.NPCCorpse:
+					return m_entry.LootId;
+				case LootEntryType.Skinning:
+					return m_entry.SkinLootId;
+				case LootEntryType.PickPocketing:
+					return m_entry.PickPocketLootId;
+			}
+			return 0;
+		}
+
+		public override bool UseGroupLoot
+		{
+			get { return true; }
+		}
+
+		public override void OnFinishedLooting()
+		{
+			EnterFinalState();
+		}
+		#endregion
+
+		public override int GetBasePowerRegen()
+		{
+			if (IsOwnedByPlayer)
+			{
+				return PowerFormulas.GetPowerRegen(this);
+			}
+			else
+			{
+				// TODO: NPC power regen
+				return BasePower / 50;
+			}
+		}
+
+		public override void Update(int dt)
 		{
 			if (m_decayTimer != null)
 			{
 				m_decayTimer.Update(dt);
 			}
 
-			if (m_target != null)
+			if (m_target != null && CanMove)
 			{
 				// always face the target
 				SetOrientationTowards(m_target);
 			}
 
 			base.Update(dt);
-		}
-
-		/// <summary>
-		/// Deletes this NPC and spawns a new instance of it.
-		/// </summary>
-		public void Reset()
-		{
-			Delete();
-			if (m_spawnPoint != null)
-			{
-				ContextHandler.ExecuteInContext(m_spawnPoint.SpawnOne);
-			}
-			else
-			{
-				m_entry.Create(Region, Position);
-			}
-		}
-
-		protected internal override void DeleteNow()
-		{
-			base.DeleteNow();
 		}
 
 		public override void Dispose(bool disposing)

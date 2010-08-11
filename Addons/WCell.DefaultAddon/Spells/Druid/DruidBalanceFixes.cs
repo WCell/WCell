@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -97,7 +97,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 				// We set the original proc chance to that of of the more often occuring effect (Wrath) 
 				// and do a second chance check for the other proc when proc'ing
-				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;
+				spell.ProcChance = (spell.ProcChance * 6 + 5) / 10;			// "${$h*0.6}% chance"
 				effect1.IsProc = true;
 				effect1.SetAffectMask(SpellLineId.DruidWrath, SpellLineId.DruidStarfire);
 				effect1.AuraEffectHandlerCreator = () => new DruidEclipseHandler();
@@ -134,7 +134,7 @@ namespace WCell.Addons.Default.Spells.Druid
 	{
 		protected override void Apply()
 		{
-			var caster = m_aura.Caster;
+			var caster = m_aura.CasterUnit;
 			if (caster != null)
 			{
 				BaseEffectValue = (caster.BasePower * EffectValue + 50) / 100;
@@ -155,7 +155,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var daction = action as DamageAction;
 				if (daction != null)
 				{
-					daction.IncreaseDamagePercent(EffectValue);
+					daction.ModDamagePercent(EffectValue);
 				}
 			}
 		}
@@ -224,7 +224,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				}
 
 				// starfire has less of a chance than wrath, so we need to make a second proc chance check here:
-				var wrathChance = m_spellEffect.Spell.ProcChance;
+				var wrathChance = m_aura.Spell.ProcChance;
 				var starfireChance = m_spellEffect.MiscValue;
 				var sfToWrathProportion = starfireChance / wrathChance;
 
@@ -303,7 +303,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 		public override void Apply()
 		{
-			if (Targets == null) return;					// must have targets
+			if (m_targets == null) return;					// must have targets
 
 			var caster = m_cast.CasterUnit;
 			if (caster == null) return;
@@ -314,14 +314,14 @@ namespace WCell.Addons.Default.Spells.Druid
 			var handler = aura.Handlers.First(handlr => handlr is StarfallAuraHandler) as StarfallAuraHandler;
 			if (handler == null) return;					// we need the handler for counting
 
-			if (handler.FallenStars + Targets.Count >= MaxStars)
+			if (handler.FallenStars + m_targets.Count >= MaxStars)
 			{
 				// reached the max amount of stars
 				var amount = MaxStars - handler.FallenStars;
 				if (amount > 0)
 				{
 					var spellTargets = new WorldObject[amount];
-					Targets.CopyTo(0, spellTargets, 0, amount);
+					m_targets.CopyTo(0, spellTargets, 0, amount);
 
 					m_cast.Trigger(Effect.TriggerSpell, spellTargets);
 				}
@@ -330,8 +330,8 @@ namespace WCell.Addons.Default.Spells.Druid
 			else
 			{
 				// we can still keep going
-				handler.FallenStars += Targets.Count;
-				m_cast.Trigger(Effect.TriggerSpell, Targets.ToArray());
+				handler.FallenStars += m_targets.Count;
+				m_cast.Trigger(Effect.TriggerSpell, m_targets.ToArray());
 			}
 		}
 	}

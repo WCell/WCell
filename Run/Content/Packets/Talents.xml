@@ -50,7 +50,7 @@
     </Simple>
   </RealmPacket>
 
-  <RealmPacket OpCode="SMSG_TALENT_GROUP_LIST" Sender="Server">
+  <RealmPacket OpCode="SMSG_TALENTS_INFO" Sender="Server">
     <Simple>
       <Name>IsPet</Name>
       <Type>Byte</Type>

@@ -1,7 +1,7 @@
 
 namespace WCell.Constants.Spells
 {
-	public static class Extensions
+	public static class SpellConstantsExtensions
 	{
 		#region HasAnyFlag
 		public static bool HasAnyFlag(this SpellTargetFlags flags, SpellTargetFlags otherFlags)
@@ -24,9 +24,14 @@ namespace WCell.Constants.Spells
 			return (flags & otherFlags) != 0;
 		}
 
-		public static bool HasAnyFlag(this AuraStateMask flags, AuraState state)
+		public static bool HasAnyFlag(this AuraStateMask mask, AuraState state)
 		{
-			return (flags & (AuraStateMask)(1 << ((int)state - 1))) != 0;
+			return (mask & (AuraStateMask)(1 << ((int)state - 1))) != 0;
+		}
+
+		public static bool HasAnyFlag(this AuraStateMask mask, AuraStateMask mask2)
+		{
+			return (mask & mask2) != 0;
 		}
 
 		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchoolMask otherFlags)
@@ -37,6 +42,21 @@ namespace WCell.Constants.Spells
 		public static bool HasAnyFlag(this DamageSchoolMask flags, DamageSchool school)
 		{
 			return (flags & (DamageSchoolMask)(1 << (int)school)) != 0;
+		}
+
+		public static RuneMask ToMask(this RuneType type)
+		{
+			return (RuneMask)(1 << (int)type);
+		}
+
+		public static bool HasAnyFlag(this RuneMask mask, RuneMask mask2)
+		{
+			return (mask & mask2) != 0;
+		}
+
+		public static bool HasAnyFlag(this RuneMask mask, RuneType type)
+		{
+			return (mask & type.ToMask()) != 0;
 		}
 		#endregion
 	}

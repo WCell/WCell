@@ -300,7 +300,7 @@ namespace WCell.Constants.Spells
 		ModFactionReputationGainPercent = 190,
 		UseNormalMovementSpeed = 191,
 		ModMeleeHastePercent = 192,
-		ModHastePct = 193,
+		ModHastePercent = 193,
 		/// <summary>
 		/// No longer unused as of 3.0.2
 		/// Function may have changed though
@@ -378,9 +378,9 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// Multi-purpose: Mana regen, damage absorption, also:
 		/// RogueCombatPreyOnTheWeakRank5
-		/// Your critical strike damage is increased by $s1% when the target has less health than you (as a percentage of total health).
+		/// Your critical strike damage is increased by $s1% when the target has less health than you.
 		/// </summary>
-		Aura_226 = 226,
+		Dummy2 = 226,
 		/// <summary>
 		/// Also triggers a spell
 		/// </summary>
@@ -395,7 +395,11 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		ModAOEDamagePercent = 229,
 		ModMaxHealth = 230,
-		Aura_231 = 231,
+		/// <summary>
+		/// Seems to be a simple proc trigger spell that overrides the
+		/// target's spell's effect values
+		/// </summary>
+		ProcTriggerSpellWithOverride = 231,
 		ModSilenceDurationPercent = 232,
 		/// <summary>
 		/// makes all humanoids except self appear as npc MiscValue
@@ -449,7 +453,7 @@ namespace WCell.Constants.Spells
 		ModPoisonDurationPct = 246,
 		Aura_247 = 247,
 		ModChanceTargetDodgesAttackPercent = 248,
-		Aura_249 = 249,
+		ConvertRune = 249,
 		Aura_250 = 250,
 		Aura_251 = 251,
 		Aura_252 = 252,
@@ -482,7 +486,10 @@ namespace WCell.Constants.Spells
 		Unused_264 = 264,
 		Unused_265 = 265,
 		Unused_266 = 266,
-		Aura_267 = 267,
+		/// <summary>
+		/// Only used in Anti-Magic Shell (Id: 48707)
+		/// </summary>
+		LimitAbsorbToCasterMaxHealthPercent = 267,
 		ModMeleeAttackPowerByPercentOfStat = 268,
 		Aura_269 = 269,
 		Aura_270 = 270,
@@ -508,7 +515,10 @@ namespace WCell.Constants.Spells
 		Aura_281 = 281,
 		Aura_282 = 282,
 		Aura_283 = 283, // Highest in 3.0.2.9056
-		Aura_284 = 284,
+		/// <summary>
+		/// Enables another Aura while active
+		/// </summary>
+		ToggleAura = 284,
 		/// <summary>
 		/// Increases your attack power by X for every Y armor you have.
 		/// Always comes together with a Dummy effect

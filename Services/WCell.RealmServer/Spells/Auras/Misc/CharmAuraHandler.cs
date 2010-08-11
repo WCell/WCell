@@ -35,10 +35,10 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 				{
 					failReason = SpellFailedReason.CantBeCharmed;
 				}
-				else if (caster.Level > EffectValue)
-				{
-					failReason = SpellFailedReason.Highlevel;
-				}
+				//else if (caster.Level < EffectValue)
+				//{
+				//    failReason = SpellFailedReason.Highlevel;
+				//}
 				else if (caster.HasMaster)
 				{
 					failReason = SpellFailedReason.Charmed;
@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 
 		protected override void Apply()
 		{
-			var caster = m_aura.Caster;
+			var caster = m_aura.CasterUnit;
 			if (caster == null)
 			{
 				return;
@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 
 		protected override void Remove(bool cancelled)
 		{
-			var caster = (Unit)m_aura.Caster;
+			var caster = (Unit)m_aura.CasterUnit;
 			var target = m_aura.Auras.Owner;
 			caster.Charm = null;
 			target.Charmer = null;

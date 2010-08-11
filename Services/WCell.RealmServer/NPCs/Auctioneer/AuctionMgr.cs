@@ -469,7 +469,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
 		private bool DoAuctioneerInteraction(Character chr, NPC auctioneer)
 		{
-			if (!auctioneer.IsAuctioneer || !auctioneer.CanInteractWith(chr))
+			if (!auctioneer.IsAuctioneer || !auctioneer.CheckVendorInteraction(chr))
 				return false;
 
 			chr.Auras.RemoveByFlag(AuraInterruptFlags.OnStartAttack);

@@ -230,7 +230,7 @@ namespace WCell.RealmServer.AI.Brains
 		/// Updates the AIAction by calling Perform. Called every tick by the Region
 		/// </summary>
 		/// <param name="dt">not used</param>
-		public virtual void Update(float dt)
+		public virtual void Update(int dt)
 		{
 			if (!m_IsRunning)
 				return;
@@ -380,6 +380,12 @@ namespace WCell.RealmServer.AI.Brains
 				owner.Brain.State = BrainState.Combat;
 				return true;
 			}
+
+			//var master = owner.Master;
+			//if (master != null)
+			//{
+			//    // help master
+			//}
 			return false;
 		}
 
@@ -425,19 +431,19 @@ namespace WCell.RealmServer.AI.Brains
 
 				var unit = (Unit)obj;
 
-                // Do not attack gamemasters unless provoked.
-                if(unit is Character)
-                {
-                    var chr = (Character)unit;
-                    if(chr.GodMode)
-                    {
-                        return true;
-                    }
-                }
+				// Do not attack gamemasters unless provoked.
+				if (unit is Character)
+				{
+					var chr = (Character)unit;
+					if (chr.GodMode)
+					{
+						return true;
+					}
+				}
 				// targets must be hostile, visible, alive, in range etc
 				if (unit.CanGenerateThreat &&
-				    m_owner.IsHostileWith(unit) &&
-				    m_owner.CanSee(unit) &&
+					m_owner.IsHostileWith(unit) &&
+					m_owner.CanSee(unit) &&
 					unit.IsInRadiusSq(owner, owner.GetAggroRangeSq(unit)) &&
 
 					// add this constraint, so NPCs don't randomly attack weak neutrals

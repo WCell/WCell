@@ -2,8 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants;
+using WCell.Constants.Items;
+using WCell.Constants.Skills;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.Skills;
+using WCell.RealmServer.Talents;
 using WCell.Util.Data;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
@@ -47,11 +54,6 @@ namespace WCell.RealmServer.Spells
 		public HashSet<Spell> TargetProcSpells;
 
 		/// <summary>
-		/// Set of Spells which can be proc'ed, when removed from the owner of this aura (if the owner owns those spells).
-		/// </summary>
-		public HashSet<Spell> RemovalProcSpells;
-
-		/// <summary>
 		/// Custom proc handlers to be added to targets of this Aura (this spell must be an Aura).
 		/// If this is != null, the resulting Aura of this Spell will not be added as a Proc handler itself.
 		/// </summary>
@@ -66,6 +68,13 @@ namespace WCell.RealmServer.Spells
 		/// Wheter this Aura can proc
 		/// </summary>
 		public bool IsProc;
+
+		/// <summary>
+		/// Whether this spell is supposed to proc something.
+		/// If set to true, this Spell will generate a SpellCast proc event when casted.
+		/// Don't use for damage spells, else they will generate 2 events!
+		/// </summary>
+		public bool GeneratesProcEventOnCast;
 
 		/// <summary>
 		/// Amount of millis before this Spell may proc another time (if it is a proc)
@@ -83,6 +92,281 @@ namespace WCell.RealmServer.Spells
 		/// (Of course one could just have added a new modifier for this, but well.)
 		/// </summary>
 		public SpellEffect MaxTargetEffect;
+
+		/// <summary>
+		/// Optional set of SpellEffects to be applied, only if certain Auras are applied
+		/// </summary>
+		public SpellEffect[] AuraConditionalEffects;
+		#endregion
+
+		#region Auto generated Spell Fields (will be overridden on initialization)
+		/// <summary>
+		/// Whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
+		/// </summary>
+		public bool IsOnNextStrike;
+
+		/// <summary>
+		/// whether this is an ability involving any kind of weapon-attack
+		/// </summary>
+		public bool IsPhysicalAbility;
+
+		/// <summary>
+		/// Whether this can trigger an instant Strike
+		/// </summary>
+		public bool IsStrikeSpell;
+
+		/// <summary>
+		/// whether this is actually a passive buff
+		/// </summary>
+		public bool IsPassive;
+
+		/// <summary>
+		/// Whether this is a ranged attack (includes wands)
+		/// </summary>
+		public bool IsRanged;
+
+		/// <summary>
+		/// Whether this is a ranged attack (includes wands), that is not triggered
+		/// </summary>
+		public bool IsRangedAbility;
+
+		/// <summary>
+		/// whether this is a throw (used for any kind of throwing weapon)
+		/// </summary>
+		public bool IsThrow;
+
+		/// <summary>
+		/// whether this is an actual SpellCaster spell
+		/// </summary>
+		public bool IsProfession;
+
+		/// <summary>
+		/// whether this teaches the initial Profession
+		/// </summary>
+		public bool TeachesApprenticeAbility;
+
+		/// <summary>
+		/// whether this is teaching another spell
+		/// </summary>
+		public bool IsTeachSpell;
+
+		/// <summary>
+		/// Whether it has any individual or category cooldown
+		/// </summary>
+		public bool HasCooldown;
+
+		/// <summary>
+		/// Whether this spell has an individual cooldown (unlike a category or "global" cooldown)
+		/// </summary>
+		public bool HasIndividualCooldown;
+
+		/// <summary>
+		/// Tame Beast (Id: 1515) amongst others
+		/// </summary>
+		public bool IsTame
+		{
+			get { return AttributesExB.HasFlag(SpellAttributesExB.TamePet); }
+		}
+
+		/// <summary>
+		/// Tame Beast (Id: 13481) amongst others
+		/// </summary>
+		public bool IsTameEffect;
+
+		/// <summary>
+		/// Whether this spell enchants an Item
+		/// </summary>
+		public bool IsEnchantment;
+
+		/// <summary>
+		/// Fishing spawns a FishingNode which needs to be removed upon canceling
+		/// </summary>
+		public bool IsFishing;
+
+		/// <summary>
+		/// The spell which teaches this spell (if any)
+		/// </summary>
+		public Spell LearnSpell;
+
+		/// <summary>
+		/// whether Spell's effects don't wear off when dead
+		/// </summary>
+		public bool PersistsThroughDeath
+		{
+			get { return AttributesExC.HasFlag(SpellAttributesExC.PersistsThroughDeath); }
+		}
+
+		/// <summary>
+		/// whether this spell is triggered by another one
+		/// </summary>
+		public bool IsTriggeredSpell;
+
+		/// <summary>
+		/// whether its a food effect
+		/// </summary>
+		public bool IsFood
+		{
+			get { return Category == 11; }
+		}
+
+		/// <summary>
+		/// whether its a drink effect
+		/// </summary>
+		public bool IsDrink
+		{
+			get { return Category == 59; }
+		}
+
+		/// <summary>
+		/// Indicates whether this Spell has at least one harmful effect
+		/// </summary>
+		public bool HasHarmfulEffects;
+
+		/// <summary>
+		/// Indicates whether this Spell has at least one beneficial effect
+		/// </summary>
+		public bool HasBeneficialEffects;
+
+
+		public HarmType HarmType;
+
+		/// <summary>
+		/// The SpellEffect of this Spell that represents a PersistentAreaAura and thus a DO (or null if it has none)
+		/// </summary>
+		public SpellEffect DOEffect;
+
+		/// <summary>
+		/// whether this is a Heal-spell
+		/// </summary>
+		public bool IsHealSpell;
+
+		/// <summary>
+		/// Whether this is a weapon ability that attacks with both weapons
+		/// </summary>
+		public bool IsDualWieldAbility;
+
+		/// <summary>
+		/// whether this is a Skinning-Spell
+		/// </summary>
+		public bool IsSkinning;
+
+		/// <summary>
+		/// If this is set for Spells, they will not be casted in the usual manner but instead this Handler will be called.
+		/// </summary>
+		public SpecialCastHandler SpecialCast;
+
+		/// <summary>
+		/// The Talent which this Spell represents one Rank of (every Talent Rank is represented by one Spell)
+		/// </summary>
+		public TalentEntry Talent;
+
+		private SkillAbility m_Ability;
+
+		/// <summary>
+		/// The SkillAbility that this Spell represents
+		/// </summary>
+		public SkillAbility Ability
+		{
+			get { return m_Ability; }
+			internal set
+			{
+				m_Ability = value;
+				if (value != null && ClassId == 0)
+				{
+					var clss = Ability.ClassMask.GetIds();
+					if (clss.Length == 1)
+					{
+						ClassId = clss[0];
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// The tier of the skill that this spell represents (if this is a Skill spell)
+		/// </summary>
+		public SkillTierId SkillTier;
+
+		/// <summary>
+		/// Tools that are required by this spell (is set during Initialization of Items)
+		/// </summary>
+		public ItemTemplate[] RequiredTools;
+
+		public Spell NextRank, PreviousRank;
+
+		/// <summary>
+		/// Indicates whether this Spell has any targets at all
+		/// </summary>
+		public bool HasTargets;
+
+		/// <summary>
+		/// Indicates whether this Spell has at least one effect on the caster
+		/// </summary>
+		public bool CasterIsTarget;
+
+		/// <summary>
+		/// Indicates whether this Spell teleports the Uni back to its bound location
+		/// </summary>
+		public bool IsHearthStoneSpell;
+
+		public bool IsAreaSpell;
+
+		public bool IsDamageSpell;
+
+		public SpellEffect TotemEffect;
+
+		public SpellEffect[] ProcTriggerEffects;
+
+		/// <summary>
+		/// The equipment slot where to look for a required item
+		/// </summary>
+		public EquipmentSlot EquipmentSlot = EquipmentSlot.End;
+
+		public bool IsFinishingMove;
+
+		public bool RequiresDeadTarget;
+
+		/// <summary>
+		/// whether this is a channel-spell
+		/// </summary>
+		public bool IsChanneled;
+
+		public int ChannelAmplitude;
+
+		public bool RequiresCasterOutOfCombat;
+
+		/// <summary>
+		/// Whether this spell costs default power (does not include Runes)
+		/// </summary>
+		public bool CostsPower;
+
+		/// <summary>
+		/// Whether this Spell has any Rune costs
+		/// </summary>
+		public bool CostsRunes;
+
+		/// <summary>
+		/// Auras with modifier effects require existing Auras to be re-evaluated
+		/// </summary>
+		public bool HasModifierEffects;
+
+		/// <summary>
+		/// All affecting masks of all Effects
+		/// </summary>
+		public uint[] AllAffectingMasks = new uint[3];
+
+		public bool HasManaShield;
+
+		public bool IsEnhancer;
+
+		private bool init1, init2;
+
+		public SpellLine Line;
+
+		/// <summary>
+		/// Whether this spell has effects that require other Auras to be active to be activated
+		/// </summary>
+		public bool HasAuraDependentEffects;
 		#endregion
 
 		#region Spell Targets
@@ -95,7 +379,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return obj is GameObject;
 			}
-			return obj is NPC && ((NPC) obj).IsAlive == (RequiredTargetType == RequiredSpellTargetType.NPCAlive);
+			return obj is NPC && ((NPC)obj).IsAlive == (RequiredTargetType == RequiredSpellTargetType.NPCAlive);
 		}
 
 		[Persistent]
@@ -106,6 +390,7 @@ namespace WCell.RealmServer.Spells
 
 		[Persistent]
 		public float TargetOrientation;
+
 		#endregion
 
 		#region Loading

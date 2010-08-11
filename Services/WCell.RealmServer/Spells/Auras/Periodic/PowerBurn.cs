@@ -28,9 +28,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		{
 			var holder = Owner;
 			if (holder.PowerType == (PowerType)m_spellEffect.MiscValue &&
-				m_aura.Caster != null)
+				m_aura.CasterUnit != null)
 			{
-				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.Caster, m_spellEffect);
+				holder.BurnPower(EffectValue, m_spellEffect.ProcValue, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
 

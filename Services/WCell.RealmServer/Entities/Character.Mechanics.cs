@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants;
 using WCell.Constants.Items;
+using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Formulas;
@@ -11,7 +12,10 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Trade;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
@@ -178,6 +182,11 @@ namespace WCell.RealmServer.Entities
 			if (m_currentRitual != null)
 			{
 				m_currentRitual.Remove(this);
+			}
+
+			if (IsTrading && !IsInRadius(m_tradeWindow.OtherWindow.Owner, TradeMgr.MaxTradeRadius))
+			{
+				m_tradeWindow.Cancel(TradeStatus.TooFarAway);
 			}
 
 			var now = Environment.TickCount;
@@ -369,8 +378,70 @@ namespace WCell.RealmServer.Entities
 
 			base.OnLeavingRegion();
 		}
+
+		private StandState m_standState;
+
+		/// <summary>
+		/// Changes the character's stand state and notifies the client.
+		/// </summary>
+		public override StandState StandState
+		{
+			get { return m_standState; }
+			set
+			{
+				if (value != StandState)
+				{
+					m_standState = value;
+					base.StandState = value;
+
+					if (m_looterEntry != null &&
+						m_looterEntry.Loot != null &&
+						value != StandState.Kneeling &&
+						m_looterEntry.Loot.MustKneelWhileLooting)
+					{
+						CancelLooting();
+					}
+
+					if (value == StandState.Stand)
+					{
+						m_auras.RemoveByFlag(AuraInterruptFlags.OnStandUp);
+					}
+
+					if (IsInWorld)
+					{
+						CharacterHandler.SendStandStateUpdate(this, value);
+					}
+				}
+			}
+		}
 		#endregion
 
+		#region Overrides
+		protected override void OnResistanceChanged(DamageSchool school)
+		{
+			if (m_activePet != null && m_activePet.IsHunterPet)
+			{
+				m_activePet.UpdatePetResistance(school);
+			}
+		}
+
+		public override void ModSpellHitChance(DamageSchool school, int delta)
+		{
+			base.ModSpellHitChance(school, delta);
+
+			// also modify pet's hit chance
+			if (m_activePet != null)
+			{
+				m_activePet.ModSpellHitChance(school, delta);
+			}
+		}
+
+		public override float GetResiliencePct()
+		{
+			var resilience = GetCombatRating(CombatRating.MeleeResilience);
+			return resilience / GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)Level - 1);
+		}
+		#endregion
 
 		public BaseRelation GetRelationTo(Character chr, CharacterRelationType type)
 		{

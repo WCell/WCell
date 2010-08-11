@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 	{
 		public override bool CanProcBeTriggeredBy(IUnitAction action)
 		{
-			// only allow critical procs to trigger this
+			// only trigger when critical
 			return action.IsCritical;
 		}
 	}

@@ -14,6 +14,24 @@ namespace WCell.RealmServer.Formulas
 	/// </summary>
 	public static class PowerFormulas
 	{
+		#region Config Variables
+		/// <summary>
+		/// The standard factor to be applied to regen on every tick
+		/// </summary>
+		public static int RegenRateFactor = 1;
+
+		/// <summary>
+		/// The delay between 2 regeneration ticks in millis
+		/// </summary>
+		public static int RegenTickDelayMillis = 1000;
+
+		/// <summary>
+		/// The amount of milliseconds for the time of "Interrupted" power regen
+		/// See: http://www.wowwiki.com/Formulas:Mana_Regen#Five_Second_Rule
+		/// </summary>
+		public static uint PowerRegenInterruptedCooldown = 5000;
+		#endregion
+
 		public static readonly PowerCalculator[] PowerRegenCalculators = new PowerCalculator[(int)PowerType.End];
 		public static readonly PowerCalculator[] BasePowerForLevelCalculators = new PowerCalculator[(int)PowerType.End];
 
@@ -63,13 +81,12 @@ namespace WCell.RealmServer.Formulas
 		public static int CalculateManaRegen(Unit unit)
 		{
 			// default mana generation
-			//return (10f + (spirit / 7f));
-			var regen = (float)(0.001f + (float)Math.Sqrt(unit.Intellect) * unit.Spirit * GameTables.BaseRegen[unit.Level]) * Unit.RegenTickMultiplier;
-			if (unit.IsInCombat)
+			var regen = 0.001f + (float)Math.Sqrt(unit.Intellect) * unit.Spirit * GameTables.BaseRegen[unit.Level];
+			if (unit.IsManaRegenInterrupted)
 			{
-				regen = (regen * unit.ManaRegenPerTickInterruptedPct) / 100;
+				regen = (regen * unit.ManaRegenPerTickInterruptedPct + 50) / 100;
 			}
-			return (int)regen;
+			return (int)regen * RegenRateFactor;
 		}
 
 		/// <summary>
@@ -81,18 +98,18 @@ namespace WCell.RealmServer.Formulas
 			{
 				return 0;
 			}
-			return -50;
+			return -10 * RegenRateFactor;
 		}
 
 
 		public static int CalculateEnergyRegen(Unit unit)
 		{
-			return 50;
+			return 10 * RegenRateFactor;
 		}
 
 		public static int CalculateRunicPowerRegen(Unit unit)
 		{
-			return -50;
+			return -10 * RegenRateFactor;
 		}
 
 		private static int CalculateRuneRegen(Unit unit)
@@ -102,7 +119,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalculateFocusRegen(Unit unit)
 		{
-			return 5;
+			return 5 * RegenRateFactor;	// 5 focus per second
 		}
 		#endregion
 

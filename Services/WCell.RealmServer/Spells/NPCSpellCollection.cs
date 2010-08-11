@@ -16,6 +16,11 @@ namespace WCell.RealmServer.Spells
 	/// </summary>
 	public class NPCSpellCollection : SpellCollection
 	{
+		/// <summary>
+		/// Cooldown of NPC spells, if they don't have one
+		/// </summary>
+		public static int DefaultNPCSpellCooldown = 10000;
+
 		protected bool m_defaultSpells;
 
 		protected List<Spell> m_readySpells;
@@ -165,36 +170,41 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public override void AddCooldown(Spell spell, Item item)
 		{
-            var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
+			var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
+			if (millis <= 0)
+			{
+				millis = DefaultNPCSpellCooldown;
+			}
 			ProcessCooldown(spell, millis);
 		}
 
-        public void RestoreCooldown(Spell spell, DateTime cdTime)
-        {
-            var millis = (cdTime - DateTime.Now).Milliseconds;
-            ProcessCooldown(spell, millis);
-        }
+		public void RestoreCooldown(Spell spell, DateTime cdTime)
+		{
+			var millis = (cdTime - DateTime.Now).Milliseconds;
+			ProcessCooldown(spell, millis);
+		}
 
-	    private void ProcessCooldown(Spell spell, int millis)
+		private void ProcessCooldown(Spell spell, int millis)
 		{
 			if (millis <= 0) return;
-	        m_readySpells.Remove(spell);
-	        
-            var ticks = millis / Owner.Region.UpdateDelay;
-	        var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
-	        Owner.CallPeriodically(action);
-	        if (m_cooldowns == null)
-	        {
-	            m_cooldowns = new List<CooldownRemoveAction>();
-	        }
-	        m_cooldowns.Add(action);
-	    }
-        
+			m_readySpells.Remove(spell);
+
+			var ticks = millis / Owner.Region.UpdateDelay;
+			var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
+			Owner.CallPeriodically(action);
+			if (m_cooldowns == null)
+			{
+				m_cooldowns = new List<CooldownRemoveAction>();
+			}
+			m_cooldowns.Add(action);
+		}
+
 		public override void ClearCooldowns()
 		{
 			var context = Owner.ContextHandler;
 			if (context != null)
-				context.AddMessage(() => {
+				context.AddMessage(() =>
+				{
 					if (m_cooldowns != null)
 					{
 						for (var i = 0; i < m_cooldowns.Count; i++)
@@ -221,7 +231,7 @@ namespace WCell.RealmServer.Spells
 					var cd = m_cooldowns[i];
 					if (cd.Spell.Id == spell.Id)
 					{
-					    m_cooldowns.Remove(cd);
+						m_cooldowns.Remove(cd);
 						m_readySpells.Add(cd.Spell);
 						break;
 					}
@@ -229,19 +239,19 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-        public int TicksUntilCooldown(Spell spell)
-        {
-            if (m_cooldowns == null) return 0;
+		public int TicksUntilCooldown(Spell spell)
+		{
+			if (m_cooldowns == null) return 0;
 
-            for (var i = 0; i < m_cooldowns.Count; i++)
-            {
-                var cd = m_cooldowns[i];
-                if (cd.Spell.Id != spell.Id) continue;
+			for (var i = 0; i < m_cooldowns.Count; i++)
+			{
+				var cd = m_cooldowns[i];
+				if (cd.Spell.Id != spell.Id) continue;
 
-                return ((Owner.Region.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
-            }
-            return 0;
-        }
+				return ((Owner.Region.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
+			}
+			return 0;
+		}
 
 		protected class CooldownRemoveAction : OneShotUpdateObjectAction
 		{

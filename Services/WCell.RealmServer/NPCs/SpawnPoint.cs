@@ -128,7 +128,7 @@ namespace WCell.RealmServer.NPCs
 							var now = Environment.TickCount;
 							if (now >= m_nextRespawn)
 							{
-								Spawn(0.0f);
+								Spawn(0);
 							}
 							else
 							{
@@ -204,16 +204,18 @@ namespace WCell.RealmServer.NPCs
 			Region.AddObjectLater(spawn);
 		}
 
-		protected void Spawn(float dt)
+		protected void Spawn(int dtMillis)
 		{
 			SpawnOne();
 			if (m_spawns.Count < m_spawnEntry.MaxAmount)
 			{
+				// spawn more later
 				var delay = m_spawnEntry.GetRandomRespawnMillis();
 				Reset(delay);
 			}
 			else
 			{
+				// stop spawning
 				m_timer.Stop();
 				Region.UnregisterUpdatableLater(m_timer);
 			}

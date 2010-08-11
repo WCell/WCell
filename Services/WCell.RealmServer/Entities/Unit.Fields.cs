@@ -24,6 +24,7 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs.Vehicles;
@@ -39,7 +40,7 @@ namespace WCell.RealmServer.Entities
 {
 	public partial class Unit
 	{
-		protected int[] m_baseStats = new int[5];
+		protected internal int[] m_baseStats = new int[5];
 		protected int[] m_baseResistances = new int[DamageSchoolCount];
 		protected UnitModelInfo m_model;
 
@@ -56,7 +57,6 @@ namespace WCell.RealmServer.Entities
 		protected Vector3 m_transportPosition;
 		protected float m_transportOrientation;
 		protected uint m_transportTime;
-		protected float m_lastHealthUpdate, m_lastPowerUpdate;
 
 		#region Objects
 		public Unit Charm
@@ -144,28 +144,15 @@ namespace WCell.RealmServer.Entities
 					if (value != null)
 					{
 						SetEntityId(UnitFields.TARGET, value.EntityId);
-						if (this is NPC)
-						{
-							value.NPCAttackerCount++;
-						}
 					}
 					else
 					{
-						OnTargetNull();
 						SetEntityId(UnitFields.TARGET, EntityId.Zero);
 						IsFighting = false;
 					}
 					m_target = value;
 					CancelPendingAbility();
 				}
-			}
-		}
-
-		private void OnTargetNull()
-		{
-			if (this is NPC)
-			{
-				m_target.NPCAttackerCount--;
 			}
 		}
 
@@ -246,6 +233,15 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
+		public virtual int MaxLevel
+		{
+			get { return int.MaxValue; }
+			internal set
+			{
+				// do nothing
+			}
+		}
+
 		/// <summary>
 		/// The Level of this Unit.
 		/// </summary>
@@ -255,12 +251,12 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				SetInt32(UnitFields.LEVEL, value);
-				if (this is NPC)
-				{
-					var npc = (NPC)this;
-					npc.SetScale();
-				}
+				OnLevelChanged();
 			}
+		}
+
+		protected virtual void OnLevelChanged()
+		{
 		}
 
 		public override int CasterLevel
@@ -432,7 +428,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// 
 		/// </summary>
-		public int PetNextLevelExp
+		public int NextPetLevelExperience
 		{
 			get { return GetInt32(UnitFields.PETNEXTLEVELEXP); }
 			set { SetInt32(UnitFields.PETNEXTLEVELEXP, value); }
@@ -539,9 +535,17 @@ namespace WCell.RealmServer.Entities
 			get { return GetInt32(UnitFields.STAT1); }
 		}
 
-		public virtual int Stamina
+		public int Stamina
 		{
 			get { return GetInt32(UnitFields.STAT2); }
+		}
+
+		/// <summary>
+		/// The amount of stamina that does not contribute to health.
+		/// </summary>
+		public virtual int StaminaWithoutHealthContribution
+		{
+			get { return 20; }
 		}
 
 		public int Intellect
@@ -772,43 +776,43 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Physical resist
 		/// </summary>
-		public virtual int Armor
+		public int Armor
 		{
 			get { return GetInt32(UnitFields.RESISTANCES); }
 			internal set { SetInt32(UnitFields.RESISTANCES, value); }
 		}
 
-		public virtual int HolyResist
+		public int HolyResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_2); }
 			internal set { SetInt32(UnitFields.RESISTANCES_2, value); }
 		}
 
-		public virtual int FireResist
+		public int FireResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_3); }
 			internal set { SetInt32(UnitFields.RESISTANCES_3, value); }
 		}
 
-		public virtual int NatureResist
+		public int NatureResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_4); }
 			internal set { SetInt32(UnitFields.RESISTANCES_4, value); }
 		}
 
-		public virtual int FrostResist
+		public int FrostResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_5); }
 			internal set { SetInt32(UnitFields.RESISTANCES_5, value); }
 		}
 
-		public virtual int ShadowResist
+		public int ShadowResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_6); }
 			internal set { SetInt32(UnitFields.RESISTANCES_6, value); }
 		}
 
-		public virtual int ArcaneResist
+		public int ArcaneResist
 		{
 			get { return GetInt32(UnitFields.RESISTANCES_7); }
 			internal set { SetInt32(UnitFields.RESISTANCES_7, value); }
@@ -850,21 +854,15 @@ namespace WCell.RealmServer.Entities
 			}
 			m_baseResistances[(uint)school] = value;
 			SetInt32(UnitFields.RESISTANCES + (int)school, value);
+			OnResistanceChanged(school);
 		}
 
 		/// <summary>
-		/// Adds the given amount to the base of the given resistance-schools
+		/// Adds the given amount to the base of the given resistance for the given school
 		/// </summary>
 		public void ModBaseResistance(DamageSchool school, int delta)
 		{
-			var val = m_baseResistances[(int)school] + delta;
-			if (val < 0)
-			{
-				val = 0;
-			}
-
-			m_baseResistances[(uint)school] = val;
-			SetInt32(UnitFields.RESISTANCES + (int)school, val);
+			SetBaseResistance(school, m_baseResistances[(int)school] + delta);
 		}
 
 		/// <summary>
@@ -889,14 +887,15 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, delta);
+				//ModBaseResistance(school, delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, -delta);
+				//ModBaseResistance(school, -delta);
 			}
+			OnResistanceChanged(school);
 		}
 
 		/// <summary>
@@ -913,14 +912,19 @@ namespace WCell.RealmServer.Entities
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				ModBaseResistance(school, -delta);
+				//ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
 				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
-				ModBaseResistance(school, delta);
+				//ModBaseResistance(school, delta);
 			}
+			OnResistanceChanged(school);
+		}
+
+		protected virtual void OnResistanceChanged(DamageSchool school)
+		{
 		}
 
 		public int ArmorBuffPositive
@@ -996,13 +1000,14 @@ namespace WCell.RealmServer.Entities
 
 		public AuraStateMask AuraState
 		{
-			get
-			{
-				return (AuraStateMask)GetUInt32(UnitFields.AURASTATE);
-			}
+			get { return (AuraStateMask)GetUInt32(UnitFields.AURASTATE); }
 			set
 			{
 				SetUInt32(UnitFields.AURASTATE, (uint)value);
+				if (m_auras is PlayerAuraCollection && AuraState != value)
+				{
+					((PlayerAuraCollection)m_auras).OnAuraStateChanged();
+				}
 			}
 		}
 
@@ -1266,7 +1271,7 @@ namespace WCell.RealmServer.Entities
 		{
 			foreach (var aura in m_auras)
 			{
-				if (aura.Caster != this)
+				if (aura.CasterUnit != this)
 				{
 					aura.Remove(true);
 				}
@@ -1336,8 +1341,6 @@ namespace WCell.RealmServer.Entities
 				var oldHealth = Health;
 				var maxHealth = MaxHealth;
 
-				m_lastHealthUpdate = Region.CurrentTime;
-
 				if (value >= maxHealth)
 				{
 					value = maxHealth;
@@ -1351,7 +1354,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value < 1)
 					{
-						Die();
+						Die(false);
 					}
 					else
 					{
@@ -1408,19 +1411,38 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public int MaxHealthMod
+		private int m_maxHealthModFlat;
+
+		public int MaxHealthModFlat
 		{
-			get { return GetInt32(UnitFields.MAXHEALTHMODIFIER); }
+			get { return m_maxHealthModFlat; }
 			set
 			{
-				SetInt32(UnitFields.MAXHEALTHMODIFIER, value);
+				m_maxHealthModFlat = value;
 				this.UpdateHealth();
 			}
 		}
 
+		public float MaxHealthModScalar
+		{
+			get { return GetFloat(UnitFields.MAXHEALTHMODIFIER); }
+			set
+			{
+				SetFloat(UnitFields.MAXHEALTHMODIFIER, value);
+				this.UpdateHealth();
+			}
+		}
+
+		/// <summary>
+		/// Current amount of health in percent
+		/// </summary>
 		public int HealthPct
 		{
-			get { return (100 * Health + (1 >> MaxHealth)) / MaxHealth; }
+			get
+			{
+				var max = MaxHealth;
+				return (100 * Health + (max >> 1)) / max;
+			}
 			set { Health = ((value * MaxHealth) + 50) / 100; }
 		}
 
@@ -1429,25 +1451,26 @@ namespace WCell.RealmServer.Entities
 		protected void UpdateHealthAuraState()
 		{
 			// set health state
-			var pct = (Health * 100) / MaxHealth;
+			var pct = HealthPct;
 
-			if (pct < 20)
+			if (pct <= 20)
 			{
-				AuraState = (AuraState & ~
-					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health35Percent)) |
+				AuraState = (AuraState & ~(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health35Percent)) |
 					AuraStateMask.Health20Percent;
 			}
-			else if (pct < 35)
+			else if (pct <= 35)
 			{
-				AuraState = (AuraState & ~
-					(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health20Percent)) |
+				AuraState = (AuraState & ~(AuraStateMask.HealthAbove75Pct | AuraStateMask.Health20Percent)) |
 					AuraStateMask.Health35Percent;
 			}
-			else if (pct >= 75)
+			else if (pct <= 75)
 			{
-				AuraState = (AuraState & ~
-					(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
-					AuraStateMask.HealthAbove75Pct;
+				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent | AuraStateMask.HealthAbove75Pct));
+			}
+			else 
+			{
+				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
+				            AuraStateMask.HealthAbove75Pct;
 			}
 		}
 		#endregion
@@ -1512,16 +1535,11 @@ namespace WCell.RealmServer.Entities
 				// TODO: fix this thing
 				// power is now calculated and regenerated continuously client-side
 				// so we also need to interpolate power values server-side
-				return UpdatePower();
+				return GetInt32(UnitFields.POWER1 + (int)PowerType);
 			}
 			set
 			{
 				value = MathUtil.ClampMinMax(value, 0, MaxPower);
-
-				if (m_region != null)
-				{
-					m_lastPowerUpdate = Region.CurrentTime;
-				}
 
 				if (value != Power)
 				{
@@ -1531,10 +1549,10 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		internal int UpdatePower()
+		internal int UpdatePower(int delayMillis)
 		{
-			var val = GetInt32(UnitFields.POWER1 + (int)PowerType) +
-					  (m_region != null ? (int)(PowerRegenPerSecond * (m_region.CurrentTime - m_lastPowerUpdate)) : 0);
+			var val = Power;
+			val += (m_PowerRegenPerTick * delayMillis + 500) / PowerFormulas.RegenTickDelayMillis;	// rounding
 			val = MathUtil.ClampMinMax(val, 0, MaxPower);
 			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
 			return val;
@@ -1546,14 +1564,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public virtual int MaxPower
 		{
-			get
-			{
-				return GetInt32(UnitFields.MAXPOWER1 + (int)PowerType);
-			}
-			internal set
-			{
-				SetInt32(UnitFields.MAXPOWER1 + (int)PowerType, value);
-			}
+			get { return GetInt32(UnitFields.MAXPOWER1 + (int)PowerType); }
+			internal set { SetInt32(UnitFields.MAXPOWER1 + (int)PowerType, value); }
 		}
 
 		#region Power Types
@@ -1620,6 +1632,12 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 		#endregion
+
+		public virtual float ParryChance
+		{
+			get { return 5f; }
+			internal set { }
+		}
 
 		/// <summary>
 		/// Amount of additional yards to be allowed to jump without having any damage inflicted.

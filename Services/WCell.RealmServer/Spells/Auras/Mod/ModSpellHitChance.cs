@@ -26,39 +26,33 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			var owner = Owner as Character;
-			if (owner != null)
+			var owner = Owner;
+			if (m_spellEffect.MiscValue == 0)
 			{
-				if (m_spellEffect.MiscValue == 0)
+				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 				{
-					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
-					{
-						owner.ModSpellHitChance(s, EffectValue);
-					}
+					owner.ModSpellHitChance(s, EffectValue);
 				}
-				else
-				{
-					owner.ModSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
-				}
+			}
+			else
+			{
+				owner.ModSpellHitChance(m_spellEffect.MiscBitSet, EffectValue);
 			}
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			var owner = Owner as Character;
-			if (owner != null)
+			var owner = Owner;
+			if (m_spellEffect.MiscValue == 0)
 			{
-				if (m_spellEffect.MiscValue == 0)
+				for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
 				{
-					for (var s = DamageSchool.Physical; s < DamageSchool.Count; s++)
-					{
-						owner.ModSpellHitChance(s, -EffectValue);
-					}
+					owner.ModSpellHitChance(s, -EffectValue);
 				}
-				else
-				{
-					owner.ModSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
-				}
+			}
+			else
+			{
+				owner.ModSpellHitChance(m_spellEffect.MiscBitSet, -EffectValue);
 			}
 		}
 	}

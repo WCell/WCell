@@ -46,5 +46,27 @@ namespace WCell.RealmServer.Lang
 			: base(baseLocale, defaultLocale, folder)
 		{
 		}
+
+		/// <summary>
+		/// TODO: Localize (use TranslatableItem)
+		/// </summary>
+		public static string FormatTimeSecondsMinutes(int seconds)
+		{
+			string time;
+			if (seconds < 60)
+			{
+				time = seconds + " seconds";
+			}
+			else
+			{
+				var mins = seconds / 60;
+				time = mins + (mins == 1 ? "minute" : "minutes");
+				if (seconds % 60 != 0)
+				{
+					time += " and " + seconds + (seconds == 1 ? "second" : "seconds");
+				}
+			}
+			return time;
+		}
 	}
 }

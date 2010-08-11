@@ -32,35 +32,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Is called when the given Character gains a new Level.
 		/// </summary>
-		public static event Action<Character> LeveledUp;
+		public static event Action<Character> LevelChanged;
 		#endregion
-
-		/// <summary>
-		/// Is called right before this Character receives the given <see cref="IDamageAction"/>
-		/// </summary>
-		public static event AttackHandler HitReceived;
-
-		internal static void NotifyHitReceive(IDamageAction action)
-		{
-			var evt = HitReceived;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
-
-		/// <summary>
-		/// Is called right before this Character delivers the given <see cref="IDamageAction"/>
-		/// </summary>
-		public static event AttackHandler HitDelivered;
-
-		internal static void NotifyHitDeliver(IDamageAction action)
-		{
-			var evt = HitDelivered;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
 	}
 }

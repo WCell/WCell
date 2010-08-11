@@ -54,8 +54,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// thunder clap should add about 15% AP to damage
 			SpellLineId.WarriorThunderClap.Apply(spell => {
-				var effect = spell.AddEffect(SpellEffectType.Dummy);
-				effect.ImplicitTargetA = ImplicitTargetType.AllEnemiesAroundCaster;
+				var effect = spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.AllEnemiesAroundCaster);
 				effect.Radius = 8;
 				effect.BasePoints = 15;
 				effect.SpellEffectHandlerCreator = (cast, effct) => new SchoolDamageByAPPctEffectHandler(cast, effct);

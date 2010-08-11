@@ -37,37 +37,40 @@ namespace WCell.Constants.Spells
 		/// <summary>
 		/// We attack
 		/// </summary>
-		MeleeAttackOther = 0x4,
+		MeleeHitOther = 0x4,
 		/// <summary>
 		/// We are critically hit
 		/// </summary>
 		MeleeCriticalHit = 0x8,
 
 		/// <summary>
-		/// We cast a spell
+		/// We cast a damage spell.
+		/// If you want this to proc on non-damaging spells,
+		/// make sure to use Spell.AddCasterProcSpells.
 		/// </summary>
 		SpellCast = 0x10,
+
 		/// <summary>
 		/// We are attacked physically
 		/// </summary>
 		PhysicalAttack = 0x20,
 		/// <summary>
-		/// We attack physically with ranged weapon
+		/// We hit someone with a ranged weapon's ammo
 		/// </summary>
-		RangedAttackOther = 0x40,
+		RangedHitOther = 0x40,
 		/// <summary>
 		/// We are critcally hit with a ranged weapon
 		/// </summary>
 		RangedCriticalHit = 0x80,
 
 		/// <summary>
-		/// We land a critical hit on sb else
+		/// We physically attack someone else
 		/// </summary>
 		PhysicalAttackOther = 0x100,
 		/// <summary>
-		/// We are attacked physically
+		/// We are struck by a melee weapon
 		/// </summary>
-		MeleeAttack = 0x200,
+		MeleeHit = 0x200,
 		/// <summary>
 		/// We do something with someone else
 		/// </summary>
@@ -82,7 +85,10 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		MeleeCriticalHitOther = 0x1000,
 
-		RangedAttack = 0x2000,
+		/// <summary>
+		/// We are hit by a ranged weapon
+		/// </summary>
+		RangedHit = 0x2000,
 
 		/// <summary>
 		/// We heal sb else
@@ -93,14 +99,19 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Heal = 0x8000,
 
+		/// <summary>
+		/// We cast a critical damage spell.
+		/// See SpellCast for reference.
+		/// </summary>
 		SpellCastCritical = 0x10000,
 
 		/// <summary>
-		/// We get hit by a spell
+		/// We get hit by a damage spell
 		/// </summary>
 		SpellHit = 0x20000,
+
 		/// <summary>
-		/// We get critically hit by spell
+		/// We get critically hit by a damage spell
 		/// </summary>
 		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,
@@ -126,7 +137,12 @@ namespace WCell.Constants.Spells
 		 * The Following effects were added to provide additional functionality:
 		 */
 		/// <summary>
-		/// Triggered when an Aura gets removed
+		/// Triggered for the caster, when an Aura is started on a target
+		/// </summary>
+		AuraStarted = 0x20000000,
+
+		/// <summary>
+		/// Triggered for the caster, when an Aura gets removed
 		/// </summary>
 		AuraRemoved = 0x40000000,
 

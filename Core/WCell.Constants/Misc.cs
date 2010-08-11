@@ -442,9 +442,9 @@ namespace WCell.Constants
 	public enum StatModifierFloat
 	{
 		AttackerCritChance,
-        BlockValue,
-		AttackTime,
-		PowerRegen,
+		BlockValue,
+		MeleeAttackTime,
+		RangedAttackTime,
 		HealthRegen,
 	}
 
@@ -468,6 +468,7 @@ namespace WCell.Constants
 		HealthRegenNoCombat,
 		
 		PowerRegen,
+		PowerRegenPercent,
 		BlockChance,
 		BlockValue,
         ParryChance,

@@ -18,19 +18,6 @@ namespace WCell.RealmServer.Achievement
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
-		private static readonly Order CreatedOrder = new Order("Created", true);
-
-		/// <summary>
-		/// Character will not have Ids below this threshold. 
-		/// You can use those unused ids for self-implemented mechanisms, eg to fake participants in chat-channels etc.
-		/// </summary>
-		/// <remarks>
-		/// Do not change this value once the first Character exists.
-		/// If you want to change this value to reserve more (or less) ids for other use, make sure
-		/// that none of the ids below this threshold are in the DB.
-		/// </remarks>
-
-		protected static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(AchievementRecord), "RecordId");
 
 		/// <summary>
 		/// Creates a new AchievementRecord row in the database with the given information.
@@ -38,24 +25,23 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
-		public static AchievementRecord CreateNewAchievementRecord(Character chr, uint achievementEntryId)
+		public static AchievementRecord CreateNewAchievementRecord(Character chr, AchievementEntryId achievementEntryId)
 		{
 			AchievementRecord record;
 
 			try
 			{
 				record = new AchievementRecord
-				         	{
-				         		RecordId = _idGenerator.Next(),
-				         		_achievementEntryId = (int) achievementEntryId,
-				         		_characterGuid = (int) chr.EntityId.Low,
-				         		CompleteDate = DateTime.Now,
-				         		New = true
-							};
+				{
+					_achievementEntryId = (int)achievementEntryId,
+					_characterGuid = (int)chr.EntityId.Low,
+					CompleteDate = DateTime.Now,
+					New = true
+				};
 			}
 			catch (Exception ex)
 			{
-				s_log.Error("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
+				s_log.ErrorException("AchievementRecord creation error (DBS: " + RealmServerConfiguration.DBType + "): ", ex);
 				record = null;
 			}
 
@@ -65,10 +51,24 @@ namespace WCell.RealmServer.Achievement
 
 		#endregion
 
+		/// <summary>
+		/// Encode char id and achievement id into RecordId
+		/// </summary>
 		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long RecordId { get; set; }
+		public long RecordId
+		{
+			get
+			{
+				return _characterGuid | ((long)_achievementEntryId << 32);
+			}
+			set
+			{
+				_characterGuid = (int)value;
+				_achievementEntryId = (int)(value >> 32);
+			}
+		}
 
-		[Field("Guid", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		[Field("CharacterId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterGuid;
 
 		[Field("Achievement", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -89,9 +89,14 @@ namespace WCell.RealmServer.Achievement
 			set { _achievementEntryId = (int)value; }
 		}
 
-		public static AchievementRecord[] Load(long chrRecordId)
+		public static AchievementRecord[] Load(int chrId)
 		{
-			return FindAllByProperty("Guid", chrRecordId);
+			return FindAll(Restrictions.Eq("_characterGuid", chrId));
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} - Char: {1}, Achievement: {2}, RecordId: {3}", GetType(), _characterGuid, _achievementEntryId, RecordId);
 		}
 	}
 }

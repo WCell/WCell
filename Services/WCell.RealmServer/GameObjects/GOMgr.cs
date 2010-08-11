@@ -58,13 +58,17 @@ namespace WCell.RealmServer.GameObjects
 		{
 			if (!loaded)
 			{
+				log.Warn("Tried to get GOEntry but GOs are not loaded: {0}", id);
+				return null;
+			}
+			GOEntry entry;
+			if (!Entries.TryGetValue((uint)id, out entry))
+			{
 				if (ContentHandler.ForceDataPresence)
 				{
 					throw new ContentException("Tried to get GOEntry but GOs are not loaded: {0}", id);
 				}
 			}
-			GOEntry entry;
-			Entries.TryGetValue((uint)id, out entry);
 			return entry;
 		}
 

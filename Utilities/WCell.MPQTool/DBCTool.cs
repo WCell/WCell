@@ -20,8 +20,10 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 //using MpqReader;
+using WCell.Constants;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
+using WCell.Util.NLog;
 
 namespace WCell.MPQTool
 {
@@ -99,39 +101,34 @@ namespace WCell.MPQTool
 					{
 						var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
 
-						// Does it already exist? If it does then it'll be one from a previous package, so let's leave it
-						if (!File.Exists(strLocalFilePath))
+						//if (!File.Exists(strLocalFilePath))
+
+						using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
 						{
-							using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
+							using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
 							{
-								using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
+								// Writing...
+								Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
+
+								// Create an 8kb buffer
+								var byFileContents = new byte[8192];
+
+								// Loop until we're out of data
+								while (true)
 								{
-									// Writing...
-									Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
+									// Read from the MPQ
+									int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
 
-									// Create an 8kb buffer
-									var byFileContents = new byte[8192];
+									// Was there anything to read?
+									if (intBytesRead == 0)
+										break;
 
-									// Loop until we're out of data
-									while (true)
-									{
-										// Read from the MPQ
-										int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
-
-										// Was there anything to read?
-										if (intBytesRead == 0)
-											break;
-
-										// Write to the file
-										stmOutput.Write(byFileContents, 0, intBytesRead);
-									}
+									// Write to the file
+									stmOutput.Write(byFileContents, 0, intBytesRead);
 								}
-
-								// Close the File
-								stmOutput.Close();
-
-								Console.WriteLine("Done");
 							}
+
+							Console.WriteLine("Done");
 						}
 					}
 				}
@@ -217,7 +214,7 @@ namespace WCell.MPQTool
 				if (checkClient)
 				{
 					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.WriteLine("Required Client Version: " + Config.RequiredClientVersion);
+					Console.WriteLine("Required Client Version: " + WCellInfo.RequiredVersion.BasicString);
 					Console.ResetColor();
 				}
 				Console.WriteLine();
@@ -247,6 +244,11 @@ namespace WCell.MPQTool
 						Console.WriteLine(curDir.FullName);
 						Console.WriteLine("Please enter the Output Directory - You can also use a relative path.");
 						DBCOutputDir = Console.ReadLine();
+						if (DBCOutputDir == null)
+						{
+							// program shutdown
+							return;
+						}
 					}
 				}
 				while (!response.StartsWith("y"));
@@ -258,7 +260,7 @@ namespace WCell.MPQTool
 				if (clear && Directory.Exists(DBCOutputDir))
 				{
 					Console.WriteLine();
-					Console.Write("Clearing Ouput directory... ");
+					Console.Write("Deleting Ouput directory... ");
 					Directory.Delete(DBCOutputDir, true);
 					Console.WriteLine("Done.");
 				}
@@ -273,7 +275,7 @@ namespace WCell.MPQTool
 					{
 						Console.ForegroundColor = ConsoleColor.Red;
 						Console.WriteLine();
-						Console.WriteLine("Please make sure that you were exporting from Client v" + Config.RequiredClientVersion);
+						Console.WriteLine("Please make sure that you were exporting from Client v" + WCellInfo.RequiredVersion.BasicString);
 					}
 					Console.ResetColor();
 				}
@@ -281,10 +283,7 @@ namespace WCell.MPQTool
 
 			catch (Exception ex)
 			{
-				Console.ForegroundColor = ConsoleColor.Red;
-				Console.WriteLine(ex.Message);
-				Console.WriteLine("Export failed. Make sure, you configured your build correctly.");
-				Console.ResetColor();
+				LogUtil.ErrorException(ex, "Export failed. Make sure, you configured your build correctly.");
 			}
 		}
 
@@ -318,7 +317,7 @@ namespace WCell.MPQTool
 
 			if (lstAllMPQFiles.Count > 0)
 			{
-				Console.WriteLine(string.Format("Found {0} MPQ's", lstAllMPQFiles.Count));
+				Console.WriteLine(string.Format("Found {0} MPQ files", lstAllMPQFiles.Count));
 				ProcessMPQ(lstAllMPQFiles);
 				return true;
 			}
@@ -417,10 +416,10 @@ namespace WCell.MPQTool
 
         public DBCTool()
         {
-            var config = Config.Instance;
+            var config = MPQToolConfig.Instance;
 
-            DBCDir = Config.DBCDir;
-            DefaultDBCOutputDir = Config.DefaultDBCOutputDir;
+            DBCDir = MPQToolConfig.DBCDirPrefix;
+            DefaultDBCOutputDir = MPQToolConfig.DefaultDBCOutputDir;
             DBCOutputDir = DefaultDBCOutputDir;
         }
 	}
@@ -429,7 +428,8 @@ namespace WCell.MPQTool
     {
         static void Main(string[] args)
         {
-            var config = Config.Instance;
+        	LogUtil.SetupConsoleLogging();
+            var config = MPQToolConfig.Instance;
             new DBCTool().Dump();
             
             // Compare(40f, 90f);

@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants.Spells;
@@ -66,6 +67,12 @@ namespace WCell.RealmServer.Spells
 		/// All spells by id.
 		/// </summary>
 		public static Spell[] ById = new Spell[70000];
+
+		public static uint HighestId
+		{
+			get;
+			internal set;
+		}
 
 		/// <summary>
 		/// All spells that require tools
@@ -118,6 +125,21 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Add / Remove
+
+		internal static void AddSpell(Spell spell)
+		{
+			ArrayUtil.Set(ref ById, spell.Id, spell);
+			HighestId = Math.Max(spell.Id, HighestId);
+		}
+
+		/// <summary>
+		/// Can be used to add a Spell that does not exist.
+		/// </summary>
+		public static Spell AddCustomSpell(string name)
+		{
+			return AddCustomSpell(HighestId + 1, name);
+		}
+
 		/// <summary>
 		/// Can be used to add a Spell that does not exist.
 		/// Usually used for spells that are unknown to the client to signal a certain state.
@@ -126,6 +148,10 @@ namespace WCell.RealmServer.Spells
 		/// <returns></returns>
 		public static Spell AddCustomSpell(uint id, string name)
 		{
+			if (Get(id) != null)
+			{
+				throw new ArgumentException("Invalid custom spell id is already in use: " + id + " - " + name);
+			}
 			var spell = new Spell
 			{
 				Id = id,
@@ -134,7 +160,7 @@ namespace WCell.RealmServer.Spells
 				Effects = new SpellEffect[0],
 				RequiredToolIds = new uint[0]
 			};
-			ArrayUtil.Set(ref ById, id, spell);
+			AddSpell(spell);
 			return spell;
 		}
 
@@ -291,26 +317,27 @@ namespace WCell.RealmServer.Spells
 		[Initialization(InitializationPass.First, "Initialize Spells")]
 		public static void LoadSpells()
 		{
-			InitEffectHandlers();
-			LoadOtherDBCs();
-
 			LoadSpells(false);
-			SkillHandler.Initialize();
-			TalentMgr.Initialize();
-
-			SpellLines.InitSpellLines();
 		}
 
 		public static void LoadSpells(bool init)
 		{
-			SpellEffect.InitMiscValueTypes();
 			if (!loaded)
 			{
+				InitEffectHandlers();
+				LoadOtherDBCs();
+
+				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
 				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
 				ContentHandler.Load<SpellLearnRelation>();
+				InitSummonHandlers();
+				SkillHandler.Initialize();
+				TalentMgr.Initialize();
+
+				SpellLines.InitSpellLines();
 			}
 
 			if (init)
@@ -325,7 +352,6 @@ namespace WCell.RealmServer.Spells
 		[Initialization(InitializationPass.Third, "Initialize Spells (2)")]
 		public static void Initialize2()
 		{
-			InitSummonHandlers();
 			LoadOverrides();
 			var learnSpells = new List<Spell>(5900);
 
@@ -431,7 +457,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.PersistantAreaAura] = (cast, effect) => new PersistantAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Summon] = (cast, effect) => new SummonEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Energize] = (cast, effect) => new EnergizeEffectHandler(cast, effect);
-			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponPercentDamageEffectHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.WeaponPercentDamage] = (cast, effect) => new WeaponDamageEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.OpenLock] = (cast, effect) => new OpenLockEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyAreaAura] = (cast, effect) => new ApplyAreaAuraEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.ApplyGroupAura] = (cast, effect) => new ApplyAreaAura2EffectHandler(cast, effect);
@@ -491,12 +517,13 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.SummonObjectSlot4] = (cast, effect) => new SummonObjectSlot2Handler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.DestroyAllTotems] = (cast, effect) => new DestroyAllTotemsHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{
 				if (SpellEffectCreators[i] == null)
 				{
-					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffect(cast, effect);
+					SpellEffectCreators[i] = (cast, effect) => new NotImplementedEffectHandler(cast, effect);
 				}
 			}
 
@@ -514,7 +541,10 @@ namespace WCell.RealmServer.Spells
 
 		public static void UnsetHandler(SpellEffectType type)
 		{
-			SpellEffectCreators[(int)type] = null;
+			//if (SpellEffectCreators[(int)type] != null && SpellEffectCreators[(int)type].GetType() == typeof(NotImplementedEffectHandler))
+			{
+				SpellEffectCreators[(int)type] = null;
+			}
 		}
 
 		#endregion
@@ -533,10 +563,16 @@ namespace WCell.RealmServer.Spells
 		{
 			foreach (var entry in SummonEntries.Values)
 			{
-				if (entry.Type == SummonPropertyType.Totem && entry.Slot <= PetMgr.MaxTotemSlots)
+				if (entry.Id == SummonType.Totem)
+				{
+					// "Totem" entries do not have Type set to Totem!
+					entry.Type = SummonPropertyType.Totem;
+				}
+				if (entry.Type == SummonPropertyType.Totem)
 				{
 					// totem
-					entry.Handler = new SpellSummonTotemHandler(entry.Slot - 1);
+					entry.Handler = new SpellSummonTotemHandler(MathUtil.ClampMinMax(entry.Slot - 1, 0, PetMgr.MaxTotemSlots - 1));
+					entry.DetermineAmountBySpellEffect = false;	// totem effect values are always health
 				}
 				else
 				{

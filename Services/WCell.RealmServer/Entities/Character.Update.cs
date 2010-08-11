@@ -99,7 +99,11 @@ namespace WCell.RealmServer.Entities
 			m_itemsRequiringUpdates.Add(item);
 		}
 
-		internal void RemoveOwnedObject(Item item)
+		/// <summary>
+		/// Removes the given item visually from the Client.
+		/// Do not call this method - but use Item.Remove instead.
+		/// </summary>
+		internal void RemoveOwnedItem(Item item)
 		{
 			//if (m_itemsRequiringUpdates.Remove(item))
 			m_itemsRequiringUpdates.Remove(item);
@@ -155,7 +159,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal void UpdateEnvironment(HashSet<WorldObject> updatedObjects)
 		{
-			var toRemove = new HashSet<WorldObject>();
+			var toRemove = WorldObjectSetPool.Obtain();
 			toRemove.AddRange(KnownObjects);
 
 			NearbyObjects.Clear();
@@ -265,6 +269,9 @@ namespace WCell.RealmServer.Entities
 			{
 				UpdateRestState();
 			}
+
+			toRemove.Clear();
+			WorldObjectSetPool.Recycle(toRemove);
 		}
 
 		void UpdateRestState()
@@ -392,7 +399,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region IUpdatable
-		public override void Update(float dt)
+		public override void Update(int dt)
 		{
 			base.Update(dt);
 
@@ -410,6 +417,10 @@ namespace WCell.RealmServer.Entities
 				{
 					UpdatePvPState(false, false);
 				}
+			}
+			if (PlayerSpells.Runes != null)
+			{
+				PlayerSpells.Runes.UpdateCooldown(dt);
 			}
 		}
 

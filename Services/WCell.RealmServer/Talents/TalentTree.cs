@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Talents
 		/// <summary>
 		/// For Pet Talents
 		/// </summary>
-		public uint TabIndex2;					// 21
+		public uint PetTabIndex;					// 21
 
 		// unnecessary
 		//public uint Icon2;					// 22

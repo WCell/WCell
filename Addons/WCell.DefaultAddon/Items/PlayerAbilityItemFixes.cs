@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,7 +24,7 @@ namespace WCell.Addons.Default.Items
 			ItemMgr.Apply(item =>
 			{
 				var spell = item.GetSpell(ItemSpellTrigger.Use);
-				spell.ConsumesCharges = true;
+				spell.HasCharges = true;
 				spell.Charges = 3;
 				item.Class = ItemClass.Consumable;
 				item.UniqueCount = 1;

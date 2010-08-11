@@ -45,11 +45,11 @@ namespace WCell.Addons.Default.Spells.Warlock
             var teleReqSpell = SpellHandler.AddCustomSpell(62388, "DemonicCircleTeleportRequirement");
             teleReqSpell.IsPreventionDebuff = false;
             teleReqSpell.AddAuraEffect(AuraType.Dummy);
-            teleReqSpell.Attributes |= SpellAttributes.NoVisibleAura;
+            teleReqSpell.Attributes |= SpellAttributes.InvisibleAura;
             teleReqSpell.Durations = new Spell.DurationEntry { Min = 360000, Max = 360000 };
             SpellHandler.Apply(spell =>
             {
-                var efct = spell.AddEffect(SpellEffectType.Dummy);
+				var efct = spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.None);
                 efct.MiscValue = (int)GOEntryId.DemonicCircleSummon;
                 efct.SpellEffectHandlerCreator = (cast, effect) => new RecallToGOHandler(cast, effect);
                 spell.AddCasterTriggerSpells(teleReqSpell);
@@ -82,7 +82,7 @@ namespace WCell.Addons.Default.Spells.Warlock
                 {
                     Effect.BasePoints += Effect.BasePoints / 4;
                 }
-                ((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
+                ((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
                 Effect.BasePoints = oldVal;
             }
 

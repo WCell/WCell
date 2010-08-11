@@ -88,37 +88,37 @@ namespace WCell.AuthServer
 
 				client.Authenticator.WriteServerChallenge(packet);
 
-                //var rand = new BigInteger(new Random(Environment.TickCount), 128);
-                //packet.WriteBigInt(rand, 16);
-                Random rand = new Random(Environment.TickCount);
-                byte[] randbytes = new byte[16];              
-                rand.NextBytes(randbytes);           
-                packet.Write(randbytes);            
-                
-                const byte securityFlag = 0x0;
+				//var rand = new BigInteger(new Random(Environment.TickCount), 128);
+				//packet.WriteBigInt(rand, 16);
+				Random rand = new Random(Environment.TickCount);
+				byte[] randbytes = new byte[16];
+				rand.NextBytes(randbytes);
+				packet.Write(randbytes);
+
+				const byte securityFlag = 0x0;
 				packet.Write(securityFlag);
 
 				// Require PIN input
-                //if ((securityFlag & 0x1) == 0x1)
-                //{
-                //    packet.WriteInt(0);
-                //    packet.Write(new byte[16]);
-                //}
+				//if ((securityFlag & 0x1) == 0x1)
+				//{
+				//    packet.WriteInt(0);
+				//    packet.Write(new byte[16]);
+				//}
 
-                // Matrix input
-                //if ((securityFlag & 0x2) == 0x2)
-                //{
-                //    packet.Write((byte)0);
-                //    packet.Write((byte)0);
-                //    packet.Write((byte)0);
-                //    packet.Write((byte)0);
-                //    packet.Write(0UL);
-                //}
+				// Matrix input
+				//if ((securityFlag & 0x2) == 0x2)
+				//{
+				//    packet.Write((byte)0);
+				//    packet.Write((byte)0);
+				//    packet.Write((byte)0);
+				//    packet.Write((byte)0);
+				//    packet.Write(0UL);
+				//}
 				// Require Security Token input
-                //if ((securityFlag & 0x4) == 0x4)
-                //{
-                //    packet.Write((byte)1);
-                //}
+				//if ((securityFlag & 0x4) == 0x4)
+				//{
+				//    packet.Write((byte)1);
+				//}
 
 				client.Send(packet);
 			}
@@ -199,7 +199,7 @@ namespace WCell.AuthServer
 
 			if (BanMgr.IsBanned(client.ClientAddress))
 			{
-				OnLoginError(client, AccountStatus.AccountBanned);	
+				OnLoginError(client, AccountStatus.AccountBanned);
 			}
 			//else if (client.Server.IsAccountLoggedIn(client.AccountName))
 			//{
@@ -207,11 +207,11 @@ namespace WCell.AuthServer
 			//}
 			else
 			{
-			    var acctQuery = new Action(() =>
-			    {
-			        var acc = AccountMgr.GetAccount(client.AccountName);
-			        QueryAccountCallback(client, acc);
-			    });
+				var acctQuery = new Action(() =>
+				{
+					var acc = AccountMgr.GetAccount(client.AccountName);
+					QueryAccountCallback(client, acc);
+				});
 
 				AuthenticationServer.Instance.AddMessage(acctQuery);
 			}
@@ -263,7 +263,7 @@ namespace WCell.AuthServer
 				}
 				else
 				{
- 					// Account has been deactivated
+					// Account has been deactivated
 					if (client.Account.StatusUntil == null)
 					{
 						// temporarily suspended
@@ -292,19 +292,19 @@ namespace WCell.AuthServer
 			}
 			else if (client.IsConnected)
 			{
-                if (client.Authenticator.IsClientProofValid(packet))
-                {
-                    AuthenticationServer.Instance.AddMessage(() =>
-                    {
-                    	LoginClient(client);
-                    });
-                }
-                else
-                {
-                    s_log.Debug(resources.InvalidClientProof, client.AccountName);
+				if (client.Authenticator.IsClientProofValid(packet))
+				{
+					AuthenticationServer.Instance.AddMessage(() =>
+					{
+						LoginClient(client);
+					});
+				}
+				else
+				{
+					s_log.Debug(resources.InvalidClientProof, client.AccountName);
 
-                    OnLoginError(client, AccountStatus.InvalidInformation);
-                }
+					OnLoginError(client, AccountStatus.InvalidInformation);
+				}
 			}
 		}
 
@@ -328,7 +328,7 @@ namespace WCell.AuthServer
 					SendAuthProofErrorReply(client, AccountStatus.Failure);
 					return;
 				}
-				acc = AutoCreateAccount(client);
+				client.Account = acc = AutoCreateAccount(client);
 			}
 
 			var authInfo = new AuthenticationInfo
@@ -413,7 +413,7 @@ namespace WCell.AuthServer
 			{
 				packet.Write((byte)0);// error
 				packet.Write((short)0);
-                client.Send(packet);
+				client.Send(packet);
 			}
 		}
 
@@ -454,7 +454,8 @@ namespace WCell.AuthServer
 			}
 
 			// delay the reply
-			ThreadPool.RegisterWaitForSingleObject(failInfo.Handle, (state, timedOut) => {
+			ThreadPool.RegisterWaitForSingleObject(failInfo.Handle, (state, timedOut) =>
+			{
 				if (client.IsConnected)
 				{
 					var evt = LoginFailed;

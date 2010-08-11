@@ -6,6 +6,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Lang;
 using WCell.Util.Variables;
 using WCell.RealmServer.Entities;
 
@@ -26,17 +27,17 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             MaxScoreDefault = 1600;
         }
 
-        [Variable("ABFlagRespawnTime")]
-        public static int FlagRespawnTime = 20;
+		[Variable("ABFlagRespawnTimeMillis")]
+        public static int FlagRespawnTimeMillis = 20 * 1000;
 
-        [Variable("ABPrepTimeSecs")]
-        public static int PreparationTimeSecs = 60;
+        [Variable("ABPrepTimeMillis")]
+        public static int ABPreparationTimeMillis = 60 * 1000;
 
         [Variable("ABUpdateDelay")]
-        public static float BattleUpdateDelay = 1f;
+        public static int BattleUpdateDelayMillis = 1000;
 
         [Variable("ABPowerUpRespawnTime")]
-        public static float PowerUpRespawnTime = 1.5f * 60f;
+        public static int PowerUpRespawnTimeMillis = 90 * 1000;
 
         public float DefaultScoreTickDelay = 12;
         #endregion
@@ -82,9 +83,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
 	    public int AllianceBaseCount { get; set; }
 
-	    public override float PreparationTimeSeconds
+	    public override int PreparationTimeMillis
         {
-            get { return PreparationTimeSecs; }
+			get { return ABPreparationTimeMillis; }
         }
         #endregion
 
@@ -120,7 +121,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             base.OnStart();
 
             Characters.SendSystemMessage("Let the battle for Arathi Basin begin!");
-            CallPeriodically(BattleUpdateDelay, Update);
+            CallPeriodically(BattleUpdateDelayMillis, Update);
         }
 
         protected override void OnFinish(bool disposing)
@@ -134,7 +135,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            var msg = "The battle for Arathi Basin begins in " + PreparationTimeSeconds / 2f + " seconds.";
+            var msg = string.Format("The battle for Arathi Basin begins in {0} seconds.", PreparationTimeMillis / 2000);
             Characters.SendSystemMessage(msg);
         }
 
@@ -142,17 +143,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnPrepare()
         {
             base.OnPrepare();
-            var msg = "The battle for Arathi Basin begins in ";
-            if ((int)PreparationTimeSeconds / 60 < 1)
-            {
-                msg += (int)PreparationTimeSeconds + " seconds.";
-            }
-            else
-            {
-                msg += PreparationTimeSeconds / 60f + (int)PreparationTimeSeconds / 60f == 1 ? "minute." : "minutes.";
-            }
 
-            Characters.SendSystemMessage(msg);
+        	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
+            Characters.SendSystemMessage("The battle for Arathi Basin begins in {0}.", time);
         }
 
         /// <summary>

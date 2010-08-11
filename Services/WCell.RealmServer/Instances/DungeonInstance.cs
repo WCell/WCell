@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Instances
 	/// </summary>
 	public abstract class DungeonInstance : BaseInstance, IUpdatable
 	{
-		public static float DefaultInstanceTimeoutMinutes = 30 * 60f;
+		public static int DefaultInstanceTimeoutMillis = 30 * 60 * 1000;
 		private DateTime m_lastReset;
 		protected TimerEntry m_timeoutTimer;
 
@@ -31,9 +31,9 @@ namespace WCell.RealmServer.Instances
 			RegisterUpdatableLater(this); 
 		}
 
-		public float TimeoutDelay
+		public int TimeoutDelay
 		{
-			get { return DefaultInstanceTimeoutMinutes; }
+			get { return DefaultInstanceTimeoutMillis; }
 		}
 
         /// <summary>
@@ -99,8 +99,7 @@ namespace WCell.RealmServer.Instances
 		    
             if (TimeoutDelay > 0)
 		    {
-		        m_timeoutTimer.RemainingInitialDelay = TimeoutDelay;
-		        m_timeoutTimer.Start();
+				m_timeoutTimer.Start(TimeoutDelay, 0);
 		    }
 		    s_log.Debug("{0} #{1} timeout timer started.", Name, m_InstanceId);
 		}
@@ -118,12 +117,9 @@ namespace WCell.RealmServer.Instances
 
 		#region IUpdatable Members
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
-			if (m_timeoutTimer.IsRunning)
-			{
-				m_timeoutTimer.Update(dt);
-			}
+			m_timeoutTimer.Update(dt);
 		}
 
 		#endregion

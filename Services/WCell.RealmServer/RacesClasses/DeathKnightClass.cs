@@ -54,15 +54,5 @@ namespace WCell.RealmServer.RacesClasses
 		{
 			return base.CalculateParry(level, (int)(parryRating + str * 0.25), str);
 		}
-
-		/// <summary>
-		/// Updates current Runic Power and Runes
-		/// </summary>
-		protected internal override void UpdatePower(Unit unit)
-		{
-			// DK also needs to update Runes
-			base.UpdatePower(unit);
-
-		}
 	}
 }

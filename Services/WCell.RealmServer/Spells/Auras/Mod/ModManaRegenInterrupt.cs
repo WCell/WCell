@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Formulas;
 
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
@@ -26,12 +27,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			Owner.ManaRegenPerTickInterruptedPct = EffectValue; 
+			Owner.ManaRegenPerTickInterruptedPct += EffectValue; 
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			Owner.ManaRegenPerTickInterruptedPct = Unit.PowerRegenInterruptedPct;
+			Owner.ManaRegenPerTickInterruptedPct -= EffectValue;
 		}
 	}
 };

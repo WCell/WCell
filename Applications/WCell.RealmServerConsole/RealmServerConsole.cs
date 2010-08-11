@@ -17,7 +17,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using WCell.Core;
+using WCell.Core.DBC;
 using WCell.RealmServer.Commands;
 using WCell.Core.Database;
 using System.IO;

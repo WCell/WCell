@@ -13,7 +13,7 @@ using WCell.RealmServer.Database;
 namespace WCell.RealmServer.NPCs.Pets
 {
 	/// <summary>
-	/// Classic Hunter pets with talents and everything
+	/// Record for Hunter pets with talents and everything
 	/// </summary>
 	[ActiveRecord("Pets_Permanent", Access = PropertyAccess.Property)]
 	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>, IPetRecord

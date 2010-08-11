@@ -14,8 +14,26 @@ namespace WCell.MPQTool.StormLibWrapper
     {
         public const int MAX_PATH = 260;
         public const string StormLibDllName = "StormLib.dll";
-        //public const string StormLibFolder = "../../../../StormLib/Bin/";
+		const string StormLibFolder = "../../Libraries/Binaries/Release/Stormlib/";
+		private const string StormLib64 = StormLibFolder + "StormLib64.dll";
+		private const string StormLib32 = StormLibFolder + "StormLib32.dll";
 
+		static NativeMethods()
+		{
+			InitAPI();
+		}
+
+		static void InitAPI()
+		{
+			if (Environment.Is64BitProcess)
+			{
+				File.Copy(Path.GetFullPath(StormLib64), StormLibDllName, true);
+			}
+			else
+			{
+				File.Copy(Path.GetFullPath(StormLib32), StormLibDllName, true);
+			}
+		}
         
         /// Return Type: BOOL->int
         ///lpFileName: LPCSTR->CHAR*

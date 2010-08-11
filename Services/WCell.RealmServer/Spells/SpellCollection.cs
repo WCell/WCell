@@ -15,10 +15,13 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.Util.NLog;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -29,7 +32,7 @@ namespace WCell.RealmServer.Spells
 	/// <summary>
 	/// 
 	/// </summary>
-	public abstract class SpellCollection
+	public abstract class SpellCollection : IEnumerable<Spell>
 	{
 		public static readonly int SpellEnhancerCount = (int)Utility.GetMaxEnum<SpellModifierType>() + 1;
 
@@ -205,6 +208,30 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
+		/// <summary>
+		/// Gets the highest rank of the line that this SpellCollection contains
+		/// </summary>
+		public Spell GetHighestRankOf(SpellLineId lineId)
+		{
+			return GetHighestRankOf(lineId.GetLine());
+		}
+
+		/// <summary>
+		/// Gets the highest rank of the line that this SpellCollection contains
+		/// </summary>
+		public Spell GetHighestRankOf(SpellLine line)
+		{
+			var rank = line.HighestRank;
+			do
+			{
+				if (Contains(rank.SpellId))
+				{
+					return rank;
+				}
+			} while ((rank = rank.PreviousRank) != null);
+			return null;
+		}
+
 		public void Remove(SpellId spellId)
 		{
 			Replace(SpellHandler.Get(spellId), null);
@@ -223,6 +250,13 @@ namespace WCell.RealmServer.Spells
 
 		public virtual void Clear()
 		{
+			foreach (var spell in m_byId.Values)
+			{
+				if (spell.IsPassive)
+				{
+					Owner.Auras.Cancel(spell);
+				}
+			}
 			m_byId.Clear();
 		}
 
@@ -255,14 +289,6 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public IEnumerator<Spell> GetEnumerator()
-		{
-			foreach (var spell in m_byId.Values)
-			{
-				yield return spell;
-			}
-		}
-
 		public virtual void AddDefaultSpells()
 		{
 		}
@@ -274,14 +300,27 @@ namespace WCell.RealmServer.Spells
 		public abstract bool IsReady(Spell spell);
 
 		/// <summary>
-		/// Clears the cooldown for this spell only
+		/// Clears the cooldown for the given spell
 		/// </summary>
-		public void ClearCooldown(Spell cooldownSpell)
+		public void ClearCooldown(SpellId spellId, bool alsoClearCategory = true)
 		{
-			ClearCooldown(cooldownSpell, true);
+			var spell = SpellHandler.Get(spellId);
+			if (spell == null)
+			{
+				try
+				{
+					throw new ArgumentException("No spell given for cooldown", "spellId");
+				}
+				catch (Exception e)
+				{
+					LogUtil.WarnException(e);
+				}
+				return;
+			}
+			ClearCooldown(spell, alsoClearCategory);
 		}
 
-		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory);
+		public abstract void ClearCooldown(Spell cooldownSpell, bool alsoClearCategory = true);
 
 		#region Special Spell Casting behavior
 
@@ -301,20 +340,22 @@ namespace WCell.RealmServer.Spells
 		/// Trigger all spells that might be triggered by the given Spell
 		/// </summary>
 		/// <param name="spell"></param>
-		public void TriggerSpellsFor(SpellCast cast)
+		internal void TriggerSpellsFor(SpellCast cast)
 		{
+			if (m_TargetTriggers == null) return;
+
 			int val;
 			var spell = cast.Spell;
-			for (var i = 0; i < TargetTriggers.Count; i++)
+			for (var i = 0; i < m_TargetTriggers.Count; i++)
 			{
-				var triggerHandler = TargetTriggers[i];
+				var triggerHandler = m_TargetTriggers[i];
 				var effect = triggerHandler.SpellEffect;
 				if (spell.SpellClassSet == effect.Spell.SpellClassSet &&
-					spell.MatchesMask(effect.AffectMask) &&
+					effect.MatchesSpell(spell) &&
 					(((val = effect.CalcEffectValue(Owner)) >= 100) || Utility.Random(0, 101) <= val) &&
 					spell != effect.TriggerSpell)	// prevent inf loops
 				{
-					var caster = triggerHandler.Aura.Caster;
+					var caster = triggerHandler.Aura.CasterUnit;
 					if (caster != null)
 					{
 						//cast.Trigger(effect.TriggerSpell, cast.Targets.MakeArray());
@@ -324,5 +365,18 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+
+		public IEnumerator<Spell> GetEnumerator()
+		{
+			foreach (var spell in m_byId.Values)
+			{
+				yield return spell;
+			}
+		}
 	}
 }

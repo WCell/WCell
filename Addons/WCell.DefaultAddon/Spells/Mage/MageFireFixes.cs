@@ -64,7 +64,7 @@ namespace WCell.Addons.Default.Spells.Mage
 				// get the spell base cost from the triggerAction and the costPct modifier from the talent
 				var spell = triggerAction.Spell;
 				var cost = spell.CalcBasePowerCost(caster);
-				var costPct = Effect.CalcEffectValue(caster, burnoutEffect.CalcEffectValue());
+				var costPct = Effect.CalcEffectValue(caster, burnoutEffect.CalcEffectValue(caster));
 
 				// deduct extra power
 				var power = (cost * costPct + 50) / 100;

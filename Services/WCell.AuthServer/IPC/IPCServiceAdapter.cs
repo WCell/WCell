@@ -262,7 +262,7 @@ namespace WCell.AuthServer.IPC
         {
             for (var i = 0; i < accNames.Length; i++)
             {
-                s_authServer.SetAccountLoggedOut(accNames[i]);
+                s_authServer.SetAccountLoggedOut(accNames[i], true);
             }
         }
 
@@ -303,7 +303,7 @@ namespace WCell.AuthServer.IPC
         /// <param name="accName">the account to log out</param>
         public void SetAccountLoggedOut(string id, string accName)
         {
-            s_authServer.SetAccountLoggedOut(accName);
+			s_authServer.SetAccountLoggedOut(accName, true);
         }
         #endregion
 

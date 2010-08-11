@@ -128,6 +128,9 @@ namespace WCell.RealmServer.Spells
 		public InterruptFlags InterruptFlags;//25
 		public AuraInterruptFlags AuraInterruptFlags;//26
 		public ChannelInterruptFlags ChannelInterruptFlags;//27
+		/// <summary>
+		/// Indicates the events that let this Spell proc (if it is a proc spell)
+		/// </summary>
 		public ProcTriggerFlags ProcTriggerFlags;//28
 		public uint ProcChance;//29
 		public int ProcCharges;//30
@@ -235,13 +238,13 @@ namespace WCell.RealmServer.Spells
 					var rank = numberRegex.Match(value);
 					if (rank.Success)
 					{
-						byte.TryParse(rank.Value, out Rank);
+						int.TryParse(rank.Value, out Rank);
 					}
 				}
 			}
 		}
 
-		public byte Rank;
+		public int Rank;
 		public string Description; // 158 - 174
 		public string BuffDescription; // 175 - 191
 

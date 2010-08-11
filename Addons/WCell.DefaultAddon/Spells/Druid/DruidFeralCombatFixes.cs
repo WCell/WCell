@@ -118,7 +118,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
 
 				// can only be proc'ed by a certain set of spells:
-				effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidFeralCombatMangleBear, SpellLineId.DruidMangleCat);
+				effect.AddToAffectMask(SpellLineId.DruidShred, SpellLineId.DruidMaul, SpellLineId.DruidMangleBear, SpellLineId.DruidMangleCat);
 			});
 
 			// King of the Jungle has 2 dummies for shapeshift-restricted aura effects
@@ -164,7 +164,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// only proc the trigger spell on dodge
 				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
 				spell.AddProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.RangedAttack,
+					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeValidator,
 					SpellHandler.Get(triggerSpellEffect.TriggerSpellId)
 					));
@@ -251,7 +251,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Cat Form has a periodic effect that should trigger a passive aura
-			SpellLineId.DruidCatFormShapeshift.Apply(spell =>
+			SpellLineId.DruidCatForm.Apply(spell =>
 			{
 				spell.RemoveEffect(AuraType.PeriodicTriggerSpell);
 
@@ -268,7 +268,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			}, SpellId.ClassSkillCatFormPassivePassive);
 
 			// Flight form also toggles a passive Aura while activated
-			SpellLineId.DruidSwiftFlightFormShapeshift.Apply(spell =>
+			SpellLineId.DruidSwiftFlightForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.SwiftFlightFormPassivePassive));
 			});
@@ -283,7 +283,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Aqua form also toggles a passive Aura while activated
-			SpellLineId.DruidAquaticFormShapeshift.Apply(spell =>
+			SpellLineId.DruidAquaticForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.ClassSkillAquaticFormPassivePassive));
 			});
@@ -309,21 +309,21 @@ namespace WCell.Addons.Default.Spells.Druid
 			});
 
 			// Dire Bear is missing it's passive Aura
-			SpellLineId.DruidDireBearFormShapeshift.Apply(spell =>
+			SpellLineId.DruidDireBearForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.ClassSkillDireBearFormPassivePassive));
 			});
 
 			// Travel form also requires it's passive Aura
-			SpellLineId.DruidTravelFormShapeshift.Apply(spell =>
+			SpellLineId.DruidTravelForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.TravelFormPassivePassive));
 			});
 
 			// Savage Defense has wrong trigger flags & it's buff has wrong effect type 
-			SpellLineId.DruidSavageDefensePassive.Apply(spell =>
+			SpellLineId.DruidSavageDefense.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeAttackOther;
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
 			});
 			SpellHandler.Apply(spell =>
 			{
@@ -331,7 +331,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			}, SpellId.EffectSavageDefense);
 
 			// Flight Form is also missing it's passive Aura
-			SpellLineId.DruidFlightFormShapeshift.Apply(spell =>
+			SpellLineId.DruidFlightForm.Apply(spell =>
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FlightFormPassivePassive));
 			});
@@ -384,7 +384,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// "each extra point (...) into ${$f1+$AP/410}.1 additional damage"
 			var bonusDmg = toConsume * (int)(Effect.Spell.DamageMultipliers[0] + ((unit.TotalMeleeAP + 210) / 410f));
 
-			((Unit)target).DoSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + bonusDmg);
+			((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcDamageValue() + bonusDmg);
 		}
 	}
 	#endregion
@@ -403,7 +403,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 			// "Each point of rage is converted into ${$m2/10}.1% of max health"
 			var health = (rage * EffectValue * Owner.MaxHealth + 50) / 10000;
-			Owner.Heal(health, m_aura.Caster, m_spellEffect);
+			Owner.Heal(health, m_aura.CasterUnit, m_spellEffect);
 		}
 	}
 	#endregion
@@ -420,7 +420,7 @@ namespace WCell.Addons.Default.Spells.Druid
 		{
 			// "Effects which increase Bleed damage also increase Maul damage."
 			var bleedBonusPct = action.Attacker.Auras.GetBleedBonusPercent();
-			action.IncreaseDamagePercent(bleedBonusPct);
+			action.ModDamagePercent(bleedBonusPct);
 		}
 	}
 	#endregion
@@ -437,12 +437,12 @@ namespace WCell.Addons.Default.Spells.Druid
 		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			// "causes affected targets to heal themselves for $s1% of their total health when they critically hit with a melee or ranged attack."
-			action.Attacker.HealPercent(EffectValue, m_aura.Caster, m_spellEffect);
+			action.Attacker.HealPercent(EffectValue, m_aura.CasterUnit, m_spellEffect);
 
-			if (action.Attacker == m_aura.Caster)
+			if (action.Attacker == m_aura.CasterUnit)
 			{
 				// "In addition, you gain $s2% of your maximum mana when you benefit from this heal."
-				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.Caster, m_spellEffect);
+				action.Attacker.EnergizePercent(EffectValue * 2, m_aura.CasterUnit, m_spellEffect);
 			}
 		}
 	}

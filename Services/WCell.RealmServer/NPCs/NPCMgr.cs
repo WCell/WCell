@@ -39,26 +39,24 @@ namespace WCell.RealmServer.NPCs
 	[GlobalMgr]
 	public static class NPCMgr
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		#region Global Variables
-		[Variable("NormalCorpseDecayDelay")]
+		[Variable("NormalCorpseDecayDelayMillis")]
 		/// <summary>
-		/// Delay before Corpse of normal NPC starts to decay without being looted in seconds (Default: 1 minute)
+		/// Delay before Corpse of normal NPC starts to decay without being looted in millis (Default: 1 minute)
 		/// </summary>
-		public static float DecayDelayNormal = 60f;
+		public static int DecayDelayNormalMillis = 60 * 1000;
 
-		[Variable("RareCorpseDecayDelay")]
+		[Variable("RareCorpseDecayDelayMillis")]
 		/// <summary>
-		/// Delay before Corpse of rare NPC starts to decay without being looted in seconds (Default: 5 minutes)
+		/// Delay before Corpse of rare NPC starts to decay without being looted in millis (Default: 5 minutes)
 		/// </summary>
-		public static float DecayDelayRare = 300f;
+		public static int DecayDelayRareMillis = 300000;
 
-		[Variable("EpicCorpseDecayDelay")]
+		[Variable("EpicCorpseDecayDelayMillis")]
 		/// <summary>
-		/// Delay before Corpse of epic NPC starts to decay without being looted in seconds (Default: 1 h)
+		/// Delay before Corpse of epic NPC starts to decay without being looted in millis (Default: 1 h)
 		/// </summary>
-		public static float DecayDelayEpic = 3600f;
+		public static int DecayDelayEpicMillis = 3600000;
 
 		public static float DefaultNPCFlySpeed = 16;
 
@@ -198,7 +196,7 @@ namespace WCell.RealmServer.NPCs
 		public static List<SpawnEntry>[] SpawnEntriesByMap = new List<SpawnEntry>[600];
 
 		[NotVariable]
-		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[600];
+		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[2000];
 
 		[NotVariable]
 		public static Dictionary<int, CreatureFamily> CreatureFamilies = new Dictionary<int, CreatureFamily>(1);
@@ -484,6 +482,7 @@ namespace WCell.RealmServer.NPCs
 
 			ContentHandler.Load<NPCEquipmentEntry>();
 			ContentHandler.Load<NPCEntry>();
+			ContentHandler.Load<NPCAiText>();
 
 			EntriesLoaded = true;
 
@@ -681,7 +680,7 @@ namespace WCell.RealmServer.NPCs
 			if (!trainer.IsTrainer)
 				return false;
 
-			if (!trainer.CanInteractWith(curChar))
+			if (!trainer.CheckVendorInteraction(curChar))
 				return false;
 
 			if (!trainer.CanTrain(curChar))
@@ -808,7 +807,7 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public static void TalkToFM(this NPC taxiVendor, Character chr)
 		{
-			if (!taxiVendor.CanInteractWith(chr))
+			if (!taxiVendor.CheckVendorInteraction(chr))
 				return;
 
 			// Get the taxi node associated with this Taxi Vendor

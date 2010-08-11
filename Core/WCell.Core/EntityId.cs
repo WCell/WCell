@@ -241,29 +241,7 @@ namespace WCell.Core
 
 		public int WritePacked(BinaryWriter binWriter)
 		{
-			byte[] buffer = BitConverter.GetBytes(Full);
-
-			byte mask = 0;
-			long startPos = binWriter.BaseStream.Position;
-
-			binWriter.Write(mask);
-
-			for (var i = 0; i < 8; i++)
-			{
-				if (buffer[i] != 0)
-				{
-					mask |= (byte)(1 << i);
-					binWriter.Write(buffer[i]);
-				}
-			}
-
-			long endPos = binWriter.BaseStream.Position;
-
-			binWriter.BaseStream.Position = startPos;
-			binWriter.Write(mask);
-			binWriter.BaseStream.Position = endPos;
-
-			return (int)(endPos - startPos);
+			return binWriter.WritePackedUInt64(Full);
 		}
 
 		public override bool Equals(object obj)

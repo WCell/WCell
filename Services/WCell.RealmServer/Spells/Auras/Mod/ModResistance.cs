@@ -19,7 +19,7 @@ using WCell.Constants;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>
-	/// 
+	/// TODO: Needs to be value in %
 	/// </summary>
 	public class ModResistancePctHandler : AuraEffectHandler
 	{

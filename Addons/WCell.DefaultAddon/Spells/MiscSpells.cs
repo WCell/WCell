@@ -41,9 +41,40 @@ namespace WCell.Addons.Default.Spells
             //                           spell.Effects[0].
             //                       });
 
+			FixDefaultInterrupt();
+
 		    FixMounts();
 		}
 
+		#region Interrupt
+		/// <summary>
+		/// The default interrupt spell is used by a multitude of spells
+		/// </summary>
+		private static void FixDefaultInterrupt()
+		{
+			// Only for "Non-player victim"
+			SpellHandler.Apply(spell => 
+				spell.GetEffect(SpellEffectType.InterruptCast).SpellEffectHandlerCreator = (cast, effct) => new NonPlayerVictimInterruptHandler(cast, effct),
+				SpellId.InterruptRank1);
+		}
+
+		internal class NonPlayerVictimInterruptHandler : SpellEffectHandler
+		{
+			public NonPlayerVictimInterruptHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				if (!target.IsPlayer)
+				{
+					base.Apply(target);
+				}
+			}
+		}
+		#endregion
+
+		#region Special Mounts
         private static void FixMounts()
         {
             // Invincible
@@ -171,5 +202,6 @@ namespace WCell.Addons.Default.Spells
                 }
             }
         }
+		#endregion
 	}
 }

@@ -13,16 +13,6 @@ namespace WCell.RealmServer.AI
 		void OnEnterCombat();
 
 		/// <summary>
-		/// Called when taking damage to the Brain's owner
-		/// </summary>
-		void OnDamageReceived(IDamageAction action);
-
-		/// <summary>
-		/// Called when inflicting damage by the Brain's owner
-		/// </summary>
-		void OnDamageDealt(IDamageAction action);
-
-		/// <summary>
 		/// Called on Brain's owner taking damage
 		/// </summary>
 		/// <param name="caster"></param>
@@ -33,6 +23,10 @@ namespace WCell.RealmServer.AI
 		/// Called on leaving combat
 		/// </summary>
 		void OnLeaveCombat();
+
+		void OnDamageReceived(IDamageAction action);
+
+		void OnDamageDealt(IDamageAction action);
 
 		/// <summary>
 		/// Called when the given healed Unit was healed by the given healer

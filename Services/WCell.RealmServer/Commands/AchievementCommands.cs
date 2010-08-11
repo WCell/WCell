@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +9,9 @@ using WCell.Util.Commands;
 
 namespace WCell.RealmServer.Commands
 {
+	/// <summary>
+	/// TODO: Localize
+	/// </summary>
 	public class AchievementCommands : RealmServerCommand
 	{
 		protected override void Initialize()
@@ -29,11 +32,11 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var achievementId = trigger.Text.NextEnum(AchievementEntryId.None);
-				var achivementEntry = AchievementMgr.Get(achievementId);
+				var achivementEntry = AchievementMgr.GetAchievementEntry(achievementId);
 				if (achivementEntry != null)
 				{
 					AddAchievement((Character) trigger.Args.Target, achievementId);
-					trigger.ReplyFormat("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
+					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
 				}
 				else
 				{
@@ -44,7 +47,7 @@ namespace WCell.RealmServer.Commands
 
 			public static bool AddAchievement(Character character, AchievementEntryId achievementEntryId)
 			{
-				character.Achievements.Add(achievementEntryId);
+				character.Achievements.EarnAchievement(achievementEntryId);
 				return true;
 			}
 		}

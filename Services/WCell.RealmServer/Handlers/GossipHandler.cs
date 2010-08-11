@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (target is NPC)
 			{
-				if (!((NPC)target).CanInteractWith(chr))
+				if (!((NPC)target).CheckVendorInteraction(chr))
 				{
 					return;
 				}

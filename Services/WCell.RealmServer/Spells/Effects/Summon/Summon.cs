@@ -79,11 +79,12 @@ namespace WCell.RealmServer.Spells.Effects
 			{
 				targetLoc = caster.Position;
 			}
-
+			
+			var effectValue = CalcEffectValue();
 			int amount;
 			if (summonEntry.DetermineAmountBySpellEffect)
 			{
-				amount = CalcEffectValue();
+				amount = effectValue;
 				if (amount < 1)
 				{
 					amount = 1;
@@ -96,8 +97,13 @@ namespace WCell.RealmServer.Spells.Effects
 
 			for (var i = 0; i < amount; i++)
 			{
-				var pet = summonEntry.Handler.Summon(m_cast, ref targetLoc, entry);
-				pet.CreationSpellId = Effect.Spell.SpellId;
+				var minion = summonEntry.Handler.Summon(m_cast, ref targetLoc, entry);
+				minion.CreationSpellId = Effect.Spell.SpellId;
+				if (!summonEntry.DetermineAmountBySpellEffect && effectValue > 1)
+				{
+					// effectValue represents the health
+					minion.Health = minion.BaseHealth = effectValue;
+				}
 			}
 		}
 

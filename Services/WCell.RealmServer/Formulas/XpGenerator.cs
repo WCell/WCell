@@ -6,6 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.Util.Variables;
@@ -249,7 +250,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int GetPetXPForLevel(int level)
 		{
-			return ((GetXpForlevel(level) * PetMgr.PetExperienceModifier) / 100);
+			return ((GetXpForlevel(level) * PetMgr.PetExperienceOfOwnerPercent + 50) / 100);		// rounding
 		}
 
 		public static int GetGrayLevel(int playerLevel)

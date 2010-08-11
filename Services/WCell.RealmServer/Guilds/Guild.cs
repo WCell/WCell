@@ -729,7 +729,7 @@ namespace WCell.RealmServer.Guilds
 
 		public void TrySetTabard(GuildMember member, NPC vendor, GuildTabard tabard)
 		{
-			if (!vendor.IsTabardVendor || !vendor.CanInteractWith(member.Character))
+			if (!vendor.IsTabardVendor || !vendor.CheckVendorInteraction(member.Character))
 			{
 				//"That's not an emblem vendor!"
 				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.InvalidVendor);
@@ -1038,9 +1038,9 @@ namespace WCell.RealmServer.Guilds
 		/// Send a packet to every guild member
 		/// </summary>
 		/// <param name="packet">the packet to send</param>
-		public void SendAll(RealmPacketOut packet)
+		public void Broadcast(RealmPacketOut packet)
 		{
-			SendAll(packet, null);
+			Broadcast(packet, null);
 		}
 
 		/// <summary>
@@ -1048,7 +1048,7 @@ namespace WCell.RealmServer.Guilds
 		/// </summary>
 		/// <param name="packet">the packet to send</param>
 		/// <param name="ignoredCharacter">the <see cref="Character" /> that won't receive the packet</param>
-		public void SendAll(RealmPacketOut packet, Character ignoredCharacter)
+		public void Broadcast(RealmPacketOut packet, Character ignoredCharacter)
 		{
 			foreach (var member in Members.Values)
 			{

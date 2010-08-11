@@ -45,7 +45,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		private DateTime _flagPickUpTime;
 		private GameObject _flag;
 		private bool _isFlagHome;
-		private float _flagRespawn;
+		private int _flagRespawnTime;
 		public GOEntry FlagStandEntry;
 		public GOEntry DroppedFlagEntry;
 
@@ -82,7 +82,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			FlagStandEntry = GOMgr.GetEntry(flagStand);
 			DroppedFlagEntry = GOMgr.GetEntry(flagDropId);
 
-			_flagRespawn = WarsongGulch.FlagRespawnTime;
+			_flagRespawnTime = WarsongGulch.FlagRespawnTimeMillis;
 			Score = 0;
 		}
 
@@ -188,7 +188,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			// Shows the flag on the character. Does all kinds of stuff in the handler.
 			chr.Auras.CreateSelf(_flagSpell, true);
-			_debuffUpdate = chr.CallDelayed(60 * (int)_flagRespawn * 1000, obj => ApplyFlagCarrierDebuff());
+			_debuffUpdate = chr.CallDelayed(_flagRespawnTime, obj => ApplyFlagCarrierDebuff());
 
 			if (_flag != null)
 			{
@@ -200,8 +200,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			_flagPickUpTime = DateTime.Now;
 			_isFlagHome = false;
 
-			var msg = chr.Name + " has picked up the " + Name + " flag!";
-			ChatMgr.SendSystemMessage(Instance.Characters, msg);
+			Instance.Characters.SendSystemMessage("{0} has picked up the {1} flag!", chr.Name, Name);
 
 			var evt = FlagPickedUp;
 			if (evt != null)
@@ -232,7 +231,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			if (FlagCarrier.Auras.Cancel(_flagSpell.SpellId))
 			{
-				Instance.CallDelayed(_flagRespawn, () => RespawnFlag()); //Respawn the flag in X seconds
+				Instance.CallDelayed(_flagRespawnTime, () => RespawnFlag()); //Respawn the flag in X seconds
 
 				// We no longer have a carrier.
 				FlagCarrier = null;

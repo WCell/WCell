@@ -573,7 +573,7 @@ namespace WCell.RealmServer.Guilds
 			tab.Text = newText.Length < 501 ? newText : newText.Substring(0, 500);
 			tab.UpdateLater();
 
-			chr.Guild.SendAll(GuildHandler.CreateBankTabTextPacket(tabId, newText));
+			chr.Guild.Broadcast(GuildHandler.CreateBankTabTextPacket(tabId, newText));
 		}
 
 		public void QueryBankLog(Character chr, byte tabId)

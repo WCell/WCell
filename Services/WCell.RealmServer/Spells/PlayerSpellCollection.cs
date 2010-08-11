@@ -39,10 +39,19 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
 
+		/// <summary>
+		/// The runes of this Player (if any)
+		/// </summary>
+		private RuneSet m_runes;
+
 		public PlayerSpellCollection(Character owner)
 			: base(owner)
 		{
 			m_sendPackets = false;
+			if (owner.Class == Constants.ClassId.DeathKnight)
+			{
+				m_runes = new RuneSet(owner);
+			}
 		}
 
 		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
@@ -56,11 +65,19 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// If this is a player's 
+		/// Owner as Character
 		/// </summary>
 		public Character OwnerChar
 		{
-			get { return Owner as Character; }
+			get { return (Character)Owner; }
+		}
+
+		/// <summary>
+		/// The set of runes of this Character (if any)
+		/// </summary>
+		public RuneSet Runes
+		{
+			get { return m_runes; }
 		}
 
 		#region Add
@@ -102,9 +119,11 @@ namespace WCell.RealmServer.Spells
 				{
 					// learn new skill
 					skill = OwnerChar.Skills.Add(spell.Ability.Skill, true);
-				}	// else upgrade tier
+				}
+
 				if (skill.CurrentTierSpell == null || skill.CurrentTierSpell.SkillTier < spell.SkillTier)
 				{
+					// upgrade tier
 					skill.CurrentTierSpell = spell;
 				}
 			}
@@ -162,19 +181,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private void OnRemove(Spell spell)
 		{
-			if (spell.Skill != null)
+			if (spell.Ability != null)
 			{
-				OwnerChar.Skills.Remove(spell.SkillId);
-			}
-			if (spell.Talent != null)
-			{
-				OwnerChar.Talents.Remove(spell.Talent.Id);
+				OwnerChar.Skills.Remove(spell.Ability.Skill.Id);
 			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
-			if (spell.IsPassive)
-			{
-				Owner.Auras.Cancel(spell);
-			}
 		}
 
 		/// <summary>
@@ -187,6 +198,11 @@ namespace WCell.RealmServer.Spells
 			m_sendPackets = false;
 			m_lock = new object();
 			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
+
+			if (m_runes != null)
+			{
+				m_runes.OnOwnerLoggedOut();
+			}
 
 			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
 			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
@@ -219,7 +235,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			m_byId.Clear();
+			base.Clear();
 		}
 		#endregion
 
@@ -303,9 +319,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Profession
-			if (spell.Skill != null)
+			if (spell.Ability.Skill != null)
 			{
-			    chr.Skills.TryLearn(spell.SkillId);
+				chr.Skills.TryLearn(spell.Ability.Skill.Id);
 			}
 
 
@@ -559,12 +575,18 @@ namespace WCell.RealmServer.Spells
 					catCds.Clear();
 				}
 			}));
+
+			// clear rune cooldowns
+			if (m_runes != null)
+			{
+				// TODO: Clear rune cooldown
+			}
 		}
 
 		/// <summary>
 		/// Clears the cooldown for this spell
 		/// </summary>
-		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory)
+		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory = true)
 		{
 			var ownerChar = OwnerChar;
 			if (ownerChar != null)
@@ -665,16 +687,27 @@ namespace WCell.RealmServer.Spells
 					}
 
 					var cd = cooldown.AsConsistent();
-					if (cd.CharId != m_ownerId)
-					{
-						cd.CharId = m_ownerId;
-					}
-					cd.SaveAndFlush();		// update or create
-					newCooldowns.Add(cd.Identifier, (T)cd);
+					//if (cd.CharId != m_ownerId)
+					cd.CharId = m_ownerId;
+					cd.SaveAndFlush(); // update or create
+					newCooldowns.Add(cd.Identifier, (T) cd);
 				}
 			}
 			cooldowns = newCooldowns;
 		}
 		#endregion
+
+		/// <summary>
+		/// Called to save runes (cds & spells are saved in another way)
+		/// </summary>
+		internal void OnSave()
+		{
+			if (m_runes != null)
+			{
+				var record = OwnerChar.Record;
+				record.RuneSetMask = m_runes.PackRuneSetMask();
+				record.RuneCooldowns = m_runes.Cooldowns;
+			}
+		}
 	}
 }

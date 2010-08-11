@@ -8,133 +8,101 @@ using WCell.Constants.Talents;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.Util;
 using WCell.Util.Variables;
 using WCell.RealmServer.Database;
 
-namespace WCell.RealmServer.NPCs
+namespace WCell.RealmServer.NPCs.Pets
 {
 	public static class PetMgr
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		#region Variables and Settings
-		/// <summary>
-		/// The default set of actions for every new Pet
-		/// </summary>
-		public static readonly PetActionEntry[] DefaultActions = new PetActionEntry[PetConstants.PetActionCount];
-		public static readonly PetSpell[] EmptySpells = new PetSpell[0];
+		public const int MaxTotemSlots = 4;
 
-		[NotVariable]
-		public static uint[] StableSlotPrices = new uint[PetConstants.MaxStableSlots];
-		
+		#region Variables & Settings & Global fields
+
+		/// <summary>
+		/// Whether players are allowed to rename pets infinitely many times
+		/// </summary>
 		public static bool InfinitePetRenames = false;
 		public static int MinPetNameLength = 3;
 		public static int MaxPetNameLength = 12;
 		public static int MaxFeedPetHappinessGain = 33000;
 
-		public const int MaxTotemSlots = 4;
+		/// <summary>
+		/// Hunter pets must not have less than ownerlevel - MaxMinionLevelDifference.
+		/// They gain levels if they have less.
+		/// </summary>
+		public static readonly int MaxHunterPetLevelDifference = 5;
+
+		/// <summary>
+		/// Percentage of character exp that pets need to level.
+		/// </summary>
+		public static readonly int PetExperienceOfOwnerPercent = 5;
+
+		/// <summary>
+		/// Percentage of character Stamina that gets added to the Pet's Stamina.
+		/// </summary>
+		public static readonly int PetStaminaOfOwnerPercent = 45;
+
+		/// <summary>
+		/// Percentage of character Armor that gets added to the Pet's Armor.
+		/// </summary>
+		public static readonly int PetArmorOfOwnerPercent = 35;
+
+		/// <summary>
+		/// Percentage of character RangedAttackPower that gets added to the Pet's MeleeAttackPower.
+		/// </summary>
+		public static readonly int PetAPOfOwnerPercent = 22;
+
+		/// <summary>
+		/// Percentage of character Resistances that get added to the Pet's Resistances.
+		/// </summary>
+		public static readonly int PetResistanceOfOwnerPercent = 40;
+
+		/// <summary>
+		/// Percentage of character Spell Damage that gets added to the Pet's Resistances.
+		/// </summary>
+		public static readonly int PetSpellDamageOfOwnerPercent = 13;
+
+		/// <summary>
+		/// The default set of actions for every new Pet
+		/// </summary>
+		public static readonly PetActionEntry[] DefaultActions = new PetActionEntry[PetConstants.PetActionCount];
+
+		internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
+
+		[NotVariable]
+		public static uint[] StableSlotPrices = new uint[PetConstants.MaxStableSlots];
 
 		[NotVariable]
 		public static readonly int[] PetTalentResetPriceTiers = {
             1000, 5000, 10000, 20000, 30000, 40000, 50000, 60000,
             70000, 80000, 90000, 100000
         };
-
-		[NotVariable]
-		public static readonly int[] BaseArmorByLevel = {
-               0,   20,   21,   46,   82,  126,  180,  245,  322,  412,  518,  545,
-             580,  615,  650,  685,  721,  756,  791,  826,  861,  897,  932,  967,
-            1002, 1037, 1072, 1108, 1142, 1177, 1212, 1247, 1283, 1317, 1353, 1387, 
-            1494, 1607, 1724, 1849, 1980, 2117, 2262, 2414, 2574, 2742, 2798, 2853, 
-            2907, 2963, 3018, 3072, 3128, 3183, 3237, 3292, 3348, 3402, 3457, 3512, 
-            3814, 4113, 4410, 4708, 5006, 5303, 5601, 5900, 6197, 6495, 6790, 7092, 
-            7392, 7692, 7992, 8292, 8592, 8892, 9192, 9492, 9792
-        };
-
-		[NotVariable]
-		public static readonly int[] BaseStrengthByLevel = {
-              0,  22,  23,  24,  25,  26,  27,  28,  29,  30,  31,  32,  33,  34, 
-             35,  37,  38,  40,  42,  44,  45,  47,  49,  50,  52,  53,  55,  56,
-             58,  60,  61,  63,  64,  66,  67,  69,  70,  72,  74,  76,  78,  81,
-             86,  91,  97, 102, 104, 106, 108, 110, 113, 115, 117, 119, 122, 124,
-            127, 129, 131, 134, 136, 139, 141, 144, 146, 149, 151, 154, 156, 159, 
-            162, 165, 168, 171, 174, 177, 181, 184, 187, 190, 193
-        };
-
-		[NotVariable]
-		public static readonly int[] BaseAgilityByLevel = {
-              0,  15,  16,  16,  16,  17,  18,  18,  19,  20,  20,  20,  21,  23,  23,
-             24,  25,  26,  27,  28,  30,  30,  30,  32,  33,  34,  35,  36,  37,  38,
-             40,  40,  41,  43,  44,  45,  46,  47,  48,  49,  50,  52,  53,  54,  55,
-             57,  57,  59,  60,  61,  63,  64,  65,  67,  68,  70,  71,  72,  74,  75, 
-             77,  82,  87,  92,  97, 102, 107, 112, 117, 122, 127, 131, 136, 141, 146,
-            151, 156, 161, 166, 171, 176
-        };
-
-		[NotVariable]
-		public static readonly int[] BaseStaminaByLevel = {
-              0,  22,  24,  25,  27,  28,  30,  32,  34,  36,  38,  40,  43,  45,  48,
-             51,  54,  57,  60,  63,  66,  70,  74,  79,  83,  88,  93,  98, 103, 109,
-            114, 119, 124, 129, 134, 140, 146, 152, 158, 164, 170, 177, 183, 190, 196,
-            203, 210, 217, 224, 232, 240, 247, 255, 263, 271, 279, 288, 296, 305, 314,
-            323, 332, 342, 351, 361, 370, 380, 391, 401, 412, 423, 434, 445, 456, 467,
-            478, 489, 501, 512, 523, 534
-        };
-
-		[NotVariable]
-		public static readonly int[] BaseIntelligenceByLevel = {
-             0, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 22, 22, 22, 
-            22, 22, 22, 22, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24,
-            25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 27, 27, 27, 27, 28, 28,
-            28, 28, 28, 29, 29, 29, 29, 30, 30, 30, 30, 30, 31, 31, 31, 32, 32,
-            32, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43
-        };
-
-		[NotVariable]
-		public static readonly int[] BaseSpiritByLevel = {
-              0,  20,  20,  21,  21,  21,  21,  22,  22, 22, 23, 23, 24, 25, 26, 27, 28,  29,
-             29,  31,  32,  32,  34,  34,  36,  37,  37, 39, 39, 41, 42, 42, 44, 44, 46,  47,
-             48,  49,  49,  51,  52,  53,  54,  55,  56, 58, 58, 60, 60, 62, 63, 64, 65,  66,
-             68,  69,  70,  71,  72,  73,  75,  78,  80, 84, 86, 88, 91, 93, 95, 96, 99, 102,
-            105, 108, 111, 114, 117, 120, 123, 126, 129
-        };
-
-		/// <summary>
-		/// Percentage of character exp that pets need to level.
-		/// </summary>
-		public static readonly int PetExperienceModifier = 25;
-
-		/// <summary>
-		/// Percentage of character Stamina that gets added to the Pet's Stamina.
-		/// </summary>
-		public static readonly int StaminaScaler = 45;
-
-		/// <summary>
-		/// Percentage of character Armor that gets added to the Pet's Armor.
-		/// </summary>
-		public static readonly int ArmorScaler = 50;
-
-		/// <summary>
-		/// Percentage of character RangedAttackPower that gets added to the Pet's MeleeAttackPower.
-		/// </summary>
-		public static readonly int MeleeAttackPowerScaler = 22;
-
-		/// <summary>
-		/// Percentage of character Resistances that get added to the Pet's Resistances.
-		/// </summary>
-		public static readonly int ResistanceScaler = 40;
 		#endregion
-
-		internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
 
 		#region Init
 		[Initialization(InitializationPass.Sixth)]
 		public static void Init()
 		{
+			InitMisc();
+		}
+
+		[Initialization]
+		[DependentInitialization(typeof(NPCMgr))]
+		public static void InitEntries()
+		{
+			ContentHandler.Load<PetLevelStatInfo>();
+		}
+
+		private static void InitMisc()
+		{
+
 			// Set the Default PetActions
 			var i = 0;
 
@@ -198,13 +166,14 @@ namespace WCell.RealmServer.NPCs
 			// Read in the prices for Stable Slots from the dbc
 			var stableSlotPriceReader =
 				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
-                    RealmServerConfiguration.GetDBCFile(WCellDef.DBC_STABLESLOTPRICES));
+					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_STABLESLOTPRICES));
 			stableSlotPriceReader.EntryList.CopyTo(StableSlotPrices, 0);
 		}
+
 		#endregion
 
 		#region Naming
-		public static PetNameInvalidReason IsPetNameValid(ref string petName)
+		public static PetNameInvalidReason ValidatePetName(ref string petName)
 		{
 			if (petName.Length == 0)
 			{
@@ -449,7 +418,7 @@ namespace WCell.RealmServer.NPCs
 				return false;
 			}
 
-			if (!stableMaster.CanInteractWith(chr))
+			if (!stableMaster.CheckVendorInteraction(chr))
 			{
 				return false;
 			}
@@ -461,11 +430,8 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Talents
-
-		public static void PetLearnTalent(Character chr, NPC pet, TalentId talentId, int rank)
+		public static void LearnPetTalent(Character chr, NPC pet, TalentId talentId, int rank)
 		{
-			if (chr == null) return;
-			if (pet == null) return;
 			if (chr.ActivePet != pet) return;
 
 			SpellId spell;
@@ -477,8 +443,6 @@ namespace WCell.RealmServer.NPCs
 
 		public static void ResetPetTalents(Character chr, NPC pet)
 		{
-			if (chr == null) return;
-			if (pet == null) return;
 			if (chr.ActivePet != pet) return;
 
 			chr.ResetPetTalents();

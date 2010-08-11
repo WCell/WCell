@@ -135,10 +135,11 @@ namespace WCell.RealmServer.Chat
 			else
 			{
 				var faction = sender.FactionGroup;
-			    RealmPacketOut pckt = null, scrambledPckt = null;
+				RealmPacketOut pckt = null, scrambledPckt = null;
 
 				var scrambleDefault = ScrambleChat && sender.Role.ScrambleChat;
-				Func<WorldObject, bool> iterator = obj => {
+				Func<WorldObject, bool> iterator = obj =>
+				{
 					if ((obj is Character))
 					{
 						var chr = (Character)obj;
@@ -328,7 +329,7 @@ namespace WCell.RealmServer.Chat
 			}
 			else
 			{
-                using (var packetOut = CreateCharChatMessage(ChatMsgType.Whisper, ChatLanguage.Universal, sender, targetChr, null, msg))
+				using (var packetOut = CreateCharChatMessage(ChatMsgType.Whisper, ChatLanguage.Universal, sender, targetChr, null, msg))
 				{
 					targetChr.Send(packetOut);
 				}
@@ -516,7 +517,7 @@ namespace WCell.RealmServer.Chat
 			string target, string msg, ChatTag tag)
 		{
 			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MESSAGECHAT);
-		    packet.Write((byte)type);
+			packet.Write((byte)type);
 			packet.Write((uint)language);
 			packet.Write(id1);
 			packet.Write(0);
@@ -529,6 +530,7 @@ namespace WCell.RealmServer.Chat
 			return packet;
 		}
 
+		#region SendSystemMessage
 		/// <summary>
 		/// Sends a system message.
 		/// </summary>
@@ -539,6 +541,33 @@ namespace WCell.RealmServer.Chat
 			using (var packet = CreateCharChatMessage(ChatMsgType.System, ChatLanguage.Universal, EntityId.Zero, EntityId.Zero, null, message, ChatTag.None))
 			{
 				target.Send(packet);
+			}
+		}
+
+		/// <summary>
+		/// Sends a system message.
+		/// TODO: Improve performance
+		/// </summary>
+		/// <param name="targets">an enumerable collection of players to send the message to</param>
+		/// <param name="message">the message to send</param>
+		public static void SendSystemMessage(this IEnumerable<Character> targets, TranslatableItem item)
+		{
+			SendSystemMessage(targets, item.Key, item.Args);
+		}
+
+		/// <summary>
+		/// Sends a system message.
+		/// </summary>
+		/// <param name="targets">an enumerable collection of players to send the message to</param>
+		/// <param name="message">the message to send</param>
+		public static void SendSystemMessage(this IEnumerable<Character> targets, RealmLangKey langKey, params object[] args)
+		{
+			foreach (var target in targets)
+			{
+				if (target != null)
+				{
+					target.SendSystemMessage(langKey, args);
+				}
 			}
 		}
 
@@ -570,6 +599,7 @@ namespace WCell.RealmServer.Chat
 				}
 			}
 		}
+		#endregion
 
 
 		/// <summary>
@@ -577,9 +607,10 @@ namespace WCell.RealmServer.Chat
 		/// </summary>
 		/// <param name="target">the character to receieve the combat log message</param>
 		/// <param name="message">the message to display in the characters combat log</param>
-		public static void SendCombatLogExperienceMessage(IPacketReceiver target, string message)
+		public static void SendCombatLogExperienceMessage(IPacketReceiver target, ClientLocale locale, RealmLangKey key, params object[] args)
 		{
-			using (var packet = CreateCharChatMessage(ChatMsgType.CombatXPGain, ChatLanguage.Universal, EntityId.Zero, EntityId.Zero, null, message, ChatTag.None))
+			using (var packet = CreateCharChatMessage(ChatMsgType.CombatXPGain, ChatLanguage.Universal, EntityId.Zero, EntityId.Zero, null,
+				RealmLocalizer.Instance.Translate(locale, key, args), ChatTag.None))
 			{
 				target.Send(packet);
 			}

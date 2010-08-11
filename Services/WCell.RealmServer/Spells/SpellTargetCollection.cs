@@ -43,7 +43,11 @@ namespace WCell.RealmServer.Spells
 		/// Further SpellEffectHandlers that are sharing this TargetCollection with the original Handler
 		/// </summary>
 		internal List<SpellEffectHandler> m_handlers;
-		bool m_initialized;
+		public bool IsInitialized
+		{
+			get;
+			private set;
+		}
 
 		internal SpellEffectHandler FirstHandler
 		{
@@ -63,13 +67,10 @@ namespace WCell.RealmServer.Spells
 			m_handlers = new List<SpellEffectHandler>(3);
 		}
 
+		#region Find & Validate Targets
 		public SpellFailedReason FindAllTargets()
 		{
-			if (m_initialized)
-			{
-				return SpellFailedReason.Ok;
-			}
-			m_initialized = true;
+			IsInitialized = true;
 
 			var caster = Cast.CasterObject;
 			if (caster == null)
@@ -81,15 +82,12 @@ namespace WCell.RealmServer.Spells
 			var firstEffect = FirstHandler.Effect;
 			if (firstEffect.Spell.IsPreventionDebuff)
 			{
-				// need to call CheckValidTarget nevertheless
+				// need to call InitializeTarget nevertheless
 				var err = SpellFailedReason.Ok;
-				if (caster == null)
-				{
-					return SpellFailedReason.NoValidTargets;
-				}
+
 				foreach (var handler in m_handlers)
 				{
-					err = handler.InitializeTarget(caster);
+					err = handler.ValidateTarget(caster);
 					if (err != SpellFailedReason.Ok)
 					{
 						return err;
@@ -131,14 +129,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellFailedReason ValidateTarget(WorldObject target, TargetFilter filter)
 		{
-			var handler = FirstHandler;
-			var cast = handler.Cast;
-			var spell = handler.Effect.Spell;
-
-			if (!target.CheckObjType(handler.TargetType))
-			{
-				return SpellFailedReason.BadTargets;
-			}
+			var cast = Cast;
+			var spell = cast.Spell;
 
 			var failReason = spell.CheckValidTarget(cast.CasterObject, target);
 			if (failReason != SpellFailedReason.Ok)
@@ -155,26 +147,24 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			return m_handlers.ValidateTargets(target);
+			return ValidateTargetForHandlers(target);
 		}
 
-		public static SpellFailedReason ValidateTarget(WorldObject target, SpellEffectHandler handler)
+		public SpellFailedReason ValidateTargetForHandlers(WorldObject target)
 		{
-			var spell = handler.Effect.Spell;
-
-			if (!target.CheckObjType(handler.TargetType))
+			foreach (var handler in m_handlers)
 			{
-				return SpellFailedReason.BadTargets;
+				if (!target.CheckObjType(handler.TargetType))
+				{
+					return SpellFailedReason.BadTargets;
+				}
+				var failReason = handler.ValidateTarget(target);
+				if (failReason != SpellFailedReason.Ok)
+				{
+					return failReason;
+				}
 			}
-
-			var failReason = spell.CheckValidTarget(handler.Cast.CasterObject, target);
-
-			if (failReason != SpellFailedReason.Ok)
-			{
-				return failReason;
-			}
-
-			return handler.InitializeTarget(target);
+			return SpellFailedReason.Ok;
 		}
 
 		public void AddTargetsInArea(Vector3 pos, TargetFilter targetFilter, float radius)
@@ -187,7 +177,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				limit = (int) spell.MaxTargets;
+				limit = (int)spell.MaxTargets;
 			}
 
 			if (limit < 1)
@@ -253,6 +243,7 @@ namespace WCell.RealmServer.Spells
 				RemoveRange(limit, Count - limit);
 			}
 		}
+		#endregion
 
 		#region Handlers
 		public delegate void TargetAdder(SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason);
@@ -433,8 +424,8 @@ namespace WCell.RealmServer.Spells
 			//        null);
 
 			targetHandlers[(int)ImplicitTargetType.NatureSummonLocation] = new TargetDefinition(
-					TargetMethods.AddSelf,
-					null);
+					TargetMethods.AddAreaDest,
+					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.NetherDrakeSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,
@@ -464,7 +455,7 @@ namespace WCell.RealmServer.Spells
 					TargetMethods.IsFriendly);
 
 			targetHandlers[(int)ImplicitTargetType.SelectedEnemyChanneled] = new TargetDefinition(
-					TargetMethods.AddSelection,
+					TargetMethods.AddChannelObject,
 					TargetMethods.CanHarm);
 
 			targetHandlers[(int)ImplicitTargetType.Self] = new TargetDefinition(
@@ -536,12 +527,12 @@ namespace WCell.RealmServer.Spells
 
 		internal void Dispose()
 		{
-			if (!m_initialized)
+			if (!IsInitialized)
 			{
 				return;
 			}
 
-			m_initialized = false;
+			IsInitialized = false;
 
 			m_handlers.Clear();
 			Clear();
@@ -577,14 +568,10 @@ namespace WCell.RealmServer.Spells.Extensions
 				return;
 			}
 
-			foreach (var handler in targets.m_handlers)
+			if ((failReason = targets.ValidateTargetForHandlers(self)) == SpellFailedReason.Ok)
 			{
-				if ((failReason = handler.InitializeTarget(self)) != SpellFailedReason.Ok)
-				{
-					return;
-				}
+				targets.Add(self);
 			}
-			targets.Add(self);
 		}
 
 		public static void AddPet(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
@@ -604,13 +591,7 @@ namespace WCell.RealmServer.Spells.Extensions
 				return;
 			}
 
-			foreach (var handler in targets.m_handlers)
-			{
-				if ((failReason = handler.InitializeTarget(pet)) != SpellFailedReason.Ok)
-				{
-					return;
-				}
-			}
+			
 			targets.Add(pet);
 		}
 
@@ -709,11 +690,31 @@ namespace WCell.RealmServer.Spells.Extensions
 					}
 					if (chainCount > 1 && selected is Unit)
 					{
-						targets.FindChain((Unit) selected, filter, true, chainCount);
+						targets.FindChain((Unit)selected, filter, true, chainCount);
 					}
 				}
 			}
 		}
+
+		public static void AddChannelObject(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
+		{
+			var caster = targets.Cast.CasterUnit;
+			if (caster != null)
+			{
+				if (caster.ChannelObject != null)
+				{
+					if ((failReason = targets.ValidateTarget(caster.ChannelObject, filter)) == SpellFailedReason.Ok)
+					{
+						targets.Add(caster.ChannelObject);
+					}
+				}
+				else
+				{
+					failReason = SpellFailedReason.BadTargets;
+				}
+			}
+		}
+
 
 		/// <summary>
 		/// Adds targets around the caster
@@ -800,6 +801,10 @@ namespace WCell.RealmServer.Spells.Extensions
 			if (!(targets.Cast.Selected is GameObject))
 			{
 				failReason = SpellFailedReason.BadTargets;
+			}
+			else
+			{
+				targets.Add(targets.Cast.Selected);
 			}
 		}
 
@@ -946,20 +951,6 @@ namespace WCell.RealmServer.Spells.Extensions
 					failedReason = harmful ? SpellFailedReason.TargetFriendly : SpellFailedReason.TargetEnemy;
 				}
 			}
-		}
-
-		public static SpellFailedReason ValidateTargets(this List<SpellEffectHandler> handlers, WorldObject target)
-		{
-			for (var i = 0; i < handlers.Count; i++)
-			{
-				var hdlr = handlers[i];
-				var failReason = hdlr.InitializeTarget(target);
-				if (failReason != SpellFailedReason.Ok)
-				{
-					return failReason;
-				}
-			}
-			return SpellFailedReason.Ok;
 		}
 		#endregion
 	}

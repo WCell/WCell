@@ -49,7 +49,8 @@ namespace WCell.Addons.Default.Spells.Paladin
 			{
 				var procEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
 				procEffect.ClearAffectMask();
-				procEffect.AddToAffectMask(SpellLineId.PaladinCleanse);
+				//procEffect.AddToAffectMask(SpellLineId.PaladinCleanse);
+				procEffect.AddAffectingSpells(SpellLineId.PaladinCleanse);
 			});
 
 			// Judgements of the Pure procs on all judgements
@@ -107,7 +108,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 	{
 		protected override void Apply()
 		{
-			if (Owner.SharedReference == m_aura.Caster.SharedReference)
+			if (Owner.SharedReference == m_aura.CasterUnit.SharedReference)
 			{
 				// apply Forbearance when casting on self
 				Owner.SpellCast.TriggerSelf(SpellId.Forbearance);

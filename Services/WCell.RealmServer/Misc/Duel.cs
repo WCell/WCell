@@ -49,12 +49,12 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// The delay until a duel starts in seconds
 		/// </summary>
-		public static float DefaultStartDelay = 3.0f;
+		public static int DefaultStartDelayMillis = 3000;
 
 		/// <summary>
 		/// If Duelist leaves the area around the flag for longer than this delay, he/she will loose the duel
 		/// </summary>
-		public static float DefaultCancelDelay = 10.0f;
+		public static int DefaultCancelDelayMillis = 10000;
 
 		static Duel()
 		{
@@ -113,16 +113,18 @@ namespace WCell.RealmServer.Misc
 		/// <returns></returns>
 		public static Duel InitializeDuel(Character challenger, Character rival)
 		{
-			return new Duel(challenger, rival, DefaultStartDelay, DefaultCancelDelay);
+			challenger.EnsureContext();
+			rival.EnsureContext();
+			return new Duel(challenger, rival, DefaultStartDelayMillis, DefaultCancelDelayMillis);
 		}
 		#endregion
 
 		private Character m_challenger;
 		private Character m_rival;
-		private float m_startDelay;
-		private float m_challengerCountdown;
-		private float m_rivalCountdown;
-		private float m_cancelDelay;
+		private int m_startDelay;
+		private int m_challengerCountdown;
+		private int m_rivalCountdown;
+		private int m_cancelDelay;
 		private bool m_active;
 		private bool m_accepted;
 		private bool m_challengerInRange;
@@ -137,7 +139,7 @@ namespace WCell.RealmServer.Misc
 		/// <param name="rival"></param>
 		/// <param name="startDelay"></param>
 		/// <param name="cancelDelay"></param>
-		public Duel(Character challenger, Character rival, float startDelay, float cancelDelay)
+		internal Duel(Character challenger, Character rival, int startDelay, int cancelDelay)
 		{
 			m_challenger = challenger;
 			m_rival = rival;
@@ -181,7 +183,7 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
-		public float CancelDelay
+		public int CancelDelay
 		{
 			get { return m_cancelDelay; }
 			set { m_cancelDelay = value; }
@@ -192,7 +194,7 @@ namespace WCell.RealmServer.Misc
 		/// If countdown did not start yet, will be set to the total delay.
 		/// If countdown is already over, this value is redundant.
 		/// </summary>
-		public float StartDelay
+		public int StartDelay
 		{
 			get { return m_startDelay; }
 			set { m_startDelay = value; }
@@ -333,7 +335,7 @@ namespace WCell.RealmServer.Misc
 		/// Updates the Duel
 		/// </summary>
 		/// <param name="dt">the time since the last update in seconds</param>
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			if (m_challenger == null || m_rival == null)
 			{
@@ -341,9 +343,9 @@ namespace WCell.RealmServer.Misc
 				return;
 			}
 
-			if (!m_challenger.IsInWorld ||
-				!m_rival.IsInWorld ||
-				!m_flag.IsInWorld)
+			if (!m_challenger.IsInContext ||
+				!m_rival.IsInContext ||
+				!m_flag.IsInContext)
 			{
 				Dispose();
 				return;
@@ -367,16 +369,17 @@ namespace WCell.RealmServer.Misc
 				// check if challenger in-range status changed
 				if (m_challengerInRange != m_challenger.IsInRadiusSq(m_flag, s_duelRadiusSq))
 				{
-					if (!(m_challengerInRange = !m_challengerInRange))
+					m_challengerInRange = !m_challengerInRange;		// in range status toggled
+					if (m_challengerInRange)
 					{
-						// out of range: Start the cancel-timer
-						DuelHandler.SendOutOfBounds(m_challenger, (uint)(m_cancelDelay * 1000));
+						// back in range: Cancel the cancel-timer
+						m_challengerCountdown = 0;
+						DuelHandler.SendInBounds(m_challenger);
 					}
 					else
 					{
-						// back in range: Cancel the cancel-timer
-						m_challengerCountdown = 0f;
-						DuelHandler.SendInBounds(m_challenger);
+						// out of range: Start the cancel-timer
+						DuelHandler.SendOutOfBounds(m_challenger, m_cancelDelay);
 					}
 				}
 				else
@@ -397,16 +400,16 @@ namespace WCell.RealmServer.Misc
 				// check if rival in-range status changed
 				if (m_rivalInRange != m_rival.IsInRadiusSq(m_flag, s_duelRadiusSq))
 				{
-					if (!(m_rivalInRange = !m_rivalInRange))
+					m_rivalInRange = !m_rivalInRange;		// in range status toggled
+					if (m_rivalInRange)
 					{
 						// out of range: Start the cancel-timer
-						var delay = (uint)(m_cancelDelay * 1000);
-						DuelHandler.SendOutOfBounds(m_rival, delay);
+						DuelHandler.SendOutOfBounds(m_rival, m_cancelDelay);
 					}
 					else
 					{
 						// back in range: Cancel the cancel-timer
-						m_rivalCountdown = 0f;
+						m_rivalCountdown = 0;
 						DuelHandler.SendInBounds(m_rival);
 					}
 				}
@@ -434,7 +437,7 @@ namespace WCell.RealmServer.Misc
 		{
 			// don't die
 			duelist.Health = 1;
-			duelist.Auras.RemoveWhere(aura => aura.Caster == duelist.DuelOpponent);
+			duelist.Auras.RemoveWhere(aura => aura.CasterUnit == duelist.DuelOpponent);
 			Finish(DuelWin.Knockout, duelist);
 		}
 

@@ -32,20 +32,17 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 		}
 
-		public override void Initialize(ref SpellFailedReason failReason)
+		public override void Apply()
 		{
 			if (Effect.TriggerSpell == null)
 			{
-				failReason = SpellFailedReason.Error;
+				//failReason = SpellFailedReason.Error;
 				log.Warn("Tried to cast Spell \"{0}\" which has invalid TriggerSpellId {1}", Effect.Spell, Effect.TriggerSpellId);
+				return;
 			}
-		}
-
-		public override void Apply()
-		{
 			//m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
 			//m_cast.Trigger(Effect.TriggerSpell, Effect);
-			m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
+			m_cast.Trigger(Effect.TriggerSpell, Effect, (Effect.TriggerSpell.Effects.Length == 1 && m_targets != null) ? m_targets.ToArray() : null);
 		}
 
 		protected override void Apply(WorldObject target)

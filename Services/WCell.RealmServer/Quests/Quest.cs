@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.RealmServer.Entities;
@@ -362,6 +363,7 @@ namespace WCell.RealmServer.Quests
                             chr.QuestLog.TryAddQuest(nq, qHolder);
 					}
 				}
+				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuest,(uint) chr.QuestLog.FinishedQuests.Count);
 				return true;
 			}
 			return false;

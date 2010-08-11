@@ -14,22 +14,47 @@
  *
  *************************************************************************/
 
+using System;
+using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras.Misc;
+
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
-	public class ManaShieldHandler : AuraEffectHandler
+	public class ManaShieldHandler : AttackEventEffectHandler
 	{
+		private float factor;
+		private int remaining;
 
 		protected override void Apply()
 		{
-			// mutually exclusive
-			var auras = m_aura.Auras;
+			factor = SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1;
+			remaining = EffectValue;
 
-			auras.Owner.SetManaShield(SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1, EffectValue);
+			base.Apply();
 		}
 
-		protected override void Remove(bool cancelled)
+		public override void OnDefend(DamageAction action)
 		{
-			m_aura.Auras.Owner.SetManaShield(0, 0);
+			var defender = Owner;	// same as action.Victim
+			var power = defender.Power;
+			var damage = action.Damage;
+
+			var amount = Math.Min(damage, (int)(power / factor));	// figure out how much to drain
+			if (remaining < amount)
+			{
+				// shield is used up
+				amount = remaining;
+				remaining = 0;
+				m_aura.Remove(false);
+			}
+			else
+			{
+				remaining -= amount;
+			}
+			defender.Power = power - (int)(amount * factor);	// drain power
+			damage -= amount;									// reduce damage
+
+			action.Damage = damage;
 		}
 	}
 };

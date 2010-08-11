@@ -99,7 +99,7 @@ namespace WCell.RealmServer.NPCs.Armorer
 				return false;
 			if (armorer == null)
 				return false;
-			if (!armorer.CanInteractWith(curChar))
+			if (!armorer.CheckVendorInteraction(curChar))
 				return false;
 
 			// Remove Auras not compatible with NPC interaction

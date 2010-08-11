@@ -11,7 +11,7 @@ namespace WCell.RealmServer.AI
 	/// <summary>
 	/// Collection representing threat values of an NPC against its foes
 	/// </summary>
-	public class ThreatCollection
+	public class ThreatCollection : IEnumerable<AggressorPair>
 	{
 		/// <summary>
 		/// Percentage of the current highest threat to become the new one.
@@ -313,5 +313,15 @@ namespace WCell.RealmServer.AI
 			m_taunter = null;
 		}
 		#endregion
+
+		public IEnumerator<AggressorPair> GetEnumerator()
+		{
+			return AggressorPairs.GetEnumerator();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
 	}
 }

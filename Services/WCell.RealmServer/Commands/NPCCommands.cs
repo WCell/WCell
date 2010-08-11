@@ -58,6 +58,12 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
+				string destName = null;
+				if (mod.Contains("d"))
+				{
+					destName = trigger.Text.NextWord();
+				}
+
 				var entryId = trigger.Text.NextEnum(NPCId.End);
 				if (entryId == NPCId.End)
 				{
@@ -83,9 +89,8 @@ namespace WCell.RealmServer.Commands
 					{
 						NPC newNpc;
 						IWorldLocation dest;
-						if (mod.Contains("d"))
+						if (!string.IsNullOrEmpty(destName))
 						{
-							var destName = trigger.Text.NextWord();
 							dest = WorldLocationMgr.Get(destName);
 							if (dest == null)
 							{
@@ -107,7 +112,10 @@ namespace WCell.RealmServer.Commands
 						{
 							newNpc = entry.Create();
 							name = newNpc.Name;
-							newNpc.Zone = trigger.Args.Target.Zone;
+							if (dest is IWorldZoneLocation)
+							{
+								newNpc.Zone = dest.Region.GetZone(((IWorldZoneLocation)dest).ZoneId);
+							}
 							if (mod.Contains("i"))
 							{
 								newNpc.Brain.DefaultState = BrainState.Idle;
@@ -398,7 +406,7 @@ namespace WCell.RealmServer.Commands
 		{
 			Init("Respawn");
 			EnglishParamInfo = "[<radius>]";
-			EnglishDescription = "Respawns all NPCs in the area. Radius by default = 50";
+			EnglishDescription = "Respawns all NPCs in the area. Default Radius = 50";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)

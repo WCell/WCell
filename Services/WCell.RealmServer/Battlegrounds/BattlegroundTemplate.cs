@@ -1,5 +1,6 @@
 using WCell.Constants;
 using WCell.RealmServer.Global;
+using WCell.Util;
 using WCell.Util.Data;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
@@ -82,7 +83,7 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
-            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId)) + 1];
+            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId))];
 
             foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
             {
@@ -101,8 +102,15 @@ namespace WCell.RealmServer.Battlegrounds
 
         public int GetBracketIdForLevel(int level)
         {
-            var diff = Difficulties.First(entry => (level >= entry.minLevel && level <= entry.maxLevel));
-            return diff.bracketId; 
+            var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+			if (diff != null)
+			{
+				return diff.bracketId;
+			}
+			else
+			{
+				return -1;
+			}
         }
 
 		private void CreateQueues()
@@ -110,7 +118,10 @@ namespace WCell.RealmServer.Battlegrounds
             Queues = new GlobalBattlegroundQueue[Difficulties.Length];
             foreach (var entry in Difficulties)
             {
-                    AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+				if (entry != null)
+				{
+					AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
+				}
             }
 		}
 
@@ -136,7 +147,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <returns>the appropriate queue for the given character level</returns>
 		public GlobalBattlegroundQueue GetQueue(int level)
 		{
-            return Queues[GetBracketIdForLevel(level)];
+            return Queues.Get((uint)GetBracketIdForLevel(level));
 		}
 
 		#region Enqueue

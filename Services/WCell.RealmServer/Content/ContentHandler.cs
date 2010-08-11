@@ -79,9 +79,9 @@ namespace WCell.RealmServer.Content
 			LightDBMapper mapper;
 			if (!s_mappersByType.TryGetValue(t, out mapper))
 			{
-				throw new Exception(
-					"DataHolder Type was not registered - Make sure it is defined in the XML schema. If the Type is not in the Core, call ContentHandler.Initialize(Assembly) on its Assembly first: " +
-					t.FullName);
+				throw new Exception(string.Format(
+					"DataHolder Type \"{0}\" was not registered - Make sure that it's XML definition was defined and associated correctly. " +
+					"If the Type is not in the Core, call ContentHandler.Initialize(Assembly) on its Assembly first.", t.FullName));
 			}
 			return mapper;
 		}

@@ -120,12 +120,12 @@ namespace WCell.RealmServer.Commands
 					}
 				}
 
-				var delay = Character.DefaultLogoutDelay;
+				var delay = Character.DefaultLogoutDelayMillis;
 
 				// check for different delay
 				if (mod.Contains("d"))
 				{
-					delay = trigger.Text.NextFloat(delay);
+					delay = trigger.Text.NextInt(delay) * 1000;
 				}
 
 				// optional reason

@@ -222,7 +222,7 @@ namespace WCell.RealmServer.Handlers
 					{
 						chr.Region.AddMessage(new Message(() =>
 						{
-							if (!chr.IsLoggingOut)
+							if (!chr.IsInContext)
 							{
 								// Character was removed in the meantime -> Login again
 								// enqueue task in IO-Queue to sync with Character.Save()
@@ -278,6 +278,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
+				Character chr = null;
 				try
 				{
 					var evt = BeforeLogin;
@@ -289,7 +290,7 @@ namespace WCell.RealmServer.Handlers
 							throw new ArgumentNullException("OnBeforeLogin returned null");
 						}
 					}
-					var chr = record.CreateCharacter();
+					chr = record.CreateCharacter();
 					chr.Create(acc, record, client);
 					chr.LoadAndLogin();
 
@@ -306,6 +307,12 @@ namespace WCell.RealmServer.Handlers
 				catch (Exception ex)
 				{
 					LogUtil.ErrorException(ex, "Failed to load Character from Record: " + record);
+					if (chr != null)
+					{
+						// Force client to relog
+						chr.Dispose();
+						client.Disconnect();
+					}
 				}
 			}
 		}

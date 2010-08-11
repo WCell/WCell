@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
@@ -12,6 +13,7 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Vendors;
@@ -26,11 +28,11 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.Items;
-using NLog;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Constants.World;
 using WCell.Constants.Updates;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -40,10 +42,8 @@ namespace WCell.RealmServer.NPCs
 	/// NPC Entry
 	/// </summary>
 	[DataHolder]
-	public partial class NPCEntry : IQuestHolderEntry, IDataHolder
+	public partial class NPCEntry : IQuestHolderEntry, INPCDataHolder
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public uint Id
 		{
 			get;
@@ -169,7 +169,7 @@ namespace WCell.RealmServer.NPCs
 
 		public InvisType InvisibilityType;
 
-        public UnitExtraFlags ExtraFlags;
+		public UnitExtraFlags ExtraFlags;
 
 		public MovementType MovementType;
 
@@ -206,9 +206,20 @@ namespace WCell.RealmServer.NPCs
 
 		public RaceId RaceId;
 
-		public EmoteType EmoteState;
+		// addon data
+		public NPCAddonData AddonData
+		{
+			get;
+			set;
+		}
 
 		private GossipMenu m_DefaultGossip;
+
+		[NotPersistent]
+		public NPCEntry Entry
+		{
+			get { return this; }
+		}
 
 		[NotPersistent]
 		public bool GeneratesXp;
@@ -246,9 +257,6 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		[NotPersistent]
 		public Spell InteractionSpell;
-
-		[NotPersistent]
-		public readonly List<Spell> Auras = new List<Spell>();
 
 		[Persistent(ItemConstants.MaxResCount)]
 		public int[] Resistances = new int[ItemConstants.MaxResCount];
@@ -385,6 +393,32 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public CreatureFamily Family;
 
+		[NotPersistent]
+		public PetLevelStatInfo[] PetLevelStatInfos;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public PetLevelStatInfo GetPetLevelStatInfo(int level)
+		{
+			if (PetLevelStatInfos == null)
+			{
+				//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+				// info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				return null;
+			}
+			else
+			{
+				var info = PetLevelStatInfos.Get(level);
+				if (info == null)
+				{
+					//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+					//info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				}
+				return info;
+			}
+		}
+
 		#region Spells
 		/// <summary>
 		/// Usable Spells to be casted by Mobs of this Type
@@ -464,25 +498,8 @@ namespace WCell.RealmServer.NPCs
 
 		private void OnSpellAdded(Spell spell)
 		{
-			if (spell.CooldownTime == 0)
-			{
-				// Quick fix:
-				spell.CooldownTime = 10000;
-			}
 		}
 
-		public void AddAura(SpellId spellId)
-		{
-			var spell = SpellHandler.Get(spellId);
-			if (spell == null)
-			{
-				log.Warn("Tried to add invalid Aura-Spell \"{0}\" to NPCEntry: {1}", spellId, this);
-			}
-			else
-			{
-				Auras.Add(spell);
-			}
-		}
 		#endregion
 
 		#region Spawns
@@ -617,7 +634,7 @@ namespace WCell.RealmServer.NPCs
 		/// The default decay delay in seconds.
 		/// </summary>
 		[NotPersistent]
-		public float DefaultDecayDelay;
+		public int DefaultDecayDelayMillis;
 
 		[NotPersistent]
 		public ResolvedLootItemList SkinningLoot;
@@ -638,19 +655,19 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// The default delay before removing the NPC after it died when not looted.
 		/// </summary>
-		float _DefaultDecayDelay
+		int _DefaultDecayDelayMillis
 		{
 			get
 			{
 				if (Rank == CreatureRank.Normal)
 				{
-					return NPCMgr.DecayDelayNormal;
+					return NPCMgr.DecayDelayNormalMillis;
 				}
 				if (Rank == CreatureRank.Rare)
 				{
-					return NPCMgr.DecayDelayRare;
+					return NPCMgr.DecayDelayRareMillis;
 				}
-				return NPCMgr.DecayDelayEpic;
+				return NPCMgr.DecayDelayEpicMillis;
 			}
 		}
 
@@ -718,7 +735,7 @@ namespace WCell.RealmServer.NPCs
 
 			NPCId = (NPCId)Id;
 
-			DefaultDecayDelay = _DefaultDecayDelay;
+			DefaultDecayDelayMillis = _DefaultDecayDelayMillis;
 			Family = NPCMgr.GetFamily(FamilyId);
 
 			if (Type == CreatureType.NotSpecified)
@@ -816,6 +833,11 @@ namespace WCell.RealmServer.NPCs
 				return;
 			}
 
+			if (AddonData != null)
+			{
+				AddonData.InitAddonData(this);
+			}
+
 			if (x < ModelInfos.Length)
 			{
 				Array.Resize(ref ModelInfos, x);
@@ -855,7 +877,7 @@ namespace WCell.RealmServer.NPCs
 
 		public bool IsExoticPet
 		{
-            get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
+			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
 		}
 
 		#region Creators
@@ -937,24 +959,6 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		internal void NotifyHitDeliver(IDamageAction action)
-		{
-			var evt = HitDelivered;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
-
-		internal void NotifyHitReceive(IDamageAction action)
-		{
-			var evt = HitReceived;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
-
 		internal bool NotifyBeforeDeath(NPC npc)
 		{
 			var evt = BeforeDeath;
@@ -968,6 +972,15 @@ namespace WCell.RealmServer.NPCs
 		internal void NotifyDied(NPC npc)
 		{
 			var evt = Died;
+			if (evt != null)
+			{
+				evt(npc);
+			}
+		}
+
+		internal void NotifyLeveledChanged(NPC npc)
+		{
+			var evt = LevelChanged;
 			if (evt != null)
 			{
 				evt(npc);
@@ -1059,11 +1072,19 @@ namespace WCell.RealmServer.NPCs
 									   LootId != 0 ? "Lootable " : "",
 									   SkinLootId != 0 ? "Skinnable " : "",
 									   PickPocketLootId != 0 ? "Pickpocketable" : "");
-			writer.WriteLineNotDefault(Auras.Count, "Auras: " + Auras.ToString(", "));
+			if (AddonData != null)
+			{
+				writer.WriteLineNotDefault(AddonData.MountModelId, "Mount: " + AddonData.MountModelId);
+				writer.WriteLineNotDefault(AddonData.Auras.Count, "Auras: " + AddonData.Auras.ToString(", "));
+			}
 			var spells = Spells;
 			if (spells != null && spells.Count > 0)
 			{
 				writer.WriteLine("Spells: " + Spells.ToString(", "));
+			}
+			if (Equipment != null)
+			{
+				writer.WriteLine("Equipment: {0}", Equipment.ItemIds.Where(id => id != 0).ToString(", "));
 			}
 			writer.WriteLineNotDefault(ExtraA9Flags, "ExtraA9Flags: " + ExtraA9Flags);
 			//if (inclFaction)	

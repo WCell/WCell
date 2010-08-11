@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Misc
 	#endregion
 
 	#region AuraRemovedAction
-	public class AuraRemovedAction : IUnitAction
+	public class AuraAction : IUnitAction
 	{
 		public Unit Attacker
 		{
@@ -301,9 +301,17 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
-		public void IncreaseDamagePercent(int pct)
+		public void ModDamagePercent(int pct)
 		{
-			m_Damage = (m_Damage * pct + 50) / 100;
+			m_Damage += (m_Damage * pct + 50) / 100;
+		}
+
+		/// <summary>
+		/// Returns the given percentage of the applied damage
+		/// </summary>
+		public int GetDamagePercent(int percent)
+		{
+			return (m_Damage * percent + 50) / 100;
 		}
 
 		private int m_Damage;
@@ -477,7 +485,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.RangedHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -485,7 +493,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttack | ProcTriggerFlags.PhysicalAttack;
+					flags |= ProcTriggerFlags.MeleeHit | ProcTriggerFlags.PhysicalAttack;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHit;
@@ -520,7 +528,7 @@ namespace WCell.RealmServer.Misc
 
 				if (IsRangedAttack)
 				{
-					flags |= ProcTriggerFlags.RangedAttackOther;
+					flags |= ProcTriggerFlags.RangedHitOther;
 					if (IsCritical)
 					{
 						//flags |= ProcTriggerFlags.RangedCriticalHit;
@@ -528,7 +536,7 @@ namespace WCell.RealmServer.Misc
 				}
 				else if (IsMeleeAttack)
 				{
-					flags |= ProcTriggerFlags.MeleeAttackOther;
+					flags |= ProcTriggerFlags.MeleeHitOther;
 					if (IsCritical)
 					{
 						flags |= ProcTriggerFlags.MeleeCriticalHitOther;
@@ -558,7 +566,7 @@ namespace WCell.RealmServer.Misc
 				Evade();
 				return false;
 			}
-			else if (Victim.IsImmune(DamageSchool.Physical) || Victim.IsInvulnerable)
+			else if (Victim.IsImmune(UsedSchool) || Victim.IsInvulnerable)
 			{
 				MissImmune();
 				return false;
@@ -640,8 +648,7 @@ namespace WCell.RealmServer.Misc
 					}
 					else
 					{
-						var blockchance = CalcBlockChance();
-						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - blockchance))
+						if (CanBlockParry && random > (hitChance - dodgeParry - glancingblow - critical - crushingblow - CalcBlockChance()))
 						{
 							// block
 							Block();
@@ -711,7 +718,7 @@ namespace WCell.RealmServer.Misc
 
 		public void StrikeCrushing()
 		{
-			Damage = (Damage * 1.5f).RoundInt();
+			Damage = (Damage * 10 + 5) / 15;		// == Damage * 1.5f
 			HitFlags = HitFlags.NormalSwingAnim | HitFlags.Crushing;
 			VictimState = VictimState.Wound;
 			Blocked = 0;
@@ -732,7 +739,7 @@ namespace WCell.RealmServer.Misc
 
 		public void SetCriticalDamage()
 		{
-			Damage = Attacker.CalcCritDamage(Damage, Victim, SpellEffect).RoundInt();
+			Damage = MathUtil.RoundInt(Attacker.CalcCritDamage(Damage, Victim, SpellEffect));
 		}
 
 		public void StrikeGlancing()
@@ -799,27 +806,38 @@ namespace WCell.RealmServer.Misc
 					ResistPct = 0;
 				}
 
-				Victim.OnDefend(this);
-				Attacker.OnAttack(this);
-
-				Resisted = (ResistPct * Damage / 100f).RoundInt();
-				Absorbed = Victim.Absorb(UsedSchool, Damage);
-				if (Absorbed > 0)
+				Victim.DeathPrevention++;
+				Attacker.DeathPrevention++;
+				try
 				{
-					HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					// add mods and call events
+					AddDamageMods();
+					Victim.OnDefend(this);
+					Attacker.OnAttack(this);
+
+					Resisted = MathUtil.RoundInt(ResistPct*Damage/100f);
+					if (Absorbed > 0)
+					{
+						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
+					}
+					else
+					{
+						Absorbed = Resisted = 0;
+					}
+
+					if (Weapon == Attacker.OffHandWeapon)
+					{
+						HitFlags |= HitFlags.LeftSwing;
+					}
+
+					Victim.DoRawDamage(this);
+				}
+				finally
+				{
+					Victim.DeathPrevention--;
+					Attacker.DeathPrevention--;
 				}
 			}
-			else
-			{
-				Absorbed = Resisted = 0;
-			}
-
-			if (Weapon == Attacker.OffHandWeapon)
-			{
-				HitFlags |= HitFlags.LeftSwing;
-			}
-
-			Victim.DoRawDamage(this);
 
 			//if ()
 			//CombatHandler.SendMeleeDamage(attacker, this, schools, hitInfo, (uint)totalDamage,
@@ -833,6 +851,7 @@ namespace WCell.RealmServer.Misc
 				CombatHandler.SendAttackerStateUpdate(this);
 			}
 		}
+
 		#endregion
 
 		#region Chances
@@ -1086,7 +1105,7 @@ namespace WCell.RealmServer.Misc
 				return 0;
 			}
 
-			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, SpellEffect.Spell, Weapon) * 100;
+			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, Spell, Weapon) * 100;
 
 			if (Weapon != null)
 			{
@@ -1218,6 +1237,51 @@ namespace WCell.RealmServer.Misc
 			return chance;
 		}
 
+		#endregion
+
+		#region Damages
+		/// <summary>
+		/// Adds all damage boni and mali
+		/// </summary>
+		internal void AddDamageMods()
+		{
+			if (Attacker != null)
+			{
+				if (!IsDot)
+				{
+					// does not add to dot
+					Damage = Attacker.GetTotalDamageDoneMod(UsedSchool, Damage, Spell);
+				}
+				else if (SpellEffect != null)
+				{
+					// periodic damage mod
+					Damage = Attacker.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, Spell, Damage);
+				}
+			}
+		}
+		#endregion
+
+		#region Absorb
+		public int Absorb(int absorbAmount, DamageSchoolMask schools)
+		{
+			if (absorbAmount <= 0)
+			{
+				return 0;
+			}
+
+			if (SpellEffect != null && Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
+			{
+				return 0 ;
+			}
+
+			if (schools.HasAnyFlag(UsedSchool))
+			{
+				var value = Math.Min(Damage, absorbAmount);
+				absorbAmount -= value;
+				Absorbed += value;
+			}
+			return absorbAmount;
+		}
 		#endregion
 
 		internal void Reset(Unit attacker, Unit target, IWeapon weapon)

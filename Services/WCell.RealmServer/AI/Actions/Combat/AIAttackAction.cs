@@ -120,14 +120,15 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		{
 			var owner = (NPC)m_owner;
 
+			var spells = owner.NPCSpells;
 			if (owner.CheckTicks(SpellShuffleTicks))
 			{
-				owner.NPCSpells.ShuffleReadySpells();
+				spells.ShuffleReadySpells();
 			}
 
-			for (var i = 0; i < owner.NPCSpells.ReadySpells.Count; i++)
+			for (var i = 0; i < spells.ReadySpells.Count; i++)
 			{
-				var spell = owner.NPCSpells.ReadySpells[i];
+				var spell = spells.ReadySpells[i];
 
 				if (spell.CanCast(owner))
 				{

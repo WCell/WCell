@@ -194,12 +194,16 @@
     <Compile Include="Commands\Extensions.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />
+    <Compile Include="Entities\NPC.Mechanics.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Formulas\PowerFormulas.cs" />
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
     <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
+    <Compile Include="NPCs\INPCDataHolder.cs" />
+    <Compile Include="NPCs\NPCAddonData.cs" />
+    <Compile Include="NPCs\Pets\PetLevelStatInfo.cs" />
     <Compile Include="Quests\QuestRewRep.cs" />
     <Compile Include="RealmAccount.cs" />
     <Compile Include="Network\AuthQueue.cs" />
@@ -243,11 +247,15 @@
     <Compile Include="Res\Resources.cs" />
     <Compile Include="Res\WCell.RealmServer.Designer.cs" />
     <Compile Include="Spells\Auras\DamagePctAmplifierHandler.cs" />
-    <Compile Include="Spells\Auras\Misc\AddExtraEffectsHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\AddEffectToPassiveAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AttackModifierHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnAutoAttackHandler.cs" />
     <Compile Include="Spells\Auras\Misc\CritCreatureMaskHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ItemEquipmentEventAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\LifeLeechPercentAuraHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ProcEnergizeHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ProcTriggerSpellOnCritHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModAllRuneCooldownsPercentHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ToggleAuraHandler.cs" />
     <Compile Include="Spells\Auras\Misc\TriggerDelayedEffectHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModMeleeAttackPowerByPercentOfStatHandler.cs" />
@@ -279,9 +287,13 @@
     <Compile Include="Spells\Auras\Passive\Unattackable.cs" />
     <Compile Include="Spells\Auras\PlayerAuraCollection.cs" />
     <Compile Include="Spells\Effects\CreateManaGemEffectHandler.cs" />
+    <Compile Include="Spells\Effects\Custom\RemoveCooldownEffectHandler.cs" />
+    <Compile Include="Spells\Effects\RemoveImpairingEffects.cs" />
     <Compile Include="Spells\InvalidSpellDataException.cs" />
     <Compile Include="Spells\RuneCostEntry.cs" />
+    <Compile Include="Spells\RuneSet.cs" />
     <Compile Include="Spells\SpellException.cs" />
+    <Compile Include="Spells\SpellExtensions.cs" />
     <Compile Include="Stats\RealmStatsExtended.cs" />
     <Compile Include="Stats\RealmStats.cs" />
     <Compile Include="Global\World.cs" />
@@ -296,6 +308,8 @@
     <Compile Include="Network\RealmClient.cs" />
     <Compile Include="RealmServer.cs" />
     <Compile Include="Entities\Unit.cs" />
+    <Compile Include="Trade\TradeMgr.cs" />
+    <Compile Include="Trade\TradeWindow.cs" />
     <Compile Include="UpdateFields\UpdateMask.cs" />
     <Compile Include="UpdateFields\UpdatePacket.cs" />
     <Compile Include="UpdateFields\UpdateFieldHandler.cs" />
@@ -509,7 +523,7 @@
     <Compile Include="Misc\SummonRequest.cs" />
     <Compile Include="NPCs\Auctioneer\AuctionSearch.cs" />
     <Compile Include="NPCs\CreatureFamily.cs" />
-    <Compile Include="Misc\Trade.cs" />
+    <Compile Include="Trade\Trade.cs" />
     <Compile Include="Network\CompressedPacket.cs" />
     <Compile Include="NPCs\Figurines\Figurine.cs" />
     <Compile Include="NPCs\Figurines\WaypointFigurine.cs" />
@@ -707,7 +721,7 @@
     <Compile Include="Lang\ArrayLocalizer.cs" />
     <Compile Include="Formulas\RestGenerator.cs" />
     <Compile Include="Misc\ExtraInfo.cs" />
-    <Compile Include="NPCs\PetMgr.cs" />
+    <Compile Include="NPCs\Pets\PetMgr.cs" />
     <Compile Include="NPCs\Pets\PetSpell.cs" />
     <Compile Include="NPCs\Vendors\VendorEntry.cs" />
     <Compile Include="Paths\PathVertex.cs" />
@@ -1198,7 +1212,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Spells\Effects\Custom\Cannibalize.cs" />
-    <Compile Include="Spells\Effects\NotImplementedEffect.cs" />
+    <Compile Include="Spells\Effects\NotImplementedEffectHandler.cs" />
     <Compile Include="Spells\Effects\UnusedEffectHandler.cs" />
     <Compile Include="Spells\NPCSpellCollection.cs" />
     <Compile Include="Spells\NPCSpell.cs" />

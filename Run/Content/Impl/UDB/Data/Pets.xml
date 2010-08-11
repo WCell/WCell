@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="PetLevelStatInfo">
+    <DefaultTable>pet_levelstats</DefaultTable>
+
+    <Flat Name="EntryId" Column="creature_entry" />
+    <Flat Name="Level" Column="level" />
+    <Flat Name="Health" Column="hp" />
+    <Flat Name="Mana" Column="mana" />
+    <Flat Name="Armor" Column="armor" />
+    <FlatArray Name="BaseStats">
+      <Column Name="str" />
+      <Column Name="agi" />
+      <Column Name="sta" />
+      <Column Name="inte" />
+      <Column Name="spi" />
+    </FlatArray>
+
+  </DataHolder>
+</DataHolders>

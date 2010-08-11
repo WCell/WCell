@@ -98,8 +98,13 @@
       <Flat Name="RequiredSpellId" Column="trainer_spell" />
     </Nested>
 
-    <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
-    <Flat Name="Emote" Table="creature_template_addon" Column="emote" />
+    <Nested Name="AddonData">
+      <Flat Name="AuraIdStr" Table="creature_template_addon" Column="auras" />
+      <Flat Name="Bytes" Table="creature_template_addon" Column="bytes1" />
+      <Flat Name="Bytes2" Table="creature_template_addon" Column="bytes2" />
+      <Flat Name="EmoteState" Table="creature_template_addon" Column="emote" />
+      <Flat Name="MountModelId" Table="creature_template_addon" Column="mount" />
+    </Nested>
   </DataHolder>
   <!--not in UDB
     <Flat Name="IsIdle" Column="" />

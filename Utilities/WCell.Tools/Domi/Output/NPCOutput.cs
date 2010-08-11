@@ -101,19 +101,23 @@ namespace WCell.Tools.Domi.Output
 
 				foreach (var spawn in set.Values)
 				{
-					uint byteSet = ((bytes0 ? spawn.Bytes : spawn.Bytes2) >> (no*8)) & 0xff;
-					if (byteSet != 0)
+					var data = spawn.AddonData ?? spawn.Entry.AddonData;
+					if (data != null)
 					{
-						string str;
-						if (enumType != null)
+						uint byteSet = ((bytes0 ? data.Bytes : data.Bytes2) >> (no * 8)) & 0xff;
+						if (byteSet != 0)
 						{
-							var obj = Convert.ChangeType(byteSet, convertType);
-							str = Enum.Format(enumType, obj, "g");
+							string str;
+							if (enumType != null)
+							{
+								var obj = Convert.ChangeType(byteSet, convertType);
+								str = Enum.Format(enumType, obj, "g");
+							}
+							else
+								str = byteSet.ToString();
+							writer.WriteLine("Spawn #{0} (Entry:{1}, {2}): {3}", spawn.SpawnId, spawn.Entry.Id, spawn.Entry.DefaultName, str);
+							//return;
 						}
-						else
-							str = byteSet.ToString();
-						writer.WriteLine("Spawn #{0} (Entry:{1}, {2}): {3}", spawn.SpawnId, spawn.Entry.Id, spawn.Entry.DefaultName, str);
-						//return;
 					}
 				}
 			}

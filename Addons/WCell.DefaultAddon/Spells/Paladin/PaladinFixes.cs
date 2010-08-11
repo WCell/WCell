@@ -21,7 +21,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 		/// </summary>
 		public static readonly SpellLineId[] PaladinAuras = new[]
 		{
-		                                           		SpellLineId.PaladinDevotionAura, SpellLineId.PaladinCrusaderAura,
+			SpellLineId.PaladinDevotionAura, SpellLineId.PaladinCrusaderAura,
 		                                           		SpellLineId.PaladinConcentrationAura,
 		                                           		SpellLineId.PaladinFireResistanceAura,
 		                                           		SpellLineId.PaladinFrostResistanceAura,
@@ -43,13 +43,6 @@ namespace WCell.Addons.Default.Spells.Paladin
 				SpellLineId.PaladinHandOfReckoning,
 				SpellLineId.PaladinHandOfSacrifice,
 				SpellLineId.PaladinHandOfSalvation);
-
-			// Gift of the Naaru: "The amount healed is increased by your spell power or attack power, whichever is higher."
-			SpellLineId.PaladinSecondarySkillGiftOfTheNaaruRacial.Apply(spell =>
-			{
-				var effect = spell.GetEffect(AuraType.PeriodicHeal);
-				effect.AuraEffectHandlerCreator = () => new GiftOfTheNaaruPaladinHandler();
-			});
 		}
 
 		#region Blessings
@@ -84,7 +77,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				// Custom proc (target = the one who is blessed): 
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
 				spell.AddProcHandler(new TriggerSpellProcHandler(
-					ProcTriggerFlags.MeleeAttackOther | ProcTriggerFlags.RangedAttackOther,
+					ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther,
 					ProcHandler.DodgeBlockOrParryValidator,
 					SpellHandler.Get(SpellId.BlessingOfSanctuary)
 					));
@@ -109,7 +102,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			var avengingWrathMarker2 = SpellHandler.AddCustomSpell(61988, "Invul Prevention");
 			avengingWrathMarker2.IsPreventionDebuff = true;				// is prevention debuff
 			avengingWrathMarker2.AddAuraEffect(AuraType.Dummy);			// make Aura
-			avengingWrathMarker2.Attributes |= SpellAttributes.NoVisibleAura | SpellAttributes.UnaffectedByInvulnerability;
+			avengingWrathMarker2.Attributes |= SpellAttributes.InvisibleAura | SpellAttributes.UnaffectedByInvulnerability;
 			avengingWrathMarker2.AttributesExC |= SpellAttributesExC.PersistsThroughDeath;
 			//avengingWrathMarker2.Durations = new Spell.DurationEntry { Min = 180000, Max = 180000 };
 			avengingWrathMarker2.Durations = new Spell.DurationEntry { Min = 120000, Max = 120000 };
@@ -130,6 +123,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 							   SpellId.AvengingWrathMarker, SpellId.Forbearance);
 		}
 
+		#region Holy Shock
 		private static void FixHolyShock()
 		{
 			AddHolyShockSpell(SpellId.PaladinHolyHolyShockRank1, SpellId.ClassSkillHolyShockRank1_2, SpellId.ClassSkillHolyShockRank1);
@@ -143,19 +137,21 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 		static void AddHolyShockSpell(SpellId spellid, SpellId heal, SpellId dmg)
 		{
-			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new HolyShockHandler(cast, effect, heal, dmg); }, spellid);
+			SpellHandler.Apply(spell => { spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator = (cast, effect) => new FriendFoeTriggerSpellHandler(cast, effect, heal, dmg); }, spellid);
 		}
 
-		#region Holy Shock
-		public class HolyShockHandler : SpellEffectHandler
+		/// <summary>
+		/// Triggers a different spell, depending on whether the target is friendly or hostile
+		/// </summary>
+		public class FriendFoeTriggerSpellHandler : SpellEffectHandler
 		{
-			SpellId heal;
-			SpellId dmg;
-			public HolyShockHandler(SpellCast cast, SpellEffect eff, SpellId heal, SpellId dmg)
+			readonly SpellId beneficialSpell;
+			readonly SpellId harmfulSpell;
+			public FriendFoeTriggerSpellHandler(SpellCast cast, SpellEffect eff, SpellId beneficialSpell, SpellId harmfulSpell)
 				: base(cast, eff)
 			{
-				this.heal = heal;
-				this.dmg = dmg;
+				this.beneficialSpell = beneficialSpell;
+				this.harmfulSpell = harmfulSpell;
 			}
 
 			protected override void Apply(WorldObject target)
@@ -165,51 +161,13 @@ namespace WCell.Addons.Default.Spells.Paladin
 				{
 					if (chr.MayAttack(target))
 					{
-						chr.SpellCast.Trigger(dmg, target);
+						chr.SpellCast.Trigger(harmfulSpell, target);
 					}
 					else
 					{
-						chr.SpellCast.Trigger(heal, target);
+						chr.SpellCast.Trigger(beneficialSpell, target);
 					}
 				}
-			}
-		}
-		#endregion
-
-		#region GiftOfTheNaaruPaladinHandler
-		public class GiftOfTheNaaruPaladinHandler : PeriodicHealHandler
-		{
-			private int totalBonus;
-			public GiftOfTheNaaruPaladinHandler()
-			{
-			}
-
-			protected override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
-			{
-				if (target is Character)
-				{
-					var chr = (Character)target;
-					var ap = target.TotalMeleeAP;
-					var sp = chr.GetDamageDoneMod(DamageSchool.Holy);
-					if (ap > sp)
-					{
-						totalBonus = ap;
-					}
-					else
-					{
-						totalBonus = sp;
-					}
-				}
-			}
-
-			protected override void Apply()
-			{
-				var val = totalBonus / (m_aura.TicksLeft + 1);
-				totalBonus -= val;
-
-				val += EffectValue;
-
-				Owner.Heal(val, m_aura.Caster, m_spellEffect);
 			}
 		}
 		#endregion

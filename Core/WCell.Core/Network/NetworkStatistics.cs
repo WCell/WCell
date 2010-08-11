@@ -17,7 +17,7 @@ namespace WCell.Core.Network
 
 		protected NetworkStatistics()
 		{
-			m_consumerTimer = new TimerEntry(0f, 0f, ConsumerCallback);
+			m_consumerTimer = new TimerEntry(ConsumerCallback);
 			m_queuedStats = new SynchronizedQueue<PacketInfo>();
 		}
 
@@ -28,14 +28,14 @@ namespace WCell.Core.Network
 
 		protected abstract void ConsumeStatistics();
 
-		protected virtual void ConsumerCallback(float dt)
+		protected virtual void ConsumerCallback(int dt)
 		{
 			ConsumeStatistics();
 		}
 
 		#region IUpdatable Members
 
-		public void Update(float dt)
+		public void Update(int dt)
 		{
 			m_consumerTimer.Update(dt);
 		}

@@ -33,6 +33,11 @@ namespace WCell.RealmServer.Spells.Auras
 		protected internal SpellEffect m_spellEffect;
 		public int BaseEffectValue;
 
+		/// <summary>
+		/// The value of the underlying SpellEffect that was calculated when
+		/// this Aura was last applied or refreshed (see <see cref="SpellEffect.CalcEffectValue(Unit)"/>).
+		/// The value is multiplied by the StackCount of the Aura (<see cref="Aura.StackCount"/>).
+		/// </summary>
 		public int EffectValue
 		{
 			get
@@ -65,15 +70,15 @@ namespace WCell.RealmServer.Spells.Auras
 			get { return EffectValue >= 0; }
 		}
 
-		private bool m_IsActive;
+		private bool m_IsActivated;
 
-		public bool IsActive
+		public bool IsActivated
 		{
-			get { return m_IsActive; }
+			get { return m_IsActivated; }
 			internal set
 			{
-				if (m_IsActive == value) return;
-				if ((m_IsActive = value))
+				if (m_IsActivated == value) return;
+				if ((m_IsActivated = value))
 				{
 					Apply();
 				}
@@ -98,11 +103,18 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// The SpellEffect which triggered this AuraEffect
+		/// The SpellEffect which created this AuraEffect OR:
+		/// If the Aura was triggered by another Spell and the original SpellEffect had OverrideEffectValue = true,
+		/// this is the SpellEffect that triggered the creation of the Aura (through TriggerSpell, ProcTriggerSpell etc).
 		/// </summary>
 		public SpellEffect SpellEffect
 		{
 			get { return m_spellEffect; }
+		}
+
+		public void UpdateEffectValue()
+		{
+			BaseEffectValue = m_spellEffect.CalcEffectValue(m_aura.CasterUnit);
 		}
 
 		/// <summary>		
@@ -118,6 +130,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void DoApply()
 		{
+			if (m_IsActivated && !m_spellEffect.IsPeriodic) return;
+			m_IsActivated = true;
 			Apply();
 		}
 
@@ -126,6 +140,8 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		internal void DoRemove(bool cancelled)
 		{
+			if (!m_IsActivated) return;
+			m_IsActivated = false;
 			Remove(cancelled);
 		}
 
@@ -137,7 +153,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Is called by Aura to remove the effect from its holder
+		/// Removes the effect from its holder
 		/// </summary>
 		protected virtual void Remove(bool cancelled)
 		{
@@ -152,9 +168,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Triggers a proc on this EffectHandler with the given target.
+		/// Called when a matching proc event triggers this proc handler with the given
+		/// triggerer and action.
 		/// </summary>
-		/// <param name="triggerer"></param>
 		public virtual void OnProc(Unit triggerer, IUnitAction action)
 		{
 		}

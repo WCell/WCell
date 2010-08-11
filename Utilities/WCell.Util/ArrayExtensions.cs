@@ -26,6 +26,18 @@ namespace WCell.Util
 		/// <summary>
 		/// Returns the entry in this array at the given index, or null if the index is out of bounds
 		/// </summary>
+		public static T Get<T>(this T[] arr, int index)
+		{
+			if (index >= arr.Length || index < 0)
+			{
+				return default(T);
+			}
+			return arr[index];
+		}
+
+		/// <summary>
+		/// Returns the entry in this array at the given index, or null if the index is out of bounds
+		/// </summary>
 		public static T Get<T>(this T[] arr, uint index)
 		{
 			if (index >= arr.Length)
@@ -176,6 +188,17 @@ namespace WCell.Util
 			}
 			arr[index] = val;
 			return index;
+		}
+
+		/// <summary>
+		/// Appends the given values to the end of arr
+		/// </summary>
+		/// <returns>The index at which it was added</returns>
+		public static void Concat<T>(ref T[] arr, T[] values)
+		{
+			var oldLen = arr.Length;
+			Array.Resize(ref arr, oldLen + values.Length);
+			Array.Copy(values, 0, arr, oldLen, values.Length);
 		}
 
 		/// <summary>

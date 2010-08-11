@@ -75,8 +75,8 @@
     <PrimaryColumn Name="entry"/>
   </Table>
 
-  <Table Name="creature_template_addon">
-    <PrimaryColumn Name="entry"/>
+  <Table Name="creature_template_addon" MainDataHolder="NPCEntry">
+    <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>
 
   <Table Name="disenchant_loot_template">

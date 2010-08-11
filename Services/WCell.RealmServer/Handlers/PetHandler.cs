@@ -40,8 +40,8 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_REQUEST_PET_INFO)]
 		public static void HandleInfoRequest(IRealmClient client, RealmPacketIn packet)
 		{
-			log.Warn("Client {0} sent CMSG_REQUEST_PET_INFO", client);
-			// TODO: CMSG_REQUEST_PET_INFO
+			// seems useless?
+			// log.Warn("Client {0} sent CMSG_REQUEST_PET_INFO", client);
 		}
 
 
@@ -259,12 +259,24 @@ namespace WCell.RealmServer.Handlers
 
 
 		#region Spells
-		public static void SendPetGUIDs(IPacketReceiver receiver)
+		public static void SendPetGUIDs(Character chr)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 8))
+			if (chr.ActivePet == null)
 			{
-				packet.Write(0);
-				receiver.Send(packet);
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 12))
+				{
+					packet.Write(0); // list count
+					chr.Send(packet);
+				}
+			}
+			else
+			{
+				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_GUIDS, 12))
+				{
+					packet.Write(1); // list count
+					packet.Write(chr.ActivePet.EntityId);
+					chr.Send(packet);
+				}
 			}
 		}
 
@@ -286,7 +298,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(pet.EntityId);
 				packet.Write((ushort)pet.Entry.FamilyId);
 				//packet.Write((ushort)0);
-				packet.Write((int)(pet.RemainingDecayDelay * 1000));			// duration
+				packet.Write(pet.RemainingDecayDelayMillis);			// duration
 				packet.Write((byte)record.AttackMode);
 				packet.Write((byte)currentAction);
 				packet.Write((ushort)record.Flags);
@@ -569,12 +581,15 @@ namespace WCell.RealmServer.Handlers
 		{
 			var petGuid = packet.ReadEntityId();
 			var talentId = (TalentId)packet.ReadInt32();
-			var rank = packet.ReadInt32(); // 0 based rank
+			var rank = packet.ReadInt32();						// 0 based rank
 
 			var chr = client.ActiveCharacter;
 			var pet = chr.Region.GetObject(petGuid) as NPC;
 
-			PetMgr.PetLearnTalent(chr, pet, talentId, rank + 1);
+			if (pet != null)
+			{
+				PetMgr.LearnPetTalent(chr, pet, talentId, rank + 1);
+			}
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_UNLEARN)]
@@ -584,8 +599,11 @@ namespace WCell.RealmServer.Handlers
 
 			var chr = client.ActiveCharacter;
 			var pet = chr.Region.GetObject(petGuid) as NPC;
-
-			PetMgr.ResetPetTalents(chr, pet);
+			
+			if (pet != null)
+			{
+				PetMgr.ResetPetTalents(chr, pet);
+			}
 		}
 
 		public static void SendPetLearnedSpell(IPacketReceiver receiver, SpellId spellId)

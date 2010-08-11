@@ -12,6 +12,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Database;
+using WCell.RealmServer.Achievement;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Talents;
 using WCell.Util.Threading;
@@ -581,7 +582,7 @@ namespace WCell.RealmServer.Database
 
 		#endregion
 
-		#region Spells
+		#region Spells & Auras & Runes
 
 		/// <summary>
 		/// Adds the given Spell and returns the newly created SpellRecord object.
@@ -651,15 +652,29 @@ namespace WCell.RealmServer.Database
 			}
 		}
 
+		public IDictionary<uint, SpellRecord> Spells
+		{
+			get;
+			private set;
+		}
+
 		public AuraRecord[] LoadAuraRecords()
 		{
 			return AuraRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
 		}
 
-		public IDictionary<uint, SpellRecord> Spells
+		[Property]
+		public int RuneSetMask
 		{
 			get;
-			private set;
+			set;
+		}
+
+		[Property]
+		public float[] RuneCooldowns
+		{
+			get;
+			set;
 		}
 		#endregion
 
@@ -919,7 +934,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Action-bar information etc for summoned pets
+		/// Amount of action-bar information etc for summoned pets
 		/// </summary>
 		[Property]
 		public int PetSummonedCount
@@ -929,7 +944,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Hunter pets
+		/// Amount of Hunter pets
 		/// </summary>
 		[Property]
 		public int PetCount
@@ -1187,6 +1202,8 @@ namespace WCell.RealmServer.Database
 				RelationMgr.Instance.RemoveRelations(charId);
 				InstanceMgr.RemoveLog(charId);
 				GroupMgr.Instance.RemoveOfflineCharacter(charId);
+				AchievementRecord.DeleteAll("CharacterId = " + charId);
+				AchievementProgressRecord.DeleteAll("CharacterId = " + charId);
 
 				return true;
 			}
@@ -1199,6 +1216,29 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
+		#region Setup
+		public void SetupNewRecord(Archetype archetype)
+		{
+			Race = archetype.Race.Id;
+			Class = archetype.Class.Id;
+			Level = Math.Max(archetype.Class.StartLevel, BaseClass.DefaultStartLevel);
+			PositionX = archetype.StartPosition.X;
+			PositionY = archetype.StartPosition.Y;
+			PositionZ = archetype.StartPosition.Z;
+			Orientation = archetype.StartOrientation;
+			RegionId = archetype.StartMapId;
+			Zone = archetype.StartZoneId;
+			TotalPlayTime = 0;
+			LevelPlayTime = 0;
+			TutorialFlags = new byte[32];
+			WatchedFaction = -1;
+
+			DisplayId = archetype.Race.GetDisplayId(Gender);
+			ActionButtons = (byte[])archetype.ActionButtons.Clone();
+		}
+		#endregion
+
+		#region Find & Get
 		/// <summary>
 		/// Gets the characters for the given account.
 		/// </summary>
@@ -1222,31 +1262,6 @@ namespace WCell.RealmServer.Database
 				chrs.Reverse();
 				return chrs;
 			}
-		}
-
-		public override string ToString()
-		{
-			return string.Format("{0} (Id: {1}, Account: {2})", Name, EntityLowId, AccountId);
-		}
-
-		public void SetupNewRecord(Archetype archetype)
-		{
-			Race = archetype.Race.Id;
-			Class = archetype.Class.Id;
-			Level = Math.Max(archetype.Class.StartLevel, BaseClass.DefaultStartLevel);
-			PositionX = archetype.StartPosition.X;
-			PositionY = archetype.StartPosition.Y;
-			PositionZ = archetype.StartPosition.Z;
-			Orientation = archetype.StartOrientation;
-			RegionId = archetype.StartMapId;
-			Zone = archetype.StartZoneId;
-			TotalPlayTime = 0;
-			LevelPlayTime = 0;
-			TutorialFlags = new byte[32];
-			WatchedFaction = -1;
-
-			DisplayId = archetype.Race.GetDisplayId(Gender);
-			ActionButtons = (byte[])archetype.ActionButtons.Clone();
 		}
 
 		public static CharacterRecord GetRecord(uint id)
@@ -1284,6 +1299,12 @@ namespace WCell.RealmServer.Database
 				charId);
 			var query = new ScalarQuery<int>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
 			return (uint)query.Execute();
+		}
+		#endregion
+
+		public override string ToString()
+		{
+			return string.Format("{0} (Id: {1}, Account: {2})", Name, EntityLowId, AccountId);
 		}
 	}
 }

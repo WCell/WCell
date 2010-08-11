@@ -171,7 +171,6 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Spell", "Spells", "Sp");
-			EnglishParamInfo = "";
 			Description = new TranslatableItem(RealmLangKey.CmdSpellDescription);
 		}
 
@@ -275,14 +274,6 @@ namespace WCell.RealmServer.Commands
 				{
 					chr.PlayerSpells.SatisfyConstraintsFor(spell);
 				}
-				else
-				{
-					// Profession
-					if (spell.Skill != null && chr != null)
-					{
-						chr.Skills.TryLearn(spell.SkillId);
-					}
-				}
 
 				if (spell.Talent != null && chr != null)
 				{
@@ -312,30 +303,32 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var id = trigger.Text.NextEnum(SpellId.None);
-				var spell = SpellHandler.Get(id);
+				var spells = SpellGetCommand.RetrieveSpells(trigger);
 
-				if (spell != null)
+				if (spells.Length > 0)
 				{
-					if (trigger.Args.Target.HasSpells)
+					foreach (var spell in spells)
 					{
-						var chr = trigger.Args.Target as Character;
-						if (spell.Talent != null && chr != null)
+						if (trigger.Args.Target.HasSpells)
 						{
-							// talent
-							chr.Talents.Remove(spell.Talent.Id);
+							var chr = trigger.Args.Target as Character;
+							if (spell.Talent != null && chr != null)
+							{
+								// talent
+								chr.Talents.Remove(spell.Talent.Id);
+							}
+							else
+							{
+								// normal spell
+								trigger.Args.Target.EnsureSpells().Remove(spell);
+							}
+							trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 						}
-						else
-						{
-							// normal spell
-							trigger.Args.Target.EnsureSpells().Remove(spell);
-						}
-						trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 					}
 				}
 				else
 				{
-					trigger.Reply(RealmLangKey.CmdSpellRemoveError, id);
+					trigger.Reply(RealmLangKey.CmdSpellRemoveError);
 				}
 			}
 		}
@@ -384,14 +377,15 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var target = trigger.Args.Target;
-				var id = trigger.Text.NextEnum(SpellId.None);
-				var spell = SpellHandler.Get(id);
+				var spells = SpellGetCommand.RetrieveSpells(trigger);
 
-				if (spell != null)
+				if (spells.Length > 0)
 				{
-					target.SpellCast.TriggerSelf(spell);
-					trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
+					foreach (var spell in spells)
+					{
+						trigger.Args.Target.SpellCast.TriggerSelf(spell);
+						trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
+					}
 				}
 				else
 				{
@@ -404,6 +398,29 @@ namespace WCell.RealmServer.Commands
 		public override ObjectTypeCustom TargetTypes
 		{
 			get { return ObjectTypeCustom.Unit; }
+		}
+	}
+
+	public class PushbackCommand : RealmServerCommand
+	{
+		protected override void Initialize()
+		{
+			Init("Pushback");
+			ParamInfo = new TranslatableItem(RealmLangKey.CmdPushbackParams);
+			Description = new TranslatableItem(RealmLangKey.CmdPushbackDescription);
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var target = trigger.Args.Target;
+			if (target == null)
+			{
+				trigger.Reply(RealmLangKey.NoValidTarget);
+			}
+			else
+			{
+				target.SpellCast.Pushback(trigger.Text.NextInt(1000));
+			}
 		}
 	}
 

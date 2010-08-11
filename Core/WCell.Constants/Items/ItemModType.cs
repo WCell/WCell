@@ -6,7 +6,13 @@ namespace WCell.Constants.Items
 	public enum ItemModType
 	{
 		None = -1,
+		/// <summary>
+		/// Unused?
+		/// </summary>
 		Power = 0,
+		/// <summary>
+		/// Unused?
+		/// </summary>
 		Health = 1,
 		/// <summary>
 		/// Unused

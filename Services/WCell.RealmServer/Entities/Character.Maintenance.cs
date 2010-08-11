@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Entities
 			Type |= ObjectTypes.Player;
 			ChatChannels = new List<ChatChannel>();
 
-			m_logoutTimer = new TimerEntry(0.0f, DefaultLogoutDelay, totalTime => FinishLogout());
+			m_logoutTimer = new TimerEntry(0, DefaultLogoutDelayMillis, totalTime => FinishLogout());
 
 			Account = acc;
 			m_client = client;
@@ -87,9 +87,10 @@ namespace WCell.RealmServer.Entities
 			HairColor = m_record.HairColor;
 			FacialHair = m_record.FacialHair;
 			UnitFlags = UnitFlags.PlayerControlled;
-			XP = m_record.Xp;
+			Experience = m_record.Xp;
 			RestXp = m_record.RestXp;
-			Level = m_record.Level;
+
+			SetInt32(UnitFields.LEVEL, m_record.Level);		// cannot use Level property, since it will trigger certain events that we don't want triggered
 			NextLevelXP = XpGenerator.GetXpForlevel(m_record.Level + 1);
 			MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
 
@@ -125,6 +126,12 @@ namespace WCell.RealmServer.Entities
 			else
 			{
 				m_spells = new PlayerSpellCollection(this);
+			}
+
+			// runes
+			if (((PlayerSpellCollection)m_spells).Runes != null)
+			{
+				((PlayerSpellCollection) m_spells).Runes.InitRunes(this);
 			}
 
 			// factions
@@ -237,6 +244,7 @@ namespace WCell.RealmServer.Entities
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
+					m_achievements.Load();
 					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
@@ -254,8 +262,7 @@ namespace WCell.RealmServer.Entities
 				catch (Exception e)
 				{
 					RealmDBUtil.OnDBError(e);
-					m_client.Disconnect();
-					return;
+					throw new Exception("Failed to load Character " + Name + " for Client: " + Client, e);
 				}
 
 				// existing Character
@@ -370,13 +377,12 @@ namespace WCell.RealmServer.Entities
 					{
 						log.Warn("Player {0}'s Corpse was spawned in invalid region: {1}", this, m_record.CorpseRegion);
 					}
-
 				}
 			}
 			else if (m_record.Health == 0)
 			{
 				// we were dead and did not release yet
-				var diff = (float)DateTime.Now.Subtract(m_record.LastDeathTime.AddMilliseconds(Corpse.AutoReleaseDelay)).TotalSeconds;
+				var diff = DateTime.Now.Subtract(m_record.LastDeathTime).GetMilliSecondsInt() + Corpse.AutoReleaseDelay;
 				m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 
 				if (diff > 0)
@@ -482,7 +488,7 @@ namespace WCell.RealmServer.Entities
 
 			try
 			{
-				InitializeRegeneration();
+				Regenerates = true;
 				((PlayerSpellCollection)m_spells).PlayerInitialize();
 
 				OnLogin();
@@ -511,7 +517,7 @@ namespace WCell.RealmServer.Entities
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
                     }
-                    if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+                    else if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
                     {
                         CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
                     }
@@ -768,13 +774,17 @@ namespace WCell.RealmServer.Entities
 				m_record.Outfit = Outfit;
 				m_record.Name = Name;
 				m_record.Level = Level;
-				m_record.PositionX = Position.X;
-				m_record.PositionY = Position.Y;
-				m_record.PositionZ = Position.Z;
-				m_record.Orientation = Orientation;
-				m_record.RegionId = m_region.Id;
-				m_record.InstanceId = m_region.InstanceId;
-				m_record.Zone = ZoneId;
+				if (m_region != null)
+				{
+					// only save position information if we are in world
+					m_record.PositionX = Position.X;
+					m_record.PositionY = Position.Y;
+					m_record.PositionZ = Position.Z;
+					m_record.Orientation = Orientation;
+					m_record.RegionId = m_region.Id;
+					m_record.InstanceId = m_region.InstanceId;
+					m_record.Zone = ZoneId;
+				}
 				m_record.DisplayId = DisplayId;
 				m_record.BindX = m_bindLocation.Position.X;
 				m_record.BindY = m_bindLocation.Position.Y;
@@ -794,7 +804,7 @@ namespace WCell.RealmServer.Entities
 				m_record.BaseSpirit = GetBaseStatValue(StatType.Spirit);
 				m_record.BaseIntellect = GetBaseStatValue(StatType.Intellect);
 				m_record.BaseAgility = GetBaseStatValue(StatType.Agility);
-				m_record.Xp = XP;
+				m_record.Xp = Experience;
 				m_record.RestXp = RestXp;
 
 				// Honor and Arena
@@ -804,6 +814,7 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = LifetimeHonorableKills;
 				m_record.HonorPoints = HonorPoints;
 				m_record.ArenaPoints = ArenaPoints;
+				
 
 				// Finished quests
 				if (m_questLog.FinishedQuests.Count > 0)
@@ -821,11 +832,17 @@ namespace WCell.RealmServer.Entities
 				{
 					m_record.NextTaxiVertexId = 0;
 				}
+
+				// spells & runes
+				PlayerSpells.OnSave();
+
+				// taxi mask
 				m_record.TaxiMask = m_taxiNodeMask.Mask;
 
 				if (m_record.Level > 1 &&
 					m_record.Level > Account.HighestCharLevel)
 				{
+					// tell auth server about the new highest level
 					Account.HighestCharLevel = m_record.Level;
 				}
 			}
@@ -861,6 +878,9 @@ namespace WCell.RealmServer.Entities
 
 					// Talents
 					//m_record.SpecProfile.Save();
+					
+					// Achievements
+					m_achievements.SaveNow();
 
 					// Auras
 					m_auras.SaveAurasNow();
@@ -882,6 +902,7 @@ namespace WCell.RealmServer.Entities
 			}
 			catch (Exception ex)
 			{
+				OnSaveFailed(ex);
 				try
 				{
 					m_record.Save();
@@ -889,7 +910,7 @@ namespace WCell.RealmServer.Entities
 				}
 				catch //(Exception ex2)
 				{
-					OnSaveFailed(ex);
+					//OnSaveFailed(ex);
 				}
 				return false;
 			}
@@ -965,7 +986,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="forced"></param>
 		public void Logout(bool forced)
 		{
-			Logout(forced, CanLogoutInstantly ? 0 : DefaultLogoutDelay);
+			Logout(forced, CanLogoutInstantly ? 0 : DefaultLogoutDelayMillis);
 		}
 
 		/// <summary>
@@ -975,7 +996,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="forced">whether the Character is forced to logout (as opposed to initializing logout oneself)</param>
 		/// <param name="delay">The delay until the client will be disconnected in seconds</param>
-		public void Logout(bool forced, float delay)
+		public void Logout(bool forced, int delay)
 		{
 			if (!m_isLoggingOut)
 			{
@@ -1127,16 +1148,16 @@ namespace WCell.RealmServer.Entities
 				evt(this);
 			}
 
-			// client might now do other things
-			m_client.ActiveCharacter = null;
-			Account.ActiveCharacter = null;
-
 			// take Player out of world context
 			if (!World.RemoveCharacter(this))
 			{
 				// was already removed
 				return;
 			}
+
+			// client might now do other things
+			m_client.ActiveCharacter = null;
+			Account.ActiveCharacter = null;
 
 			// set to false so it can't be cancelled anymore
 			m_isLoggingOut = false;
@@ -1275,14 +1296,14 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void Kick(Character kicker, string reason)
 		{
-			Kick(kicker, reason, DefaultLogoutDelay);
+			Kick(kicker, reason, DefaultLogoutDelayMillis);
 		}
 
 		/// <summary>
 		/// Broadcasts a kick message and then kicks this Character after the default delay.
 		/// Requires region context.
 		/// </summary>
-		public void Kick(INamed kicker, string reason, float delay)
+		public void Kick(INamed kicker, string reason, int delay)
 		{
 			var other = (kicker != null ? " by " + kicker.Name : "") +
 				(!string.IsNullOrEmpty(reason) ? " (" + reason + ")" : ".");
@@ -1322,29 +1343,50 @@ namespace WCell.RealmServer.Entities
 			m_minions = null;
 			m_activePet = null;
 
-			m_skills.m_owner = null;
-			m_skills = null;
+			if (m_skills != null)
+			{
+				m_skills.m_owner = null;
+				m_skills = null;
+			}
 
-			m_talents.Owner = null;
-			m_talents = null;
+			if (m_talents != null)
+			{
+				m_talents.Owner = null;
+				m_talents = null;
+			}
 
-			m_inventory.m_container = null;
-			m_inventory.m_owner = null;
-			m_inventory.m_ammo = null;
-			m_inventory.m_currentBanker = null;
-			m_inventory = null;
+			if (m_inventory != null)
+			{
+				m_inventory.m_container = null;
+				m_inventory.m_owner = null;
+				m_inventory.m_ammo = null;
+				m_inventory.m_currentBanker = null;
+				m_inventory = null;
+			}
 
-			m_mailAccount.Owner = null;
-			m_mailAccount = null;
+			if (m_mailAccount != null)
+			{
+				m_mailAccount.Owner = null;
+				m_mailAccount = null;
+			}
 
 			m_groupMember = null;
 
-			m_reputations.Owner = null;
-			m_reputations = null;
+			if (m_reputations != null)
+			{
+				m_reputations.Owner = null;
+				m_reputations = null;
+			}
 
 			if (m_InstanceCollection != null)
 			{
 				m_InstanceCollection.Dispose();
+			}
+
+			if (m_achievements != null)
+			{
+				m_achievements.m_owner = null;
+				m_achievements = null;
 			}
 
 			if (m_CasterReference != null)
@@ -1366,7 +1408,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			KnownObjects.Clear();
-
+			WorldObjectSetPool.Recycle(KnownObjects);
 		}
 
 		/// <summary>

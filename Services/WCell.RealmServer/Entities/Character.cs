@@ -18,12 +18,14 @@ using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
+using WCell.RealmServer.Achievement;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Factions;
@@ -40,6 +42,7 @@ using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
@@ -64,14 +67,19 @@ namespace WCell.RealmServer.Entities
 		public static new readonly List<Character> EmptyArray = new List<Character>();
 
 		/// <summary>
-		/// The delay until a normal player may logout in seconds.
+		/// The delay until a normal player may logout in millis.
 		/// </summary>
-		public static float DefaultLogoutDelay = 20.0f;
+		public static int DefaultLogoutDelayMillis = 20000;
 
 		/// <summary>
 		/// Speed increase when dead and in Ghost form
 		/// </summary>
-		public static float DeathSpeedIncrease = 0.25f;
+		public static float DeathSpeedFactorIncrease = 0.25f;
+
+		/// <summary>
+		/// The level at which players start to suffer from repercussion after death
+		/// </summary>
+		public static int ResurrectionSicknessStartLevel = 10;
 
 		/// <summary>
 		/// whether to check for speedhackers
@@ -300,19 +308,23 @@ namespace WCell.RealmServer.Entities
 		{
 			Resurrect();
 
-			if (Level > 10)
+			if (Level >= ResurrectionSicknessStartLevel)
 			{
 				// Apply resurrection sickness and durability loss (see http://www.wowwiki.com/Death)
 				SpellCast.TriggerSelf(SpellId.ResurrectionSickness);
-				m_inventory.Iterate(item =>
+
+				if (PlayerInventory.SHResDurabilityLossPct != 0)
 				{
-					if (item.MaxDurability > 0)
+					m_inventory.Iterate(item =>
 					{
-						item.Durability = Math.Max(0, item.Durability -
-							(((item.Durability * PlayerInventory.SHResDurabilityLossPct) + 50) / 100));
-					}
-					return true;
-				});
+						if (item.MaxDurability > 0)
+						{
+							item.Durability = Math.Max(0, item.Durability -
+								(((item.Durability * PlayerInventory.SHResDurabilityLossPct) + 50) / 100));
+						}
+						return true;
+					});
+				}
 			}
 		}
 
@@ -346,44 +358,67 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnDamageAction(action);
 
-			var pvp = action.Attacker.IsPvPing;
-			var chr = action.Attacker.CharacterMaster;
-
-			var killingBlow = !IsAlive;
-
-			if (action.Attacker != null &&
-				m_activePet != null &&
-				m_activePet.CanBeAggroedBy(action.Attacker))
+			if (action.Attacker != null)
 			{
-				m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
-			}
-
-			if (pvp && chr.IsInBattleground)
-			{
-				// Add BG stats
-				var attackerStats = chr.Battlegrounds.Stats;
-				var victimStats = Battlegrounds.Stats;
-				attackerStats.TotalDamage += action.ActualDamage;
-				if (killingBlow)
+				// aggro pet and minions
+				if (m_activePet != null)
 				{
+					m_activePet.ThreatCollection.AddNewIfNotExisted(action.Attacker);
+				}
+				if (m_minions != null)
+				{
+					foreach (var minion in m_minions)
+					{
+						minion.ThreatCollection.AddNewIfNotExisted(action.Attacker);
+					}
+				}
+
+				var pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					attackerStats.TotalDamage += action.ActualDamage;
+				}
+			}
+		}
+
+		protected override void OnKilled(IDamageAction action)
+		{
+			base.OnKilled(action);
+
+			bool pvp;
+			if (action.Attacker != null)
+			{
+				pvp = action.Attacker.IsPvPing;
+				var chr = action.Attacker.CharacterMaster;
+
+				if (pvp && chr.IsInBattleground)
+				{
+					// Add BG stats
+					var attackerStats = chr.Battlegrounds.Stats;
+					var victimStats = Battlegrounds.Stats;
 					attackerStats.KillingBlows++;
-				}
-				if (victimStats != null)
-				{
-					victimStats.Deaths++;
+					if (victimStats != null)
+					{
+						victimStats.Deaths++;
+					}
 				}
 			}
-
-			if (killingBlow)
+			else
 			{
-				if (!pvp)
-				{
-					// durability loss
-					m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
-				}
-
-				m_region.RegionTemplate.NotifyPlayerDied(action);
+				pvp = false;
 			}
+
+			if (!pvp)
+			{
+				// durability loss
+				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
+			}
+
+			m_region.RegionTemplate.NotifyPlayerDied(action);
 		}
 
 		/// <summary>
@@ -534,7 +569,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_archetype.GetLevelStats((uint)Level); }
 		}
 
-		public void UpdateRest()
+		internal void UpdateRest()
 		{
 			if (m_restTrigger != null)
 			{
@@ -545,92 +580,128 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Gain experience from combat
+		/// </summary>
 		public void GainCombatXp(int experience, INamed killed, bool gainRest)
 		{
-			if (Level >= RealmServerConfiguration.MaxCharacterLevel)
+			if (Level >= MaxLevel)
 			{
 				return;
 			}
 
-			// Generate the message to send
-			var message = string.Format("{0} dies, you gain {1} experience.", killed.Name, experience);
+			var xp = experience + (experience * KillExperienceGainModifierPercent / 100);
 
-			XP += experience + (experience*KillExperienceGainModifierPercent/100);
-			if (gainRest && RestXp > 0)
+			if (m_activePet != null && m_activePet.MayGainExperience)
 			{
-				var bonus = Math.Min(RestXp, experience);
-				message += string.Format(" (+{0} exp Rested bonus)", bonus);
-				XP += bonus;
-				RestXp -= bonus;
+				// give xp to pet
+				m_activePet.PetExperience += xp;
+				m_activePet.TryLevelUp();
 			}
 
-			// Send the message
-			ChatMgr.SendCombatLogExperienceMessage(this, message);
+			if (gainRest && RestXp > 0)
+			{
+				// add rest bonus
+				var bonus = Math.Min(RestXp, experience);
+				xp += bonus;
+				RestXp -= bonus;
+				ChatMgr.SendCombatLogExperienceMessage(this, Locale, RealmLangKey.LogCombatExpRested, killed.Name, experience, bonus);
+			}
+			else
+			{
+				ChatMgr.SendCombatLogExperienceMessage(this, Locale, RealmLangKey.LogCombatExp, killed.Name, experience);
+			}
+
+			Experience += xp;
 			TryLevelUp();
 		}
 
 		/// <summary>
-		/// 
+		/// Gain non-combat experience (through quests etc)
 		/// </summary>
 		/// <param name="experience"></param>
-		/// <param name="gainRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
-		public void GainXp(int experience)
+		/// <param name="useRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
+		public void GainXp(int experience, bool useRest = false)
 		{
-			GainXp(experience, false);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="experience"></param>
-		/// <param name="gainRest">If true, subtracts the given amount of experience from RestXp and adds it ontop of the given xp</param>
-		public void GainXp(int experience, bool gainRest)
-		{
-            XP += experience + (experience * KillExperienceGainModifierPercent / 100);
-			if (gainRest && RestXp > 0)
+			var xp = experience;
+			if (useRest && RestXp > 0)
 			{
 				var bonus = Math.Min(RestXp, experience);
-				XP += bonus;
+				xp += bonus;
 				RestXp -= bonus;
 			}
 
+			Experience += xp;
 			TryLevelUp();
 		}
 
 		internal bool TryLevelUp()
 		{
-			var nextLevelXp = NextLevelXP;
 			var level = Level;
+			var xp = Experience;
+			var nextLevelXp = NextLevelXP;
 			var leveled = false;
-			var xp = XP;
 
-			while (xp >= nextLevelXp && level < RealmServerConfiguration.MaxCharacterLevel)
+			while (xp >= nextLevelXp && level < MaxLevel)
 			{
-				XP = xp -= nextLevelXp;
-				Level = ++level;
-				NextLevelXP = nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
-
-				if (level >= 10)
-				{
-					FreeTalentPoints++;
-				}
-
-				var evt = LeveledUp;
-				if (evt != null)
-				{
-					evt(this);
-				}
+				++level;
+				xp -= nextLevelXp;
+				nextLevelXp = XpGenerator.GetXpForlevel(level + 1);
 				leveled = true;
 			}
 
 			if (leveled)
 			{
-				ModStatsForLevel(level);
-				m_auras.ReapplyAllAuras();
-				SaveLater();
+				Experience = xp;
+				NextLevelXP = nextLevelXp;
+				Level = level;
 				return true;
 			}
 			return false;
+		}
+
+		protected override void OnLevelChanged()
+		{
+			base.OnLevelChanged();
+			Experience = 0;
+
+			var level = Level;
+			int freeTalentPoints = m_talents.GetFreePlayerTalentPoints(level);
+			if (freeTalentPoints < 0)
+			{
+				// need to remove talent points
+				if (!GodMode)
+				{
+					// remove the extra talents
+					m_talents.RemoveTalents(-freeTalentPoints);
+				}
+				freeTalentPoints = 0;
+			}
+
+			// check pet level
+			if (m_activePet != null)
+			{
+				if (!m_activePet.IsHunterPet || m_activePet.Level > level)
+				{
+					m_activePet.Level = level;
+				}
+				else if (level - PetMgr.MaxHunterPetLevelDifference > m_activePet.Level)
+				{
+					m_activePet.Level = level - PetMgr.MaxHunterPetLevelDifference;
+				}
+			}
+
+			FreeTalentPoints = freeTalentPoints;
+			ModStatsForLevel(level);
+			m_auras.ReapplyAllAuras();
+			m_achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Level);
+			var evt = LevelChanged;
+			if (evt != null)
+			{
+				evt(this);
+			}
+
+			SaveLater();
 		}
 
 		public void ModStatsForLevel(int level)
@@ -780,16 +851,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		public void Send(RealmPacketOut packet)
-		{
-			m_client.Send(packet);
-		}
-
-		public void Send(byte[] packet)
-		{
-			m_client.Send(packet);
-		}
-
 		#region Interaction with NPCs & GameObjects
 		/// <summary>
 		/// Called whenever this Character interacts with any WorldObject
@@ -830,7 +891,7 @@ namespace WCell.RealmServer.Entities
 		public bool TryBindTo(NPC innKeeper)
 		{
 			OnInteract(innKeeper);
-			if (innKeeper.BindPoint != NamedWorldZoneLocation.Zero && innKeeper.CanInteractWith(this))
+			if (innKeeper.BindPoint != NamedWorldZoneLocation.Zero && innKeeper.CheckVendorInteraction(this))
 			{
 				BindTo(innKeeper);
 				return true;
@@ -1062,29 +1123,23 @@ namespace WCell.RealmServer.Entities
 					(Environment.TickCount - m_lastCombatTime) >= CombatDeactivationDelay &&
 					!m_auras.HasHarmfulAura())
 				{
+					if (m_minions != null)
+					{
+						// can't leave combat if any minion is in combat
+						foreach (var minion in m_minions)
+						{
+							if (minion.NPCAttackerCount > 0)
+							{
+								return base.CheckCombatState();
+							}
+						}
+					}
 					// leave combat if we didn't fight for a while and have no debuffs on us
 					IsInCombat = false;
 				}
 				return false;
 			}
 			return base.CheckCombatState();
-		}
-
-		/// <summary>
-		/// Adds all damage boni and mali
-		/// </summary>
-		public void AddDamageModsToAction(DamageAction action)
-		{
-			if (!action.IsDot)
-			{
-				// does not add to dot
-				action.Damage = GetTotalDamageDoneMod(action.UsedSchool, action.Damage, action.Spell);
-			}
-			else if (action.SpellEffect != null)
-			{
-				// periodic damage mod
-				action.Damage = Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, action.Spell, action.Damage);
-			}
 		}
 
 		public override int AddHealingModsToAction(int healValue, SpellEffect effect, DamageSchool school)
@@ -1252,17 +1307,10 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region AI
-		public override LinkedList<WaypointEntry> Waypoints
+		public override int GetBasePowerRegen()
 		{
-			get { return null; }
+			return PowerFormulas.GetPowerRegen(this);
 		}
-
-		public override SpawnPoint SpawnPoint
-		{
-			get { return null; }
-		}
-		#endregion
 
 		public void ActivateAllTaxiNodes()
 		{
@@ -1282,7 +1330,7 @@ namespace WCell.RealmServer.Entities
 			base.SetZone(newZone);
 			if (newZone != null)
 			{
-				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelay, () =>
+				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
 				{
 					if (IsInWorld && Zone == newZone)
 					{
@@ -1299,9 +1347,9 @@ namespace WCell.RealmServer.Entities
 			{
 				ClearTarget();
 			}
-			if (TradeInfo != null)
+			if (TradeWindow != null)
 			{
-				TradeInfo.Cancel();
+				TradeWindow.Cancel();
 			}
 		}
 
@@ -1363,7 +1411,7 @@ namespace WCell.RealmServer.Entities
 		public void ResetFreeTalentPoints()
 		{
 			// One talent point for level 10 and above
-			FreeTalentPoints = (Level - 9);
+			FreeTalentPoints = m_talents.GetFreePlayerTalentPoints(Level);
 		}
 
 		public void ResetTalents()
@@ -1702,6 +1750,18 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region AI
+		public override LinkedList<WaypointEntry> Waypoints
+		{
+			get { return null; }
+		}
+
+		public override SpawnPoint SpawnPoint
+		{
+			get { return null; }
+		}
+		#endregion
+
 		#region ITicketHandler
 		/// <summary>
 		/// The ticket that is currently being handled by this <see cref="ITicketHandler"/>
@@ -1750,6 +1810,16 @@ namespace WCell.RealmServer.Entities
 			return new[] { this };
 		}
 		#endregion
+
+		public void Send(RealmPacketOut packet)
+		{
+			m_client.Send(packet);
+		}
+
+		public void Send(byte[] packet)
+		{
+			m_client.Send(packet);
+		}
 
 		public override string ToString()
 		{

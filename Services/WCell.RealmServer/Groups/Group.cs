@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Groups
 		/// <summary>
 		/// The time after which a member who left a Group will be teleported out of a Group owned instance in seconds.
 		/// </summary>
-		public static float GroupInstanceKickDelay = 60;
+		public static int GroupInstanceKickDelayMillis = 60000;
 
 		protected const byte MinGroupMemberCount = 2;
 		protected const byte TargetIconCount = 8;
@@ -658,7 +658,7 @@ namespace WCell.RealmServer.Groups
 				if (chr.Region is BaseInstance)
 				{
 					var instance = (BaseInstance)chr.Region;
-					chr.Region.CallDelayed(GroupInstanceKickDelay, () =>
+					chr.Region.CallDelayed(GroupInstanceKickDelayMillis, () =>
 					{
 						if (chr.IsInWorld && chr.Region == instance && !instance.CanEnter(chr))
 						{
@@ -1607,7 +1607,7 @@ namespace WCell.RealmServer.Groups
 			});
 		}
 
-		public void DistributeGroupQuestKills(Character killer, NPC victim)
+		public void OnKill(Character killer, NPC victim)
 		{
 			if (Count < 1) return;
 
