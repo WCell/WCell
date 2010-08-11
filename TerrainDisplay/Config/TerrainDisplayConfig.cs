@@ -30,9 +30,10 @@ namespace TerrainDisplay
         public static bool UseExtractedData = false;
         public static string ExtractedDataPath = @"D:\Games\WCell\Run\Content\Maps";
         public static string MpqPath = @"D:\Games\MPQFiles";
-        public static TileIdentifier DefaultTileIdentifier = TileIdentifier.Redridge;
-        
-        public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
+
+		public static TileIdentifier DefaultTileIdentifier = TileIdentifier.Redridge.Copy();
+
+    	public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
 
 
         public TerrainDisplayConfig(Action<string> onError)

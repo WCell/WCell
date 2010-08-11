@@ -8,8 +8,9 @@ namespace TerrainDisplay
 {
     public class TileIdentifier : IXmlSerializable
     {
-        public string TileName;
-        public int MapId;
+    	public string TileName;
+
+    	public int MapId;
         public string MapName;
         public int TileX;
         public int TileY;
@@ -27,7 +28,12 @@ namespace TerrainDisplay
             TileY = tileY;
         }
 
-        public static TileIdentifier Redridge = new TileIdentifier
+		public TileIdentifier Copy()
+		{
+			return new TileIdentifier(TileName, MapId, MapName, TileX, TileY);
+		}
+
+        public readonly static TileIdentifier Redridge = new TileIdentifier
         {
             TileName = "Redridge",
             MapId = 0,
@@ -36,7 +42,7 @@ namespace TerrainDisplay
             TileY = 36
         };
 
-        public static TileIdentifier CenterTile = new TileIdentifier
+		public readonly static TileIdentifier CenterTile = new TileIdentifier
         {
             TileName = "Map Center",
             MapId = 0,
@@ -44,8 +50,8 @@ namespace TerrainDisplay
             TileX = 32,
             TileY = 32
         };
-        
-        public static TileIdentifier Stormwind = new TileIdentifier
+
+		public readonly static TileIdentifier Stormwind = new TileIdentifier
         {
             TileName = "Stormwind",
             MapId = 0,
@@ -53,8 +59,8 @@ namespace TerrainDisplay
             TileX = 48,
             TileY = 30
         };
-        
-        public static TileIdentifier BurningSteppes = new TileIdentifier
+
+		public readonly static TileIdentifier BurningSteppes = new TileIdentifier
         {
             TileName = "Burning Steppes",
             MapId = 0,
