@@ -137,7 +137,7 @@ namespace WCell.RealmServer.Modifiers
 		}
 		static void AddHealth(Character owner, int value)
 		{
-			owner.MaxHealthMod += value;
+			owner.MaxHealthModFlat += value;
 		}
 
 		static void AddUnused(Character owner, int value)
@@ -286,7 +286,7 @@ namespace WCell.RealmServer.Modifiers
 		}
 		static void RemoveHealth(Character owner, int value)
 		{
-			owner.MaxHealthMod -= value;
+			owner.MaxHealthModFlat -= value;
 		}
 
 		static void RemoveUnused(Character owner, int value)

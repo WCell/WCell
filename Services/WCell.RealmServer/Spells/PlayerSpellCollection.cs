@@ -119,9 +119,11 @@ namespace WCell.RealmServer.Spells
 				{
 					// learn new skill
 					skill = OwnerChar.Skills.Add(spell.Ability.Skill, true);
-				}	// else upgrade tier
+				}
+
 				if (skill.CurrentTierSpell == null || skill.CurrentTierSpell.SkillTier < spell.SkillTier)
 				{
+					// upgrade tier
 					skill.CurrentTierSpell = spell;
 				}
 			}
@@ -179,13 +181,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private void OnRemove(Spell spell)
 		{
-			if (spell.Skill != null)
+			if (spell.Ability != null)
 			{
-				OwnerChar.Skills.Remove(spell.SkillId);
-			}
-			if (spell.Talent != null)
-			{
-				OwnerChar.Talents.Remove(spell.Talent.Id);
+				OwnerChar.Skills.Remove(spell.Ability.Skill.Id);
 			}
 			OwnerChar.m_record.RemoveSpell(spell.Id);
 		}
@@ -321,9 +319,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Profession
-			if (spell.Skill != null)
+			if (spell.Ability.Skill != null)
 			{
-				chr.Skills.TryLearn(spell.SkillId);
+				chr.Skills.TryLearn(spell.Ability.Skill.Id);
 			}
 
 

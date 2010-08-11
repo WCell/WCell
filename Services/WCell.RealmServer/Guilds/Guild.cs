@@ -729,7 +729,7 @@ namespace WCell.RealmServer.Guilds
 
 		public void TrySetTabard(GuildMember member, NPC vendor, GuildTabard tabard)
 		{
-			if (!vendor.IsTabardVendor || !vendor.CanInteractWith(member.Character))
+			if (!vendor.IsTabardVendor || !vendor.CheckVendorInteraction(member.Character))
 			{
 				//"That's not an emblem vendor!"
 				GuildHandler.SendTabardResult(member.Character, GuildTabardResult.InvalidVendor);

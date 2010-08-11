@@ -250,7 +250,7 @@ namespace WCell.RealmServer.Formulas
 
 		public static int GetPetXPForLevel(int level)
 		{
-			return ((GetXpForlevel(level) * PetMgr.PetExperienceModifier) / 100);
+			return ((GetXpForlevel(level) * PetMgr.PetExperienceOfOwnerPercent + 50) / 100);		// rounding
 		}
 
 		public static int GetGrayLevel(int playerLevel)

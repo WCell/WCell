@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
@@ -12,6 +13,7 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Vendors;
@@ -30,6 +32,7 @@ using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Constants.World;
 using WCell.Constants.Updates;
+using WCell.Util.NLog;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -389,6 +392,32 @@ namespace WCell.RealmServer.NPCs
 
 		[NotPersistent]
 		public CreatureFamily Family;
+
+		[NotPersistent]
+		public PetLevelStatInfo[] PetLevelStatInfos;
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public PetLevelStatInfo GetPetLevelStatInfo(int level)
+		{
+			if (PetLevelStatInfos == null)
+			{
+				//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+				// info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				return null;
+			}
+			else
+			{
+				var info = PetLevelStatInfos.Get(level);
+				if (info == null)
+				{
+					//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+					//info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				}
+				return info;
+			}
+		}
 
 		#region Spells
 		/// <summary>
@@ -930,24 +959,6 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		internal void NotifyHitDeliver(IDamageAction action)
-		{
-			var evt = HitDelivered;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
-
-		internal void NotifyHitReceive(IDamageAction action)
-		{
-			var evt = HitReceived;
-			if (evt != null)
-			{
-				evt(action);
-			}
-		}
-
 		internal bool NotifyBeforeDeath(NPC npc)
 		{
 			var evt = BeforeDeath;
@@ -961,6 +972,15 @@ namespace WCell.RealmServer.NPCs
 		internal void NotifyDied(NPC npc)
 		{
 			var evt = Died;
+			if (evt != null)
+			{
+				evt(npc);
+			}
+		}
+
+		internal void NotifyLeveledChanged(NPC npc)
+		{
+			var evt = LevelChanged;
 			if (evt != null)
 			{
 				evt(npc);

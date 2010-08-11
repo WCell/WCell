@@ -272,7 +272,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 
 		private bool CheckVendorInteraction(Character chr)
 		{
-			if (!NPC.CanInteractWith(chr))
+			if (!NPC.CheckVendorInteraction(chr))
 				return false;
 
 			// Remove illegal Auras for vendor interaction

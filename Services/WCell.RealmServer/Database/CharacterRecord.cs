@@ -934,7 +934,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Action-bar information etc for summoned pets
+		/// Amount of action-bar information etc for summoned pets
 		/// </summary>
 		[Property]
 		public int PetSummonedCount
@@ -944,7 +944,7 @@ namespace WCell.RealmServer.Database
 		}
 
 		/// <summary>
-		/// Hunter pets
+		/// Amount of Hunter pets
 		/// </summary>
 		[Property]
 		public int PetCount

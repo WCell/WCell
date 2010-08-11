@@ -883,7 +883,7 @@ namespace WCell.RealmServer.Spells
 				}
 
 				m_startTime = Environment.TickCount;
-				m_castDelay = (int) m_spell.CastDelay;
+				m_castDelay = (int)m_spell.CastDelay;
 
 				if (!IsInstant)
 				{
@@ -919,7 +919,7 @@ namespace WCell.RealmServer.Spells
 					// put away weapon and send Start packet
 					if (CasterObject is Unit)
 					{
-						((Unit) CasterObject).SheathType = SheathType.None;
+						((Unit)CasterObject).SheathType = SheathType.None;
 					}
 					SendCastStart();
 					m_castTimer.Start(m_castDelay);
@@ -1135,27 +1135,32 @@ namespace WCell.RealmServer.Spells
 			{
 				failReason = TameFailReason.TargetDead;
 			}
+			else if (!target.Entry.IsTamable)
+			{
+				failReason = TameFailReason.NotTamable;
+			}
+			else if (target.Entry.IsExoticPet && !caster.CanControlExoticPets)
+			{
+				failReason = TameFailReason.CantControlExotic;
+			}
+			else if (target.HasMaster)
+			{
+				failReason = TameFailReason.CreatureAlreadyOwned;
+			}
+			else if (target.Level > caster.Level)
+			{
+				failReason = TameFailReason.TooHighLevel;
+			}
+			//else if (caster != null && caster.StabledPetRecords)
+			//{
+			//    failReason = TameFailReason.TooManyPets;
+			//}
 			else
 			{
-				if (!target.Entry.IsTamable)
-				{
-					failReason = TameFailReason.NotTamable;
-				}
-				else if (target.Entry.IsExoticPet && !caster.CanControlExoticPets)
-				{
-					failReason = TameFailReason.CantControlExotic;
-				}
-				else if (target.HasMaster)
-				{
-					failReason = TameFailReason.CreatureAlreadyOwned;
-				}
-				//else if (caster != null && caster.StabledPetRecords)
-				//{
-				//    failReason = TameFailReason.TooManyPets;
-				//}
+				return TameFailReason.Ok;
 			}
 
-			if (failReason != TameFailReason.Ok && caster != null)
+			if (caster != null)
 			{
 				PetHandler.SendTameFailure(caster, failReason);
 			}
@@ -1346,13 +1351,13 @@ namespace WCell.RealmServer.Spells
 		{
 			if (CasterObject is Unit)
 			{
-				var pct = ((Unit) CasterObject).GetSpellInterruptProt(m_spell);
+				var pct = ((Unit)CasterObject).GetSpellInterruptProt(m_spell);
 				if (pct >= 100)
 				{
 					return 0;
 				}
 
-				time -= (pct*time)/100; // reduce by protection %
+				time -= (pct * time) / 100; // reduce by protection %
 
 				// pushback reduction is a positive value, but we want it to be reduced, so we need to use GetModifiedIntNegative
 				time = ((Unit)CasterObject).Auras.GetModifiedIntNegative(SpellModifierType.PushbackReduction, m_spell, time);

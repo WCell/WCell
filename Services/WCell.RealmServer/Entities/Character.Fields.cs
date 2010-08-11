@@ -46,6 +46,7 @@ using WCell.RealmServer.Mail;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Skills;
@@ -467,7 +468,7 @@ namespace WCell.RealmServer.Entities
 			set { SetUInt32(PlayerFields.FLAGS, (uint)value); }
 		}
 
-		public int XP
+		public int Experience
 		{
 			get { return GetInt32(PlayerFields.XP); }
 			set { SetInt32(PlayerFields.XP, value); }
@@ -684,12 +685,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Gets the total modifier of the corresponding CombatRating (in %) 
 		/// </summary>
-		public int GetCombatRatingMod(CombatRating rating)
+		public int GetCombatRating(CombatRating rating)
 		{
 			return GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating);
 		}
 
-		public void SetCombatRatingMod(CombatRating rating, int value)
+		public void SetCombatRating(CombatRating rating, int value)
 		{
 			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, value);
 			UpdateChancesByCombatRating(rating);
@@ -701,7 +702,7 @@ namespace WCell.RealmServer.Entities
 		public void ModCombatRating(CombatRating rating, int delta)
 		{
 			var val = GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating);
-			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, val + delta);
+			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, val);
 			UpdateChancesByCombatRating(rating);
 		}
 
@@ -825,26 +826,6 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return GetFloat(PlayerFields.OFFHAND_CRIT_PERCENTAGE); }
 			internal set { SetFloat(PlayerFields.OFFHAND_CRIT_PERCENTAGE, value); }
-		}
-
-		/// <summary>
-		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
-		/// </summary>
-		public int GetTotalDamageDoneMod(DamageSchool school, int dmg, Spell spell = null)
-		{
-			dmg = UnitUpdates.GetMultiMod(GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school), dmg);
-			if (spell != null)
-			{
-				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
-			}
-			dmg += GetDamageDoneMod(school);
-			return dmg;
-		}
-
-		public int GetDamageDoneMod(DamageSchool school)
-		{
-			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
-					GetInt32(PlayerFields.MOD_DAMAGE_DONE_NEG + (int)school);
 		}
 
 		///// <summary>
@@ -1046,15 +1027,11 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		#region Combat
-
+		#region Damage
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
-		/// <param name="school"></param>
-		/// <param name="delta"></param>
-		internal void AddDamageMod(DamageSchool school, int delta)
+		protected internal override void AddDamageDoneModSilently(DamageSchool school, int delta)
 		{
 			PlayerFields field;
 			if (delta == 0)
@@ -1075,11 +1052,8 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
-		/// <param name="school"></param>
-		/// <param name="delta"></param>
-		internal void RemoveDamageMod(DamageSchool school, int delta)
+		protected internal override void RemoveDamageDoneModSilently(DamageSchool school, int delta)
 		{
 			PlayerFields field;
 			if (delta == 0)
@@ -1098,52 +1072,26 @@ namespace WCell.RealmServer.Entities
 			SetUInt32(field + (int)school, GetUInt32(field + (int)school) - (uint)delta);
 		}
 
-		/// <summary>
-		/// Adds/Removes a flat modifier to all of the given damage schools
-		/// </summary>
-		public void AddDamageMod(uint[] schools, int delta)
-		{
-			foreach (var school in schools)
-			{
-				AddDamageMod((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
-		}
-
-		/// <summary>
-		/// Adds/Removes a flat modifier to all of the given damage schools
-		/// </summary>
-		public void RemoveDamageMod(uint[] schools, int delta)
-		{
-			foreach (var school in schools)
-			{
-				RemoveDamageMod((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
-		}
-
-		private void ModDamageModPct(DamageSchool school, int delta)
+		protected internal override void ModDamageDoneFactorSilently(DamageSchool school, float delta)
 		{
 			if (delta == 0)
 			{
 				return;
 			}
 			var field = PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school;
-			SetFloat(field, GetFloat(field) + delta / 100f);
+			SetFloat(field, GetFloat(field) + delta);
 		}
 
-		/// <summary>
-		/// Adds/Removes a percent modifier to all of the given damage schools
-		/// </summary>
-		public void ModDamageModPct(uint[] schools, int delta)
+		public override float GetDamageDoneFactor(DamageSchool school)
 		{
-			foreach (var school in schools)
-			{
-				ModDamageModPct((DamageSchool)school, delta);
-			}
-			this.UpdateAllDamages();
+			return GetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school);
 		}
 
+		public override int GetDamageDoneMod(DamageSchool school)
+		{
+			return GetInt32(PlayerFields.MOD_DAMAGE_DONE_POS + (int)school) -
+					GetInt32(PlayerFields.MOD_DAMAGE_DONE_NEG + (int)school);
+		}
 		#endregion
 
 		#region Healing Done
@@ -1403,11 +1351,10 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-
-		public int MaxLevel
+		public override int MaxLevel
 		{
 			get { return GetInt32(PlayerFields.MAX_LEVEL); }
-			set { SetInt32(PlayerFields.MAX_LEVEL, value); }
+			internal set { SetInt32(PlayerFields.MAX_LEVEL, value); }
 		}
 
 		public override Zone Zone

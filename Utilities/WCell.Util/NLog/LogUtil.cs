@@ -19,6 +19,7 @@ namespace WCell.Util.NLog
 
 		public static event Action<string, Exception> ExceptionRaised;
 
+		#region Setup
 		private static bool init;
 
 		/// <summary>
@@ -63,7 +64,9 @@ namespace WCell.Util.NLog
 			LogManager.Configuration = config;
 			LogManager.EnableLogging();
 		}
+		#endregion
 
+		#region Exceptions
 		public static void ErrorException(Exception e)
 		{
 			ErrorException(e, false);
@@ -180,12 +183,12 @@ namespace WCell.Util.NLog
 				evt(msg, e);
 			}
 		}
+		#endregion
 
 		public static void LogStacktrace(Action<string> logger)
 		{
 			logger(new StackTrace(Thread.CurrentThread, true).GetFrames().ToString("\n\t", frame => frame.ToString().Trim()));
 		}
-
 
 		private static void LogSystemInfo(Action<string> logger)
 		{

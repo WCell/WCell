@@ -274,14 +274,6 @@ namespace WCell.RealmServer.Commands
 				{
 					chr.PlayerSpells.SatisfyConstraintsFor(spell);
 				}
-				else
-				{
-					// Profession
-					if (spell.Skill != null && chr != null)
-					{
-						chr.Skills.TryLearn(spell.SkillId);
-					}
-				}
 
 				if (spell.Talent != null && chr != null)
 				{

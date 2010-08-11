@@ -116,8 +116,7 @@ namespace WCell.RealmServer.Items.Enchanting
 		private static void ApplyDamage(Item item, ItemEnchantmentEffect effect)
 		{
 			var owner = item.OwningCharacter;
-			owner.AddDamageMod(DamageSchool.Physical, effect.MaxAmount);
-			owner.UpdateAllDamages();
+			owner.AddDamageDoneMod(DamageSchool.Physical, effect.MaxAmount);
 		}
 
 		private static void ApplyEquipSpell(Item item, ItemEnchantmentEffect effect)
@@ -150,7 +149,7 @@ namespace WCell.RealmServer.Items.Enchanting
 		private static void RemoveDamage(Item item, ItemEnchantmentEffect effect)
 		{
 			var owner = item.OwningCharacter;
-			owner.RemoveDamageMod(DamageSchool.Physical, effect.MaxAmount);
+			owner.RemoveDamageDoneMod(DamageSchool.Physical, effect.MaxAmount);
 			owner.UpdateAllDamages();
 		}
 

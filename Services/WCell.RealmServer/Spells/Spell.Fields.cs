@@ -238,13 +238,13 @@ namespace WCell.RealmServer.Spells
 					var rank = numberRegex.Match(value);
 					if (rank.Success)
 					{
-						byte.TryParse(rank.Value, out Rank);
+						int.TryParse(rank.Value, out Rank);
 					}
 				}
 			}
 		}
 
-		public byte Rank;
+		public int Rank;
 		public string Description; // 158 - 174
 		public string BuffDescription; // 175 - 191
 

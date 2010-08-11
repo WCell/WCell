@@ -17,7 +17,6 @@ using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
 {
-	// TODO: Combat mode triggered when pet starts combat - Complete, needs testing
 	public partial class Unit
 	{
 		#region Global Variables
@@ -533,9 +532,9 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// add mods and call events
-					if (addDamageBonuses && attacker is Character)
+					if (addDamageBonuses)
 					{
-						((Character)attacker).AddDamageModsToAction(action);
+						action.AddDamageMods();
 					}
 
 					OnDefend(action);
@@ -618,6 +617,8 @@ namespace WCell.RealmServer.Entities
 			{
 				chance = GetCritChance(dmgSchool);
 			}
+
+			//chance -= defender.GetResiliencePct(this);
 			chance -= defender.GetResiliencePct();
 			return chance;
 		}
@@ -703,25 +704,6 @@ namespace WCell.RealmServer.Entities
 
 			parryChance *= 100;
 			return (int)parryChance;
-		}
-
-		public float GetResiliencePct()
-		{
-			float resiliencePercentage = 0;
-
-			if (this is Character)
-			{
-				var def = this as Character;
-				float resilience = def.GetCombatRatingMod(CombatRating.MeleeResilience);
-				resiliencePercentage += resilience / /*GameTables.ResilienceRating[def.Level]; */
-										GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)def.Level - 1);
-			}
-			else
-			{
-				resiliencePercentage = 0;
-			}
-
-			return resiliencePercentage;
 		}
 
 		/// <summary>
@@ -1049,7 +1031,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual bool CheckCombatState()
 		{
-			if (m_comboTarget != null && !m_comboTarget.IsAlive)
+			if (m_comboTarget != null && (!m_comboTarget.IsInContext || !m_comboTarget.IsAlive))
 			{
 				ResetComboPoints();
 			}
@@ -1166,6 +1148,7 @@ namespace WCell.RealmServer.Entities
 					else if (aaction.VictimState == VictimState.Block ||
 							 aaction.VictimState == VictimState.Dodge)
 					{
+						// set
 						AuraState |= AuraStateMask.DodgeOrBlockOrParry;
 					}
 					else

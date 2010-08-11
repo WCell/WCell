@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 
 			var banker = chr.Region.GetObject(bankerId) as NPC;
-			if (banker != null && banker.IsBanker && banker.CanInteractWith(chr))
+			if (banker != null && banker.IsBanker && banker.CheckVendorInteraction(chr))
 			{
 				chr.OpenBank(banker);
 			}
@@ -203,7 +203,7 @@ namespace WCell.RealmServer.Handlers
 			//packet.SkipBytes(4);
 			packet.Position += 4;
 
-			if (petitioner != null && petitioner.IsPetitioner && petitioner.CanInteractWith(chr))
+			if (petitioner != null && petitioner.IsPetitioner && petitioner.CheckVendorInteraction(chr))
 			{
 				ItemId itemId = 0;
 				uint cost = 0;

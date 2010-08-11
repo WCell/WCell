@@ -566,7 +566,7 @@ namespace WCell.RealmServer.Misc
 				Evade();
 				return false;
 			}
-			else if (Victim.IsImmune(DamageSchool.Physical) || Victim.IsInvulnerable)
+			else if (Victim.IsImmune(UsedSchool) || Victim.IsInvulnerable)
 			{
 				MissImmune();
 				return false;
@@ -810,10 +810,12 @@ namespace WCell.RealmServer.Misc
 				Attacker.DeathPrevention++;
 				try
 				{
+					// add mods and call events
+					AddDamageMods();
 					Victim.OnDefend(this);
 					Attacker.OnAttack(this);
 
-					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
+					Resisted = MathUtil.RoundInt(ResistPct*Damage/100f);
 					if (Absorbed > 0)
 					{
 						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
@@ -1235,6 +1237,28 @@ namespace WCell.RealmServer.Misc
 			return chance;
 		}
 
+		#endregion
+
+		#region Damages
+		/// <summary>
+		/// Adds all damage boni and mali
+		/// </summary>
+		internal void AddDamageMods()
+		{
+			if (Attacker != null)
+			{
+				if (!IsDot)
+				{
+					// does not add to dot
+					Damage = Attacker.GetTotalDamageDoneMod(UsedSchool, Damage, Spell);
+				}
+				else if (SpellEffect != null)
+				{
+					// periodic damage mod
+					Damage = Attacker.Auras.GetModifiedInt(SpellModifierType.PeriodicEffectValue, Spell, Damage);
+				}
+			}
+		}
 		#endregion
 
 		#region Absorb

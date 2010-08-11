@@ -447,7 +447,7 @@ namespace WCell.RealmServer.Tests.Entities
             var spi = chr.Spirit;
             var intel = chr.Intellect;
 
-            chr.GainXp(chr.NextLevelXP - chr.XP, false);
+            chr.GainXp(chr.NextLevelXP - chr.Experience, false);
 
             var newStr = chr.Strength;
             var newStam = chr.Stamina;

@@ -114,9 +114,6 @@ namespace WCell.RealmServer.Entities
 		protected int[] m_damageTakenMods;
 		protected int[] m_damageTakenPctMods;
 
-		protected int m_ManaShieldAmount;
-		protected float m_ManaShieldFactor;
-
 		/// <summary>
 		/// Immunities against damage-schools
 		/// </summary>
@@ -977,7 +974,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Spell avoidance
 		/// </summary>
-		public void ModSpellHitChance(DamageSchool school, int delta)
+		public virtual void ModSpellHitChance(DamageSchool school, int delta)
 		{
 			if (m_SpellHitChance == null)
 			{
@@ -1901,57 +1898,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Mana Shield
-		/// <summary>
-		/// Amount of remaining mana shield
-		/// </summary>
-		public int ManaShieldAmount
-		{
-			get { return m_ManaShieldAmount; }
-			set { m_ManaShieldAmount = value; }
-		}
-
-		/// <summary>
-		/// Amount of mana to be subtracted for each hit taken
-		/// </summary>
-		public float ManaShieldFactor
-		{
-			get { return m_ManaShieldFactor; }
-			set { m_ManaShieldFactor = value; }
-		}
-
-		/// <summary>
-		/// Drains as much damage from a currently active mana shield as possible.
-		/// Deactivates the mana shield once its used up.
-		/// </summary>
-		/// <param name="damage"></param>
-		/// <returns>The amount of damage drained</returns>
-		public int DrainManaShield(int damage)
-		{
-			var power = Power;
-			if (damage >= m_ManaShieldAmount)
-			{
-				damage = m_ManaShieldAmount;
-				m_auras.RemoveWhere(aura => aura.Spell.HasManaShield);
-			}
-
-			var powerPoints = (int)(power / m_ManaShieldFactor);
-
-			var amount = Math.Min(damage, powerPoints);
-			m_ManaShieldAmount -= powerPoints;
-			Power = power - (int)(amount * m_ManaShieldFactor);
-			damage -= amount;
-
-			return amount;
-		}
-
-		public void SetManaShield(float factor, int amount)
-		{
-			m_ManaShieldFactor = factor;
-			m_ManaShieldAmount = amount;
-		}
-		#endregion
-
 		#region Misc
 		public void ResetMechanicDefaults()
 		{
@@ -1970,6 +1916,13 @@ namespace WCell.RealmServer.Entities
 			m_flightBackSpeed = DefaultFlightBackSpeed;
 			m_turnSpeed = DefaultTurnSpeed;
 			m_pitchSpeed = DefaulPitchSpeed;
+		}
+		#endregion
+
+		#region Resilience
+		public virtual float GetResiliencePct()
+		{
+			return 0;
 		}
 		#endregion
 	}

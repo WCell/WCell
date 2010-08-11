@@ -380,23 +380,23 @@ namespace WCell.RealmServer.Spells
 						spell.RequiredTotemCategories[i] = (TotemCategory)GetUInt32(rawData, currentIndex++);
 					}
 
-					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);                     // 147
-					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);    // 148
+					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);
+					spell.SchoolMask = (DamageSchoolMask)GetUInt32(rawData, currentIndex++);  
 
 					var runeCostId = GetInt32(rawData, currentIndex++);
 					if (runeCostId != 0)
 					{
-						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);// 149
+						mappeddbcRuneCostReader.Entries.TryGetValue(runeCostId, out spell.RuneCostEntry);
 					}
-					spell.MissileId = GetUInt32(rawData, currentIndex++);           // 150
+					spell.MissileId = GetUInt32(rawData, currentIndex++);       
 
 					// New 3.1.0. Id from PowerDisplay.dbc
-					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);       // 151
+					spell.PowerDisplayId = GetInt32(rawData, currentIndex++);   
 
 					// 3.2.2 unk float (array?)
-					spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);         // 152
-					spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);         // 153
-					spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);         // 154
+					spell.Unk_322_4_1 = GetUInt32(rawData, currentIndex++);    
+					spell.Unk_322_4_2 = GetUInt32(rawData, currentIndex++);  
+					spell.Unk_322_4_3 = GetUInt32(rawData, currentIndex++);   
 
 					// 3.2.2
 					spell.spellDescriptionVariablesID = GetUInt32(rawData, currentIndex++);

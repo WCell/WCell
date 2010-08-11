@@ -18,19 +18,14 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public event Action<Character, NPC> Interacting;
 
-		/// <summary>
-		/// Is called right before the given Attacker delivers the given <see cref="IDamageAction"/>
-		/// </summary>
-		public event AttackHandler HitDelivered;
-
-		/// <summary>
-		/// Is called right before the given Target receives the given <see cref="IDamageAction"/>
-		/// </summary>
-		public event AttackHandler HitReceived;
-
 		public event Func<NPC, bool> BeforeDeath;
 
 		public event NPCHandler Died;
+
+		/// <summary>
+		/// Is called when this NPC's level changed, only if the NPC of this NPCEntry may gain levels (<see cref="NPC.MayGainExperience"/>).
+		/// </summary>
+    	public event NPCHandler LevelChanged;
     }
 
 	public partial class SpawnEntry

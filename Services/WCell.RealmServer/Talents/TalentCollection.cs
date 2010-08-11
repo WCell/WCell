@@ -25,6 +25,7 @@ using WCell.Constants.Talents;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Talents
 {
@@ -52,7 +53,7 @@ namespace WCell.RealmServer.Talents
 			{
 				if (spell.Talent != null)
 				{
-					m_treePoints[spell.Talent.Tree.TabIndex]++;
+					m_treePoints[spell.Talent.Tree.TabIndex] ++;
 				}
 			}
 		}
@@ -73,7 +74,6 @@ namespace WCell.RealmServer.Talents
 		public int Count
 		{
 			get { return ById.Count; }
-
 		}
 
 		/// <summary>
@@ -81,10 +81,7 @@ namespace WCell.RealmServer.Talents
 		/// </summary>
 		public uint ResetAllPrice
 		{
-			get
-			{
-				return (uint)Owner.GetTalentResetPrice();
-			}
+			get { return (uint)Owner.GetTalentResetPrice(); }
 		}
 
 		public IHasTalents Owner
@@ -93,6 +90,7 @@ namespace WCell.RealmServer.Talents
 			internal set;
 		}
 
+		#region CanLearn
 		/// <summary>
 		/// Whether the given talent can be learned by this Character
 		/// </summary>
@@ -161,7 +159,9 @@ namespace WCell.RealmServer.Talents
 				(entry.RequiredId == TalentId.None || (ById.TryGetValue(entry.RequiredId, out reqTalent) &&
 				(entry.RequiredRank == 0 || reqTalent.Rank >= entry.RequiredRank)));
 		}
+		#endregion
 
+		#region Learn
 		/// <summary>
 		/// Tries to learn the given talent on the given rank
 		/// </summary>
@@ -210,6 +210,37 @@ namespace WCell.RealmServer.Talents
 		}
 
 		/// <summary>
+		/// Learn all talents of your own class
+		/// </summary>
+		public void LearnAll()
+		{
+			LearnAll(Owner.Class);
+		}
+
+		/// <summary>
+		/// Learns all talents of the given class
+		/// </summary>
+		public void LearnAll(ClassId clss)
+		{
+			var points = Owner.FreeTalentPoints;
+			Owner.FreeTalentPoints = 300;			// need extra Talent points to avoid internal checks to fail
+
+			foreach (var talentTree in TalentMgr.TreesByClass[(int)clss])
+			{
+				if (talentTree == null) continue;
+				foreach (var entry in talentTree)
+				{
+					if (entry == null) continue;
+					Learn(entry, entry.MaxRank);
+				}
+			}
+
+			Owner.FreeTalentPoints = points;
+		}
+		#endregion
+
+		#region Set & Add
+		/// <summary>
 		/// Sets the given talent to the given rank without any checks.
 		/// Make sure that the given TalentId is valid for this Character's class.
 		/// </summary>
@@ -244,7 +275,9 @@ namespace WCell.RealmServer.Talents
 
 			ById[entry.Id] = talent;
 		}
+		#endregion
 
+		#region Getters
 		/// <summary>
 		/// Returns the current rank that this player has of this talent
 		/// </summary>
@@ -269,56 +302,6 @@ namespace WCell.RealmServer.Talents
 			return -1;
 		}
 
-		public void Remove(TalentId id)
-		{
-			var talent = GetTalent(id);
-			if (talent != null)
-			{
-				talent.Remove();
-			}
-		}
-
-		/// <summary>
-		/// Resets all talents
-		/// </summary>
-		public void ResetAll()
-		{
-			foreach (var talent in ById.Values)
-			{
-				talent.Remove();
-			}
-			ById.Clear();
-		}
-
-		/// <summary>
-		/// Learn all talents of your own class
-		/// </summary>
-		public void LearnAll()
-		{
-			LearnAll(Owner.Class);
-		}
-
-		/// <summary>
-		/// Learns all talents of the given class
-		/// </summary>
-		public void LearnAll(ClassId clss)
-		{
-			var points = Owner.FreeTalentPoints;
-			Owner.FreeTalentPoints = 300;			// need extra Talent points to avoid internal checks to fail
-
-			foreach (var talentTree in TalentMgr.TreesByClass[(int)clss])
-			{
-				if (talentTree == null) continue;
-				foreach (var entry in talentTree)
-				{
-					if (entry == null) continue;
-					Learn(entry, entry.MaxRank);
-				}
-			}
-
-			Owner.FreeTalentPoints = points;
-		}
-
 		/// <summary>
 		/// Whether this Owner has a certain Talent.
 		/// </summary>
@@ -339,6 +322,96 @@ namespace WCell.RealmServer.Talents
 			return ById.ContainsKey(talent.Entry.Id);
 		}
 
+		public int GetFreePlayerTalentPoints(int level)
+		{
+			if (level < 10)
+			{
+				return -TotalPointsSpent;
+			}
+			return level - 9 - TotalPointsSpent;
+		}
+
+		public int GetFreePetTalentPoints(int level)
+		{
+			if (level < 20)
+			{
+				return -TotalPointsSpent;
+
+			}
+			return (level - 19) / 4 - TotalPointsSpent;
+		}
+		#endregion
+
+		#region Remove & Reset
+		public bool Remove(TalentId id)
+		{
+			var talent = GetTalent(id);
+			if (talent != null)
+			{
+				talent.Remove();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Resets all talents
+		/// </summary>
+		public void ResetAll()
+		{
+			foreach (var talent in ById.Values)
+			{
+				talent.Remove();
+			}
+			ById.Clear();
+		}
+
+		/// <summary>
+		/// Removes the given amount of arbitrarily selected talents (always removes higher level talents first)
+		/// </summary>
+		public void RemoveTalents(int count)
+		{
+			var trees = TalentMgr.GetTrees(Owner.Class);
+
+			// TODO: Remove depth-first, instead of breadth-first
+			for (var i = 0; i < trees.Length; i++)
+			{
+				var tree = trees[i];
+				while (m_treePoints[i] > 0 && count > 0)
+				{
+					for (var r = tree.TalentTable.Length - 1; r >= 0; r--)
+					{
+						var row = tree.TalentTable[r];
+						foreach (var entry in row)
+						{
+							if (entry != null)
+							{
+								var talent = GetTalent(entry.Id);
+								if (talent != null)
+								{
+									if (count >= talent.ActualRank)
+									{
+										count -= talent.ActualRank;
+										talent.Remove();
+									}
+									else
+									{
+										talent.ActualRank -= count;
+										count = 0;
+										TalentHandler.SendTalentGroupList(Owner);
+										return;
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			TalentHandler.SendTalentGroupList(Owner);
+		}
+		#endregion
+
 		#region Dual Speccing
 
 		public void ApplySpec(List<ITalentRecord> spec)
@@ -352,6 +425,7 @@ namespace WCell.RealmServer.Talents
 
 		#endregion
 
+		#region Enumerator
 		/// <summary>
 		/// Returns an enumerator that iterates through the collection.
 		/// </summary>
@@ -375,5 +449,6 @@ namespace WCell.RealmServer.Talents
 		{
 			return GetEnumerator();
 		}
+		#endregion
 	}
 }

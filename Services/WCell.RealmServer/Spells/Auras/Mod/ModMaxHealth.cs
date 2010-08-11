@@ -3,7 +3,7 @@
  *   file		: ModMaxHealth.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lÃ¸, 07 mar 2009) $
+ *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lø, 07 mar 2009) $
  *   last author	: $LastChangedBy: ralekdev $
  *   revision		: $Rev: 784 $
  *
@@ -23,12 +23,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			m_aura.Auras.Owner.MaxHealthMod += EffectValue;
+			m_aura.Auras.Owner.MaxHealthModFlat += EffectValue;
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.MaxHealthMod -= EffectValue;
+			m_aura.Auras.Owner.MaxHealthModFlat -= EffectValue;
 		}
 	}
 };

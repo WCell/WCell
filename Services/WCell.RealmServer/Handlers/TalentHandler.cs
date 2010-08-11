@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Handlers
         /// <param name="hasTalents">The IHasTalents to send the list from</param>
         public static void SendTalentGroupList(IHasTalents hasTalents, int talentGroupId)
         {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TALENT_GROUP_LIST))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TALENTS_INFO))
             {
                 var isPlayer = (hasTalents is Character);
 

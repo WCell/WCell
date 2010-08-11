@@ -555,9 +555,10 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(level);
 				packet.Write(hpGain);
 
-				for (int i = 0; i < 7; i++)
+				packet.Write(manaGain);
+				for (int i = 1; i < 7; i++)
 				{
-					packet.Write(manaGain);
+					packet.Write(0);
 				}
 
 				packet.Write(strBonus);
@@ -727,7 +728,7 @@ namespace WCell.RealmServer.Handlers
 			var shId = packet.ReadEntityId();
 			var healer = chr.Region.GetObject(shId) as NPC;
 
-			if (healer != null && healer.IsSpiritHealer && chr.IsCorpseReclaimable && healer.CanInteractWith(chr))
+			if (healer != null && healer.IsSpiritHealer && chr.IsCorpseReclaimable && healer.CheckVendorInteraction(chr))
 			{
 				chr.ResurrectWithConsequences();
 			}

@@ -392,13 +392,13 @@ namespace WCell.RealmServer.Spells.Auras
 		public static uint AddAuraGroup(SpellLineId auraLine, SpellLineId auraLine2, params SpellId[] auras)
 		{
 			var uid = GetNextAuraUID();
-			var line = SpellLines.GetLine(auraLine);
+			var line = auraLine.GetLine();
 			line.AuraUID = uid;
 			foreach (var spell in line)
 			{
 				spell.AuraUID = uid;
 			}
-			line = SpellLines.GetLine(auraLine2);
+			line = auraLine2.GetLine();
 			line.AuraUID = uid;
 			foreach (var spell in line)
 			{

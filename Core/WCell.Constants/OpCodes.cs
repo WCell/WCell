@@ -2146,7 +2146,7 @@ namespace WCell.Constants
         ///     }
         /// }
         /// </summary>
-        SMSG_TALENT_GROUP_LIST = 1216,
+        SMSG_TALENTS_INFO = 1216,
         /// <summary>
         /// lua_LearnPreviewTalents
         /// int count
