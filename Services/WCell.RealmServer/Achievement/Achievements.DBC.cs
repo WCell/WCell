@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			var achievementEntry = new AchievementEntry();
 			achievementEntry.ID = (AchievementEntryId)GetUInt32(rawData, 0);
-			achievementEntry.FactionFlag = GetUInt32(rawData, 1);
+			achievementEntry.FactionFlag = GetInt32(rawData, 1);
 			achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
 			achievementEntry.Name = new string[16];
 			for (int i = 0; i < 16; i++)

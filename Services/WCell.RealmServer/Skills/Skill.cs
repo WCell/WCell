@@ -89,7 +89,8 @@ namespace WCell.RealmServer.Skills
 				{
 					m_skills.Owner.UpdateDefense();
 				}
-				m_skills.Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachSkillLevel,m_record.CurrentValue);
+				m_skills.Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachSkillLevel,
+				                                                            (uint) m_record.SkillId, m_record.CurrentValue);
 			}
 		}
 
@@ -175,13 +176,21 @@ namespace WCell.RealmServer.Skills
 			}
 		}
 
+		private Spell _currentTierSpell;
+
 		/// <summary>
 		/// The spell that represents the current tier
 		/// </summary>
 		public Spell CurrentTierSpell
 		{
-			get;
-			internal set;
+			get { return _currentTierSpell; }
+			internal set
+			{
+				_currentTierSpell = value;
+				var skillId = value.Ability.Skill.Id;
+				var tier = value.SkillTier;
+				m_skills.m_owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LearnSkillLevel, (uint)skillId, (uint)tier);
+			}
 		}
 
 		/// <summary>

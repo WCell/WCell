@@ -321,7 +321,19 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 40
 		public SkillId SkillId;
-		public uint SkillLevel;
+		public SkillTierId SkillTierId;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (value1 == 0 || (SkillId)value1 != SkillId)
+				return;
+			achievements.SetCriteriaProgress(this, value2);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= (uint)SkillTierId;
+		}
 	}
 	// TODO: The rest
 }
