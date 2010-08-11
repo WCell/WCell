@@ -165,6 +165,7 @@ namespace WCell.RealmServer.Achievement
 		public void EarnAchievement(AchievementEntry achievement)
 		{
 			AddAchievement(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
+			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, (uint)achievement.ID, 1);
 			RemoveAchievementProgress(achievement);
 			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
 		}
@@ -266,6 +267,30 @@ namespace WCell.RealmServer.Achievement
 
 		#region Update
 		/// <summary>
+		/// Checks if the player can ever complete the given achievement.
+		/// </summary>
+		/// <param name="achievementCriteriaEntry"></param>
+		/// <returns></returns>
+		private bool IsAchieveAble(AchievementCriteriaEntry achievementCriteriaEntry)
+		{
+			// Skip achievements we have completed
+			if (HasCompleted(achievementCriteriaEntry.AchievementEntryId))
+				return false;
+
+			// Skip achievements that have different faction requirement then the player faction.
+			if (achievementCriteriaEntry.AchievementEntry.FactionFlag == (int)AchievementFactionGroup.Alliance && Owner.FactionGroup != FactionGroup.Alliance)
+				return false;
+			if (achievementCriteriaEntry.AchievementEntry.FactionFlag == (int)AchievementFactionGroup.Horde && Owner.FactionGroup != FactionGroup.Horde)
+				return false;
+
+			// Skip achievements that require to be groupfree and 
+			if (achievementCriteriaEntry.GroupFlag.HasFlag(AchievementCriteriaGroupFlags.AchievementCriteriaGroupNotInGroup) && Owner.IsInGroup)
+				return false;
+
+			return true;
+		}
+
+		/// <summary>
 		/// A method that will try to update the progress of all the related criterias.
 		/// </summary>
 		/// <param name="type">The Criteria Type.</param>
@@ -280,16 +305,10 @@ namespace WCell.RealmServer.Achievement
 			{
 				foreach (var entry in list)
 				{
-					// Skip achievements we have completed
-					if (HasCompleted(entry.AchievementEntryId))
-						continue;
-					if (entry.AchievementEntry.FactionFlag == 1 && Owner.FactionGroup != FactionGroup.Alliance)
-						continue;
-					if (entry.AchievementEntry.FactionFlag == 0 && Owner.FactionGroup != FactionGroup.Horde)
-						continue;
-
-					entry.OnUpdate(this, value1, value2, involved);
-					
+					if(IsAchieveAble(entry))
+					{
+						entry.OnUpdate(this, value1, value2, involved);
+					}
 				}
 			}
 		}
@@ -339,6 +358,12 @@ namespace WCell.RealmServer.Achievement
 			if (IsAchievementCompletable(entry.AchievementEntry))
 				EarnAchievement(entry.AchievementEntry);
 		}
+
+		/*public void CheckAchievementsAfterLoading()
+		{
+			CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Owner.Level);
+			CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Owner.Level);
+		}*/
 
     	#endregion
 

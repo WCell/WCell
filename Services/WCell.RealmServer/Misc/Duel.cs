@@ -1,5 +1,6 @@
 using System;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -310,6 +311,8 @@ namespace WCell.RealmServer.Misc
 					// user casts stun on himself
 					loser.SpellCast.Start(SpellId.NotDisplayedGrovel, false);
 					var winner = loser.DuelOpponent;
+					winner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.WinDuel, 1);
+					loser.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.LoseDuel, 1);
 					DuelHandler.SendWinner(win, winner, loser);
 				}
 
