@@ -59,7 +59,7 @@ namespace WCell.Constants.Spells
 		/// Does not show in buff/debuff pane. normally passive buffs
 		/// 0x80
 		/// </summary>
-		NoVisibleAura = 0x80,//7
+		InvisibleAura = 0x80,//7
 
 		/// <summary>
 		/// Every learn-spell has it, but also many other spells

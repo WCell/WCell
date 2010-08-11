@@ -1,5 +1,1 @@
-- implemented/cleaned up/improved pet & minion scaling; damage modifiers for NPCs; pet damage; pet experience & level gain; pet & master combat state
-- changed #level command to also allow setting of lower levels
-- removed some combat-related events (use AttackEventHandlers instead, or override Unit.OnDamageAction)
-- fixed ManaShieldHandler
-- pet talents coming up
+- renamed Group.QuestSomethingSomething to Group.OnKill
