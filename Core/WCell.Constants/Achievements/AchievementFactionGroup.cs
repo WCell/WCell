@@ -5,8 +5,10 @@ using System.Text;
 
 namespace WCell.Constants.Achievements
 {
-	public enum AchievementCriteriaGroupFlags : uint
+	public enum AchievementFactionGroup 
 	{
-		AchievementCriteriaGroupNotInGroup = 2,
+		BothGroups = -1,
+		Horde = 0,
+		Alliance = 1
 	}
 }

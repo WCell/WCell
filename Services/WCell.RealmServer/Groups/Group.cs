@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Threading;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.Updates;
@@ -1616,6 +1617,7 @@ namespace WCell.RealmServer.Groups
 				if (chr.Region == victim.Region && chr.IsInRange(new SimpleRange(0.0f, 100.0f), killer))
 				{
 					chr.QuestLog.OnNPCInteraction(victim);
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KillCreature, victim.EntryId, 1);
 				}
 			});
 		}

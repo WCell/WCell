@@ -21,9 +21,9 @@ namespace WCell.RealmServer.Achievement
 		public AchievementCriteriaId AchievementCriteriaId;
 		public AchievementEntryId AchievementEntryId;
 
-		public int CompletionFlag;
-		public int GroupFlag;
-		public int TimeLimit;
+		public uint CompletionFlag;							// 26
+		public AchievementCriteriaGroupFlags GroupFlag;		// 27
+		public uint TimeLimit;								// 29
 
 		public AchievementEntry AchievementEntry
 		{
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Achievement
 			{
 				return;
 			}
-			achievements.SetCriteriaProgress(this, value2);
+			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
 		}
 	}
 
@@ -103,7 +103,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			if(value1== 0 || (SkillId)value1!=SkillId)
 				return;
-			achievements.SetCriteriaProgress(this,value1);
+			achievements.SetCriteriaProgress(this,value2);
 		}
 
 		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
@@ -120,8 +120,8 @@ namespace WCell.RealmServer.Achievement
 
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
-			if (AchievementMgr.AchievementEntries.ContainsKey(AchievementToCompleteId))
-				achievements.SetCriteriaProgress(this, 1);
+			if(AchievementToCompleteId == (AchievementEntryId)value1)
+				achievements.SetCriteriaProgress(this, value2);
 		}
 
 		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
@@ -139,7 +139,7 @@ namespace WCell.RealmServer.Achievement
 
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
-			achievements.SetCriteriaProgress(this, value1);
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
 		}
 
 		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
@@ -159,7 +159,12 @@ namespace WCell.RealmServer.Achievement
 		{
 			if(value1 == 0)
 				return;
-			achievements.SetCriteriaProgress(this,1);
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= NumberOfDays;
 		}
 	}
 
@@ -169,6 +174,17 @@ namespace WCell.RealmServer.Achievement
 		// 11
 		public ZoneId ZoneId;
 		public uint CompletedQuestCount;
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= CompletedQuestCount;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(ZoneId == (ZoneId)value1) 
+				achievements.SetCriteriaProgress(this, value2);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -177,6 +193,16 @@ namespace WCell.RealmServer.Achievement
 		// 14
 		public uint Unused;
 		public uint CompletedQuestCount;
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= CompletedQuestCount;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -227,6 +253,16 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 26
 		public EnviromentalDamageType EnviromentalDamageType;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (value1 == 0)
+				return;
+			if ((EnviromentalDamageType) value2 != EnviromentalDamageType)
+				return;
+
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -234,7 +270,18 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 27
 		public uint QuestId;
-		public uint QuestCount;
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= 1;
+		}
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 != QuestId)
+				return;
+			achievements.SetCriteriaProgress(this,1);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -335,5 +382,36 @@ namespace WCell.RealmServer.Achievement
 			return achievementProgressRecord.Counter >= (uint)SkillTierId;
 		}
 	}
-	// TODO: The rest
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class WinDuelLevelAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 76
+		public uint Unused;
+		public uint DuelCount;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= DuelCount;
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class LoseDuelLevelAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		public uint Unused;
+		public uint DuelCount;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+		}
+	}
+
+
 }
