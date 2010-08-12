@@ -119,7 +119,11 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundTeam Winner
 		{
 			get { return _winner; }
-			protected set { _winner = value; }
+			protected set
+			{
+				_winner = value;
+				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, RegionId ,1); );
+			}
 		}
 
 		public virtual SpellId PreparationSpellId

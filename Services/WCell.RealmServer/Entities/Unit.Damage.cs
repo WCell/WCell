@@ -564,7 +564,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Deals environmental damage to this Unit (cannot be resisted)
 		/// </summary>
-		public void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
+		public virtual void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
 		{
 			//if (dmgType == EnviromentalDamageType.Fall)
 			//{

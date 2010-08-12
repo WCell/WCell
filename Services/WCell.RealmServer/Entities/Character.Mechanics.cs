@@ -17,6 +17,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Trade;
 using WCell.Util;
 using WCell.Util.Graphics;
+using WCell.Constants.Achievements;
 
 namespace WCell.RealmServer.Entities
 {
@@ -195,9 +196,16 @@ namespace WCell.RealmServer.Entities
 				if (IsAlive && Flying == 0 && Hovering == 0 && FeatherFalling == 0 && !IsImmune(DamageSchool.Physical))
 				{
 					var fallDamage = FallDamageGenerator.GetFallDmg(this, m_fallStartHeight - m_position.Z);
-
-					//if (fallDamage > 0)
-					//    DoEnvironmentalDamage(EnviromentalDamageType.Fall, fallDamage);
+					
+					if (fallDamage > 0)
+					{
+						// If the character current health is higher then the fall damage, the player survived the fall.
+						if (fallDamage < Health)
+						{
+							Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.FallWithoutDying, m_fallStartHeight - m_position.Z * 100);
+						}
+					//	DoEnvironmentalDamage(EnviromentalDamageType.Fall, fallDamage);
+					}
 
 					m_fallStart = 0;
 					m_fallStartHeight = 0;
@@ -440,6 +448,15 @@ namespace WCell.RealmServer.Entities
 		{
 			var resilience = GetCombatRating(CombatRating.MeleeResilience);
 			return resilience / GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)Level - 1);
+		}
+
+		public override void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
+		{
+			base.DoEnvironmentalDamage(dmgType, amount);
+			if(!IsAlive)
+			{
+				Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathsFrom, dmgType, 1);
+			}
 		}
 		#endregion
 

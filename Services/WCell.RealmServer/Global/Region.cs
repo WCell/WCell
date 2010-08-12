@@ -2430,6 +2430,21 @@ namespace WCell.RealmServer.Global
 					OnHonorableKill(action);
 				}
 			}
+			if (action.Victim is Character)
+			{
+				var chr = action.Victim as Character;
+				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, RegionId, 1);
+
+				if(action.Attacker is Character)
+				{
+					var killer = action.Attacker as Character;
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, killer.FactionGroup, 1);
+				}
+				else
+				{
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, action.Attacker.EntryId, 1);
+				}
+			}
 		}
 
 		/// <summary>
