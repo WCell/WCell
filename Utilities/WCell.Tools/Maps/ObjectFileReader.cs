@@ -49,7 +49,7 @@ namespace WCell.Tools.Maps
 			if (highestWMO != null)
 			{
 				var center = (highestWMO.Bounds.Min + highestWMO.Bounds.Max) / 2.0f;
-				newVec = Vector3.Transform(highestVec, Matrix.CreateRotationY(MathHelper.ToRadians(highestWMO.RotationModelY - 90)));
+				newVec = Vector3.Transform(highestVec, Matrix.CreateRotationY(WCell.Util.Graphics.MathHelper.ToRadians(highestWMO.RotationModelY - 90)));
 
 				// shift newVec to world space
 				worldVec = new Vector3(newVec.Z, newVec.X, newVec.Y);
