@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WCell.Util.Graphics
 {
-    public class Size
+    public struct Size
     {
         public static readonly Size Empty;
 

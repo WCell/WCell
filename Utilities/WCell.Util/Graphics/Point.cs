@@ -5,7 +5,7 @@ using System.Text;
 
 namespace WCell.Util.Graphics
 {
-    public class Point
+    public struct Point
     {
         public static readonly Point Empty;
 
