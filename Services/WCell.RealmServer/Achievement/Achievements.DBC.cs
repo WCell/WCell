@@ -65,6 +65,10 @@ namespace WCell.RealmServer.Achievement
 
 			CopyTo(rawData, 3, Marshal.SizeOf(typeof(AchievementCriteriaEntry)), entry);
 
+			entry.CompletionFlag = GetUInt32(rawData, 26);
+			entry.GroupFlag = (AchievementCriteriaGroupFlags) GetUInt32(rawData, 27);
+			entry.TimeLimit = GetUInt32(rawData, 29);
+
 			var achievement = entry.AchievementEntry;
 			if (achievement != null)
 			{

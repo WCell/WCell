@@ -53,6 +53,7 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.AI;
 using WCell.Core.TerrainAnalysis;
+using WCell.Constants.Achievements;
 
 namespace WCell.RealmServer.Global
 {
@@ -2464,6 +2465,7 @@ namespace WCell.RealmServer.Global
 						else
 						{
 							chr.QuestLog.OnNPCInteraction(npc);
+							chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KillCreature, npc.EntryId, 1);
 						}
 					}
 				}
