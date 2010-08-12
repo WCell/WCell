@@ -14,6 +14,7 @@ using WCell.Tools.Maps.Parsing.WMO.Components;
 using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
 using NLog;
+using MathHelper = WCell.Util.Graphics.MathHelper;
 
 namespace WCell.Tools.Maps
 {
@@ -210,7 +211,7 @@ namespace WCell.Tools.Maps
             TerrainConstants.TileExtentsToWorldExtents(ref def.Extents);
 
             Matrix modelToWorld;
-            Matrix.CreateRotationZ(MathHelper.ToRadians(def.OrientationB + 180), out modelToWorld);
+            Matrix.CreateRotationZ(WCell.Util.Graphics.MathHelper.ToRadians(def.OrientationB + 180), out modelToWorld);
             Matrix worldToModel;
             Matrix.Invert(ref modelToWorld, out worldToModel);
             def.WMOToWorld = modelToWorld;
