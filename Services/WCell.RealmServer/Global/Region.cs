@@ -2433,12 +2433,12 @@ namespace WCell.RealmServer.Global
 			if (action.Victim is Character)
 			{
 				var chr = action.Victim as Character;
-				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, RegionId, 1);
+				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)RegionId, 1);
 
 				if(action.Attacker is Character)
 				{
 					var killer = action.Attacker as Character;
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, killer.FactionGroup, 1);
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)killer.FactionGroup, 1);
 				}
 				else
 				{

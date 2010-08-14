@@ -262,7 +262,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			if(value1 == 0)
 				return;
-			if(value1 != CreatureId)
+			if((NPCId)value1 != CreatureId)
 				return;
 			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
 		}
@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			if(value1 == 0)
 				return;
-			if(achievements.Owner.FactionGroup == value1)
+			if(achievements.Owner.FactionGroup == (FactionGroup)value1)
 				return;
 			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
 		}

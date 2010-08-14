@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Battlegrounds
 			protected set
 			{
 				_winner = value;
-				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, RegionId ,1); );
+				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)RegionId ,1));
 			}
 		}
 
