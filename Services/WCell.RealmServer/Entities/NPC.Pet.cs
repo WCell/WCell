@@ -333,6 +333,7 @@ namespace WCell.RealmServer.Entities
 
 		private void UpdateSpellRanks()
 		{
+			if (m_entry.Spells == null) return;
 			var level = Level;
 			foreach (var spell in m_entry.Spells.Values)
 			{
