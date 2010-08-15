@@ -278,7 +278,7 @@ namespace WCell.RealmServer.Commands
 			{
 				var searchTerms = trigger.Text.Remainder.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				var templates = QuestMgr.Templates.Where(templ => templ != null &&
-					searchTerms.Iterate(term => !templ.Title.ContainsIgnoreCase(term)));
+					searchTerms.Iterate(term => !templ.DefaultTitle.ContainsIgnoreCase(term)));
 
 				var count = templates.Count();
 				trigger.Reply("Found {0} matching Quests.", count);
