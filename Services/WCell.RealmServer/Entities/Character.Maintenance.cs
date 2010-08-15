@@ -255,11 +255,11 @@ namespace WCell.RealmServer.Entities
 					}
 
 					// load all the rest
+					m_achievements.Load();
 					m_record.LoadSpells(this);
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
-					m_achievements.Load();
 					var auras = m_record.LoadAuraRecords();
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
 

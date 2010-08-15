@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Achievement
 			get { return AchievementMgr.GetAchievementEntry(AchievementEntryId); }
 		}
 
-		public virtual bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public virtual bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return false;
 		}
@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Achievement
 		public NPCId CreatureId;
 		public int CreatureCount;
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= CreatureCount;
 		}
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Achievement
 		public uint Unused;
 		public uint Level;
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= Level;
 		}
@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this,value2);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= SkillValue;
 		}
@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Achievement
 				achievements.SetCriteriaProgress(this, value2);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= 1;
 		}
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= CompletedQuestCount;
 		}
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= NumberOfDays;
 		}
@@ -184,7 +184,7 @@ namespace WCell.RealmServer.Achievement
 		public ZoneId ZoneId;
 		public uint CompletedQuestCount;
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= CompletedQuestCount;
 		}
@@ -203,7 +203,7 @@ namespace WCell.RealmServer.Achievement
 		public uint Unused;
 		public uint CompletedQuestCount;
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= CompletedQuestCount;
 		}
@@ -305,7 +305,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this, value1);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= Height;
 		}
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Achievement
 		// 27
 		public uint QuestId;
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= 1;
 		}
@@ -440,7 +440,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this, value2);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= (uint)SkillTierId;
 		}
@@ -458,7 +458,7 @@ namespace WCell.RealmServer.Achievement
 			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
 		}
 
-		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
 		{
 			return achievementProgressRecord.Counter >= DuelCount;
 		}
