@@ -140,7 +140,7 @@ namespace WCell.Util
 
 		public static int GetMilliSecondsInt(this TimeSpan time)
 		{
-			return (int)(time.Ticks + TicksPerSecond / 2) / TicksPerSecond;
+			return (int)(time.Ticks) / TicksPerSecond;
 		}
 
 		/// <summary>

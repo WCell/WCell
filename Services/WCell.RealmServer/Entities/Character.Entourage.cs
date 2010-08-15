@@ -79,6 +79,11 @@ namespace WCell.RealmServer.Entities
 
 					m_activePet = value;
 
+					if (m_activePet.PetRecord.Actions == null)
+					{
+						m_activePet.PetRecord.Actions = m_activePet.BuidPetActionBar();
+					}
+
 					AddPostUpdateMessage(() =>
 					{
 						if (m_activePet == value && m_activePet.IsInContext)
@@ -416,7 +421,7 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			var price = PetMgr.GetStableSLotPrice(StableSlotCount);
+			var price = PetMgr.GetStableSlotPrice(StableSlotCount);
 			if (Money < price)
 			{
 				return false;

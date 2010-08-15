@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((byte)currentAction);
 				packet.Write((ushort)record.Flags);
 
-				var actions = pet.BuidPetActionBar();
+				var actions = record.Actions;
 				for (var i = 0; i < PetConstants.PetActionCount; i++)
 				{
 					var action = actions[i];

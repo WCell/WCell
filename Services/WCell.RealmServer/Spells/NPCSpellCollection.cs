@@ -150,20 +150,22 @@ namespace WCell.RealmServer.Spells
 			{
 				if (spell.CastDelay == 0 && spell.Durations.Max == 0)
 				{
-					// no cooldown, no cast delay, no duration
-					var cd = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
-					ProcessCooldown(spell, cd);
+					// no cooldown, no cast delay, no duration: Add default cooldown
+					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
+					ProcessCooldown(spell, millis);
 				}
 			}
 			else
 			{
+				// add existing cooldown
+				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
 				ProcessCooldown(spell, millis);
 			}
 		}
 
 		public void RestoreCooldown(Spell spell, DateTime cdTime)
 		{
-			var millis = (cdTime - DateTime.Now).Milliseconds;
+			var millis = (cdTime - DateTime.Now).GetMilliSecondsInt();
 			ProcessCooldown(spell, millis);
 		}
 

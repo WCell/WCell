@@ -233,7 +233,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		#endregion
 
 		#region Stables
-		public static uint GetStableSLotPrice(int slot)
+		public static uint GetStableSlotPrice(int slot)
 		{
 			if (slot > StableSlotPrices.Length)
 			{
@@ -271,12 +271,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			{
 				chr.StablePet();
 				PetHandler.SendStableResult(chr, StableResult.StableSuccess);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr, StableResult.Fail);
-				return;
 			}
 		}
 
@@ -298,12 +296,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			if (!chr.TrySwapStabledPet(stabledPet))
 			{
 				PetHandler.SendStableResult(chr, StableResult.Fail);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
-				return;
 			}
 		}
 
@@ -317,12 +313,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			if (!chr.TryBuyStableSlot())
 			{
 				PetHandler.SendStableResult(chr.Client, StableResult.NotEnoughMoney);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr.Client, StableResult.BuySlotSuccess);
-				return;
 			}
 		}
 
@@ -361,7 +355,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 			if (stableMaster == null || !stableMaster.IsStableMaster)
 			{
-				log.Warn("Client {0} requested retreival of stabled pet from invalid NPC: {1}", chr.Client, stableMaster);
+				log.Warn("Character \"{0}\" requested retreival of stabled pet from invalid NPC: {1}", chr, stableMaster);
 				return false;
 			}
 
