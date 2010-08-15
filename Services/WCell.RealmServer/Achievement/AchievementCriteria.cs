@@ -11,6 +11,7 @@ using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
+using WCell.Constants.Factions;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -218,6 +219,15 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 15
 		public MapId MapId;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 == 0)
+				return;
+			if (MapId != (MapId)value1)
+				return;
+			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -225,6 +235,15 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 16
 		public MapId MapId;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if (value1 == 0)
+				return;
+			if (MapId != (MapId)value1)
+				return;
+			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -246,6 +265,30 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 20
 		public NPCId CreatureId;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 == 0)
+				return;
+			if((NPCId)value1 != CreatureId)
+				return;
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public class KilledByPlayerAchievementCriteriaEntry : AchievementCriteriaEntry
+	{
+		// 23
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 == 0)
+				return;
+			if(achievements.Owner.FactionGroup == (FactionGroup)value1)
+				return;
+			achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressAccumulate);
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -254,6 +297,18 @@ namespace WCell.RealmServer.Achievement
 		// 24
 		public uint Unused;
 		public uint Height;
+
+		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+		{
+			if(value1 == 0)
+				return;
+			achievements.SetCriteriaProgress(this, value1);
+		}
+
+		public override bool HasCompleted(AchievementProgressRecord achievementProgressRecord)
+		{
+			return achievementProgressRecord.Counter >= Height;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -266,10 +321,10 @@ namespace WCell.RealmServer.Achievement
 		{
 			if (value1 == 0)
 				return;
-			if ((EnviromentalDamageType) value2 != EnviromentalDamageType)
+			if ((EnviromentalDamageType) value1 != EnviromentalDamageType)
 				return;
 
-			achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
+			achievements.SetCriteriaProgress(this, value2, ProgressType.ProgressAccumulate);
 		}
 	}
 
@@ -412,6 +467,7 @@ namespace WCell.RealmServer.Achievement
 	[StructLayout(LayoutKind.Sequential)]
 	public class LoseDuelLevelAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
+		// 77
 		public uint Unused;
 		public uint DuelCount;
 

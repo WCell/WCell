@@ -139,8 +139,11 @@
     </Compile>
     <Compile Include="Achievements\AchievementCategoryEntryId.cs" />
     <Compile Include="Achievements\AchievementCriteria.cs" />
+    <Compile Include="Achievements\AchievementCriteriaCompletionFlags.cs" />
+    <Compile Include="Achievements\AchievementCriteriaGroupFlags.cs" />
     <Compile Include="Achievements\AchievementCriteriaId.cs" />
     <Compile Include="Achievements\AchievementEntryId.cs" />
+    <Compile Include="Achievements\AchievementFactionGroup.cs" />
     <Compile Include="Achievements\AchievementFlags.cs" />
     <Compile Include="Achievements\ProgressType.cs" />
     <Compile Include="AreaTriggerId.cs" />

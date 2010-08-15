@@ -79,27 +79,27 @@ namespace WCell.Util.Graphics
 			return (x * x) + (y * y);
 		}
 
-        public float Length()
-        {
-            return (float)Math.Sqrt(X*X + Y*Y);
-        }
+		public float Length()
+		{
+			return (float)Math.Sqrt(X*X + Y*Y);
+		}
 
-        public float LengthSquared()
-        {
-            return (X*X + Y*Y);
-        }
+		public float LengthSquared()
+		{
+			return (X*X + Y*Y);
+		}
 
-        /// <summary>
-        /// Subtracts vector b from vector a.
-        /// </summary>
-        /// <param name="a">The vector to subtract from.</param>
-        /// <param name="b">The subtracting vector.</param>
-        /// <param name="result">A Vector2 filled with the result of (a - b).</param>
-        public static void Subtract(ref Vector2 a, ref Vector2 b, out Vector2 result)
-        {
-            result.X = a.X - b.X;
-            result.Y = a.Y - b.Y;
-        }
+		/// <summary>
+		/// Subtracts vector b from vector a.
+		/// </summary>
+		/// <param name="a">The vector to subtract from.</param>
+		/// <param name="b">The subtracting vector.</param>
+		/// <param name="result">A Vector2 filled with the result of (a - b).</param>
+		public static void Subtract(ref Vector2 a, ref Vector2 b, out Vector2 result)
+		{
+			result.X = a.X - b.X;
+			result.Y = a.Y - b.Y;
+		}
 
 		/// <summary>
 		/// Turns the current vector into a unit vector.
@@ -139,13 +139,6 @@ namespace WCell.Util.Graphics
 			return (X.GetHashCode() + Y.GetHashCode());
 		}
 
-		public static Vector2 operator -(Vector2 a, Vector2 b)
-		{
-			Vector2 result;
-			Subtract(ref a, ref b, out result);
-			return result;
-		}
-
 		public static bool operator ==(Vector2 a, Vector2 b)
 		{
 			return a.Equals(b);
@@ -154,6 +147,16 @@ namespace WCell.Util.Graphics
 		public static bool operator !=(Vector2 a, Vector2 b)
 		{
 			return (a.X != b.X) || a.Y != b.Y;
+		}
+
+		public static Vector2 operator +(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.X + b.X, a.Y + b.Y);
+		}
+
+		public static Vector2 operator -(Vector2 a, Vector2 b)
+		{
+			return new Vector2(a.X - b.X, a.Y - b.Y);
 		}
 
 		public override string ToString()
