@@ -502,6 +502,10 @@ namespace WCell.RealmServer.Spells
 			{
 				SkillTier = (SkillTierId)skillEffect.BasePoints;
 			}
+			else
+			{
+				SkillTier = SkillTierId.End;
+			}
 
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 

@@ -9,6 +9,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
@@ -619,7 +620,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var index = packet.ReadByte();
 
-			if (index >= Character.ActionButton.MaxAmount)
+			if (index >= ActionButton.MaxAmount)
 			{
 				log.Warn("{0} sent an invalid ActionButton (Index: {1})", client, index);
 				return;

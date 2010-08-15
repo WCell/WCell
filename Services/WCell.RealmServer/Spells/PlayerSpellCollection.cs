@@ -10,6 +10,7 @@ using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Talents;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;
@@ -19,6 +20,9 @@ namespace WCell.RealmServer.Spells
 {
 	public class PlayerSpellCollection : SpellCollection
 	{
+		static readonly IEnumerable<ISpellIdCooldown> EmptyIdCooldownArray = new ISpellIdCooldown[0];
+		static readonly IEnumerable<ISpellCategoryCooldown> EmptyCatCooldownArray = new ISpellCategoryCooldown[0];
+
 		private Timer m_offlineCooldownTimer;
 		private object m_lock;
 		private uint m_ownerId;
@@ -42,7 +46,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The runes of this Player (if any)
 		/// </summary>
-		private RuneSet m_runes;
+		private readonly RuneSet m_runes;
 
 		public PlayerSpellCollection(Character owner)
 			: base(owner)
@@ -54,14 +58,24 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
+		public IEnumerable<ISpellIdCooldown> IdCooldowns
 		{
-			get { return m_idCooldowns; }
+			get { return m_idCooldowns != null ? m_idCooldowns.Values : EmptyIdCooldownArray; }
 		}
 
-		public Dictionary<uint, ISpellCategoryCooldown> CategoryCooldowns
+		public IEnumerable<ISpellCategoryCooldown> CategoryCooldowns
 		{
-			get { return m_categoryCooldowns; }
+			get { return m_categoryCooldowns != null ? m_categoryCooldowns.Values : EmptyCatCooldownArray; }
+		}
+
+		public int IdCooldownCount
+		{
+			get { return m_idCooldowns != null ? m_idCooldowns.Count : 0; }
+		}
+
+		public int CategoryCooldownCount
+		{
+			get { return m_categoryCooldowns != null ? m_categoryCooldowns.Count : 0; }
 		}
 
 		/// <summary>
@@ -109,7 +123,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
 		/// </summary>
-		void AddSpell(Spell spell, bool isNew)
+		void AddSpell(Spell spell, bool sendPacket)
 		{
 			// make sure the char knows the skill that this spell belongs to
 			if (spell.Ability != null)
@@ -128,17 +142,23 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (!m_byId.ContainsKey(spell.Id))
+			if (!m_byId.ContainsKey(spell.SpellId))
 			{
-				if (m_sendPackets && isNew)
+				var owner = OwnerChar;
+				if (m_sendPackets && sendPacket)
 				{
-					SpellHandler.SendLearnedSpell(OwnerChar.Client, spell.Id);
+					SpellHandler.SendLearnedSpell(owner.Client, spell.Id);
 					if (!spell.IsPassive)
 					{
-						SpellHandler.SendVisual(Owner, 362);	// ouchy: Unnamed constants 
+						SpellHandler.SendVisual(owner, 362);	// ouchy: Unnamed constants 
 					}
 				}
-				OwnerChar.m_record.AddSpell(spell.Id);
+
+				var specIndex = GetSpecIndex(spell);
+				var spells = GetSpellList(spell);
+				var newRecord = new SpellRecord(spell.SpellId, owner.EntityId.Low, specIndex);
+				newRecord.SaveLater();
+				spells.Add(newRecord);
 
 				base.AddSpell(spell);
 			}
@@ -149,9 +169,9 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Replaces or (if newSpell == null) removes oldSpell.
 		/// </summary>
-		public override void Replace(Spell oldSpell, Spell newSpell)
+		public override bool Replace(Spell oldSpell, Spell newSpell)
 		{
-			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.Id);
+			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.SpellId);
 			if (hasOldSpell)
 			{
 				OnRemove(oldSpell);
@@ -160,8 +180,8 @@ namespace WCell.RealmServer.Spells
 					if (m_sendPackets)
 					{
 						SpellHandler.SendSpellRemoved(OwnerChar, oldSpell.Id);
-						return;
 					}
+					return true;
 				}
 			}
 
@@ -174,6 +194,7 @@ namespace WCell.RealmServer.Spells
 
 				AddSpell(newSpell, !hasOldSpell);
 			}
+			return hasOldSpell;
 		}
 
 		/// <summary>
@@ -181,47 +202,45 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private void OnRemove(Spell spell)
 		{
-			if (spell.Ability != null)
+			var chr = OwnerChar;
+			if (spell.RepresentsSkillTier)
 			{
-				OwnerChar.Skills.Remove(spell.Ability.Skill.Id);
-			}
-			OwnerChar.m_record.RemoveSpell(spell.Id);
-		}
-
-		/// <summary>
-		/// Called when the player logs out
-		/// </summary>
-		internal void OnOwnerLoggedOut()
-		{
-			m_ownerId = Owner.EntityId.Low;
-			Owner = null;
-			m_sendPackets = false;
-			m_lock = new object();
-			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
-
-			if (m_runes != null)
-			{
-				m_runes.OnOwnerLoggedOut();
+				// TODO: Skill might now be represented by a lower tier, and only the MaxValue changes
+				chr.Skills.Remove(spell.Ability.Skill.Id);
 			}
 
-			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
-			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
-		}
-
-		/// <summary>
-		/// Called when the player logs back in
-		/// </summary>
-		internal void OnReconnectOwner(Character owner)
-		{
-			lock (m_lock)
+			// figure out from where to remove and do it
+			var spells = GetSpellList(spell);
+			for (var i = 0; i < spells.Count; i++)
 			{
-				if (m_offlineCooldownTimer != null)
+				var record = spells[i];
+				if (record.SpellId == spell.SpellId)
 				{
-					m_offlineCooldownTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					m_offlineCooldownTimer = null;
+					// delete and remove
+					RealmServer.Instance.AddMessage(new Message(record.Delete));
+					spells.RemoveAt(i);
+					return;
 				}
 			}
-			Owner = owner;
+		}
+
+		int GetSpecIndex(Spell spell)
+		{
+			var chr = OwnerChar;
+			return spell.IsTalent ? chr.Talents.CurrentSpecIndex : SpellRecord.NoSpecIndex;
+		}
+
+		List<SpellRecord> GetSpellList(Spell spell)
+		{
+			var chr = OwnerChar;
+			if (spell.IsTalent)
+			{
+				return chr.CurrentSpecProfile.TalentSpells;
+			}
+			else
+			{
+				return chr.Record.Spells;
+			}
 		}
 
 		public override void Clear()
@@ -277,6 +296,44 @@ namespace WCell.RealmServer.Spells
 			//        AddNew(ability.Spell);
 			//    }
 			//}
+		}
+		#endregion
+
+		#region Logout / Relog
+		/// <summary>
+		/// Called when the player logs out
+		/// </summary>
+		internal void OnOwnerLoggedOut()
+		{
+			m_ownerId = Owner.EntityId.Low;
+			Owner = null;
+			m_sendPackets = false;
+			m_lock = new object();
+			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
+
+			if (m_runes != null)
+			{
+				m_runes.OnOwnerLoggedOut();
+			}
+
+			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
+			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
+		}
+
+		/// <summary>
+		/// Called when the player logs back in
+		/// </summary>
+		internal void OnReconnectOwner(Character owner)
+		{
+			lock (m_lock)
+			{
+				if (m_offlineCooldownTimer != null)
+				{
+					m_offlineCooldownTimer.Change(Timeout.Infinite, Timeout.Infinite);
+					m_offlineCooldownTimer = null;
+				}
+			}
+			Owner = owner;
 		}
 		#endregion
 
@@ -690,7 +747,7 @@ namespace WCell.RealmServer.Spells
 					//if (cd.CharId != m_ownerId)
 					cd.CharId = m_ownerId;
 					cd.SaveAndFlush(); // update or create
-					newCooldowns.Add(cd.Identifier, (T) cd);
+					newCooldowns.Add(cd.Identifier, (T)cd);
 				}
 			}
 			cooldowns = newCooldowns;

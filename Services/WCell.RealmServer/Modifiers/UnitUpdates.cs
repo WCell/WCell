@@ -31,28 +31,15 @@ using System.Collections;
 namespace WCell.RealmServer.Modifiers
 {
 	/// <summary>
-	/// Container for methods to update Unit-Fields
+	/// Container for methods to update Unit-Fields.
+	/// DEPRECATED: Move to Unit.StatUpdates.cs, Character.StatUpdates.cs and NPC.StatUpdates
+	/// TODO: Get rid of the UpdateHandlers and this whole array of update values (make them properties instead)
 	/// </summary>
 	public static class UnitUpdates
 	{
 		#region Init Update Handlers
 		delegate void UpdateHandler(Unit unit);
 		static readonly UpdateHandler NothingHandler = (Unit unit) => { };
-
-		/// <summary>
-		/// Amount of mana to be added per point of Intelligence
-		/// </summary>
-		public static int ManaPerIntelligence = 15;
-
-		/// <summary>
-		/// Amount of heatlh to be added per point of Stamina
-		/// </summary>
-		public static int HealthPerStamina = 10;
-
-		/// <summary>
-		/// Amount of armor to be added per point of Agility
-		/// </summary>
-		public static int ArmorPerAgility = 2;
 
 		public static readonly int FlatIntModCount = (int)Utility.GetMaxEnum<StatModifierInt>();
 		public static readonly int MultiplierModCount = (int)Utility.GetMaxEnum<StatModifierFloat>();
@@ -66,12 +53,12 @@ namespace WCell.RealmServer.Modifiers
 
 		static UnitUpdates()
 		{
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
-			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = UpdateMaxPower;
+			FlatIntModHandlers[(int) StatModifierInt.Power] = unit => unit.UpdateMaxPower();
+			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = unit => unit.UpdateMaxPower();
+
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegen] = UpdateHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenInCombat] = UpdateCombatHealthRegen;
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegenNoCombat] = UpdateNormalHealthRegen;
-			FlatIntModHandlers[(int)StatModifierInt.Power] = UpdateMaxPower;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegen] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.PowerRegenPercent] = UpdatePowerRegen;
 			FlatIntModHandlers[(int)StatModifierInt.DodgeChance] = UpdateDodgeChance;
@@ -90,228 +77,6 @@ namespace WCell.RealmServer.Modifiers
 			MultiModHandlers[(int)StatModifierFloat.HealthRegen] = UpdateHealthRegen;
 		}
 		#endregion
-
-		internal static void UpdateAll(this Unit unit)
-		{
-			UpdateStrength(unit);
-			UpdateAgility(unit);
-			UpdateIntellect(unit);
-			UpdateSpirit(unit);
-			UpdateStamina(unit);
-		}
-
-		#region Stats
-
-		internal static void UpdateLevel(this Character chr)
-		{
-			UpdateDodgeChance(chr);
-
-			UpdateBlockChance(chr);
-			UpdateCritChance(chr);
-			UpdateAllAttackPower(chr);
-		}
-
-		internal static void UpdateStrength(this Unit unit)
-		{
-			var str = unit.GetBaseStatValue(StatType.Strength) + unit.StrengthBuffPositive - unit.StrengthBuffNegative;
-			//str = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Strength], str);
-			unit.SetInt32(UnitFields.STAT0, str);
-
-			UpdateBlockChance(unit);
-			UpdateAllAttackPower(unit);
-
-			if (unit is NPC && ((NPC)unit).IsHunterPet)
-			{
-				if (unit.MainWeapon is GenericWeapon)
-				{
-					((NPC)unit).UpdatePetDamage((GenericWeapon)unit.MainWeapon);
-					unit.UpdateMainDamage();
-				}
-				if (unit.OffHandWeapon is GenericWeapon)
-				{
-					((NPC)unit).UpdatePetDamage((GenericWeapon)unit.OffHandWeapon);
-					unit.UpdateOffHandDamage();
-				}
-			}
-		}
-
-		static void UpdatePetDamage(this NPC unit, GenericWeapon weapon)
-		{
-			var avg = (unit.Strength - 20) / 2;
-			weapon.Damages[0].Minimum = avg - avg / 5;
-			weapon.Damages[0].Maximum = avg + avg / 5;
-
-		}
-
-		internal static void UpdateAgility(this Unit unit)
-		{
-			var oldAgil = unit.Agility;
-			var agil = unit.GetBaseStatValue(StatType.Agility) + unit.AgilityBuffPositive - unit.AgilityBuffNegative;
-			//agil = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Agility], agil);
-			unit.SetInt32(UnitFields.STAT1, agil);
-			unit.ModBaseResistance(DamageSchool.Physical, (agil - oldAgil) * ArmorPerAgility);	// armor
-
-			UpdateDodgeChance(unit);
-			UpdateCritChance(unit);
-			UpdateAllAttackPower(unit);
-		}
-
-		internal static void UpdateStamina(this Unit unit)
-		{
-			var stam = unit.StaminaBuffPositive - unit.StaminaBuffNegative;
-			if (unit is NPC)
-			{
-				var npc = (NPC) unit;
-
-				if (npc.IsHunterPet)
-				{
-					// "1 stamina gives 0.45 stamina untalented"
-					var hunter = npc.Master as Character;
-					if (hunter != null)
-					{
-						// recalculate base stamina for Pet
-						var levelStatInfo = npc.Entry.GetPetLevelStatInfo(npc.Level);
-						var baseStam = (hunter.Stamina*PetMgr.PetStaminaOfOwnerPercent + 50) / 100;
-						if (levelStatInfo != null)
-						{
-							baseStam += levelStatInfo.BaseStats[(int) StatType.Stamina];
-						}
-						unit.m_baseStats[(int)StatType.Stamina] = baseStam;
-
-						stam += baseStam;
-					}
-				}
-			}
-			else
-			{
-				stam += unit.GetBaseStatValue(StatType.Stamina);
-			}
-			unit.SetInt32(UnitFields.STAT2, stam);
-
-			if (unit is Character)
-			{
-				var chr = (Character) unit;
-				if (chr.m_MeleeAPModByStat != null)
-				{
-					unit.UpdateAllAttackPower();
-				}
-
-				// update pet
-				var pet = chr.ActivePet;
-				if (pet != null && pet.IsHunterPet)
-				{
-					pet.UpdateStamina();
-				}
-			}
-
-			UpdateHealth(unit);
-		}
-
-		internal static void UpdateIntellect(this Unit unit)
-		{
-			var intel = unit.GetBaseStatValue(StatType.Intellect) + unit.IntellectBuffPositive - unit.IntellectBuffNegative;
-			//intel = intel < 0 ? 0 : GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Intellect], intel);
-			unit.SetInt32(UnitFields.STAT3, intel);
-
-			if (unit is Character)
-			{
-				var chr = (Character)unit;
-				if (unit.PowerType == PowerType.Mana)
-				{
-					UpdateSpellCritChance(chr);
-				}
-
-				// TODO Update spell power: AddDamageMod & HealingDoneMod
-
-				UpdatePowerRegen(unit);
-				if (chr.m_MeleeAPModByStat != null)
-				{
-					unit.UpdateAllAttackPower();
-				}
-			}
-
-			UpdateMaxPower(unit);
-		}
-
-		internal static void UpdateSpirit(this Unit unit)
-		{
-			var spirit = unit.GetBaseStatValue(StatType.Spirit) + unit.SpiritBuffPositive - unit.SpiritBuffNegative;
-			//spirit = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Spirit], spirit);
-			unit.SetInt32(UnitFields.STAT4, spirit);
-
-			UpdateNormalHealthRegen(unit);
-
-			// We don't need to call when we are still in the process of loaing
-			if (unit.Intellect != 0)
-			{
-				UpdatePowerRegen(unit);
-			}
-
-			if (unit is Character)
-			{
-				var chr = (Character)unit;
-				if (chr.m_MeleeAPModByStat != null)
-				{
-					unit.UpdateAllAttackPower();
-				}
-			}
-		}
-
-		internal static void UpdateStat(this Unit unit, StatType stat)
-		{
-			switch (stat)
-			{
-				case StatType.Agility:
-					unit.UpdateAgility();
-					break;
-				case StatType.Intellect:
-					unit.UpdateIntellect();
-					break;
-				case StatType.Spirit:
-					unit.UpdateSpirit();
-					break;
-				case StatType.Stamina:
-					unit.UpdateStamina();
-					break;
-				case StatType.Strength:
-					unit.UpdateStrength();
-					break;
-			}
-		}
-		#endregion
-
-		internal static void UpdateHealth(this Unit unit)
-		{
-			var stamina = unit.Stamina;
-			var uncontributed = unit.StaminaWithoutHealthContribution;
-			var stamBonus = Math.Max(stamina, uncontributed) + (Math.Max(0, stamina - uncontributed) * HealthPerStamina);
-
-			var value = unit.BaseHealth + stamBonus + unit.MaxHealthModFlat;
-			value += (int)(value * unit.MaxHealthModScalar + 0.5f);
-
-			unit.SetInt32(UnitFields.MAXHEALTH, value);
-
-			unit.UpdateHealthRegen();
-		}
-
-		internal static void UpdateMaxPower(this Unit unit)
-		{
-			var value = unit.BasePower + unit.IntMods[(int)StatModifierInt.Power];
-			if (unit is Character && unit.PowerType == PowerType.Mana)
-			{
-				var intelBase = ((Character)unit).Archetype.FirstLevelStats.Intellect;
-				value += intelBase + (unit.Intellect - intelBase) * ManaPerIntelligence;
-			}
-			value += (value * unit.IntMods[(int)StatModifierInt.PowerPct] + 50) / 100;
-			if (value < 0)
-			{
-				value = 0;
-			}
-
-			unit.MaxPower = value;
-
-			unit.UpdatePowerRegen();
-		}
 
 		#region Regen
 
@@ -419,6 +184,7 @@ namespace WCell.RealmServer.Modifiers
 					var ap = clss.CalculateMeleeAP(lvl, str, agil);
 					if (npc.IsHunterPet)
 					{
+						// Pet stat: AP
 						// "1 ranged attack power gives the pet 0.22 AP"
 						ap += (chr.TotalMeleeAP * PetMgr.PetAPOfOwnerPercent + 50) / 100;
 					}
@@ -454,9 +220,8 @@ namespace WCell.RealmServer.Modifiers
 				var pet = chr.ActivePet;
 				if (pet != null && pet.IsHunterPet)
 				{
-					// 1 ranged attack power gives the pet 0.22 AP and 0.13 spell damage (0.338 AP and 0.18 spell damage with 2/2 Wild Hunt).
-					// TODO: Spell damage
-					pet.UpdateMeleeAttackPower();
+					// TODO: Pet stat: Spell Damage
+					pet.UpdateMeleeAttackPower();	// pet's AP is dependent on Hunter's ranged AP
 				}
 
 				unit.UpdateRangedDamage();
@@ -562,7 +327,7 @@ namespace WCell.RealmServer.Modifiers
 		/// </summary>
 		internal static void UpdateMainDamage(this Unit unit)
 		{
-			var apBonus = (unit.TotalMeleeAP * unit.MainHandAttackTime) / 14000;
+			var apBonus = (unit.TotalMeleeAP * unit.MainHandAttackTime + 7000) / 14000;	// rounded
 			//if (unit is Character)
 			//{
 			//    var skillId = weapon.Skill;
@@ -615,7 +380,7 @@ namespace WCell.RealmServer.Modifiers
 
 		internal static void UpdateRangedDamage(this Unit unit)
 		{
-			var apBonus = unit.TotalRangedAP / 14 * unit.RangedAttackTime / 1000;
+			var apBonus = (unit.TotalRangedAP * unit.RangedAttackTime + 7000) / 14000;	// rounded
 
 			var weapon = unit.RangedWeapon;
 			if (weapon != null && weapon.IsRanged)
@@ -839,6 +604,31 @@ namespace WCell.RealmServer.Modifiers
 			return value * (1 + modValue);
 		}
 
+		#region Pets
+		internal static void UpdatePetResistance(this NPC pet, DamageSchool school)
+		{
+			// TODO: Pet stat: Armor & Resistances
+			int res;
+			if (school == DamageSchool.Physical)
+			{
+				// set pet armor
+				res = (pet.Armor * PetMgr.PetArmorOfOwnerPercent + 50) / 100;
+				var levelStatInfo = pet.Entry.GetPetLevelStatInfo(pet.Level);
+				if (levelStatInfo != null)
+				{
+					res += levelStatInfo.Armor;
+				}
+			}
+			else
+			{
+				// set pet res
+				res = (pet.GetResistance(school) * PetMgr.PetResistanceOfOwnerPercent + 50) / 100;
+			}
+			pet.SetBaseResistance(school, res);
+		}
+		#endregion
+
+
 		#region Generic Change methods
 
 		/// <summary>
@@ -888,29 +678,6 @@ namespace WCell.RealmServer.Modifiers
 		//    unit.FlatModsFloat[(int)mod] += delta;
 		//    FlatFloatHandlers[(int)mod](unit);
 		//}
-		#endregion
-
-		#region Pets
-		internal static void UpdatePetResistance(this NPC pet, DamageSchool school)
-		{
-			int res;
-			if (school == DamageSchool.Physical)
-			{
-				// set pet armor
-				res = (pet.Armor * PetMgr.PetArmorOfOwnerPercent + 50) / 100;
-				var levelStatInfo = pet.Entry.GetPetLevelStatInfo(pet.Level);
-				if (levelStatInfo != null)
-				{
-					res += levelStatInfo.Armor;
-				}
-			}
-			else
-			{
-				// set pet res
-				res = (pet.GetResistance(school) * PetMgr.PetResistanceOfOwnerPercent + 50) / 100;
-			}
-			pet.SetBaseResistance(school, res);
-		}
 		#endregion
 	}
 }

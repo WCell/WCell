@@ -25,14 +25,14 @@ namespace WCell.RealmServer.Spells
 			var len = 5 + (4 * spells.Count); // +(14 * cooldowns);
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INITIAL_SPELLS, len))
 			{
-				packet.Write((byte)0);
-				packet.Write((ushort)spells.Count);
+				packet.Write((byte) 0);
+				packet.Write((ushort) spells.Count);
 
-				foreach (var spell in spells.SpellsById.Values)
+				foreach (var spell in spells.AllSpells)
 				{
 					packet.Write(spell.Id);
 					//packet.Write((ushort)0xEEEE);
-					packet.Write((ushort)0);
+					packet.Write((ushort) 0);
 				}
 
 				var countPos = packet.Position;
@@ -41,37 +41,31 @@ namespace WCell.RealmServer.Spells
 
 				// cooldowns
 				var now = DateTime.Now.Ticks;
-				if (spells.IdCooldowns != null)
+				foreach (var idCd in spells.IdCooldowns)
 				{
-					foreach (var idCd in spells.IdCooldowns.Values)
+					var delay = idCd.Until.Ticks - now;
+					if (delay > 10)
 					{
-						var delay = idCd.Until.Ticks - now;
-						if (delay > 10)
-						{
-							cooldownCount++;
-							packet.Write(idCd.SpellId);
-							packet.Write((ushort)idCd.ItemId);
-							packet.Write((ushort)0);
-							packet.Write(delay / 10000);
-							packet.Write(0);
-						}
+						cooldownCount++;
+						packet.Write(idCd.SpellId);
+						packet.Write((ushort) idCd.ItemId);
+						packet.Write((ushort) 0);
+						packet.Write(delay/10000);
+						packet.Write(0);
 					}
 				}
-
-				if (spells.CategoryCooldowns != null)
+				
+				foreach (var catCd in spells.CategoryCooldowns)
 				{
-					foreach (var catCd in spells.CategoryCooldowns.Values)
+					var delay = catCd.Until.Ticks - now;
+					if (delay > 10)
 					{
-						var delay = catCd.Until.Ticks - now;
-						if (delay > 10)
-						{
-							cooldownCount++;
-							packet.Write(catCd.SpellId);
-							packet.Write((ushort)catCd.ItemId);
-							packet.Write((ushort)catCd.CategoryId);
-							packet.Write(0);
-							packet.Write(delay / 10000);
-						}
+						cooldownCount++;
+						packet.Write(catCd.SpellId);
+						packet.Write((ushort) catCd.ItemId);
+						packet.Write((ushort) catCd.CategoryId);
+						packet.Write(0);
+						packet.Write(delay/10000);
 					}
 				}
 

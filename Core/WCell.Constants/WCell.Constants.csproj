@@ -193,7 +193,7 @@
     <Compile Include="NPCs\CreatureFamilyId.cs" />
     <Compile Include="NPCs\Misc.cs" />
     <Compile Include="NPCs\Vehicles.cs" />
-    <Compile Include="Pets\Extensions.cs" />
+    <Compile Include="Pets\PetExtensions.cs" />
     <Compile Include="Pets\PetActionEntry.cs" />
     <Compile Include="Pets\PetTalentType.cs" />
     <Compile Include="NPCs\VendorInventoryError.cs" />

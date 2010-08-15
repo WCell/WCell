@@ -43,10 +43,11 @@ using Castle.ActiveRecord;
 
 namespace WCell.RealmServer.Entities
 {
+	// Anything related to creation/login/logout/saving/loading is in this file
+
 	public partial class Character
 	{
 		#region Creation
-
 		/// <summary>
 		/// Creates a new character and loads all required character data from the database
 		/// </summary>
@@ -131,7 +132,7 @@ namespace WCell.RealmServer.Entities
 			// runes
 			if (((PlayerSpellCollection)m_spells).Runes != null)
 			{
-				((PlayerSpellCollection) m_spells).Runes.InitRunes(this);
+				((PlayerSpellCollection)m_spells).Runes.InitRunes(this);
 			}
 
 			// factions
@@ -143,11 +144,10 @@ namespace WCell.RealmServer.Entities
 			m_skills = new SkillCollection(this);
 
 			// talents
-			m_talents = new TalentCollection(this);
+			m_talents = new PlayerTalentCollection(this);
 
-            // achievements
-
-            m_achievements = new AchievementCollection(this);
+			// achievements
+			m_achievements = new AchievementCollection(this);
 
 			// Items
 			m_inventory = new PlayerInventory(this);
@@ -155,10 +155,6 @@ namespace WCell.RealmServer.Entities
 			m_mailAccount = new MailAccount(this);
 
 			m_questLog = new QuestLog(this);
-
-			// Talents
-			m_record.SpecProfile = SpecProfile.NewSpecProfile(this);
-			FreeTalentPoints = m_record.FreeTalentPoints;
 
 			// tutorial flags
 			TutorialFlags = new TutorialFlags(m_record.TutorialFlags);
@@ -218,15 +214,19 @@ namespace WCell.RealmServer.Entities
 			}
 			Model = model;
 
+			// set FreeTalentPoints silently
+			UpdateFreeTalentPointsSilently(0);
 			if (m_record.JustCreated)
 			{
+				// newly created Character
+				SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+
 				if (m_zone != null)
 				{
 					SetZoneExplored(m_zone.Template, true);
 				}
 
 				//m_record.FreeTalentPoints = 0;
-				UpdateFreeTalentPointsSilently(0);
 
 				// Honor and Arena
 				m_record.KillsTotal = 0u;
@@ -238,14 +238,28 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
+				// existing Character
 				try
 				{
-					m_record.LoadSpells();
+					// load & validate SpecProfiles
+					SpecProfiles = SpecProfile.LoadAllOfCharacter(this);
+					if (SpecProfiles.Length == 0)
+					{
+						log.Warn("Character had no SpecProfiles: {0}", this);
+						SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+					}
+					if (m_record.CurrentSpecIndex >= SpecProfiles.Length)
+					{
+						log.Warn("Character had invalid CurrentSpecIndex: {0} ({1})", this, m_record.CurrentSpecIndex);
+						m_record.CurrentSpecIndex = 0;
+					}
+
+					// load all the rest
+					m_record.LoadSpells(this);
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
 					m_achievements.Load();
-					m_talents.InitTalentPoints();
 					var auras = m_record.LoadAuraRecords();
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
 
@@ -262,37 +276,32 @@ namespace WCell.RealmServer.Entities
 				catch (Exception e)
 				{
 					RealmDBUtil.OnDBError(e);
-					throw new Exception("Failed to load Character " + Name + " for Client: " + Client, e);
+					throw new Exception(string.Format("Failed to load Character \"{0}\" for Client: {1}", this, Client), e);
 				}
 
-				// existing Character
-				if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize * 4)
+				if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize*4)
 				{
 					var zones = m_record.ExploredZones;
-					Array.Resize(ref zones, (int)UpdateFieldMgr.ExplorationZoneFieldSize * 4);
+					Array.Resize(ref zones, (int) UpdateFieldMgr.ExplorationZoneFieldSize*4);
 					m_record.ExploredZones = zones;
 				}
 
-				if (ActionButtons == null)
+				// add ability spells
+				foreach (var spell in m_record.Spells)
 				{
-					// make sure to create the array, if loading or the last save failed
-					ActionButtons = (byte[])Archetype.ActionButtons.Clone();
-				}
-				else if (m_record.ActionButtons.Length != Archetype.ActionButtons.Length)
-				{
-					var buts = m_record.ActionButtons;
-					ArrayUtil.EnsureSize(ref buts, Archetype.ActionButtons.Length);
-					m_record.ActionButtons = buts;
+					((PlayerSpellCollection) m_spells).OnlyAdd(spell);
 				}
 
-				foreach (var spell in m_record.Spells.Values)
+				// add talent spells
+				foreach (var spell in CurrentSpecProfile.TalentSpells)
 				{
-					((PlayerSpellCollection)m_spells).OnlyAdd(spell);
+					((PlayerSpellCollection) m_spells).OnlyAdd(spell);
 				}
+				m_talents.CalcSpentTalentPoints();
 
-
+				// update RestState
 				if (m_record.RestTriggerId != 0 &&
-					(m_restTrigger = AreaTriggerMgr.GetTrigger((uint)m_record.RestTriggerId)) != null)
+				    (m_restTrigger = AreaTriggerMgr.GetTrigger((uint) m_record.RestTriggerId)) != null)
 				{
 					RestState = RestState.Resting;
 				}
@@ -311,11 +320,6 @@ namespace WCell.RealmServer.Entities
 
 				m_taxiNodeMask.Mask = m_record.TaxiMask;
 
-				// TODO: Load Pets
-
-				// Talents
-				UpdateFreeTalentPointsSilently(0);
-
 				// Honor and Arena
 				KillsTotal = m_record.KillsTotal;
 				HonorToday = m_record.HonorToday;
@@ -325,10 +329,11 @@ namespace WCell.RealmServer.Entities
 				ArenaPoints = m_record.ArenaPoints;
 			}
 
-			if (m_record.PetEntryId != 0)
-			{
-				LoadPets();
-			}
+			// Set FreeTalentPoints, after SpecProfile was loaded
+			m_talents.UpdateFreeTalentPointsSilently(m_talents.GetFreeTalentPointsForLevel(m_record.Level));
+
+			// Load pets (if any)
+			LoadPets();
 
 			//foreach (var skill in m_skills)
 			//{
@@ -513,14 +518,14 @@ namespace WCell.RealmServer.Entities
 					m_spells.AddDefaultSpells();
 					m_reputations.Initialize();
 
-                    if(Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
-                    {
-                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
-                    }
-                    else if(Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
-                    {
-                        CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
-                    }
+					if (Class == ClassId.Warrior && Spells.Contains(SpellId.ClassSkillBattleStance))
+					{
+						CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBattleStance, false));
+					}
+					else if (Class == ClassId.DeathKnight && Spells.Contains(SpellId.ClassSkillBloodPresence))
+					{
+						CallDelayed(1000, obj => SpellCast.Start(SpellId.ClassSkillBloodPresence, false));
+					}
 
 					// set initial weapon skill max values
 					Skills.UpdateSkillsForLevel(Level);
@@ -632,6 +637,11 @@ namespace WCell.RealmServer.Entities
 			}
 			catch (Exception e)
 			{
+				if (m_record.JustCreated)
+				{
+					m_record.CanSave = false;
+					m_record.Delete();
+				}
 				World.RemoveCharacter(this);
 				LogUtil.ErrorException(e, "Failed to initialize Character: " + this);
 				m_client.Disconnect();
@@ -681,10 +691,10 @@ namespace WCell.RealmServer.Entities
 			FactionHandler.SendFactionList(this);
 			// SMSG_INIT_WORLD_STATES
 			// SMSG_EQUIPMENT_SET_LIST
-            AchievementHandler.SendAchievementData(this);
+			AchievementHandler.SendAchievementData(this);
 			// SMSG_EXPLORATION_EXPERIENCE
 			CharacterHandler.SendTimeSpeed(this);
-			TalentHandler.SendTalentGroupList(this);
+			TalentHandler.SendTalentGroupList(m_talents);
 			AuraHandler.SendAllAuras(this);
 			// SMSG_PET_GUIDS
 		}
@@ -797,7 +807,6 @@ namespace WCell.RealmServer.Entities
 				m_record.Power = Power;
 				m_record.BasePower = BasePower;
 				m_record.Money = Money;
-				m_record.FreeTalentPoints = FreeTalentPoints;
 				m_record.WatchedFaction = WatchedFaction;
 				m_record.BaseStrength = GetBaseStatValue(StatType.Strength);
 				m_record.BaseStamina = GetBaseStatValue(StatType.Stamina);
@@ -814,7 +823,7 @@ namespace WCell.RealmServer.Entities
 				m_record.LifetimeHonorableKills = LifetimeHonorableKills;
 				m_record.HonorPoints = HonorPoints;
 				m_record.ArenaPoints = ArenaPoints;
-				
+
 
 				// Finished quests
 				if (m_questLog.FinishedQuests.Count > 0)
@@ -876,9 +885,15 @@ namespace WCell.RealmServer.Entities
 					// Quests
 					m_questLog.SaveQuests();
 
-					// Talents
-					//m_record.SpecProfile.Save();
-					
+					// Specs
+					foreach (var spec in SpecProfiles)
+					{
+						if (spec.IsDirty)
+						{
+							spec.Save();
+						}
+					}
+
 					// Achievements
 					m_achievements.SaveNow();
 
@@ -903,15 +918,6 @@ namespace WCell.RealmServer.Entities
 			catch (Exception ex)
 			{
 				OnSaveFailed(ex);
-				try
-				{
-					m_record.Save();
-					return true;
-				}
-				catch //(Exception ex2)
-				{
-					//OnSaveFailed(ex);
-				}
 				return false;
 			}
 			finally

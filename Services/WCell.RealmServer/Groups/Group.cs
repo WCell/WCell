@@ -52,6 +52,11 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public static int GroupInstanceKickDelayMillis = 60000;
 
+		/// <summary>
+		/// Max distance in yards to be rewarded for a group kill
+		/// </summary>
+		public static float MaxKillRewardDistance = 100f;
+
 		protected const byte MinGroupMemberCount = 2;
 		protected const byte TargetIconCount = 8;
 
@@ -1598,7 +1603,7 @@ namespace WCell.RealmServer.Groups
 
 			ForeachCharacter((chr) =>
 			{
-				if (chr.IsInRange(new SimpleRange(0.0f, 100.0f), earner))
+				if (chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), earner))
 				{
 					chr.GiveHonorPoints(bonus);
 					chr.KillsToday++;
@@ -1614,7 +1619,7 @@ namespace WCell.RealmServer.Groups
 
 			ForeachCharacter((chr) =>
 			{
-				if (chr.Region == victim.Region && chr.IsInRange(new SimpleRange(0.0f, 100.0f), killer))
+				if (chr.Region == victim.Region && chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), killer))
 				{
 					chr.QuestLog.OnNPCInteraction(victim);
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KillCreature, victim.EntryId, 1);

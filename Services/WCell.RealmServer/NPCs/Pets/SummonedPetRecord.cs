@@ -16,7 +16,7 @@ namespace WCell.RealmServer.NPCs.Pets
 	/// Summoned pets for which we only store ActionBar (and maybe name) settings
 	/// </summary>
 	[ActiveRecord("Pets_Summoned", Access = PropertyAccess.Property)]
-	public class SummonedPetRecord : PetRecordBase<SummonedPetRecord>, IPetRecord
+	public class SummonedPetRecord : PetRecordBase<SummonedPetRecord>
 	{
 		[Field("PetNumber", NotNull = true)]
 		private int m_PetNumber;
@@ -27,17 +27,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { m_PetNumber = (int)value; }
 		}
 
-        public override PetType Type
-        {
-            get
-            {
-                return PetType.Minion;
-            }
-            set
-            {
-                base.Type = value;
-            }
-        }
 		public static SummonedPetRecord[] LoadSummonedPetRecords(uint ownerId)
 		{
 			try

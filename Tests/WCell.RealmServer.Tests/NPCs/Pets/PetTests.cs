@@ -241,7 +241,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
         public void TestStablePet()
         {
             TestMakePet();
-            Master.StableSlotCount = PetConstants.MaxStableSlots;
+            Master.StableSlotCount = PetMgr.MaxStableSlots;
             SendStablePetPacket();
 
             var packet = Master.FakeClient.DequeueSMSG(RealmServerOpCode.SMSG_STABLE_RESULT);
@@ -335,7 +335,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
             var pet2Slot = packet["Pets"][1]["SlotNum"].ByteValue;
 
             Assert.IsTrue(numPets == 2);
-            Assert.IsTrue(numSlots == (byte)PetConstants.MaxStableSlots);
+			Assert.IsTrue(numSlots == (byte)PetMgr.MaxStableSlots);
             Assert.IsTrue(pet1Number == Cat.PetNumber);
             Assert.IsTrue(pet1Level == Cat.Level);
             Assert.IsTrue(pet1EntryId == Cat.EntryId);

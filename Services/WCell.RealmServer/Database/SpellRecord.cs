@@ -1,12 +1,15 @@
 using Castle.ActiveRecord;
 using WCell.Constants.Spells;
 using WCell.Core.Database;
+using WCell.RealmServer.Spells;
 
 namespace WCell.RealmServer.Database
 {
 	[ActiveRecord(Access = PropertyAccess.Property)]
 	public class SpellRecord : WCellRecord<SpellRecord>
 	{
+		public const int NoSpecIndex = -1;
+
 		private static readonly NHIdGenerator _idGenerator =
 			new NHIdGenerator(typeof(SpellRecord), "RecordId");
 
@@ -19,21 +22,22 @@ namespace WCell.RealmServer.Database
 		}
 
 		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private long _spellId;
+		private int m_spellId;
 
 		[Field("OwnerId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_OwnerId;
+		private int m_ownerId;
 
-		public SpellRecord(uint id, uint ownerId)
+		private SpellRecord()
+		{
+		}
+
+		public SpellRecord(SpellId id, uint ownerId, int specIndex)
 		{
 			SpellId = id;
 			OwnerId = ownerId;
+			SpecIndex = specIndex;
 			RecordId = NextId();
 			New = true;
-		}
-
-		public SpellRecord()
-		{
 		}
 
 		[PrimaryKey(PrimaryKeyType.Assigned, "SpellRecordId")]
@@ -45,19 +49,36 @@ namespace WCell.RealmServer.Database
 
 		public uint OwnerId
 		{
-			get { return (uint) m_OwnerId; }
-			set { m_OwnerId = (int) value; }
+			get { return (uint)m_ownerId; }
+			set { m_ownerId = (int)value; }
 		}
 
-		public uint SpellId
+		public SpellId SpellId
 		{
-			get { return (uint)_spellId; }
-			set { _spellId = value; }
+			get { return (SpellId)m_spellId; }
+			set { m_spellId = (int)value; }
+		}
+
+		public Spell Spell
+		{
+			get { return SpellHandler.Get(SpellId); }
+		}
+
+		[Property]
+		public int SpecIndex
+		{
+			get;
+			set;
+		}
+
+		public bool MatchesSpec(int index)
+		{
+			return SpecIndex == index || index == NoSpecIndex;
 		}
 
 		public override string ToString()
 		{
-			return (SpellId)_spellId + " (" + SpellId + ")";
+			return (SpellId)m_spellId + " (" + SpellId + ")";
 		}
 	}
 }

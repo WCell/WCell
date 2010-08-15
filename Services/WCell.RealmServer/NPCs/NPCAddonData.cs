@@ -63,10 +63,10 @@ namespace WCell.RealmServer.NPCs
 						var spell = SpellHandler.Get(auraId);
 						if (spell != null)
 						{
-							if (spell.Durations.Min > 0 && spell.Durations.Min < int.MaxValue)
+							if (!spell.IsAura || (spell.Durations.Min > 0 && spell.Durations.Min < int.MaxValue))
 							{
 								// not permanent -> cast as Spell
-								if (entry.Spells == null || !entry.Spells.ContainsKey(spell.Id))
+								if (entry.Spells == null || !entry.Spells.ContainsKey(spell.SpellId))
 								{
 									entry.AddSpell(spell);
 								}

@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Entities
 	/// <summary>
 	/// Represents a non-player character.
 	/// </summary>
-	public partial class NPC : Unit, IQuestHolder, IHasTalents
+	public partial class NPC : Unit, IQuestHolder
 	{
 		public static float BossSpellCritChance = 5f;
 
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Entities
 		protected TimerEntry m_decayTimer;
 		private string m_name;
 		protected IPetRecord m_PetRecord;
-		protected TalentCollection m_petTalents;
+		protected PetTalentCollection m_petTalents;
 		protected ThreatCollection m_threatCollection;
 		protected AIGroup m_group;
 
@@ -190,14 +190,14 @@ namespace WCell.RealmServer.Entities
 				Flying++;
 			}
 
-			if (m_entry.Spells != null)
-			{
-				EnsureSpells();
-			}
-
 			if (IsImmovable)
 			{
 				InitImmovable();
+			}
+
+			if (m_entry.Spells != null)
+			{
+				m_spells = new NPCSpellCollection(this);
 			}
 
 			AddStandardEquipment();
@@ -222,8 +222,7 @@ namespace WCell.RealmServer.Entities
 				// Set Level/Scale after NPC is in world:
 				if (!HasPlayerMaster)
 				{
-					var level = entry.GetRandomLevel();
-					Level = level;
+					Level = entry.GetRandomLevel();
 				}
 				else
 				{
@@ -453,19 +452,20 @@ namespace WCell.RealmServer.Entities
 
 		public NPCSpellCollection NPCSpells
 		{
-			get
-			{
-				if (m_spells == null)
-				{
-					m_spells = new NPCSpellCollection(this);
-				}
-				return (NPCSpellCollection)m_spells;
-			}
+			get { return (NPCSpellCollection)Spells; }
 		}
 
 		public override SpellCollection Spells
 		{
-			get { return NPCSpells; }	// ensure that spell collection is created
+			get
+			{
+				if (m_spells == null)
+				{
+					// ensure that spell collection is created
+					m_spells = new NPCSpellCollection(this);
+				}
+				return NPCSpells;
+			}
 		}
 
 		public override SpawnPoint SpawnPoint
@@ -834,27 +834,6 @@ namespace WCell.RealmServer.Entities
 			return mask.HasFlag((CreatureMask)(1 << ((int)Entry.Type - 1)));
 		}
 
-		internal void SetScale()
-		{
-			var level = Level;
-			if (HasMaster && m_entry.Family != null)
-			{
-				if (level >= m_entry.Family.MaxScaleLevel)
-				{
-					ScaleX = m_entry.Family.MaxScale * m_entry.Scale;
-				}
-				else
-				{
-					ScaleX = (m_entry.Family.MinScale + ((m_entry.Family.MaxScaleLevel - level) * m_entry.Family.ScaleStep)) *
-						m_entry.Scale;
-				}
-			}
-			else
-			{
-				ScaleX = m_entry.Scale;
-			}
-		}
-
 		#region Movement / Transport
 		protected internal override void OnEnterRegion()
 		{
@@ -1008,7 +987,15 @@ namespace WCell.RealmServer.Entities
 		#region Combat
 		public override float MaxAttackRange
 		{
-			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
+			get
+			{
+				var range = base.MaxAttackRange;
+				if (m_spells != null && NPCSpells.MaxCombatSpellRange > range)
+				{
+					range = NPCSpells.MaxCombatSpellRange;
+				}
+				return range;
+			}
 		}
 
 		protected override void OnEnterCombat()

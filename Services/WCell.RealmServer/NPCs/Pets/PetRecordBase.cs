@@ -16,9 +16,6 @@ namespace WCell.RealmServer.NPCs.Pets
 		[Field("OwnerLowId", NotNull = true)]
 		protected int _OwnerLowId;
 
-		[Field("EntryId", NotNull = true)]
-		protected int _EntryId;
-
 		[Field("NameTimeStamp")]
 		protected int _NameTimeStamp;
 
@@ -34,8 +31,8 @@ namespace WCell.RealmServer.NPCs.Pets
 		private PetActionEntry[] m_Actions;
 		private uint[] m_savedActions;
 
-		[PrimaryKey(PrimaryKeyType.Native)]
-		int Guid
+		[PrimaryKey(PrimaryKeyType.Assigned, "EntryId")]
+		int _EntryId
 		{
 			get;
 			set;
@@ -47,13 +44,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { _OwnerLowId = (int)value; }
 		}
 
-	    public virtual PetType Type
-	    {
-	        get { return PetType.End; }
-	        set { }
-	    }
-
-	    public NPCId EntryId
+		public NPCId EntryId
 		{
 			get { return (NPCId)_EntryId; }
 			set { _EntryId = (int)value; }
@@ -91,7 +82,52 @@ namespace WCell.RealmServer.NPCs.Pets
 			set { _NameTimeStamp = (int)value; }
 		}
 
+		public PetState PetState
+		{
+			get { return (PetState)(_PetState); }
+			set { _PetState = (int)value; }
+		}
+
+		public PetAttackMode AttackMode
+		{
+			get { return (PetAttackMode)((byte)_petAttackMode); }
+			set { _petAttackMode = (int)value; }
+		}
+
+		public PetFlags Flags
+		{
+			get { return (PetFlags)((ushort)_petFlags); }
+			set { _petFlags = (int)value; }
+		}
+
+		public bool IsStabled
+		{
+			get { return Flags.HasFlag(PetFlags.Stabled); }
+			set
+			{
+				if (value)
+				{
+					Flags |= PetFlags.Stabled;
+					IsActivePet = false;
+				}
+				else
+				{
+					Flags &= ~PetFlags.Stabled;
+					IsActivePet = true;
+				}
+			}
+		}
+
 		/// <summary>
+		/// Dirty records have uncommitted changes
+		/// </summary>
+		public bool IsDirty
+		{
+			get;
+			internal set;
+		}
+
+		#region ActionBar/// <summary>
 		/// 
 		/// </summary>
 		[Property(NotNull = true)]
@@ -128,59 +164,15 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 			for (var i = 0; i < m_Actions.Length; i++)
 			{
-				var action = m_Actions[i];
-				m_savedActions[i] = action;
+				m_savedActions[i] = m_Actions[i];
 			}
 		}
+		#endregion
 
-		public PetState PetState
+		#region Create / Setup / Update
+		public override void Create()
 		{
-			get { return (PetState)(_PetState); }
-			set { _PetState = (int)value; }
-		}
-
-		public PetAttackMode AttackMode
-		{
-			get { return (PetAttackMode)((byte)_petAttackMode); }
-			set { _petAttackMode = (int)value; }
-		}
-
-		public PetFlags Flags
-		{
-			get { return (PetFlags)((ushort)_petFlags); }
-			set { _petFlags = (int)value; }
-		}
-
-		public bool IsStabled
-		{
-            get { return Flags.HasFlag(PetFlags.Stabled); }
-			set
-			{
-				if (value)
-				{
-					Flags |= PetFlags.Stabled;
-					IsActivePet = false;
-				}
-				else
-				{
-					Flags &= ~PetFlags.Stabled;
-					IsActivePet = true;
-				}
-			}
-		}
-
-		/// <summary>
-		/// Dirty records have uncommitted changes
-		/// </summary>
-		public bool IsDirty
-		{
-			get;
-			internal set;
-		}
-
-		public override void Save()
-		{
-			base.Save();
+			base.Create();
 			IsDirty = false;
 		}
 
@@ -198,7 +190,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 
 			pet.PetState = PetState;
-			IsDirty = true;
+			// IsDirty = true;		// save after load?
 		}
 
 		public virtual void UpdateRecord(NPC pet)
@@ -213,5 +205,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			CopySavedActions();
 			IsDirty = true;
 		}
+		#endregion
 	}
 }

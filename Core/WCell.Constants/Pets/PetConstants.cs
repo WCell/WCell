@@ -8,7 +8,7 @@ namespace WCell.Constants.Pets
 	public static class PetConstants
 	{
 		public const int PetActionCount = 10;
-	    public static int MaxStableSlots = 4;
+		public const int PetSpellCount = 4;		// amount of pet spells in the pet spell bar
 	}
 
     public enum PetLoyaltyLevel : uint

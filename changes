@@ -1,1 +1,6 @@
-- renamed Group.QuestSomethingSomething to Group.OnKill
+- started working on cleaning up/implementing talents/pet talents/multi-spec systems
+- started moving everything from UnitUpdates into Unit.StatUpdates, NPC.StatUpdates and Character.StatUpdates respectively
+- fixed: Don't let AI spell caster cast aura on target that already has it / remove all buffs & debuffs when changing master or faction
+- added more data validation after loading from DB / more collection pooling
+- improved EmailSyntaxValidator performance
+- added a "Pet stat" comment to all places that modify pet stats

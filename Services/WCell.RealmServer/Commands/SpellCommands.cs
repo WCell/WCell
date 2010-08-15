@@ -283,7 +283,7 @@ namespace WCell.RealmServer.Commands
 				else
 				{
 					// normal spell
-					target.EnsureSpells().AddSpell(spell);
+					target.Spells.AddSpell(spell);
 				}
 			}
 		}
@@ -320,7 +320,7 @@ namespace WCell.RealmServer.Commands
 							else
 							{
 								// normal spell
-								trigger.Args.Target.EnsureSpells().Remove(spell);
+								trigger.Args.Target.Spells.Remove(spell);
 							}
 							trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 						}

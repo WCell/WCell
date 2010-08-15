@@ -14,6 +14,14 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
 {
+	/// <summary>
+	/// TODO: Correct the values & move to constants
+	/// </summary>
+	public enum AchievementCriteriaGroupFlags
+	{
+		AchievementCriteriaGroupNotInGroup
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	public abstract class AchievementCriteriaEntry
 	{

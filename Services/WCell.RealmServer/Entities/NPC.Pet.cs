@@ -1,13 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.Constants.Updates;
 using WCell.RealmServer.AI;
-using WCell.RealmServer.AI.Actions.Combat;
-using WCell.RealmServer.Database;
 using WCell.RealmServer.Formulas;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Modifiers;
@@ -16,7 +12,6 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
-using WCell.Util;
 using PetNameInvalidReason = WCell.Constants.Pets.PetNameInvalidReason;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Handlers;
@@ -81,6 +76,11 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		internal void OnBecamePet()
+		{
+			OnLevelChanged();
+		}
+
 		public bool CanEat(PetFoodType petFoodType)
 		{
 			return m_entry.Family != null && m_entry.Family.PetFoodMask.HasAnyFlag(petFoodType);
@@ -120,16 +120,10 @@ namespace WCell.RealmServer.Entities
 		#region Talents
 		public PetTalentType PetTalentType
 		{
-			get { return Entry.Family != null ? Entry.Family.PetTalentType : PetTalentType.None; }
+			get { return Entry.Family != null ? Entry.Family.PetTalentType : PetTalentType.End; }
 		}
 
 		public DateTime? LastTalentResetTime
-		{
-			get;
-			set;
-		}
-
-		public SpecProfile SpecProfile
 		{
 			get;
 			set;
@@ -145,14 +139,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public TalentCollection Talents
 		{
-			get
-			{
-				if (m_petTalents == null)
-				{
-					m_petTalents = new TalentCollection(this);
-				}
-				return m_petTalents;
-			}
+			get { return m_petTalents; }
 		}
 
 		public int FreeTalentPoints
@@ -163,9 +150,9 @@ namespace WCell.RealmServer.Entities
 				if (m_PetRecord is PermanentPetRecord)
 				{
 					PermanentPetRecord.FreeTalentPoints = value;
+					SetByte(UnitFields.BYTES_1, 1, (byte)value);
+					TalentHandler.SendTalentGroupList(m_petTalents);
 				}
-				SetByte(UnitFields.BYTES_1, 1, (byte)value);
-				TalentHandler.SendTalentGroupList(this);
 			}
 		}
 
@@ -176,61 +163,6 @@ namespace WCell.RealmServer.Entities
 				PermanentPetRecord.FreeTalentPoints = delta;
 			}
 			SetByte(UnitFields.BYTES_1, 1, (byte)delta);
-		}
-
-		public int TalentResetPriceTier
-		{
-			get { return m_PetRecord is PermanentPetRecord ? ((PermanentPetRecord)m_PetRecord).TalentResetPriceTier : 0; }
-			set
-			{
-				if (m_PetRecord is PermanentPetRecord)
-				{
-					if (value < 0)
-					{
-						value = 0;
-					}
-					if (value > (PetMgr.PetTalentResetPriceTiers.Length - 1))
-					{
-						value = (PetMgr.PetTalentResetPriceTiers.Length - 1);
-					}
-					((PermanentPetRecord)m_PetRecord).TalentResetPriceTier = value;
-				}
-			}
-		}
-
-		public int GetTalentResetPrice()
-		{
-			if (m_master != null && m_master is Character)
-			{
-				if (((Character)m_master).GodMode)
-				{
-					return 0;
-				}
-			}
-
-			var tiers = PetMgr.PetTalentResetPriceTiers;
-			var lastPriceTier = TalentResetPriceTier;
-			var lastResetTime = LastTalentResetTime;
-
-			if (lastResetTime == null)
-			{
-				return tiers[0];
-			}
-
-			var timeLapse = DateTime.Now - lastResetTime.Value;
-			var numDiscounts = timeLapse.Hours / 2;
-			var newPriceTier = lastPriceTier - numDiscounts;
-
-			if (newPriceTier < 0)
-			{
-				return tiers[0];
-			}
-
-			if (newPriceTier > (tiers.Length - 1))
-			{
-				return tiers[tiers.Length - 1];
-			}
-			return tiers[newPriceTier];
 		}
 
 		public void ResetFreeTalentPoints()
@@ -337,20 +269,33 @@ namespace WCell.RealmServer.Entities
 
 		protected override void OnLevelChanged()
 		{
-			SetScale();
-			PetExperience = 0;
+			// scale size, if necessary
+			UpdateSize();
+
+			// add/remove spell ranks
+			UpdateSpellRanks();
+
 			if (HasPlayerMaster)
 			{
 				var level = Level;
-				if (HasTalents)
+				if (level >= PetMgr.MinPetTalentLevel)
 				{
-					var freeTalentPoints = Talents.GetFreePetTalentPoints(level);
+					// make sure, pet has talent collection
+					if (m_petTalents == null)
+					{
+						m_petTalents = new PetTalentCollection(this);
+					}
+				}
+
+				if (m_petTalents != null)
+				{
+					// update talent points
+					var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
 					if (freeTalentPoints < 0)
 					{
-						// need to remove talent points
+						// Level was reduced: Remove talent points
 						if (!((Character)m_master).GodMode)
 						{
-							// remove the extra talents
 							Talents.RemoveTalents(-freeTalentPoints);
 						}
 						freeTalentPoints = 0;
@@ -361,6 +306,7 @@ namespace WCell.RealmServer.Entities
 				var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
 				if (levelStatInfo != null)
 				{
+					// update pet stats
 					ModPetStatsPerLevel(levelStatInfo);
 					m_auras.ReapplyAllAuras();
 				}
@@ -382,23 +328,25 @@ namespace WCell.RealmServer.Entities
 			}
 
 			this.UpdatePetResistance(DamageSchool.Physical);
-
-			// update spell ranks
-			var done = true;
-			do
-			{
-				foreach (var spell in m_spells)
-				{
-					if (spell.Talent == null && spell.NextRank != null && spell.NextRank.Level <= Level)
-					{
-						done = false;
-						m_spells.Remove(spell);
-						m_spells.AddSpell(spell.NextRank);
-						break; // start new iteration because iterator was invalidated
-					}
-				}
-			} while (!done);
 			SetInt32(UnitFields.HEALTH, MaxHealth);
+		}
+
+		private void UpdateSpellRanks()
+		{
+			var level = Level;
+			foreach (var spell in m_entry.Spells.Values)
+			{
+				if (spell.Level > level)
+				{
+					// remove spells that have a too high level
+					m_spells.Remove(spell);
+				}
+				else
+				{
+					// add spells that have a low enough level
+					m_spells.AddSpell(spell.NextRank);
+				}
+			}
 		}
 
 		#endregion
@@ -467,6 +415,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Lets this Pet cast the given spell
+		/// </summary>
 		public void CastPetSpell(SpellId spellId, WorldObject target)
 		{
 			var spell = NPCSpells.GetReadySpell(spellId);
@@ -489,13 +440,85 @@ namespace WCell.RealmServer.Entities
 				err = SpellFailedReason.NotReady;
 			}
 
-			if (err != SpellFailedReason.Ok)
+			if (err != SpellFailedReason.Ok && m_master is IPacketReceiver)
 			{
-				if (m_master.IsPlayer)
+				PetHandler.SendCastFailed((IPacketReceiver)m_master, spellId, err);
+			}
+		}
+		#endregion
+
+		#region Actions
+		public PetActionEntry[] BuidPetActionBar()
+		{
+			var bar = new PetActionEntry[PetConstants.PetActionCount];
+
+			var i = 0;
+
+			bar[i++] = new PetActionEntry
+			{
+				Action = PetAction.Attack,
+				Type = PetActionType.SetAction
+			};
+
+			bar[i++] = new PetActionEntry
+			{
+				Action = PetAction.Follow,
+				Type = PetActionType.SetAction
+			};
+
+			bar[i++] = new PetActionEntry
+			{
+				Action = PetAction.Stay,
+				Type = PetActionType.SetAction
+			};
+
+			IEnumerator<Spell> spells;
+			if (m_spells != null)
+			{
+				spells = m_spells.GetEnumerator();
+			}
+			else
+			{
+				spells = null;
+			}
+
+			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
+			{
+				if (spells == null || !spells.MoveNext())
 				{
-					PetHandler.SendCastFailed(m_master as IPacketReceiver, spellId, err);
+					bar[i++] = new PetActionEntry
+					{
+						Type = PetActionType.CastSpell2 + j
+					};
+				}
+				else
+				{
+					var spell = spells.Current;
+					var actionEntry = new PetActionEntry();
+					actionEntry.SetSpell(spell.SpellId, PetActionType.DefaultSpellSetting);
+					bar[i++] = actionEntry;
 				}
 			}
+
+			bar[i++] = new PetActionEntry
+			{
+				AttackMode = PetAttackMode.Aggressive,
+				Type = PetActionType.SetMode
+			};
+
+			bar[i++] = new PetActionEntry
+			{
+				AttackMode = PetAttackMode.Defensive,
+				Type = PetActionType.SetMode
+			};
+
+			bar[i++] = new PetActionEntry
+			{
+				AttackMode = PetAttackMode.Passive,
+				Type = PetActionType.SetMode
+			};
+
+			return bar;
 		}
 		#endregion
 

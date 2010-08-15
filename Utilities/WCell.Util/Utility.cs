@@ -140,7 +140,7 @@ namespace WCell.Util
 
 		public static int GetMilliSecondsInt(this TimeSpan time)
 		{
-			return (int)(time.Ticks + TicksPerSecond/2) / TicksPerSecond;
+			return (int)(time.Ticks + TicksPerSecond / 2) / TicksPerSecond;
 		}
 
 		/// <summary>
@@ -1051,7 +1051,7 @@ namespace WCell.Util
 		/// </summary>
 		public static bool IsValidEMailAddress(string mail)
 		{
-			return EmailSyntaxValidator.Valid(mail, false);
+			return EmailAddressParser.Valid(mail, false);
 		}
 
 		#region Types
@@ -1270,6 +1270,7 @@ namespace WCell.Util
 
 		#endregion
 
+		#region Strings
 		public static string GetStringRepresentation(object val)
 		{
 			if (val is string)
@@ -1294,6 +1295,12 @@ namespace WCell.Util
 		public static bool ContainsIgnoreCase(this string str, string part)
 		{
 			return str.IndexOf(part, StringComparison.InvariantCultureIgnoreCase) > -1;
+		}
+		#endregion
+
+		public static long MakeLong(int low, int high)
+		{
+			return low | ((long)high << 32);
 		}
 
 		private static readonly Random rnd = new Random();

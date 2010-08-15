@@ -1400,18 +1400,6 @@ namespace WCell.RealmServer.Entities
 			get { return m_spells; }
 		}
 
-		/// <summary>
-		/// Ensures that the SpellCollection exists (not all NPCs have Spells)
-		/// </summary>
-		public SpellCollection EnsureSpells()
-		{
-			if (!HasSpells && this is NPC)
-			{
-				m_spells = new NPCSpellCollection((NPC)this);
-			}
-			return m_spells;
-		}
-
 		public bool HasEnoughPowerToCast(Spell spell, WorldObject selected)
 		{
 			if (!spell.CostsPower)
@@ -1741,6 +1729,20 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
+		#region Affinity
+		/// <summary>
+		/// Is called when Master / Faction has changed and this Unit now has a different circle of friends
+		/// </summary>
+		protected virtual void OnAffinityChanged()
+		{
+			if (m_auras != null)
+			{
+				// whenever we change affinity: Remove Auras of everyone but ourselves
+				m_auras.RemoveOthersAuras();
+			}
+		}
+		#endregion
+
 		#region Dispose
 		public override void Dispose(bool disposing)
 		{
@@ -1769,7 +1771,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_spells != null)
 			{
-				m_spells.Owner = null;
+				m_spells.Dispose();
 				m_spells = null;
 			}
 

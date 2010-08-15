@@ -13,6 +13,12 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Achievement
 {
+	public enum AchievementFactionGroup
+	{
+		Horde,
+		Alliance
+	}
+
     /// <summary>
     /// Represents the Player's Achievements.
     /// </summary>

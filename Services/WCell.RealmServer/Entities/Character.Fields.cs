@@ -46,7 +46,6 @@ using WCell.RealmServer.Mail;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Skills;
@@ -716,44 +715,6 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private void UpdateChancesByCombatRating(CombatRating rating)
-		{
-			// TODO: Update influence
-			switch (rating)
-			{
-				case CombatRating.Dodge:
-					UnitUpdates.UpdateDodgeChance(this);
-					break;
-				case CombatRating.Parry:
-					UnitUpdates.UpdateParryChance(this);
-					break;
-				case CombatRating.Block:
-					UnitUpdates.UpdateBlockChance(this);
-					break;
-				case CombatRating.MeleeCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.RangedCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.SpellCritChance:
-					UnitUpdates.UpdateSpellCritChance(this);
-					break;
-				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDefense(this);
-					break;
-				case CombatRating.MeleeHitChance:
-					UnitUpdates.UpdateMeleeHitChance(this);
-					break;
-				case CombatRating.RangedHitChance:
-					UnitUpdates.UpdateRangedHitChance(this);
-					break;
-				case CombatRating.Expertise:
-					UnitUpdates.UpdateExpertise(this);
-					break;
-			}
-		}
-
 		#endregion
 
 		#region Tracking of Resources & Creatures
@@ -1168,12 +1129,13 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
-			var actions = m_record.ActionButtons;
+			CurrentSpecProfile.IsDirty = true;
+			var actions = CurrentSpecProfile.ActionButtons;
 			btnIndex = btnIndex * 4;
 			if (action == 0)
 			{
 				// unset it
-				Array.Copy(ActionButton.Empty, 0, actions, btnIndex, ActionButton.Size);
+				Array.Copy(ActionButton.EmptyButton, 0, actions, btnIndex, ActionButton.Size);
 			}
 			else
 			{
@@ -1182,6 +1144,7 @@ namespace WCell.RealmServer.Entities
 				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
+
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
@@ -1205,7 +1168,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(ActionButton btn, bool update = true)
 		{
-			btn.Set(m_record.ActionButtons);
+			btn.Set(CurrentSpecProfile.ActionButtons);
+			CurrentSpecProfile.IsDirty = true;
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
@@ -1217,41 +1181,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public byte[] ActionButtons
 		{
-			get { return m_record.ActionButtons; }
-			internal set { m_record.ActionButtons = value; }
+			get { return CurrentSpecProfile.ActionButtons; }
 		}
-
-		public struct ActionButton
-		{
-			public const uint Size = 4;
-			public const uint MaxAmount = 144;
-
-			public static readonly byte[] Empty = new byte[Size];
-
-			public uint Index;
-			public ushort Action;
-			public byte Type;
-			public byte Info;
-
-			public void Set(byte[] actions)
-			{
-				var index = Index * 4;
-				actions[index] = (byte)(Action & 0x00FF);
-				actions[index + 1] = (byte)((Action & 0xFF00) >> 8);
-				actions[index + 2] = Type;
-				actions[index + 3] = Info;
-			}
-
-			public static void Set(byte[] actions, uint index, ushort action, byte type, byte info)
-			{
-				index = index * 4;
-				actions[index] = (byte)(action & 0x00FF);
-				actions[index + 1] = (byte)((action & 0xFF00) >> 8);
-				actions[index + 2] = type;
-				actions[index + 3] = info;
-			}
-		}
-
 		#endregion
 
 		#region Custom Properties
@@ -1273,7 +1204,6 @@ namespace WCell.RealmServer.Entities
 		public Ticket Ticket { get; internal set; }
 
 		#region Base Unit Fields Overrides
-
 		public override int Health
 		{
 			get { return base.Health; }
@@ -1347,7 +1277,6 @@ namespace WCell.RealmServer.Entities
 				base.Level = value;
 				//Update Group Update flags
 				GroupUpdateFlags |= GroupUpdateFlags.Level;
-				this.UpdateLevel();
 			}
 		}
 
@@ -1474,7 +1403,7 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		#region Properties
+		#region Misc Properties
 
 		public override bool IsInWorld
 		{
@@ -2035,7 +1964,7 @@ namespace WCell.RealmServer.Entities
 
 				//m_record.FreeTalentPoints = value;
 				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
-				TalentHandler.SendTalentGroupList(this);
+				TalentHandler.SendTalentGroupList(m_talents);
 			}
 		}
 

@@ -99,7 +99,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			while (packet.Length - packet.Position >= 8)
+			while (packet.Length - packet.Position >= 8)	// a button has 8 bytes in the packet
 			{
 				ReadButton(pet, packet);
 			}
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 			}
 
-			// TODO: Spell settings
+			// TODO: Interpret spell settings (auto-cast etc)
 			record.Actions[index] = newAction;
 		}
 
@@ -157,11 +157,11 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var pet = chr.Region.GetObject(petId) as NPC;
 
-			if (pet != null && pet.IsAlive)
+			if (pet != null && pet.IsAlive && pet.IsInContext)
 			{
 				if (pet == chr.ActivePet || chr.GodMode)
 				{
-					chr.ActivePet = null;
+					chr.AbandonActivePet();
 				}
 			}
 #if DEBUG
@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (pet != null)
 			{
-				if (pet.Master == chr || chr.GodMode)
+				if (pet.Master == chr)
 				{
 					var aura = pet.Auras[spellId, true];
 					if (aura != null && aura.CanBeCancelled)
@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (pet != null && pet.IsAlive)
 			{
-				if (pet == chr.ActivePet || chr.GodMode)
+				if (pet == chr.ActivePet)
 				{
 					pet.Brain.EnterDefaultState();
 				}
@@ -303,9 +303,10 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((byte)currentAction);
 				packet.Write((ushort)record.Flags);
 
+				var actions = pet.BuidPetActionBar();
 				for (var i = 0; i < PetConstants.PetActionCount; i++)
 				{
-					var action = record.Actions[i];
+					var action = actions[i];
 					packet.Write(action.Raw);
 				}
 
@@ -316,7 +317,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					if (!spell.IsPassive)
 					{
-						packet.Write(spell.Id | ((uint)PetSpellState.Default << 24));
+						packet.Write(spell.Id | ((uint)PetSpellState.Enabled << 24));
 						++spellCount;
 					}
 				}
@@ -372,6 +373,16 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+		public static void SendPetLearnedSpell(IPacketReceiver receiver, SpellId spellId)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_LEARNED_SPELL, 4))
+			{
+				packet.Write((uint)spellId);
+
+				receiver.Send(packet);
+			}
+		}
+
 		public static void SendUnlearnedSpell(IPacketReceiver receiver, ushort spell)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_REMOVED_SPELL, 4))
@@ -410,6 +421,7 @@ namespace WCell.RealmServer.Handlers
 		}
 		#endregion
 
+		#region Action & Mode
 		public static void SendActionSound(IPacketReceiver receiver, IEntity pet, uint soundId)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_ACTION_SOUND, 12))
@@ -444,8 +456,9 @@ namespace WCell.RealmServer.Handlers
 				receiver.Send(packet);
 			}
 		}
+		#endregion
 
-		public static void SendPetRenameable(IPacketReceiver receiver, ushort spell)
+		public static void SendPetRenameable(IPacketReceiver receiver)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_RENAMEABLE, 0))
 			{
@@ -453,7 +466,7 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetBroken(IPacketReceiver receiver, ushort spell)
+		public static void SendPetBroken(IPacketReceiver receiver)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_BROKEN, 0))
 			{
@@ -588,7 +601,9 @@ namespace WCell.RealmServer.Handlers
 
 			if (pet != null)
 			{
-				PetMgr.LearnPetTalent(chr, pet, talentId, rank + 1);
+				if (chr.ActivePet != pet) return;
+
+				pet.Talents.Learn(talentId, rank);
 			}
 		}
 
@@ -599,20 +614,10 @@ namespace WCell.RealmServer.Handlers
 
 			var chr = client.ActiveCharacter;
 			var pet = chr.Region.GetObject(petGuid) as NPC;
-			
-			if (pet != null)
-			{
-				PetMgr.ResetPetTalents(chr, pet);
-			}
-		}
 
-		public static void SendPetLearnedSpell(IPacketReceiver receiver, SpellId spellId)
-		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_LEARNED_SPELL))
+			if (pet != null && pet.HasTalents && pet.Master == chr)
 			{
-				packet.Write((ushort)spellId);
-
-				receiver.Send(packet);
+				pet.Talents.ResetTalents();
 			}
 		}
 

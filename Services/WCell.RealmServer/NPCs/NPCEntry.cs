@@ -390,6 +390,11 @@ namespace WCell.RealmServer.NPCs
 			return SpawnEntries.ToArray();
 		}
 
+		public bool HasScalableStats
+		{
+			get { return PetLevelStatInfos != null; }
+		}
+
 		[NotPersistent]
 		public CreatureFamily Family;
 
@@ -424,7 +429,7 @@ namespace WCell.RealmServer.NPCs
 		/// Usable Spells to be casted by Mobs of this Type
 		/// </summary>
 		[NotPersistent]
-		public Dictionary<uint, Spell> Spells;
+		public Dictionary<SpellId, Spell> Spells;
 
 		[NotPersistent]
 		public SpellTriggerInfo SpellTriggerInfo;
@@ -490,10 +495,10 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (Spells == null)
 			{
-				Spells = new Dictionary<uint, Spell>(5);
+				Spells = new Dictionary<SpellId, Spell>(5);
 			}
 			OnSpellAdded(spell);
-			Spells[spell.Id] = spell;
+			Spells[spell.SpellId] = spell;
 		}
 
 		private void OnSpellAdded(Spell spell)
