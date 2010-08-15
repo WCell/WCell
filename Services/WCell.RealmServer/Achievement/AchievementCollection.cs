@@ -159,7 +159,9 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="achievementEntry"></param>
 		public void EarnAchievement(AchievementEntryId achievementEntryId)
 		{
-			EarnAchievement(AchievementMgr.GetAchievementEntry(achievementEntryId));
+		    var achievementEntry = AchievementMgr.GetAchievementEntry(achievementEntryId);
+            if(achievementEntry!= null)
+                EarnAchievement(achievementEntry);
 		}
 
 		/// <summary>
@@ -172,6 +174,10 @@ namespace WCell.RealmServer.Achievement
 			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, (uint)achievement.ID, 1);
 			RemoveAchievementProgress(achievement);
 			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
+            foreach (var achievementReward in achievement.Rewards)
+            {
+                achievementReward.GiveReward(Owner);
+            }
 		}
 
 		/// <summary>

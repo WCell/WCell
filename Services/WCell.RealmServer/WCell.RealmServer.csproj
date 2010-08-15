@@ -189,6 +189,7 @@
     <Compile Include="Achievement\AchievementCollection.cs" />
     <Compile Include="Achievement\AchievementRecord.cs" />
     <Compile Include="Achievement\AchievementProgressRecord.cs" />
+    <Compile Include="Achievement\AchievementReward.cs" />
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />

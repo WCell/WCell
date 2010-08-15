@@ -192,6 +192,7 @@
     <Compile Include="Looting\LootEntryType.cs" />
     <Compile Include="Misc\CombatRatings.cs" />
     <Compile Include="Misc\Gossips.cs" />
+    <Compile Include="Misc\TitleId.cs" />
     <Compile Include="Movement.cs" />
     <Compile Include="NPCs\CreatureFamilyId.cs" />
     <Compile Include="NPCs\Misc.cs" />
