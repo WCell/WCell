@@ -23,10 +23,10 @@ namespace WCell.RealmServer.Titles
         public override void Convert(byte[] rawData)
         {
             var characterTitleEntry = new CharacterTitleEntry();
-            characterTitleEntry.TitleId = (TitleId)GetUInt32(rawData, 0);
+            characterTitleEntry.TitleId = (TitleId) GetUInt32(rawData, 0);
             for (var i = 0; i < 16; i++)
 				characterTitleEntry.Name[i] = GetString(rawData, i + 2);
-            characterTitleEntry.BitIndex = (TitleBitId)GetUInt32(rawData, 36);
+            characterTitleEntry.BitIndex = (TitleBitId) GetUInt32(rawData, 36);
 
 
             TitleMgr.CharacterTitleEntries[characterTitleEntry.TitleId] = characterTitleEntry;
