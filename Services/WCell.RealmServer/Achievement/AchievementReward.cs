@@ -1,6 +1,7 @@
 ﻿using System;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -54,14 +55,14 @@ namespace WCell.RealmServer.Achievement
             if (character.Gender != Gender && Gender != GenderType.Neutral)
                 return;
 
-            /*if (character.FactionGroup == FactionGroup.Alliance && AllianceTitle != 0)
+            if (character.FactionGroup == FactionGroup.Alliance && AllianceTitle != 0)
             {
-                // TODO: Add titles    
+                character.SetTitle(AllianceTitle,false);
             }
             else if (character.FactionGroup == FactionGroup.Horde && HordeTitle != 0)
             {
-                // TODO: Add titles
-            }*/
+                character.SetTitle(HordeTitle, false);
+            }
 
             if (Item == 0) return;
 

@@ -59,6 +59,7 @@ using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Titles;
 
 namespace WCell.RealmServer.Entities
 {
@@ -565,10 +566,10 @@ namespace WCell.RealmServer.Entities
 			set { SetInt32(PlayerFields.WATCHED_FACTION_INDEX, value); }
 		}
 
-		public uint ChosenTitle
+        public TitleBitId ChosenTitle
 		{
-			get { return GetUInt32(PlayerFields.CHOSEN_TITLE); }
-			set { SetUInt32(PlayerFields.CHOSEN_TITLE, value); }
+            get { return (TitleBitId)GetUInt32(PlayerFields.CHOSEN_TITLE); }
+			set { SetUInt32(PlayerFields.CHOSEN_TITLE, (uint)value); }
 		}
 
 		public CharTitlesMask KnownTitleMask
@@ -2012,6 +2013,64 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return RelationMgr.Instance.HasPassiveRelations(EntityId.Low, CharacterRelationType.GuildInvite); }
 		}
+
+        public bool HasTitle(TitleId titleId)
+        {
+            var titleEntry = TitleMgr.GetTitleEntry(titleId);
+            if(titleEntry == null)
+            {
+                // TO-DO: report about an error
+                return false;
+            }
+            var bitIndex = titleEntry.BitIndex;
+
+            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
+            uint flag = (uint)(1 << (int)bitIndex % 32);
+
+            return ((CharTitlesMask) GetUInt32(fieldIndexOffset)).HasFlag((CharTitlesMask) flag);
+        }
+
+        public bool HasTitle(TitleBitId titleBitId)
+        {
+            CharacterTitleEntry titleEntry = TitleMgr.GetTitleEntry(titleBitId);
+            if (titleEntry == null)
+                return false;
+            return HasTitle(titleEntry.TitleId);
+        }
+
+        public void SetTitle(TitleId titleId, bool lost)
+        {
+            var titleEntry = TitleMgr.GetTitleEntry(titleId);
+            if (titleEntry == null)
+            {
+                // TO-DO: report about an error
+                return;
+            }
+            var bitIndex = titleEntry.BitIndex;
+
+            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
+            uint flag = (uint)(1 << (int)bitIndex % 32);
+
+            if(lost)
+            {
+                if (!HasTitle(titleId))
+                    return;
+
+                var value = GetUInt32(fieldIndexOffset) & ~flag;
+                SetUInt32(fieldIndexOffset, value);
+            }
+            else
+            {
+                if (HasTitle(titleId))
+                    return;
+
+                var value = GetUInt32(fieldIndexOffset) | flag;
+                SetUInt32(fieldIndexOffset, value);
+            }
+
+            TitleHandler.SendTitleEarned(this, titleEntry, lost);
+
+        }
 
 		#endregion
 	}
