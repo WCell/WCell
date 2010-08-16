@@ -141,6 +141,12 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_target != value)
 				{
+					if (IsFighting)
+					{
+						log.Warn("Tried to change Target while fighting for: {0}", this);
+						return;	
+					}
+
 					if (value != null)
 					{
 						SetEntityId(UnitFields.TARGET, value.EntityId);

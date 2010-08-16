@@ -440,6 +440,7 @@ namespace WCell.Addons.Default.Instances
 		/// </summary>
 		public void MoveToChest()
 		{
+			m_owner.IsInCombat = false;
 			m_owner.Target = null;				// deselect target so client wont display npc facing the last guy
 			m_owner.MoveToThenExecute(ChestLocation, unit => StartUsingChest());
 		}

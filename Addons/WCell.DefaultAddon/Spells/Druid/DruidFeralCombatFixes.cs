@@ -335,7 +335,32 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FlightFormPassivePassive));
 			});
+
+			FixBloodFrenzy();
 		}
+
+		#region Blood Frenzy
+		private static void FixBloodFrenzy()
+		{
+			SpellLineId.DruidBloodFrenzy.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther | ProcTriggerFlags.RangedCriticalHit |
+										 ProcTriggerFlags.SpellCastCritical;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
+
+				var effect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				effect.AuraEffectHandlerCreator = () => new BloodFrenzyHandler();
+			});
+		}
+
+		internal class BloodFrenzyHandler : ProcTriggerSpellHandler
+		{
+			public override bool CanProcBeTriggeredBy(IUnitAction action)
+			{
+				return action.Spell != null && action.Spell.GeneratesComboPoints;
+			}
+		}
+		#endregion
 
 		#region FixFeralSwiftness
 		private static void FixFeralSwiftness(SpellId origSpell, SpellId triggerSpell)

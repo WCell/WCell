@@ -272,7 +272,7 @@ namespace WCell.RealmServer.Commands
 				var chr = target as Character;
 				if (addRequired && chr != null)
 				{
-					chr.PlayerSpells.SatisfyConstraintsFor(spell);
+					chr.PlayerSpells.AddSpellRequirements(spell);
 				}
 
 				if (spell.Talent != null && chr != null)
