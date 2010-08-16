@@ -215,50 +215,52 @@ namespace WCell.Constants
 
 	/// <summary>
 	/// Mask for
-	/// <remarks>Values are from column 20 of CharTitles.dbc. (1 lsh value) </remarks>
+	/// <remarks>Values are from column 36 of CharTitles.dbc. (1 lsh value) </remarks>
 	/// </summary>
+	[Flags]
 	public enum CharTitlesMask : ulong
 	{
-		Disabled = 0x00000000,
-		None = 0x00000001,
-		Private = 0x00000002,
-		Corporal = 0x00000004,
-		SergeantAlliance = 0x00000008,
-		MasterSergeant = 0x00000010,
-		SegeantMajor = 0x00000020,
-		Knight = 0x00000040,
-		KnightLieutenant = 0x00000080,
-		KnightCaptain = 0x00000100,
-		KnightChampion = 0x00000200,
-		LieutenantCommander = 0x00000400,
-		Commander = 0x00000800,
-		Marshal = 0x00001000,
-		FieldMarshal = 0x00002000,
-		GrandMarshal = 0x00004000,
-		Scout = 0x00008000,
-		Grunt = 0x00010000,
-		Sergeant = 0x00020000,
-		SeniorSergeant = 0x00040000,
-		FirstSergeant = 0x00080000,
-		StoneGuard = 0x00100000,
-		BloodGuard = 0x00200000,
-		Legionnaire = 0x00400000,
-		Centurion = 0x00800000,
-		Champion = 0x01000000,
-		LieutenantGeneral = 0x02000000,
-		General = 0x04000000,
-		Warlord = 0x08000000,
-		HighWarlord = 0x10000000,
-
-		Gladiator = 0x20000000,
-		Duelist = 0x40000000,
-		Rival = 0x80000000,
-		Challenger = 0x100000000,
-		ScarabLord = 0x200000000,
-		Conqueror = 0x400000000,
-		Justicar = 0x800000000,
-
-		ChampionOfTheNaaru = 0x1000000000,
-		MercilessGladiator = 0x2000000000,
+        Disabled = 0x0000000000000000,
+        None = 0x0000000000000001,
+        Private = 0x0000000000000002, // 1
+        Corporal = 0x0000000000000004, // 2
+        SergeantA = 0x0000000000000008, // 3
+        MasterSergeant = 0x0000000000000010, // 4
+        SergeantMajor = 0x0000000000000020, // 5
+        Knight = 0x0000000000000040, // 6
+        KnightLieutenant = 0x0000000000000080, // 7
+        KnightCaptain = 0x0000000000000100, // 8
+        KnightChampion = 0x0000000000000200, // 9
+        LieutenantCommander = 0x0000000000000400, // 10
+        Commander = 0x0000000000000800, // 11
+        Marshal = 0x0000000000001000, // 12
+        FieldMarshal = 0x0000000000002000, // 13
+        GrandMarshal = 0x0000000000004000, // 14
+        Scout = 0x0000000000008000, // 15
+        Grunt = 0x0000000000010000, // 16
+        SergeantH = 0x0000000000020000, // 17
+        SeniorSergeant = 0x0000000000040000, // 18
+        FirstSergeant = 0x0000000000080000, // 19
+        StoneGuard = 0x0000000000100000, // 20
+        BloodGuard = 0x0000000000200000, // 21
+        Legionnaire = 0x0000000000400000, // 22
+        Centurion = 0x0000000000800000, // 23
+        Champion = 0x0000000001000000, // 24
+        LieutenantGeneral = 0x0000000002000000, // 25
+        General = 0x0000000004000000, // 26
+        Warlord = 0x0000000008000000, // 27
+        HighWarlord = 0x0000000010000000, // 28
+        Gladiator = 0x0000000020000000, // 29
+        Duelist = 0x0000000040000000, // 30
+        Rival = 0x0000000080000000, // 31
+        Challenger = 0x0000000100000000, // 32
+        ScarabLord = 0x0000000200000000, // 33
+        Conqueror = 0x0000000400000000, // 34
+        Justicar = 0x0000000800000000, // 35
+        ChampionOfTheNaaru = 0x0000001000000000, // 36
+        MercilessGladiator = 0x0000002000000000, // 37
+        OfTheShatteredSun = 0x0000004000000000, // 38
+        HandOfAdal = 0x0000008000000000, // 39
+        VengefulGladiator = 0x0000010000000000, // 40
 	}
 }

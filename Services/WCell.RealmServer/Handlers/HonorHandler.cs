@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using WCell.Constants;
+using WCell.Constants.Misc;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
@@ -28,14 +29,6 @@ namespace WCell.RealmServer.Handlers
         {
         }*/
 
-        [ClientPacketHandler(RealmServerOpCode.CMSG_SET_TITLE)]
-        public static void HandleChooseTitle(IRealmClient client, RealmPacketIn packet)
-        {
-            uint title = packet.ReadUInt32();
-
-            // TODO: Check whether title can be used
-            client.ActiveCharacter.ChosenTitle = title;
-        }
 
         public static void SendPVPCredit(IPacketReceiver receiver, uint points, Character victim)
         {
