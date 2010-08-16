@@ -1,2 +1,3 @@
-- fixed up player spell cooldowns and PlayerSpellCollection maintenance
+- missing files
+- fixed up player spell cooldowns and PlayerSpellCollection/NPCSpellCollection maintenance
 - added & tested loading of cooldowns (we had saving but no loading before)

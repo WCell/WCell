@@ -345,7 +345,7 @@ namespace WCell.RealmServer.Entities
 				else
 				{
 					// add spells that have a low enough level
-					m_spells.AddSpell(spell.NextRank);
+					m_spells.AddSpell(spell);
 				}
 			}
 		}
@@ -473,19 +473,10 @@ namespace WCell.RealmServer.Entities
 				Type = PetActionType.SetAction
 			};
 
-			IEnumerator<Spell> spells;
-			if (m_spells != null)
-			{
-				spells = m_spells.GetEnumerator();
-			}
-			else
-			{
-				spells = null;
-			}
-
+			IEnumerator<Spell> spells = m_spells.GetEnumerator();
 			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
 			{
-				if (spells == null || !spells.MoveNext())
+				if (!spells.MoveNext())
 				{
 					bar[i++] = new PetActionEntry
 					{

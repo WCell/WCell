@@ -118,13 +118,7 @@ namespace WCell.RealmServer.Entities
 			m_auras = new PlayerAuraCollection(this);
 
 			// spells
-			m_spells = new PlayerSpellCollection(this);
-
-			// runes
-			if (((PlayerSpellCollection) m_spells).Runes != null)
-			{
-				((PlayerSpellCollection) m_spells).Runes.InitRunes(this);
-			}
+			m_spells = PlayerSpellCollection.Obtain(this);
 
 			// factions
 			WatchedFaction = m_record.WatchedFaction;

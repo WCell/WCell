@@ -195,10 +195,7 @@ namespace WCell.RealmServer.Entities
 				InitImmovable();
 			}
 
-			if (m_entry.Spells != null)
-			{
-				m_spells = new NPCSpellCollection(this);
-			}
+			m_spells = NPCSpellCollection.Obtain(this);
 
 			AddStandardEquipment();
 			if (m_entry.AddonData != null)
@@ -218,17 +215,17 @@ namespace WCell.RealmServer.Entities
 			m_brain.IsRunning = true;
 
 			AddMessage(() =>
-			{
-				// Set Level/Scale after NPC is in world:
-				if (!HasPlayerMaster)
-				{
-					Level = entry.GetRandomLevel();
-				}
-				else
-				{
-					Level = m_master.Level;
-				}
-			});
+						{
+							// Set Level/Scale after NPC is in world:
+							if (!HasPlayerMaster)
+							{
+								Level = entry.GetRandomLevel();
+							}
+							else
+							{
+								Level = m_master.Level;
+							}
+						});
 		}
 
 		/// <summary>
@@ -452,20 +449,12 @@ namespace WCell.RealmServer.Entities
 
 		public NPCSpellCollection NPCSpells
 		{
-			get { return (NPCSpellCollection)Spells; }
+			get { return (NPCSpellCollection)m_spells; }
 		}
 
 		public override SpellCollection Spells
 		{
-			get
-			{
-				if (m_spells == null)
-				{
-					// ensure that spell collection is created
-					m_spells = new NPCSpellCollection(this);
-				}
-				return NPCSpells;
-			}
+			get { return m_spells; }
 		}
 
 		public override SpawnPoint SpawnPoint
