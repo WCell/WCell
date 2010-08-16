@@ -5,7 +5,6 @@ namespace WCell.RealmServer.Spells
 {
 	public interface ICooldown
 	{
-		uint Identifier { get; }
 		DateTime Until { get; set; }
 		IConsistentCooldown AsConsistent();
 	}
@@ -14,10 +13,10 @@ namespace WCell.RealmServer.Spells
 	{
 		uint CharId { get; set; }
 
-		void SaveAndFlush();
-		void UpdateAndFlush();
-		void CreateAndFlush();
-		void DeleteAndFlush();
+		void Save();
+		void Update();
+		void Create();
+		void Delete();
 	}
 
 	public interface ISpellIdCooldown : ICooldown
@@ -51,14 +50,10 @@ namespace WCell.RealmServer.Spells
 			set;
 		}
 
-		public uint Identifier
-		{
-			get { return SpellId; }
-		}
-
 		public IConsistentCooldown AsConsistent()
 		{
-			return new ConsistentSpellIdCooldown {
+			return new PersistentSpellIdCooldown
+			{
 				Until = Until,
 				SpellId = SpellId,
 				ItemId = ItemId
@@ -89,14 +84,10 @@ namespace WCell.RealmServer.Spells
 			set;
 		}
 
-		public uint Identifier
-		{
-			get { return CategoryId; }
-		}
-
 		public IConsistentCooldown AsConsistent()
 		{
-			return new ConsistentSpellCategoryCooldown {
+			return new PersistentSpellCategoryCooldown
+			{
 				Until = Until,
 				CategoryId = CategoryId,
 				ItemId = ItemId
@@ -105,8 +96,13 @@ namespace WCell.RealmServer.Spells
 	}
 
 	[ActiveRecord("SpellIdCooldown", Access = PropertyAccess.Property)]
-	public class ConsistentSpellIdCooldown : ActiveRecordBase<ConsistentSpellIdCooldown>, ISpellIdCooldown, IConsistentCooldown
+	public class PersistentSpellIdCooldown : ActiveRecordBase<PersistentSpellIdCooldown>, ISpellIdCooldown, IConsistentCooldown
 	{
+		public static PersistentSpellIdCooldown[] LoadIdCooldownsFor(uint lowId)
+		{
+			return FindAllByProperty("_charId", (int)lowId);
+		}
+
 		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _spellId;
 		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -115,27 +111,16 @@ namespace WCell.RealmServer.Spells
 		private int _charId;
 
 		[PrimaryKey(PrimaryKeyType.Increment)]
-		public long Id
+		private long Id
 		{
 			get;
 			set;
 		}
 
-		public uint Identifier
-		{
-			get { return (uint)_spellId; }
-		}
-
 		public uint CharId
 		{
-			get
-			{
-				return (uint)_charId;
-			}
-			set
-			{
-				_charId = (int)value;
-			}
+			get { return (uint)_charId; }
+			set { _charId = (int)value; }
 		}
 
 		[Property]
@@ -147,26 +132,14 @@ namespace WCell.RealmServer.Spells
 
 		public uint SpellId
 		{
-			get
-			{
-				return (uint)_spellId;
-			}
-			set
-			{
-				_spellId = (int)value;
-			}
+			get { return (uint)_spellId; }
+			set { _spellId = (int)value; }
 		}
 
 		public uint ItemId
 		{
-			get
-			{
-				return (uint)_itemId;
-			}
-			set
-			{
-				_itemId = (int)value;
-			}
+			get { return (uint)_itemId; }
+			set { _itemId = (int)value; }
 		}
 
 		public IConsistentCooldown AsConsistent()
@@ -176,8 +149,13 @@ namespace WCell.RealmServer.Spells
 	}
 
 	[ActiveRecord("SpellCategoryCooldown", Access = PropertyAccess.Property)]
-	public class ConsistentSpellCategoryCooldown : ActiveRecordBase<ConsistentSpellCategoryCooldown>, ISpellCategoryCooldown, IConsistentCooldown
+	public class PersistentSpellCategoryCooldown : ActiveRecordBase<PersistentSpellCategoryCooldown>, ISpellCategoryCooldown, IConsistentCooldown
 	{
+		public static PersistentSpellCategoryCooldown[] LoadCategoryCooldownsFor(uint lowId)
+		{
+			return FindAllByProperty("_charId", (int)lowId);
+		}
+
 		[Field("CatId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _catId;
 		[Field("ItemId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -188,39 +166,22 @@ namespace WCell.RealmServer.Spells
 		private int _spellId;
 
 		[PrimaryKey(PrimaryKeyType.Increment)]
-		public long Id
+		private long Id
 		{
 			get;
 			set;
 		}
 
-		public uint Identifier
-		{
-			get { return (uint)_catId; }
-		}
-
 		public uint SpellId
 		{
-			get
-			{
-				return (uint)_spellId;
-			}
-			set
-			{
-				_spellId = (int)value;
-			}
+			get { return (uint)_spellId; }
+			set { _spellId = (int)value; }
 		}
 
 		public uint CharId
 		{
-			get
-			{
-				return (uint)_charId;
-			}
-			set
-			{
-				_charId = (int)value;
-			}
+			get { return (uint)_charId; }
+			set { _charId = (int)value; }
 		}
 
 		[Property]
@@ -232,26 +193,14 @@ namespace WCell.RealmServer.Spells
 
 		public uint CategoryId
 		{
-			get
-			{
-				return (uint)_catId;
-			}
-			set
-			{
-				_catId = (int)value;
-			}
+			get { return (uint)_catId; }
+			set { _catId = (int)value; }
 		}
 
 		public uint ItemId
 		{
-			get
-			{
-				return (uint)_itemId;
-			}
-			set
-			{
-				_itemId = (int)value;
-			}
+			get { return (uint)_itemId; }
+			set { _itemId = (int)value; }
 		}
 
 		public IConsistentCooldown AsConsistent()

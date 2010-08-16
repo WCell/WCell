@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 
 			StandState = StandState.Sit;
 
-			Money = (uint)m_record.Money;
+			Money = (uint) m_record.Money;
 			Outfit = m_record.Outfit;
 			//ScaleX = m_archetype.Race.Scale;
 			ScaleX = 1;
@@ -91,7 +91,8 @@ namespace WCell.RealmServer.Entities
 			Experience = m_record.Xp;
 			RestXp = m_record.RestXp;
 
-			SetInt32(UnitFields.LEVEL, m_record.Level);		// cannot use Level property, since it will trigger certain events that we don't want triggered
+			SetInt32(UnitFields.LEVEL, m_record.Level);
+				// cannot use Level property, since it will trigger certain events that we don't want triggered
 			NextLevelXP = XpGenerator.GetXpForlevel(m_record.Level + 1);
 			MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
 
@@ -109,7 +110,7 @@ namespace WCell.RealmServer.Entities
 
 			foreach (var school in WCellDef.AllDamageSchools)
 			{
-				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
+				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int) school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
 
@@ -117,27 +118,17 @@ namespace WCell.RealmServer.Entities
 			m_auras = new PlayerAuraCollection(this);
 
 			// spells
-			PlayerSpellCollection spells;
-			if (!record.JustCreated && SpellHandler.PlayerSpellCollections.TryGetValue(EntityId.Low, out spells))
-			{
-				SpellHandler.PlayerSpellCollections.Remove(EntityId.Low);
-				m_spells = spells;
-				((PlayerSpellCollection)m_spells).OnReconnectOwner(this);
-			}
-			else
-			{
-				m_spells = new PlayerSpellCollection(this);
-			}
+			m_spells = new PlayerSpellCollection(this);
 
 			// runes
-			if (((PlayerSpellCollection)m_spells).Runes != null)
+			if (((PlayerSpellCollection) m_spells).Runes != null)
 			{
-				((PlayerSpellCollection)m_spells).Runes.InitRunes(this);
+				((PlayerSpellCollection) m_spells).Runes.InitRunes(this);
 			}
 
 			// factions
 			WatchedFaction = m_record.WatchedFaction;
-			Faction = FactionMgr.ByRace[(uint)record.Race];
+			Faction = FactionMgr.ByRace[(uint) record.Race];
 			m_reputations = new ReputationCollection(this);
 
 			// skills
@@ -194,8 +185,8 @@ namespace WCell.RealmServer.Entities
 				Power = m_record.Power;
 				SetInt32(UnitFields.HEALTH, m_record.Health);
 			}
-
 		}
+
 		#endregion
 
 		#region Load
@@ -256,11 +247,12 @@ namespace WCell.RealmServer.Entities
 
 					// load all the rest
 					m_achievements.Load();
-					m_record.LoadSpells(this);
+					((PlayerSpellCollection)m_spells).LoadSpells();
+					((PlayerSpellCollection)m_spells).LoadCooldowns();
 					m_skills.Load();
 					m_mailAccount.Load();
 					m_reputations.Load();
-					var auras = m_record.LoadAuraRecords();
+					var auras = AuraRecord.LoadAuraRecords(EntityId.Low);
 					AddPostUpdateMessage(() => m_auras.InitializeAuras(auras));
 
 					if (QuestMgr.Loaded)
@@ -286,17 +278,7 @@ namespace WCell.RealmServer.Entities
 					m_record.ExploredZones = zones;
 				}
 
-				// add ability spells
-				foreach (var spell in m_record.Spells)
-				{
-					((PlayerSpellCollection) m_spells).OnlyAdd(spell);
-				}
-
-				// add talent spells
-				foreach (var spell in CurrentSpecProfile.TalentSpells)
-				{
-					((PlayerSpellCollection) m_spells).OnlyAdd(spell);
-				}
+				// calculate amount of spent talent points per tree
 				m_talents.CalcSpentTalentPoints();
 
 				// update RestState
@@ -387,7 +369,7 @@ namespace WCell.RealmServer.Entities
 			else if (m_record.Health == 0)
 			{
 				// we were dead and did not release yet
-				var diff = DateTime.Now.Subtract(m_record.LastDeathTime).GetMilliSecondsInt() + Corpse.AutoReleaseDelay;
+				var diff = DateTime.Now.Subtract(m_record.LastDeathTime).ToMilliSecondsInt() + Corpse.AutoReleaseDelay;
 				m_corpseReleaseTimer = new TimerEntry(dt => ReleaseCorpse());
 
 				if (diff > 0)
@@ -842,7 +824,7 @@ namespace WCell.RealmServer.Entities
 					m_record.NextTaxiVertexId = 0;
 				}
 
-				// spells & runes
+				// cooldowns & runes
 				PlayerSpells.OnSave();
 
 				// taxi mask
@@ -1203,8 +1185,6 @@ namespace WCell.RealmServer.Entities
 			m_auras.CleanupAuras();
 
 			m_region.RemoveObjectNow(this);
-
-			((PlayerSpellCollection)m_spells).OnOwnerLoggedOut();
 
 			//if (!IsPlayerLogout)
 			if (!Account.IsActive)

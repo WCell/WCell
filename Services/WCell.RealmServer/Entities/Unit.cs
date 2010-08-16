@@ -1786,6 +1786,11 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
+			IsFighting = false;
+			if (m_brain != null)
+			{
+				m_brain.StopCurrentAction();
+			}
 			Target = null;
 			base.DeleteNow();
 		}

@@ -305,6 +305,8 @@ namespace WCell.RealmServer.Spells
 
 			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 
+			GeneratesComboPoints = HasEffectWith(effect => effect.EffectType == SpellEffectType.AddComboPoints);
+
 			IsFinishingMove =
 				AttributesEx.HasAnyFlag(SpellAttributesEx.FinishingMove) ||
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);

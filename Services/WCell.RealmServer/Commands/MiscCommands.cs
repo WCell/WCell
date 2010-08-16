@@ -22,6 +22,7 @@ using WCell.Constants.Factions;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
+using WCell.RealmServer.Lang;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.Stats;
 using WCell.Util;
@@ -455,7 +456,7 @@ namespace WCell.RealmServer.Commands
 			}
 			else
 			{
-				trigger.Reply("Nothing selected.");
+				trigger.Reply(RealmLangKey.InvalidSelection);
 			}
 		}
 	}

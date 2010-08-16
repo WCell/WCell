@@ -165,7 +165,7 @@ namespace WCell.RealmServer.Spells
 
 		public void RestoreCooldown(Spell spell, DateTime cdTime)
 		{
-			var millis = (cdTime - DateTime.Now).GetMilliSecondsInt();
+			var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
 			ProcessCooldown(spell, millis);
 		}
 

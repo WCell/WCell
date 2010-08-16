@@ -532,7 +532,7 @@ namespace WCell.RealmServer.Spells.Auras
 			CanBeSaved = this != m_auras.GhostAura &&
 						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
 						 UsedItem == null &&
-						 (!HasTimeout || TimeLeft > 10000);
+						 (!HasTimeout || TimeLeft > 5000);
 
 
 			m_auras.OnAuraChange(this);

@@ -21,6 +21,11 @@ namespace WCell.RealmServer.Database
 			return _idGenerator.Next();
 		}
 
+		public static SpellRecord[] LoadAllRecordsFor(uint lowId)
+		{
+			return FindAllByProperty("m_ownerId", (int)lowId);
+		}
+
 		[Field("SpellId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int m_spellId;
 

@@ -69,6 +69,7 @@ namespace WCell.Addons.Default.Instances
 			IsAIFrozen = true;
 
 			// let Svala look at Arthas
+			m_svala.IsInCombat = false;
 			m_svala.Target = m_arthasMirror;
 			m_svala.CallDelayed(8000, cb =>
 			{
