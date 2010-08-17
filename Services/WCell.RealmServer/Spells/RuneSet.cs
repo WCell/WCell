@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void OnOwnerLoggedOut()
+		internal void Dispose()
 		{
 			Owner = null;
 		}

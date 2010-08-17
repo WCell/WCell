@@ -43,21 +43,21 @@ namespace WCell.RealmServer.Spells
 				var now = DateTime.Now.Ticks;
 				foreach (var idCd in spells.IdCooldowns)
 				{
-					var delay = idCd.Until.Ticks - now;
+					var delay = (int)(idCd.Until.Ticks - now);
 					if (delay > 10)
 					{
 						cooldownCount++;
 						packet.Write(idCd.SpellId);
 						packet.Write((ushort) idCd.ItemId);
 						packet.Write((ushort) 0);
-						packet.Write(delay/10000);
+						packet.Write(Utility.ToMilliSecondsInt(delay));
 						packet.Write(0);
 					}
 				}
 				
 				foreach (var catCd in spells.CategoryCooldowns)
 				{
-					var delay = catCd.Until.Ticks - now;
+					var delay = (int)(catCd.Until.Ticks - now);
 					if (delay > 10)
 					{
 						cooldownCount++;
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Spells
 						packet.Write((ushort) catCd.ItemId);
 						packet.Write((ushort) catCd.CategoryId);
 						packet.Write(0);
-						packet.Write(delay/10000);
+						packet.Write(Utility.ToMilliSecondsInt(delay));
 					}
 				}
 

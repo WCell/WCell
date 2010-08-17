@@ -818,7 +818,7 @@ namespace WCell.RealmServer.Entities
 		/// Indicates whether this Unit is currently trying to swing at its target.
 		/// If <c>IsInCombat</c> is set but Unit is not fighting,
 		/// it will leave Combat mode after <c>CombatDeactivationDelay</c> without combat
-		/// activity, if not under the influence of a debuff.
+		/// activity.
 		/// </summary>
 		public bool IsFighting
 		{

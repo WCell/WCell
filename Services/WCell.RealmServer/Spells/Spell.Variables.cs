@@ -335,6 +335,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public EquipmentSlot EquipmentSlot = EquipmentSlot.End;
 
+		public bool GeneratesComboPoints;
+
 		public bool IsFinishingMove;
 
 		public bool RequiresDeadTarget;

@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -27,6 +28,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
@@ -99,6 +101,7 @@ namespace WCell.RealmServer.Entities
 		protected GroupUpdateFlags m_groupUpdateFlags = GroupUpdateFlags.None;
 
 		protected GuildMember m_guildMember;
+        protected ArenaTeamMember[] m_arenaTeamMember = new ArenaTeamMember[3];
 
 		/// <summary>
 		/// All skills of this Character
@@ -648,6 +651,11 @@ namespace WCell.RealmServer.Entities
 			get { return GetUInt32(PlayerFields.GUILDRANK); }
 			internal set { SetUInt32(PlayerFields.GUILDRANK, value); }
 		}
+
+        public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
+        {
+            SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
+        }
 
 		/// <summary>
 		/// The 3 classmasks of spells to not use require reagents for
@@ -1479,6 +1487,14 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+        /// <summary>
+        /// The ArenaTeamMember object of this Character (if it he/she is in an arena team)
+        /// </summary>
+        public ArenaTeamMember[] ArenaTeamMember
+        {
+            get { return m_arenaTeamMember; }
+        }
 
 		/// <summary>
 		/// Characters get disposed after Logout sequence completed and

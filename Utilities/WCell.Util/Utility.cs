@@ -133,14 +133,19 @@ namespace WCell.Util
 		public const int TicksPerSecond = 10000;
 		private const long TICKS_SINCE_1970 = 621355968000000000; // .NET ticks for 1970
 
-		public static int GetMilliSecondsInt(this DateTime time)
+		public static int ToMilliSecondsInt(this DateTime time)
 		{
 			return (int)(time.Ticks / TicksPerSecond);
 		}
 
-		public static int GetMilliSecondsInt(this TimeSpan time)
+		public static int ToMilliSecondsInt(this TimeSpan time)
 		{
 			return (int)(time.Ticks) / TicksPerSecond;
+		}
+
+		public static int ToMilliSecondsInt(int ticks)
+		{
+			return ticks / TicksPerSecond;
 		}
 
 		/// <summary>
@@ -239,32 +244,6 @@ namespace WCell.Util
 			return (uint)((time.Ticks - TICKS_SINCE_1970) / 10000000L);
 		}
 		#endregion
-
-		/// <summary>
-		/// Reverses the contents of an array.
-		/// </summary>
-		/// <typeparam name="T">type of the array</typeparam>
-		/// <param name="buffer">array of objects to reverse</param>
-		public static void Reverse<T>(T[] buffer)
-		{
-			Reverse(buffer, buffer.Length);
-		}
-
-		/// <summary>
-		/// Reverses the contents of an array.
-		/// </summary>
-		/// <typeparam name="T">type of the array</typeparam>
-		/// <param name="buffer">array of objects to reverse</param>
-		/// <param name="length">number of objects in the array</param>
-		public static void Reverse<T>(T[] buffer, int length)
-		{
-			for (int i = 0; i < length / 2; i++)
-			{
-				T temp = buffer[i];
-				buffer[i] = buffer[length - i - 1];
-				buffer[length - i - 1] = temp;
-			}
-		}
 
 		/// <summary>
 		/// Swaps one reference with another atomically.
@@ -515,38 +494,6 @@ namespace WCell.Util
 		}
 
 		#endregion
-
-		public static void ReverseArr<T>(this T[] arr)
-		{
-			var len = arr.Length - 1;
-			for (int i = 0; i < arr.Length / 2; i++)
-			{
-				var bottom = arr[i];
-				var top = arr[len - i];
-
-				arr[i] = top;
-				arr[len - i] = bottom;
-			}
-		}
-
-		/// <summary>
-		/// Sets all values of the given array between offset and length to the given obj
-		/// </summary>
-		public static void Fill<T>(this T[] arr, T obj, int offset, int until)
-		{
-			for (var i = offset; i <= until; i++)
-			{
-				arr[i] = obj;
-			}
-		}
-
-		public static void Fill(this int[] arr, int offset, int until, int startVal)
-		{
-			for (var i = offset; i <= until; i++)
-			{
-				arr[i] = startVal++;
-			}
-		}
 
 		#region Random
 
@@ -981,6 +928,7 @@ namespace WCell.Util
 			return addr ?? IPAddress.Loopback;
 		}
 
+		#region Format
 		public static string FormatMoney(uint money)
 		{
 			var str = "";
@@ -1012,34 +960,7 @@ namespace WCell.Util
 			return string.Format("{0:00}h {1:00}m {2:00}s {3:00}ms", time.Hour, time.Minute,
 								 time.Second, time.Millisecond);
 		}
-
-		public static List<TOutput> TransformList<TInput, TOutput>(this IEnumerable<TInput> enumerable,
-																   Func<TInput, TOutput> transformer)
-		{
-			var output = new List<TOutput>(enumerable.Count());
-
-			foreach (var input in enumerable)
-			{
-				output.Add(transformer(input));
-			}
-
-			return output;
-		}
-
-		public static TOutput[] TransformArray<TInput, TOutput>(this IEnumerable<TInput> enumerable,
-																Func<TInput, TOutput> transformer)
-		{
-			var output = new TOutput[enumerable.Count()];
-
-			var enumerator = enumerable.GetEnumerator();
-			for (var i = 0; i < output.Length; i++)
-			{
-				enumerator.MoveNext();
-				output[i] = transformer(enumerator.Current);
-			}
-
-			return output;
-		}
+		#endregion
 
 		public static O GetRandom<O>(this IList<O> os)
 		{
@@ -1320,6 +1241,10 @@ namespace WCell.Util
 		}
 	}
 
+	#region SingleEnumerator
+	/// <summary>
+	/// Returns a single element
+	/// </summary>
 	public class SingleEnumerator<T> : IEnumerator<T>
 		where T : class
 	{
@@ -1361,4 +1286,5 @@ namespace WCell.Util
 			get { return Current; }
 		}
 	}
+	#endregion
 }

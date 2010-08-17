@@ -1,1 +1,2 @@
-- added prevention against gaining of Achievement during loading of Character -> Also fixes saving of Achievements
+- fixed up player spell cooldowns and PlayerSpellCollection maintenance
+- added & tested loading of cooldowns (we had saving but no loading before)

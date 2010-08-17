@@ -37,6 +37,11 @@ namespace WCell.RealmServer.Database
 			return record;
 		}
 
+		public static AuraRecord[] LoadAuraRecords(uint lowId)
+		{
+			return FindAllByProperty("m_OwnerId", (int)lowId);
+		}
+
 		public AuraRecord(Aura aura)
 		{
 			New = true;

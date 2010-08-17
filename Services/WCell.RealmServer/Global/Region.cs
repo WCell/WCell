@@ -1121,7 +1121,7 @@ namespace WCell.RealmServer.Global
 			{
 				// get the time at the start of our callback
 				var updateStart = DateTime.Now;
-				var updateDelta = (updateStart - m_lastUpdateTime).GetMilliSecondsInt();
+				var updateDelta = (updateStart - m_lastUpdateTime).ToMilliSecondsInt();
 
 				// see if we have any messages to execute
 				if (m_messageQueue.Count > 0)
@@ -1274,7 +1274,7 @@ namespace WCell.RealmServer.Global
 				Interlocked.Exchange(ref m_currentThreadId, 0);
 				if (m_running)
 				{
-					var callbackTimeout = m_updateDelay - newUpdateDelta.GetMilliSecondsInt();
+					var callbackTimeout = m_updateDelay - newUpdateDelta.ToMilliSecondsInt();
 					if (callbackTimeout < 0)
 					{
 						// even if we are in a hurry: For the sake of load-balance we have to give control back to the ThreadPool

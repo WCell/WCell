@@ -969,7 +969,6 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
-			Target = null;
 			m_auras.ClearWithoutCleanup();
 			base.DeleteNow();
 		}

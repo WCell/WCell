@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Database
 		protected CharacterRecord()
 		{
 			CanSave = true;
-			Spells = new List<SpellRecord>();
+			AbilitySpells = new List<SpellRecord>();
 		}
 
 		public CharacterRecord(long accountId)
@@ -575,51 +575,14 @@ namespace WCell.RealmServer.Database
 		#endregion
 
 		#region Spells & Auras & Runes
-		internal void LoadSpells(Character chr)
-		{
-			var dbSpells = SpellRecord.FindAllByProperty("m_ownerId", (int)EntityLowId);
-			var specs = chr.SpecProfiles;
-			foreach (var record in dbSpells)
-			{
-				var spell = record.Spell;
-				if (spell == null)
-				{
-					LogManager.GetCurrentClassLogger().Warn("Character \"{0}\" had invalid spell: {1} ({2})", this, record.SpellId,
-															(uint)record.SpellId);
-					continue;
-				}
-
-				if (spell.IsTalent)
-				{
-					if (record.SpecIndex < 0 || record.SpecIndex >= specs.Length)
-					{
-						LogManager.GetCurrentClassLogger().Warn(
-							"Character \"{0}\" had Talent-Spell {1} ({2}) but with invalid SpecIndex: {3}", this, record.SpellId,
-							(uint)record.SpellId, record.SpecIndex);
-						continue;
-					}
-					specs[record.SpecIndex].TalentSpells.Add(record);
-				}
-				else
-				{
-					Spells.Add(record);
-				}
-			}
-		}
-
 		/// <summary>
 		/// Default spells; talents excluded.
 		/// Talent spells can be found in <see cref="SpecProfile"/>.
 		/// </summary>
-		public List<SpellRecord> Spells
+		public List<SpellRecord> AbilitySpells
 		{
 			get;
 			private set;
-		}
-
-		public AuraRecord[] LoadAuraRecords()
-		{
-			return AuraRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
 		}
 
 		[Property]
