@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
@@ -220,6 +221,11 @@ namespace TerrainDisplay.Extracted
                     indices.Add(offset + (row * (8 + 1) + col + 1));
                 }
             }
+        }
+
+        public override void LoadQuadTree()
+        {
+            throw new NotImplementedException();
         }
     }
 }

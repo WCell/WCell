@@ -61,6 +61,11 @@ namespace TerrainDisplay
                 Z = vec.Z
             };
         }
+
+        public static Vector3 ToWCell(this Microsoft.Xna.Framework.Vector3 vec)
+        {
+            return new Vector3(vec.X, vec.Y, vec.Z);
+        }
     }
 
     public static class MatrixExtensions

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using TerrainDisplay.Collision;
 using WCell.Util.Graphics;
 using TerrainDisplay;
 using TerrainDisplay.MPQ;
@@ -44,6 +45,12 @@ namespace TerrainDisplay.Extracted
             get { return _meshManager; }
         }
 
+        private readonly SelectedTriangleManager _selectedTriangleManager;
+        public SelectedTriangleManager SelectedTriangleManager
+        {
+            get { return _selectedTriangleManager; }
+        }
+
         public WDTFile WDT
         {
             get { return _wdt; }
@@ -70,6 +77,7 @@ namespace TerrainDisplay.Extracted
             _m2Manager = new ExtractedM2Manager(_baseDirectory, _mapId);
             _wmoManager = new ExtractedWMOManager(_baseDirectory, _mapId);
             _meshManager = new NavMeshManager();
+            _selectedTriangleManager = new SelectedTriangleManager(_adtManager);
         }
 
         public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)

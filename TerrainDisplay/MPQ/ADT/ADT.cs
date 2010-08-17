@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Terra;
+using TerrainDisplay.Collision;
 using TerrainDisplay.MPQ.ADT.Components;
 using WCell.Util.Graphics;
-using Color = WCell.Util.Graphics.Color;
 
 namespace TerrainDisplay.MPQ.ADT
 {
@@ -85,13 +85,16 @@ namespace TerrainDisplay.MPQ.ADT
         public ADT(string filePath, MpqTerrainManager mpqTerrainManager)
         {
             _mpqTerrainManager = mpqTerrainManager;
-            string fileName = Path.GetFileNameWithoutExtension(filePath);
+            var fileName = Path.GetFileNameWithoutExtension(filePath);
             FileName = fileName;
 
-            string[] fileNameParts = fileName.Split('_');
+            var fileNameParts = fileName.Split('_');
             _continent = (ContinentType) Enum.Parse(typeof (ContinentType), fileNameParts[0], true);
             _tileX = Int32.Parse(fileNameParts[2]);
             _tileY = Int32.Parse(fileNameParts[1]);
+
+            QuadTree = new QuadTree<TriIndex>(new Size(TerrainConstants.ChunkSize, TerrainConstants.ChunkSize),
+                                          TerrainConstants.UnitsPerChunkSide * TerrainConstants.UnitsPerChunkSide);
         }
 
         #endregion
@@ -118,8 +121,8 @@ namespace TerrainDisplay.MPQ.ADT
             const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide*TerrainConstants.ChunksPerTileSide;
             var tileHeights = new float[heightsPerTileSide + 1, heightsPerTileSide + 1];
             var tileHoles = new List<Index2>();
-            var holeBorders = new List<Index2>();
-
+            
+            
             for (var chunkRow = 0; chunkRow < TerrainConstants.ChunksPerTileSide; chunkRow++)
             {
                 for (var chunkCol = 0; chunkCol < TerrainConstants.ChunksPerTileSide; chunkCol++)
@@ -143,36 +146,6 @@ namespace TerrainDisplay.MPQ.ADT
                             // Add the hole vertices to the pre-insertion 'script'
                             if (!holes[unitRow/2, unitCol/2]) continue;
 
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Max(tileCol - 1, 0),
-                            //    X = Math.Max(tileRow - 1, 0),
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = tileCol,
-                            //    X = Math.Max(tileRow - 1, 0),
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 1, heightsPerTileSide),
-                            //    X = Math.Max(tileRow - 1, 0),
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
-                            //    X = Math.Max(tileRow - 1, 0),
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Max(tileCol - 1, 0),
-                            //    X = tileRow,
-                            //});
-
                             tileHoles.AddUnique(new Index2
                             {
                                 Y = tileCol,
@@ -185,18 +158,6 @@ namespace TerrainDisplay.MPQ.ADT
                                 X = tileRow
                             });
 
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
-                            //    X = tileRow
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Max(tileCol - 1, 0),
-                            //    X = Math.Min(tileRow + 1, heightsPerTileSide)
-                            //});
-
                             tileHoles.AddUnique(new Index2
                             {
                                 Y = tileCol,
@@ -208,36 +169,6 @@ namespace TerrainDisplay.MPQ.ADT
                                 Y = Math.Min(tileCol + 1, heightsPerTileSide),
                                 X = Math.Min(tileRow + 1, heightsPerTileSide)
                             });
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
-                            //    X = Math.Min(tileRow + 1, heightsPerTileSide)
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Max(tileCol - 1, 0),
-                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = tileCol,
-                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 1, heightsPerTileSide),
-                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
-                            //});
-
-                            //holeBorders.AddUnique(new Index2
-                            //{
-                            //    Y = Math.Min(tileCol + 2, heightsPerTileSide),
-                            //    X = Math.Min(tileRow + 2, heightsPerTileSide)
-                            //});
                         }
                     }
                 }
@@ -278,14 +209,8 @@ namespace TerrainDisplay.MPQ.ADT
                 var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) - (vertex.Y*TerrainConstants.UnitSize);
                 TerrainVertices.Add(new Vector3(xPos, yPos, vertex.Z));
             }
-            //for (var indexX = 0; indexX < 16; indexX++)
-            //{
-            //    for (var indexY = 0; indexY < 16; indexY++)
-            //    {
-            //        GenerateHeightIndices(indexY, indexX, Vertices.Count, Indices);
-            //        GenerateHeightVertices(indexY, indexX, Vertices, TerrainColor);
-            //    }
-            //}
+
+            LoadQuadTree();
         }
 
         /// <summary>
@@ -481,173 +406,21 @@ namespace TerrainDisplay.MPQ.ADT
             }
         }
 
-        //public List<int> ReducePolygonCount(ADTChunk mcnk, List<int> tempIndices, int offset)
-        //{
-        //    // No polygons to cull
-        //    if (tempIndices.Count == 0) return tempIndices;
+        public override void LoadQuadTree()
+        {
+            for (var i = 0; i < Indices.Count; )
+            {
+                var indices = new[] {Indices[i++], Indices[i++], Indices[i++]};
+                var vertices = new[]
+                {
+                    TerrainVertices[indices[0]], 
+                    TerrainVertices[indices[1]], 
+                    TerrainVertices[indices[2]]
+                };
 
-        //    const float mapRes = MAX_FLAT_LAND_DELTA;
-        //    var lowResHeightMap = mcnk.Heights.GetLowResMapMatrix();
-
-        //    // thin the rows
-        //    for (var row = 0; row < 9; row++)
-        //    {
-        //       for (var col = 1; col < 8; col++)
-        //       {
-        //           // check the heights of the three adjacent columns.
-        //           // if they are within a tolerance, then the middle value can be culled.
-        //           var leftHeight = lowResHeightMap[row, (col - 1)];
-        //           var centerHeight = lowResHeightMap[row, col];
-        //           var rightHeight = lowResHeightMap[row, (col + 1)];
-
-
-        //           var leftDiff = Math.Abs(leftHeight - centerHeight);
-        //           if (leftDiff >= mapRes) continue;
-
-        //           var rightDiff = Math.Abs(rightHeight - centerHeight);
-        //           if (rightDiff >= mapRes) continue;
-
-        //           var oldIndex = (row*9) + col + offset;
-        //           var newIndex = oldIndex + 1;
-
-        //           // Here's the magic. We take the index of the point we're culling 
-        //           // and increase its value by one. Now it points to the point on the right.
-        //           tempIndices = AdjustTempIndices(tempIndices, oldIndex, newIndex);
-        //       }
-        //    }
-
-        //    // Thin the columns
-        //    for (var col = 0; col < 9; col++)
-        //    {
-        //        for (var row = 1; row < 8; row++)
-        //        {
-        //            var upperHeight = lowResHeightMap[(row - 1), col];
-        //            var height = lowResHeightMap[row, col];
-        //            var lowerHeight = lowResHeightMap[(row + 1), col];
-
-        //            var upperDiff = Math.Abs(upperHeight - height);
-        //            if (upperDiff >= mapRes) continue;
-        //            var lowerDiff = Math.Abs(lowerHeight - height);
-        //            if (lowerDiff >= mapRes) continue;
-
-        //            var oldIndex = (row*9) + col + offset;
-        //            var newIndex = ((row + 1)*9) + col + offset;
-
-        //            tempIndices = AdjustTempIndices(tempIndices, oldIndex, newIndex);
-        //        }
-        //    }
-        //    return CullTempIndices(tempIndices);
-        //}
-
-        //public List<int> ReducePolygonCount(MH2O mh2o, List<int> tempIndices, int offset)
-        //{
-        //    // No polygons to cull
-        //    if (tempIndices.Count == 0) return tempIndices;
-
-        //    const float mapRes = MAX_FLAT_WATER_DELTA;
-        //    var lowResHeightMap = mh2o.GetMapHeightsMatrix();
-
-        //    // thin the rows
-        //    for (var row = 0; row < 8; row++)
-        //    {
-        //        for (var col = 1; col < 8; col++)
-        //        {
-        //            var adjRow = row - mh2o.Header.YOffset;
-        //            var adjCol = col - mh2o.Header.XOffset;
-
-        //            if (((row < mh2o.Header.YOffset) || (adjRow > mh2o.Header.Height)) ||
-        //                ((col < mh2o.Header.XOffset) || (adjCol > mh2o.Header.Width)) ||
-        //                (((col - 1) < mh2o.Header.XOffset) || ((adjCol - 1) > mh2o.Header.Width)) ||
-        //                (((col + 1) < mh2o.Header.XOffset) || ((adjCol + 1) > mh2o.Header.Width)))
-        //            {
-        //                continue;
-        //            }
-
-        //            var leftHeight = lowResHeightMap[adjRow, (adjCol - 1)];
-        //            var centerHeight = lowResHeightMap[adjRow, adjCol];
-        //            //var rightHeight = lowResHeightMap[adjRow, (adjCol + 1)];
-
-        //            var leftDiff = Math.Abs(leftHeight - centerHeight);
-        //            if (leftDiff >= mapRes) continue;
-
-        //            //var rightDiff = Math.Abs(rightHeight - centerHeight);
-        //            //if (rightDiff >= mapRes) continue;
-
-        //            var oldIndex = (adjRow * (mh2o.Header.Width + 1) + adjCol) + offset;
-        //            var newIndex = oldIndex + 1;
-
-        //            tempIndices = AdjustTempIndices(tempIndices, oldIndex, newIndex);
-        //        }
-        //    }
-            
-        //    // Thin the columns
-        //    for (var col = 0; col < 8; col++)
-        //    {
-        //        for (var row = 1; row < 8; row++)
-        //        {
-        //            var adjRow = row - mh2o.Header.YOffset;
-        //            var adjCol = col - mh2o.Header.XOffset;
-
-        //            if ((((row - 1) < mh2o.Header.YOffset) || ((adjRow - 1) > mh2o.Header.Height)) ||
-        //                ((row < mh2o.Header.YOffset) || (adjRow > mh2o.Header.Height)) ||
-        //                (((row + 1) < mh2o.Header.YOffset) || ((adjRow + 1) > mh2o.Header.Height)) ||
-        //                ((col < mh2o.Header.XOffset) || (adjCol > mh2o.Header.Width)))
-        //            {
-        //                continue;
-        //            }
-
-        //            var upperHeight = lowResHeightMap[(adjRow - 1), adjCol];
-        //            var height = lowResHeightMap[adjRow, adjCol];
-        //            //var lowerHeight = lowResHeightMap[(adjRow + 1), adjCol];
-
-        //            var upperDiff = Math.Abs(upperHeight - height);
-        //            if (upperDiff >= mapRes) continue;
-
-        //            //var lowerDiff = Math.Abs(lowerHeight - height);
-        //            //if (lowerDiff >= mapRes) continue;
-
-        //            var oldIndex = (adjRow * (mh2o.Header.Width + 1) + adjCol) + offset;
-        //            var newIndex = ((adjRow + 1) * (mh2o.Header.Width + 1) + adjCol) + offset;
-
-        //            tempIndices = AdjustTempIndices(tempIndices, oldIndex, newIndex);
-        //        }
-        //    }
-        //    return CullTempIndices(tempIndices);
-        //}
-
-        //private static List<int> CullTempIndices(IList<int> tempIndices)
-        //{
-        //    var newList = new List<int>();
-        //    for (var i = 0; i < tempIndices.Count; i++)
-        //    {
-        //        var first = tempIndices[i++];
-        //        var second = tempIndices[i++];
-        //        var third = tempIndices[i];
-
-        //        if (first == second || second == third || first == third) continue;
-        //        newList.Add(first);
-        //        newList.Add(second);
-        //        newList.Add(third);
-        //    }
-        //    return newList;
-        //}
-
-        //private static List<int> AdjustTempIndices(IList<int> tempIndices, int oldIndex, int newIndex)
-        //{
-        //    var newList = new List<int>(tempIndices.Count);
-
-        //    for (var i = 0; i < tempIndices.Count; i++)
-        //    {
-        //        if (tempIndices[i] != oldIndex)
-        //        {
-        //            newList.Add(tempIndices[i]);
-        //        }
-        //        else
-        //        {
-        //            newList.Add(newIndex);
-        //        }
-        //    }
-        //    return newList;
-        //}
+                var triIndex = new TriIndex(indices, vertices);
+                QuadTree.Insert(triIndex);
+            }
+        }
     }
 }
