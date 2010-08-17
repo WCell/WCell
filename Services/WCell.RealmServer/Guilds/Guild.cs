@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Guilds
 				_MOTD = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Guilds
 				_info = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Guilds
 				m_leader = value;
 				_leaderLowId = (int)value.Id;
 
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -149,8 +149,7 @@ namespace WCell.RealmServer.Guilds
 			set
 			{
 				_tabard = value;
-
-				UpdateLater();
+				this.UpdateLater();
 			}
 		}
 
@@ -299,7 +298,7 @@ namespace WCell.RealmServer.Guilds
 				newMember = new GuildMember(chr, this, m_ranks.Last());
 				Members.Add(newMember.Id, newMember);
 
-				UpdateLater(newMember.Create);
+				newMember.UpdateLater();
 			}
 			catch (Exception e)
 			{
@@ -492,7 +491,8 @@ namespace WCell.RealmServer.Guilds
 
 				rank = new GuildRank(this, name, privileges, m_ranks.Count);
 				m_ranks.Add(rank);
-				UpdateLater(rank.CreateAndFlush);
+
+				rank.SaveLater();
 			}
 			catch (Exception e)
 			{
@@ -597,9 +597,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId--;
-			member.Update();
-
-			UpdateLater();
+			member.UpdateLater();
 
 			return true;
 		}
@@ -615,12 +613,7 @@ namespace WCell.RealmServer.Guilds
 				return false;
 
 			member.RankId++;
-
-			RealmServer.Instance.AddMessage(new Message(() =>
-			{
-				member.UpdateAndFlush();
-				UpdateAndFlush();
-			}));
+			member.UpdateLater();
 
 			return true;
 		}

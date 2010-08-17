@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using Castle.ActiveRecord;
 using WCell.Constants;
 using WCell.Constants.Guilds;
+using WCell.Core.Database;
 using WCell.RealmServer.Database;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Guilds
 {
 	[ActiveRecord("GuildRank", Access = PropertyAccess.Property)]
-	public partial class GuildRank : ActiveRecordBase<GuildRank>
+	public partial class GuildRank : WCellRecord<GuildRank>
 	{
 		private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(GuildRank), "_id");
 

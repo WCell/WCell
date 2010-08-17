@@ -6,7 +6,7 @@ using WCell.RealmServer.Database;
 namespace WCell.RealmServer.ArenaTeams
 {
 	[ActiveRecord("ArenaTeam", Access = PropertyAccess.Property)]
-	public partial class ArenaTeam : WCellRecord<ArenaTeam>
+	public partial class ArenaTeam
 	{
         private static readonly NHIdGenerator _idGenerator = new NHIdGenerator(typeof(ArenaTeam), "_id");
 
@@ -30,74 +30,5 @@ namespace WCell.RealmServer.ArenaTeams
 
         [Field("Type", NotNull = true)]
         private int _type;
-
-        public override void Save()
-        {
-            base.Update();
-        }
-
-        public override void SaveAndFlush()
-        {
-            UpdateAndFlush();
-        }
-
-        public void UpdateLater()
-        {
-            RealmServer.Instance.AddMessage(Update);
-        }
-
-        public void UpdateLater(Action triggerAction)
-        {
-            triggerAction();
-            RealmServer.Instance.AddMessage(Update);
-        }
-
-        public override void Create()
-        {
-            try
-            {
-                base.Create();
-                OnCreate();
-            }
-            catch (Exception e)
-            {
-                RealmDBUtil.OnDBError(e);
-            }
-        }
-
-        public override void CreateAndFlush()
-        {
-            try
-            {
-                base.CreateAndFlush();
-                OnCreate();
-            }
-            catch (Exception e)
-            {
-                RealmDBUtil.OnDBError(e);
-            }
-        }
-
-        private void OnCreate()
-        {
-            m_syncRoot.Enter();
-            try
-            {
-                foreach (var member in Members.Values)
-                {
-                    member.Create();
-                }
-                Stats.Create();
-            }
-            finally
-            {
-                m_syncRoot.Exit();
-            }
-        }
-
-        protected override void OnDelete()
-        {
-            base.OnDelete();
-        }
     }
 }

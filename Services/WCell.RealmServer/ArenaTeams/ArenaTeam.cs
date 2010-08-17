@@ -5,6 +5,7 @@ using System.Linq;
 using Cell.Core;
 using NLog;
 using WCell.Constants.ArenaTeams;
+using WCell.Core.Database;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
@@ -15,7 +16,7 @@ using WCell.Util.Threading;
 
 namespace WCell.RealmServer.ArenaTeams
 {
-	public partial class ArenaTeam : INamed, IEnumerable<ArenaTeamMember>, IChatTarget
+	public partial class ArenaTeam : WCellRecord<ArenaTeam>, INamed, IEnumerable<ArenaTeamMember>, IChatTarget
 	{
 		#region Fields
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
@@ -84,8 +85,6 @@ namespace WCell.RealmServer.ArenaTeams
 
                 m_leader = value;
                 _leaderLowId = (int)value.Id;
-
-                UpdateLater();
             }
         }
 
@@ -136,7 +135,7 @@ namespace WCell.RealmServer.ArenaTeams
 
 			Register();
 
-			RealmServer.Instance.AddMessage(Create);
+			this.CreateLater();
 		}
         #endregion
 
@@ -212,7 +211,8 @@ namespace WCell.RealmServer.ArenaTeams
 
                 Members.Add(newMember.Id, newMember);
 
-                UpdateLater(newMember.Create);
+            	newMember.CreateLater();
+                this.SaveLater();
             }
             catch (Exception e)
             {
