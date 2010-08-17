@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Entities
 	///<summary>
 	/// Represents a unit controlled by a player in the game world
 	///</summary>
-	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, IHasTalents, ICharacterSet
+	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, ICharacterSet
 	{
 		private static new Logger log = LogManager.GetCurrentClassLogger();
 
@@ -663,10 +663,9 @@ namespace WCell.RealmServer.Entities
 		protected override void OnLevelChanged()
 		{
 			base.OnLevelChanged();
-			Experience = 0;
 
 			var level = Level;
-			int freeTalentPoints = m_talents.GetFreePlayerTalentPoints(level);
+			int freeTalentPoints = m_talents.GetFreeTalentPointsForLevel(level);
 			if (freeTalentPoints < 0)
 			{
 				// need to remove talent points
@@ -695,6 +694,13 @@ namespace WCell.RealmServer.Entities
 			ModStatsForLevel(level);
 			m_auras.ReapplyAllAuras();
 			m_achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachLevel, (uint)Level);
+
+			// update level-depedent stats
+			this.UpdateDodgeChance();
+			this.UpdateBlockChance();
+			this.UpdateCritChance();
+			this.UpdateAllAttackPower();
+
 			var evt = LevelChanged;
 			if (evt != null)
 			{
@@ -807,9 +813,17 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Sends a message to the client.
 		/// </summary>
-		public void SendSystemMessage(string msg, params object[] args)
+		public void SendSystemMessage(string msg)
 		{
-			ChatMgr.SendSystemMessage(this, string.Format(msg, args));
+			ChatMgr.SendSystemMessage(this, msg);
+		}
+
+		/// <summary>
+		/// Sends a message to the client.
+		/// </summary>
+		public void SendSystemMessage(string msgFormat, params object[] args)
+		{
+			ChatMgr.SendSystemMessage(this, string.Format(msgFormat, args));
 		}
 
 		public void Notify(RealmLangKey key, params object[] args)
@@ -825,14 +839,14 @@ namespace WCell.RealmServer.Entities
 			MiscHandler.SendNotification(this, string.Format(msg, args));
 		}
 
-		public void SayGroup(string msg, params object[] args)
-		{
-			SayGroup(string.Format(msg, args));
-		}
-
 		public void SayGroup(string msg)
 		{
 			this.SayGroup(SpokenLanguage, msg);
+		}
+
+		public void SayGroup(string msg, params object[] args)
+		{
+			SayGroup(string.Format(msg, args));
 		}
 
 		public override void Say(string msg)
@@ -1368,65 +1382,30 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region IHasTalents
-		public SpecProfile SpecProfile
+		#region Talent Specs
+		public SpecProfile CurrentSpecProfile
 		{
-			get { return Record.SpecProfile; }
-			set { Record.SpecProfile = value; }
+			get{return SpecProfiles[m_talents.CurrentSpecIndex];}
 		}
 
-		public int GetTalentResetPrice()
+		/// <summary>
+		/// Talent specs
+		/// </summary>
+		public SpecProfile[] SpecProfiles
 		{
-			if (GodMode)
-			{
-				return 0;
-			}
-
-			var tiers = TalentMgr.TalentResetPriceTiers;
-			var lastPriceTier = Record.TalentResetPriceTier;
-			var lastResetTime = Record.LastTalentResetTime;
-			if (lastResetTime == null)
-			{
-				return tiers[0];
-			}
-
-			var timeLapse = DateTime.Now - lastResetTime.Value;
-			if (lastPriceTier < 4) return tiers[lastPriceTier];
-
-			var numDiscounts = timeLapse.Days / 30;
-			var newPriceTier = lastPriceTier - numDiscounts;
-			if (newPriceTier < 3)
-			{
-				return tiers[3];
-			}
-
-			if (newPriceTier > (tiers.Length - 1))
-			{
-				return tiers[tiers.Length - 1];
-			}
-
-			return tiers[newPriceTier];
+			get;
+			protected internal set;
 		}
 
-		public void ResetFreeTalentPoints()
+		public void ApplyTalentSpec(int no)
 		{
-			// One talent point for level 10 and above
-			FreeTalentPoints = m_talents.GetFreePlayerTalentPoints(Level);
+			var profile = SpecProfiles.Get(no);
+
+			if (profile != null)
+			{
+				// TODO: Change talent spec
+			}
 		}
-
-		public void ResetTalents()
-		{
-			var price = Talents.ResetAllPrice;
-			if (Money < price) return;
-
-			ResetFreeTalentPoints();
-			Record.LastTalentResetTime = DateTime.Now;
-			Record.TalentResetPriceTier++;
-			Money -= price;
-
-			SpecProfile.ResetActiveTalentGroup();
-		}
-
 		#endregion
 
 		#region Implementation of IInstanceHolder

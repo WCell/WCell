@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
 
@@ -121,7 +122,7 @@ namespace WCell.RealmServer.RacesClasses
 			{
 				foreach (var archetype in archetypes)
 				{
-					Character.ActionButton.Set(archetype.ActionButtons, Index, Action, Type, Info);
+					ActionButton.Set(archetype.ActionButtons, Index, Action, Type, Info);
 				}
 			}
 		}

@@ -16,7 +16,7 @@ namespace WCell.RealmServer.NPCs.Pets
 	/// Record for Hunter pets with talents and everything
 	/// </summary>
 	[ActiveRecord("Pets_Permanent", Access = PropertyAccess.Property)]
-	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>, IPetRecord
+	public class PermanentPetRecord : PetRecordBase<PermanentPetRecord>
 	{
 		public PermanentPetRecord()
 		{
@@ -33,8 +33,8 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		public override uint PetNumber
 		{
-			get { return (uint) m_PetNumber; }
-			set { m_PetNumber = (int) value; }
+			get { return (uint)m_PetNumber; }
+			set { m_PetNumber = (int)value; }
 		}
 
 		[Property]
@@ -80,7 +80,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		}
 
 		/// <summary>
-		/// TODO: Fix Spells
+		///
 		/// </summary>
 		public IList<PetTalentSpellRecord> Spells
 		{
@@ -88,17 +88,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-        public override PetType Type
-        {
-            get
-            {
-                return PetType.Pet;
-            }
-            set
-            {
-                base.Type = value;
-            }
-        }
 		public override void SetupPet(NPC pet)
 		{
 			base.SetupPet(pet);
@@ -125,7 +114,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		{
 			try
 			{
-				return FindAllByProperty("_OwnerLowId", (int) ownerId);
+				return FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 			catch (Exception e)
 			{

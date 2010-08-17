@@ -841,7 +841,7 @@ namespace WCell.RealmServer.Handlers
 						pkt.Write(qt.Level);
 					    pkt.Write((uint)qt.Flags);
 					    pkt.Write((byte)0); // 3.3.3 question/exclamation mark
-						pkt.Write(qt.Title);
+						pkt.Write(qt.DefaultTitle);
 					}
 					chr.Client.Send(pkt);
 				}

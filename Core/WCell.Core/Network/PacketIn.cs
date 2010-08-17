@@ -169,7 +169,7 @@ namespace WCell.Core.Network
 			}
 
 			char[] stringChrs = DefaultEncoding.GetChars(chrBuffer.ToArray());
-			Utility.Reverse(stringChrs);
+			stringChrs.Reverse();
 
 			return new string(stringChrs);
 		}
@@ -239,7 +239,7 @@ namespace WCell.Core.Network
 			}
 
 			char[] chrs = ReadChars(length);
-			Utility.Reverse(chrs);
+			(chrs).Reverse();
 
 			return new string(chrs);
 		}

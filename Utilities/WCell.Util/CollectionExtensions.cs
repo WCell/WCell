@@ -8,8 +8,9 @@ using System.IO;
 
 namespace WCell.Util
 {
-	public static class Extensions
+	public static class CollectionExtensions
 	{
+		#region Dictionary Extensions
 		public static List<V> GetOrCreate<K, V>(this IDictionary<K, List<V>> map, K key)
 		{
 			List<V> list;
@@ -56,6 +57,37 @@ namespace WCell.Util
 			map.TryGetValue(key, out val);
 			return val;
 		}
+		#endregion
+
+		#region Transform
+		public static List<TOutput> TransformList<TInput, TOutput>(this IEnumerable<TInput> enumerable,
+																   Func<TInput, TOutput> transformer)
+		{
+			var output = new List<TOutput>(enumerable.Count());
+
+			foreach (var input in enumerable)
+			{
+				output.Add(transformer(input));
+			}
+
+			return output;
+		}
+
+		public static TOutput[] TransformArray<TInput, TOutput>(this IEnumerable<TInput> enumerable,
+																Func<TInput, TOutput> transformer)
+		{
+			var output = new TOutput[enumerable.Count()];
+
+			var enumerator = enumerable.GetEnumerator();
+			for (var i = 0; i < output.Length; i++)
+			{
+				enumerator.MoveNext();
+				output[i] = transformer(enumerator.Current);
+			}
+
+			return output;
+		}
+		#endregion
 
 		public static bool Iterate<T>(this IEnumerable<T> items, Func<T, bool> action)
 		{
@@ -83,17 +115,18 @@ namespace WCell.Util
 			return arr;
 		}
 
-		public static bool RemoveFirst<T>(this ICollection<T> items, Func<T, bool> filter)
+		public static T RemoveFirst<T>(this IList<T> items, Func<T, bool> filter)
 		{
-			foreach (var item in items)
+			for (var i = 0; i < items.Count; i++)
 			{
+				var item = items[i];
 				if (filter(item))
 				{
-					items.Remove(item);
-					return true;
+					items.RemoveAt(i);
+					return item;
 				}
 			}
-			return false;
+			return default(T);
 		}
 
 		public static bool Contains<T>(this IEnumerable<T> list, Func<T, bool> predicate)
@@ -121,46 +154,6 @@ namespace WCell.Util
 				list = new List<T>();
 			}
 			return list;
-		}
-
-		public static List<string> GetAllMessages(this Exception ex)
-		{
-			var msgs = new List<string>();
-			do
-			{
-				if (!(ex is TargetInvocationException))
-				{
-					msgs.Add(ex.Message);
-					if ((ex is ReflectionTypeLoadException))
-					{
-						msgs.Add("###########################################");
-						msgs.Add("LoaderExceptions:");
-						foreach (var lex in ((ReflectionTypeLoadException)ex).LoaderExceptions)
-						{
-							msgs.Add(lex.GetType().FullName + ":");
-							msgs.AddRange(lex.GetAllMessages());
-							if (lex is FileNotFoundException)
-							{
-								var asmName = ((FileNotFoundException)lex).FileName;
-								var asms = Utility.GetMatchingAssemblies(asmName);
-								if (asms.Count() > 0)
-								{
-									msgs.Add("Found matching Assembly: " + asms.ToString("; ") + 
-										" - Make sure to compile against the correct version.");
-								}
-								else
-								{
-									msgs.Add("Did not find any matching Assembly - Make sure to load the required Assemblies before loading this one.");
-								}
-							}
-							msgs.Add("");
-						}
-						msgs.Add("#############################################");
-					}
-				}
-				ex = ex.InnerException;
-			} while (ex != null);
-			return msgs;
 		}
 
 		#region Types

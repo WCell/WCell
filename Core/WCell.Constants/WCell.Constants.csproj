@@ -147,6 +147,7 @@
     <Compile Include="Achievements\AchievementFlags.cs" />
     <Compile Include="Achievements\ProgressType.cs" />
     <Compile Include="AreaTriggerId.cs" />
+    <Compile Include="ArenaTeams.cs" />
     <Compile Include="Battlegrounds.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />
     <Compile Include="Calendars.cs" />
@@ -192,11 +193,13 @@
     <Compile Include="Looting\LootEntryType.cs" />
     <Compile Include="Misc\CombatRatings.cs" />
     <Compile Include="Misc\Gossips.cs" />
+    <Compile Include="Misc\TitleBitId.cs" />
+    <Compile Include="Misc\TitleId.cs" />
     <Compile Include="Movement.cs" />
     <Compile Include="NPCs\CreatureFamilyId.cs" />
     <Compile Include="NPCs\Misc.cs" />
     <Compile Include="NPCs\Vehicles.cs" />
-    <Compile Include="Pets\Extensions.cs" />
+    <Compile Include="Pets\PetExtensions.cs" />
     <Compile Include="Pets\PetActionEntry.cs" />
     <Compile Include="Pets\PetTalentType.cs" />
     <Compile Include="NPCs\VendorInventoryError.cs" />

@@ -19,4 +19,13 @@ namespace WCell.Constants.Achievements
 		AchievementFlagRealmFirstReach = 0x00000100,         //
 		AchievementFlagRealmFirstKill = 0x00000200,			 //
 	}
+
+	/*
+1: CRITERIA_FLAG_PROGRESS_BAR, 
+2: CRITERIA_FLAG_HIDDEN, 
+4: CRITERIA_FLAG_FAIL_ACHIEVEMENT, 
+8: CRITERIA_FLAG_RESET_ON_START, 
+10: CRITERIA_FLAG_IS_DATE, 
+20: CRITERIA_FLAG_IS_MONEY
+	 */
 }

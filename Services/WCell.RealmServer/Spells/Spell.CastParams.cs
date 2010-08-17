@@ -21,7 +21,8 @@ namespace WCell.RealmServer.Spells
 
 		#region Check Caster
 		/// <summary>
-		/// Checks whether the given spell can be casted by the casting Unit
+		/// Checks whether the given spell can be casted by the casting Unit.
+		/// Does not do range checks.
 		/// </summary>
 		public SpellFailedReason CheckCasterConstraints(Unit caster)
 		{
@@ -170,8 +171,9 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var spells = caster.Spells as PlayerSpellCollection;
+
 			// check cooldown and power cost			
-			if (spells != null && !spells.CheckCooldown(this))
+			if (spells != null && !spells.IsReady(this))
 			{
 				return SpellFailedReason.NotReady;
 			}

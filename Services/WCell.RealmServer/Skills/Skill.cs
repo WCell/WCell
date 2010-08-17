@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Skills
 			m_skills.Owner.SetUInt16Low(field, (ushort)skillLine.Id);
 			m_skills.Owner.SetUInt16High(field, skillLine.Abandonable);
 
-			CurrentValue = record.CurrentValue;
+			SetCurrentValueSilently(record.CurrentValue);
 			MaxValue = record.MaxValue;
 		}
 
@@ -83,14 +83,19 @@ namespace WCell.RealmServer.Skills
 			}
 			set
 			{
-				m_skills.Owner.SetUInt16Low(PlayerField + 1, value);
-				m_record.CurrentValue = value;
-				if (SkillLine.Id == SkillId.Defense)
-				{
-					m_skills.Owner.UpdateDefense();
-				}
+				SetCurrentValueSilently(value);
 				m_skills.Owner.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ReachSkillLevel,
 				                                                            (uint) m_record.SkillId, m_record.CurrentValue);
+			}
+		}
+
+		protected void SetCurrentValueSilently(ushort value)
+		{
+			m_skills.Owner.SetUInt16Low(PlayerField + 1, value);
+			m_record.CurrentValue = value;
+			if (SkillLine.Id == SkillId.Defense)
+			{
+				m_skills.Owner.UpdateDefense();
 			}
 		}
 

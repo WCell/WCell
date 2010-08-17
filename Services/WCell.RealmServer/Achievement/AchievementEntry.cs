@@ -32,5 +32,10 @@ namespace WCell.RealmServer.Achievement
 		/// List of criteria that needs to be satisfied to achieve this achievement
 		/// </summary>
     	public readonly List<AchievementCriteriaEntry> Criteria = new List<AchievementCriteriaEntry>();
+
+        /// <summary>
+        /// List of all rewards that will be given once achievement is completed.
+        /// </summary>
+        public readonly List<AchievementReward> Rewards = new List<AchievementReward>();
     }
 }

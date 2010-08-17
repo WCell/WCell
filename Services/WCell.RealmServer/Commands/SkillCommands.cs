@@ -129,7 +129,7 @@ namespace WCell.RealmServer.Commands
 						chr.Spells.AddSpell(ability.Spell);
 						if (mod == "r")
 						{
-							chr.PlayerSpells.SatisfyConstraintsFor(ability.Spell);
+							chr.PlayerSpells.AddSpellRequirements(ability.Spell);
 						}
 					}
 				}

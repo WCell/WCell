@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cell.Core;
 using WCell.Constants.Spells;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
@@ -12,52 +13,60 @@ namespace WCell.RealmServer.Spells
 {
 	/// <summary>
 	/// NPC spell collection
-	/// TODO: is it necessary to create a dictionary if npc doesn't have spells?
 	/// </summary>
 	public class NPCSpellCollection : SpellCollection
 	{
 		/// <summary>
 		/// Cooldown of NPC spells, if they don't have one
 		/// </summary>
-		public static int DefaultNPCSpellCooldown = 10000;
+		public static int DefaultNPCSpellCooldownMillis = 1500;
 
-		protected bool m_defaultSpells;
+		static readonly ObjectPool<NPCSpellCollection> NPCSpellCollectionPool =
+			new ObjectPool<NPCSpellCollection>(() => new NPCSpellCollection());
+
+		public static NPCSpellCollection Obtain(NPC npc)
+		{
+			var spells = NPCSpellCollectionPool.Obtain();
+			spells.Initialize(npc);
+			return spells;
+		}
 
 		protected List<Spell> m_readySpells;
 		protected List<CooldownRemoveAction> m_cooldowns;
-
-		public NPCSpellCollection(NPC owner)
-			: base(owner, false)
+		
+		#region Init & Cleanup
+		private NPCSpellCollection()
 		{
-			m_byId = owner.Entry.Spells;
-			m_readySpells = new List<Spell>();
-			if (m_byId != null)
-			{
-				m_defaultSpells = true;
-				foreach (var spell in m_byId.Values)
-				{
-					AddReadySpell(spell);
-					OnNewSpell(spell);
-				}
-			}
-			else
-			{
-				m_defaultSpells = false;
-				m_byId = new Dictionary<uint, Spell>(5);
-			}
+			m_readySpells = new List<Spell>(5);
 		}
+
+		protected internal override void Recycle()
+		{
+			base.Recycle();
+
+			m_readySpells.Clear();
+			if (m_cooldowns != null)
+			{
+				m_cooldowns.Clear();
+			}
+
+			NPCSpellCollectionPool.Recycle(this);
+		}
+		#endregion
 
 		public NPC OwnerNPC
 		{
-			get
-			{
-				return Owner as NPC;
-			}
+			get { return Owner as NPC; }
 		}
 
-		public List<Spell> ReadySpells
+		public IEnumerable<Spell> ReadySpells
 		{
 			get { return m_readySpells; }
+		}
+
+		public int ReadyCount
+		{
+			get { return m_readySpells.Count; }
 		}
 
 		/// <summary>
@@ -93,11 +102,13 @@ namespace WCell.RealmServer.Spells
 		#region Add / Remove
 		public override void AddSpell(Spell spell)
 		{
-			EnsureDefaultSpellsWontChange();
-			//NPCOwner.Brain.ActionCollection.AddFactory
-			AddReadySpell(spell);
+			if (!m_byId.ContainsKey(spell.SpellId))
+			{
+				//NPCOwner.Brain.ActionCollection.AddFactory
+				base.AddSpell(spell);
 
-			base.AddSpell(spell);
+				OnNewSpell(spell);
+			}
 		}
 
 		void OnNewSpell(Spell spell)
@@ -106,60 +117,49 @@ namespace WCell.RealmServer.Spells
 			{
 				MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, Owner.GetSpellMaxRange(spell, null));
 			}
-		}
-
-		void AddReadySpell(Spell spell)
-		{
 			if (!spell.IsPassive)
 			{
-				m_readySpells.Add(spell);
+				AddReadySpell(spell);
 			}
+		}
+
+		/// <summary>
+		/// Adds the given spell as ready. Once casted, the spell will be removed.
+		/// This can be used to signal a one-time cast of a spell whose priority is to be
+		/// compared to the other spells.
+		/// </summary>
+		public void AddReadySpell(Spell spell)
+		{
+			m_readySpells.Add(spell);
 		}
 
 		public override void Clear()
 		{
-			EnsureDefaultSpellsWontChange();
-			m_readySpells.Clear();
-
 			base.Clear();
+			m_readySpells.Clear();
 		}
 
-		public override void Remove(Spell spell)
+		public override bool Remove(Spell spell)
 		{
-			EnsureDefaultSpellsWontChange();
-
-			m_readySpells.Remove(spell);
-			base.Remove(spell);
-
-			if (Owner.GetSpellMaxRange(spell, null) >= MaxCombatSpellRange)
+			if (base.Remove(spell))
 			{
-				MaxCombatSpellRange = 0f;
-				foreach (var sp in m_byId.Values)
+				m_readySpells.Remove(spell);
+
+				if (Owner.GetSpellMaxRange(spell, null) >= MaxCombatSpellRange)
 				{
-					if (sp.Range.MaxDist > MaxCombatSpellRange)
+					// find new max combat spell range
+					MaxCombatSpellRange = 0f;
+					foreach (var sp in m_byId.Values)
 					{
-						MaxCombatSpellRange = Owner.GetSpellMaxRange(sp, null);
+						if (sp.Range.MaxDist > MaxCombatSpellRange)
+						{
+							MaxCombatSpellRange = Owner.GetSpellMaxRange(sp, null);
+						}
 					}
 				}
+				return true;
 			}
-		}
-		/// <summary>
-		/// Create a new collection if we are currently sharing the default Spells for this
-		/// NPC-type.
-		/// </summary>
-		private void EnsureDefaultSpellsWontChange()
-		{
-			if (m_defaultSpells)
-			{
-				m_defaultSpells = false;
-				var newDictionary = new Dictionary<uint, Spell>(m_byId.Count);
-				foreach (var pair in m_byId)
-				{
-					newDictionary.Add(pair.Key, pair.Value);
-				}
-
-				m_byId = newDictionary;
-			}
+			return false;
 		}
 		#endregion
 
@@ -173,14 +173,24 @@ namespace WCell.RealmServer.Spells
 			var millis = Math.Max(spell.GetCooldown(Owner), spell.CategoryCooldownTime);
 			if (millis <= 0)
 			{
-				millis = DefaultNPCSpellCooldown;
+				if (spell.CastDelay == 0 && spell.Durations.Max == 0)
+				{
+					// no cooldown, no cast delay, no duration: Add default cooldown
+					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
+					ProcessCooldown(spell, millis);
+				}
 			}
-			ProcessCooldown(spell, millis);
+			else
+			{
+				// add existing cooldown
+				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
+				ProcessCooldown(spell, millis);
+			}
 		}
 
 		public void RestoreCooldown(Spell spell, DateTime cdTime)
 		{
-			var millis = (cdTime - DateTime.Now).Milliseconds;
+			var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
 			ProcessCooldown(spell, millis);
 		}
 
@@ -267,7 +277,6 @@ namespace WCell.RealmServer.Spells
 				set;
 			}
 		}
-
 		#endregion
 	}
 }

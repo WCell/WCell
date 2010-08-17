@@ -260,6 +260,11 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public TalentEntry Talent;
 
+		public bool IsTalent
+		{
+			get { return Talent != null; }
+		}
+
 		private SkillAbility m_Ability;
 
 		/// <summary>
@@ -286,6 +291,14 @@ namespace WCell.RealmServer.Spells
 		/// The tier of the skill that this spell represents (if this is a Skill spell)
 		/// </summary>
 		public SkillTierId SkillTier;
+
+		/// <summary>
+		/// Whether this represents a tier of a skill
+		/// </summary>
+		public bool RepresentsSkillTier
+		{
+			get { return SkillTier != SkillTierId.End; }
+		}
 
 		/// <summary>
 		/// Tools that are required by this spell (is set during Initialization of Items)
@@ -321,6 +334,8 @@ namespace WCell.RealmServer.Spells
 		/// The equipment slot where to look for a required item
 		/// </summary>
 		public EquipmentSlot EquipmentSlot = EquipmentSlot.End;
+
+		public bool GeneratesComboPoints;
 
 		public bool IsFinishingMove;
 
@@ -399,7 +414,7 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 	}
-	
+
 	public enum RequiredSpellTargetType
 	{
 		Default = -1,

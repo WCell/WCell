@@ -151,7 +151,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
 		public void SendMail(string subject, uint money, ItemRecord item, string body)
 		{
-			new MailMessage
+			var msg = new MailMessage
 				{
 					SenderId = (uint)HouseFaction,
 					ReceiverId = OwnerLowId,
@@ -159,9 +159,10 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 					MessageType = MailType.Auction,
 					Subject = subject,
 					Body = body,
-					IncludedMoney = money,
-					IncludedItems = item != null ? new List<ItemRecord>(1) { item } : null
-				}.Send();
+					IncludedMoney = money
+				};
+			msg.AddItem(item);
+			msg.Send();
 		}
 
 		public static IEnumerable<Auction> GetAffiliatedAuctions(AuctionHouseFaction houseFaction)
@@ -174,7 +175,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return FindAllByProperty("_ownerEntityLowId", (int)charLowId);
 		}
 
-		public static IEnumerable<Auction> GetBidderAuctionsForCharacter(uint charLowId) 
+		public static IEnumerable<Auction> GetBidderAuctionsForCharacter(uint charLowId)
 		{
 			return FindAllByProperty("_bidderEntityLowId", (int)charLowId);
 		}

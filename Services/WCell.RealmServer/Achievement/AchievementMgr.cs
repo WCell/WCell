@@ -7,6 +7,7 @@ using WCell.Constants.Achievements;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Achievement
@@ -34,6 +35,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			InitCriteria();
 			LoadDBCs();
+            ContentHandler.Load<AchievementReward>();
 		}
 
 		public static List<AchievementCriteriaEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)

@@ -109,6 +109,9 @@ namespace WCell.RealmServer.Achievement
 			return FindAll(Restrictions.Eq("_characterGuid", chrRecordId));
 		}
 
-
+		public override string ToString()
+		{
+			return string.Format("{0} (Char: {1}, Criteria: {2})", GetType().Name, _characterGuid, _achievementCriteriaId);
+		}
     }
 }

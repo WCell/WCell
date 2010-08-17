@@ -207,6 +207,7 @@
     <Compile Include="DynamicAccess\IGenericPropertyAccessor.cs" />
     <Compile Include="Collections\IdQueue.cs" />
     <Compile Include="Graphics\ContainmentType.cs" />
+    <Compile Include="ExceptionExtensions.cs" />
     <Compile Include="Graphics\MathHelper.cs" />
     <Compile Include="Graphics\Point.cs" />
     <Compile Include="Graphics\Ray2D.cs" />
@@ -215,7 +216,7 @@
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
-    <Compile Include="EmailSyntaxValidator.cs" />
+    <Compile Include="EmailAddressParser.cs" />
     <Compile Include="EnumUtil.cs" />
     <Compile Include="Graphics\2DConstants.cs" />
     <Compile Include="Graphics\BoundingBox.cs" />
@@ -236,7 +237,7 @@
     <Compile Include="IGetterSetter.cs" />
     <Compile Include="DynamicAccess\PropertyAccessorException.cs" />
     <Compile Include="DynamicAccess\AccessorMgr.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="CollectionExtensions.cs" />
     <Compile Include="INamed.cs" />
     <Compile Include="IndentTextWriter.cs" />
     <Compile Include="IProducer.cs" />

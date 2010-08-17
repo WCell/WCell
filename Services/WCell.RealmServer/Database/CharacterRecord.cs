@@ -165,7 +165,6 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
-
 		[Field("DisplayId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _displayId;
 		[Field("WatchedFaction", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
@@ -190,16 +189,16 @@ namespace WCell.RealmServer.Database
 		protected CharacterRecord()
 		{
 			CanSave = true;
+			AbilitySpells = new List<SpellRecord>();
 		}
 
 		public CharacterRecord(long accountId)
+			: this()
 		{
 			New = true;
 			JustCreated = true;
 
 			AccountId = accountId;
-			CanSave = true;
-			Spells = new Dictionary<uint, SpellRecord>();
 			ExploredZones = new byte[UpdateFieldMgr.ExplorationZoneFieldSize * 4];
 		}
 
@@ -428,13 +427,6 @@ namespace WCell.RealmServer.Database
 		}
 
 		[Property(ColumnType = "BinaryBlob")]
-		public byte[] ActionButtons
-		{
-			get;
-			set;
-		}
-
-		[Property(ColumnType = "BinaryBlob")]
 		public byte[] ExploredZones
 		{
 			get;
@@ -583,84 +575,14 @@ namespace WCell.RealmServer.Database
 		#endregion
 
 		#region Spells & Auras & Runes
-
 		/// <summary>
-		/// Adds the given Spell and returns the newly created SpellRecord object.
-		/// Returns null if Spell already existed
+		/// Default spells; talents excluded.
+		/// Talent spells can be found in <see cref="SpecProfile"/>.
 		/// </summary>
-		internal SpellRecord AddSpell(uint spellId)
-		{
-			if (Spells != null)
-			{
-				if (Spells.ContainsKey(spellId))
-				{
-					LogUtil.ErrorException(new ArgumentException("Spell cannot be added twice"),
-						string.Format("Spell ({0}, Id: {1}) added twice to Character {2} (Race: {3}, Class: {4})",
-									  (SpellId)spellId,
-									  spellId,
-									  this,
-									  Race,
-									  Class));
-					return null;
-				}
-
-				var record = new SpellRecord(spellId, EntityLowId);
-				Spells.Add(spellId, record);
-
-				RealmServer.Instance.AddMessage(new Message(record.Save));
-
-				return record;
-			}
-			return null;
-		}
-
-		internal bool RemoveSpell(uint id)
-		{
-			SpellRecord spell;
-			if (Spells.TryGetValue(id, out spell))
-			{
-				return RemoveSpell(spell);
-			}
-			return false;
-		}
-
-		bool RemoveSpell(SpellRecord record)
-		{
-			RealmServer.Instance.AddMessage(new Message(record.Delete));
-			Spells.Remove(record.SpellId);
-			return true;
-		}
-
-		internal void LoadSpells()
-		{
-			if (Spells == null)
-			{
-				Spells = new Dictionary<uint, SpellRecord>();
-				var dbSpells = SpellRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
-				foreach (var spell in dbSpells)
-				{
-					try
-					{
-						Spells.Add(spell.SpellId, spell);
-					}
-					catch (Exception e)
-					{
-						LogUtil.ErrorException(e,
-							string.Format("Spell {0} of {1} was fetched twice from DB. Loaded spells: {2}", spell.SpellId, this, dbSpells.ToString(", ")));
-					}
-				}
-			}
-		}
-
-		public IDictionary<uint, SpellRecord> Spells
+		public List<SpellRecord> AbilitySpells
 		{
 			get;
 			private set;
-		}
-
-		public AuraRecord[] LoadAuraRecords()
-		{
-			return AuraRecord.FindAllByProperty("m_OwnerId", (int)EntityLowId);
 		}
 
 		[Property]
@@ -673,6 +595,7 @@ namespace WCell.RealmServer.Database
 		[Property]
 		public float[] RuneCooldowns
 		{
+
 			get;
 			set;
 		}
@@ -998,10 +921,8 @@ namespace WCell.RealmServer.Database
 		}
 		#endregion
 
-		# region Talents
-
-		[Property("FreeTalentPoints")]
-		public int FreeTalentPoints
+		#region Talents
+		public int CurrentSpecIndex
 		{
 			get;
 			set;
@@ -1026,21 +947,14 @@ namespace WCell.RealmServer.Database
 				{
 					value = 0;
 				}
-				if (value > (TalentMgr.TalentResetPriceTiers.Length - 1))
+				if (value > (TalentMgr.PlayerTalentResetPricesPerTier.Length - 1))
 				{
-					value = (TalentMgr.TalentResetPriceTiers.Length - 1);
+					value = (TalentMgr.PlayerTalentResetPricesPerTier.Length - 1);
 				}
 				_talentResetPriceTier = value;
 			}
 		}
-
-		public SpecProfile SpecProfile
-		{
-			get;
-			set;
-		}
-
-		# endregion
+		#endregion
 
 		#region Instances & BGs
 		private BattlegroundSide m_BattlegroundTeam = BattlegroundSide.End;
@@ -1234,7 +1148,6 @@ namespace WCell.RealmServer.Database
 			WatchedFaction = -1;
 
 			DisplayId = archetype.Race.GetDisplayId(Gender);
-			ActionButtons = (byte[])archetype.ActionButtons.Clone();
 		}
 		#endregion
 
@@ -1246,22 +1159,21 @@ namespace WCell.RealmServer.Database
 		/// <returns>a collection of character objects of the characters on the given account</returns>
 		public static CharacterRecord[] FindAllOfAccount(RealmAccount account)
 		{
+			CharacterRecord[] chrs;
 			try
 			{
-				return FindAll(CreatedOrder, Restrictions.Eq("AccountId", account.AccountId));
+				chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 				//var chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 				//chrs.Reverse();
 				//return chrs;
 			}
 			catch (Exception ex)
 			{
-				//log.ErrorException("Failed to get characters for account!", ex);
 				RealmDBUtil.OnDBError(ex);
-				//return FindAll(CreatedOrder, Restrictions.Eq("AccountId", account.AccountId));
-				var chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
-				chrs.Reverse();
-				return chrs;
+				chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 			}
+			//chrs.Reverse();
+			return chrs;
 		}
 
 		public static CharacterRecord GetRecord(uint id)

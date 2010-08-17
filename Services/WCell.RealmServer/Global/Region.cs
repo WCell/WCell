@@ -1121,7 +1121,7 @@ namespace WCell.RealmServer.Global
 			{
 				// get the time at the start of our callback
 				var updateStart = DateTime.Now;
-				var updateDelta = (updateStart - m_lastUpdateTime).GetMilliSecondsInt();
+				var updateDelta = (updateStart - m_lastUpdateTime).ToMilliSecondsInt();
 
 				// see if we have any messages to execute
 				if (m_messageQueue.Count > 0)
@@ -1274,7 +1274,7 @@ namespace WCell.RealmServer.Global
 				Interlocked.Exchange(ref m_currentThreadId, 0);
 				if (m_running)
 				{
-					var callbackTimeout = m_updateDelay - newUpdateDelta.GetMilliSecondsInt();
+					var callbackTimeout = m_updateDelay - newUpdateDelta.ToMilliSecondsInt();
 					if (callbackTimeout < 0)
 					{
 						// even if we are in a hurry: For the sake of load-balance we have to give control back to the ThreadPool
@@ -2428,6 +2428,21 @@ namespace WCell.RealmServer.Global
 					var attacker = ((Character)action.Attacker);
 					attacker.OnHonorableKill(action);
 					OnHonorableKill(action);
+				}
+			}
+			if (action.Victim is Character)
+			{
+				var chr = action.Victim as Character;
+				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)RegionId, 1);
+
+				if(action.Attacker is Character)
+				{
+					var killer = action.Attacker as Character;
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)killer.FactionGroup, 1);
+				}
+				else
+				{
+					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByCreature, action.Attacker.EntryId, 1);
 				}
 			}
 		}

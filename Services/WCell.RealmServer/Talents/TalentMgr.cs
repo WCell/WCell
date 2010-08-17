@@ -32,7 +32,18 @@ namespace WCell.RealmServer.Talents
 		/// </summary>
         public const int MaxTabCount = 5;
 
-	    public static readonly int[] TalentResetPriceTiers = {1, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50};
+		/// <summary>
+		/// Player talent reset price in copper
+		/// </summary>
+		public static readonly uint[] PlayerTalentResetPricesPerTier = { 1000, 5000, 10000, 15000, 20000, 25000, 30000, 35000, 40000, 45000, 50000 };
+
+		/// <summary>
+		/// Pet talent reset price in copper
+		/// </summary>
+		public static readonly uint[] PetTalentResetPricesPerTier = {
+            1000, 5000, 10000, 20000, 30000, 40000, 50000, 60000,
+            70000, 80000, 90000, 100000
+        };
 
 		internal const int MaxTalentRowCount = 20;
 		internal const int MaxTalentColCount = 8;

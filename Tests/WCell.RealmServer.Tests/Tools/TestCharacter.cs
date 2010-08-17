@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Tests.Misc
 			Assert.AreEqual(1000, Health);
 			Assert.IsFalse(string.IsNullOrEmpty(Name));
 
-			record.SpecProfile = WCell.RealmServer.Talents.SpecProfile.NewSpecProfile(this);
+			SpecProfiles = new[] { WCell.RealmServer.Talents.SpecProfile.NewSpecProfile(this, 0) };
 		}
 
 		public TestAccount TestAccount
@@ -135,14 +135,14 @@ namespace WCell.RealmServer.Tests.Misc
 			}
 		}
 
-        public void EnsureNoGuild()
-        {
-            if (m_guildMember != null)
-            {
-                m_guildMember.LeaveGuild();
-                Assert.IsNull(m_guildMember);
-            }
-        }
+		public void EnsureNoGuild()
+		{
+			if (m_guildMember != null)
+			{
+				m_guildMember.LeaveGuild();
+				Assert.IsNull(m_guildMember);
+			}
+		}
 
 		public void EnsureFacing(WorldObject obj)
 		{
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Tests.Misc
 		{
 			return EnsureItem(item, 1);
 		}
-		
+
 		public Item EnsureItem(ItemId item, int amount)
 		{
 			Setup.EnsureBasicSetup();

@@ -37,7 +37,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 
 		public bool HasSpellReady
 		{
-			get { return ((NPC)m_owner).NPCSpells.ReadySpells.Count > 0; }
+			get { return ((NPC)m_owner).NPCSpells.ReadyCount > 0; }
 		}
 
 		public override float DistanceMin
@@ -86,6 +86,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		/// </summary>
 		public override void Update()
 		{
+			// Check for spells that we can cast
 			if (UsesSpells && HasSpellReady && m_owner.CanCastSpells)
 			{
 				if (!m_owner.CanMelee || m_owner.CheckTicks(SpellCastTicks))
@@ -97,6 +98,8 @@ namespace WCell.RealmServer.AI.Actions.Combat
 					}
 				}
 			}
+
+			// Move in on the target
 			if (m_owner.CanMelee)
 			{
 				base.Update();
@@ -126,10 +129,8 @@ namespace WCell.RealmServer.AI.Actions.Combat
 				spells.ShuffleReadySpells();
 			}
 
-			for (var i = 0; i < spells.ReadySpells.Count; i++)
+			foreach (var spell in owner.NPCSpells.ReadySpells)
 			{
-				var spell = spells.ReadySpells[i];
-
 				if (spell.CanCast(owner))
 				{
 					if (!ShouldCast(spell))
@@ -137,12 +138,18 @@ namespace WCell.RealmServer.AI.Actions.Combat
 						continue;
 					}
 
-					Cast(spell);
+					if (Cast(spell))
+					{
+						return true;
+					}
 				}
 			}
 			return false;
 		}
 
+		/// <summary>
+		/// Whether the unit should cast the given spell
+		/// </summary>
 		private bool ShouldCast(Spell spell)
 		{
 			if (spell.IsAura)
@@ -160,7 +167,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 					if (m_target.Auras[spell] != null)
 					{
 						// target already has Aura
-						return true;
+						return false;
 					}
 				}
 			}
