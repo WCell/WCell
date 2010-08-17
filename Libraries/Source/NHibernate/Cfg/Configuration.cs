@@ -972,28 +972,32 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
-			#region Way for the user to specify their own ProxyFactory
 			//http://jira.nhibernate.org/browse/NH-975
 
 			IInjectableProxyFactoryFactory ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
 			string pffClassName;
 			properties.TryGetValue(Environment.ProxyFactoryFactoryClass, out pffClassName);
-			if (ipff != null && !string.IsNullOrEmpty(pffClassName))
+			try
 			{
-				ipff.SetProxyFactoryFactory(pffClassName);
+				if (ipff != null && !string.IsNullOrEmpty(pffClassName))
+				{
+					ipff.SetProxyFactoryFactory(pffClassName);
+				}
+
+				SecondPassCompile();
+				Validate();
+				Environment.VerifyProperties(properties);
+				Settings settings = BuildSettings();
+
+				// Ok, don't need schemas anymore, so free them
+				Schemas = null;
+
+				return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
 			}
-
-			#endregion
-
-			SecondPassCompile();
-			Validate();
-			Environment.VerifyProperties(properties);
-			Settings settings = BuildSettings();
-
-			// Ok, don't need schemas anymore, so free them
-			Schemas = null;
-
-			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
+			catch (Exception e)
+			{
+				throw new Exception("Failed to BuildSessionFactory - pffClassName: " + pffClassName, e);
+			}
 		}
 
 		/// <summary>

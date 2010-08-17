@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Assembly = System.Reflection.Assembly;
+
 namespace Castle.ActiveRecord
 {
 	using System;
@@ -30,6 +32,8 @@ namespace Castle.ActiveRecord
 	using Iesi.Collections.Generic;
 	using NHibernate.Criterion;
 	using NHibernate.Tool.hbm2ddl;
+
+	using ISet=Iesi.Collections.Generic.ISet<Assembly>;
 	using Environment=NHibernate.Cfg.Environment;
 
 	/// <summary>
@@ -61,7 +65,7 @@ namespace Castle.ActiveRecord
 		private static bool isInitialized = false;
 
 		private static readonly List<IModelBuilderExtension> extensions = new List<IModelBuilderExtension>();
-		private static readonly ISet<Assembly> registeredAssemblies = new HashedSet<Assembly>();
+		private static readonly ISet registeredAssemblies = new HashedSet<Assembly>();
 		private static IDictionary<Type, string> registeredTypes;
 
 		/// <summary>
@@ -683,7 +687,7 @@ namespace Castle.ActiveRecord
 		{
 			XmlGenerationVisitor xmlVisitor = new XmlGenerationVisitor();
 			AssemblyXmlGenerator assemblyXmlGenerator = new AssemblyXmlGenerator();
-			ISet assembliesGeneratedXmlFor = new HashedSet();
+
 			foreach(ActiveRecordModel model in models)
 			{
 				Configuration config = holder.GetConfiguration(holder.GetRootType(model.Type));
@@ -897,7 +901,7 @@ namespace Castle.ActiveRecord
 
 		private static void AddXmlToNHibernateFromAssmebliesAttributes(ISessionFactoryHolder holder, ActiveRecordModelCollection models)
 		{
-			ISet<Assembly> assembliesGeneratedXmlFor = new HashedSet<Assembly>();
+			ISet assembliesGeneratedXmlFor = new HashedSet<Assembly>();
 			AssemblyXmlGenerator assemblyXmlGenerator = new AssemblyXmlGenerator();
 
 			foreach (ActiveRecordModel model in models)

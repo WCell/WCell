@@ -838,7 +838,7 @@ namespace Castle.ActiveRecord.Framework.Internal
 				{
 					return RelationType.Bag;
 				}
-				else if (genericTypeDefinition == typeof(ISet<>))
+				else if (genericTypeDefinition == typeof(Iesi.Collections.Generic.ISet<>))
 				{
 					return RelationType.Set;
 				}
