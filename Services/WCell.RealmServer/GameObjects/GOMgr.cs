@@ -287,7 +287,7 @@ namespace WCell.RealmServer.GameObjects
 					continue;
 				}
 
-				var distSq = pos.Position.GetDistanceSquared(template.Pos);
+				var distSq = pos.Position.DistanceSquared(template.Pos);
 				if (distSq < closestDistSq)
 				{
 					closestDistSq = distSq;

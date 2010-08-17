@@ -306,18 +306,27 @@ namespace WCell.Util.Graphics
                 return new Point(Right, Bottom);
             }
         }
+        
+        /// <summary>
+        /// Whether the rectangle contains the given Point. 
+        /// Points laying on the rectangles border are considered to be contained.
+        /// </summary>
         public bool Contains(Point point)
         {
             return Contains(point.X, point.Y);
         }
 
-        public bool Contains(float x, float y)
+        /// <summary>
+        /// Whether the rectangle contains the given Point(x, y). 
+        /// Points laying on the rectangles border are considered to be contained.
+        /// </summary>
+        public bool Contains(float xPos, float yPos)
         {
             if (IsEmpty)
             {
                 return false;
             }
-            return ContainsInternal(x, y);
+            return ContainsInternal(xPos, yPos);
         }
 
         public bool Contains(Rect rect)
@@ -326,7 +335,8 @@ namespace WCell.Util.Graphics
             {
                 return false;
             }
-            return ((((x <= rect.x) && (y <= rect.y)) && ((x + width) >= (rect.x + rect.width))) && ((y + height) >= (rect.y + rect.height)));
+            return ((((x <= rect.x) && (y <= rect.y)) &&
+                     ((x + width) >= (rect.x + rect.width))) && ((y + height) >= (rect.y + rect.height)));
         }
 
         public bool IntersectsWith(Rect rect)
@@ -336,6 +346,72 @@ namespace WCell.Util.Graphics
                 return false;
             }
             return ((((rect.Left <= Right) && (rect.Right >= Left)) && (rect.Top <= Bottom)) && (rect.Bottom >= Top));
+        }
+
+        public bool IntersectsWith(Ray2D ray)
+        {
+            var time = IntersectWith(ray);
+            return time.HasValue;
+        }
+
+        public float? IntersectWith(Ray2D ray)
+        {
+            var time = 0.0f;
+            var maxValue = float.MaxValue;
+            
+            if (Math.Abs(ray.Direction.X) < 1E-06f)
+            {
+                if ((ray.Position.X < X) || (ray.Position.X > Right))
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                var invDenom = 1f / ray.Direction.X;
+                var time0 = (X - ray.Position.X) * invDenom;
+                var time1 = (Right - ray.Position.X) * invDenom;
+                if (time0 > time1)
+                {
+                    var temp = time0;
+                    time0 = time1;
+                    time1 = temp;
+                }
+                time = MathHelper.Max(time0, time);
+                maxValue = MathHelper.Min(time1, maxValue);
+                if (time > maxValue)
+                {
+                    return null;
+                }
+            }
+
+            if (Math.Abs(ray.Direction.Y) < 1E-06f)
+            {
+                if ((ray.Position.Y < Y) || (ray.Position.Y > Bottom))
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                var invDenom = 1f / ray.Direction.Y;
+                var time0 = (Y - ray.Position.Y) * invDenom;
+                var time1 = (Bottom - ray.Position.Y) * invDenom;
+                if (time0 > time1)
+                {
+                    var temp = time0;
+                    time0 = time1;
+                    time1 = temp;
+                }
+                time = MathHelper.Max(time0, time);
+                maxValue = MathHelper.Min(time1, maxValue);
+                if (time > maxValue)
+                {
+                    return null;
+                }
+            }
+
+            return time;
         }
 
         public void Intersect(Rect rect)
@@ -483,9 +559,9 @@ namespace WCell.Util.Graphics
             }
         }
 
-        private bool ContainsInternal(float x, float y)
+        private bool ContainsInternal(float xPos, float yPos)
         {
-            return ((((x >= this.x) && ((x - width) <= this.x)) && (y >= this.y)) && ((y - height) <= this.y));
+            return ((((xPos >= x) && ((xPos - width) <= x)) && (yPos >= y)) && ((yPos - height) <= y));
         }
 
         static Rect()

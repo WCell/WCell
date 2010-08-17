@@ -268,7 +268,7 @@ namespace WCell.RealmServer.Groups
 		{
 			foreach (var member in Group)
 			{
-				var sqDistance = Position.GetDistanceSquared(member.Position);
+				var sqDistance = Position.DistanceSquared(member.Position);
 				if (member == this || member.Region == Region && Utility.IsInRange(sqDistance, radius))
 				{
 					handler(member);

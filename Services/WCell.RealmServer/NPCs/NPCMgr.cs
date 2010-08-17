@@ -791,7 +791,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				if (spawn != null)
 				{
-					var distSq = pos.Position.GetDistanceSquared(spawn.Position);
+					var distSq = pos.Position.DistanceSquared(spawn.Position);
 					if (distSq < distanceSq)
 					{
 						distanceSq = distSq;

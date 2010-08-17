@@ -247,12 +247,12 @@ namespace WCell.RealmServer
 
 		public static float GetDistSq(this IHasPosition pos, IHasPosition pos2)
 		{
-			return pos.Position.GetDistanceSquared(pos2.Position);
+			return pos.Position.DistanceSquared(pos2.Position);
 		}
 
 		public static float GetDistSq(this IHasPosition pos, Vector3 pos2)
 		{
-			return pos.Position.GetDistanceSquared(pos2);
+			return pos.Position.DistanceSquared(pos2);
 		}
     }
 }

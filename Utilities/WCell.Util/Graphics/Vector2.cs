@@ -114,7 +114,25 @@ namespace WCell.Util.Graphics
 			Y *= normFactor;
 		}
 
-		/// <summary>
+        public Vector2 NormalizedCopy()
+        {
+            var length = ((X*X) + (Y*Y));
+            var normFactor = 1f/((float) Math.Sqrt(length));
+
+            return new Vector2(X*normFactor, Y*normFactor);
+        }
+
+        public static float Dot(Vector2 value1, Vector2 value2)
+        {
+            return ((value1.X * value2.X) + (value1.Y * value2.Y));
+        }
+
+        public static void Dot(ref Vector2 value1, ref Vector2 value2, out float result)
+        {
+            result = (value1.X * value2.X) + (value1.Y * value2.Y);
+        }
+
+	    /// <summary>
 		/// Checks equality of two vectors.
 		/// </summary>
 		/// <param name="other">the other vector to compare with</param>
@@ -158,6 +176,16 @@ namespace WCell.Util.Graphics
 		{
 			return new Vector2(a.X - b.X, a.Y - b.Y);
 		}
+
+        public static Vector2 operator *(float f, Vector2 a)
+        {
+            return new Vector2(f*a.X, f*a.Y);
+        }
+
+        public static Vector2 operator *(Vector2 a, float f)
+        {
+            return new Vector2(f*a.X, f*a.Y);
+        }
 
 		public override string ToString()
 		{

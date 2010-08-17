@@ -206,8 +206,10 @@
     <Compile Include="DynamicAccess\IExecutable.cs" />
     <Compile Include="DynamicAccess\IGenericPropertyAccessor.cs" />
     <Compile Include="Collections\IdQueue.cs" />
+    <Compile Include="Graphics\ContainmentType.cs" />
     <Compile Include="Graphics\MathHelper.cs" />
     <Compile Include="Graphics\Point.cs" />
+    <Compile Include="Graphics\Ray2D.cs" />
     <Compile Include="Graphics\Rect.cs" />
     <Compile Include="Graphics\Size.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />

@@ -237,7 +237,7 @@ namespace WCell.RealmServer.Taxi
 				if (node == null)
 					continue;
 
-				var temp = node.Position.GetDistanceSquared(ref pos);
+				var temp = node.Position.DistanceSquared(ref pos);
 				if (temp < distSq)
 				{
 					distSq = temp;
