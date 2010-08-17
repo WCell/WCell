@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay.MPQ.WMO;
+using TerrainDisplay.Util;
 
 namespace TerrainDisplay
 {
@@ -51,6 +52,9 @@ namespace TerrainDisplay
         {
             var vertices = RenderingVerticies;
             var indices = RenderingIndices;
+
+            if (vertices.IsNullOrEmpty()) return;
+            if (indices.IsNullOrEmpty()) return;
 
             GraphicsDevice.DrawUserIndexedPrimitives(
                 PrimitiveType.TriangleList,

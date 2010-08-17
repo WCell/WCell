@@ -35,6 +35,15 @@ namespace TerrainDisplay
             vertex.Z = temp * -1;
         }
 
+        public static void TransformXnaCoordsToWoWCoords(ref Vector3 vertex)
+        {
+            // WoW       XNA
+            var temp = vertex.Z;
+            vertex.Z = vertex.Y;
+            vertex.Y = vertex.X*-1;
+            vertex.X = temp*-1;
+        }
+
         public static void TransformWoWCoordsToRecastCoords(ref Vector3 vertex)
         {
             var temp = vertex.X;

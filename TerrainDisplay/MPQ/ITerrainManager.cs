@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TerrainDisplay.Collision;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
@@ -14,6 +15,7 @@ namespace TerrainDisplay.MPQ
         IWMOManager WMOManager { get; }
         IM2Manager M2Manager { get; }
         NavMeshManager MeshManager { get; }
+        SelectedTriangleManager SelectedTriangleManager { get; }
         WDTFile WDT { get; }
 
         void LoadTile(TileIdentifier tileId);

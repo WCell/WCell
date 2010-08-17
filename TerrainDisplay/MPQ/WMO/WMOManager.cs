@@ -249,31 +249,87 @@ namespace TerrainDisplay.MPQ.WMO
             //var rotateY = Matrix.CreateRotationY(currentMODF.OrientationA * RadiansPerDegree);
 
             int offset;
+
             
             foreach (var currentGroup in currentWMO.Groups)
             {
                 if (currentGroup == null) continue;
                 //if (!currentGroup.Header.HasMLIQ) continue;
 
-                offset = currentWMO.WmoVertices.Count;
-                for (var i = 0; i < currentGroup.Vertices.Count; i++)
-                {
-                    var basePosVector = currentGroup.Vertices[i];
-                    var rotatedPosVector = Vector3.Transform(basePosVector, rotateZ);
-                    var finalPosVector = rotatedPosVector + origin;
+                var usedTris = new Dictionary<Index3, int>();
+                var wmoTrisUnique = new List<Index3>();
 
-                    //var baseNormVector = currentGroup.Normals[i];
-                    //var rotatedNormVector = Vector3.Transform(baseNormVector, rotateZ);
+                foreach (var node in currentGroup.BSPNodes)
+                {
+                    if (node.TriIndices == null) continue;
+                    foreach (var index3 in node.TriIndices)
+                    {
+                        if (usedTris.ContainsKey(index3)) continue;
+
+                        usedTris.Add(index3, 0);
+                        wmoTrisUnique.Add(index3);
+                    }
+                }
+
+                var newIndices = new Dictionary<int, int>();
+                foreach (var tri in wmoTrisUnique)
+                {
+                    int newIndex;
+                    if (!newIndices.TryGetValue(tri.Index0, out newIndex))
+                    {
+                        newIndex = currentWMO.WmoVertices.Count;
+                        newIndices.Add(tri.Index0, newIndex);
+
+                        var basePosVec = currentGroup.Vertices[tri.Index0];
+                        var rotatedPosVec = Vector3.Transform(basePosVec, rotateZ);
+                        var finalPosVector = rotatedPosVec + origin;
+                        currentWMO.WmoVertices.Add(finalPosVector);
+                    }
+                    currentWMO.WmoIndices.Add(newIndex);
+
+                    if (!newIndices.TryGetValue(tri.Index1, out newIndex))
+                    {
+                        newIndex = currentWMO.WmoVertices.Count;
+                        newIndices.Add(tri.Index1, newIndex);
+
+                        var basePosVec = currentGroup.Vertices[tri.Index1];
+                        var rotatedPosVec = Vector3.Transform(basePosVec, rotateZ);
+                        var finalPosVector = rotatedPosVec + origin;
+                        currentWMO.WmoVertices.Add(finalPosVector);
+                    }
+                    currentWMO.WmoIndices.Add(newIndex);
+
+                    if (!newIndices.TryGetValue(tri.Index2, out newIndex))
+                    {
+                        newIndex = currentWMO.WmoVertices.Count;
+                        newIndices.Add(tri.Index2, newIndex);
+
+                        var basePosVec = currentGroup.Vertices[tri.Index2];
+                        var rotatedPosVec = Vector3.Transform(basePosVec, rotateZ);
+                        var finalPosVector = rotatedPosVec + origin;
+                        currentWMO.WmoVertices.Add(finalPosVector);
+                    }
+                    currentWMO.WmoIndices.Add(newIndex);
+                }
+
+                //for (var i = 0; i < currentGroup.Vertices.Count; i++)
+                //{
+                //    var basePosVector = currentGroup.Vertices[i];
+                //    var rotatedPosVector = Vector3.Transform(basePosVector, rotateZ);
+                //    var finalPosVector = rotatedPosVector + origin;
+
+                //    //var baseNormVector = currentGroup.Normals[i];
+                //    //var rotatedNormVector = Vector3.Transform(baseNormVector, rotateZ);
                     
-                    currentWMO.WmoVertices.Add(finalPosVector);
-                }
+                //    currentWMO.WmoVertices.Add(finalPosVector);
+                //}
 
-                for (var index = 0; index < currentGroup.Indices.Count; index++)
-                {
-                    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index0 + offset);
-                    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index1 + offset);
-                    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index2 + offset);
-                }
+                //for (var index = 0; index < currentGroup.Indices.Count; index++)
+                //{
+                //    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index0 + offset);
+                //    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index1 + offset);
+                //    currentWMO.WmoIndices.Add(currentGroup.Indices[index].Index2 + offset);
+                //}
                 
                 // WMO Liquids
                 if (!currentGroup.Header.HasMLIQ) continue;

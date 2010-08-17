@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
+using TerrainDisplay.Collision;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
@@ -42,6 +43,12 @@ namespace TerrainDisplay.MPQ
             get { return _meshManager; }
         }
 
+        private readonly SelectedTriangleManager _selectedTriangleManager;
+        public SelectedTriangleManager SelectedTriangleManager
+        {
+            get { return _selectedTriangleManager; }
+        }
+
         private readonly WDTFile _wdtFile;
         public WDTFile WDT
         {
@@ -74,6 +81,7 @@ namespace TerrainDisplay.MPQ
             _wmoManager = new WMOManager(baseFileDirectory);
             _m2Manager = new M2Manager(baseFileDirectory);
             _meshManager = new NavMeshManager();
+            _selectedTriangleManager = new SelectedTriangleManager(_adtManager);
         }
 
         public void LoadTile(TileIdentifier tileId)

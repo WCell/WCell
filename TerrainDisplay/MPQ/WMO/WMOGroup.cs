@@ -6,13 +6,6 @@ using TerrainDisplay.MPQ.WMO.Components;
 
 namespace TerrainDisplay.MPQ.WMO
 {
-    public struct Index3
-    {
-        public short Index0;
-        public short Index1;
-        public short Index2;
-    }
-
     public class WMOGroup
     {
         public uint Version;

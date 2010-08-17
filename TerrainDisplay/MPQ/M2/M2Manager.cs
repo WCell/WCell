@@ -115,7 +115,9 @@ namespace TerrainDisplay.MPQ.M2
             }
 
             var currentM2 = Transform(model, tempIndices, doodadDefinition);
-           
+
+            // Ignore models with no bounding volumes
+            if (currentM2.Vertices.Count < 1) return;
             M2s.Add(currentM2);
         }
 

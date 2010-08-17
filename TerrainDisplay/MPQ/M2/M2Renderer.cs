@@ -16,7 +16,7 @@ namespace TerrainDisplay.MPQ.M2
 
         public M2Renderer(Game game, IM2Manager manager) : base(game)
         {
-            _manager = manager;  
+            _manager = manager;
         }
 
         protected override void BuildVerticiesAndIndicies()

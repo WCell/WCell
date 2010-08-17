@@ -40,7 +40,7 @@ namespace TerrainDisplay
 										  100.0f);
 			
 			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
-			new RecastRunner(TerrainManager).Start();
+			//new RecastRunner(TerrainManager).Start();
 
 			using (var game = new Game1(AvatarPosition.ToXna()))
 			{
