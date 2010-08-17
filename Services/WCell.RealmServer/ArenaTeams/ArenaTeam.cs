@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cell.Core;
@@ -67,6 +68,7 @@ namespace WCell.RealmServer.ArenaTeams
         public ArenaTeamSlot Slot
         {
             get { return m_slot; }
+            set { m_slot = value; }
         }
 
         /// Arena team leader's ArenaTeamMember
@@ -124,7 +126,9 @@ namespace WCell.RealmServer.ArenaTeams
 			_leaderLowId = (int)leader.EntityLowId;
 			_name = name;
             _type = type;
-            
+
+            m_slot = ArenaTeamMgr.GetSlotByType((uint)type);
+
 			m_leader = new ArenaTeamMember(leader, this, true);
             m_stats = new ArenaTeamStats(this);
 
@@ -148,7 +152,8 @@ namespace WCell.RealmServer.ArenaTeams
                 atm.Init(this);
                 Members.Add(atm.Id, atm);
             }
-            Stats = ArenaTeamStats.FindByPrimaryKey(this.Id);
+            m_stats = ArenaTeamStats.FindByPrimaryKey(this.Id);
+            m_slot = ArenaTeamMgr.GetSlotByType(Type);
 
             m_leader = this[LeaderLowId];
             if (m_leader == null)
@@ -166,7 +171,7 @@ namespace WCell.RealmServer.ArenaTeams
         /// </summary>
         internal void Register()
         {
-            ArenaTeamMgr.Instance.RegisterArenaTeam(this);
+            ArenaTeamMgr.RegisterArenaTeam(this);
         }
         #endregion
 
@@ -219,7 +224,7 @@ namespace WCell.RealmServer.ArenaTeams
                 SyncRoot.Exit();
             }
 
-            ArenaTeamMgr.Instance.RegisterArenaTeamMember(newMember);
+            ArenaTeamMgr.RegisterArenaTeamMember(newMember);
 
             //ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.JOINED_SS, newMember);
 
@@ -316,7 +321,7 @@ namespace WCell.RealmServer.ArenaTeams
         /// </summary>
         protected void OnRemoveMember(ArenaTeamMember member)
         {
-            ArenaTeamMgr.Instance.UnregisterArenaTeamMember(member);
+            ArenaTeamMgr.UnregisterArenaTeamMember(member);
 
             var chr = member.Character;
             if (chr != null)
@@ -349,6 +354,53 @@ namespace WCell.RealmServer.ArenaTeams
             {
                 ChangeLeader(highestMember);
             }
+        }
+        #endregion
+
+        #region IEnumerable<ArenaTeamMember> Members
+
+        public IEnumerator<ArenaTeamMember> GetEnumerator()
+        {
+            foreach (ArenaTeamMember member in Members.Values)
+            {
+                yield return member;
+            }
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            foreach (ArenaTeamMember member in Members.Values)
+            {
+                yield return member;
+            }
+        }
+
+        #endregion
+
+        #region IChatTarget
+
+        public void SendSystemMsg(string msg)
+        {
+            foreach (var member in Members.Values)
+            {
+                if (member.Character != null)
+                    member.Character.SendSystemMessage(msg);
+            }
+        }
+
+        public void SendMessage(string message)
+        {
+            // TODO: What to do if there is no chatter argument?
+            throw new NotImplementedException();
+            //ChatMgr.SendGuildMessage(sender, this, message);
+        }
+
+        /// <summary>
+        /// Say something to this target
+        /// </summary>		
+        public void SendMessage(IChatter sender, string message)
+        {
+            //ChatMgr.SendGuildMessage(sender, this, message);
         }
         #endregion
 
@@ -410,7 +462,7 @@ namespace WCell.RealmServer.ArenaTeams
 					RemoveMember(member, false);
 				}
 
-				ArenaTeamMgr.Instance.UnregisterArenaTeam(this);
+				ArenaTeamMgr.UnregisterArenaTeam(this);
 				RealmServer.Instance.AddMessage(() => Delete());
 			}
 			finally

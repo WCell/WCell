@@ -22,13 +22,21 @@ namespace WCell.RealmServer.Spells
 {
 	public class PlayerSpellCollection : SpellCollection
 	{
-		static readonly IEnumerable<ISpellIdCooldown> EmptyIdCooldownArray = new ISpellIdCooldown[0];
-		static readonly IEnumerable<ISpellCategoryCooldown> EmptyCatCooldownArray = new ISpellCategoryCooldown[0];
+		static readonly ObjectPool<PlayerSpellCollection> PlayerSpellCollectionPool =
+			new ObjectPool<PlayerSpellCollection>(() => new PlayerSpellCollection());
 
-		public static readonly ObjectPool<List<ISpellIdCooldown>> SpellIdCooldownListPool =
-			new ObjectPool<List<ISpellIdCooldown>>(() => new List<ISpellIdCooldown>(5));
-		public static readonly ObjectPool<List<ISpellCategoryCooldown>> SpellCategoryCooldownListPool =
-			new ObjectPool<List<ISpellCategoryCooldown>>(() => new List<ISpellCategoryCooldown>(5));
+		public static PlayerSpellCollection Obtain(Character chr)
+		{
+			var spells = PlayerSpellCollectionPool.Obtain();
+			spells.Initialize(chr);
+
+			// runes
+			if (spells.Runes != null)
+			{
+				spells.Runes.InitRunes(chr);
+			}
+			return spells;
+		}
 
 		/// <summary>
 		/// Whether to send Update Packets
@@ -49,39 +57,62 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The runes of this Player (if any)
 		/// </summary>
-		private readonly RuneSet m_runes;
+		private RuneSet m_runes;
 
-		public PlayerSpellCollection(Character owner)
-			: base(owner)
+		#region Init & Cleanup
+		private PlayerSpellCollection()
 		{
+			m_idCooldowns =  new List<ISpellIdCooldown>(5);
+			m_categoryCooldowns =  new List<ISpellCategoryCooldown>(5);
+		}
+
+		protected override void Initialize(Unit owner)
+		{
+			base.Initialize(owner);
+
+			var chr = (Character)owner;
 			m_sendPackets = false;
 			if (owner.Class == Constants.ClassId.DeathKnight)
 			{
-				m_runes = new RuneSet(owner);
+				m_runes = new RuneSet(chr);
+			}
+		}
+
+		protected internal override void Recycle()
+		{
+			base.Recycle();
+
+			m_idCooldowns.Clear();
+			m_categoryCooldowns.Clear();
+
+			if (m_runes != null)
+			{
+				m_runes.Dispose();
+				m_runes = null;
 			}
 
-			m_idCooldowns = SpellIdCooldownListPool.Obtain();
-			m_categoryCooldowns = SpellCategoryCooldownListPool.Obtain();
+			PlayerSpellCollectionPool.Recycle(this);
 		}
+		#endregion
 
 		public IEnumerable<ISpellIdCooldown> IdCooldowns
 		{
-			get { return m_idCooldowns ?? EmptyIdCooldownArray; }
+			get { return m_idCooldowns; }
 		}
 
 		public IEnumerable<ISpellCategoryCooldown> CategoryCooldowns
 		{
-			get { return m_categoryCooldowns ?? EmptyCatCooldownArray; }
+			get { return m_categoryCooldowns; }
 		}
 
 		public int IdCooldownCount
 		{
-			get { return m_idCooldowns != null ? m_idCooldowns.Count : 0; }
+			get { return m_idCooldowns.Count; }
 		}
 
 		public int CategoryCooldownCount
 		{
-			get { return m_categoryCooldowns != null ? m_categoryCooldowns.Count : 0; }
+			get { return m_categoryCooldowns.Count; }
 		}
 
 		/// <summary>
@@ -715,21 +746,5 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
-
-		protected internal override void Dispose()
-		{
-			base.Dispose();
-
-			m_idCooldowns.Clear();
-			SpellIdCooldownListPool.Recycle(m_idCooldowns);
-
-			m_categoryCooldowns.Clear();
-			SpellCategoryCooldownListPool.Recycle(m_categoryCooldowns);
-
-			if (m_runes != null)
-			{
-				m_runes.Dispose();
-			}
-		}
 	}
 }

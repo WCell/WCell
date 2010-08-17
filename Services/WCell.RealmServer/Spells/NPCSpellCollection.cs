@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cell.Core;
 using WCell.Constants.Spells;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
@@ -20,14 +21,38 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public static int DefaultNPCSpellCooldownMillis = 1500;
 
+		static readonly ObjectPool<NPCSpellCollection> NPCSpellCollectionPool =
+			new ObjectPool<NPCSpellCollection>(() => new NPCSpellCollection());
+
+		public static NPCSpellCollection Obtain(NPC npc)
+		{
+			var spells = NPCSpellCollectionPool.Obtain();
+			spells.Initialize(npc);
+			return spells;
+		}
+
 		protected List<Spell> m_readySpells;
 		protected List<CooldownRemoveAction> m_cooldowns;
-
-		public NPCSpellCollection(NPC owner)
-			: base(owner)
+		
+		#region Init & Cleanup
+		private NPCSpellCollection()
 		{
-			m_readySpells = SpellListPool.Obtain();
+			m_readySpells = new List<Spell>(5);
 		}
+
+		protected internal override void Recycle()
+		{
+			base.Recycle();
+
+			m_readySpells.Clear();
+			if (m_cooldowns != null)
+			{
+				m_cooldowns.Clear();
+			}
+
+			NPCSpellCollectionPool.Recycle(this);
+		}
+		#endregion
 
 		public NPC OwnerNPC
 		{
@@ -253,13 +278,5 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 		#endregion
-
-		protected internal override void Dispose()
-		{
-			base.Dispose();
-			m_readySpells.Clear();
-			SpellListPool.Recycle(m_readySpells);
-			m_readySpells = null;
-		}
 	}
 }

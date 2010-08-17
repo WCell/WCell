@@ -38,9 +38,6 @@ namespace WCell.RealmServer.Spells
 	public abstract class SpellCollection : IEnumerable<Spell>
 	{
 		public static readonly ObjectPool<List<Spell>> SpellListPool = ObjectPoolMgr.CreatePool(() => new List<Spell>(), true);
-		public static readonly ObjectPool<Dictionary<SpellId, Spell>> SpellDictionaryPool = ObjectPoolMgr.CreatePool(() => new Dictionary<SpellId, Spell>(), true);
-		
-		public static readonly int SpellEnhancerCount = (int)Utility.GetMaxEnum<SpellModifierType>() + 1;
 
 		/// <summary>
 		/// All spells by id
@@ -52,12 +49,28 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private List<AddTargetTriggerHandler> m_TargetTriggers;
 
-
-		protected SpellCollection(Unit owner)
+		#region Init & Cleanup
+		protected SpellCollection()
 		{
-			m_byId = SpellDictionaryPool.Obtain();
+			m_byId = new Dictionary<SpellId, Spell>();
+		}
+
+		protected virtual void Initialize(Unit owner)
+		{
 			Owner = owner;
 		}
+
+		protected internal virtual void Recycle()
+		{
+			Owner = null;
+
+			m_byId.Clear();
+			if (m_TargetTriggers != null)
+			{
+				m_TargetTriggers.Clear();
+			}
+		}
+		#endregion
 
 		/// <summary>
 		/// Required by SpellCollection
@@ -383,15 +396,6 @@ namespace WCell.RealmServer.Spells
 			{
 				yield return spell;
 			}
-		}
-
-		protected internal virtual void Dispose()
-		{
-			Owner = null;
-
-			m_byId.Clear();
-			SpellDictionaryPool.Recycle(m_byId);
-			m_byId = null;
 		}
 	}
 }

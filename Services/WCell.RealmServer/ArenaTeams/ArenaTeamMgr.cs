@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WCell.Constants.ArenaTeams;
 using WCell.Core;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
@@ -9,7 +10,7 @@ using WCell.Util.Collections;
 
 namespace WCell.RealmServer.ArenaTeams
 {
-	public sealed class ArenaTeamMgr : Manager<ArenaTeamMgr>
+	public static class ArenaTeamMgr
 	{
         #region Charters
 		private static uint arenateamCharter2v2Cost = 800000;
@@ -84,23 +85,17 @@ namespace WCell.RealmServer.ArenaTeams
         /// <summary>
         /// Maps char-id to the corresponding ArenaTeamMember object so it can be looked up when char reconnects
         /// </summary>
-        public static readonly IDictionary<uint, ArenaTeamMember> OfflineChars;
-        public static readonly IDictionary<uint, ArenaTeam> ArenaTeamsById;
-        public static readonly IDictionary<string, ArenaTeam> ArenaTeamsByName;
+        public static readonly IDictionary<uint, ArenaTeamMember> OfflineChars = new SynchronizedDictionary<uint, ArenaTeamMember>();
+        public static readonly IDictionary<uint, ArenaTeam> ArenaTeamsById = new SynchronizedDictionary<uint, ArenaTeam>();
+        public static readonly IDictionary<string, ArenaTeam> ArenaTeamsByName = new SynchronizedDictionary<string, ArenaTeam>(StringComparer.InvariantCultureIgnoreCase);
 
         #region Init
-        static ArenaTeamMgr()
-		{
-			ArenaTeamsById = new SynchronizedDictionary<uint, ArenaTeam>();
-			ArenaTeamsByName = new SynchronizedDictionary<string, ArenaTeam>(StringComparer.InvariantCultureIgnoreCase);
-			OfflineChars = new SynchronizedDictionary<uint, ArenaTeamMember>();
-		}
         //[Initialization(InitializationPass.Fifth, "Initialize Arena Teams")]
         public static void Initialize()
         {
-            Instance.Start();
+            LoadFromDB();
         }
-        protected override bool InternalStart()
+        public static void LoadFromDB()
         {
             ArenaTeam[] teams;
 #if DEBUG
@@ -123,16 +118,6 @@ namespace WCell.RealmServer.ArenaTeams
                     team.InitAfterLoad();
                 }
             }
-            return true;
-        }
-
-        protected override bool InternalStop()
-        {
-            ArenaTeamsById.Clear();
-            ArenaTeamsByName.Clear();
-            OfflineChars.Clear();
-
-            return true;
         }
         #endregion
 
@@ -140,7 +125,7 @@ namespace WCell.RealmServer.ArenaTeams
         /// New or loaded Arena Team
         /// </summary>
         /// <param name="guild"></param>
-        internal void RegisterArenaTeam(ArenaTeam team)
+        public static void RegisterArenaTeam(ArenaTeam team)
         {
             ArenaTeamsById.Add(team.Id, team);
             ArenaTeamsByName.Add(team.Name, team);
@@ -152,19 +137,19 @@ namespace WCell.RealmServer.ArenaTeams
             }
         }
 
-        internal void UnregisterArenaTeam(ArenaTeam team)
+        public static void UnregisterArenaTeam(ArenaTeam team)
         {
             ArenaTeamsById.Remove(team.Id);
             ArenaTeamsByName.Remove(team.Name);
         }
 
-        internal void RegisterArenaTeamMember(ArenaTeamMember atm)
+        public static void RegisterArenaTeamMember(ArenaTeamMember atm)
         {
             if (atm.Character == null)
                 OfflineChars.Add(atm.Id, atm);
         }
 
-        internal void UnregisterArenaTeamMember(ArenaTeamMember atm)
+        public static void UnregisterArenaTeamMember(ArenaTeamMember atm)
         {
             if (OfflineChars.ContainsKey(atm.Id))
                 OfflineChars.Remove(atm.Id);
@@ -184,6 +169,20 @@ namespace WCell.RealmServer.ArenaTeams
             return team;
         }
 
+        public static ArenaTeamSlot GetSlotByType(uint type)
+        {
+            switch(type)
+            {
+                case (uint)ArenaTeamTypes.ARENA_TEAM_2v2:
+                    return ArenaTeamSlot.TWO_VS_TWO;
+                case (uint)ArenaTeamTypes.ARENA_TEAM_3v3:
+                    return ArenaTeamSlot.THREE_VS_THREE;
+                case (uint)ArenaTeamTypes.ARENA_TEAM_5v5:
+                    return ArenaTeamSlot.FIVE_VS_FIVE;
+                default:
+                    throw new Exception("Invalid Type of arena team !");
+            }
+        }
         #region Checks
         public static bool CanUseName(string name)
         {

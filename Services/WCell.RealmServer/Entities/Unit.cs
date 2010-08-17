@@ -1768,12 +1768,9 @@ namespace WCell.RealmServer.Entities
 				m_brain.Dispose();
 				m_brain = null;
 			}
-
-			if (m_spells != null)
-			{
-				m_spells.Dispose();
-				m_spells = null;
-			}
+			
+			m_spells.Recycle();
+			m_spells = null;
 
 			m_auras.Owner = null;
 			m_auras = null;
