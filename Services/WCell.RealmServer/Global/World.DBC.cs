@@ -92,4 +92,35 @@ namespace WCell.RealmServer.Global
 			ArrayUtil.Set(ref World.s_RegionTemplates, (uint)rgn.Id, rgn);
 		}
 	}
+
+    public class WorldMapOverlayConverter : DBCRecordConverter
+    {
+        public override void Convert(byte[] rawData)
+        {
+            var worldMapOverlayEntry = new WorldMapOverlayEntry();
+            worldMapOverlayEntry.WorldMapOverlayId = (WorldMapOverlayId) GetUInt32(rawData, 0);
+
+            for (var i = 0; i < worldMapOverlayEntry.ZoneTemplateId.Length; i++)
+            {
+                var zoneId = (ZoneId) GetUInt32(rawData, 2 + i);
+                if(zoneId == 0)
+                    // We reached to the last ZoneId reference.
+                    break;
+
+                worldMapOverlayEntry.ZoneTemplateId[i] = zoneId;
+                var zoneTemplate = World.s_ZoneTemplates[(int) zoneId];
+                if(zoneTemplate == null)
+                {
+                    LogManager.GetCurrentClassLogger().Warn(string.Format(
+                        "Invalid ZoneId #{0} found at WorldMapOverlay #{1} during the DBC loading.", zoneId, worldMapOverlayEntry.WorldMapOverlayId));
+                    continue;
+                }
+                zoneTemplate.WorldMapOverlays.Add(worldMapOverlayEntry.WorldMapOverlayId);
+            }
+
+            ArrayUtil.Set(ref World.s_WorldMapOverlayEntries, (uint) worldMapOverlayEntry.WorldMapOverlayId,
+                          worldMapOverlayEntry);
+
+        }
+    }
 }

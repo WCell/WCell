@@ -12,6 +12,7 @@ using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.Constants.Factions;
+using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -426,25 +427,68 @@ namespace WCell.RealmServer.Achievement
 		public uint TeamRating;
 	}
 
-	[StructLayout(LayoutKind.Sequential)]
-	public class LearnSkillLevelAchievementCriteriaEntry : AchievementCriteriaEntry
-	{
-		// 40
-		public SkillId SkillId;
-		public SkillTierId SkillTierId;
+    [StructLayout(LayoutKind.Sequential)]
+    public class LearnSkillLevelAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 40
+        public SkillId SkillId;
+        public SkillTierId SkillTierId;
 
-		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
-		{
-			if (value1 == 0 || (SkillId)value1 != SkillId)
-				return;
-			achievements.SetCriteriaProgress(this, value2);
-		}
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (value1 == 0 || (SkillId)value1 != SkillId)
+                return;
+            achievements.SetCriteriaProgress(this, value2);
+        }
 
-		public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
-		{
-			return achievementProgressRecord.Counter >= (uint)SkillTierId;
-		}
-	}
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= (uint)SkillTierId;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public class ExploreAreaAchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 43
+        public WorldMapOverlayId WorldMapOverlayId;
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if (value1 != (uint) WorldMapOverlayId)
+                return;
+            var worldMapOverlayEntry = World.s_WorldMapOverlayEntries[value1];
+            if (worldMapOverlayEntry == null)
+                return;
+
+            bool matchFound = false;
+            foreach (var zoneTemplateId in worldMapOverlayEntry.ZoneTemplateId)
+            {
+                if (zoneTemplateId == 0)        // no more areaids to come, let's stop the search
+                    break;
+
+                var zoneTemplate = World.GetZoneInfo(zoneTemplateId);
+                if (zoneTemplate.ExplorationBit < 0)
+                    continue;
+
+                if (achievements.Owner.IsZoneExplored(zoneTemplate.ExplorationBit))
+                {
+                    matchFound = true;
+                    break;
+                }
+            }
+
+            if (!matchFound)
+                return;
+
+            achievements.SetCriteriaProgress(this, 1);
+        }
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= 1;
+        }
+    }
 
 	[StructLayout(LayoutKind.Sequential)]
 	public class WinDuelLevelAchievementCriteriaEntry : AchievementCriteriaEntry

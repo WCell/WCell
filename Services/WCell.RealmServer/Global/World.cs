@@ -79,6 +79,7 @@ namespace WCell.RealmServer.Global
 		internal static RegionTemplate[] s_RegionTemplates = new RegionTemplate[(int)MapId.End];
 		internal static Region[] s_Regions = new Region[(int)MapId.End];
 		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
+        internal static WorldMapOverlayEntry[] s_WorldMapOverlayEntries = new WorldMapOverlayEntry[(int)WorldMapOverlayId.End];
 
 		internal static InstancedRegion[][] s_instances = new InstancedRegion[(int)MapId.End][];
 
@@ -448,6 +449,8 @@ namespace WCell.RealmServer.Global
 					zone.FinalizeZone();
 				}
 			}
+
+            new DBCReader<WorldMapOverlayConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_WORLDMAPOVERLAY));
 		}
 
 		private static void LoadChatChannelsDBC()

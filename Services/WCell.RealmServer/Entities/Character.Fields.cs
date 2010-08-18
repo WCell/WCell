@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -1381,6 +1382,11 @@ namespace WCell.RealmServer.Entities
 				var value = (byte)(byteVal | (1 << bit));
 				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + (zone.ExplorationBit >> 5), index % 4, value);
 				m_record.ExploredZones[index] = value;
+
+                foreach (var worldMapOverlay in zone.WorldMapOverlays)
+			    {
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);   
+			    }
 			}
 
 			foreach (var child in zone.ChildZones)
