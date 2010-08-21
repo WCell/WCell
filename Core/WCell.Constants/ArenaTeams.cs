@@ -1,6 +1,37 @@
 ﻿
 namespace WCell.Constants.ArenaTeams
 {
+    public enum ArenaTeamCommandId
+    {
+        CREATE = 0x00,
+        INVITE = 0x01,
+        QUIT = 0x03,
+        FOUNDER = 0x0E
+    };
+
+    public enum ArenaTeamResult
+    {
+        INTERNAL = 0x01,
+        ALREADY_IN_ARENA_TEAM = 0x02,
+        ALREADY_IN_ARENA_TEAM_S = 0x03,
+        INVITED_TO_ARENA_TEAM = 0x04,
+        ALREADY_INVITED_TO_ARENA_TEAM_S = 0x05,
+        NAME_INVALID = 0x06,
+        NAME_EXISTS = 0x07,
+        LEADER_LEAVE = 0x08,
+        PERMISSIONS = 0x08,
+        PLAYER_NOT_IN_TEAM = 0x09,
+        PLAYER_NOT_IN_TEAM_SS = 0x0A,
+        PLAYER_NOT_FOUND = 0x0B,
+        NOT_ALLIED = 0x0C,
+        IGNORING_YOU = 0x13,
+        TARGET_TOO_LOW = 0x15,
+        TARGET_TOO_HIGH = 0x16,
+        TOO_MANY_MEMBERS = 0x17,
+        NOT_FOUND = 0x1B,
+        LOCKED = 0x1E
+    };
+
     public enum ArenaTeamTypes : uint
     {
         ARENA_TEAM_2v2 = 2,

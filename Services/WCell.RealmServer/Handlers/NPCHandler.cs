@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Items;
@@ -250,6 +252,16 @@ namespace WCell.RealmServer.Handlers
 						default:
 							return;
 					}
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
 				}
 				if (itemId != 0 && cost != 0 && type != PetitionType.None)
 				{
@@ -304,6 +316,46 @@ namespace WCell.RealmServer.Handlers
 			// TODO: 
 		}
 
+        [PacketHandler(RealmServerOpCode.MSG_PETITION_RENAME)]
+        public static void HandlePetitionRename(IRealmClient client, RealmPacketIn packet)
+        {
+            var petitionGuid = packet.ReadEntityId();
+            var newName = packet.ReadCString().Trim();
+
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            var chr = client.ActiveCharacter;
+
+                if(charter.Petition.Type == PetitionType.Guild)
+                {
+                    if (!GuildMgr.IsValidGuildName(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (GuildMgr.DoesGuildExist(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+            charter.Petition.Name = newName;
+            charter.Petition.Update();
+
+            SendPetitionRename(client, petitionGuid, newName);
+        }
 		[PacketHandler(RealmServerOpCode.MSG_PETITION_DECLINE)]
 		public static void HandlePetitionDecline(IRealmClient client, RealmPacketIn packet)
 		{
@@ -377,6 +429,17 @@ namespace WCell.RealmServer.Handlers
 				client.Send(packet);
 			}
 		}
+
+        public static void SendPetitionRename(IPacketReceiver client, EntityId petitionGuid, string newName)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_RENAME))
+            {
+                packet.WriteULong((ulong)petitionGuid);
+                packet.WriteCString(newName);
+
+                client.Send(packet);
+            }
+        }
 
 		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
