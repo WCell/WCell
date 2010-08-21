@@ -93,8 +93,7 @@ namespace WCell.MPQTool.StormLibWrapper
         /// <param name="fileData">A FileFindData structure with the search result.</param>
         /// <returns>A handle for the updated Search object</returns>
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindNextFile")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
+        public static extern IntPtr ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
 
 
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindClose")]

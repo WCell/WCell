@@ -161,10 +161,15 @@ namespace WCell.MPQTool.StormLibWrapper
             if (searchHandle == IntPtr.Zero) return false;
 
             FileFindData data;
-            var success = NativeMethods.ListFileFindNext(searchHandle, out data);
+            var handle = NativeMethods.ListFileFindNext(searchHandle, out data);
+            var success = (((long)handle & 0xFF) != 0x00);
 
+            if (!success) return false;
+
+            if (data.FilePath == "") return false;
+            
             filePath = data.FilePath;
-            return success;
+            return true;
         }
 
         private static bool CloseSearch(IntPtr searchHandle)
