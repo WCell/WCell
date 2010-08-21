@@ -517,10 +517,26 @@ namespace WCell.Constants
 
 	public enum PetitionType
 	{
-		None,
-		Guild,
-		Arena2vs2,
-		Arena3vs3,
-		Arena5vs5
+		None = 0,
+		Arena2vs2 = 2,
+		Arena3vs3 = 3,
+		Arena5vs5 = 5,
+        Guild = 9
 	}
+
+    public enum PetitionTurns : uint
+    {
+        OK = 0,
+        ALREADY_IN_GUILD = 2,
+        NEED_MORE_SIGNATURES = 4,
+    };
+
+    public enum PetitionSigns : uint
+    {
+        OK = 0,
+        ALREADY_SIGNED = 1,
+        ALREADY_IN_GUILD = 2,
+        CANT_SIGN_OWN = 3,
+        NOT_SERVER = 4,
+    };
 }

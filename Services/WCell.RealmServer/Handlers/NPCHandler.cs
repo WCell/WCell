@@ -168,7 +168,6 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
 				}
 				chr.Client.Send(packet);
-				chr.SendSystemMessage("Sent arena packet.");
 			}
 		}
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_BUY)]
@@ -207,6 +206,8 @@ namespace WCell.RealmServer.Handlers
 			{
 				ItemId itemId = 0;
 				uint cost = 0;
+                PetitionType type = PetitionType.None;
+
 				if (petitioner.IsGuildPetitioner)
 				{
 					if (chr.IsInGuild)
@@ -225,6 +226,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					itemId = PetitionerEntry.GuildPetitionEntry.ItemId;
 					cost = GuildMgr.GuildCharterCost;
+                    type = PetitionType.Guild;
 				}
 				else if (petitioner.IsArenaPetitioner)
 				{
@@ -233,20 +235,23 @@ namespace WCell.RealmServer.Handlers
 						case 1:
 							itemId = PetitionerEntry.ArenaPetition2v2Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition2v2Entry.Cost;
+                            type = PetitionType.Arena2vs2;
 							break;
 						case 2:
 							itemId = PetitionerEntry.ArenaPetition3v3Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition3v3Entry.Cost;
+                            type = PetitionType.Arena3vs3;
 							break;
 						case 3:
 							itemId = PetitionerEntry.ArenaPetition5v5Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition5v5Entry.Cost;
+                            type = PetitionType.Arena5vs5;
 							break;
 						default:
 							return;
 					}
 				}
-				if (itemId != 0 && cost != 0)
+				if (itemId != 0 && cost != 0 && type != PetitionType.None)
 				{
 					var templ = ItemMgr.GetTemplate(itemId);
 					if (templ == null)
@@ -257,6 +262,10 @@ namespace WCell.RealmServer.Handlers
 					{
 						SendBuyError(chr, petitioner, itemId, BuyItemError.NotEnoughMoney);
 					}
+                    else if (!PetitionRecord.CanBuyPetition(chr.EntityId.Low))
+                    {
+                        chr.SendSystemMessage("You can't buy another petition !");
+                    }
 					else
 					{
 						var slotId = chr.Inventory.FindFreeSlot(templ, 1);
@@ -266,10 +275,14 @@ namespace WCell.RealmServer.Handlers
 						}
 						else
 						{
-							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true);
-							chr.Money -= cost;
+							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true) as PetitionCharter;
+                            item.Petition = new PetitionRecord(name, chr.EntityId.Low, (uint)itemId, type);
+                            item.Petition.CreateAndFlush();
 
-							item.SetEnchantId(EnchantSlot.Permanent, item.EntityId.Low);
+							chr.Money -= cost;
+                            
+							item.SetEnchantId(EnchantSlot.Permanent, item.EntityId.Low);                           
+
 						}
 					}
 				}
@@ -279,6 +292,9 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_SHOW_SIGNATURES)]
 		public static void HandlePetitionShowSigns(IRealmClient client, RealmPacketIn packet)
 		{
+            var petitionGuid = packet.ReadEntityId();
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            SendPetitionSignatures(client, charter);
 			// TODO: 
 		}
 
@@ -309,14 +325,28 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_QUERY)]
 		public static void HandlePetitionQuery(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var petitionLowId = packet.ReadUInt32();
+            var petitionGuid = packet.ReadEntityId();
+            var charter = client.ActiveCharacter.Inventory.GetItemByLowId(petitionLowId) as PetitionCharter;
+            SendPetitionQueryResponse(client, charter);
 		}
 
-		public static void SendPetitionSignatures(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionSignatures(IPacketReceiver client, PetitionCharter charter)
 		{
+            var signs = charter.Petition.SignedIds;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES))
 			{
-				// TODO: 
+                packet.WriteULong((ulong)charter.EntityId.High);
+                packet.WriteULong(charter.Owner.EntityId.Low);
+                packet.WriteUInt(charter.EntityId.Low);
+                packet.WriteByte(signs.Count);
+                
+                foreach(var guid in signs)
+                {
+                    packet.WriteULong(guid);
+                    packet.WriteUInt(0);
+                }
+
 				client.Send(packet);
 			}
 		}
@@ -348,12 +378,49 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetitionQueryResponse(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
+            string name = charter.Petition.Name;
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
 			{
-				// TODO: 
-				client.Send(packet);
+                packet.WriteUInt(charter.EntityId.Low);
+                packet.WriteULong(charter.Owner.EntityId.Low);
+                packet.WriteCString(name);
+                packet.WriteByte(0);
+
+                var type = charter.Petition.Type;
+                if(type == PetitionType.Guild)
+                {
+                    packet.WriteUInt(9);
+                    packet.WriteUInt(9);
+                    packet.WriteUInt(0);
+                }
+                else
+                {
+                    packet.WriteUInt((uint)type-1);
+                    packet.WriteUInt((uint)type-1);
+                    packet.WriteUInt((uint)type);
+                }
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUShort(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+
+                for(int i = 0; i < 10; ++i)
+                    packet.WriteByte(0);
+
+                packet.WriteUInt(0);
+
+                if(type == PetitionType.Guild)
+                    packet.WriteUInt(0);
+                else
+                    packet.WriteUInt(1);
+
+                client.Send(packet);
 			}
 		}
 		#endregion
