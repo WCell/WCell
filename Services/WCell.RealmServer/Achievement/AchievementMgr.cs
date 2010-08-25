@@ -22,12 +22,11 @@ namespace WCell.RealmServer.Achievement
 		private static readonly AchievementCriteriaEntryCreator[] AchievementEntryCreators =
 			new AchievementCriteriaEntryCreator[(int)AchievementCriteriaType.End];
 
-		//public static AchievementCriteriaEntry[] CriteriaEntries = new AchievementCriteriaEntry[13000];
-
 		public static readonly List<AchievementCriteriaEntry>[] EntriesByCriterion = new List<AchievementCriteriaEntry>[(int)AchievementCriteriaType.End];
 
 		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
 		public static readonly Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry>();
+        public static readonly List<AchievementEntryId> CompletedRealmFirstAchievements = new List<AchievementEntryId>();
 
 
 		[Initialization(InitializationPass.Fifth)]
@@ -36,9 +35,24 @@ namespace WCell.RealmServer.Achievement
 			InitCriteria();
 			LoadDBCs();
             ContentHandler.Load<AchievementReward>();
+		    LoadRealmFirstAchievements();
 		}
 
-		public static List<AchievementCriteriaEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)
+        public static void LoadRealmFirstAchievements()
+        {
+            var allRealmFirstRecords = (from achievementEntry in AchievementEntries.Values
+                                        where achievementEntry.IsRealmFirstType()
+                                        select achievementEntry.ID).ToArray();
+
+            var completedAchievements = AchievementRecord.Load(allRealmFirstRecords);
+
+            foreach (var completedAchievement in completedAchievements)
+            {
+                CompletedRealmFirstAchievements.Add(completedAchievement.AchievementEntryId);
+            }
+        }
+
+	    public static List<AchievementCriteriaEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)
 		{
 			return EntriesByCriterion[(int)criterion];
 		}
@@ -125,5 +139,10 @@ namespace WCell.RealmServer.Achievement
 		{
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
+
+        public static bool IsRealmFirst(AchievementEntryId achievementEntryId)
+        {
+            return (!CompletedRealmFirstAchievements.Contains(achievementEntryId));
+        }
 	}
 }
