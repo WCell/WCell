@@ -47,8 +47,10 @@ namespace WCell.MPQTool.StormLibWrapper
             if (filePath == null)
                 throw new ArgumentNullException("filePath");
 
-            return NativeMethods.HasFile(handle, filePath);
-            
+
+            var retVal = NativeMethods.HasFile(handle, filePath);
+
+            return (((long) retVal & 0xFF) > 0x00);
             //// Try to open the file
             //if (fileHandle == IntPtr.Zero)
             //    return false;
@@ -71,7 +73,8 @@ namespace WCell.MPQTool.StormLibWrapper
                 throw new ArgumentNullException("filePath");
 
             IntPtr fileHandle;
-            var success = NativeMethods.OpenFileEx(handle, filePath, OpenFileFlags.FromMPQ, out fileHandle);
+            var retVal = NativeMethods.OpenFileEx(handle, filePath, OpenFileFlags.FromMPQ, out fileHandle);
+            var success = (((long) retVal & 0xFF) > 0x00);
 
             ErrorHandler.ThrowOnFailure((!success || (fileHandle != IntPtr.Zero)), "Could not open MPQ file.");
 

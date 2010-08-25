@@ -66,13 +66,13 @@ namespace WCell.MPQTool.StormLibWrapper
         ///dwSearchScope: DWORD->unsigned int
         ///hFile: HANDLE*
         [DllImport(StormLibDllName, EntryPoint = "SFileOpenFileEx")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
 
 
         [DllImport(StormLibDllName, EntryPoint = "SFileHasFile")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
 
         /// <summary>
         /// Returns data about the first file in the ListFile that matches the given search mask
