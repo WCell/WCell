@@ -1,4 +1,6 @@
-﻿namespace TerrainDisplay
+﻿using WCell.Util.Graphics;
+
+namespace TerrainDisplay
 {
     public static class TerrainConstants
     {
@@ -41,5 +43,38 @@
         public const float H2OSimplificationConst = 0.005f;
         public const float WMOSimplificationConst = 0.0f;
         public const float M2SimplificationConst = 0.0f;
+
+        public const string MapFileExtension = "map";
+        public const string MapFilenameFormat = "{0:00}_{1:00}." + MapFileExtension;
+        public static string GetMapFilename(int tileX, int tileY)
+        {
+            return string.Format(MapFilenameFormat, tileY, tileX);
+        }
+
+        public const string M2FileExtension = "m2x";
+        public const string M2FileFormat = "{0:00}_{1:00}." + M2FileExtension;
+        public static string GetM2File(int x, int y)
+        {
+            return string.Format(M2FileFormat, x, y);
+        }
+
+        public const string WMOFileExtension = "wmo";
+        public const string WMOFileFormat = "{0:00}_{1:00}." + WMOFileExtension;
+        public static string GetWMOFile(int x, int y)
+        {
+            return string.Format(WMOFileFormat, x, y);
+        }
+
+        public static void TilePositionToWorldPosition(ref Vector3 tilePosition)
+        {
+            tilePosition.X = (tilePosition.X - CenterPoint) * -1;
+            tilePosition.Y = (tilePosition.Y - CenterPoint) * -1;
+        }
+
+        public static void TileExtentsToWorldExtents(ref BoundingBox tileExtents)
+        {
+            TilePositionToWorldPosition(ref tileExtents.Min);
+            TilePositionToWorldPosition(ref tileExtents.Max);
+        }
     }
 }

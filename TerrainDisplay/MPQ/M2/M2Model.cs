@@ -1,4 +1,5 @@
-﻿using WCell.Util.Graphics;
+﻿using TerrainDisplay.MPQ.WMO;
+using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.M2.Components;
 
 namespace TerrainDisplay.MPQ.M2
@@ -24,7 +25,7 @@ namespace TerrainDisplay.MPQ.M2
 
 
         public Vector3[] BoundingVertices;
-        public ushort[][] BoundingTriangles;
+        public Index3[] BoundingTriangles;
         public Vector3[] BoundingNormals;
     }
 }

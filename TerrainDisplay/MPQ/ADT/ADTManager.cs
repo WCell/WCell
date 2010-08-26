@@ -12,11 +12,6 @@ namespace TerrainDisplay.MPQ.ADT
     {
         #region variables
         /// <summary>
-        /// Default ADT Path
-        /// </summary>
-        private const string _adtPath = "World\\Maps\\";
-
-        /// <summary>
         /// List of all ADTs managed by this ADT manager
         /// </summary>
         private readonly List<ADTBase> _ADTs = new List<ADTBase>();
@@ -25,22 +20,6 @@ namespace TerrainDisplay.MPQ.ADT
         {
             get { return _ADTs; }
         }
-
-        /// <summary>
-        /// Base directory for all MPQ data.
-        /// </summary>
-        private readonly string _basePath;
-
-        /// <summary>
-        /// Continent of the ADT Manager
-        /// </summary>
-        private readonly string _continent;
-
-        /// <summary>
-        /// Boolean result stating if this manager is loaded or not.
-        /// </summary>
-        private readonly bool _loaded;
-
         #endregion
 
         private readonly MpqTerrainManager _mpqTerrainManager;
@@ -54,20 +33,9 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="dataDirectory">Base directory for all MPQ data WITH TRAILING SLASHES</param>
         /// <param name="mpqTerrainManager">Handles organization of all terrain elements</param>
         /// <example>ADTManager myADTManager = new ADTManager(continent.Azeroth, "C:\\mpq\\");</example>
-        public ADTManager(string dataDirectory, string continent, MpqTerrainManager mpqTerrainManager)
+        public ADTManager(MpqTerrainManager mpqTerrainManager)
         {
-            if (Directory.Exists(dataDirectory))
-            {
-                _loaded = true;
-                _basePath = Path.Combine(dataDirectory, _adtPath);
-                _continent = continent;
-                _mpqTerrainManager = mpqTerrainManager;
-            }
-            else
-            {
-                MessageBox.Show("Invalid data directory entered. Please exit and update your app.CONFIG file",
-                                "Invalid Data Directory");
-            }
+            _mpqTerrainManager = mpqTerrainManager;
         }
 
         #endregion
@@ -75,37 +43,13 @@ namespace TerrainDisplay.MPQ.ADT
         /// <summary>
         /// Loads an ADT into the manager.
         /// </summary>
-        /// <param name="tileX">X coordinate of the ADT in the 64 x 64 Grid 
-        /// (The x-axis points into the screen and represents rows in the grid.)</param>
-        /// <param name="tileY">Y coordinate of the ADT in the 64 x 64 grid 
-        /// (The y-axis points left and also represents columns in the grid.)</param>
-        public bool LoadTile(int tileX, int tileY)
+        /// <param name="tileId">The <see cref="TileIdentifier"/> describing the tile to load.</param>
+        public bool LoadTile(TileIdentifier tileId)
         {
-            if (_loaded == false)
-            {
-                MessageBox.Show("ADT Manager not loaded, aborting loading ADT file.", "ADT Manager not loaded.");
-                return false;
-            }
-            var continentPath = Path.Combine(_basePath, _continent);
-
-            if (!Directory.Exists(continentPath))
-            {
-                throw new Exception("Continent data missing");
-            }
-
-            // Tiles and Chunks are indexed as [col, row] for some wierd reason.
-            var filePath = string.Format("{0}\\{1}_{2:00}_{3:00}.adt", continentPath, _continent, tileY, tileX);
-
-            if (!File.Exists(filePath))
-            {
-                throw new Exception("ADT Doesn't exist: " + filePath);
-            }
-            
-            var currentADT = ADTParser.Process(filePath, _mpqTerrainManager);
+            var currentADT = ADTParser.Process(MpqTerrainManager.MpqManager, tileId);
 
             foreach (var objectDef in currentADT.ObjectDefinitions)
             {
-                //if (objectDef.UniqueId != 15377) continue;
                 _mpqTerrainManager.WMOManager.AddWMO(objectDef);
             }
 

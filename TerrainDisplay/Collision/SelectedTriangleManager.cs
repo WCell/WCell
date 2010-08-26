@@ -42,15 +42,11 @@ namespace TerrainDisplay.Collision
             PositionUtil.TransformXnaCoordsToWoWCoords(ref dir3D);
             var ray3D = new Ray(pos3D, dir3D);
 
-            AddSelectedTriangle(pos3D,
-                                (pos3D + 1000.0f*dir3D),
-                                (pos3D + 0.1f*new Vector3(0f, 0f, 1f)));
-
             var pos2D = new Vector2(pos3D.X, pos3D.Y);
             var dir2D = new Vector2(dir3D.X, dir3D.Y).NormalizedCopy();
             var ray2D = new Ray2D(pos2D, dir2D);
 
-            TriIndex closestTriangle = null;
+            TerrainTriangleHolder closestTriangle = null;
             var closestTime = float.MaxValue;
             var closestVec0 = Vector3.Zero;
             var closestVec1 = Vector3.Zero;

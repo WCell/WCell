@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Microsoft.Xna.Framework;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Collision.QuadTree;
 using TerrainDisplay.MPQ.ADT.Components;
+using WCell.Util.Graphics;
+using MathHelper = Microsoft.Xna.Framework.MathHelper;
 using Matrix = WCell.Util.Graphics.Matrix;
 using Vector3 = WCell.Util.Graphics.Vector3;
 
@@ -20,14 +23,8 @@ namespace TerrainDisplay.MPQ.M2
         /// List of WMOs managed by this WMOManager
         /// </summary>
         public List<M2> M2s = new List<M2>();
+
         #endregion
-
-        private readonly string _baseDirectory;
-
-        public M2Manager(string baseDirectory)
-        {
-            _baseDirectory = baseDirectory;
-        }
 
         private List<Vector3> _renderVertices;
         private List<int> _renderIndices;
@@ -84,41 +81,41 @@ namespace TerrainDisplay.MPQ.M2
         /// <param name="doodadDefinition">MDDF (placement information) for this M2</param>
         public void Add(MapDoodadDefinition doodadDefinition)
         {
-            string filePath = Path.Combine(_baseDirectory, doodadDefinition.FilePath);
+            var filePath = doodadDefinition.FilePath;
 
             if (Path.GetExtension(filePath).Equals(".mdx") || 
                 Path.GetExtension(filePath).Equals(".mdl"))
             {
                 filePath = Path.ChangeExtension(filePath, ".m2");
-                //filePath = filePath.Substring(0, filePath.LastIndexOf('.')) + ".m2";
-                //filePath = Path.GetFileNameWithoutExtension(filePath) + ".m2";
             }
 
             _names.Add(filePath);
-            Process(doodadDefinition);
+            var currentM2 = Process(doodadDefinition);
+            
+            // Ignore models with no bounding volumes
+            if (currentM2.Vertices.Count < 1) return;
+            
+            M2s.Add(currentM2);
         }
 
-        private void Process(MapDoodadDefinition doodadDefinition)
+        private static M2 Process(MapDoodadDefinition doodadDefinition)
         {
-            var model = M2ModelParser.Process(_baseDirectory, doodadDefinition.FilePath);
+            var model = M2ModelParser.Process(MpqTerrainManager.MpqManager, doodadDefinition.FilePath);
 
-            var tempVertices = new List<Vector3>(model.BoundingVertices);
-            
             var tempIndices = new List<int>();
-            for (var i = 0; i < model.BoundingTriangles.Length; i++)
+            foreach (var tri in model.BoundingTriangles)
             {
-                var tri = model.BoundingTriangles[i];
-                
-                tempIndices.Add(tri[2]);
-                tempIndices.Add(tri[1]);
-                tempIndices.Add(tri[0]);
+                tempIndices.Add(tri.Index2);
+                tempIndices.Add(tri.Index1);
+                tempIndices.Add(tri.Index0);
             }
 
             var currentM2 = Transform(model, tempIndices, doodadDefinition);
+            var tempVertices = currentM2.Vertices;
+            var bounds = new BoundingBox(tempVertices.ToArray());
+            currentM2.Bounds = bounds;
 
-            // Ignore models with no bounding volumes
-            if (currentM2.Vertices.Count < 1) return;
-            M2s.Add(currentM2);
+            return currentM2;
         }
 
         private static M2 Transform(M2Model model, IEnumerable<int> indicies, MapDoodadDefinition mddf)

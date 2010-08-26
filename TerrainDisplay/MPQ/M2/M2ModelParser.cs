@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using TerrainDisplay.MPQ.WMO;
+using WCell.MPQTool;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 using TerrainDisplay.MPQ.M2.Components;
@@ -8,24 +10,23 @@ namespace TerrainDisplay.MPQ.M2
 {
     public class M2ModelParser
     {
-        public static M2Model Process(string filePath, string fileName)
+        public static M2Model Process(MpqManager manager, string filePath)
         {
-            var fullFilePath = Path.Combine(filePath, fileName);
-            if (!File.Exists(fullFilePath))
+            if (!manager.FileExists(filePath))
             {
-                var altFilePath = Path.ChangeExtension(fullFilePath, ".m2");
-                if (!File.Exists(altFilePath))
+                var altFilePath = Path.ChangeExtension(filePath, ".m2");
+                if (!manager.FileExists(altFilePath))
                 {
-                    throw new Exception("File does not exist: " + fullFilePath);
+                    throw new Exception("File does not exist: " + filePath);
                 }
 
-                fullFilePath = altFilePath;
+                filePath = altFilePath;
             }
 
             var model = new M2Model();
 
-            using (var fs = File.OpenRead(fullFilePath))
-            using (var br = new BinaryReader(fs))
+            using (var stream = manager.OpenFile(filePath))
+            using (var br = new BinaryReader(stream))
             {
                 ReadHeader(br, model);
                 ReadGlobalSequences(br, model);
@@ -205,16 +206,19 @@ namespace TerrainDisplay.MPQ.M2
         static void ReadBoundingTriangles(BinaryReader br, M2Model model)
         {
             var btInfo = model.Header.BoundingTriangles;
-            model.BoundingTriangles = new ushort[btInfo.Count/3][];
+            model.BoundingTriangles = new Index3[btInfo.Count / 3];
 
             br.BaseStream.Position = btInfo.Offset;
 
-            for (int i = 0; i < model.BoundingTriangles.Length; i++)
+            for (var i = 0; i < model.BoundingTriangles.Length; i++)
             {
-                model.BoundingTriangles[i] = new ushort[3];
-                model.BoundingTriangles[i][0] = br.ReadUInt16();
-                model.BoundingTriangles[i][1] = br.ReadUInt16();
-                model.BoundingTriangles[i][2] = br.ReadUInt16();
+                model.BoundingTriangles[i] = new Index3
+                {
+                    Index2 = br.ReadInt16(),
+                    Index1 = br.ReadInt16(),
+                    Index0 = br.ReadInt16()
+                };
+
             }
         }
         static void ReadBoundingVertices(BinaryReader br, M2Model model)

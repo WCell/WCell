@@ -6,6 +6,7 @@ using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
 using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Recast;
+using TerrainDisplay.Util;
 using WCell.Util.Graphics;
 using Color = Microsoft.Xna.Framework.Graphics.Color;
 using MathHelper = Microsoft.Xna.Framework.MathHelper;

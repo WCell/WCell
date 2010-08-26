@@ -4,6 +4,7 @@ using System.IO;
 using Terra;
 using TerrainDisplay.Collision;
 using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.Util;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.ADT
@@ -50,53 +51,56 @@ namespace TerrainDisplay.MPQ.ADT
 
         #region Variables
 
+        private MpqTerrainManager _mpqTerrainManager;
+
         /// <summary>
         /// The continent of the ADT
         /// </summary>
-        private ContinentType _continent;
+        private TileIdentifier _tileId;
 
         /// <summary>
         /// Filename of the ADT
         /// </summary>
         /// <example>Azeroth_32_32.adt</example>
-        public string FileName;
-
-        private MpqTerrainManager _mpqTerrainManager;
+        public string FileName
+        {
+            get { return TerrainConstants.GetMapFilename(_tileX, _tileY); }
+        }
 
         /// <summary>
         /// The X offset of the map in the 64 x 64 grid
         /// </summary>
-        private int _tileX;
+        private int _tileX
+        {
+            get { return _tileId.TileX; }
+        }
 
         /// <summary>
         /// The Y offset of the map in the 64 x 64 grid
         /// </summary>
-        private int _tileY;
+        private int _tileY
+        {
+            get { return _tileId.TileY; }
+        }
 
+        public bool IsWMOOnly;
         #endregion
 
         #region Constructors
 
-        /// <summary>
-        /// Creates a new instance of the ADT class
-        /// </summary>
-        /// <param name="filePath">Filepath of the ADT</param>
-        /// <example>ADT myADT = new ADT("Azeroth_32_32.adt");</example>
-        public ADT(string filePath, MpqTerrainManager mpqTerrainManager)
+        public ADT(TileIdentifier tileId, MpqTerrainManager mpqTerrainManager)
         {
             _mpqTerrainManager = mpqTerrainManager;
-            var fileName = Path.GetFileNameWithoutExtension(filePath);
-            FileName = fileName;
+            _tileId = tileId;
 
-            var fileNameParts = fileName.Split('_');
-            _continent = (ContinentType) Enum.Parse(typeof (ContinentType), fileNameParts[0], true);
-            _tileX = Int32.Parse(fileNameParts[2]);
-            _tileY = Int32.Parse(fileNameParts[1]);
-
-            QuadTree = new QuadTree<TriIndex>(new Size(TerrainConstants.ChunkSize, TerrainConstants.ChunkSize),
+            QuadTree = new QuadTree<TerrainTriangleHolder>(new Size(TerrainConstants.ChunkSize, TerrainConstants.ChunkSize),
                                           TerrainConstants.UnitsPerChunkSide * TerrainConstants.UnitsPerChunkSide);
         }
 
+        public ADT(TileIdentifier tileId)
+        {
+            _tileId = tileId;
+        }
         #endregion
 
         public override void GenerateLiquidVertexAndIndices()
@@ -209,8 +213,6 @@ namespace TerrainDisplay.MPQ.ADT
                 var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) - (vertex.Y*TerrainConstants.UnitSize);
                 TerrainVertices.Add(new Vector3(xPos, yPos, vertex.Z));
             }
-
-            LoadQuadTree();
         }
 
         /// <summary>
@@ -403,23 +405,6 @@ namespace TerrainDisplay.MPQ.ADT
                     indices.Add(offset + ((row + 1) * (8 + 1) + col));
                     indices.Add(offset + (row * (8 + 1) + col + 1));
                 }
-            }
-        }
-
-        public override void LoadQuadTree()
-        {
-            for (var i = 0; i < Indices.Count; )
-            {
-                var indices = new[] {Indices[i++], Indices[i++], Indices[i++]};
-                var vertices = new[]
-                {
-                    TerrainVertices[indices[0]], 
-                    TerrainVertices[indices[1]], 
-                    TerrainVertices[indices[2]]
-                };
-
-                var triIndex = new TriIndex(indices, vertices);
-                QuadTree.Insert(triIndex);
             }
         }
     }

@@ -1,110 +1,153 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
-using System.Windows.Forms;
+using System.Linq;
+using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.Util;
-using TerrainDisplay.MPQ.ADT;
+using TerrainDisplay.World.DBC;
+using WCell.MPQTool;
+
 
 namespace TerrainDisplay.MPQ.WDT
 {
 
 	public class WDTParser
 	{
-		private const string _wdtPath = "WORLD\\MAPS\\";
-		private static string _basePath;
-		private static string _continent;
-
-		public static WDTFile Process(string dataDirectory, string internalMapName)
+        public static MpqManager MpqManager;
+		private const string baseDir = "WORLD\\MAPS\\";
+        public const string Extension = ".wdt";
+		
+        public static WDT Process(MapInfo entry)
 		{
-			_basePath = Path.Combine(dataDirectory, _wdtPath);
-			_continent = internalMapName;
+            var dir = entry.InternalName;
+            var wdtDir = Path.Combine(baseDir, dir);
+            var wdtName = dir;
 
-			var wdt = new WDTFile();
+            var wdtFilePath = Path.Combine(wdtDir, wdtName + Extension);
+            if (!MpqManager.FileExists(wdtFilePath)) return null;
 
-			var continentPath = Path.Combine(_basePath, _continent);
-			if (!Directory.Exists(continentPath))
-			{
-				throw new Exception(String.Format("Continent data missing for {0}", _continent));
-			}
+            var wdt = new WDT
+            {
+                Manager = MpqManager,
+                Entry = entry,
+                Name = wdtName,
+                Path = wdtDir
+            };
 
-			var filePath = string.Format("{0}\\{1}.wdt", continentPath, _continent);
-			if (!File.Exists(filePath))
-			{
-				throw new Exception("WDT doesn't exist: " + filePath);
-			}
+            using (var fileReader = new BinaryReader(MpqManager.OpenFile(wdtFilePath)))
+            {
+                ReadMVER(fileReader, wdt);
+                ReadMPHD(fileReader, wdt);
+                ReadMAIN(fileReader, wdt);
 
-			var fileReader = new BinaryReader(File.OpenRead(filePath));
-
-			ReadMVER(fileReader, wdt);
-			ReadMPHD(fileReader, wdt);
-
-			if (wdt.Header.IsWMOMap)
-			{
-				// No terrain, the map is a "global" wmo
-				// MWMO and MODF chunks follow
-			}
-			else
-			{
-				ReadMAIN(fileReader, wdt);
-				//PrintProfile(wdt);
-			}
-
-			do
-			{
-				var type = fileReader.ReadUInt32();
-				var size = fileReader.ReadUInt32();
-				var curpos = fileReader.BaseStream.Position;
-
-				fileReader.BaseStream.Seek(curpos + size, SeekOrigin.Begin);
-
-			} while (fileReader.HasData());
-
-			fileReader.Close();
+                if (wdt.Header.IsWMOMap)
+                {
+                    // No terrain, the map is a "global" wmo
+                    // MWMO and MODF chunks follow
+                    wdt.IsWMOOnly = true;
+                    ReadMWMO(fileReader, wdt);
+                    ReadMODF(fileReader, wdt);
+                }
+            }
 
 			return wdt;
 		}
 
 
-		static void ReadMVER(BinaryReader fileReader, WDTFile wdt)
-		{
-			var type = fileReader.ReadUInt32();
-			var size = fileReader.ReadUInt32();
-			wdt.Version = fileReader.ReadInt32();
-		}
+        static void ReadMWMO(BinaryReader fileReader, WDT wdt)
+        {
+            var type = fileReader.ReadUInt32();
+            var size = fileReader.ReadUInt32();
 
-		static void ReadMPHD(BinaryReader fileReader, WDTFile wdt)
-		{
-			var type = fileReader.ReadUInt32();
-			var size = fileReader.ReadUInt32();
-			wdt.Header.Header1 = (WDTFlags)fileReader.ReadInt32();
-			wdt.Header.Header2 = fileReader.ReadInt32();
-			wdt.Header.Header3 = fileReader.ReadInt32();
-			wdt.Header.Header4 = fileReader.ReadInt32();
-			wdt.Header.Header5 = fileReader.ReadInt32();
-			wdt.Header.Header6 = fileReader.ReadInt32();
-			wdt.Header.Header7 = fileReader.ReadInt32();
-			wdt.Header.Header8 = fileReader.ReadInt32();
-		}
+            var endPos = fileReader.BaseStream.Position + size;
+            while (fileReader.BaseStream.Position < endPos)
+            {
+                if (fileReader.PeekByte() == 0)
+                {
+                    fileReader.BaseStream.Position++;
+                }
+                else
+                {
+                    wdt.WmoFiles.Add(fileReader.ReadCString());
+                }
+            }
+        }
 
-		static void ReadMAIN(BinaryReader fileReader, WDTFile wdt)
-		{
-			var type = fileReader.ReadUInt32();
-			var size = fileReader.ReadUInt32();
+        static void ReadMODF(BinaryReader fileReader, WDT wdt)
+        {
+            var type = fileReader.ReadUInt32();
+            var size = fileReader.ReadUInt32();
 
-			// Rows are along the x-axis
-			for (var x = 0; x < 64; x++)
-			{
-				// Columns are along the y-axis
-				for (var y = 0; y < 64; y++)
-				{
-					// Stored as [col, row], that's weird.
-					wdt.TileProfile[y, x] = fileReader.ReadInt64() != 0;
-				}
-			}
-		}
+            var endPos = fileReader.BaseStream.Position + size;
+            while (fileReader.BaseStream.Position < endPos)
+            {
+                var objectDef = new MapObjectDefinition();
+                var nameIndex = fileReader.ReadInt32(); // 4 bytes
+                objectDef.FilePath = wdt.WmoFiles[nameIndex];
+                objectDef.UniqueId = fileReader.ReadUInt32(); // 4 bytes
+                objectDef.Position = fileReader.ReadVector3(); // 12 bytes
+                objectDef.OrientationA = fileReader.ReadSingle(); // 4 Bytes
+                objectDef.OrientationB = fileReader.ReadSingle(); // 4 Bytes
+                objectDef.OrientationC = fileReader.ReadSingle(); // 4 Bytes
+                objectDef.Extents = fileReader.ReadBoundingBox(); // 12*2 bytes
+                objectDef.Flags = fileReader.ReadUInt16(); // 2 bytes
+                objectDef.DoodadSetId = fileReader.ReadUInt16(); // 2 bytes
+                objectDef.NameSet = fileReader.ReadUInt16(); // 2 bytes
+                fileReader.ReadUInt16(); // padding
 
-		static void PrintProfile(WDTFile wdt)
+                wdt.WmoDefinitions.Add(objectDef);
+            }
+        }
+
+        static void ReadMVER(BinaryReader fileReader, WDT wdt)
+        {
+            var type = fileReader.ReadUInt32();
+            var size = fileReader.ReadUInt32();
+            wdt.Version = fileReader.ReadInt32();
+        }
+
+        static void ReadMPHD(BinaryReader fileReader, WDT wdt)
+        {
+            var type = fileReader.ReadUInt32();
+            var size = fileReader.ReadUInt32();
+            wdt.Header.Header1 = (WDTFlags)fileReader.ReadInt32();
+            wdt.Header.Header2 = fileReader.ReadInt32();
+            wdt.Header.Header3 = fileReader.ReadInt32();
+            wdt.Header.Header4 = fileReader.ReadInt32();
+            wdt.Header.Header5 = fileReader.ReadInt32();
+            wdt.Header.Header6 = fileReader.ReadInt32();
+            wdt.Header.Header7 = fileReader.ReadInt32();
+            wdt.Header.Header8 = fileReader.ReadInt32();
+        }
+
+        static void ReadMAIN(BinaryReader fileReader, WDT wdt)
+        {
+            var type = fileReader.ReadUInt32();
+            var size = fileReader.ReadUInt32();
+
+            // Rows are along the x-axis
+            for (var x = 0; x < TerrainConstants.MapTileCount; x++)
+            {
+                // Columns are along the y-axis
+                for (var y = 0; y < TerrainConstants.MapTileCount; y++)
+                {
+                    //if (x == 48 && y == 30)
+                    //{
+                    //    wdt.TileProfile[y, x] = true;
+                    //}
+                    //else
+                    //{
+                    //    wdt.TileProfile[y, x] = false;
+                    //}
+                    // Stored as [col, row], that's weird.
+                    wdt.TileProfile[y, x] = (fileReader.ReadInt64() != 0);
+                }
+            }
+        }
+
+        static void PrintProfile(WDT wdt)
 		{
-			using (var file = new StreamWriter(_continent + ".wdtprofile.txt"))
+			using (var file = new StreamWriter(wdt.Entry.InternalName + ".wdtprofile.txt"))
 			{
 				for (var x = 0; x < 64; x++)
 				{
@@ -123,5 +166,5 @@ namespace TerrainDisplay.MPQ.WDT
 				}
 			}
 		}
-	}
+    }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Collision.QuadTree;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.MPQ.M2;
@@ -18,12 +20,11 @@ namespace TerrainDisplay.MPQ.WMO
         /// List of WMOs managed by this WMOManager
         /// </summary>
         public readonly List<WMORoot> WMOs = new List<WMORoot>();
+
         /// <summary>
         /// 1 degree = 0.0174532925 radians
         /// </summary>
         private const float RadiansPerDegree = 0.0174532925f;
-
-        private readonly string _baseDirectory;
 
         public List<string> FileNames
         {
@@ -158,10 +159,6 @@ namespace TerrainDisplay.MPQ.WMO
             }
         }
 
-        public WMOManager(string baseDirectory)
-        {
-            _baseDirectory = baseDirectory;
-        }
 
         /// <summary>
         /// Adds a WMO to the manager
@@ -169,26 +166,18 @@ namespace TerrainDisplay.MPQ.WMO
         /// <param name="currentMODF">MODF (placement information for this WMO)</param>
         public void AddWMO(MapObjectDefinition currentMODF)
         {
-            var fullFilePath = Path.Combine(_baseDirectory, currentMODF.FilePath);
-
-            if (!File.Exists(fullFilePath))
-            {
-                throw new Exception("File does not exist: " + fullFilePath);
-            }
-
             _fileNames.Add(currentMODF.FilePath);
 
             // Parse the WMORoot
-            var wmoRoot = WMORootParser.Process(fullFilePath);
-            wmoRoot.CreateAABB();
-
+            var wmoRoot = WMORootParser.Process(MpqTerrainManager.MpqManager, currentMODF.FilePath);
+            
             // Parse the WMOGroups
             for (var wmoGroup = 0; wmoGroup < wmoRoot.Header.GroupCount; wmoGroup++)
             {
                 var newFile = wmoRoot.FilePath.Substring(0, wmoRoot.FilePath.LastIndexOf('.'));
-                var currentFileName = String.Format("{0}_{1:000}.wmo", newFile, wmoGroup);
-
-                var group = WMOGroupParser.Process(_baseDirectory, currentFileName, wmoRoot, wmoGroup);
+                var currentFilePath = String.Format("{0}_{1:000}.wmo", newFile, wmoGroup);
+                
+                var group = WMOGroupParser.Process(MpqTerrainManager.MpqManager, currentFilePath, wmoRoot, wmoGroup);
                 
                 wmoRoot.Groups[wmoGroup] = group;
             }
@@ -209,16 +198,16 @@ namespace TerrainDisplay.MPQ.WMO
                 for (var i = doodadSetOffset; i < (doodadSetOffset + doodadSetCount); i++)
                 {
                     var curDoodadDef = wmoRoot.DoodadDefinitions[i];
-                    var curM2 = M2ModelParser.Process(_baseDirectory, curDoodadDef.FilePath);
+                    var curM2 = M2ModelParser.Process(MpqTerrainManager.MpqManager, curDoodadDef.FilePath);
 
                     var tempIndices = new List<int>();
                     for (var j = 0; j < curM2.BoundingTriangles.Length; j++)
                     {
                         var tri = curM2.BoundingTriangles[j];
 
-                        tempIndices.Add(tri[2]);
-                        tempIndices.Add(tri[1]);
-                        tempIndices.Add(tri[0]);
+                        tempIndices.Add(tri.Index2);
+                        tempIndices.Add(tri.Index1);
+                        tempIndices.Add(tri.Index0);
                     }
 
                     var rotatedM2 = TransformWMOM2(curM2, tempIndices, curDoodadDef);
@@ -228,6 +217,9 @@ namespace TerrainDisplay.MPQ.WMO
 
             TransformWMO(currentMODF, wmoRoot);
 
+            var bounds = new BoundingBox(wmoRoot.WmoVertices);
+            wmoRoot.Bounds = bounds;
+            
             WMOs.Add(wmoRoot);
         }
 

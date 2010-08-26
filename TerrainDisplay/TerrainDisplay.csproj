@@ -74,14 +74,21 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WCell.Util, Version=0.5.3816.28646, Culture=neutral, PublicKeyToken=c1553d4f6290a00f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="WCell.Constants">
+      <HintPath>..\Lib\WCell.Constants.dll</HintPath>
+    </Reference>
+    <Reference Include="WCell.MPQTool">
+      <HintPath>..\Lib\WCell.MPQTool.exe</HintPath>
+    </Reference>
+    <Reference Include="WCell.Util">
       <HintPath>..\Lib\WCell.Util.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AxisRenderer.cs" />
-    <Compile Include="Collider.cs" />
+    <Compile Include="Collision\BSPTree\BSPTree.cs" />
+    <Compile Include="Collision\ICollidable.cs" />
+    <Compile Include="Collision\QuadTree\WMOHolder.cs" />
+    <Compile Include="Renderers\AxisRenderer.cs" />
     <Compile Include="Collision\AABB.cs" />
     <Compile Include="Collision\Intersection.cs" />
     <Compile Include="Collision\IShape.cs" />
@@ -93,10 +100,11 @@
     <Compile Include="Collision\OCTree\OCTreeIntersection.cs" />
     <Compile Include="Collision\OCTree\OCTreeNode.cs" />
     <Compile Include="Collision\QuadTree\IQuadObject.cs" />
+    <Compile Include="Collision\QuadTree\M2Holder.cs" />
     <Compile Include="Collision\QuadTree\QuadTree.cs" />
-    <Compile Include="Collision\QuadTree\TriIndex.cs" />
+    <Compile Include="Collision\QuadTree\TerrainTriangleHolder.cs" />
     <Compile Include="Collision\SelectedTriangleManager.cs" />
-    <Compile Include="Collision\SelectedTriangleRender.cs" />
+    <Compile Include="Renderers\SelectedTriangleRender.cs" />
     <Compile Include="Collision\Triangle.cs" />
     <Compile Include="Collision\OBB.cs" />
     <Compile Include="Config\TileIdentifier.cs" />
@@ -104,14 +112,14 @@
     <Compile Include="Console\KeyBindings.cs" />
     <Compile Include="Console\MpqConsole.cs" />
     <Compile Include="Console\XnaConsole.cs" />
-    <Compile Include="Extensions.cs" />
+    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Extracted\ADT\ExtractedADT.cs" />
     <Compile Include="Extracted\ADT\ExtractedADTChunk.cs" />
     <Compile Include="Extracted\ADT\ExtractedADTManager.cs" />
     <Compile Include="Extracted\ADT\ExtractedADTParser.cs" />
     <Compile Include="Extracted\M2\ExtractedM2.cs" />
     <Compile Include="Extracted\M2\ExtractedM2Manager.cs" />
-    <Compile Include="Extracted\ExtractedTerrain.cs" />
+    <Compile Include="Extracted\ExtractedTerrainManager.cs" />
     <Compile Include="Extracted\M2\ExtractedM2Parser.cs" />
     <Compile Include="Extracted\WMO\ExtractedWMO.cs" />
     <Compile Include="Extracted\WMO\ExtractedWMOGroup.cs" />
@@ -126,7 +134,7 @@
     <Compile Include="MPQ\ADT\ADTChunkParser.cs" />
     <Compile Include="MPQ\ADT\ADTManager.cs" />
     <Compile Include="MPQ\ADT\ADTParser.cs" />
-    <Compile Include="MPQ\ADT\ADTRenderer.cs" />
+    <Compile Include="Renderers\ADTRenderer.cs" />
     <Compile Include="MPQ\ADT\Components\MapChunkHeader.cs" />
     <Compile Include="MPQ\ADT\Components\MapChunkInfo.cs" />
     <Compile Include="MPQ\ADT\Components\MapDoodadDefinition.cs" />
@@ -146,21 +154,21 @@
     <Compile Include="MPQ\M2\M2Manager.cs" />
     <Compile Include="MPQ\M2\M2Model.cs" />
     <Compile Include="MPQ\M2\M2ModelParser.cs" />
-    <Compile Include="MPQ\M2\M2Renderer.cs" />
+    <Compile Include="Renderers\M2Renderer.cs" />
     <Compile Include="MPQ\OffsetLocation.cs" />
     <Compile Include="MPQ\WMO\Index3.cs" />
-    <Compile Include="RendererBase.cs" />
+    <Compile Include="Renderers\RendererBase.cs" />
     <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
     <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
-    <Compile Include="Recast\RecastRendererBase.cs" />
+    <Compile Include="Renderers\RecastRendererBase.cs" />
     <Compile Include="Utils\PositionUtil.cs" />
     <Compile Include="MPQ\Signatures.cs" />
     <Compile Include="MPQ\TerrainConstants.cs" />
     <Compile Include="MPQ\MpqTerrainManager.cs" />
     <Compile Include="MPQ\VertexSpan.cs" />
-    <Compile Include="MPQ\WDT\WDTFile.cs" />
+    <Compile Include="MPQ\WDT\WDT.cs" />
     <Compile Include="MPQ\WDT\WDTParser.cs" />
-    <Compile Include="MPQ\WDT\WDTRenderer.cs" />
+    <Compile Include="Renderers\WDTRenderer.cs" />
     <Compile Include="MPQ\WMO\Components\BSPNode.cs" />
     <Compile Include="MPQ\WMO\Components\DoodadDefinition.cs" />
     <Compile Include="MPQ\WMO\Components\DoodadSet.cs" />
@@ -181,7 +189,7 @@
     <Compile Include="MPQ\WMO\WMOGroup.cs" />
     <Compile Include="MPQ\WMO\WMOGroupParser.cs" />
     <Compile Include="MPQ\WMO\WMOManager.cs" />
-    <Compile Include="MPQ\WMO\WMORenderer.cs" />
+    <Compile Include="Renderers\WMORenderer.cs" />
     <Compile Include="MPQ\WMO\WMORoot.cs" />
     <Compile Include="MPQ\WMO\WMORootParser.cs" />
     <Compile Include="Recast\NavMesh\NavMeshManager.cs" />
@@ -193,10 +201,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Recast\RecastAPI.cs" />
     <Compile Include="Recast\NavMesh\NavMesh.cs" />
-    <Compile Include="Recast\RecastFrameRenderer.cs" />
+    <Compile Include="Renderers\RecastFrameRenderer.cs" />
     <Compile Include="Recast\RecastRunner.cs" />
-    <Compile Include="Utils\Extensions.cs" />
     <Compile Include="VertexPositionNormalColored.cs" />
+    <Compile Include="World\DBC\DBCMapEntry.cs" />
+    <Compile Include="World\DBC\DBCReader.cs" />
+    <Compile Include="World\DBC\DBCRecordConverter.cs" />
+    <Compile Include="World\Map.cs" />
+    <Compile Include="World\Tile.cs" />
+    <Compile Include="World\World.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

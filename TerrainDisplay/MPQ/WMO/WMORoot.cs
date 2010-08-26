@@ -87,7 +87,7 @@ namespace TerrainDisplay.MPQ.WMO
         /// </summary>
         public OBB OrientatedBoundingBox;
 
-        public AABB AABB;
+        public BoundingBox Bounds;
 
         /// <summary>
         /// The M2 models that decorate this WMO
@@ -119,11 +119,6 @@ namespace TerrainDisplay.MPQ.WMO
             OrientatedBoundingBox = new OBB();
             WmoVertices.Clear();
             WmoIndices.Clear();
-        }
-
-        public void CreateAABB()
-        {
-            AABB = new AABB(Header.BoundingBox.Min, Header.BoundingBox.Max);
         }
 
         internal void DumpLiqChunks()

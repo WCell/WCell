@@ -688,10 +688,10 @@ namespace TerrainDisplay.Collision
             t = 0f;
             u = 0f;
             v = 0f;
-            var vector = vert1 - vert0;
-            var vector2 = vert2 - vert0;
-            var vector4 = Vector3.Cross(ray_direction, vector2);
-            var num = Vector3.Dot(vector, vector4);
+            var edge1 = vert1 - vert0;
+            var edge2 = vert2 - vert0;
+            var vector4 = Vector3.Cross(ray_direction, edge2);
+            var num = Vector3.Dot(edge1, vector4);
             if (num > -1E-05f)
             {
                 return false;
@@ -699,22 +699,18 @@ namespace TerrainDisplay.Collision
             var num2 = 1f / num;
             var vector3 = ray_origin - vert0;
             u = Vector3.Dot(vector3, vector4) * num2;
-            if ((u < -0.001f) || (u > 1.001f))
+            if ((u < -0.00001f) || (u > 1.00001f))
             {
                 return false;
             }
-            var vector5 = Vector3.Cross(vector3, vector);
+            var vector5 = Vector3.Cross(vector3, edge1);
             v = Vector3.Dot(ray_direction, vector5) * num2;
-            if ((v < -0.001f) || ((u + v) > 1.001f))
+            if ((v < -0.00001f) || ((u + v) > 1.00001f))
             {
                 return false;
             }
-            t = Vector3.Dot(vector2, vector5) * num2;
-            if (t <= 0f)
-            {
-                return false;
-            }
-            return true;
+            t = Vector3.Dot(edge2, vector5) * num2;
+            return t > 0.0f;
         }
 
         public static float Signed2DTriArea(Vector2 a, Vector2 b, Vector2 c)

@@ -39,7 +39,7 @@ namespace TerrainDisplay.MPQ.WMO
         /// </summary>
         public readonly List<Triangle> Triangles = new List<Triangle>();
 
-        public BSPNode[] BSPNodes;
+        public List<BSPNode> BSPNodes;
         public ushort[] MOBR;
 
         public uint TriangleCount;
@@ -97,7 +97,7 @@ namespace TerrainDisplay.MPQ.WMO
         {
             using (var f = new StreamWriter(Name + ".bspnodes.txt"))
             {
-                for (var i = 0; i < BSPNodes.Length; i++)
+                for (var i = 0; i < BSPNodes.Count; i++)
                 {
                     var node = BSPNodes[i];
                     f.WriteLine("Node: " + i);

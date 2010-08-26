@@ -55,6 +55,16 @@ namespace TerrainDisplay.MPQ.WMO.Components
         /// </summary>
         public byte[,] LiquidTileFlags;
 
+        public BoundingBox Bounds;
+
+        /// <summary>
+        /// The calculated LiquidType (for the DBC lookup) for the whole WMO
+        /// Not parsed initially
+        /// </summary>
+        public uint LiquidType;
+
+
+
         internal void Dump(StreamWriter file)
         {
             for (var y = 0; y < YTileCount; y++)

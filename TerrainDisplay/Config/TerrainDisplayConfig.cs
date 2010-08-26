@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using NLog;
+using WCell.Constants;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
@@ -18,23 +19,26 @@ namespace TerrainDisplay
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
         public static readonly string ConfigFileName = "TerrainDisplay.Config.xml";
 
+        public static string WdtPath = "WORLD\\MAPS\\";
         public static string TerrainDisplayRoot = "../../";
         public static string RunDir = TerrainDisplayRoot + "bin/";
         public static string ContentDir = TerrainDisplayRoot + "../../";
         public static string MapDir = ContentDir + "Maps/";
         public static string WMODir = ContentDir + "Maps/";
         public static string M2Dir = ContentDir + "Maps/";
-        public static string DBCDir = TerrainDisplayRoot + @"../dbc/";
+        public static string DBCDir = TerrainDisplayRoot + "../dbc/";
         public static string LogFolder = ContentDir + "/Logs/";
+
+        public static string MapDBCName = "Map.dbc";
 
         public static bool UseExtractedData = false;
         public static string ExtractedDataPath = @"D:\Games\WCell\Run\Content\Maps";
         public static string MpqPath = @"D:\Games\MPQFiles";
-
-		public static TileIdentifier DefaultTileIdentifier = TileIdentifier.Redridge.Copy();
-
+        
     	public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");
-
+        public static ClientLocale DefaultLocale = ClientLocale.English;
+        public static Encoding DefaultEncoding = Encoding.UTF8;
+        
 
         public TerrainDisplayConfig(Action<string> onError)
             : base(onError)
@@ -44,17 +48,10 @@ namespace TerrainDisplay
         public TerrainDisplayConfig() : base(OnError)
         {
             RootNodeName = "TerrainDisplayConfig";
-            s_instance = this;
+            Instance = this;
         }
 
-        private static TerrainDisplayConfig s_instance;
-        public static TerrainDisplayConfig Instance
-        {
-            get
-            {
-               return s_instance;
-            }
-        }
+        public static TerrainDisplayConfig Instance { get; private set; }
 
         public override string FilePath
         {
@@ -72,13 +69,13 @@ namespace TerrainDisplay
             if (!Loaded)
             {
                 Loaded = true;
-                s_instance.AddVariablesOfAsm<VariableAttribute>(typeof(TerrainDisplayConfig).Assembly);
+                Instance.AddVariablesOfAsm<VariableAttribute>(typeof(TerrainDisplayConfig).Assembly);
                 
                 try
                 {
-                    if (!s_instance.Load())
+                    if (!Instance.Load())
                     {
-                        s_instance.Save(true, false);
+                        Instance.Save(true, false);
                         log.Warn("Config-file \"{0}\" not found - Created new file.", Instance.FilePath);
                         log.Warn("Please take a little time to configure your server and then restart the Application.");
                         log.Warn("See http://wiki.wcell.org/index.php/Configuration for more information.");
@@ -86,9 +83,9 @@ namespace TerrainDisplay
                     }
                     else
                     {
-                        if (s_instance.AutoSave)
+                        if (Instance.AutoSave)
                         {
-                            s_instance.Save(true, true);
+                            Instance.Save(true, true);
                         }
                     }
                 }

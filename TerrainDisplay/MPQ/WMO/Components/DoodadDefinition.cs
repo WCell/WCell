@@ -17,5 +17,9 @@ namespace TerrainDisplay.MPQ.WMO.Components
         public Color4 Color;
 
         public string FilePath;
+
+        public BoundingBox Extents;
+        public Matrix WMOToModel;
+        public Matrix ModelToWMO;
     }
 }

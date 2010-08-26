@@ -31,6 +31,8 @@ namespace TerrainDisplay.MPQ.ADT
         /// MH20 Chunk (Water information for the MCNK)
         /// </summary>
         public MH2O WaterInfo = new MH2O();
+
+        public bool IsFlat;
     }
 
     public static class ADTChunkParser

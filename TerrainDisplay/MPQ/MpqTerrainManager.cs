@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using TerrainDisplay.Collision;
+using TerrainDisplay.World.DBC;
+using WCell.Constants.World;
+using WCell.MPQTool;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.M2;
@@ -14,10 +18,8 @@ namespace TerrainDisplay.MPQ
 {
     public class MpqTerrainManager : ITerrainManager
     {
-        private bool _loaded;
-        private string _internalMapName;
-        private int _mapId;
-        private string _baseDirectory;
+        public static MpqManager MpqManager;
+        public TileIdentifier TileId;
 
         private readonly IADTManager _adtManager;
         public IADTManager ADTManager
@@ -49,47 +51,43 @@ namespace TerrainDisplay.MPQ
             get { return _selectedTriangleManager; }
         }
 
-        private readonly WDTFile _wdtFile;
-        public WDTFile WDT
+        private readonly WDT.WDT _wdt;
+        public WDT.WDT WDT
         {
-            get { return _wdtFile; }
+            get { return _wdt; }
         }
 
-        //public List<VertexPositionNormalColored> Vertices = new List<VertexPositionNormalColored>(100000);
-        //public List<int> Indices = new List<int>(100000);
-        
-        public MpqTerrainManager(string baseFileDirectory, TileIdentifier tileId)
+
+        public MpqTerrainManager(TileIdentifier tileId)
         {
-            _mapId = tileId.MapId;
-            _internalMapName = tileId.MapName;
+            var wowRootDir = DBCTool.FindWowDir();
+            MpqManager = new MpqManager(wowRootDir);
+            TileId = tileId;
 
-            if (Directory.Exists(baseFileDirectory))
+            var entries = GetMapEntries();
+            MapInfo entry = null;
+            foreach (var item in entries)
             {
-                _loaded = true;
-                _baseDirectory = baseFileDirectory;
-            }
-            else
-			{
-				var msg = "Invalid data directory entered: \"" + baseFileDirectory + "\" - Please exit and update your config file";
-				MessageBox.Show(msg,
-								"Invalid Data Directory");
-				throw new FileNotFoundException(msg);
-            }
+                if (item.Id != tileId.MapId) continue;
 
-            _wdtFile = WDTParser.Process(baseFileDirectory, _internalMapName);
-            _adtManager = new ADTManager(baseFileDirectory, _internalMapName, this);
-            _wmoManager = new WMOManager(baseFileDirectory);
-            _m2Manager = new M2Manager(baseFileDirectory);
+                entry = item;
+                break;
+            }
+            
+            WDTParser.MpqManager = MpqManager;
+            _wdt = WDTParser.Process(entry);
+            
+            _adtManager = new ADTManager(this);
+            _wmoManager = new WMOManager();
+            _m2Manager = new M2Manager();
             _meshManager = new NavMeshManager();
             _selectedTriangleManager = new SelectedTriangleManager(_adtManager);
         }
 
-        public void LoadTile(TileIdentifier tileId)
+        public bool LoadTile(TileIdentifier tileId)
         {
-            var tileX = tileId.TileX;
-            var tileY = tileId.TileY;
-            var loaded = _adtManager.LoadTile(tileX, tileY);
-            _loaded = loaded;
+            var loaded = _adtManager.LoadTile(tileId);
+            return loaded;
         }
 
         public void GetRecastTriangleMesh(out Vector3[] vertices, out int[] indices)
@@ -269,6 +267,13 @@ namespace TerrainDisplay.MPQ
             }
 
             return count;
+        }
+
+        private static List<MapInfo> GetMapEntries()
+        {
+            var dbcPath = Path.Combine(TerrainDisplayConfig.DBCDir, TerrainDisplayConfig.MapDBCName);
+            var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
+            return dbcMapReader.Entries.Values.ToList();
         }
 
         //public void LoadZone(int zoneId)

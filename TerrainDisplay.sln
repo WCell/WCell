@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Recast.Exec", "..\Recast\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Terra", "Terra\Terra.csproj", "{1E90346C-7D04-4D97-8399-397B2E7DD0D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerrainExtractor", "TerrainExtractor\TerrainExtractor.csproj", "{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -101,6 +103,22 @@ Global
 		{1E90346C-7D04-4D97-8399-397B2E7DD0D6}.Release|Win32.ActiveCfg = Release|Any CPU
 		{1E90346C-7D04-4D97-8399-397B2E7DD0D6}.Release|x64.ActiveCfg = Release|Any CPU
 		{1E90346C-7D04-4D97-8399-397B2E7DD0D6}.Release|x86.ActiveCfg = Release|Any CPU
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|Itanium.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|Win32.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|x64.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|x86.ActiveCfg = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Debug|x86.Build.0 = Debug|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|Any CPU.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|Itanium.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|Mixed Platforms.Build.0 = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|Win32.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|x64.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|x86.ActiveCfg = Release|x86
+		{B02815C5-A0CB-443F-A005-8AC8F8F2D3EB}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

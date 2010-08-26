@@ -1,9 +1,14 @@
-﻿using WCell.Util.Graphics;
+﻿using System;
+using System.IO;
+using NLog;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay
 {
     public static class PositionUtil
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         public static void TransformToXNACoordSystem(ref Vector3 vector)
         {
             vector.X = (vector.X - TerrainConstants.CenterPoint) * -1;
@@ -66,6 +71,64 @@ namespace TerrainDisplay
             vertex.Z = vertex.Y;
             vertex.Y = temp*-1;
             //vertex.X = temp;
+        }
+
+        /// <summary>
+        /// Calculates which Tile the given position belongs to on a Map.
+        /// </summary>
+        /// <param name="worldPos">Calculate the Tile coords for this position.</param>
+        /// <param name="tileX">Set to the X coordinate of the tile.</param>
+        /// <param name="tileY">Set to the Y coordinate of the tile.</param>
+        /// <returns>True if the tile (X, Y) is valid.</returns>
+        internal static bool GetTileXYForPos(Vector3 worldPos, out int tileX, out int tileY)
+        {
+            tileX = (int)GetTileFraction(worldPos.Y);
+            tileY = (int)GetTileFraction(worldPos.X);
+
+            return  VerifyTileCoord(worldPos, tileX, tileY);
+        }
+
+        internal static Rect GetTileBoundingRect(TileIdentifier tileId)
+        {
+            var tileX = tileId.TileX;
+            var tileY = tileId.TileY;
+            var x = TerrainConstants.CenterPoint - (tileX*TerrainConstants.TileSize);
+            var y = TerrainConstants.CenterPoint - (tileY*TerrainConstants.TileSize);
+
+            return new Rect(x, y, TerrainConstants.TileSize, TerrainConstants.TileSize);
+        }
+
+        private static float GetTileFraction(float loc)
+        {
+            return ((TerrainConstants.CenterPoint - loc) / TerrainConstants.TileSize);
+        }
+
+        private static bool VerifyTileCoord(Vector3 worldPos, int tileX, int tileY)
+        {
+            var result = true;
+            if (tileX < 0)
+            {
+                log.Error(String.Format("WorldPos: {0} is off the map. tileX < 0.", worldPos));
+                result = false;
+            }
+            if (tileX >= TerrainConstants.TilesPerMapSide)
+            {
+                log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos,
+                                        TerrainConstants.TilesPerMapSide));
+                result = false;
+            }
+            if (tileY < 0)
+            {
+                log.Error(String.Format("WorldPos: {0} is off the map. tileY < 0.", worldPos));
+                result = false;
+            }
+            if (tileX >= TerrainConstants.TilesPerMapSide)
+            {
+                log.Error(String.Format("WorldPos: {0} is off the map. tileX >= {1}.", worldPos,
+                                        TerrainConstants.TilesPerMapSide));
+                result = false;
+            }
+            return result;
         }
     }
 }

@@ -9,7 +9,7 @@ namespace TerrainDisplay.MPQ.M2
         /// <summary>
         /// AABB For the M2
         /// </summary>
-        public Collision._3D.AABB AABB;
+        public BoundingBox Bounds;
         /// <summary>
         /// The Orientated Bounding Box for this M2
         /// </summary>

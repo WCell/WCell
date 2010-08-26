@@ -7,7 +7,7 @@ using WCell.Util.Graphics;
 
 namespace TerrainDisplay.Collision
 {
-    public class QuadTree<T> where T : class, IQuadObject
+    public class QuadTree<T> where T : class, IQuadObject, ICollidable
     {
         private readonly bool sort;
         private readonly Size minLeafSize;

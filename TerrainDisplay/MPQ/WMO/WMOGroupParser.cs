@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NLog;
+using WCell.MPQTool;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 using TerrainDisplay.Collision._3D;
@@ -10,25 +12,27 @@ namespace TerrainDisplay.MPQ.WMO
 {
     public static class WMOGroupParser
     {
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// Gets a WMOGroup from the WMO Group file
         /// </summary>
+        /// <param name="manager"></param>
         /// <param name="filePath">File path to the WMOGroup</param>
-        /// <param name="fileName">Filename for the WMOGroup</param>
+        /// <param name="root"></param>
         /// <param name="groupIndex">Current index in the WMO Group</param>
         /// <returns>A WMOGroup from the WMO Group file</returns>
-        public static WMOGroup Process(string filePath, string fileName, WMORoot root, int groupIndex)
+        public static WMOGroup Process(MpqManager manager, string filePath, WMORoot root, int groupIndex)
         {
-            var fullFilePath = Path.Combine(filePath, fileName);
-            if (!File.Exists(fullFilePath))
+            if (!manager.FileExists(filePath))
             {
-                throw new Exception("File does not exist: " + fullFilePath);
+                log.Error("WMOGroup file does not exist: ", filePath);
             }
 
             var currentWMOGroup = new WMOGroup(root, groupIndex);
 
-            using (var fs = File.OpenRead(fullFilePath))
-            using (var br = new BinaryReader(fs))
+            using (var stream = manager.OpenFile(filePath))
+            using (var br = new BinaryReader(stream))
             {
                 ReadRequiredChunks(br, currentWMOGroup);
                 ReadOptionalChunks(br, currentWMOGroup);
@@ -553,9 +557,9 @@ namespace TerrainDisplay.MPQ.WMO
 
         static void ReadMOBN(BinaryReader file, WMOGroup group, uint size)
         {
-            uint count = size/0x10;
+            var count = size/0x10;
 
-            group.BSPNodes = new BSPNode[count];
+            group.BSPNodes = new List<BSPNode>((int)count);
             for (var i=0;i<count;i++)
             {
                 var node = new BSPNode
@@ -568,7 +572,7 @@ namespace TerrainDisplay.MPQ.WMO
                                    planeDist = file.ReadSingle()
                                };
 
-                group.BSPNodes[i] = node;
+                group.BSPNodes.Add(node);
             }
         }
 
@@ -587,10 +591,8 @@ namespace TerrainDisplay.MPQ.WMO
 
         static void LinkBSPNodes(WMOGroup group)
         {
-            for (int i = 0; i < group.BSPNodes.Length; i++)
+            foreach (var n in group.BSPNodes)
             {
-                var n = group.BSPNodes[i];
-
                 if (n.posChild != -1)
                 {
                     n.Positive = group.BSPNodes[n.posChild];
@@ -608,7 +610,7 @@ namespace TerrainDisplay.MPQ.WMO
 
                 //var faces = new ushort[n.nFaces];
                 n.TriIndices = new List<Index3>(n.nFaces);
-                for (int j = 0; j < n.nFaces; j++)
+                for (var j = 0; j < n.nFaces; j++)
                 {
                     var triIndex = group.Indices[group.MOBR[n.faceStart + j]];
                     n.TriIndices.Add(triIndex);

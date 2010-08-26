@@ -1,4 +1,6 @@
-﻿using WCell.Util.Graphics;
+﻿using System.Collections.Generic;
+using TerrainDisplay.MPQ.WMO.Components;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.ADT.Components
 {
@@ -36,5 +38,10 @@ namespace TerrainDisplay.MPQ.ADT.Components
         public ushort Flags;
         public ushort DoodadSetId;
         public ushort NameSet;
+
+        public Matrix WorldToWMO;
+        public Matrix WMOToWorld;
+
+        public List<DoodadDefinition> M2Refs;
     }
 }

@@ -16,9 +16,9 @@ namespace TerrainDisplay.MPQ
         IM2Manager M2Manager { get; }
         NavMeshManager MeshManager { get; }
         SelectedTriangleManager SelectedTriangleManager { get; }
-        WDTFile WDT { get; }
+        WDT.WDT WDT { get; }
 
-        void LoadTile(TileIdentifier tileId);
+        bool LoadTile(TileIdentifier tileId);
 
 		/// <summary>
 		/// Gets the vertice and index lists in a way that is interpretable by Recast

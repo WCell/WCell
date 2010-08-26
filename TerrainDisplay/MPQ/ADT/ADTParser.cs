@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using NLog;
+using WCell.MPQTool;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 using TerrainDisplay.MPQ.ADT.Components;
@@ -8,71 +10,83 @@ namespace TerrainDisplay.MPQ.ADT
 {
     public static class ADTParser
     {
-        public static ADT Process(string filePath, MpqTerrainManager mpqTerrainManager)
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+        private const string baseDir = "WORLD\\MAPS\\";
+        public const string Extension = ".adt";
+
+        
+        public static ADT Process(MpqManager mpqManager, TileIdentifier tileId)
         {
-            var adt = new ADT(filePath, mpqTerrainManager);
+            var fileName = string.Format("{0}\\{0}_{1}_{2}{3}", tileId.MapName, tileId.TileY, tileId.TileX, Extension);
+            var filePath = Path.Combine(baseDir, fileName);
+            var adt = new ADT(tileId);
 
-            var fileReader = new BinaryReader(File.OpenRead(filePath));
-
-            ReadMVER(fileReader, adt);
-
-            ReadMHDR(fileReader, adt);
-
-            if (adt.Header.offsInfo != 0)
+            if (!mpqManager.FileExists(filePath))
             {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsInfo;
-                ReadMCIN(fileReader, adt);
-            }
-            if (adt.Header.offsTex != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsTex;
-                ReadMTEX(fileReader, adt);
-            }
-            if (adt.Header.offsModels != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsModels;
-                ReadMMDX(fileReader, adt);
-            }
-            if (adt.Header.offsModelIds != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsModelIds;
-                ReadMMID(fileReader, adt);
-            }
-            if (adt.Header.offsMapObjects != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMapObjects;
-                ReadMWMO(fileReader, adt);
-            }
-            if (adt.Header.offsMapObjectIds != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMapObjectIds;
-                ReadMWID(fileReader, adt);
-            }
-            if (adt.Header.offsDoodadDefinitions != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsDoodadDefinitions;
-                ReadMDDF(fileReader, adt);
-            }
-            if (adt.Header.offsObjectDefinitions != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsObjectDefinitions;
-                ReadMODF(fileReader, adt);
-            }
-            if (adt.Header.offsFlightBoundary != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsFlightBoundary;
-                ReadMFBO(fileReader, adt);
-            }
-            if (adt.Header.offsMH2O != 0)
-            {
-                fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMH2O;
-                ReadMH2O(fileReader, adt);
+                log.Error("ADT file does not exist: ", filePath);
             }
 
-            ReadMCNK(fileReader, adt);
+            using (var stream = mpqManager.OpenFile(filePath))
+            using (var fileReader = new BinaryReader(stream))
+            {
+                ReadMVER(fileReader, adt);
 
-            fileReader.Close();
+                ReadMHDR(fileReader, adt);
 
+                if (adt.Header.offsInfo != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsInfo;
+                    ReadMCIN(fileReader, adt);
+                }
+                //if (adt.Header.offsTex != 0)
+                //{
+                //    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsTex;
+                //    ReadMTEX(fileReader, adt);
+                //}
+                if (adt.Header.offsModels != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsModels;
+                    ReadMMDX(fileReader, adt);
+                }
+                if (adt.Header.offsModelIds != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsModelIds;
+                    ReadMMID(fileReader, adt);
+                }
+                if (adt.Header.offsMapObjects != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMapObjects;
+                    ReadMWMO(fileReader, adt);
+                }
+                if (adt.Header.offsMapObjectIds != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMapObjectIds;
+                    ReadMWID(fileReader, adt);
+                }
+                if (adt.Header.offsDoodadDefinitions != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsDoodadDefinitions;
+                    ReadMDDF(fileReader, adt);
+                }
+                if (adt.Header.offsObjectDefinitions != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsObjectDefinitions;
+                    ReadMODF(fileReader, adt);
+                }
+                //if (adt.Header.offsFlightBoundary != 0)
+                //{
+                //    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsFlightBoundary;
+                //    ReadMFBO(fileReader, adt);
+                //}
+                if (adt.Header.offsMH2O != 0)
+                {
+                    fileReader.BaseStream.Position = adt.Header.Base + adt.Header.offsMH2O;
+                    ReadMH2O(fileReader, adt);
+                }
+
+                ReadMCNK(fileReader, adt);
+            }
+            
             return adt;
         }
 
@@ -117,7 +131,7 @@ namespace TerrainDisplay.MPQ.ADT
             var size = fileReader.ReadUInt32();
 
             adt.MapChunkInfo = new MapChunkInfo[256];
-            for (int i = 0; i < 256; i++)
+            for (var i = 0; i < 256; i++)
             {
                 var mcin = new MapChunkInfo
                                {
@@ -127,11 +141,6 @@ namespace TerrainDisplay.MPQ.ADT
                                    AsyncId = fileReader.ReadUInt32()
                                };
 
-                if (mcin.Flags != 0)
-                {
-                    Console.WriteLine();
-                }
-                
                 adt.MapChunkInfo[i] = mcin;
             }
         }
@@ -208,7 +217,7 @@ namespace TerrainDisplay.MPQ.ADT
             var type = fileReader.ReadUInt32();
             var size = fileReader.ReadUInt32();
 
-            long endPos = fileReader.BaseStream.Position + size;
+            var endPos = fileReader.BaseStream.Position + size;
             while (fileReader.BaseStream.Position < endPos)
             {
                 var doodadDefinition = new MapDoodadDefinition();
@@ -303,10 +312,6 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 mh20Header[i].ofsData1 = fileReader.ReadUInt32();
                 mh20Header[i].LayerCount = fileReader.ReadUInt32();
-                //if (mh20Header[i].LayerCount > 0)
-                //{
-                //    Console.WriteLine();
-                //}
                 mh20Header[i].ofsData2 = fileReader.ReadUInt32();
             }
 

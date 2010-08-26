@@ -222,10 +222,5 @@ namespace TerrainDisplay.Extracted
                 }
             }
         }
-
-        public override void LoadQuadTree()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

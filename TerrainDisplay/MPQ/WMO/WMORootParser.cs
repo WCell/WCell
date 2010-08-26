@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using NLog;
+using WCell.MPQTool;
 using WCell.Util.Graphics;
 using TerrainDisplay.Util;
 using TerrainDisplay.MPQ.WMO.Components;
@@ -9,12 +11,19 @@ namespace TerrainDisplay.MPQ.WMO
 {
     public static class WMORootParser
     {
-        public static WMORoot Process(string filePath)
+        private static readonly Logger log = LogManager.GetCurrentClassLogger();
+
+        public static WMORoot Process(MpqManager mpqManager, string filePath)
         {
             var root = new WMORoot(filePath);
 
-            using (var file = File.OpenRead(filePath))
-            using (var fileReader = new BinaryReader(file))
+            if (!mpqManager.FileExists(filePath))
+            {
+                log.Error("WMO file does not exist: ", filePath);
+            }
+
+            using (var stream = mpqManager.OpenFile(filePath))
+            using (var fileReader = new BinaryReader(stream))
             {
                 uint type = 0;
                 uint size = 0;

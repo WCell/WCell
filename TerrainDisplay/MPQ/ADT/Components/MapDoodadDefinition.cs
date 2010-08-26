@@ -46,5 +46,9 @@ namespace TerrainDisplay.MPQ.ADT.Components
         /// Flags for the M2
         /// </summary>
         public ushort Flags;
+
+        public BoundingBox Extents;
+        public Matrix WorldToModel;
+        public Matrix ModelToWorld;
     }
 }

@@ -16,6 +16,7 @@ namespace TerrainDisplay.MPQ.ADT.Components
         /// </summary>
         public float[] Heights;
 
+        public bool IsFlat;
 
         public byte[] RenderBitMap;
 

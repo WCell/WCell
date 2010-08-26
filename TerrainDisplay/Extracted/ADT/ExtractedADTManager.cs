@@ -10,7 +10,7 @@ namespace TerrainDisplay.Extracted
 {
     public class ExtractedADTManager : IADTManager
     {
-        private ExtractedTerrain _terrain;
+        private ExtractedTerrainManager _terrainManager;
         private int _mapId;
         private string _basePath;
         private IList<ADTBase> _mapTiles;
@@ -20,8 +20,11 @@ namespace TerrainDisplay.Extracted
             get { return _mapTiles; }
         }
 
-        public bool LoadTile(int tileX, int tileY)
+        public bool LoadTile(TileIdentifier tileId)
         {
+            var tileX = tileId.TileX;
+            var tileY = tileId.TileY;
+
             if (!Directory.Exists(_basePath))
             {
                 throw new DirectoryNotFoundException(string.Format("Invalid base directory for extracted map data: {0}", _basePath));
@@ -40,12 +43,12 @@ namespace TerrainDisplay.Extracted
             
             foreach (var def in currentADT.M2Defs)
             {
-                _terrain.M2Manager.Add(def);
+                _terrainManager.M2Manager.Add(def);
             }
 
             foreach (var def in currentADT.WMODefs)
             {
-                _terrain.WMOManager.AddWMO(def);
+                _terrainManager.WMOManager.AddWMO(def);
             }
 
             currentADT.GenerateHeightVertexAndIndices();
@@ -56,10 +59,10 @@ namespace TerrainDisplay.Extracted
             return true;
         }
 
-        public ExtractedADTManager(ExtractedTerrain terrain, string basePath, int mapId)
+        public ExtractedADTManager(ExtractedTerrainManager terrainManager, string basePath, int mapId)
         {
             _mapId = mapId;
-            _terrain = terrain;
+            _terrainManager = terrainManager;
             _basePath = basePath;
             _mapTiles = new List<ADTBase>();
         }

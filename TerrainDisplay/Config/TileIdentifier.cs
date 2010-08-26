@@ -1,25 +1,88 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using TerrainDisplay.World.DBC;
+using WCell.Constants.World;
+using WCell.Util.Graphics;
 
 namespace TerrainDisplay
 {
-    public class TileIdentifier : IXmlSerializable
+    public class TileIdentifier : IXmlSerializable, IEquatable<TileIdentifier>
     {
-    	public string TileName;
+        // This dictionary is initialized on startup.
+        public static readonly Dictionary<MapId, string> InternalMapNames;
+        private const string mapDBCName = "Map.dbc";
 
-    	public int MapId;
+        /// <summary>
+        /// Optional name of the area in the map (i.e. Redridge, Burning Steppes)
+        /// </summary>
+    	public string TileName;
+        public MapId MapId;
+        /// <summary>
+        /// The InternalName from Map.dbc
+        /// </summary>
         public string MapName;
         public int TileX;
         public int TileY;
+
+        static TileIdentifier()
+        {
+            InternalMapNames = new Dictionary<MapId, string>((int)MapId.End);
+            var dbcPath = Path.GetFullPath(Path.Combine(TerrainDisplayConfig.DBCDir, mapDBCName));
+            var dbcMapReader = new MappedDBCReader<MapInfo, DBCMapEntryConverter>(dbcPath);
+            foreach (var mapInfo in dbcMapReader.Entries.Select(entry => entry.Value))
+            {
+                InternalMapNames.Add(mapInfo.Id, mapInfo.InternalName);
+            }
+
+            Redridge = new TileIdentifier
+            {
+                TileName = "Redridge",
+                MapId = MapId.EasternKingdoms,
+                MapName = InternalMapNames[MapId.EasternKingdoms],
+                TileX = 49,
+                TileY = 36
+            };
+
+            CenterTile = new TileIdentifier
+            {
+                TileName = "Map Center",
+                MapId = MapId.EasternKingdoms,
+                MapName = InternalMapNames[MapId.EasternKingdoms],
+                TileX = 32,
+                TileY = 32
+            };
+
+            Stormwind = new TileIdentifier
+            {
+                TileName = "Stormwind",
+                MapId = MapId.EasternKingdoms,
+                MapName = InternalMapNames[MapId.EasternKingdoms],
+                TileX = 48,
+                TileY = 30
+            };
+
+            BurningSteppes = new TileIdentifier
+            {
+                TileName = "Burning Steppes",
+                MapId = MapId.EasternKingdoms,
+                MapName = InternalMapNames[MapId.EasternKingdoms],
+                TileX = 49,
+                TileY = 33
+            };
+
+            DefaultTileIdentifier = Redridge.Copy();
+        }
 
         public TileIdentifier()
         {
         }
 
-        public TileIdentifier(string tileName, int mapId, string mapName, int tileX, int tileY)
+        public TileIdentifier(string tileName, MapId mapId, string mapName, int tileX, int tileY)
         {
             TileName = tileName;
             MapId = mapId;
@@ -28,47 +91,38 @@ namespace TerrainDisplay
             TileY = tileY;
         }
 
-		public TileIdentifier Copy()
+        public TileIdentifier Copy()
 		{
 			return new TileIdentifier(TileName, MapId, MapName, TileX, TileY);
 		}
 
-        public readonly static TileIdentifier Redridge = new TileIdentifier
+        public static TileIdentifier ByPosition(MapId mapId, Vector3 position)
         {
-            TileName = "Redridge",
-            MapId = 0,
-            MapName = "Azeroth",
-            TileX = 49,
-            TileY = 36
-        };
+            int tileX, tileY;
+            if (!PositionUtil.GetTileXYForPos(position, out tileX, out tileY))
+            {
+                return null;
+            }
 
-		public readonly static TileIdentifier CenterTile = new TileIdentifier
-        {
-            TileName = "Map Center",
-            MapId = 0,
-            MapName = "Azeroth",
-            TileX = 32,
-            TileY = 32
-        };
+            return new TileIdentifier
+            {
+                MapId = mapId,
+                MapName = InternalMapNames[mapId],
+                TileX = tileX,
+                TileY = tileY
+            };
+        }
 
-		public readonly static TileIdentifier Stormwind = new TileIdentifier
-        {
-            TileName = "Stormwind",
-            MapId = 0,
-            MapName = "Azeroth",
-            TileX = 48,
-            TileY = 30
-        };
+        public static readonly TileIdentifier Redridge;
 
-		public readonly static TileIdentifier BurningSteppes = new TileIdentifier
-        {
-            TileName = "Burning Steppes",
-            MapId = 0,
-            MapName = "Azeroth",
-            TileX = 49,
-            TileY = 33
-        };
-        
+        public static readonly TileIdentifier CenterTile;
+
+        public static readonly TileIdentifier Stormwind;
+
+        public static readonly TileIdentifier BurningSteppes;
+
+        public static TileIdentifier DefaultTileIdentifier;
+
         #region Implementation of IXmlSerializable
 
         public XmlSchema GetSchema()
@@ -99,7 +153,7 @@ namespace TerrainDisplay
             }
             else 
             {
-                MapId = reader.ReadElementContentAsInt();
+                MapId = (MapId)reader.ReadElementContentAsInt();
             }
             
             reader.Read();
@@ -149,5 +203,48 @@ namespace TerrainDisplay
         }
 
         #endregion
+
+        #region Implementation of IEquatable
+        public bool Equals(TileIdentifier other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(other.MapId, MapId) && (other.TileX == TileX) && (other.TileY == TileY);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != typeof(TileIdentifier)) return false;
+            return Equals((TileIdentifier)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int result = MapId.GetHashCode();
+                result = (result*397) ^ TileX;
+                result = (result*397) ^ TileY;
+                return result;
+            }
+        }
+
+        public static bool operator ==(TileIdentifier left, TileIdentifier right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(TileIdentifier left, TileIdentifier right)
+        {
+            return !Equals(left, right);
+        }
+        #endregion
+
+        public override string ToString()
+        {
+            return String.Format("TileId: MapId: {0}, X: {1}, Y: {2}", MapId, TileX, TileY);
+        }
     }
 }
