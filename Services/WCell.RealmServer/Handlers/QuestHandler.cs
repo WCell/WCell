@@ -359,7 +359,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(0f);										// since 3.3
 				pckt.Write((uint)qt.SrcItemId);
 				pckt.Write((uint)qt.Flags);
-				pckt.Write(qt.RewardTitleId);
+				pckt.Write((uint)qt.RewardTitleId);
 				pckt.Write(0);// NEW 3.0.2 PlayerKillCount
 
 				pckt.Write(qt.RewardTalents);// NEW 3.0.2 RewardTalentCount (#21)
@@ -390,9 +390,9 @@ namespace WCell.RealmServer.Handlers
 				// #### since 3.3
 				for (i = 0; i < QuestConstants.MaxReputations; i++)
 				{
-					pckt.Write(0);
-					pckt.Write(0);
-					pckt.Write(0);
+                    pckt.Write((uint)qt.RewardReputations[i].Faction);
+                    pckt.Write(qt.RewardReputations[i].ValueId);
+                    pckt.Write(qt.RewardReputations[i].Value);
 				}
 				//     ######
 
@@ -535,7 +535,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(0f);						// since 3.3
 				pckt.Write((uint)qt.RewSpell);
 				pckt.Write((uint)qt.CastSpell);
-				pckt.Write(qt.RewardTitleId);		// since 2.4.0
+				pckt.Write((uint)qt.RewardTitleId);		// since 2.4.0
 				pckt.Write(qt.RewardTalents);
 
 				// #### since 3.3
@@ -543,9 +543,9 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(0);
 				for (uint i = 0; i < QuestConstants.MaxReputations; i++)
 				{
-					pckt.Write(0);
-					pckt.Write(0);
-					pckt.Write(0);
+                    pckt.Write((uint)qt.RewardReputations[i].Faction);
+                    pckt.Write(qt.RewardReputations[i].ValueId);
+                    pckt.Write(qt.RewardReputations[i].Value);
 				}
 				// ###########
 
@@ -647,7 +647,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write((uint) 0); // unused by client
 				pckt.Write((uint) qt.RewSpell);
 				pckt.Write((uint) qt.CastSpell);
-				pckt.Write(qt.RewardTitleId);
+				pckt.Write((uint) qt.RewardTitleId);
 				pckt.Write(qt.RewardTalents); // reward talents
 				pckt.Write(0); // since 3.3
 				pckt.Write(0); // since 3.3
@@ -655,9 +655,9 @@ namespace WCell.RealmServer.Handlers
 				// #### since 3.3
 				for (var i = 0; i < QuestConstants.MaxReputations; i++)
 				{
-					pckt.Write(0);
-					pckt.Write(0);
-					pckt.Write(0);
+				    pckt.Write((uint) qt.RewardReputations[i].Faction);
+                    pckt.Write(qt.RewardReputations[i].ValueId);
+                    pckt.Write(qt.RewardReputations[i].Value);
 				}
 				//     ######
 
