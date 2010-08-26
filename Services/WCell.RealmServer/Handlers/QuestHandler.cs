@@ -388,12 +388,13 @@ namespace WCell.RealmServer.Handlers
 				}
 
 				// #### since 3.3
-				for (i = 0; i < QuestConstants.MaxReputations; i++)
-				{
+                for (i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write((uint)qt.RewardReputations[i].Faction);
+                for (i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].ValueId);
+                for (i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].Value);
-				}
+
 				//     ######
 
 				pckt.Write((uint)qt.MapId);
@@ -541,12 +542,13 @@ namespace WCell.RealmServer.Handlers
 				// #### since 3.3
 				pckt.Write(0);						// bonus arena points
 				pckt.Write(0);
-				for (uint i = 0; i < QuestConstants.MaxReputations; i++)
-				{
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write((uint)qt.RewardReputations[i].Faction);
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].ValueId);
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].Value);
-				}
+
 				// ###########
 
 
@@ -653,12 +655,13 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(0); // since 3.3
 
 				// #### since 3.3
-				for (var i = 0; i < QuestConstants.MaxReputations; i++)
-				{
-				    pckt.Write((uint) qt.RewardReputations[i].Faction);
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
+                    pckt.Write((uint)qt.RewardReputations[i].Faction);
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].ValueId);
+                for (uint i = 0; i < QuestConstants.MaxReputations; i++)
                     pckt.Write(qt.RewardReputations[i].Value);
-				}
+
 				//     ######
 
 				chr.Client.Send(pckt);

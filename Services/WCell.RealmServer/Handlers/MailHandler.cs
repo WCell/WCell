@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Handlers
 			var unkowwn1 = packet.ReadUInt32();			// 4 unknown bytes
 
 			var itemCount = packet.ReadByte();
-			if (itemCount > MailMgr.MaxStoredItems)
+            if (itemCount > MailMgr.MaxItemsPerMail)
 				return;
 
 			var items = new List<Item>(itemCount);
@@ -63,8 +63,7 @@ namespace WCell.RealmServer.Handlers
 			var money = packet.ReadUInt32();
 			var cod = packet.ReadUInt32();
 
-			var unknown2 = packet.ReadUInt32();
-			var unknown3 = packet.ReadUInt32();
+			var unknown2 = packet.ReadUInt64();
 			var unknown4 = packet.ReadByte();
 
 			chr.MailAccount.SendMail(recipientName, subject, msg, stationary, items, money, cod);
@@ -253,7 +252,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_MAIL_LIST_RESULT, 128 * messages.Count))
 			{
-				const int EnchantCount = (int)EnchantSlot.Prismatic + 1;
+				const int enchantCount = (int)EnchantSlot.Prismatic + 1;
 
 				packet.Write(messages.Count);
 				var count = Math.Min(messages.Count, 0xFF);
@@ -262,6 +261,10 @@ namespace WCell.RealmServer.Handlers
 				for (var m = 0; m < count; m++)
 				{
 					var letter = messages[m];
+
+                    // Skip deleted mails
+                    if(letter.IsDeleted)
+                        continue;
 
 					var sizePos = packet.Position;
 					packet.Position = sizePos + 2; // size of message
@@ -291,7 +294,7 @@ namespace WCell.RealmServer.Handlers
 					}
 
 					packet.Write(letter.CashOnDelivery);
-					packet.Write(letter.TextId);
+					//packet.Write(letter.TextId);
 
 					packet.Write(0u);
 					packet.Write((uint) letter.MessageStationary);
@@ -315,7 +318,8 @@ namespace WCell.RealmServer.Handlers
 
 					packet.Write((float) ((letter.ExpireTime - DateTime.Now).TotalMilliseconds/(24*60*60*1000)));
 					packet.Write(0u);
-					packet.Write(letter.Subject);
+                    packet.Write(letter.Subject);
+                    packet.Write(letter.Body);
 
 					if (letter.IncludedItemCount == 0)
 					{
@@ -338,7 +342,7 @@ namespace WCell.RealmServer.Handlers
 
 								if (record.EnchantIds != null)
 								{
-									for (var j = 0; j < EnchantCount; ++j)
+									for (var j = 0; j < enchantCount; ++j)
 									{
 										var enchantId = record.EnchantIds[j];
 										if (enchantId != 0)
@@ -366,7 +370,7 @@ namespace WCell.RealmServer.Handlers
 								}
 								else
 								{
-									for (var j = 0; j < EnchantCount; ++j)
+									for (var j = 0; j < enchantCount; ++j)
 									{
 										packet.Write(0u);
 										packet.Write(0);
@@ -387,7 +391,7 @@ namespace WCell.RealmServer.Handlers
 								packet.Write(0u);
 								packet.Write(0u);
 
-								for (byte j = 0; j < EnchantCount; ++j)
+								for (byte j = 0; j < enchantCount; ++j)
 								{
 									packet.Write(0u);
 									packet.Write(0u);
