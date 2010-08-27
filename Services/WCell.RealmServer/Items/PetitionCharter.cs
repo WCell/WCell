@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Items
 
         protected internal override void DoDestroy()
         {
-            Petition.DeleteAndFlush();
+            Petition.Delete();
             base.DoDestroy();
         }
 
@@ -57,8 +57,8 @@ namespace WCell.RealmServer.Items
 		{
             Name = name;
 			OwnerId = ownerId;
-			ItemId = (int) itemId;
-			SignedIds = new List<int>(9);
+			ItemId = (int)itemId;
+			SignedIds = new List<long>(9);
             Type = type;
 		}
 
@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Items
         }
 
 		[Property("SignedIds", NotNull = true)]
-		public List<int> SignedIds
+		public List<long> SignedIds
 		{
 			get;
 			set;
@@ -105,14 +105,6 @@ namespace WCell.RealmServer.Items
 		{
 			return Find(id);
 		}
-
-        public static bool CanUseName(string name)
-        {
-            if(FindAllByProperty("Name", name) != null)
-                return false;
-            else
-                return true;
-        }
 
         public static bool CanBuyPetition(uint ownerId)
         {

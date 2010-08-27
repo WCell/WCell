@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Items;
@@ -250,6 +252,16 @@ namespace WCell.RealmServer.Handlers
 						default:
 							return;
 					}
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
 				}
 				if (itemId != 0 && cost != 0 && type != PetitionType.None)
 				{
@@ -277,7 +289,7 @@ namespace WCell.RealmServer.Handlers
 						{
 							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true) as PetitionCharter;
                             item.Petition = new PetitionRecord(name, chr.EntityId.Low, (uint)itemId, type);
-                            item.Petition.CreateAndFlush();
+                            item.Petition.Create();
 
 							chr.Money -= cost;
                             
@@ -294,20 +306,63 @@ namespace WCell.RealmServer.Handlers
 		{
             var petitionGuid = packet.ReadEntityId();
             var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
-            SendPetitionSignatures(client, charter);
-			// TODO: 
+            SendPetitionSignatures(client, charter); 
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_SIGN)]
 		public static void HandlePetitionSign(IRealmClient client, RealmPacketIn packet)
-		{
-			// TODO: 
+	    {
+			var petitionGuid = packet.ReadEntityId();
+             
 		}
 
+        [PacketHandler(RealmServerOpCode.MSG_PETITION_RENAME)]
+        public static void HandlePetitionRename(IRealmClient client, RealmPacketIn packet)
+        {
+            var petitionGuid = packet.ReadEntityId();
+            var newName = packet.ReadCString().Trim();
+
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            var chr = client.ActiveCharacter;
+
+                if(charter.Petition.Type == PetitionType.Guild)
+                {
+                    if (!GuildMgr.IsValidGuildName(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (GuildMgr.DoesGuildExist(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+
+            charter.Petition.Name = newName;
+            charter.Petition.Update();
+
+            SendPetitionRename(client, charter);
+        }
 		[PacketHandler(RealmServerOpCode.MSG_PETITION_DECLINE)]
 		public static void HandlePetitionDecline(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+			var petitionGuid = packet.ReadEntityId();
+
+            //SendPetitionDecline(client, petition);
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_OFFER_PETITION)]
@@ -327,17 +382,18 @@ namespace WCell.RealmServer.Handlers
 		{
             var petitionLowId = packet.ReadUInt32();
             var petitionGuid = packet.ReadEntityId();
-            var charter = client.ActiveCharacter.Inventory.GetItemByLowId(petitionLowId) as PetitionCharter;
+
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
             SendPetitionQueryResponse(client, charter);
 		}
 
 		public static void SendPetitionSignatures(IPacketReceiver client, PetitionCharter charter)
 		{
             var signs = charter.Petition.SignedIds;
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES, 8+8+4+1+signs.Count*12))
 			{
-                packet.WriteULong((ulong)charter.EntityId.High);
-                packet.WriteULong(charter.Owner.EntityId.Low);
+                packet.WriteULong(charter.EntityId.Full);
+                packet.WriteULong(charter.Owner.EntityId.Full);
                 packet.WriteUInt(charter.EntityId.Low);
                 packet.WriteByte(signs.Count);
                 
@@ -360,11 +416,12 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetitionDecline(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionDecline(IPacketReceiver client, PetitionRecord record)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE))
 			{
-				// TODO: 
+                
+				// TODO
 				client.Send(packet);
 			}
 		}
@@ -378,28 +435,40 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+        public static void SendPetitionRename(IPacketReceiver client, PetitionCharter petition)
+        {
+            var name = petition.Petition.Name;
+            using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_RENAME, 8 + name.Length + 1))
+            {
+                packet.WriteULong(petition.EntityId.Full);
+                packet.WriteCString(name);
+
+                client.Send(packet);
+            }
+        }
+
 		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
             string name = charter.Petition.Name;
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
 			{
                 packet.WriteUInt(charter.EntityId.Low);
-                packet.WriteULong(charter.Owner.EntityId.Low);
+                packet.WriteULong(charter.Owner.EntityId.Full);
                 packet.WriteCString(name);
                 packet.WriteByte(0);
 
-                var type = charter.Petition.Type;
-                if(type == PetitionType.Guild)
+                var type = (uint)charter.Petition.Type;
+                if(type == (uint)PetitionType.Guild)
                 {
-                    packet.WriteUInt(9);
-                    packet.WriteUInt(9);
+                    packet.WriteUInt(type);
+                    packet.WriteUInt(type);
                     packet.WriteUInt(0);
                 }
                 else
                 {
-                    packet.WriteUInt((uint)type-1);
-                    packet.WriteUInt((uint)type-1);
-                    packet.WriteUInt((uint)type);
+                    packet.WriteUInt(type-1);
+                    packet.WriteUInt(type-1);
+                    packet.WriteUInt(type);
                 }
                 packet.WriteUInt(0);
                 packet.WriteUInt(0);
@@ -415,7 +484,7 @@ namespace WCell.RealmServer.Handlers
 
                 packet.WriteUInt(0);
 
-                if(type == PetitionType.Guild)
+                if(type == (uint)PetitionType.Guild)
                     packet.WriteUInt(0);
                 else
                     packet.WriteUInt(1);
