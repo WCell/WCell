@@ -1018,8 +1018,11 @@ namespace WCell.RealmServer.Quests
 					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
-            receiver.SetTitle(RewardTitleId, false);
-			return true;
+            if (RewardTitleId != TitleId.None)
+            {
+                receiver.SetTitle(RewardTitleId, false);
+            }
+		    return true;
 		}
 
         public int CalcRewRep(int valueId, int value)

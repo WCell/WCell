@@ -2065,13 +2065,13 @@ namespace WCell.RealmServer.Entities
             var titleEntry = TitleMgr.GetTitleEntry(titleId);
             if (titleEntry == null)
             {
-                // TO-DO: report about an error
+                log.Warn(string.Format("TitleId: {0} could not be found.", (uint) titleId));
                 return;
             }
             var bitIndex = titleEntry.BitIndex;
 
             var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
-            uint flag = (uint)(1 << (int)bitIndex % 32);
+            var flag = (uint)(1 << (int)bitIndex % 32);
 
             if(lost)
             {
