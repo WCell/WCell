@@ -58,7 +58,7 @@ namespace WCell.Tools.Maps.Parsing.WDT
 
             foreach (var mapEntry in entryList)
             {
-                if (mapEntry.Id != (int)MapId.EasternKingdoms) continue;
+                //if (mapEntry.Id != (int)MapId.EasternKingdoms) continue;
                 Process(mapEntry);
             }
         }

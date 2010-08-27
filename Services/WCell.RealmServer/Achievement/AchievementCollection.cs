@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using NLog;
 using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Util;
+using WCell.RealmServer.Guilds;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -83,12 +79,18 @@ namespace WCell.RealmServer.Achievement
 		public bool IsAchievementCompletable(AchievementEntry achievementEntry)
 		{
 			// Counter achievement were never meant to be completed.
-			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.Counter))
 				return false;
+
+            // The method will return false only if the achievement has RealmFirst flags
+            // and already achieved by someone.
+            if (!AchievementMgr.IsRealmFirst(achievementEntry.ID))
+                return false;
 
 			AchievementEntryId achievementForTestId = (achievementEntry.RefAchievement != 0)
 														? achievementEntry.RefAchievement
 														: achievementEntry.ID;
+
 			uint achievementForTestCount = achievementEntry.Count;
 
 
@@ -126,7 +128,7 @@ namespace WCell.RealmServer.Achievement
 			AchievementEntry achievementEntry = achievementCriteriaEntry.AchievementEntry;
 
 			// Counter achievement were never meant to be completed.
-			if (achievementEntry.Flags.HasFlag(AchievementFlags.AchievementFlagCounter))
+			if (achievementEntry.Flags.HasFlag(AchievementFlags.Counter))
 				return false;
 
 			//TODO: Add support for realm first.
@@ -173,11 +175,17 @@ namespace WCell.RealmServer.Achievement
 			AddAchievement(AchievementRecord.CreateNewAchievementRecord(m_owner, achievement.ID));
 			CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteAchievement, (uint)achievement.ID, 1);
 			RemoveAchievementProgress(achievement);
-			AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
+
             foreach (var achievementReward in achievement.Rewards)
-            {
                 achievementReward.GiveReward(Owner);
-            }
+
+            if (m_owner.IsInGuild)
+                m_owner.Guild.Broadcast(AchievementHandler.CreateAchievementEarnedToGuild(achievement.ID, m_owner));
+
+            if (achievement.IsRealmFirstType())
+                AchievementHandler.SendServerFirstAchievement(achievement.ID, m_owner);
+
+		    AchievementHandler.SendAchievementEarned(achievement.ID, m_owner);
 		}
 
 		/// <summary>
@@ -332,8 +340,10 @@ namespace WCell.RealmServer.Achievement
 			// not create record for 0 counter
 			if (newValue == 0)
 				return;
-			AchievementProgressRecord achievementProgressRecord = GetOrCreateProgressRecord(entry.AchievementCriteriaId);
+
+			var achievementProgressRecord = GetOrCreateProgressRecord(entry.AchievementCriteriaId);
 			uint updateValue;
+
 			switch (progressType)
 			{
 				case ProgressType.ProgressAccumulate:
@@ -346,6 +356,7 @@ namespace WCell.RealmServer.Achievement
 					updateValue = newValue;
 					break;
 			}
+
 			if (updateValue == achievementProgressRecord.Counter)
 				return;
 
@@ -362,7 +373,10 @@ namespace WCell.RealmServer.Achievement
 				achievementProgressRecord.StartOrUpdateTime = now;
 			}
 
-			AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
+		    AchievementHandler.SendAchievmentStatus(achievementProgressRecord, Owner);
+
+
+
 			if (IsAchievementCompletable(entry.AchievementEntry))
 			{
 				EarnAchievement(entry.AchievementEntry);
