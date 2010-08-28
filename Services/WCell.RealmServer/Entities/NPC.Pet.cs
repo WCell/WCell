@@ -449,9 +449,9 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Actions
-		public PetActionEntry[] BuidPetActionBar()
+		public uint[] BuidPetActionBar()
 		{
-			var bar = new PetActionEntry[PetConstants.PetActionCount];
+			var bar = new uint[PetConstants.PetActionCount];
 
 			var i = 0;
 
@@ -459,21 +459,21 @@ namespace WCell.RealmServer.Entities
 			{
 				Action = PetAction.Attack,
 				Type = PetActionType.SetAction
-			};
+			}.Raw;
 
 			bar[i++] = new PetActionEntry
 			{
 				Action = PetAction.Follow,
 				Type = PetActionType.SetAction
-			};
+			}.Raw;
 
 			bar[i++] = new PetActionEntry
 			{
 				Action = PetAction.Stay,
 				Type = PetActionType.SetAction
-			};
+			}.Raw;
 
-			IEnumerator<Spell> spells = m_spells.GetEnumerator();
+			var spells = m_spells.GetEnumerator();
 			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
 			{
 				if (!spells.MoveNext())
@@ -481,14 +481,14 @@ namespace WCell.RealmServer.Entities
 					bar[i++] = new PetActionEntry
 					{
 						Type = PetActionType.CastSpell2 + j
-					};
+					}.Raw;
 				}
 				else
 				{
 					var spell = spells.Current;
 					var actionEntry = new PetActionEntry();
 					actionEntry.SetSpell(spell.SpellId, PetActionType.DefaultSpellSetting);
-					bar[i++] = actionEntry;
+					bar[i++] = actionEntry.Raw;
 				}
 			}
 
@@ -496,19 +496,19 @@ namespace WCell.RealmServer.Entities
 			{
 				AttackMode = PetAttackMode.Aggressive,
 				Type = PetActionType.SetMode
-			};
+			}.Raw;
 
 			bar[i++] = new PetActionEntry
 			{
 				AttackMode = PetAttackMode.Defensive,
 				Type = PetActionType.SetMode
-			};
+			}.Raw;
 
 			bar[i++] = new PetActionEntry
 			{
 				AttackMode = PetAttackMode.Passive,
 				Type = PetActionType.SetMode
-			};
+			}.Raw;
 
 			return bar;
 		}

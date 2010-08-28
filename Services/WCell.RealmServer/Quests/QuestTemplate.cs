@@ -220,7 +220,6 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// Title (name) of the quest to be shown in <see cref="QuestLog"/> in the server's default language.
 		/// </summary>
-		[NotPersistent]
 		public string DefaultTitle
 		{
 			get { return Titles != null ? Titles.LocalizeWithDefaultLocale() : "[unknown Quest]"; }

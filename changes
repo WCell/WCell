@@ -1,7 +1,2 @@
-<<<<<<< HEAD
-- fixed up player spell cooldowns and PlayerSpellCollection maintenance
-=======
-- missing files
-- fixed up player spell cooldowns and PlayerSpellCollection/NPCSpellCollection maintenance
->>>>>>> a3d4bda18ba792bf0c460958de17dc3d1beb2792
-- added & tested loading of cooldowns (we had saving but no loading before)
+- added some stubs for world events
+- fixed up some minor pet stuff

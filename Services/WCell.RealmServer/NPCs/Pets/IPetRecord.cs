@@ -83,7 +83,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			get;
 		}
 
-		PetActionEntry[] Actions
+		uint[] ActionButtons
 		{
 			get;
 			set;

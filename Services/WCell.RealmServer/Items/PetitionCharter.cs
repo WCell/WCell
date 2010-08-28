@@ -74,9 +74,9 @@ namespace WCell.RealmServer.Items
 			SignedIds.Add((int)signedId);
 		}
 
-		public static PetitionRecord LoadRecord(uint id)
+		public static PetitionRecord LoadRecord(uint itemId)
 		{
-			return Find((int)id);
+			return Find((int)itemId);
 		}
 	}
 }

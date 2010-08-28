@@ -207,6 +207,8 @@
     <Compile Include="Entities\Unit.StatUpdates.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Formulas\PowerFormulas.cs" />
+    <Compile Include="Global\WorldEvent.cs" />
+    <Compile Include="Global\WorldEventMgr.cs" />
     <Compile Include="Handlers\ArenaTeamHandler.cs" />
     <Compile Include="Handlers\TitleHandler.cs" />
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
