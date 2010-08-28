@@ -94,6 +94,11 @@ namespace WCell.RealmServer.Achievement
 			return FindAll(Restrictions.Eq("_characterGuid", chrId));
 		}
 
+        public static AchievementRecord[] Load(AchievementEntryId[] achievementEntryIds)
+        {
+            return FindAll(Restrictions.In("_achievementEntryId", achievementEntryIds));
+        }
+
 		public override string ToString()
 		{
 			return string.Format("{0} - Char: {1}, Achievement: {2}, RecordId: {3}", GetType(), _characterGuid, _achievementEntryId, RecordId);

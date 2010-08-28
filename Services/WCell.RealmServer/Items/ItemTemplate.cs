@@ -833,14 +833,8 @@ namespace WCell.RealmServer.Items
 				if (!record.New)
 				{
 					// this is executed in the IO-context
-					charter = PetitionRecord.LoadRecord(record.EntityLowId);
+					charter = PetitionRecord.LoadRecord(record.OwnerId);
 				}
-				else
-				{
-					charter = new PetitionRecord((uint)record.OwnerId, record.EntityLowId);
-				}
-
-				// TODO: Make charters work
 			}
 		}
 

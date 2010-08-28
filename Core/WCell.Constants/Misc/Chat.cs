@@ -67,7 +67,7 @@ namespace WCell.Constants.Misc
 		Restricted = 0x2E,
 
 		Battlenet = 47,
-		Achievment,
+		Achievment = 48,
 		ArenaPoints = 49,
 		PartyLeader,
 		End

@@ -90,6 +90,7 @@ namespace WCell.RealmServer.Guilds
 				_MOTD = value;
 
 				GuildHandler.SendGuildRosterToGuildMembers(this);
+			    GuildHandler.SendEventToGuild(this, GuildEvents.MOTD);
 				this.UpdateLater();
 			}
 		}
@@ -207,12 +208,12 @@ namespace WCell.RealmServer.Guilds
 
 			m_ranks = GuildMgr.CreateDefaultRanks(this);
 			m_leader = new GuildMember(leader, this, HighestRank);
-
 			Members.Add(m_leader.Id, m_leader);
-
-			Register();
-
+            m_leader.Create();
+		    
 			RealmServer.Instance.AddMessage(Create);
+
+            Register();
 		}
 		#endregion
 
@@ -297,8 +298,7 @@ namespace WCell.RealmServer.Guilds
 				}
 				newMember = new GuildMember(chr, this, m_ranks.Last());
 				Members.Add(newMember.Id, newMember);
-
-				newMember.UpdateLater();
+				newMember.Create();
 			}
 			catch (Exception e)
 			{

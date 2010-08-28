@@ -98,6 +98,8 @@ namespace WCell.Core
 
         public const string DBC_MAPDIFFICULTY = "MapDifficulty.dbc";
 
+        public const string DBC_WORLDMAPOVERLAY = "WorldMapOverlay.dbc";
+
         public const string DBC_PVPDIFFICULTY = "PvpDifficulty.dbc";
 
         public const string DBC_BATTLEMASTERLIST = "BattlemasterList.dbc";

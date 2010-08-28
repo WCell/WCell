@@ -6,6 +6,7 @@ using WCell.Constants.Items;
 using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Guilds;
+using WCell.RealmServer.Items;
 
 namespace WCell.RealmServer.NPCs
 {

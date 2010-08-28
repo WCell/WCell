@@ -10,7 +10,7 @@ namespace WCell.RealmServer.Titles
         public string[] Name;           // 2-17
         // public string[] Names2;      // 19-34
         // public string Flags;         // 35 string unused.
-        public TitleBitId BitIndex;           // 36
+        public TitleBitId BitIndex;     // 36
 
         public CharacterTitleEntry()
         {

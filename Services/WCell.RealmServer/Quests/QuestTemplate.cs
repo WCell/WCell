@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// 
 		/// </summary>
-		public uint RewardTitleId;
+		public TitleId RewardTitleId;
 
 		/* 
 		public uint PlayerKillCount;
@@ -1013,19 +1013,22 @@ namespace WCell.RealmServer.Quests
 			{
 				if (RewardReputations[i].Faction != 0)
 				{
-				    int value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
+				    var value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
 					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
-			//TODO Give RewardTitle
-			//chr.Titles.Add(RewardTitle);
-			return true;
+            if (RewardTitleId != TitleId.None)
+            {
+                receiver.SetTitle(RewardTitleId, false);
+            }
+		    return true;
 		}
 
         public int CalcRewRep(int valueId, int value)
         {
             if (value != 0)
                 return value*100;
+
             var index = (valueId > 0) ? 0 : 1; 
             return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
         }

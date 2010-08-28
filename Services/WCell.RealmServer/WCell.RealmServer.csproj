@@ -209,6 +209,8 @@
     <Compile Include="Formulas\PowerFormulas.cs" />
     <Compile Include="Global\WorldEvent.cs" />
     <Compile Include="Global\WorldEventMgr.cs" />
+    <Compile Include="Global\WorldMapOverlayEntry.cs" />
+    <Compile Include="Global\WorldMapOverlayId.cs" />
     <Compile Include="Handlers\ArenaTeamHandler.cs" />
     <Compile Include="Handlers\TitleHandler.cs" />
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />

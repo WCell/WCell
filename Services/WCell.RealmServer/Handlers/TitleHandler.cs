@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Handlers
         [ClientPacketHandler(RealmServerOpCode.CMSG_SET_TITLE)]
         public static void HandleChooseTitle(IRealmClient client, RealmPacketIn packet)
         {
-            int titleBit = packet.ReadInt32();
+            var titleBit = packet.ReadInt32();
 
             if (titleBit > 0)
             {

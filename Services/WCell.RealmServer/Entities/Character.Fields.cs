@@ -17,6 +17,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Achievements;
 using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -1381,6 +1382,11 @@ namespace WCell.RealmServer.Entities
 				var value = (byte)(byteVal | (1 << bit));
 				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + (zone.ExplorationBit >> 5), index % 4, value);
 				m_record.ExploredZones[index] = value;
+
+                foreach (var worldMapOverlay in zone.WorldMapOverlays)
+			    {
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);   
+			    }
 			}
 
 			foreach (var child in zone.ChildZones)
@@ -2059,13 +2065,13 @@ namespace WCell.RealmServer.Entities
             var titleEntry = TitleMgr.GetTitleEntry(titleId);
             if (titleEntry == null)
             {
-                // TO-DO: report about an error
+                log.Warn(string.Format("TitleId: {0} could not be found.", (uint) titleId));
                 return;
             }
             var bitIndex = titleEntry.BitIndex;
 
             var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
-            uint flag = (uint)(1 << (int)bitIndex % 32);
+            var flag = (uint)(1 << (int)bitIndex % 32);
 
             if(lost)
             {

@@ -84,58 +84,62 @@ namespace WCell.MPQTool
 
 		public void ProcessMPQ(List<string> lstAllMPQFiles)
 		{
-			// Create a folder to dump all this into
+		    // Create a folder to dump all this into
 			Directory.CreateDirectory(DBCOutputDir);
 
 			// Go through all the files, getting all DBCs
-			for (int i = 0; i < lstAllMPQFiles.Count; i++)
-			{
-				using (var oArchive = new MpqArchive(lstAllMPQFiles[i]))
-				{
-				    var dbcFiles = oArchive.FindAllFiles("*.dbc");
-                    //var dbcsFiles = from a in oArchive.Files
-                    //                where a.Name.EndsWith(".dbc")
-                    //                select a.Name;
+		    foreach (var mpqFileName in lstAllMPQFiles)
+		    {
+		        //Directory.CreateDirectory(Path.Combine(DBCOutputDir, Path.GetFileNameWithoutExtension(mpqFileName)));
 
-					foreach (var strFileName in dbcFiles)
-					{
-						var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
+		        using (var oArchive = new MpqArchive(mpqFileName))
+		        {
+		            var dbcFiles = oArchive.FindAllFiles("*.dbc");
+		            //var dbcsFiles = from a in oArchive.Files
+		            //                where a.Name.EndsWith(".dbc")
+		            //                select a.Name;
 
-						//if (!File.Exists(strLocalFilePath))
+		            foreach (var strFileName in dbcFiles)
+		            {
+		                var strLocalFilePath = string.Format(@"{0}\{1}", DBCOutputDir, Path.GetFileName(strFileName));
+		                //var strLocalFilePath = Path.Combine(DBCOutputDir, Path.GetFileNameWithoutExtension(mpqFileName));
+		                //strLocalFilePath = Path.Combine(strLocalFilePath, Path.GetFileName(strFileName));
 
-						using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
-						{
-							using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
-							{
-								// Writing...
-								Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
+                        if (File.Exists(strLocalFilePath)) continue;
 
-								// Create an 8kb buffer
-								var byFileContents = new byte[8192];
+		                using (Stream stmOutput = new FileStream(strLocalFilePath, FileMode.Create))
+		                {
+		                    using (Stream stmInput = oArchive.OpenFile(strFileName).GetStream())
+		                    {
+		                        // Writing...
+		                        Console.Write(string.Format("Writing File {0}....", Path.GetFileName(strFileName)));
 
-								// Loop until we're out of data
-								while (true)
-								{
-									// Read from the MPQ
-									int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
+		                        // Create an 8kb buffer
+		                        var byFileContents = new byte[8192];
 
-									// Was there anything to read?
-									if (intBytesRead == 0)
-										break;
+		                        // Loop until we're out of data
+		                        while (true)
+		                        {
+		                            // Read from the MPQ
+		                            int intBytesRead = stmInput.Read(byFileContents, 0, byFileContents.Length);
 
-									// Write to the file
-									stmOutput.Write(byFileContents, 0, intBytesRead);
-								}
-							}
+		                            // Was there anything to read?
+		                            if (intBytesRead == 0)
+		                                break;
 
-							Console.WriteLine("Done");
-						}
-					}
-				}
-			}
+		                            // Write to the file
+		                            stmOutput.Write(byFileContents, 0, intBytesRead);
+		                        }
+		                    }
+
+		                    Console.WriteLine("Done");
+		                }
+		            }
+		        }
+		    }
 		}
 
-		/// <summary>
+	    /// <summary>
 		/// Gets the locale.
 		/// </summary>
 		/// <param name="strDataFolder">The Wow data folder.</param>

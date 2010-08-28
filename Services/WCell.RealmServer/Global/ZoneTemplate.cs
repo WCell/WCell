@@ -24,6 +24,7 @@ namespace WCell.RealmServer.Global
 		internal RegionTemplate m_RegionTemplate;
 		internal MapId m_RegionId;
 		public readonly List<ZoneTemplate> ChildZones = new List<ZoneTemplate>(1);
+        public readonly List<WorldMapOverlayId> WorldMapOverlays = new List<WorldMapOverlayId>();
 
 		public ZoneId Id;
 
