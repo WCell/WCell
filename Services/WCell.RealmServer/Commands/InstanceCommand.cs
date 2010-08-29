@@ -116,8 +116,8 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("Create", "C");
-				EnglishParamInfo = "[-e] <MapId>";
-				EnglishDescription = "Creates a new Instance of the given Map. -e enters it right away.";
+				EnglishParamInfo = "[-e[d]] <MapId> [<difficulty>]";
+				EnglishDescription = "Creates a new Instance of the given Map. -d allows to specify the difficulty (value between 0 and 3). -e enters it right away.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -136,15 +136,29 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 
-				var region = World.GetRegionTemplate(mapid);
+				var regionTemplate = World.GetRegionTemplate(mapid);
 
-				if (region != null && region.IsInstance)
+				if (regionTemplate != null && regionTemplate.IsInstance)
 				{
-					var instance = InstanceMgr.CreateInstance(chr, region.InstanceTemplate, chr.GetInstanceDifficulty(region.IsRaid));
+					uint diffIndex;
+					if (mod.Contains("d"))
+					{
+						diffIndex = trigger.Text.NextUInt();
+						var diff = regionTemplate.GetDifficulty(diffIndex);
+						if (diff == null)
+						{
+							trigger.Reply("Invalid Difficulty: {0}");
+						}
+					}
+					else
+					{
+						diffIndex = chr.GetInstanceDifficulty(regionTemplate.IsRaid);
+					}
+					var instance = InstanceMgr.CreateInstance(chr, regionTemplate.InstanceTemplate, diffIndex);
 					if (instance != null)
 					{
 						trigger.Reply("Instance created: " + instance);
-						if (mod == "e")
+						if (mod.Contains("e"))
 						{
 							if (trigger.Args.Target is Character)
 							{
@@ -154,7 +168,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						trigger.Reply("Unable to create Instance of: " + region);
+						trigger.Reply("Unable to create Instance of: " + regionTemplate);
 					}
 				}
 				else

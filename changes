@@ -1,2 +1,2 @@
-- added some stubs for world events
-- fixed up some minor pet stuff
+- added spawning of heroic NPC overrides
+- fixed IsHeroic heuristics for map difficulties

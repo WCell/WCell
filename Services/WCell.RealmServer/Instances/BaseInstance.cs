@@ -55,10 +55,9 @@ namespace WCell.RealmServer.Instances
 		/// <summary>
 		/// Difficulty of the instance
 		/// </summary>
-		public MapDifficultyEntry Difficulty
+		public override MapDifficultyEntry Difficulty
 		{
 			get { return m_difficulty; }
-			set { m_difficulty = value; }
 		}
 
 		public IInstanceHolderSet Owner

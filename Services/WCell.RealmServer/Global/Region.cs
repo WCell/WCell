@@ -397,12 +397,30 @@ namespace WCell.RealmServer.Global
 			get { return m_RegionTemplate.Type; }
 		}
 
-		/// <summary>
-		/// Whether or not the region (instance) is in heroic mode
-		/// </summary>
-		public virtual bool IsHeroic
+		public bool IsHeroic
 		{
-			get { return false; }
+			get
+			{
+				var diff = Difficulty;
+				return diff != null && diff.IsHeroic;
+			}
+		}
+
+		public uint DifficultyIndex
+		{
+			get
+			{
+				var diff = Difficulty;
+				return diff != null ? diff.Index : 0;
+			}
+		}
+
+		/// <summary>
+		/// Difficulty of the instance
+		/// </summary>
+		public virtual MapDifficultyEntry Difficulty
+		{
+			get { return null; }
 		}
 
 		/// <summary>
@@ -1816,6 +1834,7 @@ namespace WCell.RealmServer.Global
 						{
 							m_spiritHealers.Add(npc);
 						}
+
 					}
 				}
 				else if (obj is GameObject)

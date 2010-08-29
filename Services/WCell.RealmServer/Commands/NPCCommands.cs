@@ -110,20 +110,13 @@ namespace WCell.RealmServer.Commands
 
 						for (var i = 0; i < amount; i++)
 						{
-							newNpc = entry.Create();
+							newNpc = entry.SpawnAt(dest);
 							name = newNpc.Name;
-							if (dest is IWorldZoneLocation)
-							{
-								newNpc.Zone = dest.Region.GetZone(((IWorldZoneLocation)dest).ZoneId);
-							}
 							if (mod.Contains("i"))
 							{
 								newNpc.Brain.DefaultState = BrainState.Idle;
 							}
 							newNpc.Brain.EnterDefaultState();
-
-							//trigger.Args.Target.PlaceInFront(newNpc);
-							newNpc.TeleportTo(dest);
 						}
 						// tricky way to make ourselves not welcome:
 						//trigger.Args.Owner.Reputations.SetValue(FactionRepListId.BootyBay, -30000);

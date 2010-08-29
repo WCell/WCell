@@ -43,7 +43,7 @@ namespace WCell.Addons.Default.Instances
 		{
 			m_svala = svala;
 
-			m_arthasMirror = arthasMirrorEntry.Create();
+			m_arthasMirror = arthasMirrorEntry.Create(DifficultyIndex);
 			m_arthasMirror.Orientation = 1.58825f;
 			AddObject(m_arthasMirror, arthasPosition);
 
