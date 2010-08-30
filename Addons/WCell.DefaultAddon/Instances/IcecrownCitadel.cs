@@ -159,14 +159,11 @@ namespace WCell.Addons.Default.Instances
 
                 if (BoneStormTick >= 3)
                 {
-                    foreach (var aura in (m_owner.Auras))
-                    {
-                        if (aura.Spell == BoneStorm)
-                        {
-                            aura.TimeLeft = boneLength * 1000;
-                            break;
-                        }
-                    }
+                    var aura = m_owner.Auras.GetAuraBySpell(BoneStorm);
+
+                    if (aura != null)
+                        aura.TimeLeft = boneLength * 1000;
+
                     m_owner.RunSpeed = m_owner.RunSpeed * 3.0f;
                     isBoneStorm = true;
                     BoneStormTick = 0;

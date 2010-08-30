@@ -335,6 +335,19 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			return null;
 		}
+        /// <summary>
+        /// Get an aura on a unit corresponding to a spell.
+        /// </summary>
+        /// <returns>Aura corresponding to the provided spell.</returns>
+        public Aura GetAuraBySpell(Spell spell)
+        {
+            foreach (var aura in this)
+            {
+                if (aura.Spell == spell)
+                    return aura;
+            }
+            return null;
+        }
 		#endregion
 
 		#region Contains
