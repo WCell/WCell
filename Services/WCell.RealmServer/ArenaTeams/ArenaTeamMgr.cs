@@ -107,7 +107,7 @@ namespace WCell.RealmServer.ArenaTeams
             }
             catch (Exception e)
             {
-                RealmDBUtil.OnDBError(e);
+                RealmDBMgr.OnDBError(e);
                 teams = WCellRecord<ArenaTeam>.FindAll();
             }
 #endif

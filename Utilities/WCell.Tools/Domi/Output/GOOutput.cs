@@ -30,7 +30,7 @@ namespace WCell.Tools.Domi.Output
 
 		private static void Init()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			GOMgr.LoadAll();
 		}

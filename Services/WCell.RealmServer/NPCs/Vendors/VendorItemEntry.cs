@@ -79,7 +79,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 			Template = ItemMgr.GetTemplate(ItemId);
 			if (Template == null)
 			{
-				ContentHandler.OnInvalidDBData("{0} has invalid ItemId: {1} ({2})", this, ItemId, (int)ItemId);
+				ContentMgr.OnInvalidDBData("{0} has invalid ItemId: {1} ({2})", this, ItemId, (int)ItemId);
 			}
 			else
 			{

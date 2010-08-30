@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Instances
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				GlobalResetTimers = GlobalInstanceTimer.LoadTimers();
 			}
 		}

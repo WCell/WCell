@@ -25,13 +25,12 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 
 		protected override void Apply()
 		{
-			amount = EffectValue / 100f;
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.AttackerCritChance, amount);
+			Owner.AttackerPhysicalCritChancePercentMod += EffectValue;
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.ChangeModifier(StatModifierFloat.AttackerCritChance, -amount);
+			Owner.AttackerPhysicalCritChancePercentMod -= EffectValue;
 		}
 	}
 };

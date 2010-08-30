@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				trigger.Reply("Loading content-mapping information...");
-				ContentHandler.Load();
+				ContentMgr.Load();
 				trigger.Reply("Done.");
 			}
 		}
@@ -64,7 +64,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				trigger.Reply("Checking Content-Definitions...");
-				var count = ContentHandler.Check(trigger.Reply);
+				var count = ContentMgr.Check(trigger.Reply);
 				trigger.Reply("Done - Found {0} error(s).", count); 
 			}
 		}

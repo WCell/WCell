@@ -20,8 +20,8 @@ namespace WCell.Tools.Domi
 		{
 			var dir = ToolConfig.DefaultAddonSourceDir + "Instances/";
 
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			World.InitializeWorld();
 			InstanceMgr.Initialize();
 

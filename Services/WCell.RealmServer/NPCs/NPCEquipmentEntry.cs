@@ -22,7 +22,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (EquipmentId > 100000)
 			{
-				ContentHandler.OnInvalidDBData("NPCEquipmentEntry had invalid Id: " + EquipmentId);
+				ContentMgr.OnInvalidDBData("NPCEquipmentEntry had invalid Id: " + EquipmentId);
 				return;
 			}
 			ArrayUtil.Set(ref NPCMgr.EquipmentEntries, EquipmentId, this);

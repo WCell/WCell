@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Factions;
@@ -83,7 +83,7 @@ namespace WCell.RealmServer.Achievement
             var achievementEntry = AchievementMgr.AchievementEntries[AchievementEntryId];
             if(achievementEntry == null)
             {
-                ContentHandler.OnInvalidDBData("{0} had an invalid AchievementEntryId.", this);
+                ContentMgr.OnInvalidDBData("{0} had an invalid AchievementEntryId.", this);
                 return;
             }
             achievementEntry.Rewards.Add(this);

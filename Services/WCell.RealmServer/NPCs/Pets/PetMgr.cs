@@ -95,7 +95,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void InitEntries()
 		{
-			ContentHandler.Load<PetLevelStatInfo>();
+			ContentMgr.Load<PetLevelStatInfo>();
 		}
 
 		private static void InitMisc()

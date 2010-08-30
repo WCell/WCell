@@ -596,7 +596,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect GetEffect(AuraType type)
 		{
-			return GetEffect(type, ContentHandler.ForceDataPresence);
+			return GetEffect(type, ContentMgr.ForceDataPresence);
 		}
 
 		/// <summary>

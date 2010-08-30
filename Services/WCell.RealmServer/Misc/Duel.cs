@@ -236,7 +236,7 @@ namespace WCell.RealmServer.Misc
 			m_flag.Phase = m_challenger.Phase;
 			if (m_flag == null)
 			{
-				ContentHandler.OnInvalidDBData("Cannot start Duel: DuelFlag-GameObject (ID: {0}) does not exist.", (int)GOEntryId.DuelFlag);
+				ContentMgr.OnInvalidDBData("Cannot start Duel: DuelFlag-GameObject (ID: {0}) does not exist.", (int)GOEntryId.DuelFlag);
 				Cancel();
 			}
 			else

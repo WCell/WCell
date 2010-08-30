@@ -77,8 +77,8 @@ namespace WCell.Tools.Domi
 
 		public static void WriteAllEnums()
 		{
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
@@ -158,7 +158,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteItemSetId()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			ItemMgr.ForceInitialize();
@@ -194,7 +194,7 @@ namespace WCell.Tools.Domi
 
 		public static void WriteNpcId()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
 			NPCMgr.ForceInitialize();
@@ -403,8 +403,8 @@ namespace WCell.Tools.Domi
 
 		public static void WriteSpellId()
 		{
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();

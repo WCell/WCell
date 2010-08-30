@@ -376,11 +376,11 @@ namespace WCell.RealmServer.Global
             new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPDIFFICULTY));
 
 			// add existing RegionTemplate objects to mapper
-			var mapper = ContentHandler.GetMapper<RegionTemplate>();
+			var mapper = ContentMgr.GetMapper<RegionTemplate>();
 			mapper.AddObjectsUInt(s_RegionTemplates);
 
 			// Add additional data from DB
-			ContentHandler.Load<RegionTemplate>();
+			ContentMgr.Load<RegionTemplate>();
 
 			// when only updating, it won't call FinalizeAfterLoad automatically:
 			foreach (var rgn in s_RegionTemplates)

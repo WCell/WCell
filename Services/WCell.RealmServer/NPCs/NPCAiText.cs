@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using WCell.Constants;
+using WCell.Constants.Misc;
 using WCell.RealmServer.Lang;
 using WCell.Util.Data;
 
@@ -15,9 +16,13 @@ namespace WCell.RealmServer.NPCs
 		#region Fields
 		public int Id;
 		public int Sound;
-		public int Type;
+		/// <summary>
+		/// Custom chat message type that indicates how the message is being transmitted
+		/// </summary>
+		public uint Type;
 		public int Language;
 		public int Emote;
+
 		/// <summary>
 		/// Mob's ID or string like "Common Kobold Text"
 		/// </summary>

@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Transports
 		{
 			if (Loaded) return;
 
-			ContentHandler.Load<TransportEntry>();
+			ContentMgr.Load<TransportEntry>();
 
 			Loaded = true;
 		}

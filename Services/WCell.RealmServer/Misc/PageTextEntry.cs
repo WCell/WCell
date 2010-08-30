@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Misc
 		[DependentInitialization(typeof(ItemMgr))]
 		public static void InitPageTexts()
 		{
-			ContentHandler.Load<PageTextEntry>();
+			ContentMgr.Load<PageTextEntry>();
 			foreach (var entry in Entries)
 			{
 				if (entry != null && entry.NextPageId != 0)

@@ -710,7 +710,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (string.IsNullOrEmpty(DefaultName))
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no name: " + this);
+				ContentMgr.OnInvalidDBData("NPCEntry has no name: " + this);
 				return;
 			}
 
@@ -798,7 +798,7 @@ namespace WCell.RealmServer.NPCs
 
 			if (AllianceFaction == null)
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
+				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
 				AllianceFaction = NPCMgr.DefaultFaction;
 				HordeFaction = AllianceFaction;
 			}
@@ -860,7 +860,7 @@ namespace WCell.RealmServer.NPCs
 
 			if (x == 0)
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
+				ContentMgr.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
 				return;
 			}
 

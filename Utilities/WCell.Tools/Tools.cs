@@ -342,16 +342,16 @@ namespace WCell.Tools
 		{
 			StartRealm();
 
-			Utility.Measure("Loading of Items and NPCs", 1, ContentHandler.FetchAll);
+			Utility.Measure("Loading of Items and NPCs", 1, ContentMgr.FetchAll);
 		}
 
 		[Tool]
 		public static void WriteContentStubs()
 		{
-			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBUtil.Initialize());
-			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentHandler.SaveDefaultStubs);
+			Utility.Measure("DBSetup.Initialize()", 1, () => RealmDBMgr.Initialize());
+			Utility.Measure("ContentHandler.SaveDefaultStubs()", 1, ContentMgr.SaveDefaultStubs);
 
-			ContentHandler.SaveDefaultStubs();
+			ContentMgr.SaveDefaultStubs();
 		}
 
 		#endregion

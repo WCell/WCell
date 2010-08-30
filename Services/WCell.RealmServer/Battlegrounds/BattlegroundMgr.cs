@@ -141,7 +141,7 @@ namespace WCell.RealmServer.Battlegrounds
 
             PVPDifficultyReader = new MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_PVPDIFFICULTY));
 
-			ContentHandler.Load<BattlegroundTemplate>();
+			ContentMgr.Load<BattlegroundTemplate>();
 
 			DeserterSpell = SpellHandler.Get(DeserterSpellId);
 
@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			if (NPCMgr.Loaded && Loaded)
 			{
-				ContentHandler.Load<BattlemasterRelation>();
+				ContentMgr.Load<BattlemasterRelation>();
 			}
 		}
 

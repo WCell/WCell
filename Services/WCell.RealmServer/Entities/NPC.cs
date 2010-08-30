@@ -1045,62 +1045,34 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Talk
-		public override void Say(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, message);
-		}
-
-		public void Say(string message, float radius)
+		public override void Say(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, message, radius);
 		}
 
-		public void Say(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Say(string[] localizedMsgs, float radius)
+		public override void Say(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, localizedMsgs, radius);
 		}
 
-		public override void Yell(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, message);
-		}
 
-		public void Yell(string message, float radius)
+		public override void Yell(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, message, radius);
 		}
 
-		public void Yell(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Yell(string[] localizedMsgs, float radius)
+		public override void Yell(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, localizedMsgs, radius);
 		}
 
-		public override void Emote(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message);
-		}
 
-		public void Emote(string message, float radius)
+		public override void Emote(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message, radius);
 		}
 
-		public void Emote(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Emote(string[] localizedMsgs, float radius)
+		public void Emote(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs, radius);
 		}
@@ -1109,9 +1081,9 @@ namespace WCell.RealmServer.Entities
 		/// Yells to everyone within the region to hear
 		/// </summary>
 		/// <param name="message"></param>
-		public virtual void YellToRegion(string message)
+		public void YellToRegion(string[] messages)
 		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, message, -1);
+			Yell(-1, messages);
 		}
 		#endregion
 

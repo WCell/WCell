@@ -261,7 +261,7 @@ namespace WCell.RealmServer.Entities
 				}
 				catch (Exception e)
 				{
-					RealmDBUtil.OnDBError(e);
+					RealmDBMgr.OnDBError(e);
 					throw new Exception(string.Format("Failed to load Character \"{0}\" for Client: {1}", this, Client), e);
 				}
 

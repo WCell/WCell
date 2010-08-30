@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Items
 			//RandomPropEntry = ItemMgr.GetRandomPropertyEntry(EntryId);
 			if (PropertiesId > 30000)
 			{
-				ContentHandler.OnInvalidDBData("RandomEnchantEntry has invalid PropertiesId: {0} (Enchant: {2})", PropertiesId, EnchantId);
+				ContentMgr.OnInvalidDBData("RandomEnchantEntry has invalid PropertiesId: {0} (Enchant: {2})", PropertiesId, EnchantId);
 			}
 			else
 			{

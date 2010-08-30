@@ -90,7 +90,7 @@ namespace WCell.RealmServer.AreaTriggers
 				}
 				else
 				{
-					ContentHandler.OnInvalidDBData("Invalid Region: " + rgn);
+					ContentMgr.OnInvalidDBData("Invalid Region: " + rgn);
 				}
 			}
 			return true;
@@ -161,7 +161,7 @@ namespace WCell.RealmServer.AreaTriggers
 				ArrayUtil.Set(ref AreaTriggers, (uint)at.Key, at.Value);
 			}
 
-			ContentHandler.Load<ATTemplate>();
+			ContentMgr.Load<ATTemplate>();
 
 			if (RealmServer.InitMgr != null)
 			{

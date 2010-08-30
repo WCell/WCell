@@ -413,6 +413,27 @@ namespace WCell.RealmServer.Spells
 		{
 		}
 		#endregion
+
+		#region AI Spell casting
+		public AISpellCastSettings AISpellCastSettings;
+
+		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillis, AISpellCastTarget target = AISpellCastTarget.Default)
+		{
+			return AISpellCastSettings = new AISpellCastSettings { Target = target, CooldownMin = cooldownMillis, CooldownMax = cooldownMillis };
+		}
+
+		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillisMin, int cooldownMillisMax, int idleTimeAfterCastMillis = 10000,
+			AISpellCastTarget target = AISpellCastTarget.Default)
+		{
+			return AISpellCastSettings = new AISpellCastSettings
+			{
+				Target = target,
+				CooldownMin = cooldownMillisMin,
+				CooldownMax = cooldownMillisMax,
+				IdleTimeAfterCastMillis = idleTimeAfterCastMillis
+			};
+		}
+		#endregion
 	}
 
 	public enum RequiredSpellTargetType

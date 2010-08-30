@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Achievement
 		{
 			InitCriteria();
 			LoadDBCs();
-            ContentHandler.Load<AchievementReward>();
+            ContentMgr.Load<AchievementReward>();
 		    LoadRealmFirstAchievements();
 		}
 

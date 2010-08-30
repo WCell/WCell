@@ -218,6 +218,8 @@
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Misc\ActionBar.cs" />
+    <Compile Include="Spells\AISpellCastSettings.cs" />
+    <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />
@@ -586,7 +588,7 @@
     <Compile Include="Commands\Triggers.cs" />
     <Compile Include="Commands\WorldCommand.cs" />
     <Compile Include="Content\ContentException.cs" />
-    <Compile Include="Content\ContentHandler.cs" />
+    <Compile Include="Content\ContentMgr.cs" />
     <Compile Include="Database\AuraRecord.cs" />
     <Compile Include="Database\Guild.cs" />
     <Compile Include="Database\GuildEventLogEntry.cs" />
@@ -853,7 +855,7 @@
     <Compile Include="Commands\TestCommands.cs" />
     <Compile Include="Database\CharacterRecord.cs" />
     <Compile Include="Database\ItemRecord.cs" />
-    <Compile Include="Database\RealmDBUtil.cs" />
+    <Compile Include="Database\RealmDBMgr.cs" />
     <Compile Include="Mail\MailMessage.cs" />
     <Compile Include="Items\Item.DBC.cs" />
     <Compile Include="Entities\Unit.Damage.cs" />

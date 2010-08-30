@@ -53,9 +53,9 @@ namespace WCell.Tools.Domi.Output
 
 		public static void Init()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 			RealmAddonMgr.Initialize(RealmServer.RealmServer.InitMgr);
-			ContentHandler.Initialize();
+			ContentMgr.Initialize();
 
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();

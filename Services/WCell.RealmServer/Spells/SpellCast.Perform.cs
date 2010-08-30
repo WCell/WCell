@@ -187,23 +187,35 @@ namespace WCell.RealmServer.Spells
 			}
 			else if (handler.HasOwnTargets)
 			{
-				targets = null;
-
-				// check if we have same target-types, else collect targets specifically for this Effect
-				for (var j = 0; j < h; j++)
+				// see if targets are shared between effects
+				if (m_spell.AISpellCastSettings != null && m_spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
 				{
-					var handler2 = handlers[j];
-					if (handler.Effect.TargetsEqual(handler2.Effect))
+					// targets of all effects are determined by AI behavior
+					if (targets == null)
 					{
-						targets = handler2.m_targets;
-						break;
+						targets = SpellTargetCollection.Obtain();
 					}
 				}
-
-				if (targets == null)
+				else
 				{
-					//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
-					targets = new SpellTargetCollection();
+					// check if we have same target-types, else collect targets specifically for this Effect
+					targets = null;
+
+					for (var j = 0; j < h; j++)
+					{
+						var handler2 = handlers[j];
+						if (handler.Effect.TargetsEqual(handler2.Effect))
+						{
+							targets = handler2.m_targets;
+							break;
+						}
+					}
+
+					if (targets == null)
+					{
+						//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
+						targets = SpellTargetCollection.Obtain();
+					}
 				}
 			}
 

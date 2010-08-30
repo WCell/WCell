@@ -127,7 +127,7 @@ namespace WCell.Addons.Default.Instances
 
                 if (BoneStormMove <= boneLength / 3)
                 {
-                    var target = m_owner.GetNearbyRandomCharacter();
+                    var target = m_owner.GetNearbyRandomHostileCharacter();
                     if (target != null)
                         m_owner.Movement.MoveTo(target.Position);
                 }

@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
@@ -53,6 +54,7 @@ namespace WCell.RealmServer.Entities
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
 		public static readonly ObjectPool<HashSet<WorldObject>> WorldObjectSetPool = ObjectPoolMgr.CreatePool(() => new HashSet<WorldObject>());
+		public static readonly ObjectPool<List<WorldObject>> WorldObjectListPool = ObjectPoolMgr.CreatePool(() => new List<WorldObject>());
 
 		#region Variables
 		/// <summary>
@@ -690,22 +692,47 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Gets a random nearby Character in BroadcastRange
+		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
+		/// TODO: Add LoS check
 		/// </summary>
-		public Character GetNearbyRandomCharacter()
+		public Character GetNearbyRandomHostileCharacter()
+		{
+			return GetNearbyRandomHostileCharacter(BroadcastRange);
+		}
+
+		/// <summary>
+		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
+		/// TODO: Add LoS check
+		/// </summary>
+		public Character GetNearbyRandomHostileCharacter(float radius)
 		{
 			if (AreaCharCount == 0)
 			{
 				return null;
 			}
 
+			if (radius > BroadcastRange)
+			{
+				// TODO: This won't quite work
+			}
+
 			Character chr = null;
 			var r = 1 + Utility.Random(0, AreaCharCount);
 			var i = 0;
+			var radiusSq = radius*radius;
 			IterateEnvironment(BroadcastRange, obj =>
 			{
-				if (CanSee(obj) && obj is Character)
+				if (obj is Character)
 				{
+					if (!CanSee(obj) || 
+						!((Character)obj).IsAlive ||
+						!IsHostileWith(obj) ||
+						!IsInRadiusSq(obj, radiusSq))
+					{
+						// does not count
+						r--;
+						return true;
+					}
 					chr = (Character)obj;
 				}
 				return ++i != r;
@@ -716,7 +743,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the Unit that is closest within the given Radius around this Object
 		/// </summary>
-		public Unit GetNextUnit(float radius)
+		public Unit GetNearestUnit(float radius)
 		{
 			Unit unit = null;
 			var sqDist = float.MaxValue;
@@ -737,7 +764,15 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
 		/// </summary>
-		public Unit GetNextUnit(float radius, Func<Unit, bool> filter)
+		public Unit GetNearestUnit(Func<Unit, bool> filter)
+		{
+			return GetNearestUnit(BroadcastRange, filter);
+		}
+
+		/// <summary>
+		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
+		/// </summary>
+		public Unit GetNearestUnit(float radius, Func<Unit, bool> filter)
 		{
 			Unit target = null;
 			var sqDist = float.MaxValue;
@@ -766,6 +801,11 @@ namespace WCell.RealmServer.Entities
 		public Unit GetRandomUnit(float radius, Func<Unit, bool> filter)
 		{
 			return (Unit)GetVisibleObjectsInRadius(radius, obj => obj is Unit && filter((Unit)obj), 0).GetRandom();
+		}
+
+		public Unit GetRandomAlliedUnit()
+		{
+			return GetRandomAlliedUnit(BroadcastRange);
 		}
 
 		public Unit GetRandomAlliedUnit(float radius)
@@ -1082,16 +1122,21 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Chatting
 		public virtual ClientLocale Locale
 		{
-			get;
-			set;
+			get { return RealmServerConfiguration.DefaultLocale; }
+			set { log.Warn("Tried to illegaly set WorldObject.Locale for: {0}", this); }
 		}
 
-		public virtual void Say(string message)
+		#region Say
+		public void Say(string message)
 		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, message);
+			Say(ChatMgr.ListeningRadius, message);
+		}
+
+		public virtual void Say(float radius, string message)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, message, radius);
 		}
 
 		public void Say(RealmLangKey key, params object[] args)
@@ -1104,14 +1149,31 @@ namespace WCell.RealmServer.Entities
 			Say(string.Format(message, args));
 		}
 
+		public void Say(string[] localizedMsgs)
+		{
+			Say(ChatMgr.ListeningRadius, localizedMsgs);
+		}
+
+		public virtual void Say(float radius, string[] localizedMsgs)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, ChatLanguage.Universal, localizedMsgs, radius);
+		}
+		#endregion
+
+		#region Yell
+		public virtual void Yell(float radius, string message)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, message, radius);
+		}
+
+		public void Yell(string message)
+		{
+			Yell(ChatMgr.YellRadius, message);
+		}
+
 		public void Yell(RealmLangKey key, params object[] args)
 		{
 			Yell(RealmLocalizer.Instance.Translate(Locale, key, args));
-		}
-
-		public virtual void Yell(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, message);
 		}
 
 		public void Yell(string message, params object[] args)
@@ -1119,19 +1181,46 @@ namespace WCell.RealmServer.Entities
 			Yell(string.Format(message, args));
 		}
 
+		public void Yell(string[] localizedMsgs)
+		{
+			Yell(ChatMgr.YellRadius, localizedMsgs);
+		}
+
+		public virtual void Yell(float radius, string[] localizedMsgs)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, localizedMsgs, radius);
+		}
+		#endregion
+
+		#region Emote
+		public virtual void Emote(float radius, string message)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, ChatLanguage.Universal, message, radius);
+		}
+
+		public void Emote(string message)
+		{
+			Emote(ChatMgr.ListeningRadius, message);
+		}
+
 		public void Emote(RealmLangKey key, params object[] args)
 		{
 			Emote(RealmLocalizer.Instance.Translate(Locale, key, args));
 		}
 
-		public virtual void Emote(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, ChatLanguage.Universal, message);
-		}
-
 		public void Emote(string message, params object[] args)
 		{
 			Emote(string.Format(message, args));
+		}
+
+		public void Emote(string[] localizedMsgs)
+		{
+			Emote(ChatMgr.ListeningRadius, localizedMsgs);
+		}
+
+		public virtual void Emote(float radius, string[] localizedMsgs)
+		{
+			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, ChatLanguage.Universal, localizedMsgs, radius);
 		}
 		#endregion
 
@@ -1629,6 +1718,24 @@ namespace WCell.RealmServer.Entities
 		public void PlaySound(uint sound)
 		{
 			MiscHandler.SendPlayObjectSound(this, sound);
+		}
+
+		/// <summary>
+		/// TODO: Find a better way to identify texts (i.e. by entry/object-type ids and sequence number)
+		/// </summary>
+		public void PlayTextAndSoundByEnglishPrefix(string englishPrefix)
+		{
+			var text = NPCAiTextMgr.GetFirstTextByEnglishPrefix(englishPrefix);
+			if (text != null)
+			{
+				PlayTextAndSound(text);
+			}
+		}
+
+		public void PlayTextAndSound(NPCAiText text)
+		{
+			PlaySound((uint)text.Sound);
+			Yell(text.Texts);
 		}
 
 		#region Deletion & Disposal

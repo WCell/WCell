@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcCastTimeReader.Entries.TryGetValue(castTimeIndex, out spell.CastDelay))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid CastTime-Entry: {1}", spell.Name, castTimeIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid CastTime-Entry: {1}", spell.Name, castTimeIndex);
 						}
 					}
 
@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcDurationReader.Entries.TryGetValue(durationIndex, out spell.Durations))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Duration-Entry: {1}", spell.Name, durationIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Duration-Entry: {1}", spell.Name, durationIndex);
 						}
 					}
 
@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcRangeReader.Entries.TryGetValue(rangeIndex, out spell.Range))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Range-Entry: {1}", spell.Name, rangeIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Range-Entry: {1}", spell.Name, rangeIndex);
 						}
 					}
 

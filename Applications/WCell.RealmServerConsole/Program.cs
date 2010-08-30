@@ -40,7 +40,7 @@ namespace WCell.RealmServerConsole
 
 			Thread.CurrentThread.IsBackground = true;
 
-			ContentHandler.ForceDataPresence = true;
+			ContentMgr.ForceDataPresence = true;
 			RealmServer.Program.Start();
 			RealmServerConsole.Run();
 		}

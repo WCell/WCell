@@ -118,7 +118,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				return FindAllByProperty("_OwnerLowId", (int)ownerId);
 			}
 		}

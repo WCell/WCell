@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Tests.Skills
 
 			ItemMgr.LoadAll();
 			//LootMgr.LoadAll();
-			ContentHandler.Load<ItemLootItemEntry>();
+			ContentMgr.Load<ItemLootItemEntry>();
 		}
 
 		[ClassCleanup]

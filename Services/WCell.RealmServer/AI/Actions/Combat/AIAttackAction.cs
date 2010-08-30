@@ -194,6 +194,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		{
 			if (m_owner.IsInSpellRange(spell, m_target))
 			{
+				m_owner.SpellCast.SourceLoc = m_owner.Position;
 				m_owner.SpellCast.TargetLoc = m_target.Position;
 				return m_owner.SpellCast.Start(spell, false) == SpellFailedReason.Ok;
 			}

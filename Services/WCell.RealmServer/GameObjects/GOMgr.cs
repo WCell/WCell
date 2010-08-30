@@ -64,7 +64,7 @@ namespace WCell.RealmServer.GameObjects
 			GOEntry entry;
 			if (!Entries.TryGetValue((uint)id, out entry))
 			{
-				if (ContentHandler.ForceDataPresence)
+				if (ContentMgr.ForceDataPresence)
 				{
 					throw new ContentException("Tried to get GOEntry but GOs are not loaded: {0}", id);
 				}
@@ -120,8 +120,8 @@ namespace WCell.RealmServer.GameObjects
 		{
 			if (!Loaded)
 			{
-				ContentHandler.Load<GOEntry>();
-				ContentHandler.Load<GOSpawn>();
+				ContentMgr.Load<GOEntry>();
+				ContentMgr.Load<GOSpawn>();
 
 				new GOPortalEntry().FinalizeDataHolder();
 

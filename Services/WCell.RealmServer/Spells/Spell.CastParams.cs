@@ -9,6 +9,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 using WCell.Constants.Items;
 using WCell.RealmServer.Misc;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells
 {
@@ -33,7 +34,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Power Type			
-			if (CostsPower && 
+			if (CostsPower &&
 				PowerType != caster.PowerType &&
 				PowerType != PowerType.Health &&
 				!AttributesExB.HasFlag(SpellAttributesExB.DoesNotNeedShapeshift))
@@ -456,7 +457,7 @@ namespace WCell.RealmServer.Spells
 			//    }
 			//}
 
-			if (Range.MinDist > 0 && caster != null && 
+			if (Range.MinDist > 0 && caster != null &&
 				//caster.IsInRadius(target, caster.GetSpellMinRange(Range.MinDist, target)))
 				caster.IsInRadius(target, Range.MinDist))
 			{
@@ -525,7 +526,16 @@ namespace WCell.RealmServer.Spells
 		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
-			var cd = CooldownTime;
+			int cd;
+			if (AISpellCastSettings != null)
+			{
+				cd = Utility.Random(AISpellCastSettings.CooldownMin, AISpellCastSettings.CooldownMax);
+			}
+			else
+			{
+				cd = CooldownTime;
+			}
+
 			if (cd == 0)
 			{
 				if (HasIndividualCooldown)

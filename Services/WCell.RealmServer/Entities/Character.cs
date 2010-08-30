@@ -849,19 +849,19 @@ namespace WCell.RealmServer.Entities
 			SayGroup(string.Format(msg, args));
 		}
 
-		public override void Say(string msg)
+		public override void Say(float radius, string msg)
 		{
-			this.SayYellEmote(ChatMsgType.Say, SpokenLanguage, msg);
+			this.SayYellEmote(ChatMsgType.Say, SpokenLanguage, msg, radius);
 		}
 
-		public override void Yell(string msg)
+		public override void Yell(float radius, string msg)
 		{
-			this.SayYellEmote(ChatMsgType.Yell, SpokenLanguage, msg);
+			this.SayYellEmote(ChatMsgType.Yell, SpokenLanguage, msg, radius);
 		}
 
-		public override void Emote(string msg)
+		public override void Emote(float radius, string msg)
 		{
-			this.SayYellEmote(ChatMsgType.Emote, SpokenLanguage, msg);
+			this.SayYellEmote(ChatMsgType.Emote, SpokenLanguage, msg, radius);
 		}
 		#endregion
 

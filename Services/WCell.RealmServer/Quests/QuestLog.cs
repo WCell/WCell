@@ -747,7 +747,7 @@ namespace WCell.RealmServer.Quests
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				records = QuestRecord.GetQuestRecordForCharacter(Owner.EntityId.Low);
 			}
 

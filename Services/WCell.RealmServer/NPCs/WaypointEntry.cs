@@ -69,7 +69,7 @@ namespace WCell.RealmServer.NPCs
 			SpawnEntry = NPCMgr.GetSpawnEntry(SpawnId);
 			if (SpawnEntry == null)
 			{
-				ContentHandler.OnInvalidDBData("{0} had an invalid SpawnId.", this);
+				ContentMgr.OnInvalidDBData("{0} had an invalid SpawnId.", this);
 			}
 			else
 			{
@@ -85,7 +85,7 @@ namespace WCell.RealmServer.NPCs
 					}
 					else if (cur.Value.Id == Id)
 					{
-						ContentHandler.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
+						ContentMgr.OnInvalidDBData("Found multiple Waypoints with the same Id {0} for SpawnEntry {1}", Id, SpawnEntry);
 						return;
 					}
 					cur = cur.Next;

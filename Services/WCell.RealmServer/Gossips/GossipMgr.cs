@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Gossips
 		{
 			Loaded = true;
 
-			ContentHandler.Load<GossipEntry>();
+			ContentMgr.Load<GossipEntry>();
 			AddDefaultGossipOptions();
 		}
 

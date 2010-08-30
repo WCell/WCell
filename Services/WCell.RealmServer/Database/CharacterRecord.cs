@@ -102,7 +102,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return null;
 			}
 		}
@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return false;
 			}
 		}
@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				return false;
 			}
 		}
@@ -756,7 +756,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				m_loadedItems = ItemRecord.LoadItems(EntityLowId);
 			}
 		}
@@ -1169,7 +1169,7 @@ namespace WCell.RealmServer.Database
 			}
 			catch (Exception ex)
 			{
-				RealmDBUtil.OnDBError(ex);
+				RealmDBMgr.OnDBError(ex);
 				chrs = FindAllByProperty("Created", "AccountId", account.AccountId);
 			}
 			//chrs.Reverse();

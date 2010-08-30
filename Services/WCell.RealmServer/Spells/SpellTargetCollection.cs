@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
@@ -37,7 +38,13 @@ namespace WCell.RealmServer.Spells
 	public class SpellTargetCollection : List<WorldObject>
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
-		public static readonly ObjectPool<SpellTargetCollection> SpellTargetCollectionPool = ObjectPoolMgr.CreatePool(() => new SpellTargetCollection());
+		static readonly ObjectPool<SpellTargetCollection> SpellTargetCollectionPool = ObjectPoolMgr.CreatePool(() => new SpellTargetCollection());
+
+		public static SpellTargetCollection Obtain()
+		{
+			// TODO: Recycle collections
+			return new SpellTargetCollection();
+		}
 
 		/// <summary>
 		/// Further SpellEffectHandlers that are sharing this TargetCollection with the original Handler
@@ -72,11 +79,19 @@ namespace WCell.RealmServer.Spells
 		{
 			IsInitialized = true;
 
-			var caster = Cast.CasterObject;
+			var cast = Cast;
+			var caster = cast.CasterObject;
 			if (caster == null)
 			{
+				// TODO: This still needs to work without a caster?!
 				log.Warn("Invalid SpellCast - Tried to find targets, without Caster set: {0}", caster);
 				return SpellFailedReason.Error;
+			}
+
+			var spell = cast.Spell;
+			if (!cast.IsPlayerCast && spell.AISpellCastSettings != null && spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
+			{
+				return FindTargets(spell.AISpellCastSettings.Target);
 			}
 
 			var firstEffect = FirstHandler.Effect;
@@ -111,6 +126,48 @@ namespace WCell.RealmServer.Spells
 				failReason = FindTargets(firstEffect.ImplicitTargetB);
 			}
 			return failReason;
+		}
+
+		/// <summary>
+		/// Finds targets by the given custom AI target enum
+		/// </summary>
+		private SpellFailedReason FindTargets(AISpellCastTarget targetType)
+		{
+			var caster = Cast.CasterObject;
+
+			// TODO: Use effect radius?
+
+			// find single target
+			WorldObject singleTarget;
+			switch (targetType)
+			{
+				case AISpellCastTarget.NearestHostilePlayer:
+					singleTarget = caster.GetNearestUnit(obj => obj is Character && caster.IsHostileWith(obj));
+					break;
+				case AISpellCastTarget.RandomAlliedUnit:
+					singleTarget = caster.GetRandomAlliedUnit();
+					break;
+				case AISpellCastTarget.RandomHostilePlayer:
+					singleTarget = caster.GetNearbyRandomHostileCharacter();
+					break;
+				case AISpellCastTarget.SecondHighestThreatTarget:
+					if (!(caster is NPC))
+					{
+						return SpellFailedReason.Error;
+					}
+					var npc = (NPC)caster;
+					singleTarget = npc.ThreatCollection.GetAggressorByThreatRank(1);
+					break;
+				default:
+					singleTarget = null;
+					break;
+			}
+
+			if (singleTarget != null)
+			{
+				Add(singleTarget);
+			}
+			return SpellFailedReason.Ok;
 		}
 
 		public SpellFailedReason FindTargets(ImplicitTargetType targetType)
@@ -591,7 +648,7 @@ namespace WCell.RealmServer.Spells.Extensions
 				return;
 			}
 
-			
+
 			targets.Add(pet);
 		}
 

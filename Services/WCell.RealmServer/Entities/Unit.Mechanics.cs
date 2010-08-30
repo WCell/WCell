@@ -1925,5 +1925,17 @@ namespace WCell.RealmServer.Entities
 			return 0;
 		}
 		#endregion
+
+		public int AttackerSpellCritChancePercentMod
+		{
+			get;
+			set;
+		}
+
+		public int AttackerPhysicalCritChancePercentMod
+		{
+			get;
+			set;
+		}
 	}
 }

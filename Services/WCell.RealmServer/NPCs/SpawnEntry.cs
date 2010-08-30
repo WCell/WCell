@@ -269,7 +269,7 @@ namespace WCell.RealmServer.NPCs
 				Entry = NPCMgr.GetEntry(EntryId);
 				if (Entry == null)
 				{
-					ContentHandler.OnInvalidDBData("{0} had an invalid EntryId.", this);
+					ContentMgr.OnInvalidDBData("{0} had an invalid EntryId.", this);
 					return;
 				}
 			}

@@ -329,7 +329,7 @@ namespace WCell.RealmServer.Spells
 				Spell.InitDbcs();
 				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
-				ContentHandler.Load<SpellLearnRelation>();
+				ContentMgr.Load<SpellLearnRelation>();
 				InitSummonHandlers();
 				SkillHandler.Initialize();
 				TalentMgr.Initialize();
@@ -389,9 +389,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private static void LoadOverrides()
 		{
-			var mapper = ContentHandler.GetMapper<Spell>();
+			var mapper = ContentMgr.GetMapper<Spell>();
 			mapper.AddObjectsUInt(ById);
-			ContentHandler.Load(mapper);
+			ContentMgr.Load(mapper);
 		}
 
 		internal static void InitTools()

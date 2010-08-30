@@ -503,9 +503,8 @@ namespace WCell.RealmServer.NPCs
 			}
 			FactionMgr.Initialize();
 
-			ContentHandler.Load<NPCEquipmentEntry>();
-			ContentHandler.Load<NPCEntry>();
-			ContentHandler.Load<NPCAiText>();
+			ContentMgr.Load<NPCEquipmentEntry>();
+			ContentMgr.Load<NPCEntry>();
 
 			EntriesLoaded = true;
 
@@ -554,13 +553,13 @@ namespace WCell.RealmServer.NPCs
 			{
 				return;
 			}
-			ContentHandler.Load<SpawnEntry>();
+			ContentMgr.Load<SpawnEntry>();
 			SpawnsLoaded = true;
 		}
 
 		public static void LoadWaypoints()
 		{
-			ContentHandler.Load<WaypointEntry>();
+			ContentMgr.Load<WaypointEntry>();
 		}
 
 		[Initialization]
@@ -617,7 +616,7 @@ namespace WCell.RealmServer.NPCs
 		#region Trainers
 		private static void LoadTrainers()
 		{
-			ContentHandler.Load<TrainerSpellEntry>();
+			ContentMgr.Load<TrainerSpellEntry>();
 		}
 
 		static void OnNewTrainer(NPC npc)
@@ -724,7 +723,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadVendors()
 		{
 			LoadItemExtendedCostEntries();
-			ContentHandler.Load<VendorItemEntry>();
+			ContentMgr.Load<VendorItemEntry>();
 		}
 
 		static void LoadItemExtendedCostEntries()

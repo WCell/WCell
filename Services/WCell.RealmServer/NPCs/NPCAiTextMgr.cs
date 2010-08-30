@@ -5,12 +5,20 @@ using System.Linq;
 using NLog;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.Lang;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs
 {
 	public static class NPCAiTextMgr
 	{
+		[Initialization]
+		[DependentInitialization(typeof(ContentMgr))]
+		public static void InitAITexts()
+		{
+			ContentMgr.Load<NPCAiText>();
+		}
+
 		#region Global Containers & Get Methods
 		[NotVariable]
 		/// <summary>
@@ -33,11 +41,26 @@ namespace WCell.RealmServer.NPCs
 		{
 			return Entries.Where(entry => entry.Value.GetMobId() == id).Select(entry => entry.Value).ToArray();
 		}
+
+		/// <summary>
+		/// Select the first Text whose english version starts with the given string
+		/// </summary>
+		/// <param name="englishPrefix">String preposition</param>
+		public static NPCAiText GetFirstTextByEnglishPrefix(string englishPrefix, bool warnIfNotFound = true)
+		{
+			var text = Entries.Values.FirstOrDefault(entry => entry.Texts.Localize(Constants.ClientLocale.English).StartsWith(englishPrefix));
+			if (text == null && warnIfNotFound)
+			{
+				LogManager.GetCurrentClassLogger().Warn("Could not find AIText which starts with: {0}", englishPrefix);
+			}
+			return text;
+		}
+
 		/// <summary>
 		/// Select entries by preposition of yelled text (on any localization)
 		/// </summary>
 		/// <param name="str">String preposition</param>
-		public static NPCAiText[] GetEntry(string str)
+		public static NPCAiText[] GetEntries(string str)
 		{
 			return
 				Entries.Where(entry => entry.Value.Texts.Any(text => text.StartsWith(str))).Select(entry => entry.Value)

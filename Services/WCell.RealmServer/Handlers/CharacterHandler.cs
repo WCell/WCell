@@ -161,7 +161,7 @@ namespace WCell.RealmServer.Handlers
 					//SendCharCreateReply(client, LoginErrorCode.CHAR_CREATE_ERROR);
 					try
 					{
-						RealmDBUtil.OnDBError(e);
+						RealmDBMgr.OnDBError(e);
 						newCharRecord.CreateAndFlush();
 					}
 					catch (Exception)

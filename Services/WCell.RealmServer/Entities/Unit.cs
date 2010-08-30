@@ -1051,7 +1051,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Makes this Unit move their face towards the given location
+		/// Makes this Unit look at the given location
 		/// </summary>
 		public void Face(Vector3 pos)
 		{
