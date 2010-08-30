@@ -109,6 +109,32 @@ namespace WCell.Util.Graphics
             Max = new Vector3(maxX, maxY, maxZ);
         }
 
+        public BoundingBox(IEnumerable<Vector3> vectors)
+        {
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var minZ = float.MaxValue;
+
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
+            var maxZ = float.MinValue;
+
+            foreach (var vector in vectors)
+            {
+                minX = Math.Min(vector.X, minX);
+                maxX = Math.Max(vector.X, maxX);
+
+                minY = Math.Min(vector.Y, minY);
+                maxY = Math.Max(vector.Y, maxY);
+
+                minZ = Math.Min(vector.Z, minZ);
+                maxZ = Math.Max(vector.Z, maxZ);
+            }
+
+            Min = new Vector3(minX, minY, minZ);
+            Max = new Vector3(maxX, maxY, maxZ);
+        }
+
 		public float Width
 		{
 			get { return Max.X - Min.X; }

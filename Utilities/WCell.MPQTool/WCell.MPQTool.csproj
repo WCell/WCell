@@ -217,9 +217,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="StormLib\StormLib.dll" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\Core\WCell.Constants\WCell.Constants.csproj">
       <Project>{42F497A4-0347-491D-8FA8-50E4D8AD19EB}</Project>
       <Name>WCell.Constants</Name>

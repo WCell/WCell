@@ -364,13 +364,13 @@ namespace WCell.MPQTool
 				return false;
 			}
 
-			if (!Environment.Is64BitOperatingSystem)
+		    if (!Environment.Is64BitProcess)
 			{
 				key = key.OpenSubKey("Blizzard Entertainment");
 			}
 			else
 			{
-				key = key.OpenSubKey("Wow6432Node");
+                key = key.OpenSubKey("Wow6432Node");
 				if (key == null)
 				{
 					return false;

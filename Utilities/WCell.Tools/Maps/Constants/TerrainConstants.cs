@@ -46,8 +46,8 @@ namespace WCell.Tools.Maps.Constants
 
         public static void TilePositionToWorldPosition(ref Vector3 tilePosition)
         {
-            tilePosition.X = (tilePosition.X - TerrainConstants.CenterPoint) * -1;
-            tilePosition.Y = (tilePosition.Y - TerrainConstants.CenterPoint) * -1;
+            tilePosition.X = (tilePosition.X - CenterPoint) * -1;
+            tilePosition.Y = (tilePosition.Y - CenterPoint) * -1;
         }
 
         public static void TileExtentsToWorldExtents(ref BoundingBox tileExtents)
