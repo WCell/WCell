@@ -437,6 +437,118 @@ namespace WCell.Util.Graphics
             return rect1;
         }
 
+        public bool ClipRay(Ray2D ray2d, out Vector2 new1, out Vector2 new2)
+        {
+            var point1 = ray2d.Position;
+            var point2 = ray2d.Position + ray2d.Direction*float.MaxValue;
+
+            return ClipLine(point1, point2, out new1, out new2);
+        }
+
+        public bool ClipLine(Vector2 point1, Vector2 point2, out Vector2 new1, out Vector2 new2)
+        {
+            new1 = point1;
+            new2 = point2;
+
+            var x1 = point1.X;
+            var y1 = point1.Y;
+            var x2 = point2.X;
+            var y2 = point2.Y;
+
+            var minX = x;
+            var minY = y;
+            var maxX = x + height;
+            var maxY = y + height;
+
+            var p1Flags = CalcOutFlags(x1, y1);
+            var p2Flags = CalcOutFlags(x2, y2);
+
+            while ((p1Flags | p2Flags) != OutFlags.None)
+            {
+                if ((p1Flags & p2Flags) != OutFlags.None) return false;
+
+                var dx = (x2 - x1);
+                var dy = (y2 - y1);
+
+                if (p1Flags != OutFlags.None)
+                {
+                    // first point is outside, so we update it against one of the
+                    // four sides then continue
+                    if ((p1Flags & OutFlags.Left) == OutFlags.Left
+                        && dx != 0.0)
+                    {
+                        y1 = y1 + (minX - x1)*dy/dx;
+                        x1 = minX;
+                    }
+                    else if ((p1Flags & OutFlags.Right) == OutFlags.Right
+                             && dx != 0.0)
+                    {
+                        y1 = y1 + (maxX - x1)*dy/dx;
+                        x1 = maxX;
+                    }
+                    else if ((p1Flags & OutFlags.Bottom) == OutFlags.Bottom
+                             && dy != 0.0)
+                    {
+                        x1 = x1 + (maxY - y1)*dx/dy;
+                        y1 = maxY;
+                    }
+                    else if ((p1Flags & OutFlags.Top) == OutFlags.Top
+                             && dy != 0.0)
+                    {
+                        x1 = x1 + (minY - y1)*dx/dy;
+                        y1 = minY;
+                    }
+                    p1Flags = CalcOutFlags(x1, y1);
+                }
+                else if (p2Flags != OutFlags.None)
+                {
+                    // second point is outside, so we update it against one of the
+                    // four sides then continue
+                    if ((p2Flags & OutFlags.Left) == OutFlags.Left
+                        && dx != 0.0)
+                    {
+                        y2 = y2 + (minX - x2)*dy/dx;
+                        x2 = minX;
+                    }
+                    else if ((p2Flags & OutFlags.Right) == OutFlags.Right
+                             && dx != 0.0)
+                    {
+                        y2 = y2 + (maxX - x2)*dy/dx;
+                        x2 = maxX;
+                    }
+                    else if ((p2Flags & OutFlags.Bottom) == OutFlags.Bottom
+                             && dy != 0.0)
+                    {
+                        x2 = x2 + (maxY - y2)*dx/dy;
+                        y2 = maxY;
+                    }
+                    else if ((p2Flags & OutFlags.Top) == OutFlags.Top
+                             && dy != 0.0)
+                    {
+                        x2 = x2 + (minY - y2)*dx/dy;
+                        y2 = minY;
+                    }
+                    p2Flags = CalcOutFlags(x2, y2);
+                }
+            }
+
+            new1 = new Vector2(x1, y1);
+            new2 = new Vector2(x2, y2);
+            return true;
+        }
+
+        private OutFlags CalcOutFlags(float x1, float y1)
+        {
+            var flags = OutFlags.None;
+            if (x1 < Left) flags |= OutFlags.Left;
+            else if (x1 > Right) flags |= OutFlags.Right;
+
+            if (y1 < Top) flags |= OutFlags.Top;
+            else if (y1 > Bottom) flags |= OutFlags.Bottom;
+
+            return flags;
+        }
+
         public void Union(Rect rect)
         {
             if (IsEmpty)
@@ -574,5 +686,15 @@ namespace WCell.Util.Graphics
                 height = float.NegativeInfinity
             };
         }
-    } 
+    }
+
+    [Flags]
+    enum OutFlags : byte
+    {
+        None = 0x00,
+        Top = 0x01,
+        Bottom = 0x02,
+        Left = 0x04,
+        Right = 0x08
+    }
 }
