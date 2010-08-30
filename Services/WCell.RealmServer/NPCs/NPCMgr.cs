@@ -212,6 +212,17 @@ namespace WCell.RealmServer.NPCs
 		[NotVariable]
 		internal static Spell[][] PetSpells;
 
+		#region Get*
+		public static NPCEntry GetEntry(uint id, uint difficultyIndex)
+		{
+			var entry = GetEntry(id);
+			if (entry != null)
+			{
+				return entry.GetEntry(difficultyIndex);
+			}
+			return null;
+		}
+
 		public static NPCEntry GetEntry(uint id)
 		{
 			if (id >= Entries.Length)
@@ -221,6 +232,16 @@ namespace WCell.RealmServer.NPCs
 				return entry;
 			}
 			return Entries[id];
+		}
+
+		public static NPCEntry GetEntry(NPCId id, uint difficultyIndex)
+		{
+			var entry = GetEntry(id);
+			if (entry != null)
+			{
+				return entry.GetEntry(difficultyIndex);
+			}
+			return null;
 		}
 
 		public static NPCEntry GetEntry(NPCId id)
@@ -233,6 +254,27 @@ namespace WCell.RealmServer.NPCs
 			}
 			return Entries[(uint)id];
 		}
+
+		public static SpawnEntry GetSpawnEntry(uint id)
+		{
+			if (id >= SpawnEntries.Length)
+			{
+				return null;
+			}
+			return SpawnEntries[id];
+		}
+
+		public static List<SpawnEntry> GetSpawnEntries(MapId map)
+		{
+			return SpawnEntriesByMap[(int)map];
+		}
+
+		public static NPCEquipmentEntry GetEquipment(uint equipId)
+		{
+			return EquipmentEntries.Get(equipId);
+		}
+		#endregion
+
 
 		/// <summary>
 		/// Creates a new custom NPCEntry with the given Id.
@@ -263,25 +305,6 @@ namespace WCell.RealmServer.NPCs
 			entry.Id = id;
 			CustomEntries.Add(id, entry);
 			entry.FinalizeDataHolder();
-		}
-
-		public static SpawnEntry GetSpawnEntry(uint id)
-		{
-			if (id >= SpawnEntries.Length)
-			{
-				return null;
-			}
-			return SpawnEntries[id];
-		}
-
-		public static List<SpawnEntry> GetSpawnEntries(MapId map)
-		{
-			return SpawnEntriesByMap[(int)map];
-		}
-
-		public static NPCEquipmentEntry GetEquipment(uint equipId)
-		{
-			return EquipmentEntries.Get(equipId);
 		}
 
 		internal static uint GenerateUniqueLowId()

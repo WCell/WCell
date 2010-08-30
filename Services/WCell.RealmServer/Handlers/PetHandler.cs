@@ -112,13 +112,13 @@ namespace WCell.RealmServer.Handlers
 
 			var record = pet.PermanentPetRecord;
 
-			if (index > record.Actions.Length)
+			if (index > record.ActionButtons.Length)
 			{
 				return;
 			}
 
 			// TODO: Interpret spell settings (auto-cast etc)
-			record.Actions[index] = newAction;
+			record.ActionButtons[index] = newAction;
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PET_RENAME)]
@@ -303,11 +303,11 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((byte)currentAction);
 				packet.Write((ushort)record.Flags);
 
-				var actions = record.Actions;
+				var actions = record.ActionButtons;
 				for (var i = 0; i < PetConstants.PetActionCount; i++)
 				{
 					var action = actions[i];
-					packet.Write(action.Raw);
+					packet.Write(action);
 				}
 
 				var spellPos = packet.Position;

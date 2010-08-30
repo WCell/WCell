@@ -28,8 +28,7 @@ namespace WCell.RealmServer.NPCs.Pets
 		[Field("PetFlags", NotNull = true)]
 		protected int _petFlags;
 
-		private PetActionEntry[] m_Actions;
-		private uint[] m_savedActions;
+		private uint[] m_ActionButtons;
 
 		[PrimaryKey(PrimaryKeyType.Assigned, "EntryId")]
 		int _EntryId
@@ -127,47 +126,15 @@ namespace WCell.RealmServer.NPCs.Pets
 			internal set;
 		}
 
-		#region ActionBar/// <summary>
+		/// <summary>
 		/// 
 		/// </summary>
 		[Property(NotNull = true)]
-		public uint[] SavedActions
+		public uint[] ActionButtons
 		{
-			get { return m_savedActions; }
-			set
-			{
-				m_savedActions = value;
-				m_Actions = new PetActionEntry[value.Length];
-				for (var i = 0; i < value.Length; i++)
-				{
-					var action = value[i];
-					m_Actions[i] = action;
-				}
-			}
+			get { return m_ActionButtons; }
+			set { m_ActionButtons = value; }
 		}
-
-		public PetActionEntry[] Actions
-		{
-			get { return m_Actions; }
-			set
-			{
-				m_Actions = value;
-				CopySavedActions();
-			}
-		}
-
-		void CopySavedActions()
-		{
-			if (m_savedActions == null)
-			{
-				m_savedActions = new uint[m_Actions.Length];
-			}
-			for (var i = 0; i < m_Actions.Length; i++)
-			{
-				m_savedActions[i] = m_Actions[i];
-			}
-		}
-		#endregion
 
 		#region Create / Setup / Update
 		public override void Create()
@@ -202,7 +169,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			}
 			PetState = pet.PetState;
 			EntryId = (NPCId)pet.EntryId;
-			CopySavedActions();
 			IsDirty = true;
 		}
 		#endregion

@@ -196,11 +196,9 @@ namespace WCell.RealmServer.NPCs
 		public void SpawnOne()
 		{
 			var spawn = SpawnEntry.Entry.Create(this);
-			var pos = m_spawnEntry.Position;
+			spawn.Position = m_spawnEntry.Position;
 
 			m_spawns.Add(spawn);
-
-			spawn.Position = pos;
 			Region.AddObjectLater(spawn);
 		}
 

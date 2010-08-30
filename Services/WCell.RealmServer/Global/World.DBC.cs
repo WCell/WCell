@@ -40,9 +40,9 @@ namespace WCell.RealmServer.Global
 				{
 					map.Difficulties = new MapDifficultyEntry[(int) RaidDifficulty.End];
 				}
-				map.Difficulties[entry.Index] = entry;
 
 				entry.Finalize(map);
+				map.Difficulties[entry.Index] = entry;
 			}
 		}
 	}

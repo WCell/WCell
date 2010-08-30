@@ -50,6 +50,29 @@ namespace WCell.RealmServer.NPCs
 			set;
 		}
 
+		[Persistent((int)RaidDifficulty.End - 1)]
+		public NPCId[] DifficultyOverrideEntryIds = new NPCId[(int)RaidDifficulty.End - 1];
+
+		/// <summary>
+		/// Returns the NPCEntry for the given difficulty
+		/// </summary>
+		public NPCEntry GetEntry(uint difficultyIndex)
+		{
+			if (difficultyIndex != 0)
+			{
+				var id = DifficultyOverrideEntryIds.Get(difficultyIndex-1);
+				if (id != 0)
+				{
+					var entry = NPCMgr.GetEntry(id);
+					if (entry != null)
+					{
+						return entry;
+					}
+				}
+			}
+			return this;
+		}
+
 		[Persistent((int)ClientLocale.End)]
 		public string[] Names = new string[(int)ClientLocale.End];
 
@@ -385,6 +408,9 @@ namespace WCell.RealmServer.NPCs
 
 		public float HoverHeight;
 
+		/// <summary>
+		/// Necessary for caching
+		/// </summary>
 		public IWorldLocation[] GetInWorldTemplates()
 		{
 			return SpawnEntries.ToArray();
@@ -892,38 +918,37 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public NPCCreator NPCCreator;
 
-		public NPC Create()
+		public NPC Create(uint difficulty = 0u)
 		{
-			return Create((SpawnPoint)null);
+			return NPCCreator(GetEntry(difficulty));
 		}
 
 		public NPC Create(SpawnPoint spawn)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(spawn.Region.DifficultyIndex);
 			npc.SetupNPC(this, spawn);
 			return npc;
 		}
 
-		public NPC Create(Region rgn, Vector3 pos)
+		public NPC SpawnAt(Region rgn, Vector3 pos)
 		{
-			var npc = NPCCreator(this);
-			npc.SetupNPC(this, null);
+			var npc = Create(rgn.DifficultyIndex);
 			rgn.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC Create(IWorldZoneLocation loc)
+		public NPC SpawnAt(IWorldZoneLocation loc)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(loc.Region.DifficultyIndex);
 			npc.SetupNPC(this, null);
 			npc.Zone = loc.GetZone();
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;
 		}
 
-		public NPC Create(IWorldLocation loc)
+		public NPC SpawnAt(IWorldLocation loc)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(loc.Region.DifficultyIndex);
 			npc.SetupNPC(this, null);
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;

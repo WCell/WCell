@@ -1,6 +1,7 @@
 ﻿using System;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.ArenaTeams;
 using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Network;
@@ -62,6 +63,38 @@ namespace WCell.RealmServer.Handlers
             packet.WriteUInt(team.Stats.rank);
 
             return packet;
+        }
+
+        /// <summary>
+        /// Sends result of actions connected with arenas
+        /// </summary>
+        /// <param name="client">the client to send to</param>
+        /// <param name="commandId">command executed</param>
+        /// <param name="name">name of player event has happened to</param>
+        /// <param name="resultCode">The <see cref="ArenaTeamResult"/> result code</param>
+        public static void SendResult(IPacketReceiver client, ArenaTeamCommandId commandId, string team, string player,
+                                      ArenaTeamResult resultCode)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_COMMAND_RESULT))
+            {
+                packet.WriteUInt((uint)commandId);
+                packet.WriteCString(team);
+                packet.WriteCString(player);
+                packet.WriteUInt((uint)resultCode);
+
+                client.Send(packet);
+            }
+        }
+
+        /// <summary>
+        /// Sends result of actions connected with arenas
+        /// </summary>
+        /// <param name="client">the client to send to</param>
+        /// <param name="commandId">command executed</param>
+        /// <param name="resultCode">The <see cref="ArenaTeamResult"/> result code</param>
+        public static void SendResult(IPacketReceiver client, ArenaTeamCommandId commandId, ArenaTeamResult resultCode)
+        {
+            SendResult(client, commandId, string.Empty, string.Empty, resultCode);
         }
     }
 }

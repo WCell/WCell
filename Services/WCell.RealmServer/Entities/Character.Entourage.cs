@@ -79,9 +79,9 @@ namespace WCell.RealmServer.Entities
 
 					m_activePet = value;
 
-					if (m_activePet.PetRecord.Actions == null)
+					if (m_activePet.PetRecord.ActionButtons == null)
 					{
-						m_activePet.PetRecord.Actions = m_activePet.BuidPetActionBar();
+						m_activePet.PetRecord.ActionButtons = m_activePet.BuidPetActionBar();
 					}
 
 					AddPostUpdateMessage(() =>
