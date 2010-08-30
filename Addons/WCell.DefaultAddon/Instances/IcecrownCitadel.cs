@@ -159,7 +159,7 @@ namespace WCell.Addons.Default.Instances
 
                 if (BoneStormTick >= 3)
                 {
-                    var aura = m_owner.Auras.GetAuraBySpell(BoneStorm);
+                    var aura = m_owner.Auras[BoneStorm];
 
                     if (aura != null)
                         aura.TimeLeft = boneLength * 1000;
