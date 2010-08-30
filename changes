@@ -1,6 +1,2 @@
-- added AISpellCastSettings to make AI spell casting a lot simpler; added it to some instance implementations
-- implemented ModAttackerSpellCritChance
-- started implementing/fixing mage spells
-- to test: MageFrostFrostbite, MageFireImprovedScorch
-- improved Say/Yell/Emote methods
-- brought back NPCEntry.xml
+- removed AuraCollection.GetAuraBySpell
+-> Use instead: var aura = myGuy.Auras[spellid or spell or spelllineid or aurauid etc];
