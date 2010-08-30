@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using TerrainDisplay.MPQ.WMO;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 
@@ -26,6 +27,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// </summary>
         public List<int> DoodadRefs = new List<int>();
         public List<int> ObjectRefs = new List<int>();
+        public List<Index3> TerrainTris = new List<Index3>();
 
         /// <summary>
         /// MH20 Chunk (Water information for the MCNK)
@@ -33,6 +35,8 @@ namespace TerrainDisplay.MPQ.ADT
         public MH2O WaterInfo = new MH2O();
 
         public bool IsFlat;
+
+        
     }
 
     public static class ADTChunkParser
@@ -118,23 +122,18 @@ namespace TerrainDisplay.MPQ.ADT
             h.sizeShadow = fileReader.ReadUInt32(); //0x30
             h.AreaId = fileReader.ReadInt32(); //0x34
             h.nMapObjRefs = fileReader.ReadUInt32(); //0x38
-
             // Bitmap to which height values are ignored
             h.Holes = fileReader.ReadUInt16();
             fileReader.ReadUInt16(); // pad
-
             //if (h.Holes > 0)
             //{
             //    Console.WriteLine(Convert.ToString(h.Holes, 2));
             //}
-
-
             h.predTex = new ushort[8];
             for (var i = 0; i < 8; i++)
             {
                 h.predTex[i] = fileReader.ReadUInt16();
             }
-
             h.nEffectDoodad = new byte[8];
             for (var i = 0; i < 8; i++)
             {

@@ -74,8 +74,6 @@ namespace TerrainDisplay
                 TileX = 49,
                 TileY = 33
             };
-
-            DefaultTileIdentifier = Redridge.Copy();
         }
 
         public TileIdentifier()
@@ -121,7 +119,14 @@ namespace TerrainDisplay
 
         public static readonly TileIdentifier BurningSteppes;
 
-        public static TileIdentifier DefaultTileIdentifier;
+        public static TileIdentifier DefaultTileIdentifier = new TileIdentifier
+        {
+            TileName = "Redridge",
+            MapId = MapId.EasternKingdoms,
+            MapName = "Azeroth",
+            TileX = 49,
+            TileY = 36
+        };
 
         #region Implementation of IXmlSerializable
 
@@ -153,7 +158,8 @@ namespace TerrainDisplay
             }
             else 
             {
-                MapId = (MapId)reader.ReadElementContentAsInt();
+                var val = reader.ReadElementContentAsString();
+                MapId = (MapId)Enum.Parse(typeof(MapId), val);
             }
             
             reader.Read();

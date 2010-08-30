@@ -544,6 +544,88 @@ namespace TerrainDisplay.Collision
             return true;
         }
 
+        public static bool IntersectSegmentRectangle2DXY(Rect rect, Vector3 point1, Vector3 point2)
+        {
+            var rectMin = new Vector2(rect.TopLeft.X, rect.TopLeft.Y);
+            var rectMax = new Vector2(rect.BottomRight.X, rect.BottomRight.Y);
+            var point12d = new Vector2(point1.X, point2.X);
+            var point22d = new Vector2(point2.X, point2.Y);
+
+            return IntersectSegmentRectangle2D(rectMin, rectMax, point12d, point22d);
+        }
+
+        public static bool IntersectSegmentRectangle2D(Vector2 rectMin, Vector2 rectMax, Vector2 point1, Vector2 point2)
+        {
+            // Find min and max X for the segment
+            var a_rectangleMinX = rectMin.X;
+            var a_rectangleMinY = rectMin.Y;
+            var a_rectangleMaxX = rectMax.X;
+            var a_rectangleMaxY = rectMax.Y;
+            var a_p1x = point1.X;
+            var a_p1y = point1.Y;
+            var a_p2x = point2.X;
+            var a_p2y = point2.Y;
+
+            var minX = a_p1x;
+            var maxX = a_p2x;
+            if (a_p1x > a_p2x)
+            {
+                minX = a_p2x;
+                maxX = a_p1x;
+            }
+
+            // Find the intersection of the segment's and rectangle's x-projections
+            if (maxX > a_rectangleMaxX)
+            {
+                maxX = a_rectangleMaxX;
+            }
+
+            if (minX < a_rectangleMinX)
+            {
+                minX = a_rectangleMinX;
+            }
+
+            if (minX > maxX) // If their projections do not intersect return false
+            {
+                return false;
+            }
+
+            // Find corresponding min and max Y for min and max X we found before
+
+            var minY = a_p1y;
+            var maxY = a_p2y;
+
+            var dx = a_p2x - a_p1x;
+
+            if (Math.Abs(dx) > Epsilon)
+            {
+                var a = (a_p2y - a_p1y)/dx;
+                var b = a_p1y - a*a_p1x;
+                minY = a*minX + b;
+                maxY = a*maxX + b;
+            }
+
+            if (minY > maxY)
+            {
+                var tmp = maxY;
+                maxY = minY;
+                minY = tmp;
+            }
+
+            // Find the intersection of the segment's and rectangle's y-projections
+            if (maxY > a_rectangleMaxY)
+            {
+                maxY = a_rectangleMaxY;
+            }
+
+            if (minY < a_rectangleMinY)
+            {
+                minY = a_rectangleMinY;
+            }
+
+            return (minY <= maxY);
+        }
+
         public static bool IsConvexQuad(Vector3 a, Vector3 b, Vector3 c, Vector3 d)
         {
             var vector = Vector3.Cross(d - b, a - b);
@@ -642,6 +724,34 @@ namespace TerrainDisplay.Collision
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Checks if point P is inside Triangle ABC using only the X and Y coordinates of the Vector3.
+        /// </summary>
+        /// <param name="p"></param>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static bool PointInTriangle2DXY(Vector3 p, Vector3 a, Vector3 b, Vector3 c)
+        {
+            var a2d = new Vector2(a.X, a.Y);
+            var b2d = new Vector2(b.X, b.Y);
+            var c2d = new Vector2(c.X, c.Y);
+            var p2d = new Vector2(p.X, p.Y);
+
+            return PointInTriangle2D(ref p2d, ref a2d, ref b2d, ref c2d);
+        }
+
+        public static bool PointInTriangle2DXY(Point p, Vector3 a, Vector3 b, Vector3 c)
+        {
+            var a2d = new Vector2(a.X, a.Y);
+            var b2d = new Vector2(b.X, b.Y);
+            var c2d = new Vector2(c.X, c.Y);
+            var p2d = new Vector2(p.X, p.Y);
+
+            return PointInTriangle2D(ref p2d, ref a2d, ref b2d, ref c2d);
         }
 
         public static bool PointInTriangleBarycentric(Vector3 a, Vector3 b, Vector3 c, Vector3 p)

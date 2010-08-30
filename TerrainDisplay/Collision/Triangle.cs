@@ -33,11 +33,7 @@ namespace TerrainDisplay.Collision._3D
         {
             get
             {
-                return new List<int> {
-                    0,
-                    1,
-                    2
-                };
+                return new List<int> { 0, 1, 2 };
             }
         }
 

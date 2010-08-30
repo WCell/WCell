@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using Terra;
 using TerrainDisplay.Collision;
+using TerrainDisplay.Collision._3D;
 using TerrainDisplay.MPQ.ADT.Components;
+using TerrainDisplay.MPQ.WMO;
 using TerrainDisplay.Util;
 using WCell.Util.Graphics;
 
@@ -28,15 +30,15 @@ namespace TerrainDisplay.MPQ.ADT
         /// <summary>
         /// Array of MCNK chunks which give the ADT vertex information for this ADT
         /// </summary>
-        public readonly ADTChunk[,] MapChunks = new ADTChunk[16,16];
+        public readonly ADTChunk[,] MapChunks = new ADTChunk[16, 16];
         /// <summary>
         /// Array of MH20 chunks which give the ADT FLUID vertex information for this ADT
         /// </summary>
-        public readonly MH2O[,] LiquidInfo = new MH2O[16,16];
+        public readonly MH2O[,] LiquidInfo = new MH2O[16, 16];
         /// <summary>
         /// List of MDDF Chunks which are placement information for M2s
         /// </summary>
-        public readonly List<MapDoodadDefinition> DoodadDefinitions = new List<MapDoodadDefinition>(); // NEW
+        public readonly List<MapDoodadDefinition> DoodadDefinitions = new List<MapDoodadDefinition>();
         /// <summary>
         /// List of MODF Chunks which are placement information for WMOs
         /// </summary>
@@ -83,6 +85,18 @@ namespace TerrainDisplay.MPQ.ADT
             get { return _tileId.TileY; }
         }
 
+        public Rect TileBounds2d
+        {
+            get
+            {
+                var tileBaseX = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize);
+                var tileBaseY = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize);
+                var tileBottomX = tileBaseX - TerrainConstants.TileSize;
+                var tileBottonY = tileBaseY - TerrainConstants.TileSize;
+                return new Rect(new Point(tileBaseX, tileBaseY), new Point(tileBottomX, tileBottonY));
+            }
+        }
+
         public bool IsWMOOnly;
         #endregion
 
@@ -107,7 +121,7 @@ namespace TerrainDisplay.MPQ.ADT
         {
             LiquidVertices = new List<Vector3>();
             LiquidIndices = new List<int>();
-           
+
             var vertexCounter = 0;
             for (var indexX = 0; indexX < 16; indexX++)
             {
@@ -119,36 +133,36 @@ namespace TerrainDisplay.MPQ.ADT
                 }
             }
         }
-        
+
         public override void GenerateHeightVertexAndIndices()
         {
-            const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide*TerrainConstants.ChunksPerTileSide;
+            const int heightsPerTileSide = TerrainConstants.UnitsPerChunkSide * TerrainConstants.ChunksPerTileSide;
             var tileHeights = new float[heightsPerTileSide + 1, heightsPerTileSide + 1];
             var tileHoles = new List<Index2>();
-            
-            
+
+
             for (var chunkRow = 0; chunkRow < TerrainConstants.ChunksPerTileSide; chunkRow++)
             {
                 for (var chunkCol = 0; chunkCol < TerrainConstants.ChunksPerTileSide; chunkCol++)
                 {
                     var chunk = MapChunks[chunkCol, chunkRow];
                     var heights = chunk.Heights.GetLowResMapMatrix();
-                    var holes = (chunk.Header.Holes > 0) ? chunk.Header.GetHolesMap() : new bool[4,4];
+                    var holes = (chunk.Header.Holes > 0) ? chunk.Header.GetHolesMap() : new bool[4, 4];
 
                     // Add the height map values, inserting them into their correct positions
                     for (var unitRow = 0; unitRow <= TerrainConstants.UnitsPerChunkSide; unitRow++)
                     {
                         for (var unitCol = 0; unitCol <= TerrainConstants.UnitsPerChunkSide; unitCol++)
                         {
-                            var tileRow = chunkRow*TerrainConstants.UnitsPerChunkSide + unitRow;
-                            var tileCol = chunkCol*TerrainConstants.UnitsPerChunkSide + unitCol;
+                            var tileRow = chunkRow * TerrainConstants.UnitsPerChunkSide + unitRow;
+                            var tileCol = chunkCol * TerrainConstants.UnitsPerChunkSide + unitCol;
 
                             tileHeights[tileRow, tileCol] = heights[unitCol, unitRow] + chunk.Header.Z;
 
                             if (unitCol == TerrainConstants.UnitsPerChunkSide) continue;
                             if (unitRow == TerrainConstants.UnitsPerChunkSide) continue;
                             // Add the hole vertices to the pre-insertion 'script'
-                            if (!holes[unitRow/2, unitCol/2]) continue;
+                            if (!holes[unitRow / 2, unitCol / 2]) continue;
 
                             tileHoles.AddUnique(new Index2
                             {
@@ -197,11 +211,11 @@ namespace TerrainDisplay.MPQ.ADT
                 if (count != 9) continue;
                 allHoleIndices.AddUnique(index);
             }
-            
+
             var terra = new Terra.Terra(1.0f, tileHeights);
             terra.ScriptedPreInsertion(tileHoles);
             terra.Triangulate();
-            
+
             List<Vector3> newVertices;
             Indices = new List<int>();
             terra.GenerateOutput(allHoleIndices, out newVertices, out Indices);
@@ -209,10 +223,12 @@ namespace TerrainDisplay.MPQ.ADT
             TerrainVertices = new List<Vector3>();
             foreach (var vertex in newVertices)
             {
-                var xPos = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize) - (vertex.X*TerrainConstants.UnitSize);
-                var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) - (vertex.Y*TerrainConstants.UnitSize);
+                var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (vertex.X * TerrainConstants.UnitSize);
+                var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (vertex.Y * TerrainConstants.UnitSize);
                 TerrainVertices.Add(new Vector3(xPos, yPos, vertex.Z));
             }
+
+            SortTrisIntoChunks();
         }
 
         /// <summary>
@@ -226,7 +242,7 @@ namespace TerrainDisplay.MPQ.ADT
         {
             var tempVertexCounter = 0;
             var mapChunk = MapChunks[indexY, indexX];
-            
+
             var mh2O = LiquidInfo[indexY, indexX];
 
             if (mh2O == null) return tempVertexCounter;
@@ -252,10 +268,10 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 for (var yStep = 0; yStep < 9; yStep++)
                 {
-                    var xPos = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize) -
-                               (indexX*TerrainConstants.ChunkSize) - (xStep*TerrainConstants.UnitSize);
-                    var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) -
-                               (indexY*TerrainConstants.ChunkSize) - (yStep*TerrainConstants.UnitSize);
+                    var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) -
+                               (indexX * TerrainConstants.ChunkSize) - (xStep * TerrainConstants.UnitSize);
+                    var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) -
+                               (indexY * TerrainConstants.ChunkSize) - (yStep * TerrainConstants.UnitSize);
 
                     if (((xStep < mh2O.Header.XOffset) || ((xStep - mh2O.Header.XOffset) > mh2O.Header.Height)) ||
                         ((yStep < mh2O.Header.YOffset) || ((yStep - mh2O.Header.YOffset) > mh2O.Header.Width)))
@@ -296,12 +312,12 @@ namespace TerrainDisplay.MPQ.ADT
                     var col = c - mh2O.Header.YOffset;
 
                     if (!renderMap[col, row] && ((mh2O.Header.Height != 8) || (mh2O.Header.Width != 8))) continue;
-                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col + 1));
-                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col + 1));
-                    indices.Add(offset + ((row + 1)*(mh2O.Header.Width + 1) + col));
-                    indices.Add(offset + (row*(mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col + 1));
+                    indices.Add(offset + ((row + 1) * (mh2O.Header.Width + 1) + col));
+                    indices.Add(offset + (row * (mh2O.Header.Width + 1) + col + 1));
                 }
             }
         }
@@ -324,10 +340,10 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 for (var yStep = 0; yStep < 9; yStep++)
                 {
-                    var xPos = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize) - (indexX*TerrainConstants.ChunkSize) -
-                               (xStep*TerrainConstants.UnitSize);
-                    var yPos = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize) - (indexY*TerrainConstants.ChunkSize) -
-                               (yStep*TerrainConstants.UnitSize);
+                    var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (indexX * TerrainConstants.ChunkSize) -
+                               (xStep * TerrainConstants.UnitSize);
+                    var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (indexY * TerrainConstants.ChunkSize) -
+                               (yStep * TerrainConstants.UnitSize);
                     var zPos = lowResMap[yStep, xStep] + mcnk.Header.Z;
 
                     var theNormal = lowResNormal[yStep, xStep];
@@ -359,7 +375,7 @@ namespace TerrainDisplay.MPQ.ADT
         {
             var mcnk = MapChunks[indexY, indexX];
 
-            var holesMap = new bool[4,4];
+            var holesMap = new bool[4, 4];
             if (mcnk.Header.Holes > 0)
             {
                 holesMap = mcnk.Header.GetHolesMap();
@@ -369,7 +385,7 @@ namespace TerrainDisplay.MPQ.ADT
             {
                 for (var col = 0; col < 8; col++)
                 {
-                    if (holesMap[row/2, col/2]) continue;
+                    if (holesMap[row / 2, col / 2]) continue;
                     //{
                     //    indices.Add(offset + ((row + 1) * (8 + 1) + col));
                     //    indices.Add(offset + (row * (8 + 1) + col));
@@ -406,6 +422,182 @@ namespace TerrainDisplay.MPQ.ADT
                     indices.Add(offset + (row * (8 + 1) + col + 1));
                 }
             }
+        }
+
+        private void SortTrisIntoChunks()
+        {
+            var baseXPos = TerrainConstants.CenterPoint - (_tileId.TileX)*TerrainConstants.TileSize;
+            var baseYPos = TerrainConstants.CenterPoint - (_tileId.TileY)*TerrainConstants.TileSize;
+
+            //Triangulate the indices
+            var triList = new List<Index3>();
+            for (var i = 0; i < Indices.Count; )
+            {
+                triList.Add(new Index3
+                {
+                    Index0 = (short)Indices[i++],
+                    Index1 = (short)Indices[i++],
+                    Index2 = (short)Indices[i++]
+                });
+            }
+
+            for (var chunkX = 0; chunkX < TerrainConstants.ChunksPerTileSide; chunkX++)
+            {
+                for (var chunkY = 0; chunkY < TerrainConstants.ChunksPerTileSide; chunkY++)
+                {
+                    var chunk = MapChunks[chunkY, chunkX];
+                    var chunkBaseX = baseXPos - TerrainConstants.ChunkSize*chunkX;
+                    var chunkBaseY = baseYPos - TerrainConstants.ChunkSize*chunkY;
+                    var chunkBottomX = chunkBaseX - TerrainConstants.ChunkSize;
+                    var chunkBottomY = chunkBaseY - TerrainConstants.ChunkSize;
+                    var chunkRect = new Rect(new Point(chunkBaseX, chunkBaseY),
+                                             new Point(chunkBottomX, chunkBottomY));
+
+                    foreach (var triangle in triList)
+                    {
+                        var vertex0 = TerrainVertices[triangle.Index0];
+                        var vertex1 = TerrainVertices[triangle.Index1];
+                        var vertex2 = TerrainVertices[triangle.Index2];
+                        var min = Vector3.Min(Vector3.Min(vertex0, vertex1), vertex2);
+                        var max = Vector3.Max(Vector3.Max(vertex0, vertex1), vertex2);
+
+                        var triRect = new Rect(new Point(min.X, min.Y), new Point(max.X, max.Y));
+                        if (!chunkRect.IntersectsWith(triRect)) continue;
+
+                        // Check if any of the triangle's vertices are contained in the chunk's bounds
+                        if (chunkRect.Contains(vertex0.X, vertex0.Y))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (chunkRect.Contains(vertex1.X, vertex1.Y))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (chunkRect.Contains(vertex2.X, vertex2.Y))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        // Check if any of the Chunk's corners are contained in the triangle
+                        if (Intersection.PointInTriangle2DXY(chunkRect.TopLeft, vertex0, vertex1, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (Intersection.PointInTriangle2DXY(chunkRect.TopRight, vertex0, vertex1, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (Intersection.PointInTriangle2DXY(chunkRect.BottomLeft, vertex0, vertex1, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (Intersection.PointInTriangle2DXY(chunkRect.BottomRight, vertex0, vertex1, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        // Check if any of the triangle's line segments intersect the chunk's bounds
+                        if (Intersection.IntersectSegmentRectangle2DXY(chunkRect, vertex0, vertex1))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (Intersection.IntersectSegmentRectangle2DXY(chunkRect, vertex0, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+
+                        if (Intersection.IntersectSegmentRectangle2DXY(chunkRect, vertex1, vertex2))
+                        {
+                            chunk.TerrainTris.Add(triangle);
+                            continue;
+                        }
+                    }
+                }
+            }
+        }
+
+        public bool GetPotentialColliders(Ray2D ray2D, List<Index3> colliders)
+        {
+            var tileRect = TileBounds2d;
+
+            Vector2 start, end;
+            if (!tileRect.ClipRay(ray2D, out start, out end)) return false;
+
+            if (colliders == null)
+            {
+                colliders = new List<Index3>();
+            }
+
+            int startChunkX, startChunkY;
+            GetChunkXY(start, out startChunkX, out startChunkY);
+
+            int endChunkX, endChunkY;
+            GetChunkXY(end, out endChunkX, out endChunkY);
+
+            if (startChunkX > endChunkX)
+            {
+                var temp = startChunkX;
+                startChunkX = endChunkX;
+                endChunkX = temp;
+            }
+
+            if (startChunkY > endChunkY)
+            {
+                var temp = startChunkY;
+                startChunkY = endChunkY;
+                endChunkY = temp;
+            }
+
+            for (var chunkY = startChunkY; chunkY <= endChunkY; chunkY++)
+            {
+                for (var chunkX = startChunkX; chunkX <= endChunkX; chunkX++)
+                {
+                    var chunk = MapChunks[chunkY, chunkX];
+                    var basePos = new Point(chunk.Header.X, chunk.Header.Y);
+                    var bottomPos = new Point(basePos.X - TerrainConstants.ChunkSize,
+                                              basePos.Y - TerrainConstants.ChunkSize);
+                    var chunkRect = new Rect(basePos, bottomPos);
+
+                    if (!chunkRect.IntersectsWith(ray2D)) continue;
+
+                    colliders.AddRange(chunk.TerrainTris);
+                }
+            }
+
+            return true;
+        }
+
+        public bool GetChunkXY(Vector2 pos, out int chunkX, out int chunkY)
+        {
+            var tileBaseX = TerrainConstants.CenterPoint - (_tileX*TerrainConstants.TileSize);
+            var tileBaseY = TerrainConstants.CenterPoint - (_tileY*TerrainConstants.TileSize);
+
+            var posX = (pos.X - tileBaseX)*-1;
+            var posY = (pos.Y - tileBaseY)*-1;
+
+            chunkX = (int) (posX/TerrainConstants.ChunkSize);
+            chunkY = (int) (posY/TerrainConstants.ChunkSize);
+
+            if (chunkX < 0) return false;
+            if (chunkY < 0) return false;
+            if (chunkX >= TerrainConstants.ChunksPerTileSide) return false;
+            if (chunkY >= TerrainConstants.ChunksPerTileSide) return false;
+            return true;
         }
     }
 }

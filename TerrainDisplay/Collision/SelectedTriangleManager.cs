@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TerrainDisplay.MPQ.ADT;
+using TerrainDisplay.MPQ.WMO;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay.Collision
@@ -46,7 +48,6 @@ namespace TerrainDisplay.Collision
             var dir2D = new Vector2(dir3D.X, dir3D.Y).NormalizedCopy();
             var ray2D = new Ray2D(pos2D, dir2D);
 
-            TerrainTriangleHolder closestTriangle = null;
             var closestTime = float.MaxValue;
             var closestVec0 = Vector3.Zero;
             var closestVec1 = Vector3.Zero;
@@ -54,8 +55,9 @@ namespace TerrainDisplay.Collision
             
             foreach (var tile in _adtManager.MapTiles)
             {
-                if (tile.QuadTree == null) continue;
-                var results = tile.QuadTree.Query(ray2D);
+                var results = new List<Index3>();
+                if (!((ADT)tile).GetPotentialColliders(ray2D, results)) continue;
+
                 foreach (var result in results)
                 {
                     var vec0 = tile.TerrainVertices[result.Index0];
@@ -67,14 +69,13 @@ namespace TerrainDisplay.Collision
                     if (time > closestTime) continue;
 
                     closestTime = time;
-                    closestTriangle = result;
                     closestVec0 = vec0;
                     closestVec1 = vec1;
                     closestVec2 = vec2;
                 }
             }
 
-            if (closestTriangle == null) return;
+            if (closestTime == float.MaxValue) return;
             AddSelectedTriangle(closestVec0, closestVec1, closestVec2);
         }
 
