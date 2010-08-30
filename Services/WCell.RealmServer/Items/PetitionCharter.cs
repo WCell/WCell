@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Items
             Name = name;
 			OwnerId = ownerId;
 			ItemId = (int)itemId;
-			SignedIds = new List<long>(9);
+			SignedIds = new List<uint>(9);
             Type = type;
 		}
 
@@ -89,7 +89,7 @@ namespace WCell.RealmServer.Items
         }
 
 		[Property("SignedIds", NotNull = true)]
-		public List<long> SignedIds
+		public List<uint> SignedIds
 		{
 			get;
 			set;
@@ -97,13 +97,13 @@ namespace WCell.RealmServer.Items
 
 		public void AddSignature(uint signedId)
 		{
-			SignedIds.Add((int)signedId);
+			SignedIds.Add(signedId);
             Update();
 		}
 
-		public static PetitionRecord LoadRecord(int itemId)
+		public static PetitionRecord LoadRecord(int ownerId)
 		{
-			return Find(itemId);
+			return Find(ownerId);
 		}
 
         public static bool CanBuyPetition(uint ownerId)
@@ -112,6 +112,12 @@ namespace WCell.RealmServer.Items
                 return false;
             else
                 return true;
+        }
+
+        public static PetitionRecord LoadRecordByItemId(uint itemId)
+        {
+            var property = FindAllByProperty("ItemId", (int)itemId);
+            return property[0];
         }
 	}
 }
