@@ -369,7 +369,47 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_OFFER_PETITION)]
 		public static void HandlePetitionOffer(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var unk = packet.ReadUInt32();
+            var petitionId = packet.ReadEntityId();
+            var playerId = packet.ReadEntityId();
+
+            var player = World.GetCharacter(playerId.Low);
+            var petition = PetitionRecord.LoadRecordByItemId(petitionId.Low);
+
+            var namePlayer = player.Name;
+
+            if (player.Faction != client.ActiveCharacter.Faction)
+            {
+                if (petition.Type == PetitionType.Guild)
+                    GuildHandler.SendResult(client, GuildCommandId.CREATE, client.ActiveCharacter.Name, GuildResult.NOT_ALLIED);
+                else
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.INVITE, ArenaTeamResult.NOT_ALLIED);
+                return;
+            }
+
+            if (petition.Type == PetitionType.Guild)
+            {
+                if (player.IsInGuild)
+                {
+                    GuildHandler.SendResult(client, GuildCommandId.INVITE, namePlayer, GuildResult.ALREADY_IN_GUILD_S);
+                    return;
+                }
+            }
+            else 
+            {
+                if (player.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)petition.Type)] != null)
+                {
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.ALREADY_IN_ARENA_TEAM_S);
+                    return;
+                }
+                else if (player.Level < 80)
+                {
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.TARGET_TOO_LOW);
+                    return;
+                }
+            }
+
+            SendPetitionSignatures(player.Client, client.ActiveCharacter.Inventory.GetItem(petitionId) as PetitionCharter);            
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_TURN_IN_PETITION)]
