@@ -385,41 +385,60 @@ namespace WCell.Addons.Default.Spells.Druid
 		public override SpellFailedReason InitializeTarget(WorldObject target)
 		{
 			var auras = ((Unit)target).Auras;
-			aura = auras[SpellLineId.DruidRejuvenation];
-			if (aura == null)
+			var rejuvenation = auras[SpellLineId.DruidRejuvenation];
+			var regrowth = auras[SpellLineId.DruidRegrowth];
+
+			if (rejuvenation != null)
 			{
-				aura = auras[SpellLineId.DruidRegrowth];
-				if (aura == null)
+				if (regrowth != null)
 				{
+					aura = (rejuvenation.TimeLeft < regrowth.TimeLeft) ? rejuvenation : regrowth;
+				}
+				else
+				{
+					aura = rejuvenation;
+				}
+			}
+			else
+			{
+				if (regrowth != null)
+				{
+					aura = regrowth;
+				}
+				else
+				{
+					aura = null;
 					return SpellFailedReason.TargetAurastate;
 				}
 			}
+
 			return base.InitializeTarget(target);
 		}
 
 		protected override void Apply(WorldObject target)
 		{
-			var handler = aura.GetHandler(AuraType.PeriodicHeal) as ParameterizedPeriodicHealHandler;
+			var handler = aura.GetHandler(AuraType.PeriodicHeal) as PeriodicHealHandler;
 			if (handler == null)
 			{
 				LogManager.GetCurrentClassLogger().Warn("Aura does not have a ParameterizedPeriodicHealHandler: " + aura);
 				return;
 			}
 
-			int secs;
+			int ticks;
 			if (aura.Spell.Line.LineId == SpellLineId.DruidRejuvenation)
 			{
 				// "amount equal to 12 sec of Rejuvenation"
-				secs = 12;
+				ticks = 4;
 			}
 			else// if (aura.Spell.Line.LineId == SpellLineId.DruidRegrowth)
 			{
 				// "or 18 sec. of Regrowth"
-				secs = 18;
+				ticks = 6;
 			}
 
-			var totalSecs = aura.Spell.Durations.Max;
-			var amount = (handler.TotalHeal * secs + totalSecs) / totalSecs;
+			//var maxTicks = aura.MaxTicks;
+			// TODO: Add correct heal bonuses
+			var amount = handler.EffectValue * ticks;
 
 			((Unit)target).Heal(amount, m_cast.CasterUnit, Effect);
 
