@@ -48,6 +48,7 @@ namespace WCell.RealmServer.ArenaTeams
         {
             return FindAllByProperty("_arenaTeamId", (int)team.Id);
         }
+
         public ArenaTeamMember() {}
 
 		public ArenaTeamMember(CharacterRecord chr, ArenaTeam team, bool isLeader)

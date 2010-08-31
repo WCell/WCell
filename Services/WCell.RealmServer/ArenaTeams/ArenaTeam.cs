@@ -118,24 +118,24 @@ namespace WCell.RealmServer.ArenaTeams
 		/// <param name="leader">leader's character record</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="ArenaTeam"/> object</returns>
-		public ArenaTeam(CharacterRecord leader, string name, int type)
+		public ArenaTeam(CharacterRecord leader, string name, uint type)
 			: this()
 		{
 			_id = _idGenerator.Next();
 			_leaderLowId = (int)leader.EntityLowId;
 			_name = name;
-            _type = type;
+            _type = (int)type;
 
-            m_slot = ArenaTeamMgr.GetSlotByType((uint)type);
+            m_slot = ArenaTeamMgr.GetSlotByType(type);
 
 			m_leader = new ArenaTeamMember(leader, this, true);
             m_stats = new ArenaTeamStats(this);
 
 			Members.Add(m_leader.Id, m_leader);
-
-			Register();
-
-			this.CreateLater();
+            m_leader.Create();
+			
+            RealmServer.Instance.AddMessage(Create);
+            Register();
 		}
         #endregion
 
@@ -211,8 +211,8 @@ namespace WCell.RealmServer.ArenaTeams
 
                 Members.Add(newMember.Id, newMember);
 
-            	newMember.CreateLater();
-                this.SaveLater();
+            	newMember.Create();
+                Update();
             }
             catch (Exception e)
             {
