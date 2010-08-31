@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool IsHunterPet
 		{
-			get { return m_PetRecord is PermanentPetRecord; }
+			get { return m_PetRecord is PermanentPetRecord && PetTalentType == PetTalentType.End; }
 		}
 
 		#region Names
@@ -76,7 +76,22 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		internal void OnBecamePet()
+		/// <summary>
+		/// Makes this the pet of the given owner
+		/// </summary>
+		internal void MakePet(uint ownerId)
+		{
+			PetRecord = PetMgr.CreatePermanentPetRecord(Entry, ownerId);
+			if (!HasTalents && IsHunterPet)
+			{
+				m_petTalents = new PetTalentCollection(this);
+			}
+		}
+
+		/// <summary>
+		/// Is called when this Pet became the ActivePet of a Character
+		/// </summary>
+		internal void OnBecameActivePet()
 		{
 			OnLevelChanged();
 		}

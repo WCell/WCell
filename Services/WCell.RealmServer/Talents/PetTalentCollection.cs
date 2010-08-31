@@ -41,7 +41,7 @@ namespace WCell.RealmServer.Talents
 
 		public override bool CanLearn(TalentEntry entry, int rank)
 		{
-			return entry.Tree.Id != ((NPC)Owner).PetTalentType.GetTalentTreeId() && base.CanLearn(entry, rank);
+			return entry.Tree.Id == ((NPC)Owner).PetTalentType.GetTalentTreeId() && base.CanLearn(entry, rank);
 		}
 
 		public override int FreeTalentPoints

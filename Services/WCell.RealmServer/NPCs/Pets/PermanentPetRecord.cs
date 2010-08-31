@@ -95,7 +95,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			pet.PetExperience = Experience;
 			pet.Level = Level;
 			pet.LastTalentResetTime = LastTalentResetTime;
-			pet.FreeTalentPoints = FreeTalentPoints;
+			if (pet.HasTalents)
+			{
+				pet.FreeTalentPoints = FreeTalentPoints;
+			}
 		}
 
 		public override void UpdateRecord(NPC pet)
@@ -107,7 +110,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			Entry = pet.Entry;
 			Level = pet.Level;
 			LastTalentResetTime = pet.LastTalentResetTime;
-			FreeTalentPoints = pet.FreeTalentPoints;
+			if (pet.HasTalents)
+			{
+				FreeTalentPoints = pet.FreeTalentPoints;
+			}
 		}
 
 		public static PermanentPetRecord[] LoadPermanentPetRecords(uint ownerId)

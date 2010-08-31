@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Spells
 			else if (handler.HasOwnTargets)
 			{
 				// see if targets are shared between effects
-				if (m_spell.AISpellCastSettings != null && m_spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
+				if (IsPlayerCast && m_spell.AISpellCastSettings != null && m_spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
 				{
 					// targets of all effects are determined by AI behavior
 					if (targets == null)

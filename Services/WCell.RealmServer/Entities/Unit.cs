@@ -1786,7 +1786,7 @@ namespace WCell.RealmServer.Entities
 			IsFighting = false;
 			if (m_brain != null)
 			{
-				m_brain.StopCurrentAction();
+				m_brain.IsRunning = false;
 			}
 			Target = null;
 			base.DeleteNow();

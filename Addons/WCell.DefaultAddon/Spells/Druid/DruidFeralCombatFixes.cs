@@ -323,7 +323,8 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Savage Defense has wrong trigger flags & it's buff has wrong effect type 
 			SpellLineId.DruidSavageDefense.Apply(spell =>
 			{
-				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeHitOther;
+				spell.ProcTriggerFlags = ProcTriggerFlags.MeleeCriticalHitOther;
+				spell.RequiredShapeshiftMask = ShapeshiftMask.Bear | ShapeshiftMask.DireBear;
 			});
 			SpellHandler.Apply(spell =>
 			{

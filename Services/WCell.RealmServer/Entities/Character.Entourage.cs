@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Entities
 						{
 							PetHandler.SendSpells(this, m_activePet, PetAction.Follow);
 							PetHandler.SendPetGUIDs(this);
-							m_activePet.OnBecamePet();
+							m_activePet.OnBecameActivePet();
 						}
 					});
 				}
@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Entities
 		{
 			Enslave(minion, durationMillis);
 
-			minion.PetRecord = PetMgr.CreatePermanentPetRecord(minion.Entry, m_record.EntityLowId);
+			minion.MakePet(m_record.EntityLowId);
 			m_record.PetCount++;
 
 			InitializeMinion(minion);

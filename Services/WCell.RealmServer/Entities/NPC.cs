@@ -78,14 +78,16 @@ namespace WCell.RealmServer.Entities
 		internal protected NPC()
 		{
 			m_threatCollection = new ThreatCollection();
+
+			// auras
+			m_auras = new NPCAuraCollection(this);
+
+			m_spells = NPCSpellCollection.Obtain(this);
 		}
 
 		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
-			// auras
-			m_auras = new NPCAuraCollection(this);
-
 			SpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
@@ -99,10 +101,6 @@ namespace WCell.RealmServer.Entities
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-				else if (entry.ModelInfos != null && entry.ModelInfos.Length > 0)
-				{
-					Model = entry.ModelInfos.GetRandom();
-				}
 			}
 			else
 			{
@@ -110,10 +108,44 @@ namespace WCell.RealmServer.Entities
 				spawnEntry = entry.FirstSpawnEntry;
 			}
 
+			GenerateId(entry.Id);
+
+			SetEntry(entry);
+		}
+
+		public void SetEntry(NPCId entryId)
+		{
+			var entry = NPCMgr.GetEntry(entryId);
+			SetEntry(entry);
+		}
+
+		public void SetEntry(NPCEntry entry)
+		{
 			Entry = entry;
+
+			if (m_spawnPoint == null || m_spawnPoint.SpawnEntry.DisplayIdOverride == 0)
+			{
+				if (entry.ModelInfos.Length > 0)
+				{
+					Model = entry.ModelInfos.GetRandom();
+				}
+			}
 			NativeDisplayId = DisplayId;
 
+			if (m_brain != null)
+			{
+				// overriding already existing entry
+			}
+			else
+			{
+				// new
+				m_Movement = new Movement(this);
+				m_brain = m_entry.BrainCreator(this);
+				m_brain.IsRunning = true;
+			}
+
 			// misc stuff
+			Name = m_entry.DefaultName;
 			Faction = entry.Faction;
 			NPCFlags = entry.NPCFlags;
 			UnitFlags = entry.UnitFlags;
@@ -160,9 +192,15 @@ namespace WCell.RealmServer.Entities
 			SetUInt32(UnitFields.MAXHEALTH, health);
 			SetUInt32(UnitFields.BASE_HEALTH, health);
 
-			if (spawnEntry == null || !spawnEntry.IsDead)
+			if (m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
 			{
 				SetUInt32(UnitFields.HEALTH, health);
+			}
+
+			if (m_entry.Regenerates)
+			{
+				Regenerates = true;
+				HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
 			}
 
 			var mana = entry.GetRandomMana();
@@ -171,8 +209,6 @@ namespace WCell.RealmServer.Entities
 			SetInt32(UnitFields.POWER1, mana);
 
 			HoverHeight = entry.HoverHeight;
-
-			m_Movement = new Movement(this);
 
 			PowerCostMultiplier = 1f;
 
@@ -190,13 +226,6 @@ namespace WCell.RealmServer.Entities
 				Flying++;
 			}
 
-			if (IsImmovable)
-			{
-				InitImmovable();
-			}
-
-			m_spells = NPCSpellCollection.Obtain(this);
-
 			AddStandardEquipment();
 			if (m_entry.AddonData != null)
 			{
@@ -211,21 +240,23 @@ namespace WCell.RealmServer.Entities
 
 			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
-			m_brain = m_entry.BrainCreator(this);
-			m_brain.IsRunning = true;
+			if (IsImmovable)
+			{
+				InitImmovable();
+			}
 
 			AddMessage(() =>
-						{
-							// Set Level/Scale after NPC is in world:
-							if (!HasPlayerMaster)
-							{
-								Level = entry.GetRandomLevel();
-							}
-							else
-							{
-								Level = m_master.Level;
-							}
-						});
+			{
+				// Set Level/Scale after NPC is in world:
+				if (!HasPlayerMaster)
+				{
+					Level = entry.GetRandomLevel();
+				}
+				else
+				{
+					Level = m_master.Level;
+				}
+			});
 		}
 
 		/// <summary>
@@ -330,29 +361,14 @@ namespace WCell.RealmServer.Entities
 			}
 			private set
 			{
-				if (m_entry != null)
-				{
-					throw new InvalidOperationException("Trying to change Entry of NPC: " + this);
-				}
-
 				m_entry = value;
-				GenerateId(value.Id);
-				if (m_entry.Regenerates)
-				{
-					Regenerates = true;
-					HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
-				}
-				m_name = m_entry.DefaultName;
 				EntryId = value.Id;
 			}
 		}
 
 		public override string Name
 		{
-			get
-			{
-				return m_name;
-			}
+			get { return m_name; }
 			set
 			{
 				m_name = value;
