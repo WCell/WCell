@@ -4,7 +4,7 @@ using WCell.Constants;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 
-namespace WCell.Addons
+namespace WCell.Addons.Default.Gossip.GuardGossip.Horde
 {
     class Orgrimmar : GossipMenu
     {
@@ -12,7 +12,7 @@ namespace WCell.Addons
         [DependentInitialization(typeof(NPCMgr))]
         public static void CreateOrgrimmarGossipMenu()
         {
-            var entry = NPCMgr.GetEntry(3296);
+            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.OrgrimmarGrunt);
             entry.DefaultGossip = new GossipMenu(
                 new GossipMenuItem(GossipMenuIcon.Trade, "The Bank",
                                    convo =>

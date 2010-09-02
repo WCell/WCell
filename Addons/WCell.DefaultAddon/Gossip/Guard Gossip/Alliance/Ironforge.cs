@@ -4,7 +4,7 @@ using WCell.Constants;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 
-namespace WCell.Addons
+namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
 {
     class Ironforge : GossipMenu
     {
@@ -12,7 +12,7 @@ namespace WCell.Addons
         [DependentInitialization(typeof(NPCMgr))]
         public static void CreateIronforgeGossipMenu()
         {
-            var entry = NPCMgr.GetEntry(5595);
+            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.IronforgeGuard);
             entry.DefaultGossip = new GossipMenu(
                 new GossipMenuItem(GossipMenuIcon.Trade, "Auction House",
                                    convo =>

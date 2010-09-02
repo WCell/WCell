@@ -4,9 +4,9 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 
-namespace WCell.Addons
+namespace WCell.Addons.Default.Gossip.GuardGossip.Neutral
 {
-    internal class Shattrath : GossipMenu
+    class Shattrath : GossipMenu
     {
         public static void CreateShattrathGossipMenu(uint npcID)
         {
@@ -202,9 +202,9 @@ namespace WCell.Addons
                                        )
                     )
                 )
-            {
-                KeepOpen = true
-            };
+                                      {
+                                          KeepOpen = true
+                                      };
         }
 
         [Initialization]

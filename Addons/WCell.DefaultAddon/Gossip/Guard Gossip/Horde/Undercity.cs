@@ -4,9 +4,9 @@ using WCell.Constants;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 
-namespace WCell.Addons
+namespace WCell.Addons.Default.Gossip.GuardGossip.Horde
 {
-    internal class Undercity : GossipMenu
+    class Undercity : GossipMenu
     {
         [Initialization]
         [DependentInitialization(typeof (NPCMgr))]
