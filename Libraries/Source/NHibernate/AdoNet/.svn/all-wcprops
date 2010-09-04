@@ -1,0 +1,101 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/AdoNet
+END
+NonBatchingBatcherFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/3219/trunk/nhibernate/src/NHibernate/AdoNet/NonBatchingBatcherFactory.cs
+END
+SqlClientBatchingBatcherFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4353/trunk/nhibernate/src/NHibernate/AdoNet/SqlClientBatchingBatcherFactory.cs
+END
+OracleDataClientBatchingBatcherFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/3619/trunk/nhibernate/src/NHibernate/AdoNet/OracleDataClientBatchingBatcherFactory.cs
+END
+ColumnNameCache.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3071/trunk/nhibernate/src/NHibernate/AdoNet/ColumnNameCache.cs
+END
+NonBatchingBatcher.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/4540/trunk/nhibernate/src/NHibernate/AdoNet/NonBatchingBatcher.cs
+END
+SqlClientBatchingBatcher.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/5112/trunk/nhibernate/src/NHibernate/AdoNet/SqlClientBatchingBatcher.cs
+END
+OracleDataClientBatchingBatcher.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4909/trunk/nhibernate/src/NHibernate/AdoNet/OracleDataClientBatchingBatcher.cs
+END
+SqlClientSqlCommandSet.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4932/trunk/nhibernate/src/NHibernate/AdoNet/SqlClientSqlCommandSet.cs
+END
+ConnectionManager.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/AdoNet/ConnectionManager.cs
+END
+ResultSetWrapper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3071/trunk/nhibernate/src/NHibernate/AdoNet/ResultSetWrapper.cs
+END
+IExpectation.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/AdoNet/IExpectation.cs
+END
+AbstractBatcher.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/AdoNet/AbstractBatcher.cs
+END
+IEmbeddedBatcherFactoryProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/3619/trunk/nhibernate/src/NHibernate/AdoNet/IEmbeddedBatcherFactoryProvider.cs
+END
+TooManyRowsAffectedException.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/AdoNet/TooManyRowsAffectedException.cs
+END
+Expectations.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4122/trunk/nhibernate/src/NHibernate/AdoNet/Expectations.cs
+END
+IBatcherFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3217/trunk/nhibernate/src/NHibernate/AdoNet/IBatcherFactory.cs
+END

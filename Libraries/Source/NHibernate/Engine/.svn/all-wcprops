@@ -1,0 +1,239 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/nhibernate/!svn/ver/5169/trunk/nhibernate/src/NHibernate/Engine
+END
+EntityUniqueKey.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3206/trunk/nhibernate/src/NHibernate/Engine/EntityUniqueKey.cs
+END
+RowSelection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4025/trunk/nhibernate/src/NHibernate/Engine/RowSelection.cs
+END
+TypedValue.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4756/trunk/nhibernate/src/NHibernate/Engine/TypedValue.cs
+END
+VersionValue.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/VersionValue.cs
+END
+NamedQueryDefinition.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3223/trunk/nhibernate/src/NHibernate/Engine/NamedQueryDefinition.cs
+END
+Cascade.cs
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Cascade.cs
+END
+ExecuteUpdateResultCheckStyle.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/4305/trunk/nhibernate/src/NHibernate/Engine/ExecuteUpdateResultCheckStyle.cs
+END
+Status.cs
+K 25
+svn:wc:ra_dav:version-url
+V 82
+/svnroot/nhibernate/!svn/ver/3057/trunk/nhibernate/src/NHibernate/Engine/Status.cs
+END
+AssociationKey.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/4006/trunk/nhibernate/src/NHibernate/Engine/AssociationKey.cs
+END
+QueryParameters.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5169/trunk/nhibernate/src/NHibernate/Engine/QueryParameters.cs
+END
+TwoPhaseLoad.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/TwoPhaseLoad.cs
+END
+EntityEntry.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Engine/EntityEntry.cs
+END
+JoinHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4774/trunk/nhibernate/src/NHibernate/Engine/JoinHelper.cs
+END
+ValueInclusion.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3385/trunk/nhibernate/src/NHibernate/Engine/ValueInclusion.cs
+END
+ISessionFactoryImplementor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/3879/trunk/nhibernate/src/NHibernate/Engine/ISessionFactoryImplementor.cs
+END
+BatchFetchQueue.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3484/trunk/nhibernate/src/NHibernate/Engine/BatchFetchQueue.cs
+END
+IPersistenceContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Engine/IPersistenceContext.cs
+END
+SubselectFetch.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3904/trunk/nhibernate/src/NHibernate/Engine/SubselectFetch.cs
+END
+IMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/3760/trunk/nhibernate/src/NHibernate/Engine/IMapping.cs
+END
+CascadingAction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/CascadingAction.cs
+END
+CollectionEntry.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/CollectionEntry.cs
+END
+Collections.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Collections.cs
+END
+ResultSetMappingDefinition.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4122/trunk/nhibernate/src/NHibernate/Engine/ResultSetMappingDefinition.cs
+END
+IdentifierValue.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/IdentifierValue.cs
+END
+IBatcher.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/5073/trunk/nhibernate/src/NHibernate/Engine/IBatcher.cs
+END
+ActionQueue.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/ActionQueue.cs
+END
+Versioning.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Versioning.cs
+END
+EntityKey.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/4146/trunk/nhibernate/src/NHibernate/Engine/EntityKey.cs
+END
+ForeignKeys.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/ForeignKeys.cs
+END
+TransactionHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4361/trunk/nhibernate/src/NHibernate/Engine/TransactionHelper.cs
+END
+JoinSequence.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5091/trunk/nhibernate/src/NHibernate/Engine/JoinSequence.cs
+END
+Nullability.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3397/trunk/nhibernate/src/NHibernate/Engine/Nullability.cs
+END
+UnsavedValueFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4305/trunk/nhibernate/src/NHibernate/Engine/UnsavedValueFactory.cs
+END
+FilterDefinition.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/4812/trunk/nhibernate/src/NHibernate/Engine/FilterDefinition.cs
+END
+StatefulPersistenceContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/StatefulPersistenceContext.cs
+END
+NamedSQLQueryDefinition.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3223/trunk/nhibernate/src/NHibernate/Engine/NamedSQLQueryDefinition.cs
+END
+CascadeStyle.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Engine/CascadeStyle.cs
+END
+CollectionKey.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/3520/trunk/nhibernate/src/NHibernate/Engine/CollectionKey.cs
+END
+ISessionImplementor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4689/trunk/nhibernate/src/NHibernate/Engine/ISessionImplementor.cs
+END

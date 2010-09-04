@@ -1,9 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
+using NHibernate.Metadata;
 using NHibernate.Persister.Entity;
 
 namespace NHibernate.Action
@@ -16,7 +15,7 @@ namespace NHibernate.Action
 	{
 		private readonly ISessionImplementor session;
 		private readonly HashedSet<string> affectedEntityNames= new HashedSet<string>();
-		private readonly HashedSet affectedCollectionRoles= new HashedSet();
+		private readonly HashedSet<string> affectedCollectionRoles = new HashedSet<string>();
 		private readonly List<string> spaces;
 
 		public BulkOperationCleanupAction(ISessionImplementor session, IQueryable[] affectedQueryables)
@@ -29,7 +28,7 @@ namespace NHibernate.Action
 				{
 					affectedEntityNames.Add(affectedQueryables[i].EntityName);
 				}
-				ISet roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
+				Iesi.Collections.Generic.ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(affectedQueryables[i].EntityName);
 				if (roles != null)
 				{
 					affectedCollectionRoles.AddAll(roles);
@@ -52,10 +51,10 @@ namespace NHibernate.Action
 
 			Iesi.Collections.Generic.ISet<string> tmpSpaces = new HashedSet<string>(querySpaces);
 			ISessionFactoryImplementor factory = session.Factory;
-			IDictionary acmd = factory.GetAllClassMetadata();
-			foreach (DictionaryEntry entry in acmd)
+			IDictionary<string, IClassMetadata> acmd = factory.GetAllClassMetadata();
+			foreach (KeyValuePair<string, IClassMetadata> entry in acmd)
 			{
-				string entityName = ((System.Type) entry.Key).FullName;
+				string entityName = entry.Key;
 				IEntityPersister persister = factory.GetEntityPersister(entityName);
 				string[] entitySpaces = persister.QuerySpaces;
 
@@ -65,7 +64,7 @@ namespace NHibernate.Action
 					{
 						affectedEntityNames.Add(persister.EntityName);
 					}
-					ISet roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
+					Iesi.Collections.Generic.ISet<string> roles = session.Factory.GetCollectionRolesByEntityParticipant(persister.EntityName);
 					if (roles != null)
 					{
 						affectedCollectionRoles.AddAll(roles);
@@ -98,7 +97,7 @@ namespace NHibernate.Action
 
 		#region IExecutable Members
 
-		public object[] PropertySpaces
+		public string[] PropertySpaces
 		{
 			get { return spaces.ToArray(); }
 		}

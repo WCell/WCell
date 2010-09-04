@@ -1,0 +1,401 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree
+END
+IPathNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IPathNode.cs
+END
+IndexNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IndexNode.cs
+END
+BinaryLogicOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4395/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/BinaryLogicOperatorNode.cs
+END
+ConstructorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4828/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ConstructorNode.cs
+END
+IsNullLogicOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IsNullLogicOperatorNode.cs
+END
+ASTErrorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4339/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ASTErrorNode.cs
+END
+ISelectExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ISelectExpression.cs
+END
+IdentNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IdentNode.cs
+END
+IOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IOperatorNode.cs
+END
+BetweenOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4347/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/BetweenOperatorNode.cs
+END
+UnaryArithmeticNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/UnaryArithmeticNode.cs
+END
+IBinaryOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IBinaryOperatorNode.cs
+END
+ASTTreeAdaptor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4315/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ASTTreeAdaptor.cs
+END
+ParameterNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ParameterNode.cs
+END
+IsNotNullLogicOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IsNotNullLogicOperatorNode.cs
+END
+DeleteStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/DeleteStatement.cs
+END
+IUnaryOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IUnaryOperatorNode.cs
+END
+SelectExpressionList.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/4299/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/SelectExpressionList.cs
+END
+ASTNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4978/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ASTNode.cs
+END
+CountNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/CountNode.cs
+END
+FromClause.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/FromClause.cs
+END
+IExpectedTypeAwareNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IExpectedTypeAwareNode.cs
+END
+OrderByClause.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/OrderByClause.cs
+END
+SqlNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/SqlNode.cs
+END
+IntoClause.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4347/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IntoClause.cs
+END
+IASTNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/4246/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IASTNode.cs
+END
+ISessionFactoryAwareNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ISessionFactoryAwareNode.cs
+END
+HqlSqlWalkerTreeNodeStream.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/4347/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/HqlSqlWalkerTreeNodeStream.cs
+END
+IResolvableNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IResolvableNode.cs
+END
+FromElement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/FromElement.cs
+END
+BinaryArithmeticOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/BinaryArithmeticOperatorNode.cs
+END
+ImpliedFromElement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ImpliedFromElement.cs
+END
+AbstractSelectExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AbstractSelectExpression.cs
+END
+FromReferenceNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/FromReferenceNode.cs
+END
+IASTFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IASTFactory.cs
+END
+InsertStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4242/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/InsertStatement.cs
+END
+IParameterContainer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IParameterContainer.cs
+END
+AggregateNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AggregateNode.cs
+END
+DotNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/DotNode.cs
+END
+JavaConstantNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/JavaConstantNode.cs
+END
+Case2Node.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/Case2Node.cs
+END
+UpdateStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/UpdateStatement.cs
+END
+QueryNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/QueryNode.cs
+END
+SelectClause.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4299/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/SelectClause.cs
+END
+IStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IStatement.cs
+END
+ASTFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/ASTFactory.cs
+END
+FromElementType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/FromElementType.cs
+END
+HqlSqlWalkerNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/4347/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/HqlSqlWalkerNode.cs
+END
+SelectExpressionImpl.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/SelectExpressionImpl.cs
+END
+IRestrictableStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IRestrictableStatement.cs
+END
+CaseNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/CaseNode.cs
+END
+SqlFragment.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/SqlFragment.cs
+END
+MethodNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/MethodNode.cs
+END
+AbstractStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AbstractStatement.cs
+END
+AbstractNullnessCheckNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AbstractNullnessCheckNode.cs
+END
+HqlSqlWalkerTreeAdapter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4828/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/HqlSqlWalkerTreeAdapter.cs
+END
+AbstractRestrictableStatement.cs
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svnroot/nhibernate/!svn/ver/5127/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AbstractRestrictableStatement.cs
+END
+UnaryLogicOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/UnaryLogicOperatorNode.cs
+END
+IInitializableNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IInitializableNode.cs
+END
+CollectionFunction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4219/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/CollectionFunction.cs
+END
+LiteralNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4704/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/LiteralNode.cs
+END
+BooleanLiteralNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/BooleanLiteralNode.cs
+END
+FromElementFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/FromElementFactory.cs
+END
+InLogicOperatorNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4347/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/InLogicOperatorNode.cs
+END
+IDisplayableNode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/IDisplayableNode.cs
+END
+AssignmentSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4290/trunk/nhibernate/src/NHibernate/Hql/Ast/ANTLR/Tree/AssignmentSpecification.cs
+END

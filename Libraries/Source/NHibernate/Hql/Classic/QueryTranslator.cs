@@ -1,14 +1,16 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 
 using NHibernate.Engine;
+using NHibernate.Engine.Query;
 using NHibernate.Hql.Util;
 using NHibernate.Impl;
 using NHibernate.Loader;
@@ -19,6 +21,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Util;
 using NHibernate.Dialect.Function;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 
 namespace NHibernate.Hql.Classic
@@ -44,7 +47,7 @@ namespace NHibernate.Hql.Classic
 		private readonly IDictionary<string, IAssociationType> uniqueKeyOwnerReferences = new Dictionary<string, IAssociationType>();
 		private readonly IDictionary<string, IPropertyMapping> decoratedPropertyMappings = new Dictionary<string, IPropertyMapping>();
 
-		private readonly IList<SqlString> scalarSelectTokens = new List<SqlString>(); // contains a List of strings
+		private readonly IList<SqlString> scalarSelectTokens = new List<SqlString>();
 		private readonly IList<SqlString> whereTokens = new List<SqlString>();
 		private readonly IList<SqlString> havingTokens = new List<SqlString>();
 		private readonly IDictionary<string, JoinSequence> joins = new LinkedHashMap<string, JoinSequence>();
@@ -116,11 +119,14 @@ namespace NHibernate.Hql.Classic
 
 				hasUnsafeCollection = hasUnsafeCollection || IsUnsafe(collectionPersister);
 
-				if (count > 1 && hasUnsafeCollection)
-				{
-					// The comment only mentions a bag since I don't want to confuse users.
-					throw new QueryException("Cannot fetch multiple collections in a single query if one of them is a bag");
-				}
+				// NH : This constraint is present in BasicLoader.PostInstantiate
+				// The constraint here break some tests ported from H3.2 
+				// where is possible the use of "left join fetch"
+				//if (count > 1 && hasUnsafeCollection)
+				//{
+				//  // The comment only mentions a bag since I don't want to confuse users.
+				//  throw new QueryException("Cannot fetch multiple collections in a single query if one of them is a bag");
+				//}
 
 				names.Add(name);
 				persisters.Add(collectionPersister);
@@ -221,7 +227,7 @@ namespace NHibernate.Hql.Classic
 
 		private IDictionary<string, IFilter> enabledFilters;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryTranslator));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(QueryTranslator));
 
 		/// <summary> Construct a query translator </summary>
 		/// <param name="queryIdentifier">
@@ -337,10 +343,9 @@ namespace NHibernate.Hql.Classic
 		/// <c>setter</c> will attempt to cast the <c>ILoadable</c> array passed in into an 
 		/// <c>IQueryable</c> array.
 		/// </remarks>
-		protected internal override ILoadable[] EntityPersisters
+		public override ILoadable[] EntityPersisters
 		{
 			get { return persisters; }
-			set { persisters = (IQueryable[]) value; }
 		}
 
 		/// <summary>
@@ -352,12 +357,62 @@ namespace NHibernate.Hql.Classic
 			get { return returnTypes; }
 		}
 
-		internal virtual IType[] ActualReturnTypes
+		public Loader.Loader Loader
+		{
+			get { return this; }
+		}
+
+		public virtual IType[] ActualReturnTypes
 		{
 			get { return actualReturnTypes; }
 		}
 
-		public virtual string[][] ScalarColumnNames
+	    public ParameterMetadata BuildParameterMetadata()
+	    {
+	        return BuildParameterMetadata(GetParameterTranslations(), queryString);
+	    }
+
+        private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
+        {
+            long start = DateTime.Now.Ticks;
+            ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(hql);
+            long end = DateTime.Now.Ticks;
+            if (log.IsDebugEnabled)
+            {
+                log.Debug("HQL param location recognition took " + (end - start) + " mills (" + hql + ")");
+            }
+
+            int ordinalParamCount = parameterTranslations.OrdinalParameterCount;
+            int[] locations = recognizer.OrdinalParameterLocationList.ToArray();
+            if (parameterTranslations.SupportsOrdinalParameterMetadata && locations.Length != ordinalParamCount)
+            {
+                throw new HibernateException("ordinal parameter mismatch");
+            }
+            ordinalParamCount = locations.Length;
+            OrdinalParameterDescriptor[] ordinalParamDescriptors = new OrdinalParameterDescriptor[ordinalParamCount];
+            for (int i = 1; i <= ordinalParamCount; i++)
+            {
+                ordinalParamDescriptors[i - 1] =
+                    new OrdinalParameterDescriptor(i,
+                                                   parameterTranslations.SupportsOrdinalParameterMetadata
+                                                    ? parameterTranslations.GetOrdinalParameterExpectedType(i)
+                                                    : null, locations[i - 1]);
+            }
+
+            Dictionary<string, NamedParameterDescriptor> namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
+            foreach (KeyValuePair<string, ParamLocationRecognizer.NamedParameterDescription> entry in recognizer.NamedParameterDescriptionMap)
+            {
+                string name = entry.Key;
+                ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
+                namedParamDescriptorMap[name] =
+                    new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name),
+                                                 description.BuildPositionsArray(), description.JpaStyle);
+
+            }
+            return new ParameterMetadata(ordinalParamDescriptors, namedParamDescriptorMap);
+        }
+
+	    public virtual string[][] ScalarColumnNames
 		{
 			get { return scalarColumnNames; }
 		}
@@ -422,12 +477,11 @@ namespace NHibernate.Hql.Classic
 		}
 
 		/// <summary></summary>
-		// TODO: Work out why this causes an error in 1.1 - the variable sqlString is private so we're only exposing one name
-			protected internal override SqlString SqlString
+		[CLSCompliant(false)]
+		public override SqlString SqlString
 		{
 			// this needs internal access because the WhereParser needs to be able to "get" it.
 			get { return sqlString; }
-			set { throw new InvalidOperationException("QueryTranslator.SqlString is read-only"); }
 		}
 
 		private int NextCount()
@@ -529,7 +583,7 @@ namespace NHibernate.Hql.Classic
 
 		internal IQueryable GetPersisterUsingImports(string className)
 		{
-			return SessionFactoryHelper.FindQueryableUsingImports(Factory, className);
+			return helper.FindQueryableUsingImports(className);
 		}
 
 		internal IQueryable GetPersister(string clazz)
@@ -1068,7 +1122,7 @@ namespace NHibernate.Hql.Classic
 					ExtractFunctionClause(tokens, ref tokenIdx);
 
 				// The function render simply translate its name for a specific dialect.
-				return func.Render(new ArrayList(), Factory);
+				return func.Render(new List<object>(), Factory);
 			}
 			functionTokens = ExtractFunctionClause(tokens, ref tokenIdx);
 
@@ -1076,9 +1130,9 @@ namespace NHibernate.Hql.Classic
 			if (fg == null)
 				fg = new CommonGrammar();
 
-			IList args = new ArrayList();
+			IList args = new List<object>();
 			SqlStringBuilder argBuf = new SqlStringBuilder();
-			// Extract args spliting first 2 token because are: FuncName(
+			// Extract args splitting first 2 token because are: FuncName(
 			// last token is ')'
 			// To allow expressions like arg (ex:5+5) all tokens between 'argument separator' or
 			// a 'know argument' are compacted in a string, 
@@ -1200,7 +1254,6 @@ namespace NHibernate.Hql.Classic
 		protected override string[] CollectionSuffixes
 		{
 			get { return fetchedCollections.CollectionSuffixes; }
-			set { throw new InvalidOperationException("QueryTranslator.CollectionSuffixes_set"); }
 		}
 
 		public void AddCollectionToFetch(string role, string name, string ownerName, string entityName)
@@ -1216,7 +1269,6 @@ namespace NHibernate.Hql.Classic
 		protected override string[] Suffixes
 		{
 			get { return suffixes; }
-			set { suffixes = value; }
 		}
 
 		/// <remarks>Used for collection filters</remarks>
@@ -1287,10 +1339,13 @@ namespace NHibernate.Hql.Classic
 
 		public IEnumerable GetEnumerable(QueryParameters parameters, ISessionImplementor session)
 		{
-			bool stats = session.Factory.Statistics.IsStatisticsEnabled;
-			long startTime = 0;
-			if (stats)
-				startTime = DateTime.Now.Ticks;
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			IDbCommand cmd = PrepareQueryCommand(parameters, false, session);
 
@@ -1300,17 +1355,18 @@ namespace NHibernate.Hql.Classic
 				HolderInstantiator.CreateClassicHolderInstantiator(holderConstructor, parameters.ResultTransformer);
 			IEnumerable result =
 				new EnumerableImpl(rs, cmd, session, ReturnTypes, ScalarColumnNames, parameters.RowSelection, hi);
-			if (stats)
+			if (statsEnabled)
 			{
-				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + queryString, 0, (DateTime.Now.Ticks  - startTime));
+				stopWath.Stop();
+				session.Factory.StatisticsImplementor.QueryExecuted("HQL: " + queryString, 0, stopWath.Elapsed);
 				// NH: Different behavior (H3.2 use QueryLoader in AST parser) we need statistic for orginal query too.
 				// probably we have a bug some where else for statistic RowCount
-				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, (DateTime.Now.Ticks - startTime));
+				session.Factory.StatisticsImplementor.QueryExecuted(QueryIdentifier, 0, stopWath.Elapsed);
 			}
 			return result;
 		}
 
-		public static string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
+		public string[] ConcreteQueries(string query, ISessionFactoryImplementor factory)
 		{
 			// TODO H3.2 check if the QuerySplitter can do the work (this method is not present in H3.2)
 
@@ -1364,10 +1420,10 @@ namespace NHibernate.Hql.Classic
 						((last != null && beforeClassTokens.Contains(last)) && (next == null || !notAfterClassTokens.Contains(next))) ||
 						PathExpressionParser.EntityClass.Equals(last))
 					{
-						System.Type clazz = SessionFactoryHelper.GetImportedClass(factory, token);
+						System.Type clazz = helper.GetImportedClass(token);
 						if (clazz != null)
 						{
-							string[] implementors = factory.GetImplementors(clazz.AssemblyQualifiedName);
+							string[] implementors = factory.GetImplementors(clazz.FullName);
 							string placeholder = "$clazz" + count++ + "$";
 
 							if (implementors != null)
@@ -1509,29 +1565,24 @@ namespace NHibernate.Hql.Classic
 			set { holderClass = value; }
 		}
 
-		protected internal override LockMode[] GetLockModes(IDictionary lockModes)
+		public override LockMode[] GetLockModes(IDictionary<string, LockMode> lockModes)
 		{
 			// unfortunately this stuff can't be cached because
 			// it is per-invocation, not constant for the
 			// QueryTranslator instance
-			IDictionary nameLockModes = new Hashtable();
+			Dictionary<string, LockMode> nameLockModes = new Dictionary<string, LockMode>();
 			if (lockModes != null)
 			{
-				IDictionaryEnumerator it = lockModes.GetEnumerator();
-				while (it.MoveNext())
+				foreach (KeyValuePair<string, LockMode> mode in lockModes)
 				{
-					DictionaryEntry me = it.Entry;
-					nameLockModes.Add(
-						GetAliasName((String) me.Key),
-						me.Value
-						);
+					nameLockModes[GetAliasName(mode.Key)] = mode.Value;
 				}
 			}
 			LockMode[] lockModeArray = new LockMode[names.Length];
 			for (int i = 0; i < names.Length; i++)
 			{
-				LockMode lm = (LockMode) nameLockModes[names[i]];
-				if (lm == null)
+				LockMode lm;
+				if (!nameLockModes.TryGetValue(names[i], out lm))
 				{
 					lm = LockMode.None;
 				}
@@ -1540,7 +1591,7 @@ namespace NHibernate.Hql.Classic
 			return lockModeArray;
 		}
 
-		protected override SqlString ApplyLocks(SqlString sql, IDictionary lockModes, Dialect.Dialect dialect)
+		protected override SqlString ApplyLocks(SqlString sql, IDictionary<string, LockMode> lockModes, Dialect.Dialect dialect)
 		{
 			SqlString result;
 			if (lockModes == null || lockModes.Count == 0)
@@ -1549,16 +1600,16 @@ namespace NHibernate.Hql.Classic
 			}
 			else
 			{
-				IDictionary aliasedLockModes = new Hashtable();
-				foreach (DictionaryEntry de in lockModes)
+				Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
+				foreach (KeyValuePair<string, LockMode> de in lockModes)
 				{
-					aliasedLockModes[GetAliasName((string) de.Key)] = de.Value;
+					aliasedLockModes[GetAliasName(de.Key)] = de.Value;
 				}
 
-				IDictionary keyColumnNames = null;
+				Dictionary<string,string[]> keyColumnNames = null;
 				if (dialect.ForUpdateOfColumns)
 				{
-					keyColumnNames = new Hashtable();
+					keyColumnNames = new Dictionary<string, string[]>();
 					for (int i = 0; i < names.Length; i++)
 					{
 						keyColumnNames[names[i]] = persisters[i].IdentifierColumnNames;
@@ -1594,7 +1645,6 @@ namespace NHibernate.Hql.Classic
 		protected override int[] Owners
 		{
 			get { return owners; }
-			set { owners = value; }
 		}
 
 		public IDictionary<string, IFilter> EnabledFilters
@@ -1607,7 +1657,7 @@ namespace NHibernate.Hql.Classic
 			AddJoin(name, joinSequence.GetFromPart());
 		}
 
-		protected internal override bool IsSubselectLoadingEnabled
+		public override bool IsSubselectLoadingEnabled
 		{
 			get { return HasSubselectLoadableCollections(); }
 		}

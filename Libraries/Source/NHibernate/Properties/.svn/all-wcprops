@@ -1,0 +1,161 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties
+END
+PascalCaseUnderscoreStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/PascalCaseUnderscoreStrategy.cs
+END
+ISetter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/ISetter.cs
+END
+IOptimizableSetter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/IOptimizableSetter.cs
+END
+IPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3809/trunk/nhibernate/src/NHibernate/Properties/IPropertyAccessor.cs
+END
+EmbeddedPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/EmbeddedPropertyAccessor.cs
+END
+ChainedPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3809/trunk/nhibernate/src/NHibernate/Properties/ChainedPropertyAccessor.cs
+END
+XmlAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/XmlAccessor.cs
+END
+BackrefPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/BackrefPropertyAccessor.cs
+END
+NoSetterAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/NoSetterAccessor.cs
+END
+BackFieldStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3880/trunk/nhibernate/src/NHibernate/Properties/BackFieldStrategy.cs
+END
+PascalCaseMUnderscoreStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/PascalCaseMUnderscoreStrategy.cs
+END
+CamelCaseUnderscoreStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/CamelCaseUnderscoreStrategy.cs
+END
+NoopAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/NoopAccessor.cs
+END
+IndexPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/IndexPropertyAccessor.cs
+END
+PascalCaseMStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/PascalCaseMStrategy.cs
+END
+PropertyAccessorFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4363/trunk/nhibernate/src/NHibernate/Properties/PropertyAccessorFactory.cs
+END
+CamelCaseStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/CamelCaseStrategy.cs
+END
+MapAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/MapAccessor.cs
+END
+ReadonlyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5032/trunk/nhibernate/src/NHibernate/Properties/ReadonlyAccessor.cs
+END
+LowerCaseUnderscoreStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/LowerCaseUnderscoreStrategy.cs
+END
+IOptimizableGetter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/IOptimizableGetter.cs
+END
+IGetter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Properties/IGetter.cs
+END
+FieldAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4122/trunk/nhibernate/src/NHibernate/Properties/FieldAccessor.cs
+END
+LowerCaseStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/LowerCaseStrategy.cs
+END
+IFieldNamingStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/3234/trunk/nhibernate/src/NHibernate/Properties/IFieldNamingStrategy.cs
+END
+BasicPropertyAccessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4682/trunk/nhibernate/src/NHibernate/Properties/BasicPropertyAccessor.cs
+END

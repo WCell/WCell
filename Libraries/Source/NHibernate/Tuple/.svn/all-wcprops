@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple
+END
+PropertyFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3233/trunk/nhibernate/src/NHibernate/Tuple/PropertyFactory.cs
+END
+EntityModeToTuplizerMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4065/trunk/nhibernate/src/NHibernate/Tuple/EntityModeToTuplizerMapping.cs
+END
+PocoInstantiator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/PocoInstantiator.cs
+END
+DynamicMapInstantiator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4621/trunk/nhibernate/src/NHibernate/Tuple/DynamicMapInstantiator.cs
+END
+Property.cs
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/3182/trunk/nhibernate/src/NHibernate/Tuple/Property.cs
+END
+StandardProperty.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3362/trunk/nhibernate/src/NHibernate/Tuple/StandardProperty.cs
+END
+ITuplizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/3313/trunk/nhibernate/src/NHibernate/Tuple/ITuplizer.cs
+END
+IdentifierProperty.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/3385/trunk/nhibernate/src/NHibernate/Tuple/IdentifierProperty.cs
+END
+IInstantiator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Tuple/IInstantiator.cs
+END
+VersionProperty.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3362/trunk/nhibernate/src/NHibernate/Tuple/VersionProperty.cs
+END

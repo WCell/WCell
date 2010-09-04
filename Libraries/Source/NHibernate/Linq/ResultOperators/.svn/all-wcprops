@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4948/trunk/nhibernate/src/NHibernate/Linq/ResultOperators
+END
+ClientSideTransformOperator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svnroot/nhibernate/!svn/ver/4920/trunk/nhibernate/src/NHibernate/Linq/ResultOperators/ClientSideTransformOperator.cs
+END
+AggregateResultOperator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svnroot/nhibernate/!svn/ver/4948/trunk/nhibernate/src/NHibernate/Linq/ResultOperators/AggregateResultOperator.cs
+END
+NonAggregatingGroupBy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4798/trunk/nhibernate/src/NHibernate/Linq/ResultOperators/NonAggregatingGroupBy.cs
+END

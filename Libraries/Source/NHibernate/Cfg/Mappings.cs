@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Mapping;
 
@@ -18,14 +18,14 @@ namespace NHibernate.Cfg
 		#region Utility classes
 
 		[Serializable]
-		protected internal class ColumnNames
+		public class ColumnNames
 		{
 			public readonly IDictionary<string, string> logicalToPhysical = new Dictionary<string, string>();
 			public readonly IDictionary<string, string> physicalToLogical = new Dictionary<string, string>();
 		}
 
 		[Serializable]
-		protected internal class TableDescription
+		public class TableDescription
 		{
 			public readonly string logicalName;
 			public readonly Table denormalizedSupertable;
@@ -38,7 +38,7 @@ namespace NHibernate.Cfg
 		}
 
 		[Serializable]
-		internal class PropertyReference
+		public sealed class PropertyReference
 		{
 			public string referencedClass;
 			public string propertyName;
@@ -47,7 +47,7 @@ namespace NHibernate.Cfg
 
 		#endregion
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Mappings));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Mappings));
 
 		private readonly IDictionary<string, PersistentClass> classes;
 		private readonly IDictionary<string, Mapping.Collection> collections;
@@ -61,6 +61,7 @@ namespace NHibernate.Cfg
 		private string catalogName;
 		private string defaultCascade;
 		private string defaultNamespace;
+		private readonly Dialect.Dialect dialect;
 		private string defaultAssembly;
 		private string defaultAccess;
 		private bool autoImport;
@@ -68,6 +69,7 @@ namespace NHibernate.Cfg
 		private readonly IList<PropertyReference> propertyReferences;
 		private readonly IDictionary<string, FilterDefinition> filterDefinitions;
 		private readonly IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
+		private readonly Queue<FilterSecondPassArgs> filtersSecondPasses;
 
 		private readonly INamingStrategy namingStrategy;
 
@@ -88,7 +90,7 @@ namespace NHibernate.Cfg
 		/// </summary>
 		protected internal IDictionary<string, TableDescription> tableNameBinding;
 
-		internal Mappings(
+		protected internal Mappings(
 			IDictionary<string, PersistentClass> classes,
 			IDictionary<string, Mapping.Collection> collections,
 			IDictionary<string, Table> tables,
@@ -97,6 +99,7 @@ namespace NHibernate.Cfg
 			IDictionary<string, ResultSetMappingDefinition> resultSetMappings,
 			IDictionary<string, string> imports,
 			IList<SecondPassCommand> secondPasses,
+			Queue<FilterSecondPassArgs> filtersSecondPasses,
 			IList<PropertyReference> propertyReferences,
 			INamingStrategy namingStrategy,
 			IDictionary<string, TypeDef> typeDefs,
@@ -106,7 +109,8 @@ namespace NHibernate.Cfg
 			IDictionary<string, TableDescription> tableNameBinding,
 			IDictionary<Table, ColumnNames> columnNameBindingPerTable,
 			string defaultAssembly,
-			string defaultNamespace)
+			string defaultNamespace,
+			Dialect.Dialect dialect)
 		{
 			this.classes = classes;
 			this.collections = collections;
@@ -126,6 +130,8 @@ namespace NHibernate.Cfg
 			this.columnNameBindingPerTable = columnNameBindingPerTable;
 			this.defaultAssembly = defaultAssembly;
 			this.defaultNamespace = defaultNamespace;
+			this.dialect = dialect;
+			this.filtersSecondPasses = filtersSecondPasses;
 		}
 
 		/// <summary>
@@ -153,37 +159,28 @@ namespace NHibernate.Cfg
 			collections[collection.Role] = collection;
 		}
 
-		internal void AddUniquePropertyReference(string referencedClass, string propertyName)
+		public void AddUniquePropertyReference(string referencedClass, string propertyName)
 		{
-			PropertyReference upr = new PropertyReference();
-			upr.referencedClass = referencedClass;
-			upr.propertyName = propertyName;
-			upr.unique = true;
+			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName, unique = true};
 			propertyReferences.Add(upr);
 		}
 
-		internal void AddPropertyReference(string referencedClass, string propertyName)
+		public void AddPropertyReference(string referencedClass, string propertyName)
 		{
-			PropertyReference upr = new PropertyReference();
-			upr.referencedClass = referencedClass;
-			upr.propertyName = propertyName;
+			var upr = new PropertyReference {referencedClass = referencedClass, propertyName = propertyName};
 			propertyReferences.Add(upr);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public PersistentClass GetClass(System.Type type)
-		{
-			// TODO NH: Remove this method
-			return GetClass(type.FullName);
 		}
 
 		public PersistentClass GetClass(string className)
 		{
-			return classes[className];
+			PersistentClass result;
+			classes.TryGetValue(className, out result);
+			return result;
+		}
+
+		public Dialect.Dialect Dialect
+		{
+			get { return dialect; }
 		}
 
 		/// <summary>
@@ -212,18 +209,13 @@ namespace NHibernate.Cfg
 			set { defaultAssembly = value; }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="role"></param>
-		/// <returns></returns>
 		public Mapping.Collection GetCollection(string role)
 		{
 			return collections[role];
 		}
 
 		/// <summary>
-		/// Adds an import to allow for the full class name <c>Namespace.Entity</c> 
+		/// Adds an import to allow for the full class name <c>Namespace.Entity (AssemblyQualifiedName)</c> 
 		/// to be referenced as <c>Entity</c> or some other name in HQL.
 		/// </summary>
 		/// <param name="className">The name of the type that is being renamed.</param>
@@ -231,26 +223,35 @@ namespace NHibernate.Cfg
 		/// <exception cref="MappingException">Thrown when the rename already identifies another type.</exception>
 		public void AddImport(string className, string rename)
 		{
+			if (rename == null)
+			{
+				throw new ArgumentNullException("rename");
+			}
 			// if the imports dictionary already contains the rename, then make sure 
 			// the rename is not for a different className.  If it is a different className
 			// then we probably have 2 classes with the same name in a different namespace.  To 
 			// prevent this error one of the classes needs to have the attribute "
-			if (imports.ContainsKey(rename) && imports[rename] != className)
-			{
-				object existing = imports[rename];
-				throw new DuplicateMappingException("duplicate import: " + rename +
-				                                    " refers to both " + className +
-				                                    " and " + existing +
-				                                    " (try using auto-import=\"false\")",
-				                                    "import",
-				                                    rename);
-			}
+			string existing;
+			imports.TryGetValue(rename, out existing);
 			imports[rename] = className;
+			if (existing != null)
+			{
+				if (existing.Equals(className))
+				{
+					log.Info("duplicate import: " + className + "->" + rename);
+				}
+				else
+				{
+					throw new DuplicateMappingException(
+						"duplicate import: " + rename + " refers to both " + className + " and " + existing
+						+ " (try using auto-import=\"false\")", "import", rename);
+				}
+			}
 		}
 
-		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract)
+		public Table AddTable(string schema, string catalog, string name, string subselect, bool isAbstract, string schemaAction)
 		{
-			string key = subselect ?? Table.Qualify(catalog, schema, name);
+			string key = subselect ?? dialect.Qualify(catalog, schema, name);
 			Table table;
 			if (!tables.TryGetValue(key, out table))
 			{
@@ -260,6 +261,7 @@ namespace NHibernate.Cfg
 				table.Schema = schema;
 				table.Catalog = catalog;
 				table.Subselect = subselect;
+				table.SchemaActions = GetSchemaActions(schemaAction);
 				tables[key] = table;
 			}
 			else
@@ -271,19 +273,70 @@ namespace NHibernate.Cfg
 			return table;
 		}
 
+		private static SchemaAction GetSchemaActions(string schemaAction)
+		{
+			if (string.IsNullOrEmpty(schemaAction))
+			{
+				return SchemaAction.All;
+			}
+			else
+			{
+				SchemaAction sa = SchemaAction.None;
+				string[] acts = schemaAction.Split(new[] {',', ' '});
+				foreach (var s in acts)
+				{
+					switch (s.ToLowerInvariant())
+					{
+						case "":
+						case "all":
+							sa |= SchemaAction.All;
+							break;
+						case "drop":
+							sa |= SchemaAction.Drop;
+							break;
+						case "update":
+							sa |= SchemaAction.Update;
+							break;
+						case "export":
+							sa |= SchemaAction.Export;
+							break;
+						case "validate":
+							sa |= SchemaAction.Validate;
+							break;
+						case "none":
+							sa |= SchemaAction.None;
+							break;
+						default:
+							throw new MappingException(
+								string.Format("Invalid schema-export value; Expected(all drop update export validate none), Found ({0})", s));
+					}
+				}
+				return sa;
+			}
+		}
+
 		public Table AddDenormalizedTable(string schema, string catalog, string name, bool isAbstract, string subselect, Table includedTable)
 		{
-			string key = subselect ?? Table.Qualify(schema, catalog, name);
-			if (tables.ContainsKey(key))
+			string key = subselect ?? dialect.Qualify(schema, catalog, name);
+
+			Table table = new DenormalizedTable(includedTable)
+			              	{
+												IsAbstract = isAbstract, 
+												Name = name, 
+												Catalog = catalog, 
+												Schema = schema, 
+												Subselect = subselect
+											};
+
+			Table existing;
+			if (tables.TryGetValue(key, out existing))
 			{
-				throw new DuplicateMappingException("table", name);
+				if (existing.IsPhysicalTable)
+				{
+					throw new DuplicateMappingException("table", name);
+				}
 			}
 
-			Table table = new DenormalizedTable(includedTable);
-			table.IsAbstract = isAbstract;
-			table.Name = name;
-			table.Schema = schema;
-			table.Subselect = subselect;
 			tables[key] = table;
 			return table;
 		}
@@ -299,13 +352,13 @@ namespace NHibernate.Cfg
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same physical table name reference several logical table names: " + physicalName
-				                           + " => " + "'" + oldDescriptor.logicalName + "' and '" + logicalName + "'");
+																	 + " => " + "'" + oldDescriptor.logicalName + "' and '" + logicalName + "'");
 			}
 		}
 
 		public Table GetTable(string schema, string catalog, string name)
 		{
-			string key = Table.Qualify(catalog, schema, name);
+			string key = dialect.Qualify(catalog, schema, name);
 			return tables[key];
 		}
 
@@ -404,12 +457,22 @@ namespace NHibernate.Cfg
 
 		public void AddFilterDefinition(FilterDefinition definition)
 		{
-			filterDefinitions.Add(definition.FilterName, definition);
+			FilterDefinition fd;
+			if (filterDefinitions.TryGetValue(definition.FilterName, out fd))
+			{
+				if(fd!=null)
+				{
+					throw new MappingException("Duplicated filter-def named: " + definition.FilterName);
+				}
+			}
+			filterDefinitions[definition.FilterName] = definition;
 		}
 
 		public FilterDefinition GetFilterDefinition(string name)
 		{
-			return filterDefinitions[name];
+			FilterDefinition result;
+			filterDefinitions.TryGetValue(name, out result);
+			return result;
 		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject auxiliaryDatabaseObject)
@@ -435,14 +498,14 @@ namespace NHibernate.Cfg
 
 		public void AddTypeDef(string typeName, string typeClass, IDictionary<string, string> paramMap)
 		{
-			TypeDef def = new TypeDef(typeClass, paramMap);
+			var def = new TypeDef(typeClass, paramMap);
 			typeDefs[typeName] = def;
 			log.Debug("Added " + typeName + " with class " + typeClass);
 		}
 
 		public TypeDef GetTypeDef(string typeName)
 		{
-			if(string.IsNullOrEmpty(typeName)) 
+			if (string.IsNullOrEmpty(typeName))
 				return null;
 			TypeDef result;
 			typeDefs.TryGetValue(typeName, out result);
@@ -464,13 +527,13 @@ namespace NHibernate.Cfg
 			binding.logicalToPhysical.TryGetValue(logicalName.ToLowerInvariant(), out oldFinalName);
 			binding.logicalToPhysical[logicalName.ToLowerInvariant()] = finalColumn.GetQuotedName();
 			if (oldFinalName != null &&
-			    !(finalColumn.IsQuoted
-			      	? oldFinalName.Equals(finalColumn.GetQuotedName())
-			      	: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
+					!(finalColumn.IsQuoted
+							? oldFinalName.Equals(finalColumn.GetQuotedName())
+							: oldFinalName.Equals(finalColumn.GetQuotedName(), StringComparison.InvariantCultureIgnoreCase)))
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same logical column name referenced by different physical ones: " + table.Name + "."
-				                           + logicalName + " => '" + oldFinalName + "' and '" + finalColumn.GetQuotedName() + "'");
+																	 + logicalName + " => '" + oldFinalName + "' and '" + finalColumn.GetQuotedName() + "'");
 			}
 
 			string oldLogicalName;
@@ -480,7 +543,7 @@ namespace NHibernate.Cfg
 			{
 				//TODO possibly relax that
 				throw new MappingException("Same physical column represented by different logical column names: " + table.Name + "."
-				                           + finalColumn.GetQuotedName() + " => '" + oldLogicalName + "' and '" + logicalName + "'");
+																	 + finalColumn.GetQuotedName() + " => '" + oldLogicalName + "' and '" + logicalName + "'");
 			}
 		}
 
@@ -532,7 +595,7 @@ namespace NHibernate.Cfg
 
 		private static string BuildTableNameKey(string schema, string catalog, string name)
 		{
-			StringBuilder keyBuilder = new StringBuilder();
+			var keyBuilder = new StringBuilder();
 			if (schema != null)
 				keyBuilder.Append(schema);
 			keyBuilder.Append(".");
@@ -588,6 +651,34 @@ namespace NHibernate.Cfg
 			return persistentClass;
 		}
 
+		public void ExpectedFilterDefinition(IFilterable filterable, string filterName, string condition)
+		{
+			var fdef = GetFilterDefinition(filterName);
+			if (string.IsNullOrEmpty(condition))
+			{
+				if (fdef != null)
+				{
+					// where immediately available, apply the condition
+					condition = fdef.DefaultFilterCondition;
+				}
+			}
+			if (string.IsNullOrEmpty(condition) && fdef == null)
+			{
+				log.Debug(string.Format("Adding filter second pass [{0}]", filterName));
+				filtersSecondPasses.Enqueue(new FilterSecondPassArgs(filterable, filterName));
+			}
+			else if (string.IsNullOrEmpty(condition) && fdef != null)
+			{
+				// Both sides does not have condition
+				throw new MappingException("no filter condition found for filter: " + filterName);
+			}
+
+			if (fdef == null)
+			{
+				// if not available add an expected filter definition
+				FilterDefinitions[filterName] = null;
+			}
+		}
 	}
 
 	public delegate void SecondPassCommand(IDictionary<string, PersistentClass> persistentClasses);

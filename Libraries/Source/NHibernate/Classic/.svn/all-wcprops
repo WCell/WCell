@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Classic
+END
+IValidatable.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/2665/trunk/nhibernate/src/NHibernate/Classic/IValidatable.cs
+END
+ValidationFailure.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Classic/ValidationFailure.cs
+END
+ILifecycle.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/2665/trunk/nhibernate/src/NHibernate/Classic/ILifecycle.cs
+END

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Iesi.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Engine;
@@ -18,6 +17,7 @@ namespace NHibernate.Loader
 		protected readonly IList<OuterJoinableAssociation> associations = new List<OuterJoinableAssociation>();
 		private readonly Iesi.Collections.Generic.ISet<AssociationKey> visitedAssociationKeys = new HashedSet<AssociationKey>();
 		private readonly IDictionary<string, IFilter> enabledFilters;
+		private readonly IDictionary<string, IFilter> enabledFiltersForManyToOne;
 
 		private string[] suffixes;
 		private string[] collectionSuffixes;
@@ -114,6 +114,7 @@ namespace NHibernate.Loader
 		{
 			this.factory = factory;
 			this.enabledFilters = enabledFilters;
+			enabledFiltersForManyToOne = FilterHelper.GetEnabledForManyToOne(enabledFilters);
 		}
 
 		/// <summary>
@@ -129,6 +130,11 @@ namespace NHibernate.Loader
 			}
 		}
 
+		protected virtual SqlString GetWithClause(string path)
+		{
+			return SqlString.Empty;
+		}
+
 		/// <summary>
 		/// Add on association (one-to-one, many-to-one, or a collection) to a list
 		/// of associations to be fetched by outerjoin
@@ -141,7 +147,7 @@ namespace NHibernate.Loader
 			string subalias = GenerateTableAlias(associations.Count + 1, path, joinable);
 
 			OuterJoinableAssociation assoc =
-				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, Factory, enabledFilters);
+				new OuterJoinableAssociation(type, alias, aliasedLhsColumns, subalias, joinType, GetWithClause(path), Factory, enabledFilters);
 			assoc.ValidateJoin(path);
 			associations.Add(assoc);
 
@@ -218,20 +224,18 @@ namespace NHibernate.Loader
 			}
 		}
 
-		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister, int propertyNumber,
-			string alias, string path, bool nullable, int currentDepth)
+		private void WalkEntityAssociationTree(IAssociationType associationType, IOuterJoinLoadable persister,
+		                                       int propertyNumber, string alias, string path, bool nullable, int currentDepth,
+		                                       ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
-			string[] aliasedLhsColumns =
-				JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, persister, Factory);
-
-			string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, persister, Factory);
-			string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
+			string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, 0);
+			string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, 0);
+			string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
 
 			string subpath = SubPath(path, persister.GetSubclassPropertyName(propertyNumber));
 
-			JoinType joinType =
-				GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable, lhsColumns, nullable,
-										currentDepth, persister.GetCascadeStyle(propertyNumber));
+			JoinType joinType = GetJoinType(associationType, persister.GetFetchMode(propertyNumber), subpath, lhsTable,
+			                                lhsColumns, nullable, currentDepth, persister.GetCascadeStyle(propertyNumber));
 
 			AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 		}
@@ -240,21 +244,22 @@ namespace NHibernate.Loader
 		/// For an entity class, add to a list of associations to be fetched
 		/// by outerjoin
 		/// </summary>
-		private void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected virtual void WalkEntityTree(IOuterJoinLoadable persister, string alias, string path, int currentDepth)
 		{
 			int n = persister.CountSubclassProperties();
 			for (int i = 0; i < n; i++)
 			{
 				IType type = persister.GetSubclassPropertyType(i);
+				ILhsAssociationTypeSqlInfo associationTypeSQLInfo = JoinHelper.GetLhsSqlInfo(alias, i, persister, Factory);
 				if (type.IsAssociationType)
 				{
-					WalkEntityAssociationTree((IAssociationType)type, persister, i, alias, path,
-																		persister.IsSubclassPropertyNullable(i), currentDepth);
+					WalkEntityAssociationTree((IAssociationType) type, persister, i, alias, path,
+					                          persister.IsSubclassPropertyNullable(i), currentDepth, associationTypeSQLInfo);
 				}
 				else if (type.IsComponentType)
 				{
-					WalkComponentTree((IAbstractComponentType)type, i, 0, persister, alias,
-														SubPath(path, persister.GetSubclassPropertyName(i)), currentDepth);
+					WalkComponentTree((IAbstractComponentType) type, 0, alias, SubPath(path, persister.GetSubclassPropertyName(i)),
+					                  currentDepth, associationTypeSQLInfo);
 				}
 			}
 		}
@@ -262,8 +267,8 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// For a component, add to a list of associations to be fetched by outerjoin
 		/// </summary>
-		private void WalkComponentTree(IAbstractComponentType componentType, int propertyNumber, int begin,
-			IOuterJoinLoadable persister, string alias, string path, int currentDepth)
+		protected void WalkComponentTree(IAbstractComponentType componentType, int begin, string alias, string path,
+		                                 int currentDepth, ILhsAssociationTypeSqlInfo associationTypeSQLInfo)
 		{
 			IType[] types = componentType.Subtypes;
 			string[] propertyNames = componentType.PropertyNames;
@@ -271,19 +276,18 @@ namespace NHibernate.Loader
 			{
 				if (types[i].IsAssociationType)
 				{
-					IAssociationType associationType = (IAssociationType)types[i];
-					string[] aliasedLhsColumns =
-						JoinHelper.GetAliasedLHSColumnNames(associationType, alias, propertyNumber, begin, persister, Factory);
+					var associationType = (IAssociationType) types[i];
 
-					string[] lhsColumns = JoinHelper.GetLHSColumnNames(associationType, propertyNumber, begin, persister, Factory);
-					string lhsTable = JoinHelper.GetLHSTableName(associationType, propertyNumber, persister);
+					string[] aliasedLhsColumns = associationTypeSQLInfo.GetAliasedColumnNames(associationType, begin);
+					string[] lhsColumns = associationTypeSQLInfo.GetColumnNames(associationType, begin);
+					string lhsTable = associationTypeSQLInfo.GetTableName(associationType);
 
 					string subpath = SubPath(path, propertyNames[i]);
 					bool[] propertyNullability = componentType.PropertyNullability;
 
-					JoinType joinType =
-						GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
-												propertyNullability == null || propertyNullability[i], currentDepth, componentType.GetCascadeStyle(i));
+					JoinType joinType = GetJoinType(associationType, componentType.GetFetchMode(i), subpath, lhsTable, lhsColumns,
+					                                propertyNullability == null || propertyNullability[i], currentDepth,
+					                                componentType.GetCascadeStyle(i));
 
 					AddAssociationToJoinTreeIfNecessary(associationType, aliasedLhsColumns, alias, subpath, currentDepth, joinType);
 				}
@@ -291,7 +295,7 @@ namespace NHibernate.Loader
 				{
 					string subpath = SubPath(path, propertyNames[i]);
 
-					WalkComponentTree((IAbstractComponentType)types[i], propertyNumber, begin, persister, alias, subpath, currentDepth);
+					WalkComponentTree((IAbstractComponentType) types[i], begin, alias, subpath, currentDepth, associationTypeSQLInfo);
 				}
 				begin += types[i].GetColumnSpan(Factory);
 			}
@@ -339,12 +343,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Extend the path by the given property name
 		/// </summary>
-		private static string SubPath(string path, string property)
+		protected static string SubPath(string path, string property)
 		{
-			if (path == null || path.Length == 0)
-				return property;
-			else
-				return StringHelper.Qualify(path, property);
+			return string.IsNullOrEmpty(path) ? property : StringHelper.Qualify(path, property);
 		}
 
 		/// <summary>
@@ -464,7 +465,7 @@ namespace NHibernate.Loader
 			string foreignKeyTable;
 			string[] foreignKeyColumns;
 
-			if (type.ForeignKeyDirection == ForeignKeyDirection.ForeignKeyFromParent)
+			if (type.ForeignKeyDirection.Equals(ForeignKeyDirection.ForeignKeyFromParent))
 			{
 				foreignKeyTable = lhsTable;
 				foreignKeyColumns = lhsColumnNames;
@@ -525,19 +526,32 @@ namespace NHibernate.Loader
 			return !tooDeep && !IsDuplicateAssociation(lhsTable, lhsColumnNames, type);
 		}
 
-		protected string OrderBy(IList<OuterJoinableAssociation> associations, string orderBy)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations, SqlString orderBy)
 		{
 			return MergeOrderings(OrderBy(associations), orderBy);
 		}
 
-		protected string MergeOrderings(string ass, string orderBy)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations, string orderBy)
+		{
+			return MergeOrderings(OrderBy(associations), new SqlString(orderBy));
+		}
+
+		protected SqlString MergeOrderings(SqlString ass, SqlString orderBy)
 		{
 			if (ass.Length == 0)
 				return orderBy;
 			else if (orderBy.Length == 0)
 				return ass;
 			else
-				return ass + StringHelper.CommaSpace + orderBy;
+				return ass.Append(StringHelper.CommaSpace).Append(orderBy);
+		}
+
+		protected SqlString MergeOrderings(string ass, SqlString orderBy) {
+			return this.MergeOrderings(new SqlString(ass), orderBy);
+		}
+
+		protected SqlString MergeOrderings(string ass, string orderBy) {
+			return this.MergeOrderings(new SqlString(ass), new SqlString(orderBy));
 		}
 
 		/// <summary>
@@ -551,10 +565,25 @@ namespace NHibernate.Loader
 			foreach (OuterJoinableAssociation oj in associations)
 			{
 				if (last != null && last.IsManyToManyWith(oj))
-					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection)last.Joinable);
+				{
+					oj.AddManyToManyJoin(outerjoin, (IQueryableCollection) last.Joinable);
+				}
 				else
+				{
 					oj.AddJoins(outerjoin);
-
+					// NH Different behavior : NH1179 and NH1293
+					// Apply filters in Many-To-One association
+					if (enabledFiltersForManyToOne.Count > 0)
+					{
+						string manyToOneFilterFragment = oj.Joinable.FilterFragment(oj.RHSAlias, enabledFiltersForManyToOne);
+						bool joinClauseDoesNotContainsFilterAlready =
+							outerjoin.ToFromFragmentString.IndexOfCaseInsensitive(manyToOneFilterFragment) == -1;
+						if (joinClauseDoesNotContainsFilterAlready)
+						{
+							outerjoin.AddCondition(manyToOneFilterFragment);
+						}
+					}
+				}
 				last = oj;
 			}
 
@@ -597,9 +626,9 @@ namespace NHibernate.Loader
 		/// <summary>
 		/// Get the order by string required for collection fetching
 		/// </summary>
-		protected static string OrderBy(IList<OuterJoinableAssociation> associations)
+		protected SqlString OrderBy(IList<OuterJoinableAssociation> associations)
 		{
-			StringBuilder buf = new StringBuilder();
+			SqlStringBuilder buf = new SqlStringBuilder();
 
 			OuterJoinableAssociation last = null;
 			foreach (OuterJoinableAssociation oj in associations)
@@ -612,7 +641,7 @@ namespace NHibernate.Loader
 						if (queryableCollection.HasOrdering)
 						{
 							string orderByString = queryableCollection.GetSQLOrderByString(oj.RHSAlias);
-							buf.Append(orderByString).Append(StringHelper.CommaSpace);
+							buf.Add(orderByString).Add(StringHelper.CommaSpace);
 						}
 					}
 					else
@@ -627,7 +656,7 @@ namespace NHibernate.Loader
 								if (queryableCollection.HasManyToManyOrdering)
 								{
 									string orderByString = queryableCollection.GetManyToManyOrderByString(oj.RHSAlias);
-									buf.Append(orderByString).Append(StringHelper.CommaSpace);
+									buf.Add(orderByString).Add(StringHelper.CommaSpace);
 								}
 							}
 						}
@@ -636,10 +665,16 @@ namespace NHibernate.Loader
 				last = oj;
 			}
 
-			if (buf.Length > 0)
-				buf.Length = buf.Length - 2;
+			if (buf.Count > 0) {
+				buf.RemoveAt(buf.Count-1);
+			}
 
-			return buf.ToString();
+			return buf.ToSqlString();
+		}
+
+		protected virtual string GenerateAliasForColumn(string rootAlias, string column)
+		{
+			return rootAlias;
 		}
 
 		/// <summary>
@@ -651,7 +686,8 @@ namespace NHibernate.Loader
 			{
 				// if not a composite key, use "foo in (?, ?, ?)" for batching
 				// if no batch, and not a composite key, use "foo = ?"
-				InFragment inf = new InFragment().SetColumn(alias, columnNames[0]);
+				string tableAlias = GenerateAliasForColumn(alias, columnNames[0]);
+				InFragment inf = new InFragment().SetColumn(tableAlias, columnNames[0]);
 
 				for (int i = 0; i < batchSize; i++)
 					inf.AddValue(Parameter.Placeholder);
@@ -757,7 +793,6 @@ namespace NHibernate.Loader
 			else
 			{
 				SqlStringBuilder buf = new SqlStringBuilder(associations.Count * 3);
-				buf.Add(StringHelper.CommaSpace);
 
 				int entityAliasCount = 0;
 				int collectionAliasCount = 0;
@@ -778,16 +813,16 @@ namespace NHibernate.Loader
 						joinable.SelectFragment(next == null ? null : next.Joinable, next == null ? null : next.RHSAlias, join.RHSAlias,
 																		entitySuffix, collectionSuffix, join.JoinType == JoinType.LeftOuterJoin);
 
-					buf.Add(selectFragment);
-
+					if (selectFragment.Trim().Length > 0)
+					{
+						buf.Add(StringHelper.CommaSpace)
+							.Add(selectFragment);
+					}
 					if (joinable.ConsumesEntityAlias())
 						entityAliasCount++;
 
 					if (joinable.ConsumesCollectionAlias() && join.JoinType == JoinType.LeftOuterJoin)
 						collectionAliasCount++;
-
-					if (i < associations.Count - 1 && selectFragment.Trim().Length > 0)
-						buf.Add(StringHelper.CommaSpace);
 				}
 
 				return buf.ToSqlString().ToString();

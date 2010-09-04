@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -309,11 +309,6 @@
     <ProjectReference Include="..\..\Core\WCell.Intercommunication\WCell.Intercommunication.csproj">
       <Project>{5997613F-D2A5-4B86-BEE2-C823BC07D5AF}</Project>
       <Name>WCell.Intercommunication</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-3.5</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Services\WCell.RealmServer\WCell.RealmServer.csproj">

@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/nhibernate/!svn/ver/5020/trunk/nhibernate/src/NHibernate/Proxy
+END
+ILazyInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3097/trunk/nhibernate/src/NHibernate/Proxy/ILazyInitializer.cs
+END
+AbstractProxyFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4923/trunk/nhibernate/src/NHibernate/Proxy/AbstractProxyFactory.cs
+END
+IEntityNotFoundDelegate.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/3007/trunk/nhibernate/src/NHibernate/Proxy/IEntityNotFoundDelegate.cs
+END
+IProxyValidator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3844/trunk/nhibernate/src/NHibernate/Proxy/IProxyValidator.cs
+END
+NHibernateProxyHelper.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5020/trunk/nhibernate/src/NHibernate/Proxy/NHibernateProxyHelper.cs
+END
+IProxyFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4923/trunk/nhibernate/src/NHibernate/Proxy/IProxyFactory.cs
+END
+DynProxyTypeValidator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3880/trunk/nhibernate/src/NHibernate/Proxy/DynProxyTypeValidator.cs
+END
+AbstractLazyInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4484/trunk/nhibernate/src/NHibernate/Proxy/AbstractLazyInitializer.cs
+END
+INHibernateProxy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Proxy/INHibernateProxy.cs
+END

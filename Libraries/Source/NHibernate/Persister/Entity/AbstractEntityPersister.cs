@@ -6,7 +6,7 @@ using System.Data.Common;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
@@ -26,10 +26,9 @@ using NHibernate.Tuple;
 using NHibernate.Tuple.Entity;
 using NHibernate.Type;
 using NHibernate.Util;
-using Array = System.Array;
-using Property = NHibernate.Mapping.Property;
+using Array=System.Array;
+using Property=NHibernate.Mapping.Property;
 using NHibernate.SqlTypes;
-using System.Diagnostics;
 
 namespace NHibernate.Persister.Entity
 {
@@ -41,8 +40,8 @@ namespace NHibernate.Persister.Entity
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
 	public abstract class AbstractEntityPersister : IOuterJoinLoadable, IQueryable, IClassMetadata,
-	                                                IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer,
-	                                                IPostInsertIdentityPersister, ILockable
+																									IUniqueKeyLoadable, ISqlLoadable, ILazyPropertyInitializer,
+																									IPostInsertIdentityPersister, ILockable
 	{
 		#region InclusionChecker
 
@@ -78,7 +77,6 @@ namespace NHibernate.Persister.Entity
 			{
 				this.includeProperty = includeProperty;
 			}
-
 			public bool IncludeProperty(int propertyNumber)
 			{
 				return includeProperty[propertyNumber];
@@ -95,8 +93,7 @@ namespace NHibernate.Persister.Entity
 			private readonly object entity;
 			private readonly AbstractEntityPersister entityPersister;
 
-			public GeneratedIdentifierBinder(object[] fields, bool[] notNull, ISessionImplementor session, object entity,
-			                                 AbstractEntityPersister entityPersister)
+			public GeneratedIdentifierBinder(object[] fields, bool[] notNull, ISessionImplementor session, object entity, AbstractEntityPersister entityPersister)
 			{
 				this.fields = fields;
 				this.notNull = notNull;
@@ -116,7 +113,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		private static readonly ILog log = LogManager.GetLogger(typeof (AbstractEntityPersister));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityPersister));
 		public const string EntityClass = "class";
 		protected const string Discriminator_Alias = "clazz_";
 
@@ -143,7 +140,6 @@ namespace NHibernate.Persister.Entity
 		private readonly string sqlWhereStringTemplate;
 
 		#region Information about properties of this class
-
 		//including inherited properties
 		//(only really needed for updatable/insertable properties)
 		private readonly int[] propertyColumnSpans;
@@ -161,9 +157,6 @@ namespace NHibernate.Persister.Entity
 		private readonly bool[][] propertyColumnInsertable;
 		private readonly bool[] propertyUniqueness;
 		private readonly bool[] propertySelectable;
-
-		// Edit by Domi: Cache of the column indices
-		private int[] cachedIndices;
 
 		#endregion
 
@@ -211,7 +204,7 @@ namespace NHibernate.Persister.Entity
 
 		#endregion
 
-		private readonly Hashtable uniqueKeyLoaders = new Hashtable();
+		private readonly Dictionary<string, EntityLoader> uniqueKeyLoaders = new Dictionary<string, EntityLoader>();
 		private readonly Dictionary<LockMode, ILockingStrategy> lockers = new Dictionary<LockMode, ILockingStrategy>();
 		private readonly Dictionary<string, IUniqueEntityLoader> loaders = new Dictionary<string, IUniqueEntityLoader>();
 
@@ -233,7 +226,6 @@ namespace NHibernate.Persister.Entity
 		private SqlString sqlInsertGeneratedValuesSelectString;
 		private SqlString sqlUpdateGeneratedValuesSelectString;
 		private string identitySelectString;
-
 		#endregion
 
 		#region Custom SQL
@@ -267,14 +259,14 @@ namespace NHibernate.Persister.Entity
 		protected readonly BasicEntityPropertyMapping propertyMapping;
 
 		protected AbstractEntityPersister(PersistentClass persistentClass, ICacheConcurrencyStrategy cache,
-		                                  ISessionFactoryImplementor factory)
+																			ISessionFactoryImplementor factory)
 		{
 			this.factory = factory;
 			this.cache = cache;
 			isLazyPropertiesCacheable = persistentClass.IsLazyPropertiesCacheable;
 			cacheEntryStructure = factory.Settings.IsStructuredCacheEntriesEnabled
-			                      	? (ICacheEntryStructure) new StructuredCacheEntry(this)
-			                      	: (ICacheEntryStructure) new UnstructuredCacheEntry();
+															? (ICacheEntryStructure)new StructuredCacheEntry(this)
+															: (ICacheEntryStructure)new UnstructuredCacheEntry();
 
 			entityMetamodel = new EntityMetamodel(persistentClass, factory);
 
@@ -337,9 +329,9 @@ namespace NHibernate.Persister.Entity
 
 			sqlWhereString = !string.IsNullOrEmpty(persistentClass.Where) ? "( " + persistentClass.Where + ") " : null;
 			sqlWhereStringTemplate = sqlWhereString == null
-			                         	? null
-			                         	: Template.RenderWhereStringTemplate(sqlWhereString, factory.Dialect,
-			                         	                                     factory.SQLFunctionRegistry);
+																? null
+																: Template.RenderWhereStringTemplate(sqlWhereString, factory.Dialect,
+																																		 factory.SQLFunctionRegistry);
 
 			#endregion
 
@@ -367,7 +359,6 @@ namespace NHibernate.Persister.Entity
 
 			i = 0;
 			bool foundFormula = false;
-
 			foreach (Property prop in persistentClass.PropertyClosureIterator)
 			{
 				thisClassProperties.Add(prop);
@@ -529,8 +520,8 @@ namespace NHibernate.Persister.Entity
 
 		protected abstract int[] SubclassColumnTableNumberClosure { get; }
 		protected abstract int[] SubclassFormulaTableNumberClosure { get; }
-		protected internal abstract int[] PropertyTableNumbersInSelect { get; }
-		protected internal abstract int[] PropertyTableNumbers { get; }
+		protected internal abstract int[] PropertyTableNumbersInSelect { get;}
+		protected internal abstract int[] PropertyTableNumbers { get;}
 
 		public virtual string DiscriminatorColumnName
 		{
@@ -777,7 +768,7 @@ namespace NHibernate.Persister.Entity
 				if (identitySelectString == null)
 					identitySelectString =
 						Factory.Dialect.GetIdentitySelectString(GetTableName(0), GetKeyColumns(0)[0],
-						                                        IdentifierType.SqlTypes(Factory)[0].DbType);
+																										IdentifierType.SqlTypes(Factory)[0].DbType);
 				return identitySelectString;
 			}
 		}
@@ -1012,20 +1003,16 @@ namespace NHibernate.Persister.Entity
 			get { return entityMetamodel.NaturalIdentifierProperties; }
 		}
 
-		public abstract string[][] ContraintOrderedTableKeyColumnClosure { get; }
-		public abstract IType DiscriminatorType { get; }
-		public abstract string[] ConstraintOrderedTableNameClosure { get; }
-		public abstract string DiscriminatorSQLValue { get; }
-		public abstract object DiscriminatorValue { get; }
-		public abstract string[] PropertySpaces { get; }
+		public abstract string[][] ContraintOrderedTableKeyColumnClosure { get;}
+		public abstract IType DiscriminatorType { get;}
+		public abstract string[] ConstraintOrderedTableNameClosure { get;}
+		public abstract string DiscriminatorSQLValue { get;}
+		public abstract object DiscriminatorValue { get;}
+		public abstract string[] PropertySpaces { get;}
 
-		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert)
-		{
-		}
+		protected virtual void AddDiscriminatorToInsert(SqlInsertBuilder insert) { }
 
-		protected virtual void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix)
-		{
-		}
+		protected virtual void AddDiscriminatorToSelect(SelectFragment select, string name, string suffix) { }
 
 		public abstract string GetSubclassTableName(int j);
 
@@ -1140,13 +1127,13 @@ namespace NHibernate.Persister.Entity
 					int property = dirtyProperties[i];
 					int table = propertyTableNumbers[property];
 					tableUpdateNeeded[table] = tableUpdateNeeded[table] ||
-					                           (GetPropertyColumnSpan(property) > 0 && updateability[property]);
+																		 (GetPropertyColumnSpan(property) > 0 && updateability[property]);
 				}
 				if (IsVersioned)
 				{
 					tableUpdateNeeded[0] = tableUpdateNeeded[0] ||
-					                       Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
-					                                                             PropertyVersionability);
+																 Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection,
+																																			 PropertyVersionability);
 				}
 				return tableUpdateNeeded;
 			}
@@ -1215,7 +1202,7 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug(
 					string.Format("initializing lazy properties of: {0}, field access: {1}",
-					              MessageHelper.InfoString(this, id, Factory), fieldName));
+												MessageHelper.InfoString(this, id, Factory), fieldName));
 			}
 
 			if (HasCache)
@@ -1224,7 +1211,7 @@ namespace NHibernate.Persister.Entity
 				object ce = Cache.Get(cacheKey, session.Timestamp);
 				if (ce != null)
 				{
-					CacheEntry cacheEntry = (CacheEntry) CacheEntryStructure.Destructure(ce, factory);
+					CacheEntry cacheEntry = (CacheEntry)CacheEntryStructure.Destructure(ce, factory);
 					if (!cacheEntry.AreLazyPropertiesUnfetched)
 					{
 						//note early exit here:
@@ -1236,14 +1223,14 @@ namespace NHibernate.Persister.Entity
 			return InitializeLazyPropertiesFromDatastore(fieldName, entity, session, id, entry);
 		}
 
-		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session,
-		                                                     object id, EntityEntry entry)
+		private object InitializeLazyPropertiesFromDatastore(string fieldName, object entity, ISessionImplementor session, object id, EntityEntry entry)
 		{
 			if (!HasLazyProperties)
 				throw new AssertionFailure("no lazy properties");
 
 			log.Debug("initializing lazy properties from datastore");
 
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				object result = null;
@@ -1258,7 +1245,7 @@ namespace NHibernate.Persister.Entity
 						// are shared PK one-to-one associations which are
 						// handled differently in the Type#nullSafeGet code...
 						ps = session.Batcher.PrepareCommand(CommandType.Text, lazySelect, IdentifierType.SqlTypes(Factory));
-						IdentifierType.NullSafeSet(ps, id, 1, session);
+						IdentifierType.NullSafeSet(ps, id, 0, session);
 						rs = session.Batcher.ExecuteReader(ps);
 						rs.Read();
 					}
@@ -1283,14 +1270,20 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not initialize lazy properties: " +
-				                                 MessageHelper.InfoString(this, id, Factory), SQLLazySelectString);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message =
+				                       			"could not initialize lazy properties: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = SQLLazySelectString.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
-		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session,
-		                                                 EntityEntry entry, CacheEntry cacheEntry)
+		private object InitializeLazyPropertiesFromCache(string fieldName, object entity, ISessionImplementor session, EntityEntry entry, CacheEntry cacheEntry)
 		{
 			log.Debug("initializing lazy properties from second-level cache");
 
@@ -1311,8 +1304,7 @@ namespace NHibernate.Persister.Entity
 			return result;
 		}
 
-		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot,
-		                                    int j, object propValue)
+		private bool InitializeLazyProperty(string fieldName, object entity, ISessionImplementor session, object[] snapshot, int j, object propValue)
 		{
 			SetPropertyValue(entity, lazyPropertyNumbers[j], propValue, session.EntityMode);
 			if (snapshot != null)
@@ -1376,8 +1368,8 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < columns.Length; i++)
 			{
 				bool selectable = (allProperties || !subclassColumnLazyClosure[i]) &&
-				                  !IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
-				                  subclassColumnSelectableClosure[i];
+					!IsSubclassTableSequentialSelect(columnTableNumbers[i]) &&
+					subclassColumnSelectableClosure[i];
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, columnTableNumbers[i]);
@@ -1391,7 +1383,7 @@ namespace NHibernate.Persister.Entity
 			for (int i = 0; i < formulaTemplates.Length; i++)
 			{
 				bool selectable = (allProperties || !subclassFormulaLazyClosure[i]) &&
-				                  !IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
+					!IsSubclassTableSequentialSelect(formulaTableNumbers[i]);
 				if (selectable)
 				{
 					string subalias = GenerateTableAlias(name, formulaTableNumbers[i]);
@@ -1415,10 +1407,10 @@ namespace NHibernate.Persister.Entity
 				log.Debug("Getting current persistent state for: " + MessageHelper.InfoString(this, id, Factory));
 			}
 
+			using (new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString,
-				                                               IdentifierType.SqlTypes(factory));
+				IDbCommand st = session.Batcher.PrepareCommand(CommandType.Text, SQLSnapshotSelectString, IdentifierType.SqlTypes(factory));
 				IDataReader rs = null;
 				try
 				{
@@ -1451,9 +1443,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
-				                                 SQLSnapshotSelectString);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = SQLSnapshotSelectString.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -1539,10 +1537,8 @@ namespace NHibernate.Persister.Entity
 			{
 				if (inclusionChecker.IncludeProperty(i))
 				{
-					frag.AddColumns(GenerateTableAlias(alias, propertyTableNumbers[i]), propertyColumnNames[i],
-					                propertyColumnAliases[i]);
-					frag.AddFormulas(GenerateTableAlias(alias, propertyTableNumbers[i]), propertyColumnFormulaTemplates[i],
-					                 propertyColumnAliases[i]);
+					frag.AddColumns(GenerateTableAlias(alias, propertyTableNumbers[i]), propertyColumnNames[i], propertyColumnAliases[i]);
+					frag.AddFormulas(GenerateTableAlias(alias, propertyTableNumbers[i]), propertyColumnFormulaTemplates[i], propertyColumnAliases[i]);
 				}
 			}
 			return frag.ToFragmentString();
@@ -1562,10 +1558,10 @@ namespace NHibernate.Persister.Entity
 
 			string[] aliasedIdColumns = StringHelper.Qualify(RootAlias, IdentifierColumnNames);
 			string selectClause = StringHelper.Join(StringHelper.CommaSpace, aliasedIdColumns)
-			                      + ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
+														+ ConcretePropertySelectFragment(RootAlias, PropertyUpdateability);
 
 			SqlString fromClause = new SqlString(FromTableFragment(RootAlias)) +
-			                       FromJoinFragment(RootAlias, true, false);
+														 FromJoinFragment(RootAlias, true, false);
 
 			SqlString joiner = new SqlString("=", Parameter.Placeholder, " and ");
 			SqlStringBuilder whereClauseBuilder = new SqlStringBuilder()
@@ -1606,9 +1602,9 @@ namespace NHibernate.Persister.Entity
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Forcing version increment [" +
-				          MessageHelper.InfoString(this, id, Factory) + "; " +
-				          VersionType.ToLoggableString(currentVersion, Factory) + " -> " +
-				          VersionType.ToLoggableString(nextVersion, Factory) + "]");
+					MessageHelper.InfoString(this, id, Factory) + "; " +
+					VersionType.ToLoggableString(currentVersion, Factory) + " -> " +
+					VersionType.ToLoggableString(nextVersion, Factory) + "]");
 			}
 
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[0]);
@@ -1616,8 +1612,7 @@ namespace NHibernate.Persister.Entity
 			SqlCommandInfo versionIncrementCommand = GenerateVersionIncrementUpdateString();
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text,
-				                                               versionIncrementCommand.ParameterTypes);
+				IDbCommand st = session.Batcher.PrepareCommand(versionIncrementCommand.CommandType, versionIncrementCommand.Text, versionIncrementCommand.ParameterTypes);
 				try
 				{
 					VersionType.NullSafeSet(st, nextVersion, 0, session);
@@ -1632,9 +1627,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
-				                                 VersionSelectString);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = VersionSelectString.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 			return nextVersion;
 		}
@@ -1649,7 +1650,7 @@ namespace NHibernate.Persister.Entity
 			}
 			update.AddColumn(VersionColumnName, VersionType);
 			update.SetIdentityColumn(IdentifierColumnNames, IdentifierType);
-			update.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
+			update.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 			return update.ToSqlCommandInfo();
 		}
 
@@ -1662,11 +1663,10 @@ namespace NHibernate.Persister.Entity
 			{
 				log.Debug("Getting version: " + MessageHelper.InfoString(this, id, Factory));
 			}
-
+			using(new SessionIdLoggingContext(session.SessionId))
 			try
 			{
-				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString,
-				                                                    IdentifierType.SqlTypes(Factory));
+				IDbCommand st = session.Batcher.PrepareQueryCommand(CommandType.Text, VersionSelectString, IdentifierType.SqlTypes(Factory));
 				IDataReader rs = null;
 				try
 				{
@@ -1689,9 +1689,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
-				                                 VersionSelectString);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not retrieve version: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = VersionSelectString.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -1745,6 +1751,11 @@ namespace NHibernate.Persister.Entity
 			return propertyMapping.ToType(propertyName);
 		}
 
+		public bool TryToType(string propertyName, out IType type)
+		{
+			return propertyMapping.TryToType(propertyName, out type);
+		}
+
 		public string[] GetPropertyColumnNames(string propertyName)
 		{
 			return propertyMapping.GetColumnNames(propertyName);
@@ -1764,7 +1775,7 @@ namespace NHibernate.Persister.Entity
 			IType type = propertyMapping.ToType(rootPropertyName);
 			if (type.IsAssociationType)
 			{
-				IAssociationType assocType = (IAssociationType) type;
+				IAssociationType assocType = (IAssociationType)type;
 				if (assocType.UseLHSPrimaryKey)
 				{
 					// performance op to avoid the array search
@@ -1806,6 +1817,16 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
+		public string GenerateTableAliasForColumn(string rootAlias, string column)
+		{
+			int propertyIndex = Array.IndexOf(SubclassColumnClosure, column);
+
+			if (propertyIndex < 0)
+				return rootAlias;
+
+			return GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[propertyIndex]);
+		}
+
 		public string GenerateTableAlias(string rootAlias, int tableNumber)
 		{
 			if (tableNumber == 0)
@@ -1837,6 +1858,18 @@ namespace NHibernate.Persister.Entity
 				{
 					result[j] = StringHelper.Qualify(alias, cols[j]);
 				}
+			}
+			return result;
+		}
+
+		public string[] ToIdentifierColumns(string name)
+		{
+			string alias = GenerateTableAlias(name, 0);
+			string[] cols = IdentifierColumnNames;
+			var result = new string[cols.Length];
+			for (int j = 0; j < cols.Length; j++)
+			{
+				result[j] = StringHelper.Qualify(alias, cols[j]);
 			}
 			return result;
 		}
@@ -1903,7 +1936,7 @@ namespace NHibernate.Persister.Entity
 		{
 			string[] rawAliases;
 
-			if (!subclassPropertyAliases.TryGetValue(propertyName, out rawAliases))
+			if (!subclassPropertyAliases.TryGetValue(propertyName,out rawAliases))
 				return null;
 
 			string[] result = new string[rawAliases.Length];
@@ -1947,7 +1980,7 @@ namespace NHibernate.Persister.Entity
 			if (IdentifierType.IsComponentType)
 			{
 				// Fetch embedded identifiers propertynames from the "virtual" identifier component
-				IAbstractComponentType componentId = (IAbstractComponentType) IdentifierType;
+				IAbstractComponentType componentId = (IAbstractComponentType)IdentifierType;
 				string[] idPropertyNames = componentId.PropertyNames;
 				string[] idAliases = IdentifierAliases;
 				string[] idColumnNames = IdentifierColumnNames;
@@ -1956,29 +1989,28 @@ namespace NHibernate.Persister.Entity
 				{
 					if (entityMetamodel.HasNonIdentifierPropertyNamedId)
 					{
-						subclassPropertyAliases[EntityPersister.EntityID + "." + idPropertyNames[i]] = new string[] {idAliases[i]};
-						subclassPropertyColumnNames[EntityPersister.EntityID + "." + IdentifierPropertyName + "." + idPropertyNames[i]] =
-							new string[] {idColumnNames[i]};
+						subclassPropertyAliases[EntityPersister.EntityID + "." + idPropertyNames[i]] = new string[] { idAliases[i] };
+						subclassPropertyColumnNames[EntityPersister.EntityID + "." + IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idColumnNames[i] };
 					}
 					//				if (hasIdentifierProperty() && !ENTITY_ID.equals( getIdentifierPropertyName() ) ) {
 					if (HasIdentifierProperty)
 					{
-						subclassPropertyAliases[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] {idAliases[i]};
-						subclassPropertyColumnNames[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] {idColumnNames[i]};
+						subclassPropertyAliases[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idAliases[i] };
+						subclassPropertyColumnNames[IdentifierPropertyName + "." + idPropertyNames[i]] = new string[] { idColumnNames[i] };
 					}
 					else
 					{
 						// embedded composite ids ( alias.idname1, alias.idname2 )
-						subclassPropertyAliases[idPropertyNames[i]] = new string[] {idAliases[i]};
-						subclassPropertyColumnNames[idPropertyNames[i]] = new string[] {idColumnNames[i]};
+						subclassPropertyAliases[idPropertyNames[i]] = new string[] { idAliases[i] };
+						subclassPropertyColumnNames[idPropertyNames[i]] = new string[] { idColumnNames[i] };
 					}
 				}
 			}
 
 			if (entityMetamodel.IsPolymorphic)
 			{
-				subclassPropertyAliases[EntityClass] = new string[] {DiscriminatorAlias};
-				subclassPropertyColumnNames[EntityClass] = new string[] {DiscriminatorColumnName};
+				subclassPropertyAliases[EntityClass] = new string[] { DiscriminatorAlias };
+				subclassPropertyColumnNames[EntityClass] = new string[] { DiscriminatorColumnName };
 			}
 		}
 
@@ -1989,7 +2021,7 @@ namespace NHibernate.Persister.Entity
 				string propName = path == null ? prop.Name : path + "." + prop.Name;
 				if (prop.IsComposite)
 				{
-					Component component = (Component) prop.Value;
+					Component component = (Component)prop.Value;
 					InternalInitSubclassPropertyAliasesMap(propName, component.PropertyIterator);
 				}
 				else
@@ -2022,13 +2054,10 @@ namespace NHibernate.Persister.Entity
 
 			if (useStaticLoader)
 			{
-				return (EntityLoader) uniqueKeyLoaders[propertyName];
+				return uniqueKeyLoaders[propertyName];
 			}
-			else
-			{
-				return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName),
-				                             enabledFilters);
-			}
+
+			return CreateUniqueKeyLoader(propertyMapping.ToType(propertyName), propertyMapping.ToColumns(propertyName), enabledFilters);
 		}
 
 		public int GetPropertyIndex(string propertyName)
@@ -2048,17 +2077,16 @@ namespace NHibernate.Persister.Entity
 					//don't need filters for the static loaders
 					uniqueKeyLoaders[propertyNames[i]] =
 						CreateUniqueKeyLoader(propertyTypes[i], GetPropertyColumnNames(i),
-						                      new CollectionHelper.EmptyMapClass<string, IFilter>());
+																	new CollectionHelper.EmptyMapClass<string, IFilter>());
 				}
 			}
 		}
 
-		private EntityLoader CreateUniqueKeyLoader(IType uniqueKeyType, string[] columns,
-		                                           IDictionary<string, IFilter> enabledFilters)
+		private EntityLoader CreateUniqueKeyLoader(IType uniqueKeyType, string[] columns, IDictionary<string, IFilter> enabledFilters)
 		{
 			if (uniqueKeyType.IsEntityType)
 			{
-				string className = ((EntityType) uniqueKeyType).GetAssociatedEntityName();
+				string className = ((EntityType)uniqueKeyType).GetAssociatedEntityName();
 				uniqueKeyType = Factory.GetEntityPersister(className).IdentifierType;
 			}
 
@@ -2164,15 +2192,14 @@ namespace NHibernate.Persister.Entity
 		}
 
 		/// <summary> Generate the SQL that updates a row by id (and version)</summary>
-		protected internal SqlCommandInfo GenerateUpdateString(bool[] includeProperty, int j, object[] oldFields,
-		                                                       bool useRowId)
+		protected internal SqlCommandInfo GenerateUpdateString(bool[] includeProperty, int j, object[] oldFields, bool useRowId)
 		{
 			SqlUpdateBuilder updateBuilder = new SqlUpdateBuilder(Factory.Dialect, Factory)
 				.SetTableName(GetTableName(j));
 
 			// select the correct row by either pk or rowid
 			if (useRowId)
-				updateBuilder.SetIdentityColumn(new string[] {rowIdName}, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
+				updateBuilder.SetIdentityColumn(new string[] { rowIdName }, NHibernateUtil.Int32); //TODO: eventually, rowIdName[j]
 			else
 				updateBuilder.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
@@ -2194,7 +2221,7 @@ namespace NHibernate.Persister.Entity
 				// check it (unless this is a "generated" version column)!
 				if (CheckVersion(includeProperty))
 				{
-					updateBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
+					updateBuilder.SetVersionColumn(new string[] { VersionColumnName }, VersionType);
 					hasColumns = true;
 				}
 			}
@@ -2244,8 +2271,7 @@ namespace NHibernate.Persister.Entity
 
 		private bool CheckVersion(bool[] includeProperty)
 		{
-			return includeProperty[VersionProperty] ||
-			       entityMetamodel.PropertyUpdateGenerationInclusions[VersionProperty] != ValueInclusion.None;
+			return includeProperty[VersionProperty] || entityMetamodel.PropertyUpdateGenerationInclusions[VersionProperty] != ValueInclusion.None;
 		}
 
 		protected SqlCommandInfo GenerateInsertString(bool[] includeProperty, int j)
@@ -2266,7 +2292,6 @@ namespace NHibernate.Persister.Entity
 
 			SqlInsertBuilder builder = new SqlInsertBuilder(Factory).SetTableName(GetTableName(j));
 
-
 			// add normal properties
 			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 			{
@@ -2274,12 +2299,6 @@ namespace NHibernate.Persister.Entity
 				{
 					// this property belongs on the table and is to be inserted
 					builder.AddColumns(GetPropertyColumnNames(i), propertyColumnInsertable[i], PropertyTypes[i]);
-				}
-				if (builder.GetParametersTypeArray().Length < i + 1 && propertyColumnSpans[i] > 0)
-				{
-					//log.Warn(string.Format("Entity {0} had a double entry for Column Name: {1}", Name, propertyColumnNames[i]));
-					throw new Exception(string.Format("Entity {0} had two columns with the same name: {1}", Name,
-					                                  propertyColumnNames[i][0]));
 				}
 			}
 
@@ -2341,16 +2360,17 @@ namespace NHibernate.Persister.Entity
 			return insert.ToSqlCommandInfo();
 		}
 
-		protected SqlCommandInfo GenerateDeleteString(int j)
+		protected virtual SqlCommandInfo GenerateDeleteString(int j)
 		{
-			SqlDeleteBuilder deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
+			var deleteBuilder = new SqlDeleteBuilder(Factory.Dialect, Factory);
 			deleteBuilder
 				.SetTableName(GetTableName(j))
 				.SetIdentityColumn(GetKeyColumns(j), IdentifierType);
 
-			if (j == 0 && IsVersioned)
+			// NH: Only add version to where clause if optimistic lock mode is Version
+			if (j == 0 && IsVersioned && entityMetamodel.OptimisticLockMode == Versioning.OptimisticLock.Version)
 			{
-				deleteBuilder.SetVersionColumn(new string[] {VersionColumnName}, VersionType);
+				deleteBuilder.SetVersionColumn(new[] { VersionColumnName }, VersionType);
 			}
 
 			if (Factory.Settings.IsCommentsEnabled)
@@ -2360,16 +2380,14 @@ namespace NHibernate.Persister.Entity
 			return deleteBuilder.ToSqlCommandInfo();
 		}
 
-		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j,
-		                        IDbCommand st, ISessionImplementor session)
+		protected int Dehydrate(object id, object[] fields, bool[] includeProperty, bool[][] includeColumns, int j, IDbCommand st, ISessionImplementor session)
 		{
 			return Dehydrate(id, fields, null, includeProperty, includeColumns, j, st, session, 0);
 		}
 
 		/// <summary> Marshall the fields of a persistent instance to a prepared statement</summary>
-		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns,
-		                        int table,
-		                        IDbCommand statement, ISessionImplementor session, int index)
+		protected int Dehydrate(object id, object[] fields, object rowId, bool[] includeProperty, bool[][] includeColumns, int table,
+			IDbCommand statement, ISessionImplementor session, int index)
 		{
 			if (log.IsDebugEnabled)
 			{
@@ -2378,64 +2396,30 @@ namespace NHibernate.Persister.Entity
 
 			// there's a pretty strong coupling between the order of the SQL parameter 
 			// construction and the actual order of the parameter collection. 
-			var i = 0;
-			try
-			{
-				for (; i < entityMetamodel.PropertySpan; i++)
-				{
-					if (includeProperty[i] && IsPropertyOfTable(i, table))
-					{
-						PropertyTypes[i].NullSafeSet(statement, fields[i], index, includeColumns[i], session);
-						index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
-					}
-				}
 
-				if (rowId != null)
+			for (int i = 0; i < entityMetamodel.PropertySpan; i++)
+			{
+				if (includeProperty[i] && IsPropertyOfTable(i, table))
 				{
-					// TODO H3.2 : support to set the rowId
-					// TransactionManager.manager.SetObject(ps, index, rowId);
-					// index += 1;
-					throw new NotImplementedException("support to set the rowId");
-				}
-				else if (id != null)
-				{
-					IdentifierType.NullSafeSet(statement, id, index, session);
-					index += IdentifierColumnSpan;
+					PropertyTypes[i].NullSafeSet(statement, fields[i], index, includeColumns[i], session);
+					index += ArrayHelper.CountTrue(includeColumns[i]); //TODO:  this is kinda slow...
 				}
 			}
-			catch (Exception ex)
+
+			if (rowId != null)
 			{
-				throw new Exception(string.Format("Failed to dehydrate {0} (at Cell: {1}, Index: {2}, Id: {3}, Value: {4})",
-				                                  Name, propertyColumnNames[i][0], index, id, fields[i]), ex);
+				// TODO H3.2 : support to set the rowId
+				// TransactionManager.manager.SetObject(ps, index, rowId);
+				// index += 1;
+				throw new NotImplementedException("support to set the rowId");
+			}
+			else if (id != null)
+			{
+				IdentifierType.NullSafeSet(statement, id, index, session);
+				index += IdentifierColumnSpan;
 			}
 
 			return index;
-		}
-
-		public void RecacheColumnIndices(string[][] suffixedNames, DataTable table)
-		{
-			var items = table.Rows;
-			cachedIndices = new int[suffixedNames.Length];
-			for (var i = 0; i < suffixedNames.Length; i++)
-			{
-				if (suffixedNames[i].Length != 0)
-				{
-					int columnIndex = -1;
-					for (int j = 0; j < items.Count; j++)
-					{
-						if (suffixedNames[i][0] == items[j].ItemArray[0].ToString())
-						{
-							columnIndex = j;
-							break;
-						}
-					}
-					//if (columnIndex == -1)
-					//{
-					//    throw new Exception("Could not find index for column: " + suffixedNames[i][0]);
-					//}
-					cachedIndices[i] = columnIndex;
-				}
-			}
 		}
 
 		/// <summary>
@@ -2443,22 +2427,20 @@ namespace NHibernate.Persister.Entity
 		/// without resolving associations or collections
 		/// </summary>
 		public object[] Hydrate(IDataReader rs, object id, object obj, ILoadable rootLoadable,
-		                        string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
+			string[][] suffixedPropertyColumns, bool allProperties, ISessionImplementor session)
 		{
 			if (log.IsDebugEnabled)
 			{
 				log.Debug("Hydrating entity: " + MessageHelper.InfoString(this, id, Factory));
 			}
 
-			AbstractEntityPersister rootPersister = (AbstractEntityPersister) rootLoadable;
+			AbstractEntityPersister rootPersister = (AbstractEntityPersister)rootLoadable;
 
 			bool hasDeferred = rootPersister.HasSequentialSelect;
 			IDbCommand sequentialSelect = null;
 			IDataReader sequentialResultSet = null;
 			bool sequentialSelectEmpty = false;
-
-			string[] propNames = PropertyNames;
-			int i = -1;
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				if (hasDeferred)
@@ -2498,12 +2480,13 @@ namespace NHibernate.Persister.Entity
 					}
 				}
 
+				string[] propNames = PropertyNames;
 				IType[] types = PropertyTypes;
 				object[] values = new object[types.Length];
 				bool[] laziness = PropertyLaziness;
 				string[] propSubclassNames = SubclassPropertySubclassNameClosure;
 
-				for (i = 0; i < types.Length; i++)
+				for (int i = 0; i < types.Length; i++)
 				{
 					if (!propertySelectable[i])
 					{
@@ -2513,7 +2496,7 @@ namespace NHibernate.Persister.Entity
 					{
 						//decide which ResultSet to get the property value from:
 						bool propertyIsDeferred = hasDeferred
-						                          && rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
+																			&& rootPersister.IsSubclassPropertyDeferred(propNames[i], propSubclassNames[i]);
 						if (propertyIsDeferred && sequentialSelectEmpty)
 						{
 							values[i] = null;
@@ -2522,22 +2505,7 @@ namespace NHibernate.Persister.Entity
 						{
 							IDataReader propertyResultSet = propertyIsDeferred ? sequentialResultSet : rs;
 							string[] cols = propertyIsDeferred ? propertyColumnAliases[i] : suffixedPropertyColumns[i];
-
-							// Dirty fix by Domi: Don't query the DB for the ID if we already have it!
-							var type = types[i];
-							if (cachedIndices == null)
-							{
-								RecacheColumnIndices(suffixedPropertyColumns, propertyResultSet.GetSchemaTable());
-							}
-
-							if (cachedIndices[i] > 0 && type is NullableType)
-							{
-								values[i] = ((NullableType) type).NullSafeGet(propertyResultSet, cachedIndices[i]);
-							}
-							else
-							{
-								values[i] = type.Hydrate(propertyResultSet, cols, session, obj);
-							}
+							values[i] = types[i].Hydrate(propertyResultSet, cols, session, obj);
 						}
 					}
 					else
@@ -2552,11 +2520,6 @@ namespace NHibernate.Persister.Entity
 				}
 
 				return values;
-			}
-			catch (Exception e)
-			{
-				throw new Exception(string.Format("Unable to hydrate row with id '{0}' from {1}. Column: {2} (#{3})",
-				                                  id, EntityName, propNames[i], i), e);
 			}
 			finally
 			{
@@ -2618,7 +2581,7 @@ namespace NHibernate.Persister.Entity
 		/// in cases where the identifier value is known before the insert occurs.
 		/// </remarks>
 		protected void Insert(object id, object[] fields, bool[] notNull, int j,
-		                      SqlCommandInfo sql, object obj, ISessionImplementor session)
+			SqlCommandInfo sql, object obj, ISessionImplementor session)
 		{
 			if (IsInverseTable(j))
 			{
@@ -2651,8 +2614,8 @@ namespace NHibernate.Persister.Entity
 			{
 				// Render the SQL query
 				IDbCommand insertCmd = useBatch
-				                       	? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-				                       	: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 
 				try
 				{
@@ -2692,15 +2655,21 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not insert: " + MessageHelper.InfoString(this), sql.Text);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not insert: " + MessageHelper.InfoString(this, id),
+				                       		Sql = sql.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
 		/// <summary> Perform an SQL UPDATE or SQL INSERT</summary>
 		protected internal virtual void UpdateOrInsert(object id, object[] fields, object[] oldFields, object rowId,
-		                                               bool[] includeProperty, int j, object oldVersion, object obj,
-		                                               SqlCommandInfo sql, ISessionImplementor session)
+			bool[] includeProperty, int j, object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
 		{
 			if (!IsInverseTable(j))
 			{
@@ -2734,13 +2703,12 @@ namespace NHibernate.Persister.Entity
 		}
 
 		protected bool Update(object id, object[] fields, object[] oldFields, object rowId, bool[] includeProperty, int j,
-		                      object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
+			object oldVersion, object obj, SqlCommandInfo sql, ISessionImplementor session)
 		{
 			bool useVersion = j == 0 && IsVersioned;
 			IExpectation expectation = Expectations.AppropriateExpectation(updateResultCheckStyles[j]);
 			//bool callable = IsUpdateCallable(j);
-			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
-				//note: updates to joined tables can't be batched...
+			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable; //note: updates to joined tables can't be batched...
 
 			if (log.IsDebugEnabled)
 			{
@@ -2755,8 +2723,8 @@ namespace NHibernate.Persister.Entity
 			{
 				int index = 0;
 				IDbCommand statement = useBatch
-				                       	? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
-				                       	: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
+																? session.Batcher.PrepareBatchCommand(sql.CommandType, sql.Text, sql.ParameterTypes)
+																: session.Batcher.PrepareCommand(sql.CommandType, sql.Text, sql.ParameterTypes);
 				try
 				{
 					//index += expectation.Prepare(statement, factory.ConnectionProvider.Driver);
@@ -2774,15 +2742,15 @@ namespace NHibernate.Persister.Entity
 					{
 						bool[] versionability = PropertyVersionability;
 						bool[] includeOldField = OptimisticLockMode == Versioning.OptimisticLock.All
-						                         	? PropertyUpdateability
-						                         	: includeProperty;
+																			? PropertyUpdateability
+																			: includeProperty;
 						IType[] types = PropertyTypes;
 
 						for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 						{
 							bool include = includeOldField[i] &&
-							               IsPropertyOfTable(i, j) &&
-							               versionability[i];
+														 IsPropertyOfTable(i, j) &&
+														 versionability[i];
 							if (include)
 							{
 								bool[] settable = types[i].ToColumnNullness(oldFields[i], Factory);
@@ -2821,8 +2789,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not update: " + MessageHelper.InfoString(this, id, Factory), sql.Text);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not update: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = sql.Text.ToString(),
+																	EntityName = EntityName,
+																	EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -2830,14 +2805,16 @@ namespace NHibernate.Persister.Entity
 		/// Perform an SQL DELETE
 		/// </summary>
 		public void Delete(object id, object version, int j, object obj, SqlCommandInfo sql, ISessionImplementor session,
-		                   object[] loadedState)
+											 object[] loadedState)
 		{
 			if (IsInverseTable(j))
 			{
 				return;
 			}
 
-			bool useVersion = j == 0 && IsVersioned;
+			// NH : Only use version if lock mode is Version
+			bool useVersion = j == 0 && IsVersioned && Versioning.OptimisticLock.Version == entityMetamodel.OptimisticLockMode;
+
 			//bool callable = IsDeleteCallable(j);
 			IExpectation expectation = Expectations.AppropriateExpectation(deleteResultCheckStyles[j]);
 			bool useBatch = j == 0 && expectation.CanBeBatched && IsBatchable;
@@ -2932,8 +2909,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not delete: " + MessageHelper.InfoString(this, id, Factory), sql.Text);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not delete: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = sql.Text.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -2946,7 +2930,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public void Update(object id, object[] fields, int[] dirtyFields, bool hasDirtyCollection,
-		                   object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session)
+			object[] oldFields, object oldVersion, object obj, object rowId, ISessionImplementor session)
 		{
 			//note: dirtyFields==null means we had no snapshot, and we couldn't get one using select-before-update
 			//	  oldFields==null just means we had no snapshot to begin with (we might have used select-before-update to get the dirtyFields)
@@ -2965,8 +2949,8 @@ namespace NHibernate.Persister.Entity
 				for (int j = 0; j < span; j++)
 				{
 					updateStrings[j] = tableUpdateNeeded[j]
-					                   	? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null)
-					                   	: null;
+															? GenerateUpdateString(propsToUpdate, j, oldFields, j == 0 && rowId != null)
+															: null;
 				}
 			}
 			else
@@ -2981,8 +2965,7 @@ namespace NHibernate.Persister.Entity
 				// Now update only the tables with dirty properties (and the table with the version number)
 				if (tableUpdateNeeded[j])
 				{
-					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j],
-					               session);
+					UpdateOrInsert(id, fields, oldFields, j == 0 ? rowId : null, propsToUpdate, j, oldVersion, obj, updateStrings[j], session);
 				}
 			}
 		}
@@ -3041,7 +3024,7 @@ namespace NHibernate.Persister.Entity
 		{
 			int span = TableSpan;
 			bool isImpliedOptimisticLocking = !entityMetamodel.IsVersioned &&
-			                                  entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version;
+																				entityMetamodel.OptimisticLockMode > Versioning.OptimisticLock.Version;
 			object[] loadedState = null;
 			if (isImpliedOptimisticLocking)
 			{
@@ -3097,7 +3080,7 @@ namespace NHibernate.Persister.Entity
 				for (int i = 0; i < entityMetamodel.PropertySpan; i++)
 				{
 					bool include = versionability[i] &&
-					               IsPropertyOfTable(i, j);
+												 IsPropertyOfTable(i, j);
 
 					if (include)
 					{
@@ -3171,7 +3154,7 @@ namespace NHibernate.Persister.Entity
 			}
 		}
 
-		public string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
+		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
 			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), enabledFilters);
@@ -3192,8 +3175,8 @@ namespace NHibernate.Persister.Entity
 		public virtual SqlString FromJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
 		{
 			return SubclassTableSpan == 1
-			       	? new SqlString(string.Empty) // just a performance opt!
-			       	: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
+				? new SqlString(string.Empty) // just a performance opt!
+				: CreateJoin(alias, innerJoin, includeSubclasses).ToFromFragmentString;
 		}
 
 		public virtual SqlString WhereJoinFragment(string alias, bool innerJoin, bool includeSubclasses)
@@ -3215,17 +3198,17 @@ namespace NHibernate.Persister.Entity
 			for (int j = 1; j < tableSpan; j++) //notice that we skip the first table; it is the driving table!
 			{
 				bool joinIsIncluded = IsClassOrSuperclassTable(j) ||
-				                      (includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
+					(includeSubclasses && !IsSubclassTableSequentialSelect(j) && !IsSubclassTableLazy(j));
 				if (joinIsIncluded)
 				{
 					join.AddJoin(GetSubclassTableName(j),
-					             GenerateTableAlias(name, j),
-					             idCols,
-					             GetSubclassTableKeyColumns(j),
-					             innerjoin && IsClassOrSuperclassTable(j) && !IsInverseTable(j) && !IsNullableTable(j)
-					             	? JoinType.InnerJoin //we can inner join to superclass tables (the row MUST be there)
-					             	: JoinType.LeftOuterJoin //we can never inner join to subclass tables
-						);
+						GenerateTableAlias(name, j),
+						idCols,
+						GetSubclassTableKeyColumns(j),
+						innerjoin && IsClassOrSuperclassTable(j) && !IsInverseTable(j) && !IsNullableTable(j)
+							? JoinType.InnerJoin //we can inner join to superclass tables (the row MUST be there)
+							: JoinType.LeftOuterJoin //we can never inner join to subclass tables
+					);
 				}
 			}
 			return join;
@@ -3236,16 +3219,15 @@ namespace NHibernate.Persister.Entity
 			string[] keyCols = StringHelper.Qualify(drivingAlias, GetSubclassTableKeyColumns(tableNumbers[0]));
 			JoinFragment jf = Factory.Dialect.CreateOuterJoinFragment();
 			for (int i = 1; i < tableNumbers.Length; i++)
-			{
-				//skip the driving table
+			{ //skip the driving table
 				int j = tableNumbers[i];
 				jf.AddJoin(GetSubclassTableName(j),
-				           GenerateTableAlias(RootAlias, j),
-				           keyCols,
-				           GetSubclassTableKeyColumns(j),
-				           IsInverseSubclassTable(j) || IsNullableSubclassTable(j)
-				           	? JoinType.LeftOuterJoin
-				           	: JoinType.InnerJoin);
+						GenerateTableAlias(RootAlias, j),
+						keyCols,
+						GetSubclassTableKeyColumns(j),
+						IsInverseSubclassTable(j) || IsNullableSubclassTable(j)
+							? JoinType.LeftOuterJoin
+							: JoinType.InnerJoin);
 			}
 			return jf;
 		}
@@ -3291,7 +3273,7 @@ namespace NHibernate.Persister.Entity
 			//return new SqlString(StringHelper.Join("= ? and ",
 			//        StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber))) + "= ?");
 			string[] subclauses = StringHelper.Qualify(alias, GetSubclassTableKeyColumns(tableNumber));
-			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length*4);
+			SqlStringBuilder builder = new SqlStringBuilder(subclauses.Length * 4);
 			for (int i = 0; i < subclauses.Length; i++)
 			{
 				string subclause = subclauses[i];
@@ -3309,8 +3291,7 @@ namespace NHibernate.Persister.Entity
 
 			//render the where and from parts
 			int drivingTable = tableNumbers[0];
-			string drivingAlias = GenerateTableAlias(RootAlias, drivingTable);
-				//we *could* regenerate this inside each called method!
+			string drivingAlias = GenerateTableAlias(RootAlias, drivingTable); //we *could* regenerate this inside each called method!
 			SqlString where = CreateWhereByKey(drivingTable, drivingAlias);
 			string from = CreateFrom(drivingTable, drivingAlias);
 
@@ -3364,20 +3345,21 @@ namespace NHibernate.Persister.Entity
 				SqlCommandInfo defaultDelete = GenerateDeleteString(j);
 
 				sqlInsertStrings[j] = customSQLInsert[j] != null
-				                      	? new SqlCommandInfo(customSQLInsert[j], defaultInsert.ParameterTypes)
-				                      	: defaultInsert;
+																? new SqlCommandInfo(customSQLInsert[j], defaultInsert.ParameterTypes)
+																: defaultInsert;
+
 				sqlUpdateStrings[j] = customSQLUpdate[j] != null
-				                      	? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
-				                      	: defaultUpdate;
+																? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
+																: defaultUpdate;
 
 				// NH: in practice for lazy update de update sql is the same any way.
 				sqlLazyUpdateStrings[j] = customSQLUpdate[j] != null
-				                          	? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
-				                          	: GenerateUpdateString(NonLazyPropertyUpdateability, j, false);
+																		? new SqlCommandInfo(customSQLUpdate[j], defaultUpdate.ParameterTypes)
+																		: GenerateUpdateString(NonLazyPropertyUpdateability, j, false);
 
 				sqlDeleteStrings[j] = customSQLDelete[j] != null
-				                      	? new SqlCommandInfo(customSQLDelete[j], defaultDelete.ParameterTypes)
-				                      	: defaultDelete;
+																? new SqlCommandInfo(customSQLDelete[j], defaultDelete.ParameterTypes)
+																: defaultDelete;
 			}
 
 			tableHasColumns = new bool[joinSpan];
@@ -3400,12 +3382,11 @@ namespace NHibernate.Persister.Entity
 			}
 			if (IsIdentifierAssignedByInsert)
 			{
-				identityDelegate = ((IPostInsertIdentifierGenerator) IdentifierGenerator).GetInsertGeneratedIdentifierDelegate(
-					this, Factory, UseGetGeneratedKeys());
-				SqlCommandInfo defaultInsert = GenerateInsertString(PropertyInsertability, 0);
+				identityDelegate = ((IPostInsertIdentifierGenerator)IdentifierGenerator).GetInsertGeneratedIdentifierDelegate(this, Factory, UseGetGeneratedKeys());
+				SqlCommandInfo defaultInsert = GenerateIdentityInsertString(PropertyInsertability);
 				sqlIdentityInsertString = customSQLInsert[0] != null
-				                          	? new SqlCommandInfo(customSQLInsert[0], defaultInsert.ParameterTypes)
-				                          	: GenerateIdentityInsertString(PropertyInsertability);
+																		? new SqlCommandInfo(customSQLInsert[0], defaultInsert.ParameterTypes)
+																		: defaultInsert;
 			}
 			else
 			{
@@ -3431,9 +3412,7 @@ namespace NHibernate.Persister.Entity
 			bool disableForUpdate = SubclassTableSpan > 1 && HasSubclasses && !Factory.Dialect.SupportsOuterJoinForUpdate;
 
 			loaders[LockMode.Upgrade.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.Upgrade);
-			loaders[LockMode.UpgradeNoWait.ToString()] = disableForUpdate
-			                                             	? readLoader
-			                                             	: CreateEntityLoader(LockMode.UpgradeNoWait);
+			loaders[LockMode.UpgradeNoWait.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.UpgradeNoWait);
 			loaders[LockMode.Force.ToString()] = disableForUpdate ? readLoader : CreateEntityLoader(LockMode.Force);
 
 			loaders["merge"] = new CascadeEntityLoader(this, CascadingAction.Merge, Factory);
@@ -3517,6 +3496,7 @@ namespace NHibernate.Persister.Entity
 			if (IsVersioned)
 			{
 				propsToUpdate[VersionProperty] =
+					PropertyUpdateability[VersionProperty] && 
 					Versioning.IsVersionIncrementRequired(dirtyProperties, hasDirtyCollection, PropertyVersionability);
 			}
 
@@ -3536,12 +3516,10 @@ namespace NHibernate.Persister.Entity
 			return notNull;
 		}
 
-		public virtual int[] FindDirty(object[] currentState, object[] previousState, object entity,
-		                               ISessionImplementor session)
+		public virtual int[] FindDirty(object[] currentState, object[] previousState, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeFactory.FindDirty(
-				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable,
-				HasUninitializedLazyProperties(entity, session.EntityMode), session);
+				entityMetamodel.Properties, currentState, previousState, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
 
 			if (props == null)
 			{
@@ -3557,8 +3535,7 @@ namespace NHibernate.Persister.Entity
 		public virtual int[] FindModified(object[] old, object[] current, object entity, ISessionImplementor session)
 		{
 			int[] props = TypeFactory.FindModified(
-				entityMetamodel.Properties, current, old, propertyColumnUpdateable,
-				HasUninitializedLazyProperties(entity, session.EntityMode), session);
+				entityMetamodel.Properties, current, old, propertyColumnUpdateable, HasUninitializedLazyProperties(entity, session.EntityMode), session);
 			if (props == null)
 			{
 				return null;
@@ -3622,7 +3599,7 @@ namespace NHibernate.Persister.Entity
 
 		private IVersionType LocateVersionType()
 		{
-			return entityMetamodel.VersionProperty == null ? null : (IVersionType) entityMetamodel.VersionProperty.Type;
+			return entityMetamodel.VersionProperty == null ? null : (IVersionType)entityMetamodel.VersionProperty.Type;
 		}
 
 		public virtual bool HasLazyProperties
@@ -3641,8 +3618,7 @@ namespace NHibernate.Persister.Entity
 				}
 				else
 				{
-					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, null,
-					                                                                                    session);
+					IFieldInterceptor fieldInterceptor = FieldInterceptionHelper.InjectFieldInterceptor(entity, EntityName, GetMappedClass(session.EntityMode), null, null, session);
 					fieldInterceptor.MarkDirty();
 				}
 			}
@@ -3682,7 +3658,19 @@ namespace NHibernate.Persister.Entity
 			// check the id unsaved-value
 			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
 			if (result2.HasValue)
-				return result2;
+			{
+				if (IdentifierGenerator is Assigned)
+				{
+					// if using assigned identifier, we can only make assumptions
+					// if the value is a known unsaved-value
+					if (result2.Value)
+						return true;
+				}
+				else
+				{
+					return result2;
+				}
+			}
 
 			// check to see if it is in the second-level cache
 			if (HasCache)
@@ -3771,7 +3759,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias,
-		                             string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+			string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
 		{
 			return SelectFragment(lhsAlias, entitySuffix);
 		}
@@ -3893,7 +3881,7 @@ namespace NHibernate.Persister.Entity
 		}
 
 		public IEntityPersister GetSubclassEntityPersister(object instance, ISessionFactoryImplementor factory,
-		                                                   EntityMode entityMode)
+																											EntityMode entityMode)
 		{
 			if (!HasSubclasses)
 			{
@@ -3914,7 +3902,7 @@ namespace NHibernate.Persister.Entity
 					if (subclassEntityName == null)
 					{
 						throw new HibernateException("instance not of expected entity type: " + clazz.FullName + " is not a: "
-						                             + EntityName);
+																				 + EntityName);
 					}
 					else
 					{
@@ -3940,8 +3928,7 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new AssertionFailure("no insert-generated properties");
 			}
-			ProcessGeneratedProperties(id, entity, state, session, sqlInsertGeneratedValuesSelectString,
-			                           PropertyInsertGenerationInclusions);
+			ProcessGeneratedProperties(id, entity, state, session, sqlInsertGeneratedValuesSelectString, PropertyInsertGenerationInclusions);
 		}
 
 		public void ProcessUpdateGeneratedProperties(object id, object entity, object[] state, ISessionImplementor session)
@@ -3950,16 +3937,15 @@ namespace NHibernate.Persister.Entity
 			{
 				throw new AssertionFailure("no update-generated properties");
 			}
-			ProcessGeneratedProperties(id, entity, state, session, sqlUpdateGeneratedValuesSelectString,
-			                           PropertyUpdateGenerationInclusions);
+			ProcessGeneratedProperties(id, entity, state, session, sqlUpdateGeneratedValuesSelectString, PropertyUpdateGenerationInclusions);
 		}
 
 		private void ProcessGeneratedProperties(object id, object entity, object[] state,
-		                                        ISessionImplementor session, SqlString selectionSQL,
-		                                        ValueInclusion[] includeds)
+				ISessionImplementor session, SqlString selectionSQL, ValueInclusion[] includeds)
 		{
 			session.Batcher.ExecuteBatch(); //force immediate execution of the insert
 
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				IDbCommand cmd =
@@ -3972,7 +3958,7 @@ namespace NHibernate.Persister.Entity
 					if (!rs.Read())
 					{
 						throw new HibernateException("Unable to locate row for retrieval of generated properties: "
-						                             + MessageHelper.InfoString(this, id, Factory));
+																				 + MessageHelper.InfoString(this, id, Factory));
 					}
 					for (int i = 0; i < PropertySpan; i++)
 					{
@@ -3991,8 +3977,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle, "unable to select generated column values",
-				                                 selectionSQL);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "unable to select generated column values",
+				                       		Sql = selectionSQL.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -4039,11 +4032,11 @@ namespace NHibernate.Persister.Entity
 				.Add(WhereJoinFragment(RootAlias, true, false))
 				.ToSqlString();
 
-			SqlString sql =
-				select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
+			SqlString sql = select.SetOuterJoins(SqlString.Empty, SqlString.Empty).SetWhereClause(whereClause).ToStatementString();
 			///////////////////////////////////////////////////////////////////////
 
 			object[] snapshot = new object[naturalIdPropertyCount];
+			using (new SessionIdLoggingContext(session.SessionId)) 
 			try
 			{
 				IDbCommand ps = session.Batcher.PrepareCommand(CommandType.Text, sql, IdentifierType.SqlTypes(factory));
@@ -4072,8 +4065,15 @@ namespace NHibernate.Persister.Entity
 			}
 			catch (DbException sqle)
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, sqle,
-				                                 "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory), sql);
+				var exceptionContext = new AdoExceptionContextInfo
+				                       	{
+				                       		SqlException = sqle,
+				                       		Message = "could not retrieve snapshot: " + MessageHelper.InfoString(this, id, Factory),
+				                       		Sql = sql.ToString(),
+				                       		EntityName = EntityName,
+				                       		EntityId = id
+				                       	};
+				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, exceptionContext);
 			}
 		}
 
@@ -4115,15 +4115,14 @@ namespace NHibernate.Persister.Entity
 		}
 
 		private SqlType[] idAndVersionSqlTypes;
-
 		public virtual SqlType[] IdAndVersionSqlTypes
 		{
 			get
 			{
-				if (idAndVersionSqlTypes == null)
+				if(idAndVersionSqlTypes == null)
 					idAndVersionSqlTypes = IsVersioned
-					                       	? ArrayHelper.Join(IdentifierType.SqlTypes(factory), VersionType.SqlTypes(factory))
-					                       	: IdentifierType.SqlTypes(factory);
+												? ArrayHelper.Join(IdentifierType.SqlTypes(factory), VersionType.SqlTypes(factory))
+												: IdentifierType.SqlTypes(factory);
 				return idAndVersionSqlTypes;
 			}
 		}
@@ -4132,7 +4131,6 @@ namespace NHibernate.Persister.Entity
 		{
 			return MessageHelper.InfoString(this);
 		}
-
 		#endregion
 	}
 }

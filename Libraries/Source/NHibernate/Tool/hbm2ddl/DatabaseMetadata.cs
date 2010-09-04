@@ -1,26 +1,28 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using Iesi.Collections.Generic;
+
+using NHibernate.Dialect.Schema;
+using NHibernate.Exceptions;
+using NHibernate.Mapping;
+using NHibernate.Util;
+
 namespace NHibernate.Tool.hbm2ddl
 {
-	using System;
-	using System.Collections;
-	using System.Data;
-	using System.Data.Common;
-	using System.Data.SqlClient;
-	using Exceptions;
-	using Iesi.Collections;
-	using log4net;
-	using Mapping;
-	using Util;
-
 	public class DatabaseMetadata
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (DatabaseMetadata));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof (DatabaseMetadata));
 
-		private readonly IDictionary tables = new Hashtable();
-		private readonly ISet sequences = new HashedSet();
+		private readonly IDictionary<string, ITableMetadata> tables = new Dictionary<string, ITableMetadata>();
+		private readonly Iesi.Collections.Generic.ISet<string> sequences = new HashedSet<string>();
 		private readonly bool extras;
+	    private readonly Dialect.Dialect dialect;
+		private readonly IDataBaseSchema meta;
 		private readonly ISQLExceptionConverter sqlExceptionConverter;
-
-		private readonly ISchemaReader schemaReader;
+		private static readonly string[] Types = {"TABLE", "VIEW"};
 
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect)
 			: this(connection, dialect, true)
@@ -30,115 +32,134 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public DatabaseMetadata(DbConnection connection, Dialect.Dialect dialect, bool extras)
 		{
-			schemaReader = new InformationSchemaReader(connection);
-			this.extras = extras;
+			meta = dialect.GetDataBaseSchema(connection);
+		    this.dialect = dialect;
+		    this.extras = extras;
 			InitSequences(connection, dialect);
 			sqlExceptionConverter = dialect.BuildSQLExceptionConverter();
 		}
 
-		private static readonly String[] Types = {"TABLE", "VIEW"};
-
-		private static readonly object tableIndexStatistic = null;
-
-		public static object TableIndexStatistic
+		public ITableMetadata GetTableMetadata(string name, string schema, string catalog, bool isQuoted)
 		{
-			get { return tableIndexStatistic; }
-		}
-
-
-		public TableMetadata GetTableMetadata(string name, string schema)
-		{
-			Object identifier = Identifier(schema, name);
-			TableMetadata table = (TableMetadata) tables[identifier];
+			string identifier = Identifier(catalog, schema, name);
+			ITableMetadata table;
+			tables.TryGetValue(identifier, out table);
 			if (table != null)
+				return table; // EARLY exit
+
+			try
 			{
-				return table;
-			}
-			else
-			{
-				try
+				DataTable metaInfo;
+				if ((isQuoted && meta.StoresMixedCaseQuotedIdentifiers))
 				{
-					DataRowCollection rows = schemaReader.GetTables(schema, name, Types).Rows;
-					foreach (DataRow tableRow in rows)
+					metaInfo = meta.GetTables(catalog, schema, name, Types);
+				}
+				else
+				{
+					if ((isQuoted && meta.StoresUpperCaseQuotedIdentifiers) || (!isQuoted && meta.StoresUpperCaseIdentifiers))
 					{
-						string tableName = (string) tableRow["TABLE_NAME"];
-						if (name.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
+						metaInfo =
+							meta.GetTables(StringHelper.ToUpperCase(catalog), StringHelper.ToUpperCase(schema),
+							               StringHelper.ToUpperCase(name), Types);
+					}
+					else
+					{
+						if ((isQuoted && meta.StoresLowerCaseQuotedIdentifiers) || (!isQuoted && meta.StoresLowerCaseIdentifiers))
 						{
-							table = new TableMetadata(tableRow, schemaReader, extras);
-							this.tables.Add(identifier, table);
-							return table;
+							metaInfo =
+								meta.GetTables(StringHelper.ToLowerCase(catalog), StringHelper.ToLowerCase(schema),
+								               StringHelper.ToLowerCase(name), Types);
+						}
+						else
+						{
+							metaInfo = meta.GetTables(catalog, schema, name, Types);
 						}
 					}
 
-					log.Info("table not found: " + name);
-					return null;
 				}
-				catch (DbException sqle)
+				DataRowCollection rows = metaInfo.Rows;
+
+				foreach (DataRow tableRow in rows)
 				{
-					throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not get table metadata: " + name);
+					string tableName = Convert.ToString(tableRow[meta.ColumnNameForTableName]);
+					if (name.Equals(tableName, StringComparison.InvariantCultureIgnoreCase))
+					{
+						table = meta.GetTableMetadata(tableRow, extras);
+						tables[identifier] = table;
+						return table;
+					}
 				}
+
+				log.Info("table not found: " + name);
+				return null;
+			}
+			catch (DbException sqle)
+			{
+				throw ADOExceptionHelper.Convert(sqlExceptionConverter, sqle, "could not get table metadata: " + name);
 			}
 		}
 
-		private static string Identifier(String schema, String name)
+		private string Identifier(string catalog, string schema, string name)
 		{
-			return Table.Qualify(null, schema, name);
+			return dialect.Qualify(catalog, schema, name);
 		}
-
 
 		private void InitSequences(DbConnection connection, Dialect.Dialect dialect)
 		{
 			if (dialect.SupportsSequences)
 			{
-				String sql = dialect.QuerySequencesString;
+				string sql = dialect.QuerySequencesString;
 				if (sql != null)
 				{
-					IDbCommand statement = null;
-					IDataReader rs = null;
-					try
+					using (IDbCommand statement = connection.CreateCommand())
 					{
-						statement = connection.CreateCommand();
 						statement.CommandText = sql;
-						rs = statement.ExecuteReader();
-
-						while (rs.Read())
+						using (IDataReader rs = statement.ExecuteReader())
 						{
-							sequences.Add(((String) rs[1]).ToLower());
+							while (rs.Read())
+								sequences.Add(((string) rs[0]).ToLower().Trim());
 						}
-					}
-					finally
-					{
-						if (rs != null) rs.Close();
-						if (statement != null) statement.Dispose();
 					}
 				}
 			}
 		}
 
-
-		public bool IsTable(Object key)
+		public bool IsSequence(object key)
 		{
-			if (key is String)
+			string sKey = key as string;
+			if (sKey != null)
 			{
-				Table tbl = new Table((String) key);
-				if (GetTableMetadata(tbl.Name, tbl.Schema) != null)
+				string[] strings = sKey.Split('.');
+				return sequences.Contains(strings[strings.Length - 1].ToLower());
+			}
+			return false;
+		}
+
+		public bool IsTable(object key)
+		{
+			string sKey = key as string;
+			if (sKey != null)
+			{
+				Table tbl = new Table(sKey);
+				if (GetTableMetadata(tbl.Name, tbl.Schema, tbl.Catalog, tbl.IsQuoted) != null)
 				{
 					return true;
 				}
 				else
 				{
-					String[] strings = StringHelper.Split(".", (String) key);
+					string[] strings = sKey.Split('.');
 					if (strings.Length == 3)
 					{
 						tbl = new Table(strings[2]);
-						tbl.Schema = (strings[1]);
-						return GetTableMetadata(tbl.Name, tbl.Schema) != null;
+						tbl.Catalog = strings[0];
+						tbl.Schema = strings[1];
+						return GetTableMetadata(tbl.Name, tbl.Schema, tbl.Catalog, tbl.IsQuoted) != null;
 					}
 					else if (strings.Length == 2)
 					{
 						tbl = new Table(strings[1]);
-						tbl.Schema = (strings[0]);
-						return GetTableMetadata(tbl.Name, tbl.Schema) != null;
+						tbl.Schema = strings[0];
+						return GetTableMetadata(tbl.Name, tbl.Schema, tbl.Catalog, tbl.IsQuoted) != null;
 					}
 				}
 			}
@@ -147,19 +168,8 @@ namespace NHibernate.Tool.hbm2ddl
 
 		public override String ToString()
 		{
-			return "DatabaseMetadata" + StringHelper.CollectionToString(tables.Keys) + " " +
-			       StringHelper.CollectionToString(sequences);
-		}
-
-
-		public bool IsSequence(Object key)
-		{
-			if (key is String)
-			{
-				String[] strings = StringHelper.Split(".", (String) key);
-				return sequences.Contains(strings[strings.Length - 1].ToLower());
-			}
-			return false;
+			return "DatabaseMetadata" + StringHelper.CollectionToString((ICollection)tables.Keys) + " " +
+						 StringHelper.CollectionToString((ICollection)sequences);
 		}
 	}
 }

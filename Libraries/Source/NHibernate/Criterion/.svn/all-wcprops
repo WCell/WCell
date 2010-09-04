@@ -1,0 +1,425 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/nhibernate/!svn/ver/5118/trunk/nhibernate/src/NHibernate/Criterion
+END
+PropertyProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4089/trunk/nhibernate/src/NHibernate/Criterion/PropertyProjection.cs
+END
+AndExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/AndExpression.cs
+END
+CountProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/3858/trunk/nhibernate/src/NHibernate/Criterion/CountProjection.cs
+END
+NullExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/NullExpression.cs
+END
+IsNotEmptyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/IsNotEmptyExpression.cs
+END
+SQLProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/SQLProjection.cs
+END
+Expression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/3346/trunk/nhibernate/src/NHibernate/Criterion/Expression.cs
+END
+CriteriaSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/CriteriaSpecification.cs
+END
+LtPropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/LtPropertyExpression.cs
+END
+AvgProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3662/trunk/nhibernate/src/NHibernate/Criterion/AvgProjection.cs
+END
+SubqueryProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3640/trunk/nhibernate/src/NHibernate/Criterion/SubqueryProjection.cs
+END
+RowCountProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/RowCountProjection.cs
+END
+ProjectionsExtensions.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4980/trunk/nhibernate/src/NHibernate/Criterion/ProjectionsExtensions.cs
+END
+AggregateProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4695/trunk/nhibernate/src/NHibernate/Criterion/AggregateProjection.cs
+END
+IProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/IProjection.cs
+END
+LePropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/LePropertyExpression.cs
+END
+SimpleProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/SimpleProjection.cs
+END
+Subqueries.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/4913/trunk/nhibernate/src/NHibernate/Criterion/Subqueries.cs
+END
+Disjunction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/Disjunction.cs
+END
+Conjunction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/Conjunction.cs
+END
+ExistsSubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/ExistsSubqueryExpression.cs
+END
+SqlFunctionProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/5111/trunk/nhibernate/src/NHibernate/Criterion/SqlFunctionProjection.cs
+END
+PropertySubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/PropertySubqueryExpression.cs
+END
+BetweenExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/BetweenExpression.cs
+END
+IsEmptyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/IsEmptyExpression.cs
+END
+Order.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/3784/trunk/nhibernate/src/NHibernate/Criterion/Order.cs
+END
+NotNullExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/NotNullExpression.cs
+END
+IdentifierProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/IdentifierProjection.cs
+END
+NotExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3935/trunk/nhibernate/src/NHibernate/Criterion/NotExpression.cs
+END
+Distinct.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/Distinct.cs
+END
+DetachedCriteria.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/5091/trunk/nhibernate/src/NHibernate/Criterion/DetachedCriteria.cs
+END
+InsensitiveLikeExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/3466/trunk/nhibernate/src/NHibernate/Criterion/InsensitiveLikeExpression.cs
+END
+InExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3934/trunk/nhibernate/src/NHibernate/Criterion/InExpression.cs
+END
+QueryOverBuilderExtensions.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/5003/trunk/nhibernate/src/NHibernate/Criterion/QueryOverBuilderExtensions.cs
+END
+Junction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/4838/trunk/nhibernate/src/NHibernate/Criterion/Junction.cs
+END
+LogicalExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Criterion/LogicalExpression.cs
+END
+Example.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4853/trunk/nhibernate/src/NHibernate/Criterion/Example.cs
+END
+SelectSubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3640/trunk/nhibernate/src/NHibernate/Criterion/SelectSubqueryExpression.cs
+END
+AliasedProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/AliasedProjection.cs
+END
+GtPropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/GtPropertyExpression.cs
+END
+OrExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/OrExpression.cs
+END
+ConditionalProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4326/trunk/nhibernate/src/NHibernate/Criterion/ConditionalProjection.cs
+END
+ICriteriaQuery.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/5118/trunk/nhibernate/src/NHibernate/Criterion/ICriteriaQuery.cs
+END
+GroupedProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/4595/trunk/nhibernate/src/NHibernate/Criterion/GroupedProjection.cs
+END
+PropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/PropertyExpression.cs
+END
+LikeExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4708/trunk/nhibernate/src/NHibernate/Criterion/LikeExpression.cs
+END
+ICriterion.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/ICriterion.cs
+END
+RestrictionsExtensions.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/5004/trunk/nhibernate/src/NHibernate/Criterion/RestrictionsExtensions.cs
+END
+SimpleSubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/SimpleSubqueryExpression.cs
+END
+AbstractEmptinessExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/5083/trunk/nhibernate/src/NHibernate/Criterion/AbstractEmptinessExpression.cs
+END
+SQLCriterion.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3489/trunk/nhibernate/src/NHibernate/Criterion/SQLCriterion.cs
+END
+GePropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/GePropertyExpression.cs
+END
+AbstractCriterion.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/AbstractCriterion.cs
+END
+Property.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/Property.cs
+END
+ConstantProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3885/trunk/nhibernate/src/NHibernate/Criterion/ConstantProjection.cs
+END
+CastProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/CastProjection.cs
+END
+Restrictions.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/4838/trunk/nhibernate/src/NHibernate/Criterion/Restrictions.cs
+END
+IdentifierEqExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/IdentifierEqExpression.cs
+END
+NullSubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4913/trunk/nhibernate/src/NHibernate/Criterion/NullSubqueryExpression.cs
+END
+EqPropertyExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/EqPropertyExpression.cs
+END
+IPropertyProjection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4089/trunk/nhibernate/src/NHibernate/Criterion/IPropertyProjection.cs
+END
+CriterionUtil.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/4089/trunk/nhibernate/src/NHibernate/Criterion/CriterionUtil.cs
+END
+SubqueryExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/5118/trunk/nhibernate/src/NHibernate/Criterion/SubqueryExpression.cs
+END
+Projections.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/4857/trunk/nhibernate/src/NHibernate/Criterion/Projections.cs
+END
+QueryOver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5002/trunk/nhibernate/src/NHibernate/Criterion/QueryOver.cs
+END
+MatchMode.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/3342/trunk/nhibernate/src/NHibernate/Criterion/MatchMode.cs
+END
+RowCountInt64Projection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/3411/trunk/nhibernate/src/NHibernate/Criterion/RowCountInt64Projection.cs
+END
+ProjectionList.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4855/trunk/nhibernate/src/NHibernate/Criterion/ProjectionList.cs
+END
+NaturalIdentifier.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/4838/trunk/nhibernate/src/NHibernate/Criterion/NaturalIdentifier.cs
+END
+SimpleExpression.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/3458/trunk/nhibernate/src/NHibernate/Criterion/SimpleExpression.cs
+END

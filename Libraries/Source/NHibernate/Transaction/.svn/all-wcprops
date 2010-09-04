@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 77
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transaction
+END
+AdoNetWithDistrubtedTransactionFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svnroot/nhibernate/!svn/ver/4997/trunk/nhibernate/src/NHibernate/Transaction/AdoNetWithDistrubtedTransactionFactory.cs
+END
+ITransactionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4360/trunk/nhibernate/src/NHibernate/Transaction/ITransactionContext.cs
+END
+ITransactionFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4361/trunk/nhibernate/src/NHibernate/Transaction/ITransactionFactory.cs
+END
+AdoNetWithDistributedTransactionFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transaction/AdoNetWithDistributedTransactionFactory.cs
+END
+AdoNetTransactionFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transaction/AdoNetTransactionFactory.cs
+END
+AdoTransaction.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transaction/AdoTransaction.cs
+END
+ISynchronization.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3472/trunk/nhibernate/src/NHibernate/Transaction/ISynchronization.cs
+END

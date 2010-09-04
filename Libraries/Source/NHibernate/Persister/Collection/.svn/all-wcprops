@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Persister/Collection
+END
+CollectionPropertyMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svnroot/nhibernate/!svn/ver/4299/trunk/nhibernate/src/NHibernate/Persister/Collection/CollectionPropertyMapping.cs
+END
+CompositeElementPropertyMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svnroot/nhibernate/!svn/ver/3334/trunk/nhibernate/src/NHibernate/Persister/Collection/CompositeElementPropertyMapping.cs
+END
+BasicCollectionPersister.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/3715/trunk/nhibernate/src/NHibernate/Persister/Collection/BasicCollectionPersister.cs
+END
+IQueryableCollection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/3334/trunk/nhibernate/src/NHibernate/Persister/Collection/IQueryableCollection.cs
+END
+AbstractCollectionPersister.cs
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Persister/Collection/AbstractCollectionPersister.cs
+END
+CollectionPropertyNames.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svnroot/nhibernate/!svn/ver/3334/trunk/nhibernate/src/NHibernate/Persister/Collection/CollectionPropertyNames.cs
+END
+ICollectionPersister.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Persister/Collection/ICollectionPersister.cs
+END
+ISqlLoadableCollection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/3334/trunk/nhibernate/src/NHibernate/Persister/Collection/ISqlLoadableCollection.cs
+END
+ElementPropertyMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/4299/trunk/nhibernate/src/NHibernate/Persister/Collection/ElementPropertyMapping.cs
+END
+NamedQueryCollectionInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Persister/Collection/NamedQueryCollectionInitializer.cs
+END
+OneToManyPersister.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3521/trunk/nhibernate/src/NHibernate/Persister/Collection/OneToManyPersister.cs
+END

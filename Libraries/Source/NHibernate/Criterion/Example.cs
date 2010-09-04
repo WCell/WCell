@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Iesi.Collections.Generic;
 using NHibernate.Engine;
 using NHibernate.Persister.Entity;
@@ -56,9 +57,9 @@ namespace NHibernate.Criterion
 		}
 
 		//private static readonly IPropertySelector NotNull = new NotNullPropertySelector();
-		private static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
-		private static readonly IPropertySelector All = new AllPropertySelector();
-		private static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
+		protected static readonly IPropertySelector NotNullOrEmptyString = new NotNullOrEmptyStringPropertySelector();
+		protected static readonly IPropertySelector All = new AllPropertySelector();
+		protected static readonly IPropertySelector NotNullOrZero = new NotNullOrZeroPropertySelector();
 
 		/// <summary>
 		/// Implementation of <see cref="IPropertySelector"/> that includes all
@@ -271,6 +272,30 @@ namespace NHibernate.Criterion
 			       _selector.Include(value, name, type);
 		}
 
+		private object[] GetPropertyValues(IEntityPersister persister, ICriteria criteria, ICriteriaQuery criteriaQuery)
+		{
+			System.Type type = _entity.GetType();
+			if(type == persister.GetMappedClass(GetEntityMode(criteria, criteriaQuery))) //not using anon object
+			{
+				return persister.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
+			}
+			ArrayList list = new ArrayList();
+			for(int i = 0; i < persister.PropertyNames.Length; i++)
+			{
+				PropertyInfo pInfo = type.GetProperty(persister.PropertyNames[i]);
+				if(pInfo != null)
+				{
+					list.Add(pInfo.GetValue(_entity, null));
+				}
+				else
+				{
+					list.Add(null); //to maintain same order as PropertyNames list
+					_excludedProperties.Add(persister.PropertyNames[i]); //exclude the properties that aren't in the anon object (duplicates ok)
+				}
+			}
+			return list.ToArray();
+		}
+
 		public override SqlString ToSqlString(ICriteria criteria, ICriteriaQuery criteriaQuery, IDictionary<string, IFilter> enabledFilters)
 		{
 			SqlStringBuilder builder = new SqlStringBuilder();
@@ -279,7 +304,7 @@ namespace NHibernate.Criterion
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			String[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] propertyValues = meta.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
+			object[] propertyValues = GetPropertyValues(meta, criteria, criteriaQuery);
 			for (int i = 0; i < propertyNames.Length; i++)
 			{
 				object propertyValue = propertyValues[i];
@@ -323,12 +348,14 @@ namespace NHibernate.Criterion
 			return builder.ToSqlString();
 		}
 
+
+		//note: now that Criterion are adding typed values via ICriteriaQuery.AddUsedTypedValues this function is never called.
 		public override TypedValue[] GetTypedValues(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			string[] propertyNames = meta.PropertyNames;
 			IType[] propertyTypes = meta.PropertyTypes;
-			object[] values = meta.GetPropertyValues(_entity, GetEntityMode(criteria, criteriaQuery));
+			object[] values = GetPropertyValues(meta, criteria, criteriaQuery);
 
 			ArrayList list = new ArrayList();
 			for (int i = 0; i < propertyNames.Length; i++)
@@ -355,13 +382,19 @@ namespace NHibernate.Criterion
 			return (TypedValue[]) list.ToArray(typeof(TypedValue));
 		}
 
+		public override IProjection[] GetProjections()
+		{
+			return null;
+		}
+
 		private EntityMode GetEntityMode(ICriteria criteria, ICriteriaQuery criteriaQuery)
 		{
 			IEntityPersister meta = criteriaQuery.Factory.GetEntityPersister(criteriaQuery.GetEntityName(criteria));
 			EntityMode? result = meta.GuessEntityMode(_entity);
 			if (!result.HasValue)
 			{
-				throw new InvalidCastException(_entity.GetType().FullName);
+				return EntityMode.Poco; //this occurs for anon objects
+				//throw new InvalidCastException(_entity.GetType().FullName);
 			}
 			return result.Value;
 		}
@@ -384,9 +417,9 @@ namespace NHibernate.Criterion
 			// parameter passed in.
 			if (value != null)
 			{
-				if (value is string)
+				var stringValue = value as string;
+				if (stringValue != null)
 				{
-					string stringValue = (string) value;
 					if (_isIgnoreCaseEnabled)
 					{
 						stringValue = stringValue.ToLower();
@@ -397,7 +430,8 @@ namespace NHibernate.Criterion
 					}
 					value = stringValue;
 				}
-				list.Add(new TypedValue(type, value, EntityMode.Poco)); // TODO NH Different behavior: In H3.2 EntityMode is nullable
+				list.Add(new TypedValue(type, value, EntityMode.Poco));
+					// TODO NH Different behavior: In H3.2 EntityMode is nullable
 			}
 		}
 
@@ -442,19 +476,20 @@ namespace NHibernate.Criterion
 				builder.Add(" and ");
 			}
 
-			ICriterion crit;
-			if (propertyValue != null)
-			{
-				bool isString = propertyValue is String;
-				crit = (_isLikeEnabled && isString) ?
-				       (ICriterion) new LikeExpression(propertyName, propertyValue.ToString(), escapeCharacter, _isIgnoreCaseEnabled) :
-							 new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
-			}
-			else
-			{
-				crit = new NullExpression(propertyName);
-			}
+			ICriterion crit = propertyValue != null
+			                  	? GetNotNullPropertyCriterion(propertyValue, propertyName)
+			                  	: new NullExpression(propertyName);
 			builder.Add(crit.ToSqlString(criteria, cq, enabledFilters));
+		}
+
+		protected virtual ICriterion GetNotNullPropertyCriterion(object propertyValue, string propertyName)
+		{
+			bool isString = propertyValue is string;
+			return (_isLikeEnabled && isString)
+			       	? (ICriterion)
+			       	  new LikeExpression(propertyName, propertyValue.ToString(), _matchMode, escapeCharacter,
+			       	                     _isIgnoreCaseEnabled)
+			       	: new SimpleExpression(propertyName, propertyValue, " = ", _isIgnoreCaseEnabled && isString);
 		}
 
 		protected void AppendComponentCondition(

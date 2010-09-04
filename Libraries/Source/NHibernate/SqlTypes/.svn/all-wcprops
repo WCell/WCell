@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 74
+/svnroot/nhibernate/!svn/ver/5174/trunk/nhibernate/src/NHibernate/SqlTypes
+END
+SqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/4464/trunk/nhibernate/src/NHibernate/SqlTypes/SqlType.cs
+END
+AnsiStringSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/SqlTypes/AnsiStringSqlType.cs
+END
+AnsiStringFixedLengthSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/SqlTypes/AnsiStringFixedLengthSqlType.cs
+END
+BinaryBlobSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/4465/trunk/nhibernate/src/NHibernate/SqlTypes/BinaryBlobSqlType.cs
+END
+BinarySqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/SqlTypes/BinarySqlType.cs
+END
+StringClobSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/5174/trunk/nhibernate/src/NHibernate/SqlTypes/StringClobSqlType.cs
+END
+StringSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/SqlTypes/StringSqlType.cs
+END
+SqlTypeFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/4894/trunk/nhibernate/src/NHibernate/SqlTypes/SqlTypeFactory.cs
+END
+StringFixedLengthSqlType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/SqlTypes/StringFixedLengthSqlType.cs
+END

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/Entity
+END
+EntityEntityModeToTuplizerMapping.cs
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svnroot/nhibernate/!svn/ver/3642/trunk/nhibernate/src/NHibernate/Tuple/Entity/EntityEntityModeToTuplizerMapping.cs
+END
+PocoEntityTuplizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/Entity/PocoEntityTuplizer.cs
+END
+DynamicMapEntityTuplizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/Entity/DynamicMapEntityTuplizer.cs
+END
+AbstractEntityTuplizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/Entity/AbstractEntityTuplizer.cs
+END
+EntityMetamodel.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Tuple/Entity/EntityMetamodel.cs
+END
+IEntityTuplizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Tuple/Entity/IEntityTuplizer.cs
+END

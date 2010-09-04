@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transform
+END
+ToListResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4272/trunk/nhibernate/src/NHibernate/Transform/ToListResultTransformer.cs
+END
+RootEntityResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Transform/RootEntityResultTransformer.cs
+END
+AliasToBeanResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/5119/trunk/nhibernate/src/NHibernate/Transform/AliasToBeanResultTransformer.cs
+END
+DistinctRootEntityResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Transform/DistinctRootEntityResultTransformer.cs
+END
+Transformers.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/4272/trunk/nhibernate/src/NHibernate/Transform/Transformers.cs
+END
+AliasToEntityMapResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Transform/AliasToEntityMapResultTransformer.cs
+END
+PassThroughResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Transform/PassThroughResultTransformer.cs
+END
+AliasToBeanConstructorResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Transform/AliasToBeanConstructorResultTransformer.cs
+END
+IResultTransformer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Transform/IResultTransformer.cs
+END

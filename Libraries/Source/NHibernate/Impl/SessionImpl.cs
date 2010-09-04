@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 using Iesi.Collections;
-using log4net;
+
 using NHibernate.AdoNet;
 using NHibernate.Collection;
+using NHibernate.Criterion;
 using NHibernate.Engine;
 using NHibernate.Engine.Query;
 using NHibernate.Engine.Query.Sql;
@@ -38,17 +40,22 @@ namespace NHibernate.Impl
 	[Serializable]
 	public sealed class SessionImpl : AbstractSessionImpl, IEventSource, ISerializable, IDeserializationCallback
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SessionImpl));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SessionImpl));
 
 		private readonly long timestamp;
 
-		private CacheMode cacheMode= CacheMode.Normal;
+		private CacheMode cacheMode = CacheMode.Normal;
 		private FlushMode flushMode = FlushMode.Auto;
 
 		private readonly IInterceptor interceptor;
 
-		[NonSerialized] 
-		private EntityMode entityMode = NHibernate.EntityMode.Poco;
+		[NonSerialized]
+		private readonly EntityMode entityMode = EntityMode.Poco;
+
+		[NonSerialized]
+		private FutureCriteriaBatch futureCriteriaBatch;
+		[NonSerialized]
+		private FutureQueryBatch futureQueryBatch;
 
 		[NonSerialized]
 		private readonly EventListeners listeners;
@@ -59,24 +66,26 @@ namespace NHibernate.Impl
 		private readonly ConnectionManager connectionManager;
 
 		[NonSerialized]
-		private int dontFlushFromFind = 0;
+		private int dontFlushFromFind;
 
 		[NonSerialized]
-		private IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
+		private readonly IDictionary<string, IFilter> enabledFilters = new Dictionary<string, IFilter>();
 
 		[NonSerialized]
 		private readonly StatefulPersistenceContext persistenceContext;
-		
-		[NonSerialized]
-		private ISession rootSession;
 
 		[NonSerialized]
-		private IDictionary<EntityMode,ISession> childSessionsByEntityMode;
+		private readonly ISession rootSession;
 
+		[NonSerialized]
+		private IDictionary<EntityMode, ISession> childSessionsByEntityMode;
 
-		//[NonSerialized] private bool flushBeforeCompletionEnabled;
-		[NonSerialized] private bool autoCloseSessionEnabled;
-		//[NonSerialized] private ConnectionReleaseMode connectionReleaseMode;
+		[NonSerialized]
+		private readonly bool flushBeforeCompletionEnabled;
+		[NonSerialized]
+		private readonly bool autoCloseSessionEnabled;
+		[NonSerialized]
+		private readonly ConnectionReleaseMode connectionReleaseMode;
 
 		#region System.Runtime.Serialization.ISerializable Members
 
@@ -94,8 +103,9 @@ namespace NHibernate.Impl
 		{
 			timestamp = info.GetInt64("timestamp");
 
-			factory = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
-			listeners = factory.EventListeners;
+			SessionFactoryImpl fact = (SessionFactoryImpl)info.GetValue("factory", typeof(SessionFactoryImpl));
+			Factory = fact;
+			listeners = fact.EventListeners;
 			persistenceContext = (StatefulPersistenceContext)info.GetValue("persistenceContext", typeof(StatefulPersistenceContext));
 
 			actionQueue = (ActionQueue)info.GetValue("actionQueue", typeof(ActionQueue));
@@ -131,8 +141,8 @@ namespace NHibernate.Impl
 				throw new InvalidOperationException("Cannot serialize a Session while connected");
 			}
 
-			info.AddValue("factory", factory, typeof(SessionFactoryImpl));
-			info.AddValue("persistenceContext", persistenceContext, typeof (StatefulPersistenceContext));
+			info.AddValue("factory", Factory, typeof(SessionFactoryImpl));
+			info.AddValue("persistenceContext", persistenceContext, typeof(StatefulPersistenceContext));
 			info.AddValue("actionQueue", actionQueue, typeof(ActionQueue));
 			info.AddValue("timestamp", timestamp);
 			info.AddValue("flushMode", flushMode);
@@ -163,36 +173,11 @@ namespace NHibernate.Impl
 			persistenceContext.SetSession(this);
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
-				filter.AfterDeserialize(factory.GetFilterDefinition(filter.Name));
+				filter.AfterDeserialize(Factory.GetFilterDefinition(filter.Name));
 			}
 		}
 
 		#endregion
-
-		internal SessionImpl(
-			IDbConnection connection,
-			SessionFactoryImpl factory,
-			long timestamp,
-			IInterceptor interceptor,
-			ConnectionReleaseMode connectionReleaseMode):base(factory)
-		{
-			if (interceptor == null)
-				throw new ArgumentNullException("interceptor", "The interceptor can not be null");
-
-			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
-			this.interceptor = interceptor;
-			this.timestamp = timestamp;
-			listeners = factory.EventListeners;
-			actionQueue = new ActionQueue(this);
-			persistenceContext = new StatefulPersistenceContext(this);
-
-			if (factory.Statistics.IsStatisticsEnabled)
-			{
-				factory.StatisticsImplementor.OpenSession();
-			}
-
-			log.Debug("opened session");
-		}
 
 		/// <summary>
 		/// Constructor used for OpenSession(...) processing, as well as construction
@@ -207,7 +192,7 @@ namespace NHibernate.Impl
 		/// <param name="flushBeforeCompletionEnabled">Should we auto flush before completion of transaction</param>
 		/// <param name="autoCloseSessionEnabled">Should we auto close after completion of transaction</param>
 		/// <param name="connectionReleaseMode">The mode by which we should release JDBC connections.</param>
-		public SessionImpl(
+		internal SessionImpl(
 			IDbConnection connection,
 			SessionFactoryImpl factory,
 			bool autoclose,
@@ -219,18 +204,36 @@ namespace NHibernate.Impl
 			ConnectionReleaseMode connectionReleaseMode)
 			: base(factory)
 		{
-			rootSession = null;
-			this.timestamp = timestamp;
-			this.entityMode = entityMode;
-			this.interceptor = interceptor;
-			listeners = factory.EventListeners;
-			actionQueue = new ActionQueue(this);
-			persistenceContext = new StatefulPersistenceContext(this);
-			//this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
-			this.autoCloseSessionEnabled = autoCloseSessionEnabled;
-			//this.connectionReleaseMode = connectionReleaseMode;
-			//this.jdbcContext = new JDBCContext(this, connection, interceptor);
-			connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (interceptor == null)
+					throw new AssertionFailure("The interceptor can not be null.");
+
+				rootSession = null;
+				this.timestamp = timestamp;
+				this.entityMode = entityMode;
+				this.interceptor = interceptor;
+				listeners = factory.EventListeners;
+				actionQueue = new ActionQueue(this);
+				persistenceContext = new StatefulPersistenceContext(this);
+				this.flushBeforeCompletionEnabled = flushBeforeCompletionEnabled;
+				this.autoCloseSessionEnabled = autoCloseSessionEnabled;
+				this.connectionReleaseMode = connectionReleaseMode;
+				connectionManager = new ConnectionManager(this, connection, connectionReleaseMode, interceptor);
+
+				if (factory.Statistics.IsStatisticsEnabled)
+				{
+					factory.StatisticsImplementor.OpenSession();
+				}
+
+				if (log.IsDebugEnabled)
+				{
+					log.DebugFormat("[session-id={0}] opened session at timestamp: {1}, for session factory: [{2}/{3}]",
+						SessionId, timestamp, factory.Name, factory.Uuid);
+				}
+
+				CheckAndUpdateSessionStatus();
+			}
 		}
 
 		/// <summary>
@@ -239,24 +242,57 @@ namespace NHibernate.Impl
 		/// <param name="parent">The parent Session</param>
 		/// <param name="entityMode">The entity mode</param>
 		private SessionImpl(SessionImpl parent, EntityMode entityMode)
-			:base (parent.factory)
+			: base(parent.Factory, parent.SessionId)
 		{
-			rootSession = parent;
-			timestamp = parent.timestamp;
-			connectionManager = parent.connectionManager; //this.jdbcContext = parent.jdbcContext;
-			interceptor = parent.interceptor;
-			listeners = parent.listeners;
-			actionQueue = new ActionQueue(this);
-			this.entityMode = entityMode;
-			persistenceContext = new StatefulPersistenceContext(this);
-			//this.flushBeforeCompletionEnabled = false;
-			autoCloseSessionEnabled = false;
-			//this.connectionReleaseMode = null;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				rootSession = parent;
+				timestamp = parent.timestamp;
+				connectionManager = parent.connectionManager;
+				interceptor = parent.interceptor;
+				listeners = parent.listeners;
+				actionQueue = new ActionQueue(this);
+				this.entityMode = entityMode;
+				persistenceContext = new StatefulPersistenceContext(this);
+				flushBeforeCompletionEnabled = false;
+				autoCloseSessionEnabled = false;
+				connectionReleaseMode = parent.ConnectionReleaseMode; // NH different
 
-			if (factory.Statistics.IsStatisticsEnabled)
-				factory.StatisticsImplementor.OpenSession();
+				if (Factory.Statistics.IsStatisticsEnabled)
+					Factory.StatisticsImplementor.OpenSession();
 
-			log.Debug("opened session [" + entityMode + "]");
+				log.Debug("opened session [" + entityMode + "]");
+
+				CheckAndUpdateSessionStatus();
+			}
+		}
+
+		public override FutureCriteriaBatch FutureCriteriaBatch
+		{
+			get
+			{
+				if (futureCriteriaBatch == null)
+					futureCriteriaBatch = new FutureCriteriaBatch(this);
+				return futureCriteriaBatch;
+			}
+			internal set
+			{
+				futureCriteriaBatch = value;
+			}
+		}
+
+		public override FutureQueryBatch FutureQueryBatch
+		{
+			get
+			{
+				if (futureQueryBatch == null)
+					futureQueryBatch = new FutureQueryBatch(this);
+				return futureQueryBatch;
+			}
+			internal set
+			{
+				futureQueryBatch = value;
+			}
 		}
 
 		/// <summary></summary>
@@ -264,7 +300,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return connectionManager.Batcher;
 			}
 		}
@@ -273,6 +309,11 @@ namespace NHibernate.Impl
 		public override long Timestamp
 		{
 			get { return timestamp; }
+		}
+
+		public ConnectionReleaseMode ConnectionReleaseMode
+		{
+			get { return connectionReleaseMode; }
 		}
 
 		public bool IsAutoCloseSessionEnabled
@@ -285,43 +326,55 @@ namespace NHibernate.Impl
 			get { return IsAutoCloseSessionEnabled && !IsClosed; }
 		}
 
-		/// <summary></summary>
+		/// <summary>
+		/// Close the session and release all resources
+		/// <remarks>
+		/// Do not call this method inside a transaction scope, use <c>Dispose</c> instead, since
+		/// Close() is not aware of distributed transactions
+		/// </remarks>
+		/// </summary>
 		public IDbConnection Close()
 		{
-			log.Debug("closing session");
-			if (IsClosed)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new SessionException("Session was already closed");
-			}
+				log.Debug("closing session");
+				if (IsClosed)
+				{
+					throw new SessionException("Session was already closed");
+				}
 
-			if (factory.Statistics.IsStatisticsEnabled)
-			{
-				factory.StatisticsImplementor.CloseSession();
-			}
+				if (Factory.Statistics.IsStatisticsEnabled)
+				{
+					Factory.StatisticsImplementor.CloseSession();
+				}
 
-			try
-			{
 				try
 				{
-					if (childSessionsByEntityMode != null)
+					try
 					{
-						foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+						if (childSessionsByEntityMode != null)
 						{
-							pair.Value.Close();
+							foreach (KeyValuePair<EntityMode, ISession> pair in childSessionsByEntityMode)
+							{
+								pair.Value.Close();
+							}
 						}
 					}
-				}
-				catch {}
+					catch
+					{
+						// just ignore
+					}
 
-				if (rootSession == null)
-					return connectionManager.Close();
-				else
-					return null;
-			}
-			finally
-			{
-				SetClosed();
-				Cleanup();
+					if (rootSession == null)
+						return connectionManager.Close();
+					else
+						return null;
+				}
+				finally
+				{
+					SetClosed();
+					Cleanup();
+				}
 			}
 		}
 
@@ -332,65 +385,75 @@ namespace NHibernate.Impl
 		/// </summary>
 		public override void AfterTransactionCompletion(bool success, ITransaction tx)
 		{
-			log.Debug("transaction completion");
-			if (Factory.Statistics.IsStatisticsEnabled)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				Factory.StatisticsImplementor.EndTransaction(success);
-			}
-
-			connectionManager.AfterTransaction();
-			persistenceContext.AfterTransactionCompletion();
-			actionQueue.AfterTransactionCompletion(success);
-			if (rootSession == null && tx != null)
-			{
-				try
+				log.Debug("transaction completion");
+				if (Factory.Statistics.IsStatisticsEnabled)
 				{
-					interceptor.AfterTransactionCompletion(tx);
+					Factory.StatisticsImplementor.EndTransaction(success);
 				}
-				catch (Exception t)
+
+				connectionManager.AfterTransaction();
+				persistenceContext.AfterTransactionCompletion();
+				actionQueue.AfterTransactionCompletion(success);
+				if (rootSession == null)
 				{
-					log.Error("exception in interceptor afterTransactionCompletion()", t);
+					try
+					{
+						interceptor.AfterTransactionCompletion(tx);
+					}
+					catch (Exception t)
+					{
+						log.Error("exception in interceptor afterTransactionCompletion()", t);
+					}
 				}
+
+
+				//if (autoClear)
+				//	Clear();
 			}
-
-
-			//if (autoClear)
-			//	Clear();
 		}
 
 		private void Cleanup()
 		{
-			persistenceContext.Clear();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				persistenceContext.Clear();
+			}
 		}
 
 		public LockMode GetCurrentLockMode(object obj)
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			if (obj == null)
-			{
-				throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
-			}
-			if (obj is INHibernateProxy)
-			{
-				obj = ((INHibernateProxy)obj).HibernateLazyInitializer.GetImplementation(this);
 				if (obj == null)
 				{
-					return LockMode.None;
+					throw new ArgumentNullException("obj", "null object passed to GetCurrentLockMode");
 				}
-			}
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
+				{
+					obj = proxy.HibernateLazyInitializer.GetImplementation(this);
+					if (obj == null)
+					{
+						return LockMode.None;
+					}
+				}
 
-			EntityEntry e = persistenceContext.GetEntry(obj);
-			if (e == null)
-			{
-				throw new TransientObjectException("Given object not associated with the session");
-			}
+				EntityEntry e = persistenceContext.GetEntry(obj);
+				if (e == null)
+				{
+					throw new TransientObjectException("Given object not associated with the session");
+				}
 
-			if (e.Status != Status.Loaded)
-			{
-				throw new ObjectDeletedException("The given object was deleted", e.Id, e.EntityName);
+				if (e.Status != Status.Loaded)
+				{
+					throw new ObjectDeletedException("The given object was deleted", e.Id, e.EntityName);
+				}
+				return e.LockMode;
 			}
-			return e.LockMode;
 		}
 
 		public override bool IsOpen
@@ -405,12 +468,18 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Save(object obj)
 		{
-			return FireSave(new SaveOrUpdateEvent(null, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return FireSave(new SaveOrUpdateEvent(null, obj, this));
+			}
 		}
 
 		public object Save(string entityName, object obj)
 		{
-			return FireSave(new SaveOrUpdateEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return FireSave(new SaveOrUpdateEvent(entityName, obj, this));
+			}
 		}
 
 		/// <summary>
@@ -420,7 +489,10 @@ namespace NHibernate.Impl
 		/// <param name="id"></param>
 		public void Save(object obj, object id)
 		{
-			FireSave(new SaveOrUpdateEvent(null, obj, id, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSave(new SaveOrUpdateEvent(null, obj, id, this));
+			}
 		}
 
 		/// <summary>
@@ -429,170 +501,223 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Delete(object obj)
 		{
-			FireDelete(new DeleteEvent(obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireDelete(new DeleteEvent(obj, this));
+			}
 		}
 
 		/// <summary> Delete a persistent object (by explicit entity name)</summary>
 		public void Delete(string entityName, object obj)
 		{
-			FireDelete(new DeleteEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireDelete(new DeleteEvent(entityName, obj, this));
+			}
 		}
 
 		public void Update(object obj)
 		{
-			FireUpdate(new SaveOrUpdateEvent(null, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireUpdate(new SaveOrUpdateEvent(null, obj, this));
+			}
 		}
 
 		public void Update(string entityName, object obj)
 		{
-			FireUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+			}
 		}
 
 		public void SaveOrUpdate(object obj)
 		{
-			FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSaveOrUpdate(new SaveOrUpdateEvent(null, obj, this));
+			}
 		}
 
 		public void SaveOrUpdate(string entityName, object obj)
 		{
-			FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSaveOrUpdate(new SaveOrUpdateEvent(entityName, obj, this));
+			}
 		}
 
 		public void Update(object obj, object id)
 		{
-			FireUpdate(new SaveOrUpdateEvent(null, obj, id, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireUpdate(new SaveOrUpdateEvent(null, obj, id, this));
+			}
 		}
 
 		private static readonly object[] NoArgs = new object[0];
 		private static readonly IType[] NoTypes = new IType[0];
 
-		/// <summary>
-		/// Retrieve a list of persistent objects using a Hibernate query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <returns></returns>
-		public IList Find(string query)
+		IList Find(string query, object[] values, IType[] types)
 		{
-			return List(query, new QueryParameters());
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return List(query, new QueryParameters(types, values));
+			}
 		}
 
-		public IList Find(string query, object value, IType type)
+		public override void CloseSessionFromDistributedTransaction()
 		{
-			return List(query, new QueryParameters(type, value));
-		}
-
-		public IList Find(string query, object[] values, IType[] types)
-		{
-			return List(query, new QueryParameters(types, values));
+			Dispose(true);
 		}
 
 		public override IList List(string query, QueryParameters parameters)
 		{
-			IList results = new ArrayList();
-			List(query, parameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				IList results = new ArrayList();
+				List(query, parameters, results);
+				return results;
+			}
 		}
 
 		public override IList<T> List<T>(string query, QueryParameters parameters)
 		{
-			List<T> results = new List<T>();
-			List(query, parameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				List<T> results = new List<T>();
+				List(query, parameters, results);
+				return results;
+			}
 		}
 
 		public override void List(string query, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
-			queryParameters.ValidateParameters();
-			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
-			AutoFlushIfRequired(plan.QuerySpaces);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(query, false);
+				AutoFlushIfRequired(plan.QuerySpaces);
 
-			bool success = false;
-			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			try
-			{
-				plan.PerformList(queryParameters, this, results);
-				success = true;
-			}
-			catch (HibernateException)
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch (Exception e)
-			{
-				throw Convert(e, "Could not execute query");
-			}
-			finally
-			{
-				dontFlushFromFind--;
-				AfterOperation(success);
+				bool success = false;
+				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "Could not execute query");
+				}
+				finally
+				{
+					dontFlushFromFind--;
+					AfterOperation(success);
+				}
 			}
 		}
+
+        public override IList List(IQueryExpression queryExpression, QueryParameters parameters)
+        {
+            IList results = (IList) typeof(List<>).MakeGenericType(queryExpression.Type)
+                                                  .GetConstructor(System.Type.EmptyTypes)
+                                                  .Invoke(null);
+
+            List(queryExpression, parameters, results);
+
+            return results;
+        }
+
+        public override void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results)
+        {
+            using (new SessionIdLoggingContext(SessionId))
+            {
+                CheckAndUpdateSessionStatus();
+                queryParameters.ValidateParameters();
+                var plan = GetHQLQueryPlan(queryExpression, false);
+                AutoFlushIfRequired(plan.QuerySpaces);
+
+                bool success = false;
+                dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+                try
+                {
+                    plan.PerformList(queryParameters, this, results);
+                    success = true;
+                }
+                catch (HibernateException)
+                {
+                    // Do not call Convert on HibernateExceptions
+                    throw;
+                }
+                catch (Exception e)
+                {
+                    throw Convert(e, "Could not execute query");
+                }
+                finally
+                {
+                    dontFlushFromFind--;
+                    AfterOperation(success);
+                }
+            }
+        }
 
 		public override IQueryTranslator[] GetQueries(string query, bool scalar)
 		{
-			// take the union of the query spaces (ie the queried tables)
-			IQueryTranslator[] q = factory.GetQuery(query, scalar, enabledFilters);
-			HashedSet<string> qs = new HashedSet<string>();
-			for (int i = 0; i < q.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				qs.AddAll(q[i].QuerySpaces);
+				var plan = Factory.QueryPlanCache.GetHQLQueryPlan(query, scalar, enabledFilters);
+				AutoFlushIfRequired(plan.QuerySpaces);
+				return plan.Translators;
 			}
-
-			AutoFlushIfRequired(qs);
-
-			return q;
-		}
-
-		public IEnumerable Enumerable(string query)
-		{
-			return Enumerable(query, NoArgs, NoTypes);
-		}
-
-		public IEnumerable Enumerable(string query, object value, IType type)
-		{
-			return Enumerable(query, new object[] { value }, new IType[] { type });
-		}
-
-		public IEnumerable Enumerable(string query, object[] values, IType[] types)
-		{
-			return Enumerable(query, new QueryParameters(types, values));
 		}
 
 		public override IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			queryParameters.ValidateParameters();
-			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
-			AutoFlushIfRequired(plan.QuerySpaces);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(query, true);
+				AutoFlushIfRequired(plan.QuerySpaces);
 
-			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			try
-			{
-				return plan.PerformIterate<T>(queryParameters, this);
-			}
-			finally
-			{
-				dontFlushFromFind--;
+				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+				try
+				{
+					return plan.PerformIterate<T>(queryParameters, this);
+				}
+				finally
+				{
+					dontFlushFromFind--;
+				}
 			}
 		}
 
 		public override IEnumerable Enumerable(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			queryParameters.ValidateParameters();
-			HQLQueryPlan plan = GetHQLQueryPlan(query, true);
-			AutoFlushIfRequired(plan.QuerySpaces);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(query, true);
+				AutoFlushIfRequired(plan.QuerySpaces);
 
-			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			try
-			{
-				return plan.PerformIterate(queryParameters, this);
-			}
-			finally
-			{
-				dontFlushFromFind--;
+				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+				try
+				{
+					return plan.PerformIterate(queryParameters, this);
+				}
+				finally
+				{
+					dontFlushFromFind--;
+				}
 			}
 		}
 
@@ -600,49 +725,64 @@ namespace NHibernate.Impl
 
 		public int Delete(string query)
 		{
-			return Delete(query, NoArgs, NoTypes);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Delete(query, NoArgs, NoTypes);
+			}
 		}
 
 		public int Delete(string query, object value, IType type)
 		{
-			return Delete(query, new object[] { value }, new IType[] { type });
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Delete(query, new[] { value }, new[] { type });
+			}
 		}
 
 		public int Delete(string query, object[] values, IType[] types)
 		{
-			if (string.IsNullOrEmpty(query))
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentNullException("query", "attempt to perform delete-by-query with null query");
-			}
-
-			ErrorIfClosed();
-
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("delete: " + query);
-				if (values.Length != 0)
+				if (string.IsNullOrEmpty(query))
 				{
-					log.Debug("parameters: " + StringHelper.ToString(values));
+					throw new ArgumentNullException("query", "attempt to perform delete-by-query with null query");
 				}
-			}
 
-			IList list = Find(query, values, types);
-			int count = list.Count;
-			for (int i = 0; i < count; i++)
-			{
-				Delete(list[i]);
+				CheckAndUpdateSessionStatus();
+
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("delete: " + query);
+					if (values.Length != 0)
+					{
+						log.Debug("parameters: " + StringHelper.ToString(values));
+					}
+				}
+
+				IList list = Find(query, values, types);
+				int count = list.Count;
+				for (int i = 0; i < count; i++)
+				{
+					Delete(list[i]);
+				}
+				return count;
 			}
-			return count;
 		}
 
 		public void Lock(object obj, LockMode lockMode)
 		{
-			FireLock(new LockEvent(obj, lockMode, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireLock(new LockEvent(obj, lockMode, this));
+			}
 		}
 
 		public void Lock(string entityName, object obj, LockMode lockMode)
 		{
-			FireLock(new LockEvent(entityName, obj, lockMode, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireLock(new LockEvent(entityName, obj, lockMode, this));
+			}
 		}
 
 		/// <summary>
@@ -653,74 +793,86 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public IQuery CreateFilter(object collection, string queryString)
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			ErrorIfClosed();
-			CollectionFilterImpl filter =
-				new CollectionFilterImpl(queryString, collection, this,
-				                         GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
-			//filter.SetComment(queryString);
-			return filter;
+				CheckAndUpdateSessionStatus();
+				CollectionFilterImpl filter =
+					new CollectionFilterImpl(queryString, collection, this,
+											 GetFilterQueryPlan(collection, queryString, null, false).ParameterMetadata);
+				//filter.SetComment(queryString);
+				return filter;
+			}
 		}
 
 		private FilterQueryPlan GetFilterQueryPlan(object collection, string filter, QueryParameters parameters, bool shallow)
 		{
-			if (collection == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentNullException("collection", "null collection passed to filter");
-			}
-
-			CollectionEntry entry = persistenceContext.GetCollectionEntryOrNull(collection);
-			ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
-
-			FilterQueryPlan plan;
-			if (roleBeforeFlush == null)
-			{
-				// if it was previously unreferenced, we need to flush in order to
-				// get its state into the database in order to execute query
-				Flush();
-				entry = persistenceContext.GetCollectionEntryOrNull(collection);
-				ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
-				if (roleAfterFlush == null)
+				if (collection == null)
 				{
-					throw new QueryException("The collection was unreferenced");
+					throw new ArgumentNullException("collection", "null collection passed to filter");
 				}
-				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
-			}
-			else
-			{
-				// otherwise, we only need to flush if there are in-memory changes
-				// to the queried tables
-				plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow, EnabledFilters);
-				if (AutoFlushIfRequired(plan.QuerySpaces))
+
+				CollectionEntry entry = persistenceContext.GetCollectionEntryOrNull(collection);
+				ICollectionPersister roleBeforeFlush = (entry == null) ? null : entry.LoadedPersister;
+
+				FilterQueryPlan plan;
+				if (roleBeforeFlush == null)
 				{
-					// might need to run a different filter entirely after the flush
-					// because the collection role may have changed
+					// if it was previously unreferenced, we need to flush in order to
+					// get its state into the database in order to execute query
+					Flush();
 					entry = persistenceContext.GetCollectionEntryOrNull(collection);
 					ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
-					if (roleBeforeFlush != roleAfterFlush)
+					if (roleAfterFlush == null)
 					{
-						if (roleAfterFlush == null)
+						throw new QueryException("The collection was unreferenced");
+					}
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
+																	 EnabledFilters);
+				}
+				else
+				{
+					// otherwise, we only need to flush if there are in-memory changes
+					// to the queried tables
+					plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleBeforeFlush.Role, shallow,
+																	 EnabledFilters);
+					if (AutoFlushIfRequired(plan.QuerySpaces))
+					{
+						// might need to run a different filter entirely after the flush
+						// because the collection role may have changed
+						entry = persistenceContext.GetCollectionEntryOrNull(collection);
+						ICollectionPersister roleAfterFlush = (entry == null) ? null : entry.LoadedPersister;
+						if (roleBeforeFlush != roleAfterFlush)
 						{
-							throw new QueryException("The collection was dereferenced");
+							if (roleAfterFlush == null)
+							{
+								throw new QueryException("The collection was dereferenced");
+							}
+							plan = Factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow,
+																			 EnabledFilters);
 						}
-						plan = factory.QueryPlanCache.GetFilterQueryPlan(filter, roleAfterFlush.Role, shallow, EnabledFilters);
 					}
 				}
-			}
 
-			if (parameters != null)
-			{
-				parameters.PositionalParameterValues[0] = entry.LoadedKey;
-				parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
-			}
+				if (parameters != null)
+				{
+					parameters.PositionalParameterValues[0] = entry.LoadedKey;
+					parameters.PositionalParameterTypes[0] = entry.LoadedPersister.KeyType;
+				}
 
-			return plan;
+				return plan;
+			}
 		}
 
 		public override object Instantiate(string clazz, object id)
 		{
-			return Instantiate(factory.GetEntityPersister(clazz), id);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Instantiate(Factory.GetEntityPersister(clazz), id);
+			}
 		}
 
 		/// <summary> Get the ActionQueue for this session</summary>
@@ -728,7 +880,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return actionQueue;
 			}
 		}
@@ -741,100 +893,145 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Instantiate(IEntityPersister persister, object id)
 		{
-			object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
-			if (result == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				result = persister.Instantiate(id, entityMode);
+				ErrorIfClosed();
+				object result = interceptor.Instantiate(persister.EntityName, entityMode, id);
+				if (result == null)
+				{
+					result = persister.Instantiate(id, entityMode);
+				}
+				return result;
 			}
-			return result;
 		}
 
 		#region IEventSource Members
 		/// <summary> Force an immediate flush</summary>
 		public void ForceFlush(EntityEntry entityEntry)
 		{
-			ErrorIfClosed();
-			if (log.IsDebugEnabled)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				log.Debug("flushing to force deletion of re-saved object: " + MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
-			}
+				CheckAndUpdateSessionStatus();
+				if (log.IsDebugEnabled)
+				{
+					log.Debug("flushing to force deletion of re-saved object: " +
+							  MessageHelper.InfoString(entityEntry.Persister, entityEntry.Id, Factory));
+				}
 
-			if (persistenceContext.CascadeLevel > 0)
-			{
-				throw new ObjectDeletedException(
-					"deleted object would be re-saved by cascade (remove deleted object from associations)", entityEntry.Id,
-					entityEntry.EntityName);
-			}
+				if (persistenceContext.CascadeLevel > 0)
+				{
+					throw new ObjectDeletedException(
+						"deleted object would be re-saved by cascade (remove deleted object from associations)",
+						entityEntry.Id,
+						entityEntry.EntityName);
+				}
 
-			Flush();
+				Flush();
+			}
 		}
 
 		/// <summary> Cascade merge an entity instance</summary>
 		public void Merge(string entityName, object obj, IDictionary copiedAlready)
 		{
-			FireMerge(copiedAlready, new MergeEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireMerge(copiedAlready, new MergeEvent(entityName, obj, this));
+			}
 		}
 
 		/// <summary> Cascade persist an entity instance</summary>
 		public void Persist(string entityName, object obj, IDictionary createdAlready)
 		{
-			FirePersist(createdAlready, new PersistEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FirePersist(createdAlready, new PersistEvent(entityName, obj, this));
+			}
 		}
 
 		/// <summary> Cascade persist an entity instance during the flush process</summary>
 		public void PersistOnFlush(string entityName, object obj, IDictionary copiedAlready)
 		{
-			FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FirePersistOnFlush(copiedAlready, new PersistEvent(entityName, obj, this));
+			}
 		}
 
-		/// <summary> Cascade refesh an entity instance</summary>
+		/// <summary> Cascade refresh an entity instance</summary>
 		public void Refresh(object obj, IDictionary refreshedAlready)
 		{
-			FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireRefresh(refreshedAlready, new RefreshEvent(obj, this));
+			}
 		}
 
 		/// <summary> Cascade copy an entity instance</summary>
 		public void SaveOrUpdateCopy(string entityName, object obj, IDictionary copiedAlready)
 		{
-			FireSaveOrUpdateCopy(copiedAlready, new MergeEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireSaveOrUpdateCopy(copiedAlready, new MergeEvent(entityName, obj, this));
+			}
 		}
 
 		/// <summary> Cascade delete an entity instance</summary>
 		public void Delete(string entityName, object child, bool isCascadeDeleteEnabled, ISet transientEntities)
 		{
-			FireDelete(new DeleteEvent(entityName, child, isCascadeDeleteEnabled, this), transientEntities);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireDelete(new DeleteEvent(entityName, child, isCascadeDeleteEnabled, this), transientEntities);
+			}
 		}
 
 		#endregion
 
 		public object Merge(string entityName, object obj)
 		{
-			return FireMerge(new MergeEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return FireMerge(new MergeEvent(entityName, obj, this));
+			}
 		}
 
 		public object Merge(object obj)
 		{
-			return Merge(null, obj);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Merge(null, obj);
+			}
 		}
 
 		public void Persist(string entityName, object obj)
 		{
-			FirePersist(new PersistEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FirePersist(new PersistEvent(entityName, obj, this));
+			}
 		}
 
 		public void Persist(object obj)
 		{
-			Persist(null, obj);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				Persist(null, obj);
+			}
 		}
 
 		public void PersistOnFlush(string entityName, object obj)
 		{
-			FirePersistOnFlush(new PersistEvent(entityName, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FirePersistOnFlush(new PersistEvent(entityName, obj, this));
+			}
 		}
 
 		public void PersistOnFlush(object obj)
 		{
-			Persist(null, obj);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				Persist(null, obj);
+			}
 		}
 
 		/// <summary></summary>
@@ -844,40 +1041,52 @@ namespace NHibernate.Impl
 			set { flushMode = value; }
 		}
 
+		public bool FlushBeforeCompletionEnabled
+		{
+			get { return flushBeforeCompletionEnabled; }
+		}
+
 		public override string BestGuessEntityName(object entity)
 		{
-			INHibernateProxy proxy = entity as INHibernateProxy;
-			if (proxy != null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				ILazyInitializer initializer = proxy.HibernateLazyInitializer;
-
-				// it is possible for this method to be called during flush processing,
-				// so make certain that we do not accidently initialize an uninitialized proxy
-				if (initializer.IsUninitialized)
+				INHibernateProxy proxy = entity as INHibernateProxy;
+				if (proxy != null)
 				{
-					return initializer.PersistentClass.FullName;
+					ILazyInitializer initializer = proxy.HibernateLazyInitializer;
+
+					// it is possible for this method to be called during flush processing,
+					// so make certain that we do not accidently initialize an uninitialized proxy
+					if (initializer.IsUninitialized)
+					{
+						return initializer.PersistentClass.FullName;
+					}
+					entity = initializer.GetImplementation();
 				}
-				entity = initializer.GetImplementation();
-			}
-			EntityEntry entry = persistenceContext.GetEntry(entity);
-			if (entry == null)
-			{
-				return GuessEntityName(entity);
-			}
-			else
-			{
-				return entry.Persister.EntityName;
+				EntityEntry entry = persistenceContext.GetEntry(entity);
+				if (entry == null)
+				{
+					return GuessEntityName(entity);
+				}
+				else
+				{
+					return entry.Persister.EntityName;
+				}
 			}
 		}
 
 		public override string GuessEntityName(object entity)
 		{
-			string entityName = interceptor.GetEntityName(entity);
-			if (entityName == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				entityName = entity.GetType().FullName;
+				string entityName = interceptor.GetEntityName(entity);
+				if (entityName == null)
+				{
+					System.Type t = entity.GetType();
+					entityName = Factory.TryGetGuessEntityName(t) ?? t.FullName;
+				}
+				return entityName;
 			}
-			return entityName;
 		}
 
 		public override bool IsEventSource
@@ -890,23 +1099,26 @@ namespace NHibernate.Impl
 
 		public override object GetEntityUsingInterceptor(EntityKey key)
 		{
-			ErrorIfClosed();
-			// todo : should this get moved to PersistentContext?
-			// logically, is PersistentContext the "thing" to which an interceptor gets attached?
-			object result = persistenceContext.GetEntity(key);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				// todo : should this get moved to PersistentContext?
+				// logically, is PersistentContext the "thing" to which an interceptor gets attached?
+				object result = persistenceContext.GetEntity(key);
 
-			if (result == null)
-			{
-				object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
-				if (newObject != null)
+				if (result == null)
 				{
-					Lock(newObject, LockMode.None);
+					object newObject = interceptor.GetEntity(key.EntityName, key.Identifier);
+					if (newObject != null)
+					{
+						Lock(newObject, LockMode.None);
+					}
+					return newObject;
 				}
-				return newObject;
-			}
-			else
-			{
-				return result;
+				else
+				{
+					return result;
+				}
 			}
 		}
 
@@ -914,7 +1126,7 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				return persistenceContext;
 			}
 		}
@@ -927,150 +1139,49 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		private bool AutoFlushIfRequired(Iesi.Collections.Generic.ISet<string> querySpaces)
 		{
-			ErrorIfClosed();
-			if (!TransactionInProgress)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				// do not auto-flush while outside a transaction
-				return false;
+				CheckAndUpdateSessionStatus();
+				if (!TransactionInProgress)
+				{
+					// do not auto-flush while outside a transaction
+					return false;
+				}
+				AutoFlushEvent autoFlushEvent = new AutoFlushEvent(querySpaces, this);
+				IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
+				for (int i = 0; i < autoFlushEventListener.Length; i++)
+				{
+					autoFlushEventListener[i].OnAutoFlush(autoFlushEvent);
+				}
+				return autoFlushEvent.FlushRequired;
 			}
-			AutoFlushEvent autoFlushEvent = new AutoFlushEvent(querySpaces, this);
-			IAutoFlushEventListener[] autoFlushEventListener = listeners.AutoFlushEventListeners;
-			for (int i = 0; i < autoFlushEventListener.Length; i++)
-			{
-				autoFlushEventListener[i].OnAutoFlush(autoFlushEvent);
-			}
-			return autoFlushEvent.FlushRequired;
 		}
+
+		#region load()/get() operations
 
 		public void Load(object obj, object id)
 		{
-			LoadEvent loadEvent = new LoadEvent(id, obj, this);
-			FireLoad(loadEvent, LoadEventListener.Reload);
-		}
-
-		public object Load(System.Type clazz, object id)
-		{
-			if (id == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentNullException("id", "null is not a valid identifier");
-			}
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, false, this);
-			bool success = false;
-			try
-			{
-				FireLoad(loadEvent, LoadEventListener.Load);
-				if (loadEvent.Result == null)
-					factory.EntityNotFoundDelegate.HandleEntityNotFound(clazz.FullName, id);
-
-				success = true;
-				return loadEvent.Result;
-			}
-			finally
-			{
-				AfterOperation(success);
+				LoadEvent loadEvent = new LoadEvent(id, obj, this);
+				FireLoad(loadEvent, LoadEventListener.Reload);
 			}
 		}
 
 		public T Load<T>(object id)
 		{
-			return (T)Load(typeof(T), id);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)Load(typeof(T), id);
+			}
 		}
 
 		public T Load<T>(object id, LockMode lockMode)
 		{
-			return (T)Load(typeof(T), id, lockMode);
-		}
-
-		public T Get<T>(object id)
-		{
-			return (T)Get(typeof(T), id);
-		}
-
-		public T Get<T>(object id, LockMode lockMode)
-		{
-			return (T)Get(typeof(T), id, lockMode);
-		}
-
-		public string GetEntityName(object obj)
-		{
-			ErrorIfClosed();
-			INHibernateProxy proxy = obj as INHibernateProxy;
-			if (proxy != null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				if (!persistenceContext.ContainsProxy(proxy))
-				{
-					throw new TransientObjectException("proxy was not associated with the session");
-				}
-				ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
-
-				obj = li.GetImplementation();
+				return (T)Load(typeof(T), id, lockMode);
 			}
-
-			EntityEntry entry = persistenceContext.GetEntry(obj);
-			if (entry == null)
-			{
-				throw new TransientObjectException(
-					"object references an unsaved transient instance - save the transient instance before flushing: "
-					+ obj.GetType().FullName);
-			}
-			return entry.Persister.EntityName;
-		}
-
-		public object Get(System.Type entityClass, object id)
-		{
-			return Get(entityClass.FullName, id);
-		}
-
-		public object Get(string entityName, object id)
-		{
-			LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
-			bool success = false;
-			try
-			{
-				FireLoad(loadEvent, LoadEventListener.Get);
-				success = true;
-				return loadEvent.Result;
-			}
-			finally
-			{
-				AfterOperation(success);
-			}
-		}
-
-		/// <summary> 
-		/// Load the data for the object with the specified id into a newly created object.
-		/// This is only called when lazily initializing a proxy.
-		/// Do NOT return a proxy.
-		/// </summary>
-		public override object ImmediateLoad(string entityName, object id)
-		{
-			if (log.IsDebugEnabled)
-			{
-				IEntityPersister persister = Factory.GetEntityPersister(entityName);
-				log.Debug("initializing proxy: " + MessageHelper.InfoString(persister, id, Factory));
-			}
-
-			LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-			FireLoad(loadEvent, LoadEventListener.ImmediateLoad);
-			return loadEvent.Result;
-		}
-
-
-		/// <summary>
-		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
-		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
-		/// </summary>
-		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
-		{
-			// todo : remove
-			LoadType type = isNullable ? LoadEventListener.InternalLoadNullable: (eager ? LoadEventListener.InternalLoadEager: LoadEventListener.InternalLoadLazy);
-			LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
-			FireLoad(loadEvent, type);
-			if (!isNullable)
-			{
-				UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
-			}
-			return loadEvent.Result; 
 		}
 
 		/// <summary>
@@ -1080,18 +1191,89 @@ namespace NHibernate.Impl
 		/// 
 		/// If the object does not exist in the database, an exception is thrown.
 		/// </summary>
-		/// <param name="clazz"></param>
+		/// <param name="entityClass"></param>
 		/// <param name="id"></param>
 		/// <param name="lockMode"></param>
 		/// <returns></returns>
 		/// <exception cref="ObjectNotFoundException">
 		/// Thrown when the object with the specified id does not exist in the database.
 		/// </exception>
-		public object Load(System.Type clazz, object id, LockMode lockMode)
+		public object Load(System.Type entityClass, object id, LockMode lockMode)
 		{
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-			FireLoad(loadEvent, LoadEventListener.Load);
-			return loadEvent.Result;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Load(entityClass.FullName, id, lockMode);
+			}
+		}
+
+		public object Load(string entityName, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (id == null)
+				{
+					throw new ArgumentNullException("id", "null is not a valid identifier");
+				}
+
+				var @event = new LoadEvent(id, entityName, false, this);
+				bool success = false;
+				try
+				{
+					FireLoad(@event, LoadEventListener.Load);
+					if (@event.Result == null)
+					{
+						Factory.EntityNotFoundDelegate.HandleEntityNotFound(entityName, id);
+					}
+					success = true;
+					return @event.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+			}
+		}
+
+		public object Load(string entityName, object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				var @event = new LoadEvent(id, entityName, lockMode, this);
+				FireLoad(@event, LoadEventListener.Load);
+				return @event.Result;
+			}
+		}
+
+		public object Load(System.Type entityClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Load(entityClass.FullName, id);
+			}
+		}
+
+		public T Get<T>(object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)Get(typeof(T), id);
+			}
+		}
+
+		public T Get<T>(object id, LockMode lockMode)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return (T)Get(typeof(T), id, lockMode);
+			}
+		}
+
+		public object Get(System.Type entityClass, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Get(entityClass.FullName, id);
+			}
 		}
 
 		/// <summary>
@@ -1107,45 +1289,153 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object Get(System.Type clazz, object id, LockMode lockMode)
 		{
-			LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
-			FireLoad(loadEvent, LoadEventListener.Get);
-			return loadEvent.Result;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				LoadEvent loadEvent = new LoadEvent(id, clazz.FullName, lockMode, this);
+				FireLoad(loadEvent, LoadEventListener.Get);
+				return loadEvent.Result;
+			}
 		}
+
+		public string GetEntityName(object obj)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
+				{
+					if (!persistenceContext.ContainsProxy(proxy))
+					{
+						throw new TransientObjectException("proxy was not associated with the session");
+					}
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
+
+					obj = li.GetImplementation();
+				}
+
+				EntityEntry entry = persistenceContext.GetEntry(obj);
+				if (entry == null)
+				{
+					throw new TransientObjectException(
+						"object references an unsaved transient instance - save the transient instance before flushing: "
+						+ obj.GetType().FullName);
+				}
+				return entry.Persister.EntityName;
+			}
+		}
+
+		public object Get(string entityName, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				LoadEvent loadEvent = new LoadEvent(id, entityName, false, this);
+				bool success = false;
+				try
+				{
+					FireLoad(loadEvent, LoadEventListener.Get);
+					success = true;
+					return loadEvent.Result;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+			}
+		}
+
+		/// <summary> 
+		/// Load the data for the object with the specified id into a newly created object.
+		/// This is only called when lazily initializing a proxy.
+		/// Do NOT return a proxy.
+		/// </summary>
+		public override object ImmediateLoad(string entityName, object id)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				if (log.IsDebugEnabled)
+				{
+					IEntityPersister persister = Factory.GetEntityPersister(entityName);
+					log.Debug("initializing proxy: " + MessageHelper.InfoString(persister, id, Factory));
+				}
+
+				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
+				FireLoad(loadEvent, LoadEventListener.ImmediateLoad);
+				return loadEvent.Result;
+			}
+		}
+
+
+		/// <summary>
+		/// Return the object with the specified id or throw exception if no row with that id exists. Defer the load,
+		/// return a new proxy or return an existing proxy if possible. Do not check if the object was deleted.
+		/// </summary>
+		public override object InternalLoad(string entityName, object id, bool eager, bool isNullable)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				// todo : remove
+				LoadType type = isNullable
+									? LoadEventListener.InternalLoadNullable
+									: (eager ? LoadEventListener.InternalLoadEager : LoadEventListener.InternalLoadLazy);
+				LoadEvent loadEvent = new LoadEvent(id, entityName, true, this);
+				FireLoad(loadEvent, type);
+				if (!isNullable)
+				{
+					UnresolvableObjectException.ThrowIfNull(loadEvent.Result, id, entityName);
+				}
+				return loadEvent.Result;
+			}
+		}
+
+		#endregion
 
 		public void Refresh(object obj)
 		{
-			FireRefresh(new RefreshEvent(obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireRefresh(new RefreshEvent(obj, this));
+			}
 		}
 
 		public void Refresh(object obj, LockMode lockMode)
 		{
-			FireRefresh(new RefreshEvent(obj, lockMode, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireRefresh(new RefreshEvent(obj, lockMode, this));
+			}
 		}
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel)
 		{
-			if (rootSession != null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				// Todo : should seriously consider not allowing a txn to begin from a child session
-				//      can always route the request to the root session...
-				log.Warn("Transaction started on non-root session");
-			}
+				if (rootSession != null)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					log.Warn("Transaction started on non-root session");
+				}
 
-			ErrorIfClosed();
-			return connectionManager.BeginTransaction(isolationLevel);
+				CheckAndUpdateSessionStatus();
+				return connectionManager.BeginTransaction(isolationLevel);
+			}
 		}
 
 		public ITransaction BeginTransaction()
 		{
-			if (rootSession != null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				// Todo : should seriously consider not allowing a txn to begin from a child session
-				//      can always route the request to the root session...
-				log.Warn("Transaction started on non-root session");
-			}
+				if (rootSession != null)
+				{
+					// Todo : should seriously consider not allowing a txn to begin from a child session
+					//      can always route the request to the root session...
+					log.Warn("Transaction started on non-root session");
+				}
 
-			ErrorIfClosed();
-			return connectionManager.BeginTransaction();
+				CheckAndUpdateSessionStatus();
+				return connectionManager.BeginTransaction();
+			}
 		}
 
 		public ITransaction Transaction
@@ -1176,15 +1466,18 @@ namespace NHibernate.Impl
 		/// </remarks>
 		public override void Flush()
 		{
-			ErrorIfClosed();
-			if (persistenceContext.CascadeLevel > 0)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new HibernateException("Flush during cascade is dangerous");
-			}
-			IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
-			for (int i = 0; i < flushEventListener.Length; i++)
-			{
-				flushEventListener[i].OnFlush(new FlushEvent(this));
+				CheckAndUpdateSessionStatus();
+				if (persistenceContext.CascadeLevel > 0)
+				{
+					throw new HibernateException("Flush during cascade is dangerous");
+				}
+				IFlushEventListener[] flushEventListener = listeners.FlushEventListeners;
+				for (int i = 0; i < flushEventListener.Length; i++)
+				{
+					flushEventListener[i].OnFlush(new FlushEvent(this));
+				}
 			}
 		}
 
@@ -1198,45 +1491,27 @@ namespace NHibernate.Impl
 
 		public bool IsDirty()
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			log.Debug("checking session dirtiness");
-			if (actionQueue.AreInsertionsOrDeletionsQueued)
-			{
-				log.Debug("session dirty (scheduled updates and insertions)");
-				return true;
-			}
-			else
-			{
-				DirtyCheckEvent dcEvent = new DirtyCheckEvent(this);
-				IDirtyCheckEventListener[] dirtyCheckEventListener = listeners.DirtyCheckEventListeners;
-				for (int i = 0; i < dirtyCheckEventListener.Length; i++)
+				log.Debug("checking session dirtiness");
+				if (actionQueue.AreInsertionsOrDeletionsQueued)
 				{
-					dirtyCheckEventListener[i].OnDirtyCheck(dcEvent);
+					log.Debug("session dirty (scheduled updates and insertions)");
+					return true;
 				}
-				return dcEvent.Dirty;
+				else
+				{
+					DirtyCheckEvent dcEvent = new DirtyCheckEvent(this);
+					IDirtyCheckEventListener[] dirtyCheckEventListener = listeners.DirtyCheckEventListeners;
+					for (int i = 0; i < dirtyCheckEventListener.Length; i++)
+					{
+						dirtyCheckEventListener[i].OnDirtyCheck(dcEvent);
+					}
+					return dcEvent.Dirty;
+				}
 			}
-		}
-
-		[NonSerialized]
-		private System.Type lastClass;
-
-		[NonSerialized]
-		private IEntityPersister lastResultForClass;
-
-		private IEntityPersister GetClassPersister(System.Type theClass)
-		{
-			if (lastClass != theClass)
-			{
-				lastResultForClass = factory.GetEntityPersister(theClass);
-				lastClass = theClass;
-			}
-			return lastResultForClass;
-		}
-
-		public override IEntityPersister GetEntityPersister(object obj)
-		{
-			return GetClassPersister(obj.GetType());
 		}
 
 		/// <summary>
@@ -1246,22 +1521,23 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object GetIdentifier(object obj)
 		{
-			ErrorIfClosed();
-			// Actually the case for proxies will probably work even with
-			// the session closed, but do the check here anyway, so that
-			// the behavior is uniform.
-
-			if (obj is INHibernateProxy)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
-				if (li.Session != this)
+				CheckAndUpdateSessionStatus();
+				// Actually the case for proxies will probably work even with
+				// the session closed, but do the check here anyway, so that
+				// the behavior is uniform.
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
 				{
-					throw new TransientObjectException("The proxy was not associated with this session");
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
+					if (li.Session != this)
+					{
+						throw new TransientObjectException("The proxy was not associated with this session");
+					}
+					return li.Identifier;
 				}
-				return li.Identifier;
-			}
-			else
-			{
+
 				EntityEntry entry = persistenceContext.GetEntry(obj);
 				if (entry == null)
 				{
@@ -1279,53 +1555,27 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public override object GetContextEntityIdentifier(object obj)
 		{
-			INHibernateProxy proxy = obj as INHibernateProxy;
-			if (proxy != null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return proxy.HibernateLazyInitializer.Identifier;
+				INHibernateProxy proxy = obj as INHibernateProxy;
+				if (proxy != null)
+				{
+					return proxy.HibernateLazyInitializer.Identifier;
+				}
+				else
+				{
+					EntityEntry entry = persistenceContext.GetEntry(obj);
+					return (entry != null) ? entry.Id : null;
+				}
 			}
-			else
-			{
-				EntityEntry entry = persistenceContext.GetEntry(obj);
-				return (entry != null) ? entry.Id : null;
-			}
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="obj"></param>
-		/// <returns></returns>
-		public override bool IsSaved(object obj)
-		{
-			if (obj is INHibernateProxy)
-			{
-				return true; // NH sure ???
-			}
-
-			EntityEntry entry = persistenceContext.GetEntry(obj);
-			if (entry != null)
-			{
-				return true;
-			}
-
-			bool? isUnsaved = interceptor.IsTransient(obj);
-			if (isUnsaved.HasValue)
-			{
-				return !isUnsaved.Value;
-			}
-			isUnsaved = GetEntityPersister(obj).IsTransient(obj, this);
-			if (isUnsaved.HasValue)
-			{
-				return !isUnsaved.Value;
-			}
-
-			return false;
 		}
 
 		internal ICollectionPersister GetCollectionPersister(string role)
 		{
-			return factory.GetCollectionPersister(role);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return Factory.GetCollectionPersister(role);
+			}
 		}
 
 		/// <summary>
@@ -1335,11 +1585,14 @@ namespace NHibernate.Impl
 		/// <param name="writing"></param>
 		public override void InitializeCollection(IPersistentCollection collection, bool writing)
 		{
-			ErrorIfClosed();
-			IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
-			for (int i = 0; i < listener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				listener[i].OnInitializeCollection(new InitializeCollectionEvent(collection, this));
+				CheckAndUpdateSessionStatus();
+				IInitializeCollectionEventListener[] listener = listeners.InitializeCollectionEventListeners;
+				for (int i = 0; i < listener.Length; i++)
+				{
+					listener[i].OnInitializeCollection(new InitializeCollectionEvent(collection, this));
+				}
 			}
 		}
 
@@ -1367,31 +1620,35 @@ namespace NHibernate.Impl
 		/// <summary></summary>
 		public IDbConnection Disconnect()
 		{
-			ErrorIfClosed();
-			log.Debug("disconnecting session");
-			return connectionManager.Disconnect();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				log.Debug("disconnecting session");
+				return connectionManager.Disconnect();
+			}
 		}
 
 		public void Reconnect()
 		{
-			ErrorIfClosed();
-			log.Debug("reconnecting session");
-			connectionManager.Reconnect();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				log.Debug("reconnecting session");
+				connectionManager.Reconnect();
+			}
 		}
 
 		public void Reconnect(IDbConnection conn)
 		{
-			ErrorIfClosed();
-			log.Debug("reconnecting session");
-			connectionManager.Reconnect(conn);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				log.Debug("reconnecting session");
+				connectionManager.Reconnect(conn);
+			}
 		}
 
 		#region System.IDisposable Members
-
-		/// <summary>
-		/// A flag to indicate if <c>Dispose()</c> has been called.
-		/// </summary>
-		private bool _isAlreadyDisposed;
 
 		private string fetchProfile;
 
@@ -1404,12 +1661,20 @@ namespace NHibernate.Impl
 		}
 
 		/// <summary>
-		/// Just in case the user forgot to Commit() or Close()
+		/// Perform a soft (distributed transaction aware) close of the session
 		/// </summary>
 		public void Dispose()
 		{
-			log.Debug("running ISession.Dispose()");
-			Dispose(true);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				log.Debug(string.Format("[session-id={0}] running ISession.Dispose()", SessionId));
+				if (TransactionContext!=null)
+				{
+					TransactionContext.ShouldCloseSessionOnDistributedTransactionCompleted = true;
+					return;
+				}
+				Dispose(true);
+			}
 		}
 
 		/// <summary>
@@ -1423,229 +1688,299 @@ namespace NHibernate.Impl
 		/// </remarks>
 		private void Dispose(bool isDisposing)
 		{
-			if (_isAlreadyDisposed)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				// don't dispose of multiple times.
-				return;
+				if (IsAlreadyDisposed)
+				{
+					// don't dispose of multiple times.
+					return;
+				}
+
+				log.Debug(string.Format("[session-id={0}] executing real Dispose({1})", SessionId, isDisposing));
+
+				// free managed resources that are being managed by the session if we
+				// know this call came through Dispose()
+				if (isDisposing && !IsClosed)
+				{
+					 Close();
+				}
+
+				// free unmanaged resources here
+
+				IsAlreadyDisposed = true;
+				// nothing for Finalizer to do - so tell the GC to ignore it
+				GC.SuppressFinalize(this);
 			}
-
-			// free managed resources that are being managed by the session if we
-			// know this call came through Dispose()
-			if (isDisposing && !IsClosed)
-			{
-				Close();
-			}
-
-			// free unmanaged resources here
-
-			_isAlreadyDisposed = true;
-			// nothing for Finalizer to do - so tell the GC to ignore it
-			GC.SuppressFinalize(this);
 		}
 
 		#endregion
 
-		public ICollection Filter(object collection, string filter)
-		{
-			QueryParameters qp = new QueryParameters(new IType[1], new object[1]);
-			return ListFilter(collection, filter, qp);
-		}
-
-		public ICollection Filter(object collection, string filter, object value, IType type)
-		{
-			QueryParameters qp = new QueryParameters(new IType[] { null, type }, new object[] { null, value });
-			return ListFilter(collection, filter, qp);
-		}
-
-		public ICollection Filter(object collection, string filter, object[] values, IType[] types)
-		{
-			ErrorIfClosed();
-
-			object[] vals = new object[values.Length + 1];
-			IType[] typs = new IType[values.Length + 1];
-			Array.Copy(values, 0, vals, 1, values.Length);
-			Array.Copy(types, 0, typs, 1, types.Length);
-			QueryParameters qp = new QueryParameters(typs, vals);
-			return ListFilter(collection, filter, qp);
-		}
-
 		private void Filter(object collection, string filter, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
-			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, false);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, false);
 
-			bool success = false;
-			dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
-			try
-			{
-				plan.PerformList(queryParameters, this, results);
-				success = true;
-			}
-			catch (HibernateException)
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch (Exception e)
-			{
-				throw Convert(e, "could not execute query");
-			}
-			finally
-			{
-				dontFlushFromFind--;
-				AfterOperation(success);
+				bool success = false;
+				dontFlushFromFind++; //stops flush being called multiple times if this method is recursively called
+				try
+				{
+					plan.PerformList(queryParameters, this, results);
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception e)
+				{
+					throw Convert(e, "could not execute query");
+				}
+				finally
+				{
+					dontFlushFromFind--;
+					AfterOperation(success);
+				}
 			}
 		}
 
 		public override IList ListFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			IList results = new ArrayList();
-			Filter(collection, filter, queryParameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				IList results = new ArrayList();
+				Filter(collection, filter, queryParameters, results);
+				return results;
+			}
 		}
 
 		public override IList<T> ListFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			List<T> results = new List<T>();
-			Filter(collection, filter, queryParameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				List<T> results = new List<T>();
+				Filter(collection, filter, queryParameters, results);
+				return results;
+			}
 		}
 
 		public override IEnumerable EnumerableFilter(object collection, string filter, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
-			return plan.PerformIterate(queryParameters, this);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
+				return plan.PerformIterate(queryParameters, this);
+			}
 		}
 
 		public override IEnumerable<T> EnumerableFilter<T>(object collection, string filter, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
-			return plan.PerformIterate<T>(queryParameters, this);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				FilterQueryPlan plan = GetFilterQueryPlan(collection, filter, queryParameters, true);
+				return plan.PerformIterate<T>(queryParameters, this);
+			}
+		}
+
+		public ICriteria CreateCriteria<T>() where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return CreateCriteria(typeof(T));
+			}
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass)
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			return new CriteriaImpl(persistentClass, this);
+				return new CriteriaImpl(persistentClass, this);
+			}
+		}
+
+		public ICriteria CreateCriteria<T>(string alias) where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return CreateCriteria(typeof(T), alias);
+			}
 		}
 
 		public ICriteria CreateCriteria(System.Type persistentClass, string alias)
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			return new CriteriaImpl(persistentClass, alias, this);
+				return new CriteriaImpl(persistentClass, alias, this);
+			}
+		}
+
+		public ICriteria CreateCriteria(string entityName, string alias)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityName, alias, this);
+			}
+		}
+
+		public ICriteria CreateCriteria(string entityName)
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new CriteriaImpl(entityName, this);
+			}
+		}
+
+		public IQueryOver<T,T> QueryOver<T>() where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), this));
+			}
+		}
+
+		public IQueryOver<T,T> QueryOver<T>(Expression<Func<T>> alias) where T : class
+		{
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				string aliasPath = ExpressionProcessor.FindMemberExpression(alias.Body);
+				return new QueryOver<T,T>(new CriteriaImpl(typeof(T), aliasPath, this));
+			}
 		}
 
 		public override IList List(CriteriaImpl criteria)
 		{
-			ArrayList results = new ArrayList();
-			List(criteria, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				ArrayList results = new ArrayList();
+				List(criteria, results);
+				return results;
+			}
 		}
 
 		public override IList<T> List<T>(CriteriaImpl criteria)
 		{
-			List<T> results = new List<T>();
-			List(criteria, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				List<T> results = new List<T>();
+				List(criteria, results);
+				return results;
+			}
 		}
 
 		public override void List(CriteriaImpl criteria, IList results)
 		{
-			ErrorIfClosed();
-
-			string[] implementors = factory.GetImplementors(criteria.EntityOrClassName);
-			int size = implementors.Length;
-
-			CriteriaLoader[] loaders = new CriteriaLoader[size];
-			Iesi.Collections.Generic.ISet<string> spaces = new HashedSet<string>();
-
-			for (int i = 0; i < size; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				loaders[i] = new CriteriaLoader(
-					GetOuterJoinLoadable(implementors[i]),
-					factory,
-					criteria,
-					implementors[i],
-					enabledFilters
-					);
+				CheckAndUpdateSessionStatus();
 
-				spaces.AddAll(loaders[i].QuerySpaces);
-			}
+				string[] implementors = Factory.GetImplementors(criteria.EntityOrClassName);
+				int size = implementors.Length;
 
-			AutoFlushIfRequired(spaces);
+				CriteriaLoader[] loaders = new CriteriaLoader[size];
+				Iesi.Collections.Generic.ISet<string> spaces = new HashedSet<string>();
 
-			dontFlushFromFind++;
-
-			bool success = false;
-			try
-			{
-				for (int i = size - 1; i >= 0; i--)
+				for (int i = 0; i < size; i++)
 				{
-					ArrayHelper.AddAll(results, loaders[i].List(this));
+					loaders[i] = new CriteriaLoader(
+						GetOuterJoinLoadable(implementors[i]),
+						Factory,
+						criteria,
+						implementors[i],
+						enabledFilters
+						);
+
+					spaces.AddAll(loaders[i].QuerySpaces);
 				}
-				success = true;
-			}
-			catch (HibernateException)
-			{
-				// Do not call Convert on HibernateExceptions
-				throw;
-			}
-			catch (Exception sqle)
-			{
-				throw Convert(sqle, "Unable to perform find");
-			}
-			finally
-			{
-				dontFlushFromFind--;
-				AfterOperation(success);
+
+				AutoFlushIfRequired(spaces);
+
+				dontFlushFromFind++;
+
+				bool success = false;
+				try
+				{
+					for (int i = size - 1; i >= 0; i--)
+					{
+						ArrayHelper.AddAll(results, loaders[i].List(this));
+					}
+					success = true;
+				}
+				catch (HibernateException)
+				{
+					// Do not call Convert on HibernateExceptions
+					throw;
+				}
+				catch (Exception sqle)
+				{
+					throw Convert(sqle, "Unable to perform find");
+				}
+				finally
+				{
+					dontFlushFromFind--;
+					AfterOperation(success);
+				}
 			}
 		}
 
 		internal IOuterJoinLoadable GetOuterJoinLoadable(string entityName)
 		{
-			IEntityPersister persister = factory.GetEntityPersister(entityName);
-			if (!(persister is IOuterJoinLoadable))
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
+				var persister = Factory.GetEntityPersister(entityName) as IOuterJoinLoadable;
+				if (persister == null)
+				{
+					throw new MappingException("class persister is not OuterJoinLoadable: " + entityName);
+				}
+				return persister;
 			}
-			return (IOuterJoinLoadable)persister;
 		}
 
 		public bool Contains(object obj)
 		{
-			ErrorIfClosed();
-
-			if (obj is INHibernateProxy)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				//do not use proxiesByKey, since not all
-				//proxies that point to this session's
-				//instances are in that collection!
-				ILazyInitializer li = ((INHibernateProxy)obj).HibernateLazyInitializer;
-				if (li.IsUninitialized)
+				CheckAndUpdateSessionStatus();
+				var proxy = obj as INHibernateProxy;
+				if (proxy != null)
 				{
-					//if it is an uninitialized proxy, pointing
-					//with this session, then when it is accessed,
-					//the underlying instance will be "contained"
-					return li.Session == this;
+					//do not use proxiesByKey, since not all
+					//proxies that point to this session's
+					//instances are in that collection!
+					ILazyInitializer li = proxy.HibernateLazyInitializer;
+					if (li.IsUninitialized)
+					{
+						//if it is an uninitialized proxy, pointing
+						//with this session, then when it is accessed,
+						//the underlying instance will be "contained"
+						return li.Session == this;
+					}
+					else
+					{
+						//if it is initialized, see if the underlying
+						//instance is contained, since we need to 
+						//account for the fact that it might have been
+						//evicted
+						obj = li.GetImplementation();
+					}
 				}
-				else
-				{
-					//if it is initialized, see if the underlying
-					//instance is contained, since we need to 
-					//account for the fact that it might have been
-					//evicted
-					obj = li.GetImplementation();
-				}
+				// A session is considered to contain an entity only if the entity has
+				// an entry in the session's persistence context and the entry reports
+				// that the entity has not been removed
+				EntityEntry entry = persistenceContext.GetEntry(obj);
+				return entry != null && entry.Status != Status.Deleted && entry.Status != Status.Gone;
 			}
-			// A session is considered to contain an entity only if the entity has
-			// an entry in the session's persistence context and the entry reports
-			// that the entity has not been removed
-			EntityEntry entry = persistenceContext.GetEntry(obj);
-			return entry != null && entry.Status != Status.Deleted && entry.Status != Status.Gone;
 		}
 
 		/// <summary>
@@ -1655,107 +1990,128 @@ namespace NHibernate.Impl
 		/// <param name="obj"></param>
 		public void Evict(object obj)
 		{
-			FireEvict(new EvictEvent(obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireEvict(new EvictEvent(obj, this));
+			}
 		}
 
 		public override ISQLQuery CreateSQLQuery(string sql)
 		{
-			ErrorIfClosed();
-			return base.CreateSQLQuery(sql);
-		}
-
-		public IQuery CreateSQLQuery(string sql, string returnAlias, System.Type returnClass)
-		{
-			ErrorIfClosed();
-			return new SqlQueryImpl(sql, new string[] { returnAlias }, new System.Type[] { returnClass }, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
-		}
-
-		public IQuery CreateSQLQuery(string sql, string[] returnAliases, System.Type[] returnClasses)
-		{
-			ErrorIfClosed();
-			return new SqlQueryImpl(sql, returnAliases, returnClasses, this, factory.QueryPlanCache.GetSQLParameterMetadata(sql));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				return base.CreateSQLQuery(sql);
+			}
 		}
 
 		public override IList List(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
-			ArrayList results = new ArrayList();
-			List(spec, queryParameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				ArrayList results = new ArrayList();
+				List(spec, queryParameters, results);
+				return results;
+			}
 		}
 
 		public override IList<T> List<T>(NativeSQLQuerySpecification spec, QueryParameters queryParameters)
 		{
-			List<T> results = new List<T>();
-			List(spec, queryParameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				List<T> results = new List<T>();
+				List(spec, queryParameters, results);
+				return results;
+			}
 		}
 
 		public override void List(NativeSQLQuerySpecification spec, QueryParameters queryParameters, IList results)
 		{
-			SQLCustomQuery query = new SQLCustomQuery(
-				spec.SqlQueryReturns,
-				spec.QueryString,
-				spec.QuerySpaces,
-				factory);
-			ListCustomQuery(query, queryParameters, results);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				SQLCustomQuery query = new SQLCustomQuery(
+					spec.SqlQueryReturns,
+					spec.QueryString,
+					spec.QuerySpaces,
+					Factory);
+				ListCustomQuery(query, queryParameters, results);
+			}
 		}
 
 		public override void ListCustomQuery(ICustomQuery customQuery, QueryParameters queryParameters, IList results)
 		{
-			ErrorIfClosed();
-
-			CustomLoader loader = new CustomLoader(customQuery, factory);
-			AutoFlushIfRequired(loader.QuerySpaces);
-
-			bool success = false;
-			dontFlushFromFind++;
-			try
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				ArrayHelper.AddAll(results, loader.List(this, queryParameters));
-				success = true;
-			}
-			finally
-			{
-				dontFlushFromFind--;
-				AfterOperation(success);
+				CheckAndUpdateSessionStatus();
+
+				CustomLoader loader = new CustomLoader(customQuery, Factory);
+				AutoFlushIfRequired(loader.QuerySpaces);
+
+				bool success = false;
+				dontFlushFromFind++;
+				try
+				{
+					ArrayHelper.AddAll(results, loader.List(this, queryParameters));
+					success = true;
+				}
+				finally
+				{
+					dontFlushFromFind--;
+					AfterOperation(success);
+				}
 			}
 		}
 
 		public override IList<T> ListCustomQuery<T>(ICustomQuery customQuery, QueryParameters queryParameters)
 		{
-			List<T> results = new List<T>();
-			ListCustomQuery(customQuery, queryParameters, results);
-			return results;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				List<T> results = new List<T>();
+				ListCustomQuery(customQuery, queryParameters, results);
+				return results;
+			}
 		}
 
 		/// <summary></summary>
 		public void Clear()
 		{
-			ErrorIfClosed();
-			actionQueue.Clear();
-			persistenceContext.Clear();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				actionQueue.Clear();
+				persistenceContext.Clear();
+			}
 		}
 
 		public void Replicate(object obj, ReplicationMode replicationMode)
 		{
-			FireReplicate(new ReplicateEvent(obj, replicationMode, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireReplicate(new ReplicateEvent(obj, replicationMode, this));
+			}
 		}
 
 		public void Replicate(string entityName, object obj, ReplicationMode replicationMode)
 		{
-			FireReplicate(new ReplicateEvent(entityName, obj, replicationMode, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				FireReplicate(new ReplicateEvent(entityName, obj, replicationMode, this));
+			}
 		}
 
 		public ISessionFactory SessionFactory
 		{
-			get { return factory; }
+			get { return Factory; }
 		}
 
 		public void CancelQuery()
 		{
-			ErrorIfClosed();
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
 
-			Batcher.CancelLastQuery();
+				Batcher.CancelLastQuery();
+			}
 		}
 
 		/// <summary>
@@ -1765,79 +2121,94 @@ namespace NHibernate.Impl
 		/// <returns></returns>
 		public object SaveOrUpdateCopy(object obj)
 		{
-			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, this));
+			}
 		}
 
 		public object SaveOrUpdateCopy(object obj, object id)
 		{
-			return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
-		}
-
-		protected internal override void ErrorIfClosed()
-		{
-			if (_isAlreadyDisposed || IsClosed)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ObjectDisposedException("ISession", "Session was disposed of or closed");
+				return FireSaveOrUpdateCopy(new MergeEvent(null, obj, id, this));
 			}
 		}
 
 		public IFilter GetEnabledFilter(string filterName)
 		{
-			ErrorIfClosed();
-			return enabledFilters[filterName];
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				IFilter result;
+				enabledFilters.TryGetValue(filterName, out result);
+				return result;
+			}
 		}
 
 		public IFilter EnableFilter(string filterName)
 		{
-			ErrorIfClosed();
-			FilterImpl filter = new FilterImpl(factory.GetFilterDefinition(filterName));
-			enabledFilters[filterName] = filter;
-			return filter;
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				FilterImpl filter = new FilterImpl(Factory.GetFilterDefinition(filterName));
+				enabledFilters[filterName] = filter;
+				return filter;
+			}
 		}
 
 		public void DisableFilter(string filterName)
 		{
-			ErrorIfClosed();
-			enabledFilters.Remove(filterName);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				enabledFilters.Remove(filterName);
+			}
 		}
 
 		public override Object GetFilterParameterValue(string filterParameterName)
 		{
-			ErrorIfClosed();
-			string[] parsed = ParseFilterParameterName(filterParameterName);
-			IFilter ifilter;
-			enabledFilters.TryGetValue(parsed[0], out ifilter);
-			FilterImpl filter = ifilter as FilterImpl;
-			if (filter == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentException("Filter [" + parsed[0] + "] currently not enabled");
+				CheckAndUpdateSessionStatus();
+				string[] parsed = ParseFilterParameterName(filterParameterName);
+				IFilter ifilter;
+				enabledFilters.TryGetValue(parsed[0], out ifilter);
+				FilterImpl filter = ifilter as FilterImpl;
+				if (filter == null)
+				{
+					throw new ArgumentException("Filter [" + parsed[0] + "] currently not enabled");
+				}
+				return filter.GetParameter(parsed[1]);
 			}
-			return filter.GetParameter(parsed[1]);
 		}
 
 		public override IType GetFilterParameterType(string filterParameterName)
 		{
-			ErrorIfClosed();
-			string[] parsed = ParseFilterParameterName(filterParameterName);
-			FilterDefinition filterDef = factory.GetFilterDefinition(parsed[0]);
-			if (filterDef == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentNullException(parsed[0], "Filter [" + parsed[0] + "] not defined");
+				CheckAndUpdateSessionStatus();
+				string[] parsed = ParseFilterParameterName(filterParameterName);
+				FilterDefinition filterDef = Factory.GetFilterDefinition(parsed[0]);
+				if (filterDef == null)
+				{
+					throw new ArgumentNullException(parsed[0], "Filter [" + parsed[0] + "] not defined");
+				}
+				IType type = filterDef.GetParameterType(parsed[1]);
+				if (type == null)
+				{
+					// this is an internal error of some sort...
+					throw new ArgumentNullException(parsed[1], "Unable to locate type for filter parameter");
+				}
+				return type;
 			}
-			IType type = filterDef.GetParameterType(parsed[1]);
-			if (type == null)
-			{
-				// this is an internal error of some sort...
-				throw new ArgumentNullException(parsed[1], "Unable to locate type for filter parameter");
-			}
-			return type;
 		}
 
 		public override IDictionary<string, IFilter> EnabledFilters
 		{
 			get
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 
 				foreach (IFilter filter in enabledFilters.Values)
 				{
@@ -1850,14 +2221,17 @@ namespace NHibernate.Impl
 
 		private string[] ParseFilterParameterName(string filterParameterName)
 		{
-			int dot = filterParameterName.IndexOf(".");
-			if (dot <= 0)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				throw new ArgumentException("Invalid filter-parameter name format","filterParameterName");
+				int dot = filterParameterName.IndexOf(".");
+				if (dot <= 0)
+				{
+					throw new ArgumentException("Invalid filter-parameter name format", "filterParameterName");
+				}
+				string filterName = filterParameterName.Substring(0, dot);
+				string parameterName = filterParameterName.Substring(dot + 1);
+				return new[] { filterName, parameterName };
 			}
-			string filterName = filterParameterName.Substring(0, dot);
-			string parameterName = filterParameterName.Substring(dot + 1);
-			return new string[] { filterName, parameterName };
 		}
 
 		public override ConnectionManager ConnectionManager
@@ -1867,12 +2241,18 @@ namespace NHibernate.Impl
 
 		public IMultiQuery CreateMultiQuery()
 		{
-			return new MultiQueryImpl(this);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return new MultiQueryImpl(this);
+			}
 		}
 
 		public IMultiCriteria CreateMultiCriteria()
 		{
-			return new MultiCriteriaImpl(this, factory);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				return new MultiCriteriaImpl(this, Factory);
+			}
 		}
 
 		/// <summary> Get the statistics for this session.</summary>
@@ -1884,32 +2264,30 @@ namespace NHibernate.Impl
 			}
 		}
 
-		private void AfterOperation(bool success)
-		{
-			if (!connectionManager.IsInActiveTransaction)
-			{
-				connectionManager.AfterNonTransactionalQuery(success);
-			}
-		}
-
 		public override void AfterTransactionBegin(ITransaction tx)
 		{
-			ErrorIfClosed();
-			interceptor.AfterTransactionBegin(tx);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				interceptor.AfterTransactionBegin(tx);
+			}
 		}
 
 		public override void BeforeTransactionCompletion(ITransaction tx)
 		{
-			log.Debug("before transaction completion");
-			if ( rootSession == null ) 
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				try
+				log.Debug("before transaction completion");
+				if (rootSession == null)
 				{
-					interceptor.BeforeTransactionCompletion(tx);
-				}
-				catch (Exception e)
-				{
-					log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+					try
+					{
+						interceptor.BeforeTransactionCompletion(tx);
+					}
+					catch (Exception e)
+					{
+						log.Error("exception in interceptor BeforeTransactionCompletion()", e);
+					}
 				}
 			}
 		}
@@ -1926,43 +2304,47 @@ namespace NHibernate.Impl
 			return this;
 		}
 
-		public override ISession GetSession()
-		{
-			return this;
-		}
-
 		public ISession GetSession(EntityMode entityMode)
 		{
-			if(this.entityMode.Equals(entityMode))
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return this;
-			}
+				// This is explicitly removed to allow support
+				// for child sessions that want to flush during
+				// the parent session lifecycle. See NH-1714, 
+				// and the suggested audit examples.
+				//
+				//if (this.entityMode.Equals(entityMode))
+				//{
+				//    return this;
+				//}
 
-			if(rootSession !=null)
-			{
-				return rootSession.GetSession(entityMode);
-			}
+				if (rootSession != null)
+				{
+					return rootSession.GetSession(entityMode);
+				}
 
-			ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 
-			ISession rtn = null;
-			if (childSessionsByEntityMode == null)
-			{
-				childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
-			}
-			else
-			{
-				if(childSessionsByEntityMode.ContainsKey(entityMode))
-					rtn = childSessionsByEntityMode[entityMode];
-			}
+				ISession rtn = null;
+				if (childSessionsByEntityMode == null)
+				{
+					childSessionsByEntityMode = new Dictionary<EntityMode, ISession>();
+				}
+				else
+				{
+					if (childSessionsByEntityMode.ContainsKey(entityMode))
+						rtn = childSessionsByEntityMode[entityMode];
+				}
 
-			if(rtn == null)
-			{
-				rtn = new SessionImpl(this, entityMode);
-				childSessionsByEntityMode.Add(entityMode,rtn);
+				if (rtn == null)
+				{
+					log.DebugFormat("Creating child session with {0}", entityMode);
+					rtn = new SessionImpl(this, entityMode);
+					childSessionsByEntityMode.Add(entityMode, rtn);
+				}
+
+				return rtn;
 			}
-			
-			return rtn;
 		}
 
 		public override IInterceptor Interceptor
@@ -1986,7 +2368,7 @@ namespace NHibernate.Impl
 			get { return cacheMode; }
 			set
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting cache mode to: " + value);
@@ -2000,288 +2382,364 @@ namespace NHibernate.Impl
 			get { return entityMode; }
 		}
 
+		public EntityMode ActiveEntityMode
+		{
+			get { return entityMode; }
+		}
+
 		public override string FetchProfile
 		{
 			get { return fetchProfile; }
 			set
 			{
-				ErrorIfClosed();
+				CheckAndUpdateSessionStatus();
 				fetchProfile = value;
 			}
 		}
 
 		public void SetReadOnly(object entity, bool readOnly)
 		{
-			ErrorIfClosed();
-			persistenceContext.SetReadOnly(entity, readOnly);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				persistenceContext.SetReadOnly(entity, readOnly);
+			}
 		}
 
 		private void FireDelete(DeleteEvent @event)
 		{
-			ErrorIfClosed();
-			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
-			for (int i = 0; i < deleteEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				deleteEventListener[i].OnDelete(@event);
+				CheckAndUpdateSessionStatus();
+				IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
+				for (int i = 0; i < deleteEventListener.Length; i++)
+				{
+					deleteEventListener[i].OnDelete(@event);
+				}
 			}
 		}
 
 		private void FireDelete(DeleteEvent @event, ISet transientEntities)
 		{
-			ErrorIfClosed();
-			IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
-			for (int i = 0; i < deleteEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				deleteEventListener[i].OnDelete(@event, transientEntities);
+				CheckAndUpdateSessionStatus();
+				IDeleteEventListener[] deleteEventListener = listeners.DeleteEventListeners;
+				for (int i = 0; i < deleteEventListener.Length; i++)
+				{
+					deleteEventListener[i].OnDelete(@event, transientEntities);
+				}
 			}
 		}
 
 		private void FireEvict(EvictEvent evictEvent)
 		{
-			ErrorIfClosed();
-			IEvictEventListener[] evictEventListener = listeners.EvictEventListeners;
-			for (int i = 0; i < evictEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				evictEventListener[i].OnEvict(evictEvent);
+				CheckAndUpdateSessionStatus();
+				IEvictEventListener[] evictEventListener = listeners.EvictEventListeners;
+				for (int i = 0; i < evictEventListener.Length; i++)
+				{
+					evictEventListener[i].OnEvict(evictEvent);
+				}
 			}
 		}
 
 		private void FireLoad(LoadEvent @event, LoadType loadType)
 		{
-			ErrorIfClosed();
-			ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
-			for (int i = 0; i < loadEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				loadEventListener[i].OnLoad(@event, loadType);
+				CheckAndUpdateSessionStatus();
+				ILoadEventListener[] loadEventListener = listeners.LoadEventListeners;
+				for (int i = 0; i < loadEventListener.Length; i++)
+				{
+					loadEventListener[i].OnLoad(@event, loadType);
+				}
 			}
 		}
 
 		private void FireLock(LockEvent lockEvent)
 		{
-			ErrorIfClosed();
-			ILockEventListener[] lockEventListener = listeners.LockEventListeners;
-			for (int i = 0; i < lockEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				lockEventListener[i].OnLock(lockEvent);
+				CheckAndUpdateSessionStatus();
+				ILockEventListener[] lockEventListener = listeners.LockEventListeners;
+				for (int i = 0; i < lockEventListener.Length; i++)
+				{
+					lockEventListener[i].OnLock(lockEvent);
+				}
 			}
 		}
 
 		private object FireMerge(MergeEvent @event)
 		{
-			ErrorIfClosed();
-			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
-			for (int i = 0; i < mergeEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				mergeEventListener[i].OnMerge(@event);
+				CheckAndUpdateSessionStatus();
+				IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
+				for (int i = 0; i < mergeEventListener.Length; i++)
+				{
+					mergeEventListener[i].OnMerge(@event);
+				}
+				return @event.Result;
 			}
-			return @event.Result;
 		}
 
 		private void FireMerge(IDictionary copiedAlready, MergeEvent @event)
 		{
-			ErrorIfClosed();
-			IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
-			for (int i = 0; i < mergeEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				mergeEventListener[i].OnMerge(@event, copiedAlready);
+				CheckAndUpdateSessionStatus();
+				IMergeEventListener[] mergeEventListener = listeners.MergeEventListeners;
+				for (int i = 0; i < mergeEventListener.Length; i++)
+				{
+					mergeEventListener[i].OnMerge(@event, copiedAlready);
+				}
 			}
 		}
 
 		private void FirePersist(IDictionary copiedAlready, PersistEvent @event)
 		{
-			ErrorIfClosed();
-			IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
-			for (int i = 0; i < persistEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				persistEventListener[i].OnPersist(@event, copiedAlready);
+				CheckAndUpdateSessionStatus();
+				IPersistEventListener[] persistEventListener = listeners.PersistEventListeners;
+				for (int i = 0; i < persistEventListener.Length; i++)
+				{
+					persistEventListener[i].OnPersist(@event, copiedAlready);
+				}
 			}
 		}
 
 		private void FirePersist(PersistEvent @event)
 		{
-			ErrorIfClosed();
-			IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
-			for (int i = 0; i < createEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				createEventListener[i].OnPersist(@event);
+				CheckAndUpdateSessionStatus();
+				IPersistEventListener[] createEventListener = listeners.PersistEventListeners;
+				for (int i = 0; i < createEventListener.Length; i++)
+				{
+					createEventListener[i].OnPersist(@event);
+				}
 			}
 		}
 
 		private void FirePersistOnFlush(IDictionary copiedAlready, PersistEvent @event)
 		{
-			ErrorIfClosed();
-			IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
-			for (int i = 0; i < persistEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				persistEventListener[i].OnPersist(@event, copiedAlready);
+				CheckAndUpdateSessionStatus();
+				IPersistEventListener[] persistEventListener = listeners.PersistOnFlushEventListeners;
+				for (int i = 0; i < persistEventListener.Length; i++)
+				{
+					persistEventListener[i].OnPersist(@event, copiedAlready);
+				}
 			}
 		}
 
 		private void FirePersistOnFlush(PersistEvent @event)
 		{
-			ErrorIfClosed();
-			IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
-			for (int i = 0; i < createEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				createEventListener[i].OnPersist(@event);
+				CheckAndUpdateSessionStatus();
+				IPersistEventListener[] createEventListener = listeners.PersistOnFlushEventListeners;
+				for (int i = 0; i < createEventListener.Length; i++)
+				{
+					createEventListener[i].OnPersist(@event);
+				}
 			}
 		}
 
 		private void FireRefresh(RefreshEvent refreshEvent)
 		{
-			ErrorIfClosed();
-			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
-			for (int i = 0; i < refreshEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				refreshEventListener[i].OnRefresh(refreshEvent);
+				CheckAndUpdateSessionStatus();
+				IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
+				for (int i = 0; i < refreshEventListener.Length; i++)
+				{
+					refreshEventListener[i].OnRefresh(refreshEvent);
+				}
 			}
 		}
 
 		private void FireRefresh(IDictionary refreshedAlready, RefreshEvent refreshEvent)
 		{
-			ErrorIfClosed();
-			IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
-			for (int i = 0; i < refreshEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				refreshEventListener[i].OnRefresh(refreshEvent, refreshedAlready);
+				CheckAndUpdateSessionStatus();
+				IRefreshEventListener[] refreshEventListener = listeners.RefreshEventListeners;
+				for (int i = 0; i < refreshEventListener.Length; i++)
+				{
+					refreshEventListener[i].OnRefresh(refreshEvent, refreshedAlready);
+				}
 			}
 		}
 
 		private void FireReplicate(ReplicateEvent @event)
 		{
-			ErrorIfClosed();
-			IReplicateEventListener[] replicateEventListener = listeners.ReplicateEventListeners;
-			for (int i = 0; i < replicateEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				replicateEventListener[i].OnReplicate(@event);
+				CheckAndUpdateSessionStatus();
+				IReplicateEventListener[] replicateEventListener = listeners.ReplicateEventListeners;
+				for (int i = 0; i < replicateEventListener.Length; i++)
+				{
+					replicateEventListener[i].OnReplicate(@event);
+				}
 			}
 		}
 
 		private object FireSave(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
-			ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
-			for (int i = 0; i < saveEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				saveEventListener[i].OnSaveOrUpdate(@event);
+				CheckAndUpdateSessionStatus();
+				ISaveOrUpdateEventListener[] saveEventListener = listeners.SaveEventListeners;
+				for (int i = 0; i < saveEventListener.Length; i++)
+				{
+					saveEventListener[i].OnSaveOrUpdate(@event);
+				}
+				return @event.ResultId;
 			}
-			return @event.ResultId;
 		}
 
 		private void FireSaveOrUpdate(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
-			ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
-			for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				saveOrUpdateEventListener[i].OnSaveOrUpdate(@event);
+				CheckAndUpdateSessionStatus();
+				ISaveOrUpdateEventListener[] saveOrUpdateEventListener = listeners.SaveOrUpdateEventListeners;
+				for (int i = 0; i < saveOrUpdateEventListener.Length; i++)
+				{
+					saveOrUpdateEventListener[i].OnSaveOrUpdate(@event);
+				}
 			}
 		}
 
 		private void FireSaveOrUpdateCopy(IDictionary copiedAlready, MergeEvent @event)
 		{
-			ErrorIfClosed();
-			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				saveOrUpdateCopyEventListener[i].OnMerge(@event, copiedAlready);
+				CheckAndUpdateSessionStatus();
+				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
+				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
+				{
+					saveOrUpdateCopyEventListener[i].OnMerge(@event, copiedAlready);
+				}
 			}
 		}
 
 		private object FireSaveOrUpdateCopy(MergeEvent @event)
 		{
-			ErrorIfClosed();
-			IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
-			for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				saveOrUpdateCopyEventListener[i].OnMerge(@event);
+				CheckAndUpdateSessionStatus();
+				IMergeEventListener[] saveOrUpdateCopyEventListener = listeners.SaveOrUpdateCopyEventListeners;
+				for (int i = 0; i < saveOrUpdateCopyEventListener.Length; i++)
+				{
+					saveOrUpdateCopyEventListener[i].OnMerge(@event);
+				}
+				return @event.Result;
 			}
-			return @event.Result;
 		}
 
 		private void FireUpdate(SaveOrUpdateEvent @event)
 		{
-			ErrorIfClosed();
-			ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
-			for (int i = 0; i < updateEventListener.Length; i++)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				updateEventListener[i].OnSaveOrUpdate(@event);
+				CheckAndUpdateSessionStatus();
+				ISaveOrUpdateEventListener[] updateEventListener = listeners.UpdateEventListeners;
+				for (int i = 0; i < updateEventListener.Length; i++)
+				{
+					updateEventListener[i].OnSaveOrUpdate(@event);
+				}
 			}
 		}
 
 		public override int ExecuteNativeUpdate(NativeSQLQuerySpecification nativeQuerySpecification, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			queryParameters.ValidateParameters();
-			NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
-
-			AutoFlushIfRequired(plan.CustomQuery.QuerySpaces);
-
-			bool success = false;
-			int result;
-			try
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				result = plan.PerformExecuteUpdate(queryParameters, this);
-				success = true;
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				NativeSQLQueryPlan plan = GetNativeSQLQueryPlan(nativeQuerySpecification);
+
+				AutoFlushIfRequired(plan.CustomQuery.QuerySpaces);
+
+				bool success = false;
+				int result;
+				try
+				{
+					result = plan.PerformExecuteUpdate(queryParameters, this);
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				return result;
 			}
-			finally
-			{
-				AfterOperation(success);
-			}
-			return result;
 		}
 
 		public override int ExecuteUpdate(string query, QueryParameters queryParameters)
 		{
-			ErrorIfClosed();
-			queryParameters.ValidateParameters();
-			HQLQueryPlan plan = GetHQLQueryPlan(query, false);
-			AutoFlushIfRequired(plan.QuerySpaces);
+			using (new SessionIdLoggingContext(SessionId))
+			{
+				CheckAndUpdateSessionStatus();
+				queryParameters.ValidateParameters();
+				var plan = GetHQLQueryPlan(query, false);
+				AutoFlushIfRequired(plan.QuerySpaces);
 
-			bool success = false;
-			int result;
-			try
-			{
-				result = plan.PerformExecuteUpdate(queryParameters, this);
-				success = true;
+				bool success = false;
+				int result;
+				try
+				{
+					result = plan.PerformExecuteUpdate(queryParameters, this);
+					success = true;
+				}
+				finally
+				{
+					AfterOperation(success);
+				}
+				return result;
 			}
-			finally
-			{
-				AfterOperation(success);
-			}
-			return result;
 		}
+
 
 		public override IEntityPersister GetEntityPersister(string entityName, object obj)
 		{
-			ErrorIfClosed();
-			if (entityName == null)
+			using (new SessionIdLoggingContext(SessionId))
 			{
-				return factory.GetEntityPersister(GuessEntityName(obj));
-			}
-			else
-			{
-				// try block is a hack around fact that currently tuplizers are not
-				// given the opportunity to resolve a subclass entity name.  this
-				// allows the (we assume custom) interceptor the ability to
-				// influence this decision if we were not able to based on the
-				// given entityName
-				try
+				CheckAndUpdateSessionStatus();
+				if (entityName == null)
 				{
-					return factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory, entityMode);
+					return Factory.GetEntityPersister(GuessEntityName(obj));
 				}
-				catch (HibernateException)
+				else
 				{
+					// try block is a hack around fact that currently tuplizers are not
+					// given the opportunity to resolve a subclass entity name.  this
+					// allows the (we assume custom) interceptor the ability to
+					// influence this decision if we were not able to based on the
+					// given entityName
 					try
 					{
-						return GetEntityPersister(null, obj);
+						return Factory.GetEntityPersister(entityName).GetSubclassEntityPersister(obj, Factory,
+																								 entityMode);
 					}
 					catch (HibernateException)
 					{
-						// we ignore this exception and re-throw the 
-						// original one
+						try
+						{
+							return GetEntityPersister(null, obj);
+						}
+						catch (HibernateException)
+						{
+							// we ignore this exception and re-throw the 
+							// original one
+						}
+						throw;
 					}
-					throw;
 				}
 			}
 		}

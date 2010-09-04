@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Collection;
 using NHibernate.Impl;
 using NHibernate.Persister.Collection;
@@ -20,7 +22,7 @@ namespace NHibernate.Engine.Loading
 	/// </remarks>
 	public class CollectionLoadContext
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(CollectionLoadContext));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(CollectionLoadContext));
 		private readonly LoadContexts loadContexts;
 		private readonly IDataReader resultSet;
 		private readonly Iesi.Collections.Generic.ISet<CollectionKey> localLoadingCollectionKeys = new HashedSet<CollectionKey>();
@@ -96,7 +98,7 @@ namespace NHibernate.Engine.Loading
 				else
 				{
 					object owner = loadContexts.PersistenceContext.GetCollectionOwner(key, persister);
-					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading;
+					bool newlySavedEntity = owner != null && loadContexts.PersistenceContext.GetEntry(owner).Status != Status.Loading && em != EntityMode.Xml;
 					if (newlySavedEntity)
 					{
 						// important, to account for newly saved entities in query
@@ -114,7 +116,7 @@ namespace NHibernate.Engine.Loading
 						collection = persister.CollectionType.Instantiate(loadContexts.PersistenceContext.Session, persister, key);
 					}
 				}
-				collection.BeforeInitialize(persister);
+				collection.BeforeInitialize(persister, -1);
 				collection.BeginRead();
 				localLoadingCollectionKeys.Add(collectionKey);
 				loadContexts.RegisterLoadingCollectionXRef(collectionKey, new LoadingCollectionEntry(resultSet, persister, key, collection));
@@ -145,7 +147,7 @@ namespace NHibernate.Engine.Loading
 		/// <param name="persister">The persister for which to complete loading. </param>
 		public void EndLoadingCollections(ICollectionPersister persister)
 		{
-			if (!loadContexts.HasLoadingCollectionEntries || (localLoadingCollectionKeys.Count == 0))
+			if (!loadContexts.HasLoadingCollectionEntries && (localLoadingCollectionKeys.Count == 0))
 			{
 				return;
 			}
@@ -235,10 +237,21 @@ namespace NHibernate.Engine.Loading
 				log.Debug("ending loading collection [" + lce + "]");
 			}
 			ISessionImplementor session = LoadContext.PersistenceContext.Session;
+			EntityMode em = session.EntityMode;
+
+			bool statsEnabled = session.Factory.Statistics.IsStatisticsEnabled;
+			var stopWath = new Stopwatch();
+			if (statsEnabled)
+			{
+				stopWath.Start();
+			}
 
 			bool hasNoQueuedAdds = lce.Collection.EndRead(persister); // warning: can cause a recursive calls! (proxy initialization)
 
-			LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+			if (persister.CollectionType.HasHolder(em))
+			{
+				LoadContext.PersistenceContext.AddCollectionHolder(lce.Collection);
+			}
 
 			CollectionEntry ce = LoadContext.PersistenceContext.GetCollectionEntry(lce.Collection);
 			if (ce == null)
@@ -263,9 +276,10 @@ namespace NHibernate.Engine.Loading
 				log.Debug("collection fully initialized: " + MessageHelper.InfoString(persister, lce.Key, session.Factory));
 			}
 
-			if (session.Factory.Statistics.IsStatisticsEnabled)
+			if (statsEnabled)
 			{
-				session.Factory.StatisticsImplementor.LoadCollection(persister.Role);
+				stopWath.Stop();
+				session.Factory.StatisticsImplementor.LoadCollection(persister.Role, stopWath.Elapsed);
 			}
 		}
 
@@ -287,8 +301,8 @@ namespace NHibernate.Engine.Loading
 				// some filters affecting the collection are enabled on the session, so do not do the put into the cache.
 				log.Debug("Refusing to add to cache due to enabled filters");
 				// todo : add the notion of enabled filters to the CacheKey to differentiate filtered collections from non-filtered;
-				//      but CacheKey is currently used for both collections and entities; would ideally need to define two seperate ones;
-				//      currently this works in conjuction with the check on
+				//      but CacheKey is currently used for both collections and entities; would ideally need to define two separate ones;
+				//      currently this works in conjunction with the check on
 				//      DefaultInitializeCollectionEventHandler.initializeCollectionFromCache() (which makes sure to not read from
 				//      cache with enabled filters).
 				return; // EARLY EXIT!!!!!
@@ -308,8 +322,9 @@ namespace NHibernate.Engine.Loading
 				versionComparator = null;
 			}
 
-			CacheKey ck = new CacheKey(lce.Key, persister.KeyType, persister.Role, session.EntityMode, factory);
-			bool put = persister.Cache.Put(ck, lce.Collection.Disassemble(persister), 
+			CollectionCacheEntry entry = new CollectionCacheEntry(lce.Collection, persister);
+			CacheKey cacheKey = new CacheKey(lce.Key, persister.KeyType, persister.Role, session.EntityMode, factory);
+			bool put = persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), 
 			                    session.Timestamp, version, versionComparator,
 													factory.Settings.IsMinimalPutsEnabled && session.CacheMode != CacheMode.Refresh);
 

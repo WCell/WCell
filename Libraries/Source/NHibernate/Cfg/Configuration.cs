@@ -5,16 +5,19 @@ using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using System.Xml.Schema;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Bytecode;
 using NHibernate.Cfg.ConfigurationSchema;
+using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.XmlHbmBinding;
 using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
+using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.Event;
 using NHibernate.Id;
@@ -24,6 +27,8 @@ using NHibernate.Proxy;
 using NHibernate.Tool.hbm2ddl;
 using NHibernate.Type;
 using NHibernate.Util;
+using Array = System.Array;
+using System.Runtime.Serialization;
 
 namespace NHibernate.Cfg
 {
@@ -42,71 +47,143 @@ namespace NHibernate.Cfg
 	/// is immutable and does not retain any association back to the <see cref="Configuration" />
 	/// </para>
 	/// </remarks>
-	public class Configuration
+	[Serializable]
+	public class Configuration : ISerializable
 	{
-		/// <summary>The XML Namespace for the nhibernate-mapping</summary>
-		public const string MappingSchemaXMLNS = "urn:nhibernate-mapping-2.2";
-
 		/// <summary>Default name for hibernate configuration file.</summary>
 		public const string DefaultHibernateCfgFileName = "hibernate.cfg.xml";
 
 		private string currentDocumentName;
+		private bool preMappingBuildProcessed;
 
-		private IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
-		private IDictionary<string, string> imports;
-		private IDictionary<string, NHibernate.Mapping.Collection> collections;
-		private IDictionary<string, Table> tables;
-		private IDictionary<string, NamedQueryDefinition> namedQueries;
-		private IDictionary<string, NamedSQLQueryDefinition> namedSqlQueries;
-		private IDictionary<string, ResultSetMappingDefinition> sqlResultSetMappings;
-		private IList<SecondPassCommand> secondPasses;
-		private IList<Mappings.PropertyReference> propertyReferences;
+		protected IDictionary<string, PersistentClass> classes; // entityName, PersistentClass
+		protected IDictionary<string, NHibernate.Mapping.Collection> collections;
+		protected IDictionary<string, Table> tables;
+		protected IList<SecondPassCommand> secondPasses;
+		protected Queue<FilterSecondPassArgs> filtersSecondPasses;
+		protected IList<Mappings.PropertyReference> propertyReferences;
 		private IInterceptor interceptor;
 		private IDictionary<string, string> properties;
-		private IDictionary<string, FilterDefinition> filterDefinitions;
-		private IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
-		private IDictionary<string, ISQLFunction> sqlFunctions;
+		protected IList<IAuxiliaryDatabaseObject> auxiliaryDatabaseObjects;
 
 		private INamingStrategy namingStrategy = DefaultNamingStrategy.Instance;
 		private MappingsQueue mappingsQueue;
 
 		private EventListeners eventListeners;
-		private IDictionary<string, TypeDef> typeDefs;
-		private Iesi.Collections.Generic.ISet<ExtendsQueueEntry> extendsQueue;
-		private IDictionary<string, Mappings.TableDescription> tableNameBinding;
-		private IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
+		protected IDictionary<string, TypeDef> typeDefs;
+		protected Iesi.Collections.Generic.ISet<ExtendsQueueEntry> extendsQueue;
+		protected IDictionary<string, Mappings.TableDescription> tableNameBinding;
+		protected IDictionary<Table, Mappings.ColumnNames> columnNameBindingPerTable;
 
-		private static readonly ILog log = LogManager.GetLogger(typeof(Configuration));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(Configuration));
+
 
 		protected internal SettingsFactory settingsFactory;
+
+		#region ISerializable Members
+		public Configuration(SerializationInfo info, StreamingContext context)
+		{
+			Reset();
+
+			EntityNotFoundDelegate = GetSerialedObject<IEntityNotFoundDelegate>(info, "entityNotFoundDelegate");
+
+			auxiliaryDatabaseObjects = GetSerialedObject<IList<IAuxiliaryDatabaseObject>>(info, "auxiliaryDatabaseObjects");
+			classes = GetSerialedObject<IDictionary<string, PersistentClass>>(info, "classes");
+			collections = GetSerialedObject<IDictionary<string, NHibernate.Mapping.Collection>>(info, "collections");
+
+			columnNameBindingPerTable = GetSerialedObject<IDictionary<Table, Mappings.ColumnNames>>(info,
+																									"columnNameBindingPerTable");
+			defaultAssembly = GetSerialedObject<string>(info, "defaultAssembly");
+			defaultNamespace = GetSerialedObject<string>(info, "defaultNamespace");
+			eventListeners = GetSerialedObject<EventListeners>(info, "eventListeners");
+			//this.extendsQueue = GetSerialedObject<ISet<ExtendsQueueEntry>>(info, "extendsQueue");
+			FilterDefinitions = GetSerialedObject<IDictionary<string, FilterDefinition>>(info, "filterDefinitions");
+			Imports = GetSerialedObject<IDictionary<string, string>>(info, "imports");
+			interceptor = GetSerialedObject<IInterceptor>(info, "interceptor");
+			mapping = GetSerialedObject<IMapping>(info, "mapping");
+			NamedQueries = GetSerialedObject<IDictionary<string, NamedQueryDefinition>>(info, "namedQueries");
+			NamedSQLQueries = GetSerialedObject<IDictionary<string, NamedSQLQueryDefinition>>(info, "namedSqlQueries");
+			namingStrategy = GetSerialedObject<INamingStrategy>(info, "namingStrategy");
+			properties = GetSerialedObject<IDictionary<string, string>>(info, "properties");
+			propertyReferences = GetSerialedObject<IList<Mappings.PropertyReference>>(info, "propertyReferences");
+			settingsFactory = GetSerialedObject<SettingsFactory>(info, "settingsFactory");
+			SqlFunctions = GetSerialedObject<IDictionary<string, ISQLFunction>>(info, "sqlFunctions");
+			SqlResultSetMappings = GetSerialedObject<IDictionary<string, ResultSetMappingDefinition>>(info,
+																									  "sqlResultSetMappings");
+			tableNameBinding = GetSerialedObject<IDictionary<string, Mappings.TableDescription>>(info, "tableNameBinding");
+			tables = GetSerialedObject<IDictionary<string, Table>>(info, "tables");
+			typeDefs = GetSerialedObject<IDictionary<string, TypeDef>>(info, "typeDefs");
+			filtersSecondPasses = GetSerialedObject<Queue<FilterSecondPassArgs>>(info, "filtersSecondPasses");
+		}
+
+		private T GetSerialedObject<T>(SerializationInfo info, string name)
+		{
+			return (T)info.GetValue(name, typeof(T));
+		}
+
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			ConfigureProxyFactoryFactory();
+			SecondPassCompile();
+			Validate();
+
+			info.AddValue("entityNotFoundDelegate", EntityNotFoundDelegate);
+
+			info.AddValue("auxiliaryDatabaseObjects", auxiliaryDatabaseObjects);
+			info.AddValue("classes", classes);
+			info.AddValue("collections", collections);
+			info.AddValue("columnNameBindingPerTable", columnNameBindingPerTable);
+			info.AddValue("defaultAssembly", defaultAssembly);
+			info.AddValue("defaultNamespace", defaultNamespace);
+			info.AddValue("eventListeners", eventListeners);
+			//info.AddValue("extendsQueue", this.extendsQueue);
+			info.AddValue("filterDefinitions", FilterDefinitions);
+			info.AddValue("imports", Imports);
+			info.AddValue("interceptor", interceptor);
+			info.AddValue("mapping", mapping);
+			info.AddValue("namedQueries", NamedQueries);
+			info.AddValue("namedSqlQueries", NamedSQLQueries);
+			info.AddValue("namingStrategy", namingStrategy);
+			info.AddValue("properties", properties);
+			info.AddValue("propertyReferences", propertyReferences);
+			info.AddValue("settingsFactory", settingsFactory);
+			info.AddValue("sqlFunctions", SqlFunctions);
+			info.AddValue("sqlResultSetMappings", SqlResultSetMappings);
+			info.AddValue("tableNameBinding", tableNameBinding);
+			info.AddValue("tables", tables);
+			info.AddValue("typeDefs", typeDefs);
+			info.AddValue("filtersSecondPasses", filtersSecondPasses);
+		}
+		#endregion
 
 		/// <summary>
 		/// Clear the internal state of the <see cref="Configuration"/> object.
 		/// </summary>
-		private void Reset()
+		protected void Reset()
 		{
 			classes = new Dictionary<string, PersistentClass>(); //new SequencedHashMap(); - to make NH-369 bug deterministic
-			imports = new Dictionary<string, string>();
+			Imports = new Dictionary<string, string>();
 			collections = new Dictionary<string, NHibernate.Mapping.Collection>();
 			tables = new Dictionary<string, Table>();
-			namedQueries = new Dictionary<string, NamedQueryDefinition>();
-			namedSqlQueries = new Dictionary<string, NamedSQLQueryDefinition>();
-			sqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
+			NamedQueries = new Dictionary<string, NamedQueryDefinition>();
+			NamedSQLQueries = new Dictionary<string, NamedSQLQueryDefinition>();
+			SqlResultSetMappings = new Dictionary<string, ResultSetMappingDefinition>();
 			secondPasses = new List<SecondPassCommand>();
 			propertyReferences = new List<Mappings.PropertyReference>();
-			filterDefinitions = new Dictionary<string, FilterDefinition>();
+			FilterDefinitions = new Dictionary<string, FilterDefinition>();
 			interceptor = emptyInterceptor;
 			properties = Environment.Properties;
 			auxiliaryDatabaseObjects = new List<IAuxiliaryDatabaseObject>();
-			sqlFunctions = new Dictionary<string, ISQLFunction>();
+			SqlFunctions = new Dictionary<string, ISQLFunction>();
 			mappingsQueue = new MappingsQueue();
 			eventListeners = new EventListeners();
 			typeDefs = new Dictionary<string, TypeDef>();
 			extendsQueue = new HashedSet<ExtendsQueueEntry>();
 			tableNameBinding = new Dictionary<string, Mappings.TableDescription>();
 			columnNameBindingPerTable = new Dictionary<Table, Mappings.ColumnNames>();
+			filtersSecondPasses = new Queue<FilterSecondPassArgs>();
 		}
-
+		[Serializable]
 		private class Mapping : IMapping
 		{
 			private readonly Configuration configuration;
@@ -118,8 +195,8 @@ namespace NHibernate.Cfg
 
 			private PersistentClass GetPersistentClass(string className)
 			{
-				PersistentClass pc;
-				if (!configuration.classes.TryGetValue(className, out pc))
+				PersistentClass pc = configuration.classes[className];
+				if (pc == null)
 				{
 					throw new MappingException("persistent class not known: " + className);
 				}
@@ -133,7 +210,7 @@ namespace NHibernate.Cfg
 
 			public string GetIdentifierPropertyName(string className)
 			{
-				var pc = GetPersistentClass(className);
+				PersistentClass pc = GetPersistentClass(className);
 				if (!pc.HasIdentifierProperty)
 				{
 					return null;
@@ -159,10 +236,9 @@ namespace NHibernate.Cfg
 			}
 		}
 
-		[NonSerialized]
 		private IMapping mapping;
 
-		protected internal Configuration(SettingsFactory settingsFactory)
+		protected Configuration(SettingsFactory settingsFactory)
 		{
 			InitBlock();
 			this.settingsFactory = settingsFactory;
@@ -182,10 +258,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Create a new Configuration object.
 		/// </summary>
-		public Configuration()
-			: this(new SettingsFactory())
-		{
-		}
+		public Configuration() : this(new SettingsFactory()) { }
 
 		/// <summary>
 		/// The class mappings 
@@ -237,10 +310,7 @@ namespace NHibernate.Cfg
 		/// <returns><see cref="NHibernate.Mapping.Collection" /></returns>
 		public NHibernate.Mapping.Collection GetCollectionMapping(string role)
 		{
-			if (collections.ContainsKey(role))
-				return collections[role];
-			else
-				return null;
+			return collections.ContainsKey(role) ? collections[role] : null;
 		}
 
 		/// <summary>
@@ -262,7 +332,9 @@ namespace NHibernate.Cfg
 		private static void LogAndThrow(Exception exception)
 		{
 			if (log.IsErrorEnabled)
+			{
 				log.Error(exception.Message, exception);
+			}
 
 			throw exception;
 		}
@@ -395,7 +467,7 @@ namespace NHibernate.Cfg
 
 			try
 			{
-				using (MemoryStream ms = new MemoryStream())
+				using (var ms = new MemoryStream())
 				{
 					doc.Save(ms);
 					ms.Position = 0;
@@ -421,24 +493,56 @@ namespace NHibernate.Cfg
 		/// <param name="doc">The NamedXmlDocument that contains the <b>validated</b> mapping XML file.</param>
 		private void AddValidatedDocument(NamedXmlDocument doc)
 		{
+			AddDeserializedMapping(doc.Document, doc.Name);
+		}
+
+		public event EventHandler<BindMappingEventArgs> BeforeBindMapping;
+		public event EventHandler<BindMappingEventArgs> AfterBindMapping;
+
+		/// <summary>
+		/// Add mapping data using deserialized class.
+		/// </summary>
+		/// <param name="mappingDocument">Mapping metadata.</param>
+		/// <param name="documentFileName">XML file's name where available; otherwise null.</param>
+		public void AddDeserializedMapping(HbmMapping mappingDocument, string documentFileName)
+		{
+			if (mappingDocument == null)
+			{
+				throw new ArgumentNullException("mappingDocument");
+			}
 			try
 			{
-				// note that the prefix has absolutely nothing to do with what the user
-				// selects as their prefix in the document.  It is the prefix we use to 
-				// build the XPath and the nsmgr takes care of translating our prefix into
-				// the user defined prefix...
-				XmlNamespaceManager namespaceManager = new XmlNamespaceManager(doc.Document.NameTable);
-				namespaceManager.AddNamespace(HbmConstants.nsPrefix, MappingSchemaXMLNS);
-
 				Dialect.Dialect dialect = Dialect.Dialect.GetDialect(properties);
-				Mappings mappings = CreateMappings();
+				OnBeforeBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
+				Mappings mappings = CreateMappings(dialect);
 
-				new MappingRootBinder(mappings, namespaceManager, dialect).Bind(doc.Document.DocumentElement);
+				new MappingRootBinder(mappings, dialect).Bind(mappingDocument);
+				OnAfterBindMapping(new BindMappingEventArgs(dialect, mappingDocument, documentFileName));
 			}
 			catch (Exception e)
 			{
-				string nameFormatted = doc.Name ?? "(unknown)";
-				LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
+				var message = documentFileName == null
+								? "Could not compile deserialized mapping document."
+								: "Could not compile the mapping document: " + documentFileName;
+				LogAndThrow(new MappingException(message, e));
+			}
+		}
+
+		private void OnAfterBindMapping(BindMappingEventArgs bindMappingEventArgs)
+		{
+			var handler = AfterBindMapping;
+			if (handler != null)
+			{
+				handler(this, bindMappingEventArgs);
+			}
+		}
+
+		private void OnBeforeBindMapping(BindMappingEventArgs bindMappingEventArgs)
+		{
+			var handler = BeforeBindMapping;
+			if(handler != null)
+			{
+				handler(this, bindMappingEventArgs);
 			}
 		}
 
@@ -446,27 +550,38 @@ namespace NHibernate.Cfg
 		/// Create a new <see cref="Mappings" /> to add classes and collection
 		/// mappings to.
 		/// </summary>
-		public Mappings CreateMappings()
+		public Mappings CreateMappings(Dialect.Dialect dialect)
 		{
-			return new Mappings(classes, 
-				collections, 
-				tables, 
-				namedQueries, 
-				namedSqlQueries, 
-				sqlResultSetMappings, 
-				imports, 
-				secondPasses, 
-				propertyReferences, 
-				namingStrategy, 
-				typeDefs, 
-				filterDefinitions, 
-				extendsQueue, 
-				auxiliaryDatabaseObjects, 
-				tableNameBinding, 
-				columnNameBindingPerTable,
-				defaultAssembly,
-				defaultNamespace
-				);
+			ProcessPreMappingBuildProperties();
+			return new Mappings(classes, collections, tables, NamedQueries, NamedSQLQueries, SqlResultSetMappings, Imports,
+								secondPasses, filtersSecondPasses, propertyReferences, namingStrategy, typeDefs, FilterDefinitions, extendsQueue,
+								auxiliaryDatabaseObjects, tableNameBinding, columnNameBindingPerTable, defaultAssembly,
+								defaultNamespace, dialect);
+		}
+
+		private void ProcessPreMappingBuildProperties()
+		{
+			if (preMappingBuildProcessed)
+			{
+				return;
+			}
+			ConfigureCollectionTypeFactory();
+			preMappingBuildProcessed = true;
+		}
+
+		private void ConfigureCollectionTypeFactory()
+		{
+			var ctfc = GetProperty(Environment.CollectionTypeFactoryClass);
+			if (string.IsNullOrEmpty(ctfc))
+			{
+				return;
+			}
+			var ictfc = Environment.BytecodeProvider as IInjectableCollectionTypeFactoryClass;
+			if (ictfc == null)
+			{
+				return;
+			}
+			ictfc.SetCollectionTypeFactoryClass(ctfc);
 		}
 
 		/// <summary>
@@ -556,11 +671,30 @@ namespace NHibernate.Cfg
 			finally
 			{
 				if (rsrc != null)
+				{
 					rsrc.Close();
+				}
 			}
 		}
 
-		// Not ported - addResource(String path) - not applicable
+		/// <summary>
+		/// Adds the mappings from embedded resources of the assembly.
+		/// </summary>
+		/// <param name="paths">Paths to the resource files in the assembly.</param>
+		/// <param name="assembly">The assembly that contains the resource files.</param>
+		/// <returns>This configuration object.</returns>
+		public Configuration AddResources(IEnumerable<string> paths, Assembly assembly)
+		{
+			if (paths == null)
+			{
+				throw new ArgumentNullException("paths");
+			}
+			foreach (var path in paths)
+			{
+				AddResource(path, assembly);
+			}
+			return this;
+		}
 
 		/// <summary>
 		/// Read a mapping from an embedded resource, using a convention.
@@ -614,11 +748,11 @@ namespace NHibernate.Cfg
 		public Configuration AddAssembly(Assembly assembly)
 		{
 			IList<string> resourceNames = GetAllHbmXmlResourceNames(assembly);
-			if (resourceNames.Count==0)
+			if (resourceNames.Count == 0)
 			{
 				log.Warn("No mapped documents found in assembly: " + assembly.FullName);
-			} 
-			foreach (string name in resourceNames)
+			}
+			foreach (var name in resourceNames)
 			{
 				AddResource(name, assembly);
 			}
@@ -627,9 +761,9 @@ namespace NHibernate.Cfg
 
 		private static IList<string> GetAllHbmXmlResourceNames(Assembly assembly)
 		{
-			List<string> result = new List<string>();
+			var result = new List<string>();
 
-			foreach (string resource in assembly.GetManifestResourceNames())
+			foreach (var resource in assembly.GetManifestResourceNames())
 			{
 				if (resource.EndsWith(".hbm.xml"))
 				{
@@ -647,12 +781,12 @@ namespace NHibernate.Cfg
 		/// <param name="dir">a directory</param>
 		public Configuration AddDirectory(DirectoryInfo dir)
 		{
-			foreach (DirectoryInfo subDirectory in dir.GetDirectories())
+			foreach (var subDirectory in dir.GetDirectories())
 			{
 				AddDirectory(subDirectory);
 			}
 
-			foreach (FileInfo hbmXml in dir.GetFiles("*.hbm.xml"))
+			foreach (var hbmXml in dir.GetFiles("*.hbm.xml"))
 			{
 				AddFile(hbmXml);
 			}
@@ -671,7 +805,7 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			List<string> script = new List<string>();
+			var script = new List<string>();
 
 			// drop them in reverse order in case db needs it done that way...
 			for (int i = auxiliaryDatabaseObjects.Count - 1; i >= 0; i--)
@@ -685,34 +819,48 @@ namespace NHibernate.Cfg
 
 			if (dialect.DropConstraints)
 			{
-				foreach (Table table in TableMappings)
+				foreach (var table in TableMappings)
 				{
-					if (table.IsPhysicalTable)
+					if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
 					{
-						foreach (ForeignKey fk in table.ForeignKeyIterator)
+						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Drop))
+							{
 								script.Add(fk.SqlDropString(dialect, defaultCatalog, defaultSchema));
+							}
 						}
 					}
 				}
 			}
 
-			foreach (Table table in TableMappings)
+			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Drop))
+				{
 					script.Add(table.SqlDropString(dialect, defaultCatalog, defaultSchema));
+				}
 			}
 
 			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
-			foreach (IPersistentIdentifierGenerator idGen in pIDg)
+			foreach (var idGen in pIDg)
 			{
-				string dropString = idGen.SqlDropString(dialect);
-				if (dropString != null)
-					script.Add(dropString);
+				string[] lines = idGen.SqlDropString(dialect);
+				if (lines != null)
+				{
+					foreach (var line in lines)
+					{
+						script.Add(line);
+					}
+				}
 			}
 
 			return script.ToArray();
+		}
+
+		public static bool IncludeAction(SchemaAction actionsSource, SchemaAction includedAction)
+		{
+			return (actionsSource & includedAction) != SchemaAction.None;
 		}
 
 		/// <summary>
@@ -726,50 +874,58 @@ namespace NHibernate.Cfg
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			List<string> script = new List<string>();
+			var script = new List<string>();
 
-			foreach (Table table in TableMappings)
+			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
 				{
 					script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					script.AddRange(table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema));
 				}
 			}
 
-			foreach (Table table in TableMappings)
+			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Export))
 				{
 					if (!dialect.SupportsUniqueConstraintInCreateAlterTable)
 					{
-						foreach (UniqueKey uk in table.UniqueKeyIterator)
+						foreach (var uk in table.UniqueKeyIterator)
 						{
 							string constraintString = uk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema);
 							if (constraintString != null)
+							{
 								script.Add(constraintString);
+							}
 						}
 					}
 
-					foreach (Index index in table.IndexIterator)
+					foreach (var index in table.IndexIterator)
+					{
 						script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+					}
 
 					if (dialect.HasAlterTable)
 					{
-						foreach (ForeignKey fk in table.ForeignKeyIterator)
+						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Export))
+							{
 								script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
+							}
 						}
 					}
 				}
 			}
 
 			IEnumerable<IPersistentIdentifierGenerator> pIDg = IterateGenerators(dialect);
-			foreach (IPersistentIdentifierGenerator idGen in pIDg)
+			foreach (var idGen in pIDg)
+			{
 				script.AddRange(idGen.SqlCreateStrings(dialect));
+			}
 
-			foreach (IAuxiliaryDatabaseObject auxDbObj in auxiliaryDatabaseObjects)
+			foreach (var auxDbObj in auxiliaryDatabaseObjects)
 			{
 				if (auxDbObj.AppliesToDialect(dialect))
 				{
@@ -782,20 +938,88 @@ namespace NHibernate.Cfg
 
 		private void Validate()
 		{
-			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
-			HashedSet allProxyErrors = null;
+			ValidateEntities();
 
-			foreach (PersistentClass clazz in classes.Values)
+			ValidateCollections();
+
+			ValidateFilterDefs();
+		}
+
+		private void ValidateFilterDefs()
+		{
+			var filterNames = new HashedSet<string>();
+			foreach (var filterDefinition in FilterDefinitions)
+			{
+				if (filterDefinition.Value == null)
+				{
+					// a class/collection has a filter but the filter-def was not added.
+					filterNames.Add(filterDefinition.Key);
+				}
+			}
+			if (filterNames.Count > 0)
+			{
+				var message = new StringBuilder();
+				message.Append("filter-def for filter named ");
+				foreach (var filterName in filterNames)
+				{
+					message.AppendLine(filterName);
+				}
+				message.AppendLine("was not found.");
+				throw new MappingException(message.ToString());
+			}
+
+			// check filter-def without reference
+			if (FilterDefinitions.Count > 0)
+			{
+				filterNames.Clear();
+				foreach (var persistentClass in ClassMappings)
+				{
+					filterNames.AddAll(persistentClass.FilterMap.Keys);
+				}
+				foreach (var collectionMapping in CollectionMappings)
+				{
+					filterNames.AddAll(collectionMapping.FilterMap.Keys);
+					filterNames.AddAll(collectionMapping.ManyToManyFilterMap.Keys);
+				}
+				foreach (var filterName in FilterDefinitions.Keys)
+				{
+					if (!filterNames.Contains(filterName))
+					{
+						// if you are going to remove this exception at least add a log.Error
+						// because the usage of filter-def, outside its scope, may cause unexpected behaviour
+						// during queries.
+						log.ErrorFormat("filter-def for filter named '{0}' was never used to filter classes nor collections.\r\nThis may result in unexpected behavior during queries", filterName);
+					}
+				}
+			}
+		}
+
+		private void ValidateCollections()
+		{
+			foreach (var col in collections.Values)
+			{
+				col.Validate(mapping);
+			}
+		}
+
+		private void ValidateEntities()
+		{
+			bool validateProxy = PropertiesHelper.GetBoolean(Environment.UseProxyValidator, properties, true);
+			HashedSet<string> allProxyErrors = null;
+			IProxyValidator pvalidator = Environment.BytecodeProvider.ProxyFactoryFactory.ProxyValidator;
+
+			foreach (var clazz in classes.Values)
 			{
 				clazz.Validate(mapping);
+
 				if (validateProxy)
 				{
-					ICollection errors = ValidateProxyInterface(clazz);
+					ICollection<string> errors = ValidateProxyInterface(clazz, pvalidator);
 					if (errors != null)
 					{
 						if (allProxyErrors == null)
 						{
-							allProxyErrors = new HashedSet(errors);
+							allProxyErrors = new HashedSet<string>(errors);
 						}
 						else
 						{
@@ -809,14 +1033,9 @@ namespace NHibernate.Cfg
 			{
 				throw new InvalidProxyTypeException(allProxyErrors);
 			}
-
-			foreach (NHibernate.Mapping.Collection col in collections.Values)
-			{
-				col.Validate(mapping);
-			}
 		}
 
-		private static ICollection ValidateProxyInterface(PersistentClass persistentClass)
+		private static ICollection<string> ValidateProxyInterface(PersistentClass persistentClass, IProxyValidator validator)
 		{
 			if (!persistentClass.IsLazy)
 			{
@@ -830,7 +1049,16 @@ namespace NHibernate.Cfg
 				return null;
 			}
 
-			return ProxyTypeValidator.ValidateType(persistentClass.ProxyInterface);
+			return validator.ValidateType(persistentClass.ProxyInterface);
+		}
+
+		/// <summary> 
+		/// Call this to ensure the mappings are fully compiled/built. Usefull to ensure getting
+		/// access to all information in the metamodel when calling e.g. getClassMappings().
+		/// </summary>
+		public virtual void BuildMappings()
+		{
+			SecondPassCompile();
 		}
 
 		/// <remarks>
@@ -844,7 +1072,7 @@ namespace NHibernate.Cfg
 
 			log.Info("processing one-to-many association mappings");
 
-			foreach (SecondPassCommand command in secondPasses)
+			foreach (var command in secondPasses)
 			{
 				command(classes);
 			}
@@ -853,7 +1081,7 @@ namespace NHibernate.Cfg
 
 			log.Info("processing one-to-one association property references");
 
-			foreach (Mappings.PropertyReference upr in propertyReferences)
+			foreach (var upr in propertyReferences)
 			{
 				PersistentClass clazz = GetClassMapping(upr.referencedClass);
 				if (clazz == null)
@@ -870,9 +1098,26 @@ namespace NHibernate.Cfg
 			log.Info("processing foreign key constraints");
 
 			ISet done = new HashedSet();
-			foreach (Table table in TableMappings)
+			foreach (var table in TableMappings)
 			{
 				SecondPassCompileForeignKeys(table, done);
+			}
+
+			log.Info("processing filters (second pass)");
+			foreach (var filterSecondPassArgs in filtersSecondPasses)
+			{
+				FilterDefinition filterDef;
+				var filterName = filterSecondPassArgs.FilterName;
+				FilterDefinitions.TryGetValue(filterName, out filterDef);
+				if (filterDef == null)
+				{
+					throw new MappingException("filter-def for filter named " + filterName + " was not found.");
+				}
+				if (string.IsNullOrEmpty(filterDef.DefaultFilterCondition))
+				{
+					throw new MappingException("no filter condition found for filter: " + filterName);
+				}
+				filterSecondPassArgs.Filterable.FilterMap[filterName] = filterDef.DefaultFilterCondition;
 			}
 		}
 
@@ -880,7 +1125,7 @@ namespace NHibernate.Cfg
 		{
 			table.CreateForeignKeys();
 
-			foreach (ForeignKey fk in table.ForeignKeyIterator)
+			foreach (var fk in table.ForeignKeyIterator)
 			{
 				if (!done.Contains(fk))
 				{
@@ -889,7 +1134,8 @@ namespace NHibernate.Cfg
 					string referencedEntityName = fk.ReferencedEntityName;
 					if (string.IsNullOrEmpty(referencedEntityName))
 					{
-						throw new MappingException(string.Format("An association from the table {0} does not specify the referenced entity", fk.Table.Name));
+						throw new MappingException(
+							string.Format("An association from the table {0} does not specify the referenced entity", fk.Table.Name));
 					}
 
 					if (log.IsDebugEnabled)
@@ -900,8 +1146,8 @@ namespace NHibernate.Cfg
 					PersistentClass referencedClass;
 					if (!classes.TryGetValue(referencedEntityName, out referencedClass))
 					{
-						string message = string.Format("An association from the table {0} refers to an unmapped class: {1}",
-							fk.Table.Name, referencedEntityName);
+						string message = string.Format("An association from the table {0} refers to an unmapped class: {1}", fk.Table.Name,
+													   referencedEntityName);
 
 						LogAndThrow(new MappingException(message));
 					}
@@ -914,7 +1160,7 @@ namespace NHibernate.Cfg
 
 						try
 						{
-							fk.ReferencedTable = referencedClass.Table;
+							fk.AddReferencedTable(referencedClass);
 							fk.AlignColumns();
 						}
 						catch (MappingException me)
@@ -929,10 +1175,7 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// The named queries
 		/// </summary>
-		public IDictionary<string, NamedQueryDefinition> NamedQueries
-		{
-			get { return namedQueries; }
-		}
+		public IDictionary<string, NamedQueryDefinition> NamedQueries { get; protected set; }
 
 		private EventListeners GetInitializedEventListeners()
 		{
@@ -949,11 +1192,7 @@ namespace NHibernate.Cfg
 		/// located by specified id.  This is mainly intended for EJB3 implementations to be able to
 		/// control how proxy initialization errors should be handled...
 		/// </remarks>
-		public IEntityNotFoundDelegate EntityNotFoundDelegate
-		{
-			get { return entityNotFoundDelegate; }
-			set { entityNotFoundDelegate = value; }
-		}
+		public IEntityNotFoundDelegate EntityNotFoundDelegate { get; set; }
 
 		public EventListeners EventListeners
 		{
@@ -964,6 +1203,22 @@ namespace NHibernate.Cfg
 		private string defaultAssembly;
 		private string defaultNamespace;
 
+		protected virtual void ConfigureProxyFactoryFactory()
+		{
+			#region Way for the user to specify their own ProxyFactory
+
+			//http://jira.nhibernate.org/browse/NH-975
+
+			var ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
+			string pffClassName;
+			properties.TryGetValue(Environment.ProxyFactoryFactoryClass, out pffClassName);
+			if (ipff != null && !string.IsNullOrEmpty(pffClassName))
+			{
+				ipff.SetProxyFactoryFactory(pffClassName);
+			}
+
+			#endregion
+		}
 		/// <summary>
 		/// Instantiate a new <see cref="ISessionFactory" />, using the properties and mappings in this
 		/// configuration. The <see cref="ISessionFactory" /> will be immutable, so changes made to the
@@ -972,32 +1227,17 @@ namespace NHibernate.Cfg
 		/// <returns>An <see cref="ISessionFactory" /> instance.</returns>
 		public ISessionFactory BuildSessionFactory()
 		{
-			//http://jira.nhibernate.org/browse/NH-975
 
-			IInjectableProxyFactoryFactory ipff = Environment.BytecodeProvider as IInjectableProxyFactoryFactory;
-			string pffClassName;
-			properties.TryGetValue(Environment.ProxyFactoryFactoryClass, out pffClassName);
-			try
-			{
-				if (ipff != null && !string.IsNullOrEmpty(pffClassName))
-				{
-					ipff.SetProxyFactoryFactory(pffClassName);
-				}
+			ConfigureProxyFactoryFactory();
+			SecondPassCompile();
+			Validate();
+			Environment.VerifyProperties(properties);
+			Settings settings = BuildSettings();
 
-				SecondPassCompile();
-				Validate();
-				Environment.VerifyProperties(properties);
-				Settings settings = BuildSettings();
+			// Ok, don't need schemas anymore, so free them
+			Schemas = null;
 
-				// Ok, don't need schemas anymore, so free them
-				Schemas = null;
-
-				return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Failed to BuildSessionFactory - pffClassName: " + pffClassName, e);
-			}
+			return new SessionFactoryImpl(this, mapping, settings, GetInitializedEventListeners());
 		}
 
 		/// <summary>
@@ -1087,7 +1327,7 @@ namespace NHibernate.Cfg
 		/// </returns>
 		public Configuration AddProperties(IDictionary<string, string> additionalProperties)
 		{
-			foreach (KeyValuePair<string, string> de in additionalProperties)
+			foreach (var de in additionalProperties)
 			{
 				properties.Add(de.Key, de.Value);
 			}
@@ -1118,9 +1358,9 @@ namespace NHibernate.Cfg
 			return PropertiesHelper.GetString(name, properties, null);
 		}
 
-		private void AddProperties(IHibernateConfiguration hc)
+		private void AddProperties(ISessionFactoryConfiguration factoryConfiguration)
 		{
-			foreach (KeyValuePair<string, string> kvp in hc.SessionFactory.Properties)
+			foreach (var kvp in factoryConfiguration.Properties)
 			{
 				if (log.IsDebugEnabled)
 				{
@@ -1148,10 +1388,10 @@ namespace NHibernate.Cfg
 		/// </remarks>
 		public Configuration Configure()
 		{
-			IHibernateConfiguration hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
+			var hc = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName) as IHibernateConfiguration;
 			if (hc != null && hc.SessionFactory != null)
 			{
-				return DoConfigure(hc);
+				return DoConfigure(hc.SessionFactory);
 			}
 			else
 			{
@@ -1207,12 +1447,14 @@ namespace NHibernate.Cfg
 		public Configuration Configure(Assembly assembly, string resourceName)
 		{
 			if (assembly == null)
-				throw new HibernateException("Could not configure NHibernate.",
-					new ArgumentNullException("assembly"));
+			{
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("assembly"));
+			}
 
 			if (resourceName == null)
-				throw new HibernateException("Could not configure NHibernate.",
-					new ArgumentNullException("resourceName"));
+			{
+				throw new HibernateException("Could not configure NHibernate.", new ArgumentNullException("resourceName"));
+			}
 
 			Stream stream = null;
 			try
@@ -1221,9 +1463,8 @@ namespace NHibernate.Cfg
 				if (stream == null)
 				{
 					// resource does not exist - throw appropriate exception 
-					throw new HibernateException("A ManifestResourceStream could not be created for the resource " +
-						resourceName +
-							" in Assembly " + assembly.FullName);
+					throw new HibernateException("A ManifestResourceStream could not be created for the resource " + resourceName
+												 + " in Assembly " + assembly.FullName);
 				}
 
 				return Configure(new XmlTextReader(stream));
@@ -1250,13 +1491,13 @@ namespace NHibernate.Cfg
 			if (textReader == null)
 			{
 				throw new HibernateConfigException("Could not configure NHibernate.",
-					new ArgumentException("A null value was passed in.", "textReader"));
+												   new ArgumentException("A null value was passed in.", "textReader"));
 			}
 
 			try
 			{
 				IHibernateConfiguration hc = new HibernateConfiguration(textReader);
-				return DoConfigure(hc);
+				return DoConfigure(hc.SessionFactory);
 			}
 			catch (Exception e)
 			{
@@ -1267,73 +1508,66 @@ namespace NHibernate.Cfg
 
 		// Not ported - configure(org.w3c.dom.Document)
 
-		protected Configuration DoConfigure(IHibernateConfiguration hc)
+		protected Configuration DoConfigure(ISessionFactoryConfiguration factoryConfiguration)
 		{
-			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
+			if (!string.IsNullOrEmpty(factoryConfiguration.Name))
 			{
-				properties[Environment.SessionFactoryName] = hc.SessionFactory.Name;
+				properties[Environment.SessionFactoryName] = factoryConfiguration.Name;
 			}
 
-			AddProperties(hc);
+			AddProperties(factoryConfiguration);
 
 			// Load mappings
-			foreach (MappingConfiguration mc in hc.SessionFactory.Mappings)
+			foreach (var mc in factoryConfiguration.Mappings)
 			{
 				if (mc.IsEmpty())
-					throw new HibernateConfigException("<mapping> element in configuration specifies no attributes");
-				if (!string.IsNullOrEmpty(mc.Resource))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.Resource + " in " + mc.Assembly);
+					throw new HibernateConfigException("<mapping> element in configuration specifies no attributes");
+				}
+				if (!string.IsNullOrEmpty(mc.Resource) && !string.IsNullOrEmpty(mc.Assembly))
+				{
+					log.Debug(factoryConfiguration.Name + "<-" + mc.Resource + " in " + mc.Assembly);
 					AddResource(mc.Resource, Assembly.Load(mc.Assembly));
 				}
 				else if (!string.IsNullOrEmpty(mc.Assembly))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.Assembly);
+					log.Debug(factoryConfiguration.Name + "<-" + mc.Assembly);
 					AddAssembly(mc.Assembly);
 				}
 				else if (!string.IsNullOrEmpty(mc.File))
 				{
-					log.Debug(hc.SessionFactory.Name + "<-" + mc.File);
+					log.Debug(factoryConfiguration.Name + "<-" + mc.File);
 					AddFile(mc.File);
 				}
 			}
 
 			// Load class-cache
-			foreach (ClassCacheConfiguration ccc in hc.SessionFactory.ClassesCache)
+			foreach (var ccc in factoryConfiguration.ClassesCache)
 			{
-				System.Type clazz;
-				try
-				{
-					clazz = ReflectHelper.ClassForName(ccc.Class);
-				}
-				catch (TypeLoadException tle)
-				{
-					throw new HibernateConfigException("class-cache Configuration: Could not find class " + ccc.Class, tle);
-				}
-
 				string region = string.IsNullOrEmpty(ccc.Region) ? ccc.Class : ccc.Region;
 				bool includeLazy = (ccc.Include != ClassCacheInclude.NonLazy);
-				SetCacheConcurrencyStrategy(clazz, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region, includeLazy);
+				SetCacheConcurrencyStrategy(ccc.Class, EntityCacheUsageParser.ToString(ccc.Usage), region, includeLazy);
 			}
 
 			// Load collection-cache
-			foreach (CollectionCacheConfiguration ccc in hc.SessionFactory.CollectionsCache)
+			foreach (var ccc in factoryConfiguration.CollectionsCache)
 			{
 				string role = ccc.Collection;
 				NHibernate.Mapping.Collection collection = GetCollectionMapping(role);
 				if (collection == null)
 				{
-					throw new HibernateConfigException("collection-cache Configuration: Cannot configure cache for unknown collection role " + role);
+					throw new HibernateConfigException(
+						"collection-cache Configuration: Cannot configure cache for unknown collection role " + role);
 				}
 
 				string region = string.IsNullOrEmpty(ccc.Region) ? role : ccc.Region;
-				SetCacheConcurrencyStrategy(role, CfgXmlHelper.ClassCacheUsageConvertToString(ccc.Usage), region);
+				SetCollectionCacheConcurrencyStrategy(role, EntityCacheUsageParser.ToString(ccc.Usage), region);
 			}
 
 			// Events
-			foreach (EventConfiguration ec in hc.SessionFactory.Events)
+			foreach (var ec in factoryConfiguration.Events)
 			{
-				string[] listenerClasses = new string[ec.Listeners.Count];
+				var listenerClasses = new string[ec.Listeners.Count];
 				for (int i = 0; i < ec.Listeners.Count; i++)
 				{
 					listenerClasses[i] = ec.Listeners[i].Class;
@@ -1342,19 +1576,33 @@ namespace NHibernate.Cfg
 				SetListeners(ec.Type, listenerClasses);
 			}
 			// Listeners
-			foreach (ListenerConfiguration lc in hc.SessionFactory.Listeners)
+			foreach (var lc in factoryConfiguration.Listeners)
 			{
 				log.Debug("Event listener: " + lc.Type + "=" + lc.Class);
-				SetListeners(lc.Type, new string[] { lc.Class });
+				SetListeners(lc.Type, new[] { lc.Class });
 			}
 
-			if (!string.IsNullOrEmpty(hc.SessionFactory.Name))
+			if (!string.IsNullOrEmpty(factoryConfiguration.Name))
 			{
-				log.Info("Configured SessionFactory: " + hc.SessionFactory.Name);
+				log.Info("Configured SessionFactory: " + factoryConfiguration.Name);
 			}
 			log.Debug("properties: " + properties);
 
 			return this;
+		}
+
+		internal RootClass GetRootClassMapping(string clazz)
+		{
+			try
+			{
+				return (RootClass)GetClassMapping(clazz);
+			}
+			catch (InvalidCastException)
+			{
+				throw new HibernateConfigException(
+					"class-cache Configuration: You may only specify a cache for root <class> mappings " + "(cache was specified for "
+					+ clazz + ")");
+			}
 		}
 
 		internal RootClass GetRootClassMapping(System.Type clazz)
@@ -1366,13 +1614,13 @@ namespace NHibernate.Cfg
 				throw new HibernateConfigException("class-cache Configuration: Cache specified for unmapped class " + clazz);
 			}
 
-			RootClass rootClass = persistentClass as RootClass;
+			var rootClass = persistentClass as RootClass;
 
 			if (rootClass == null)
 			{
 				throw new HibernateConfigException(
-					"class-cache Configuration: You may only specify a cache for root <class> mappings "
-						+ "(cache was specified for " + clazz + ")");
+					"class-cache Configuration: You may only specify a cache for root <class> mappings " + "(cache was specified for "
+					+ clazz + ")");
 			}
 
 			return rootClass;
@@ -1381,21 +1629,24 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Set up a cache for an entity class
 		/// </summary>
-		public Configuration SetCacheConcurrencyStrategy(System.Type clazz, string concurrencyStrategy)
+		public Configuration SetCacheConcurrencyStrategy(String clazz, String concurrencyStrategy)
 		{
-			SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, clazz.FullName);
+			SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, clazz);
 			return this;
 		}
 
-		internal void SetCacheConcurrencyStrategy(System.Type clazz, string concurrencyStrategy, string region)
+		public void SetCacheConcurrencyStrategy(String clazz, String concurrencyStrategy, String region)
 		{
 			SetCacheConcurrencyStrategy(clazz, concurrencyStrategy, region, true);
 		}
 
-		internal void SetCacheConcurrencyStrategy(System.Type clazz, string concurrencyStrategy,
-			string region, bool includeLazy)
+		internal void SetCacheConcurrencyStrategy(String clazz, String concurrencyStrategy, String region, bool includeLazy)
 		{
-			RootClass rootClass = GetRootClassMapping(clazz);
+			RootClass rootClass = GetRootClassMapping(StringHelper.GetFullClassname(clazz));
+			if (rootClass == null)
+			{
+				throw new HibernateConfigException("Cannot cache an unknown entity: " + clazz);
+			}
 			rootClass.CacheConcurrencyStrategy = concurrencyStrategy;
 			rootClass.CacheRegionName = region;
 			rootClass.SetLazyPropertiesCacheable(includeLazy);
@@ -1404,13 +1655,13 @@ namespace NHibernate.Cfg
 		/// <summary>
 		/// Set up a cache for a collection role
 		/// </summary>
-		public Configuration SetCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy)
+		public Configuration SetCollectionCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy)
 		{
-			SetCacheConcurrencyStrategy(collectionRole, concurrencyStrategy, collectionRole);
+			SetCollectionCacheConcurrencyStrategy(collectionRole, concurrencyStrategy, collectionRole);
 			return this;
 		}
 
-		internal void SetCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy, string region)
+		internal void SetCollectionCacheConcurrencyStrategy(string collectionRole, string concurrencyStrategy, string region)
 		{
 			NHibernate.Mapping.Collection collection = GetCollectionMapping(collectionRole);
 			collection.CacheConcurrencyStrategy = concurrencyStrategy;
@@ -1418,13 +1669,9 @@ namespace NHibernate.Cfg
 		}
 
 		/// <summary>
-		/// Get the query language imports
+		/// Get the query language imports (entityName/className -> AssemblyQualifiedName)
 		/// </summary>
-		/// <returns></returns>
-		public IDictionary<string, string> Imports
-		{
-			get { return imports; }
-		}
+		public IDictionary<string, string> Imports { get; protected set; }
 
 		/// <summary>
 		/// Create an object-oriented view of the configuration properties
@@ -1433,7 +1680,11 @@ namespace NHibernate.Cfg
 		//protected Settings BuildSettings()
 		private Settings BuildSettings()
 		{
-			return settingsFactory.BuildSettings(properties);
+			var result = settingsFactory.BuildSettings(properties);
+			// NH : Set configuration for IdGenerator SQL logging
+			PersistentIdGeneratorParmsNames.SqlStatementLogger.FormatSql = result.SqlStatementLogger.FormatSql;
+			PersistentIdGeneratorParmsNames.SqlStatementLogger.LogToStdout = result.SqlStatementLogger.LogToStdout;
+			return result;
 		}
 
 		/// <summary>
@@ -1441,7 +1692,8 @@ namespace NHibernate.Cfg
 		/// </summary>
 		public IDictionary<string, NamedSQLQueryDefinition> NamedSQLQueries
 		{
-			get { return namedSqlQueries; }
+			get;
+			protected set;
 		}
 
 		/// <summary>
@@ -1465,17 +1717,15 @@ namespace NHibernate.Cfg
 
 		public IDictionary<string, ResultSetMappingDefinition> SqlResultSetMappings
 		{
-			get { return sqlResultSetMappings; }
+			get;
+			protected set;
 		}
 
-		public IDictionary<string, FilterDefinition> FilterDefinitions
-		{
-			get { return filterDefinitions; }
-		}
+		public IDictionary<string, FilterDefinition> FilterDefinitions { get; protected set; }
 
 		public void AddFilterDefinition(FilterDefinition definition)
 		{
-			filterDefinitions.Add(definition.FilterName, definition);
+			FilterDefinitions.Add(definition.FilterName, definition);
 		}
 
 		public void AddAuxiliaryDatabaseObject(IAuxiliaryDatabaseObject obj)
@@ -1483,14 +1733,11 @@ namespace NHibernate.Cfg
 			auxiliaryDatabaseObjects.Add(obj);
 		}
 
-		public IDictionary<string, ISQLFunction> SqlFunctions
-		{
-			get { return sqlFunctions; }
-		}
+		public IDictionary<string, ISQLFunction> SqlFunctions { get; protected set; }
 
 		public void AddSqlFunction(string functionName, ISQLFunction sqlFunction)
 		{
-			sqlFunctions[functionName] = sqlFunction;
+			SqlFunctions[functionName] = sqlFunction;
 		}
 
 		#region NHibernate-Specific Members
@@ -1518,15 +1765,25 @@ namespace NHibernate.Cfg
 
 				try
 				{
-					XmlDocument hbmDocument = new XmlDocument();
+					var hbmDocument = new XmlDocument();
 					hbmDocument.Load(reader);
 					return new NamedXmlDocument(name, hbmDocument);
+				}
+				catch (MappingException)
+				{
+					throw;
+				}
+				catch (Exception e)
+				{
+					string nameFormatted = name ?? "(unknown)";
+					LogAndThrow(new MappingException("Could not compile the mapping document: " + nameFormatted, e));
 				}
 				finally
 				{
 					currentDocumentName = null;
 				}
 			}
+			return null;
 		}
 
 		/// <summary>
@@ -1572,13 +1829,8 @@ namespace NHibernate.Cfg
 
 		private void ValidationHandler(object o, ValidationEventArgs args)
 		{
-			string message =
-				string.Format(
-					"{0}({1},{2}): XML validation error: {3}",
-					currentDocumentName,
-					args.Exception.LineNumber,
-					args.Exception.LinePosition,
-					args.Exception.Message);
+			string message = string.Format("{0}({1},{2}): XML validation error: {3}", currentDocumentName,
+										   args.Exception.LineNumber, args.Exception.LinePosition, args.Exception.Message);
 			LogAndThrow(new MappingException(message, args.Exception));
 		}
 
@@ -1593,7 +1845,6 @@ namespace NHibernate.Cfg
 		#endregion
 
 		private XmlSchemas schemas;
-		private IEntityNotFoundDelegate entityNotFoundDelegate;
 
 		private XmlSchemas Schemas
 		{
@@ -1622,13 +1873,12 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				object[] listeners =
-					(object[]) System.Array.CreateInstance(eventListeners.GetListenerClassFor(type), listenerClasses.Length);
+				var listeners = (object[])Array.CreateInstance(eventListeners.GetListenerClassFor(type), listenerClasses.Length);
 				for (int i = 0; i < listeners.Length; i++)
 				{
 					try
 					{
-						listeners[i] = Activator.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
+						listeners[i] = Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(listenerClasses[i]));
 					}
 					catch (Exception e)
 					{
@@ -1655,7 +1905,7 @@ namespace NHibernate.Cfg
 			}
 			else
 			{
-				object[] listeners = (object[])System.Array.CreateInstance(eventListeners.GetListenerClassFor(type), 1);
+				var listeners = (object[])Array.CreateInstance(eventListeners.GetListenerClassFor(type), 1);
 				listeners[0] = listener;
 				SetListeners(type, listeners);
 			}
@@ -1663,92 +1913,109 @@ namespace NHibernate.Cfg
 
 		private void ClearListeners(ListenerType type)
 		{
-
 			switch (type)
 			{
 				case ListenerType.Autoflush:
-						eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
+					eventListeners.AutoFlushEventListeners = new IAutoFlushEventListener[] { };
 					break;
 				case ListenerType.Merge:
-						eventListeners.MergeEventListeners = new IMergeEventListener[] { };
+					eventListeners.MergeEventListeners = new IMergeEventListener[] { };
 					break;
 				case ListenerType.Create:
-						eventListeners.PersistEventListeners = new IPersistEventListener[] { };
+					eventListeners.PersistEventListeners = new IPersistEventListener[] { };
 					break;
 				case ListenerType.CreateOnFlush:
-						eventListeners.PersistOnFlushEventListeners = new IPersistEventListener[] { };
+					eventListeners.PersistOnFlushEventListeners = new IPersistEventListener[] { };
 					break;
 				case ListenerType.Delete:
-						eventListeners.DeleteEventListeners = new IDeleteEventListener[] { };
+					eventListeners.DeleteEventListeners = new IDeleteEventListener[] { };
 					break;
 				case ListenerType.DirtyCheck:
-						eventListeners.DirtyCheckEventListeners = new IDirtyCheckEventListener[] { };
+					eventListeners.DirtyCheckEventListeners = new IDirtyCheckEventListener[] { };
 					break;
 				case ListenerType.Evict:
-						eventListeners.EvictEventListeners = new IEvictEventListener[] { };
+					eventListeners.EvictEventListeners = new IEvictEventListener[] { };
 					break;
 				case ListenerType.Flush:
-						eventListeners.FlushEventListeners = new IFlushEventListener[] { };
+					eventListeners.FlushEventListeners = new IFlushEventListener[] { };
 					break;
 				case ListenerType.FlushEntity:
-						eventListeners.FlushEntityEventListeners = new IFlushEntityEventListener[] { };
+					eventListeners.FlushEntityEventListeners = new IFlushEntityEventListener[] { };
 					break;
 				case ListenerType.Load:
-						eventListeners.LoadEventListeners = new ILoadEventListener[] { };
+					eventListeners.LoadEventListeners = new ILoadEventListener[] { };
 					break;
 				case ListenerType.LoadCollection:
-						eventListeners.InitializeCollectionEventListeners = new IInitializeCollectionEventListener[] { };
+					eventListeners.InitializeCollectionEventListeners = new IInitializeCollectionEventListener[] { };
 					break;
 				case ListenerType.Lock:
-						eventListeners.LockEventListeners = new ILockEventListener[] { };
+					eventListeners.LockEventListeners = new ILockEventListener[] { };
 					break;
 				case ListenerType.Refresh:
-						eventListeners.RefreshEventListeners = new IRefreshEventListener[] { };
+					eventListeners.RefreshEventListeners = new IRefreshEventListener[] { };
 					break;
 				case ListenerType.Replicate:
-						eventListeners.ReplicateEventListeners = new IReplicateEventListener[] { };
+					eventListeners.ReplicateEventListeners = new IReplicateEventListener[] { };
 					break;
 				case ListenerType.SaveUpdate:
-						eventListeners.SaveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { };
+					eventListeners.SaveOrUpdateEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.Save:
-						eventListeners.SaveEventListeners = new ISaveOrUpdateEventListener[] { };
+					eventListeners.SaveEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.PreUpdate:
-						eventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { };
+					eventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { };
 					break;
 				case ListenerType.Update:
-						eventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[] { };
+					eventListeners.UpdateEventListeners = new ISaveOrUpdateEventListener[] { };
 					break;
 				case ListenerType.PreLoad:
-						eventListeners.PreLoadEventListeners = new IPreLoadEventListener[] { };
+					eventListeners.PreLoadEventListeners = new IPreLoadEventListener[] { };
 					break;
 				case ListenerType.PreDelete:
-						eventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { };
+					eventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { };
 					break;
 				case ListenerType.PreInsert:
-						eventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { };
+					eventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { };
 					break;
 				case ListenerType.PostLoad:
-						eventListeners.PostLoadEventListeners = new IPostLoadEventListener[] { };
+					eventListeners.PostLoadEventListeners = new IPostLoadEventListener[] { };
 					break;
 				case ListenerType.PostInsert:
-						eventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { };
+					eventListeners.PostInsertEventListeners = new IPostInsertEventListener[] { };
 					break;
 				case ListenerType.PostUpdate:
-						eventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { };
+					eventListeners.PostUpdateEventListeners = new IPostUpdateEventListener[] { };
 					break;
 				case ListenerType.PostDelete:
-						eventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { };
+					eventListeners.PostDeleteEventListeners = new IPostDeleteEventListener[] { };
 					break;
 				case ListenerType.PostCommitUpdate:
-						eventListeners.PostCommitUpdateEventListeners = new IPostUpdateEventListener[] { };
+					eventListeners.PostCommitUpdateEventListeners = new IPostUpdateEventListener[] { };
 					break;
 				case ListenerType.PostCommitInsert:
-						eventListeners.PostCommitInsertEventListeners = new IPostInsertEventListener[] { };
+					eventListeners.PostCommitInsertEventListeners = new IPostInsertEventListener[] { };
 					break;
 				case ListenerType.PostCommitDelete:
-						eventListeners.PostCommitDeleteEventListeners = new IPostDeleteEventListener[] { };
+					eventListeners.PostCommitDeleteEventListeners = new IPostDeleteEventListener[] { };
+					break;
+				case ListenerType.PreCollectionRecreate:
+					eventListeners.PreCollectionRecreateEventListeners = new IPreCollectionRecreateEventListener[] { };
+					break;
+				case ListenerType.PreCollectionRemove:
+					eventListeners.PreCollectionRemoveEventListeners = new IPreCollectionRemoveEventListener[] { };
+					break;
+				case ListenerType.PreCollectionUpdate:
+					eventListeners.PreCollectionUpdateEventListeners = new IPreCollectionUpdateEventListener[] { };
+					break;
+				case ListenerType.PostCollectionRecreate:
+					eventListeners.PostCollectionRecreateEventListeners = new IPostCollectionRecreateEventListener[] { };
+					break;
+				case ListenerType.PostCollectionRemove:
+					eventListeners.PostCollectionRemoveEventListeners = new IPostCollectionRemoveEventListener[] { };
+					break;
+				case ListenerType.PostCollectionUpdate:
+					eventListeners.PostCollectionUpdateEventListeners = new IPostCollectionUpdateEventListener[] { };
 					break;
 				default:
 					log.Warn("Unrecognized listener type [" + type + "]");
@@ -1766,92 +2033,112 @@ namespace NHibernate.Cfg
 		public void SetListeners(ListenerType type, object[] listeners)
 		{
 			if (listeners == null)
+			{
 				ClearListeners(type);
+			}
 			switch (type)
 			{
 				case ListenerType.Autoflush:
-						eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[]) listeners;
+					eventListeners.AutoFlushEventListeners = (IAutoFlushEventListener[])listeners;
 					break;
 				case ListenerType.Merge:
-						eventListeners.MergeEventListeners = (IMergeEventListener[])listeners;
+					eventListeners.MergeEventListeners = (IMergeEventListener[])listeners;
 					break;
 				case ListenerType.Create:
-						eventListeners.PersistEventListeners = (IPersistEventListener[])listeners;
+					eventListeners.PersistEventListeners = (IPersistEventListener[])listeners;
 					break;
 				case ListenerType.CreateOnFlush:
-						eventListeners.PersistOnFlushEventListeners = (IPersistEventListener[])listeners;
+					eventListeners.PersistOnFlushEventListeners = (IPersistEventListener[])listeners;
 					break;
 				case ListenerType.Delete:
-						eventListeners.DeleteEventListeners = (IDeleteEventListener[])listeners;
+					eventListeners.DeleteEventListeners = (IDeleteEventListener[])listeners;
 					break;
 				case ListenerType.DirtyCheck:
-						eventListeners.DirtyCheckEventListeners = (IDirtyCheckEventListener[])listeners;
+					eventListeners.DirtyCheckEventListeners = (IDirtyCheckEventListener[])listeners;
 					break;
 				case ListenerType.Evict:
-						eventListeners.EvictEventListeners = (IEvictEventListener[])listeners;
+					eventListeners.EvictEventListeners = (IEvictEventListener[])listeners;
 					break;
 				case ListenerType.Flush:
-						eventListeners.FlushEventListeners = (IFlushEventListener[])listeners;
+					eventListeners.FlushEventListeners = (IFlushEventListener[])listeners;
 					break;
 				case ListenerType.FlushEntity:
-						eventListeners.FlushEntityEventListeners = (IFlushEntityEventListener[])listeners;
+					eventListeners.FlushEntityEventListeners = (IFlushEntityEventListener[])listeners;
 					break;
 				case ListenerType.Load:
-						eventListeners.LoadEventListeners = (ILoadEventListener[])listeners;
+					eventListeners.LoadEventListeners = (ILoadEventListener[])listeners;
 					break;
 				case ListenerType.LoadCollection:
-						eventListeners.InitializeCollectionEventListeners = (IInitializeCollectionEventListener[])listeners;
+					eventListeners.InitializeCollectionEventListeners = (IInitializeCollectionEventListener[])listeners;
 					break;
 				case ListenerType.Lock:
-						eventListeners.LockEventListeners = (ILockEventListener[])listeners;
+					eventListeners.LockEventListeners = (ILockEventListener[])listeners;
 					break;
 				case ListenerType.Refresh:
-						eventListeners.RefreshEventListeners = (IRefreshEventListener[])listeners;
+					eventListeners.RefreshEventListeners = (IRefreshEventListener[])listeners;
 					break;
 				case ListenerType.Replicate:
-						eventListeners.ReplicateEventListeners = (IReplicateEventListener[])listeners;
+					eventListeners.ReplicateEventListeners = (IReplicateEventListener[])listeners;
 					break;
 				case ListenerType.SaveUpdate:
-						eventListeners.SaveOrUpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					eventListeners.SaveOrUpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
 					break;
 				case ListenerType.Save:
-						eventListeners.SaveEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					eventListeners.SaveEventListeners = (ISaveOrUpdateEventListener[])listeners;
 					break;
 				case ListenerType.PreUpdate:
-						eventListeners.PreUpdateEventListeners = (IPreUpdateEventListener[])listeners;
+					eventListeners.PreUpdateEventListeners = (IPreUpdateEventListener[])listeners;
 					break;
 				case ListenerType.Update:
-						eventListeners.UpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
+					eventListeners.UpdateEventListeners = (ISaveOrUpdateEventListener[])listeners;
 					break;
 				case ListenerType.PreLoad:
-						eventListeners.PreLoadEventListeners = (IPreLoadEventListener[])listeners;
+					eventListeners.PreLoadEventListeners = (IPreLoadEventListener[])listeners;
 					break;
 				case ListenerType.PreDelete:
-						eventListeners.PreDeleteEventListeners = (IPreDeleteEventListener[])listeners;
+					eventListeners.PreDeleteEventListeners = (IPreDeleteEventListener[])listeners;
 					break;
 				case ListenerType.PreInsert:
-						eventListeners.PreInsertEventListeners = (IPreInsertEventListener[])listeners;
+					eventListeners.PreInsertEventListeners = (IPreInsertEventListener[])listeners;
 					break;
 				case ListenerType.PostLoad:
-						eventListeners.PostLoadEventListeners = (IPostLoadEventListener[])listeners;
+					eventListeners.PostLoadEventListeners = (IPostLoadEventListener[])listeners;
 					break;
 				case ListenerType.PostInsert:
-						eventListeners.PostInsertEventListeners = (IPostInsertEventListener[])listeners;
+					eventListeners.PostInsertEventListeners = (IPostInsertEventListener[])listeners;
 					break;
 				case ListenerType.PostUpdate:
-						eventListeners.PostUpdateEventListeners = (IPostUpdateEventListener[])listeners;
+					eventListeners.PostUpdateEventListeners = (IPostUpdateEventListener[])listeners;
 					break;
 				case ListenerType.PostDelete:
-						eventListeners.PostDeleteEventListeners = (IPostDeleteEventListener[])listeners;
+					eventListeners.PostDeleteEventListeners = (IPostDeleteEventListener[])listeners;
 					break;
 				case ListenerType.PostCommitUpdate:
-						eventListeners.PostCommitUpdateEventListeners = (IPostUpdateEventListener[])listeners;
+					eventListeners.PostCommitUpdateEventListeners = (IPostUpdateEventListener[])listeners;
 					break;
 				case ListenerType.PostCommitInsert:
-						eventListeners.PostCommitInsertEventListeners = (IPostInsertEventListener[])listeners;
+					eventListeners.PostCommitInsertEventListeners = (IPostInsertEventListener[])listeners;
 					break;
 				case ListenerType.PostCommitDelete:
-						eventListeners.PostCommitDeleteEventListeners = (IPostDeleteEventListener[])listeners;
+					eventListeners.PostCommitDeleteEventListeners = (IPostDeleteEventListener[])listeners;
+					break;
+				case ListenerType.PreCollectionRecreate:
+					eventListeners.PreCollectionRecreateEventListeners = (IPreCollectionRecreateEventListener[])listeners;
+					break;
+				case ListenerType.PreCollectionRemove:
+					eventListeners.PreCollectionRemoveEventListeners = (IPreCollectionRemoveEventListener[])listeners;
+					break;
+				case ListenerType.PreCollectionUpdate:
+					eventListeners.PreCollectionUpdateEventListeners = (IPreCollectionUpdateEventListener[])listeners;
+					break;
+				case ListenerType.PostCollectionRecreate:
+					eventListeners.PostCollectionRecreateEventListeners = (IPostCollectionRecreateEventListener[])listeners;
+					break;
+				case ListenerType.PostCollectionRemove:
+					eventListeners.PostCollectionRemoveEventListeners = (IPostCollectionRemoveEventListener[])listeners;
+					break;
+				case ListenerType.PostCollectionUpdate:
+					eventListeners.PostCollectionUpdateEventListeners = (IPostCollectionUpdateEventListener[])listeners;
 					break;
 				default:
 					log.Warn("Unrecognized listener type [" + type + "]");
@@ -1859,71 +2146,180 @@ namespace NHibernate.Cfg
 			}
 		}
 
+
+		/// <summary>
+		/// Append the listeners to the end of the currently configured
+		/// listeners
+		/// </summary>
+		public void AppendListeners(ListenerType type, object[] listeners)
+		{
+			switch (type)
+			{
+				case ListenerType.Autoflush:
+					eventListeners.AutoFlushEventListeners = AppendListeners(eventListeners.AutoFlushEventListeners, (IAutoFlushEventListener[])listeners);
+					break;
+				case ListenerType.Merge:
+					eventListeners.MergeEventListeners = AppendListeners(eventListeners.MergeEventListeners, (IMergeEventListener[])listeners);
+					break;
+				case ListenerType.Create:
+					eventListeners.PersistEventListeners = AppendListeners(eventListeners.PersistEventListeners, (IPersistEventListener[])listeners);
+					break;
+				case ListenerType.CreateOnFlush:
+					eventListeners.PersistOnFlushEventListeners = AppendListeners(eventListeners.PersistOnFlushEventListeners, (IPersistEventListener[])listeners);
+					break;
+				case ListenerType.Delete:
+					eventListeners.DeleteEventListeners = AppendListeners(eventListeners.DeleteEventListeners, (IDeleteEventListener[])listeners);
+					break;
+				case ListenerType.DirtyCheck:
+					eventListeners.DirtyCheckEventListeners = AppendListeners(eventListeners.DirtyCheckEventListeners, (IDirtyCheckEventListener[])listeners);
+					break;
+				case ListenerType.Evict:
+					eventListeners.EvictEventListeners = AppendListeners(eventListeners.EvictEventListeners, (IEvictEventListener[])listeners);
+					break;
+				case ListenerType.Flush:
+					eventListeners.FlushEventListeners = AppendListeners(eventListeners.FlushEventListeners, (IFlushEventListener[])listeners);
+					break;
+				case ListenerType.FlushEntity:
+					eventListeners.FlushEntityEventListeners = AppendListeners(eventListeners.FlushEntityEventListeners, (IFlushEntityEventListener[])listeners);
+					break;
+				case ListenerType.Load:
+					eventListeners.LoadEventListeners = AppendListeners(eventListeners.LoadEventListeners, (ILoadEventListener[])listeners);
+					break;
+				case ListenerType.LoadCollection:
+					eventListeners.InitializeCollectionEventListeners = AppendListeners(eventListeners.InitializeCollectionEventListeners, (IInitializeCollectionEventListener[])listeners);
+					break;
+				case ListenerType.Lock:
+					eventListeners.LockEventListeners = AppendListeners(eventListeners.LockEventListeners, (ILockEventListener[])listeners);
+					break;
+				case ListenerType.Refresh:
+					eventListeners.RefreshEventListeners = AppendListeners(eventListeners.RefreshEventListeners, (IRefreshEventListener[])listeners);
+					break;
+				case ListenerType.Replicate:
+					eventListeners.ReplicateEventListeners = AppendListeners(eventListeners.ReplicateEventListeners, (IReplicateEventListener[])listeners);
+					break;
+				case ListenerType.SaveUpdate:
+					eventListeners.SaveOrUpdateEventListeners = AppendListeners(eventListeners.SaveOrUpdateEventListeners, (ISaveOrUpdateEventListener[])listeners);
+					break;
+				case ListenerType.Save:
+					eventListeners.SaveEventListeners = AppendListeners(eventListeners.SaveEventListeners, (ISaveOrUpdateEventListener[])listeners);
+					break;
+				case ListenerType.PreUpdate:
+					eventListeners.PreUpdateEventListeners = AppendListeners(eventListeners.PreUpdateEventListeners, (IPreUpdateEventListener[])listeners);
+					break;
+				case ListenerType.Update:
+					eventListeners.UpdateEventListeners = AppendListeners(eventListeners.UpdateEventListeners, (ISaveOrUpdateEventListener[])listeners);
+					break;
+				case ListenerType.PreLoad:
+					eventListeners.PreLoadEventListeners = AppendListeners(eventListeners.PreLoadEventListeners, (IPreLoadEventListener[])listeners);
+					break;
+				case ListenerType.PreDelete:
+					eventListeners.PreDeleteEventListeners = AppendListeners(eventListeners.PreDeleteEventListeners, (IPreDeleteEventListener[])listeners);
+					break;
+				case ListenerType.PreInsert:
+					eventListeners.PreInsertEventListeners = AppendListeners(eventListeners.PreInsertEventListeners, (IPreInsertEventListener[])listeners);
+					break;
+				case ListenerType.PostLoad:
+					eventListeners.PostLoadEventListeners = AppendListeners(eventListeners.PostLoadEventListeners, (IPostLoadEventListener[])listeners);
+					break;
+				case ListenerType.PostInsert:
+					eventListeners.PostInsertEventListeners = AppendListeners(eventListeners.PostInsertEventListeners, (IPostInsertEventListener[])listeners);
+					break;
+				case ListenerType.PostUpdate:
+					eventListeners.PostUpdateEventListeners = AppendListeners(eventListeners.PostUpdateEventListeners, (IPostUpdateEventListener[])listeners);
+					break;
+				case ListenerType.PostDelete:
+					eventListeners.PostDeleteEventListeners = AppendListeners(eventListeners.PostDeleteEventListeners, (IPostDeleteEventListener[])listeners);
+					break;
+				case ListenerType.PostCommitUpdate:
+					eventListeners.PostCommitUpdateEventListeners = AppendListeners(eventListeners.PostCommitUpdateEventListeners, (IPostUpdateEventListener[])listeners);
+					break;
+				case ListenerType.PostCommitInsert:
+					eventListeners.PostCommitInsertEventListeners = AppendListeners(eventListeners.PostCommitInsertEventListeners, (IPostInsertEventListener[])listeners);
+					break;
+				case ListenerType.PostCommitDelete:
+					eventListeners.PostCommitDeleteEventListeners = AppendListeners(eventListeners.PostCommitDeleteEventListeners, (IPostDeleteEventListener[])listeners);
+					break;
+				case ListenerType.PreCollectionRecreate:
+					eventListeners.PreCollectionRecreateEventListeners = AppendListeners(eventListeners.PreCollectionRecreateEventListeners, (IPreCollectionRecreateEventListener[])listeners);
+					break;
+				case ListenerType.PreCollectionRemove:
+					eventListeners.PreCollectionRemoveEventListeners = AppendListeners(eventListeners.PreCollectionRemoveEventListeners, (IPreCollectionRemoveEventListener[])listeners);
+					break;
+				case ListenerType.PreCollectionUpdate:
+					eventListeners.PreCollectionUpdateEventListeners = AppendListeners(eventListeners.PreCollectionUpdateEventListeners, (IPreCollectionUpdateEventListener[])listeners);
+					break;
+				case ListenerType.PostCollectionRecreate:
+					eventListeners.PostCollectionRecreateEventListeners = AppendListeners(eventListeners.PostCollectionRecreateEventListeners, (IPostCollectionRecreateEventListener[])listeners);
+					break;
+				case ListenerType.PostCollectionRemove:
+					eventListeners.PostCollectionRemoveEventListeners = AppendListeners(eventListeners.PostCollectionRemoveEventListeners, (IPostCollectionRemoveEventListener[])listeners);
+					break;
+				case ListenerType.PostCollectionUpdate:
+					eventListeners.PostCollectionUpdateEventListeners = AppendListeners(eventListeners.PostCollectionUpdateEventListeners, (IPostCollectionUpdateEventListener[])listeners);
+					break;
+				default:
+					log.Warn("Unrecognized listener type [" + type + "]");
+					break;
+			}
+		}
+
+		private static T[] AppendListeners<T>(T[] existing, T[] listenersToAdd)
+		{
+			var list = new List<T>(existing ?? new T[0]);
+			list.AddRange(listenersToAdd);
+			return list.ToArray();
+		}
+
 		///<summary>
 		/// Generate DDL for altering tables
 		///</summary>
 		/// <seealso cref="NHibernate.Tool.hbm2ddl.SchemaUpdate"/>
-		public String[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		public string[] GenerateSchemaUpdateScript(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
 		{
 			SecondPassCompile();
 
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			ArrayList script = new ArrayList(50);
-			foreach (Table table in tables.Values)
+			var script = new List<string>(50);
+			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
 				{
-
-					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
-							table.Name,
-							table.Schema ?? defaultSchema
-						);
+					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema ?? defaultSchema,
+																				 table.Catalog ?? defaultCatalog, table.IsQuoted);
 					if (tableInfo == null)
 					{
 						script.Add(table.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 					}
 					else
 					{
-						string[] alterDDL = table.SqlAlterStrings(
-								dialect,
-								mapping,
-								tableInfo,
-								defaultSchema
-							);
+						string[] alterDDL = table.SqlAlterStrings(dialect, mapping, tableInfo, defaultCatalog, defaultSchema);
 						script.AddRange(alterDDL);
 					}
 
 					string[] comments = table.SqlCommentStrings(dialect, defaultCatalog, defaultSchema);
 					script.AddRange(comments);
-
 				}
 			}
 
-			foreach (Table table in tables.Values)
+			foreach (var table in TableMappings)
 			{
-				if (table.IsPhysicalTable)
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Update))
 				{
-
-					TableMetadata tableInfo = databaseMetadata.GetTableMetadata(
-							table.Name,
-							table.Schema
-						);
+					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(table.Name, table.Schema, table.Catalog,
+																				 table.IsQuoted);
 
 					if (dialect.HasAlterTable)
 					{
-						foreach (ForeignKey fk in table.ForeignKeyIterator)
+						foreach (var fk in table.ForeignKeyIterator)
 						{
-							if (fk.HasPhysicalConstraint)
+							if (fk.HasPhysicalConstraint && IncludeAction(fk.ReferencedTable.SchemaActions, SchemaAction.Update))
 							{
-								bool create = tableInfo == null || (
-										tableInfo.GetForeignKeyMetadata(fk.Name) == null && (
-									//Icky workaround for MySQL bug:
-												!(dialect is MySQLDialect) ||
-														tableInfo.GetIndexMetadata(fk.Name) == null
-											)
-									);
+								bool create = tableInfo == null
+											  ||
+											  (tableInfo.GetForeignKeyMetadata(fk.Name) == null
+											   && (!(dialect is MySQLDialect) || tableInfo.GetIndexMetadata(fk.Name) == null));
 								if (create)
 								{
 									script.Add(fk.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
@@ -1932,34 +2328,22 @@ namespace NHibernate.Cfg
 						}
 					}
 
-				}
-
-				/*//broken, 'cos we don't generate these with names in SchemaExport
-				subIter = table.getIndexIterator();
-				while ( subIter.hasNext() ) {
-					Index index = (Index) subIter.next();
-					if ( !index.isForeignKey() || !dialect.hasImplicitIndexForForeignKey() ) {
-						if ( tableInfo==null || tableInfo.GetIndexMetadata( index.getFilterName() ) == null ) {
-							script.add( index.sqlCreateString(dialect, mapping) );
+					foreach (var index in table.IndexIterator)
+					{
+						if (tableInfo == null || tableInfo.GetIndexMetadata(index.Name) == null)
+						{
+							script.Add(index.SqlCreateString(dialect, mapping, defaultCatalog, defaultSchema));
 						}
 					}
 				}
-				//broken, 'cos we don't generate these with names in SchemaExport
-				subIter = table.getUniqueKeyIterator();
-				while ( subIter.hasNext() ) {
-					UniqueKey uk = (UniqueKey) subIter.next();
-					if ( tableInfo==null || tableInfo.GetIndexMetadata( uk.getFilterName() ) == null ) {
-						script.add( uk.sqlCreateString(dialect, mapping) );
-					}
-				}*/
 			}
 
-			foreach (IPersistentIdentifierGenerator generator in IterateGenerators(dialect))
+			foreach (var generator in IterateGenerators(dialect))
 			{
-				Object key = generator.GeneratorKey();
+				string key = generator.GeneratorKey();
 				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
 				{
-					String[] lines = generator.SqlCreateStrings(dialect);
+					string[] lines = generator.SqlCreateStrings(dialect);
 					for (int i = 0; i < lines.Length; i++)
 					{
 						script.Add(lines[i]);
@@ -1967,43 +2351,89 @@ namespace NHibernate.Cfg
 				}
 			}
 
-			return ArrayHelper.ToStringArray(script);
+			return script.ToArray();
+		}
+
+		public void ValidateSchema(Dialect.Dialect dialect, DatabaseMetadata databaseMetadata)
+		{
+			SecondPassCompile();
+
+			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
+			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
+
+			var iter = TableMappings;
+			foreach (var table in iter)
+			{
+				if (table.IsPhysicalTable && IncludeAction(table.SchemaActions, SchemaAction.Validate))
+				{
+					/*NH Different Implementation :
+						TableMetadata tableInfo = databaseMetadata.getTableMetadata(
+						table.getName(),
+						( table.getSchema() == null ) ? defaultSchema : table.getSchema(),
+						( table.getCatalog() == null ) ? defaultCatalog : table.getCatalog(),
+								table.isQuoted());*/
+					ITableMetadata tableInfo = databaseMetadata.GetTableMetadata(
+						table.Name,
+						table.Schema ?? defaultSchema,
+						table.Catalog ?? defaultCatalog,
+						table.IsQuoted);
+					if (tableInfo == null)
+						throw new HibernateException("Missing table: " + table.Name);
+					else
+						table.ValidateColumns(dialect, mapping, tableInfo);
+				}
+			}
+
+			var persistenceIdentifierGenerators = IterateGenerators(dialect);
+			foreach (var generator in persistenceIdentifierGenerators)
+			{
+				string key = generator.GeneratorKey();
+				if (!databaseMetadata.IsSequence(key) && !databaseMetadata.IsTable(key))
+				{
+					throw new HibernateException(string.Format("Missing sequence or table: " + key));
+				}
+			}
 		}
 
 		private IEnumerable<IPersistentIdentifierGenerator> IterateGenerators(Dialect.Dialect dialect)
 		{
-			Dictionary<string, IPersistentIdentifierGenerator> generators =
-				new Dictionary<string, IPersistentIdentifierGenerator>();
+			var generators = new Dictionary<string, IPersistentIdentifierGenerator>();
 			string defaultCatalog = PropertiesHelper.GetString(Environment.DefaultCatalog, properties, null);
 			string defaultSchema = PropertiesHelper.GetString(Environment.DefaultSchema, properties, null);
 
-			foreach (PersistentClass pc in classes.Values)
+			foreach (var pc in classes.Values)
 			{
 				if (!pc.IsInherited)
 				{
-					IPersistentIdentifierGenerator ig =
-						pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass) pc) as
+					var ig =
+						pc.Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema, (RootClass)pc) as
 						IPersistentIdentifierGenerator;
 
 					if (ig != null)
+					{
 						generators[ig.GeneratorKey()] = ig;
+					}
 				}
 			}
 
-			foreach (NHibernate.Mapping.Collection collection in collections.Values)
+			foreach (var collection in collections.Values)
 			{
 				if (collection.IsIdentified)
 				{
-					IPersistentIdentifierGenerator ig =
-						((IdentifierCollection) collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema,
-						                                                                         null) as IPersistentIdentifierGenerator;
+					var ig =
+						((IdentifierCollection)collection).Identifier.CreateIdentifierGenerator(dialect, defaultCatalog, defaultSchema,
+																								 null) as IPersistentIdentifierGenerator;
 
 					if (ig != null)
+					{
 						generators[ig.GeneratorKey()] = ig;
+					}
 				}
 			}
 
 			return generators.Values;
 		}
+
+
 	}
 }

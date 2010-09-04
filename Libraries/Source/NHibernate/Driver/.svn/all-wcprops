@@ -1,0 +1,197 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svnroot/nhibernate/!svn/ver/5174/trunk/nhibernate/src/NHibernate/Driver
+END
+MySqlDataDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5147/trunk/nhibernate/src/NHibernate/Driver/MySqlDataDriver.cs
+END
+DbProviderFactoryDriveConnectionCommandProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 123
+/svnroot/nhibernate/!svn/ver/5142/trunk/nhibernate/src/NHibernate/Driver/DbProviderFactoryDriveConnectionCommandProvider.cs
+END
+CsharpSqliteDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/5110/trunk/nhibernate/src/NHibernate/Driver/CsharpSqliteDriver.cs
+END
+SQLite20Driver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/5152/trunk/nhibernate/src/NHibernate/Driver/SQLite20Driver.cs
+END
+ASA10ClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/3647/trunk/nhibernate/src/NHibernate/Driver/ASA10ClientDriver.cs
+END
+DB2Driver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/5145/trunk/nhibernate/src/NHibernate/Driver/DB2Driver.cs
+END
+DriverBase.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Driver/DriverBase.cs
+END
+SybaseClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/5153/trunk/nhibernate/src/NHibernate/Driver/SybaseClientDriver.cs
+END
+OleDbDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/2195/trunk/nhibernate/src/NHibernate/Driver/OleDbDriver.cs
+END
+FirebirdClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5146/trunk/nhibernate/src/NHibernate/Driver/FirebirdClientDriver.cs
+END
+FirebirdDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Driver/FirebirdDriver.cs
+END
+IfxDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/5150/trunk/nhibernate/src/NHibernate/Driver/IfxDriver.cs
+END
+IngresDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4093/trunk/nhibernate/src/NHibernate/Driver/IngresDriver.cs
+END
+ReflectionBasedDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/5144/trunk/nhibernate/src/NHibernate/Driver/ReflectionBasedDriver.cs
+END
+DB2400Driver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Driver/DB2400Driver.cs
+END
+SqlStringFormatter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/4944/trunk/nhibernate/src/NHibernate/Driver/SqlStringFormatter.cs
+END
+SqlClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/5174/trunk/nhibernate/src/NHibernate/Driver/SqlClientDriver.cs
+END
+OracleDataClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/5164/trunk/nhibernate/src/NHibernate/Driver/OracleDataClientDriver.cs
+END
+NDataReader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/4981/trunk/nhibernate/src/NHibernate/Driver/NDataReader.cs
+END
+NHybridDataReader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Driver/NHybridDataReader.cs
+END
+IDriveConnectionCommandProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/5141/trunk/nhibernate/src/NHibernate/Driver/IDriveConnectionCommandProvider.cs
+END
+SQLiteDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5152/trunk/nhibernate/src/NHibernate/Driver/SQLiteDriver.cs
+END
+ReflectionDriveConnectionCommandProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svnroot/nhibernate/!svn/ver/5141/trunk/nhibernate/src/NHibernate/Driver/ReflectionDriveConnectionCommandProvider.cs
+END
+ASAClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3647/trunk/nhibernate/src/NHibernate/Driver/ASAClientDriver.cs
+END
+OracleClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/5148/trunk/nhibernate/src/NHibernate/Driver/OracleClientDriver.cs
+END
+NpgsqlDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/5151/trunk/nhibernate/src/NHibernate/Driver/NpgsqlDriver.cs
+END
+OdbcDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4915/trunk/nhibernate/src/NHibernate/Driver/OdbcDriver.cs
+END
+OracleLiteDataClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4007/trunk/nhibernate/src/NHibernate/Driver/OracleLiteDataClientDriver.cs
+END
+ISqlParameterFormatter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2659/trunk/nhibernate/src/NHibernate/Driver/ISqlParameterFormatter.cs
+END
+SybaseAdoNet12ClientDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/5153/trunk/nhibernate/src/NHibernate/Driver/SybaseAdoNet12ClientDriver.cs
+END
+IDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/5073/trunk/nhibernate/src/NHibernate/Driver/IDriver.cs
+END
+SqlServerCeDriver.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4741/trunk/nhibernate/src/NHibernate/Driver/SqlServerCeDriver.cs
+END

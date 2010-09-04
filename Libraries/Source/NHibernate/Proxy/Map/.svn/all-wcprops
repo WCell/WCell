@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svnroot/nhibernate/!svn/ver/4923/trunk/nhibernate/src/NHibernate/Proxy/Map
+END
+MapProxy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3097/trunk/nhibernate/src/NHibernate/Proxy/Map/MapProxy.cs
+END
+MapLazyInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/3097/trunk/nhibernate/src/NHibernate/Proxy/Map/MapLazyInitializer.cs
+END
+MapProxyFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/4923/trunk/nhibernate/src/NHibernate/Proxy/Map/MapProxyFactory.cs
+END

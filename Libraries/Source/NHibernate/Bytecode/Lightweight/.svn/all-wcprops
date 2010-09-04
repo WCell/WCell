@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/4345/trunk/nhibernate/src/NHibernate/Bytecode/Lightweight
+END
+BytecodeProviderImpl.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/4345/trunk/nhibernate/src/NHibernate/Bytecode/Lightweight/BytecodeProviderImpl.cs
+END
+Delegates.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2852/trunk/nhibernate/src/NHibernate/Bytecode/Lightweight/Delegates.cs
+END
+ReflectionOptimizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3933/trunk/nhibernate/src/NHibernate/Bytecode/Lightweight/ReflectionOptimizer.cs
+END
+AccessOptimizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/3379/trunk/nhibernate/src/NHibernate/Bytecode/Lightweight/AccessOptimizer.cs
+END

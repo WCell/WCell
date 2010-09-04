@@ -221,11 +221,6 @@
       <Name>WCell.Intercommunication</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-3.5</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>

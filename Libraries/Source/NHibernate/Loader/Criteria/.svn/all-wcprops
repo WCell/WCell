@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Criteria
+END
+ScalarCollectionCriteriaInfoProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svnroot/nhibernate/!svn/ver/4718/trunk/nhibernate/src/NHibernate/Loader/Criteria/ScalarCollectionCriteriaInfoProvider.cs
+END
+CriteriaQueryTranslator.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Criteria/CriteriaQueryTranslator.cs
+END
+ICriteriaInfoProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4718/trunk/nhibernate/src/NHibernate/Loader/Criteria/ICriteriaInfoProvider.cs
+END
+EntityCriteriaInfoProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4718/trunk/nhibernate/src/NHibernate/Loader/Criteria/EntityCriteriaInfoProvider.cs
+END
+ComponentCollectionCriteriaInfoProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svnroot/nhibernate/!svn/ver/4718/trunk/nhibernate/src/NHibernate/Loader/Criteria/ComponentCollectionCriteriaInfoProvider.cs
+END
+CriteriaJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Criteria/CriteriaJoinWalker.cs
+END
+CriteriaLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Loader/Criteria/CriteriaLoader.cs
+END

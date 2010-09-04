@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Connection
+END
+UserSuppliedConnectionProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Connection/UserSuppliedConnectionProvider.cs
+END
+ConnectionProviderFactory.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Connection/ConnectionProviderFactory.cs
+END
+IConnectionProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3318/trunk/nhibernate/src/NHibernate/Connection/IConnectionProvider.cs
+END
+DriverConnectionProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Connection/DriverConnectionProvider.cs
+END
+ConnectionProvider.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Connection/ConnectionProvider.cs
+END

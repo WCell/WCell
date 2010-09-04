@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Custom/Sql
+END
+SQLCustomQuery.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Custom/Sql/SQLCustomQuery.cs
+END
+SQLQueryParser.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4452/trunk/nhibernate/src/NHibernate/Loader/Custom/Sql/SQLQueryParser.cs
+END
+SQLQueryReturnProcessor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Custom/Sql/SQLQueryReturnProcessor.cs
+END

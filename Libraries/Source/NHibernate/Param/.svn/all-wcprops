@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/nhibernate/!svn/ver/4714/trunk/nhibernate/src/NHibernate/Param
+END
+CollectionFilterKeyParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/CollectionFilterKeyParameterSpecification.cs
+END
+DynamicFilterParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/DynamicFilterParameterSpecification.cs
+END
+IExplicitParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/IExplicitParameterSpecification.cs
+END
+PositionalParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/PositionalParameterSpecification.cs
+END
+AggregatedIndexCollectionSelectorParameterSpecifications.cs
+K 25
+svn:wc:ra_dav:version-url
+V 131
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/AggregatedIndexCollectionSelectorParameterSpecifications.cs
+END
+ParameterTranslationsImpl.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4714/trunk/nhibernate/src/NHibernate/Param/ParameterTranslationsImpl.cs
+END
+NamedParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/4407/trunk/nhibernate/src/NHibernate/Param/NamedParameterSpecification.cs
+END
+AbstractExplicitParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/AbstractExplicitParameterSpecification.cs
+END
+IParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/4222/trunk/nhibernate/src/NHibernate/Param/IParameterSpecification.cs
+END
+VersionTypeSeedParameterSpecification.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/4246/trunk/nhibernate/src/NHibernate/Param/VersionTypeSeedParameterSpecification.cs
+END

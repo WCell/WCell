@@ -1,0 +1,89 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Query
+END
+CallableParser.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/4874/trunk/nhibernate/src/NHibernate/Engine/Query/CallableParser.cs
+END
+HQLStringQueryPlan.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/4893/trunk/nhibernate/src/NHibernate/Engine/Query/HQLStringQueryPlan.cs
+END
+ParameterParser.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4806/trunk/nhibernate/src/NHibernate/Engine/Query/ParameterParser.cs
+END
+ReturnMetadata.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/3046/trunk/nhibernate/src/NHibernate/Engine/Query/ReturnMetadata.cs
+END
+ParamLocationRecognizer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/4806/trunk/nhibernate/src/NHibernate/Engine/Query/ParamLocationRecognizer.cs
+END
+ParameterMetadata.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4806/trunk/nhibernate/src/NHibernate/Engine/Query/ParameterMetadata.cs
+END
+NamedParameterDescriptor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/3046/trunk/nhibernate/src/NHibernate/Engine/Query/NamedParameterDescriptor.cs
+END
+QueryPlanCache.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Query/QueryPlanCache.cs
+END
+HQLExpressionQueryPlan.cs
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svnroot/nhibernate/!svn/ver/4893/trunk/nhibernate/src/NHibernate/Engine/Query/HQLExpressionQueryPlan.cs
+END
+HQLQueryPlan.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Query/HQLQueryPlan.cs
+END
+FilterQueryPlan.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/4886/trunk/nhibernate/src/NHibernate/Engine/Query/FilterQueryPlan.cs
+END
+QueryMetadata.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/3052/trunk/nhibernate/src/NHibernate/Engine/Query/QueryMetadata.cs
+END
+NativeSQLQueryPlan.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Query/NativeSQLQueryPlan.cs
+END
+OrdinalParameterDescriptor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3046/trunk/nhibernate/src/NHibernate/Engine/Query/OrdinalParameterDescriptor.cs
+END

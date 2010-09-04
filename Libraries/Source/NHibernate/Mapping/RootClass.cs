@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine;
 using NHibernate.Util;
 
@@ -16,7 +16,7 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public class RootClass : PersistentClass, ITableOwner
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(RootClass));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(RootClass));
 
 		/// <summary>
 		/// The default name of the column for the Identifier
@@ -159,11 +159,6 @@ namespace NHibernate.Mapping
 			get { return false; }
 		}
 
-		public override Iesi.Collections.Generic.ISet<string> SynchronizedTables
-		{
-			get { return synchronizedTables; }
-		}
-
 		public virtual Iesi.Collections.Generic.ISet<Table> IdentityTables
 		{
 			get
@@ -281,7 +276,7 @@ namespace NHibernate.Mapping
 		/// </summary>
 		/// <value>
 		/// <see langword="true" /> if only classes queried on should be returned, <see langword="false" />
-		/// if any class in the heirarchy should implicitly be returned.
+		/// if any class in the hierarchy should implicitly be returned.
 		/// </value>
 		public override bool IsExplicitPolymorphism
 		{

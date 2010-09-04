@@ -1,0 +1,17 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Transaction
+END
+IIsolatedWork.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/4501/trunk/nhibernate/src/NHibernate/Engine/Transaction/IIsolatedWork.cs
+END
+Isolater.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Engine/Transaction/Isolater.cs
+END

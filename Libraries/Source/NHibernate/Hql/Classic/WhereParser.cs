@@ -361,7 +361,13 @@ namespace NHibernate.Hql.Classic
 				//unaryCounts.removeLast(); //check that its zero? (As an assertion)
 				SqlStringBuilder join = joins[joins.Count - 1];
 				joins.RemoveAt(joins.Count - 1);
-				joins[joins.Count - 1].Add(join.ToSqlString());
+
+				//let special non-boolean-functions works like: "from Animal a where fx(a.Text,'x');"
+				//and 'fx' isn't a boolean function.
+				if (joins.Count == 0)
+					AppendToken(q, join.ToSqlString());
+				else
+					joins[joins.Count - 1].Add(join.ToSqlString());
 			}
 
 			bool lastNots = nots[nots.Count - 1];
@@ -457,6 +463,7 @@ namespace NHibernate.Hql.Classic
 
 		private void DoToken(string token, QueryTranslator q)
 		{
+			SessionFactoryHelper helper = new SessionFactoryHelper(q.Factory);
 			if (q.IsName(StringHelper.Root(token))) //path expression
 			{
 				DoPathExpression(q.Unalias(token), q);
@@ -502,7 +509,7 @@ namespace NHibernate.Hql.Classic
 					{
 						fieldName = StringHelper.Unqualify(token);
 						string typeName = StringHelper.Qualifier(token);
-						importedType = SessionFactoryHelper.GetImportedClass(q.Factory, typeName);
+						importedType = helper.GetImportedClass(typeName);
 					}
 
 					if (indexOfDot > -1 && importedType != null &&
@@ -597,7 +604,7 @@ namespace NHibernate.Hql.Classic
 				// a String.Empty can get passed in here.  If that occurs
 				// then don't create a new SqlString for it - just ignore
 				// it since it adds nothing to the sql being generated.
-				if (token != null && token.Length > 0)
+				if (!string.IsNullOrEmpty(token))
 				{
 					q.AppendWhereToken(new SqlString(token));
 				}

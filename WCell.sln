@@ -55,8 +55,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.Util", "Utilities\WCe
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {5909BFE7-93CF-4E5F-BE22-6293368AF01D}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate-3.5", "Libraries\Source\NHibernate\NHibernate-3.5.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WCell.MPQTool", "Utilities\WCell.MPQTool\WCell.MPQTool.csproj", "{5F96293A-1276-4515-8048-EBC49CD81D71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Servers", "Servers", "{60BC37D8-E1E8-460D-BE36-DD66C21E42BE}"
@@ -94,6 +92,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthServer", "AuthServer", 
 	ProjectSection(SolutionItems) = preProject
 		Run\AuthContent\Lang\English.xml = Run\AuthContent\Lang\English.xml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate", "Libraries\Source\NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -347,22 +347,6 @@ Global
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x64.Build.0 = Release|x64
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x86.ActiveCfg = Release|x86
 		{F753AF28-A251-4C12-9335-07E8236184F2}.Release|x86.Build.0 = Release|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Itanium.ActiveCfg = Debug|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Itanium.Build.0 = Debug|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x64.ActiveCfg = Debug|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x64.Build.0 = Debug|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x86.ActiveCfg = Debug|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x86.Build.0 = Debug|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Itanium.ActiveCfg = Release|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Itanium.Build.0 = Release|Itanium
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x64.ActiveCfg = Release|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x64.Build.0 = Release|x64
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.ActiveCfg = Release|x86
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.Build.0 = Release|x86
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F96293A-1276-4515-8048-EBC49CD81D71}.Debug|Itanium.ActiveCfg = Debug|Itanium
@@ -399,6 +383,16 @@ Global
 		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|Itanium.ActiveCfg = Release|Any CPU
 		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|x64.ActiveCfg = Release|Any CPU
 		{1025C512-AF25-4887-9E7B-9DE58B5D0C70}.Release|x86.ActiveCfg = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|Itanium.ActiveCfg = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Itanium.ActiveCfg = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -421,15 +415,15 @@ Global
 		{71AB07AD-4D94-4693-8560-47862E5B6E61} = {372CB0F3-1BA6-4157-8CCB-E10D0912AD02}
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
-		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
+		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

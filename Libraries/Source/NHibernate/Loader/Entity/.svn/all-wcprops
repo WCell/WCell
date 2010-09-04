@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Entity
+END
+CollectionElementLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Entity/CollectionElementLoader.cs
+END
+EntityJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/4919/trunk/nhibernate/src/NHibernate/Loader/Entity/EntityJoinWalker.cs
+END
+BatchingEntityLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3484/trunk/nhibernate/src/NHibernate/Loader/Entity/BatchingEntityLoader.cs
+END
+EntityLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/3484/trunk/nhibernate/src/NHibernate/Loader/Entity/EntityLoader.cs
+END
+IUniqueEntityLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/3576/trunk/nhibernate/src/NHibernate/Loader/Entity/IUniqueEntityLoader.cs
+END
+CascadeEntityJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/3784/trunk/nhibernate/src/NHibernate/Loader/Entity/CascadeEntityJoinWalker.cs
+END
+AbstractEntityLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Entity/AbstractEntityLoader.cs
+END
+CascadeEntityLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/3484/trunk/nhibernate/src/NHibernate/Loader/Entity/CascadeEntityLoader.cs
+END

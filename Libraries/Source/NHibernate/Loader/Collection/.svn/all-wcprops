@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Collection
+END
+SubselectCollectionLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/4714/trunk/nhibernate/src/NHibernate/Loader/Collection/SubselectCollectionLoader.cs
+END
+BatchingCollectionInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svnroot/nhibernate/!svn/ver/3483/trunk/nhibernate/src/NHibernate/Loader/Collection/BatchingCollectionInitializer.cs
+END
+OneToManyJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/5091/trunk/nhibernate/src/NHibernate/Loader/Collection/OneToManyJoinWalker.cs
+END
+OneToManyLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Collection/OneToManyLoader.cs
+END
+CollectionJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svnroot/nhibernate/!svn/ver/3483/trunk/nhibernate/src/NHibernate/Loader/Collection/CollectionJoinWalker.cs
+END
+CollectionLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4197/trunk/nhibernate/src/NHibernate/Loader/Collection/CollectionLoader.cs
+END
+BasicCollectionJoinWalker.cs
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svnroot/nhibernate/!svn/ver/5091/trunk/nhibernate/src/NHibernate/Loader/Collection/BasicCollectionJoinWalker.cs
+END
+BasicCollectionLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Loader/Collection/BasicCollectionLoader.cs
+END
+ICollectionInitializer.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3483/trunk/nhibernate/src/NHibernate/Loader/Collection/ICollectionInitializer.cs
+END
+SubselectOneToManyLoader.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4744/trunk/nhibernate/src/NHibernate/Loader/Collection/SubselectOneToManyLoader.cs
+END

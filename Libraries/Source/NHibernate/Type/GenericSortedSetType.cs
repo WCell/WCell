@@ -5,7 +5,7 @@ using Iesi.Collections.Generic;
 namespace NHibernate.Type
 {
 	/// <summary>
-	/// An <see cref="IType"/> that maps a sorted <see cref="Iesi.Collections.Generic.ISet{T}"/> collection
+    /// An <see cref="IType"/> that maps a sorted <see cref="Iesi.Collections.Generic.ISet{T}"/> collection
 	/// to the database.
 	/// </summary>
 	[Serializable]

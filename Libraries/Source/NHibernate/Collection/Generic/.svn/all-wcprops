@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/5173/trunk/nhibernate/src/NHibernate/Collection/Generic
+END
+PersistentGenericMap.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/4982/trunk/nhibernate/src/NHibernate/Collection/Generic/PersistentGenericMap.cs
+END
+PersistentGenericBag.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3520/trunk/nhibernate/src/NHibernate/Collection/Generic/PersistentGenericBag.cs
+END
+PersistentGenericList.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3597/trunk/nhibernate/src/NHibernate/Collection/Generic/PersistentGenericList.cs
+END
+PersistentGenericSet.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3576/trunk/nhibernate/src/NHibernate/Collection/Generic/PersistentGenericSet.cs
+END
+PersistentGenericIdentifierBag.cs
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svnroot/nhibernate/!svn/ver/5173/trunk/nhibernate/src/NHibernate/Collection/Generic/PersistentGenericIdentifierBag.cs
+END

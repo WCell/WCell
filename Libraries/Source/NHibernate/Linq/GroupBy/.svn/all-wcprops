@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/nhibernate/!svn/ver/4945/trunk/nhibernate/src/NHibernate/Linq/GroupBy
+END
+AggregatingGroupByRewriter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/4819/trunk/nhibernate/src/NHibernate/Linq/GroupBy/AggregatingGroupByRewriter.cs
+END
+GroupByAggregateDetectionVisitor.cs
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/svnroot/nhibernate/!svn/ver/4819/trunk/nhibernate/src/NHibernate/Linq/GroupBy/GroupByAggregateDetectionVisitor.cs
+END
+NonAggregatingGroupByRewriter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/4945/trunk/nhibernate/src/NHibernate/Linq/GroupBy/NonAggregatingGroupByRewriter.cs
+END
+GroupBySelectClauseRewriter.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/4819/trunk/nhibernate/src/NHibernate/Linq/GroupBy/GroupBySelectClauseRewriter.cs
+END

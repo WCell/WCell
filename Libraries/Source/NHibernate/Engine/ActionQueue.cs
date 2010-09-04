@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Action;
 using NHibernate.Cache;
 
@@ -20,7 +20,7 @@ namespace NHibernate.Engine
 	[Serializable]
 	public class ActionQueue
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ActionQueue));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
 
 		private ISessionImplementor session;
@@ -228,11 +228,11 @@ namespace NHibernate.Engine
 			get { return (insertions.Count > 0 || deletions.Count > 0); }
 		}
 
-		private static bool AreTablesToUpdated(IList executables, Iesi.Collections.Generic.ISet<string> tablespaces)
+		private static bool AreTablesToUpdated(IList executables, ICollection<string> tablespaces)
 		{
 			foreach (IExecutable exec in executables)
 			{
-				object[] spaces = exec.PropertySpaces;
+				var spaces = exec.PropertySpaces;
 				foreach (string o in spaces)
 				{
 					if(tablespaces.Contains(o))
@@ -279,28 +279,26 @@ namespace NHibernate.Engine
 
 		public void SortCollectionActions()
 		{
-			// todo-events verify the behaviour of this method and verify CompareTo of CollectionAction
-			//if (session.Factory.Settings.IsOrderUpdatesEnabled)
-			//{
-			//  //sort the updates by fk
-			//  collectionCreations.Sort();
-			//  collectionUpdates.Sort();
-			//  collectionRemovals.Sort();
-			//}
+			if (session.Factory.Settings.IsOrderUpdatesEnabled)
+			{
+				//sort the updates by fk
+				collectionCreations.Sort();
+				collectionUpdates.Sort();
+				collectionRemovals.Sort();
+			}
 		}
 
 		public void SortActions()
 		{
-			// todo-events verify the behaviour of this method and verify CompareTo of EntityAction
-			//if (session.Factory.Settings.IsOrderUpdatesEnabled)
-			//{
-			//  //sort the updates by pk
-			//  updates.Sort();
-			//}
-			//if (session.Factory.Settings.IsOrderInsertsEnabled)
-			//{
-			//  SortInsertActions();
-			//}
+			if (session.Factory.Settings.IsOrderUpdatesEnabled)
+			{
+				//sort the updates by pk
+				updates.Sort();
+			}
+			if (session.Factory.Settings.IsOrderInsertsEnabled)
+			{
+				SortInsertActions();
+			}
 		}
 
 		 //Order the {@link #insertions} queue such that we group inserts
@@ -317,7 +315,7 @@ namespace NHibernate.Engine
 			// The main data structure in this ordering algorithm is the 'positionToAction'
 			// map. Essentially this can be thought of as an put-ordered map (the problem with
 			// actually implementing it that way and doing away with the 'nameList' is that
-			// we'd end up having potential duplicate key values).  'positionToAction' maitains
+			// we'd end up having potential duplicate key values).  'positionToAction' maintains
 			// a mapping from a position within the 'nameList' structure to a "partial queue"
 			// of actions.
 
@@ -348,7 +346,7 @@ namespace NHibernate.Engine
 				else
 				{
 					// we have seen it before, so we need to determine if this insert action is
-					// is depenedent upon a previously processed action in terms of FK
+					// is dependent upon a previously processed action in terms of FK
 					// relationships (this FK checking is done against the entity's property-state
 					// associated with the action...)
 					int lastPos = nameList.LastIndexOf(thisEntityName);

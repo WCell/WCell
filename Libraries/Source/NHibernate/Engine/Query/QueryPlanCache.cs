@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Engine.Query.Sql;
 using NHibernate.Util;
 
@@ -11,7 +11,7 @@ namespace NHibernate.Engine.Query
 	[Serializable]
 	public class QueryPlanCache
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(QueryPlanCache));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(QueryPlanCache));
 
 		private readonly ISessionFactoryImplementor factory;
 
@@ -33,7 +33,7 @@ namespace NHibernate.Engine.Query
 
 		public ParameterMetadata GetSQLParameterMetadata(string query)
 		{
-			ParameterMetadata metadata = (ParameterMetadata)sqlParamMetadataCache[query];
+			var metadata = (ParameterMetadata)sqlParamMetadataCache[query];
 			if (metadata == null)
 			{
 				// for native-sql queries, the param metadata is determined outside
@@ -47,10 +47,10 @@ namespace NHibernate.Engine.Query
 			return metadata;
 		}
 
-		public HQLQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
+		public IQueryPlan GetHQLQueryPlan(string queryString, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			HQLQueryPlanKey key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
-			HQLQueryPlan plan = (HQLQueryPlan)planCache[key];
+			var key = new HQLQueryPlanKey(queryString, shallow, enabledFilters);
+			var plan = (IQueryPlan)planCache[key];
 
 			if (plan == null)
 			{
@@ -58,7 +58,8 @@ namespace NHibernate.Engine.Query
 				{
 					log.Debug("unable to locate HQL query plan in cache; generating (" + queryString + ")");
 				}
-				plan = new HQLQueryPlan(queryString, shallow, enabledFilters, factory);
+				plan = new HQLStringQueryPlan(queryString, shallow, enabledFilters, factory);
+				planCache.Put(key, plan);
 			}
 			else
 			{
@@ -68,23 +69,51 @@ namespace NHibernate.Engine.Query
 				}
 			}
 
-			planCache.Put(key, plan);
-
 			return plan;
 		}
 
+        public IQueryExpressionPlan GetHQLQueryPlan(IQueryExpression queryExpression, bool shallow, IDictionary<string, IFilter> enabledFilters)
+        {
+            string expressionStr = queryExpression.Key;
+
+            var key = new HQLQueryPlanKey(expressionStr, shallow, enabledFilters);
+            var plan = (IQueryExpressionPlan)planCache[key];
+
+            if (plan == null)
+            {
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug("unable to locate HQL query plan in cache; generating (" + expressionStr + ")");
+                }
+                plan = new HQLExpressionQueryPlan(expressionStr, queryExpression, shallow, enabledFilters, factory);
+                planCache.Put(key, plan);
+            }
+            else
+            {
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug("located HQL query plan in cache (" + expressionStr + ")");
+                }
+            }
+
+            return plan;
+        }
+
+
 		public FilterQueryPlan GetFilterQueryPlan(string filterString, string collectionRole, bool shallow, IDictionary<string, IFilter> enabledFilters)
 		{
-			FilterQueryPlanKey key = new FilterQueryPlanKey(filterString, collectionRole, shallow, enabledFilters);
-			FilterQueryPlan plan = (FilterQueryPlan)planCache[key];
+			var key = new FilterQueryPlanKey(filterString, collectionRole, shallow, enabledFilters);
+			var plan = (FilterQueryPlan) planCache[key];
 
 			if (plan == null)
 			{
 				if (log.IsDebugEnabled)
 				{
-					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : " + filterString + ")");
+					log.Debug("unable to locate collection-filter query plan in cache; generating (" + collectionRole + " : "
+					          + filterString + ")");
 				}
 				plan = new FilterQueryPlan(filterString, collectionRole, shallow, enabledFilters, factory);
+				planCache.Put(key, plan);
 			}
 			else
 			{
@@ -94,14 +123,12 @@ namespace NHibernate.Engine.Query
 				}
 			}
 
-			planCache.Put(key, plan);
-
 			return plan;
 		}
 
 		public NativeSQLQueryPlan GetNativeSQLQueryPlan(NativeSQLQuerySpecification spec)
 		{
-			NativeSQLQueryPlan plan = (NativeSQLQueryPlan)planCache[spec];
+			var plan = (NativeSQLQueryPlan)planCache[spec];
 
 			if (plan == null)
 			{
@@ -110,6 +137,7 @@ namespace NHibernate.Engine.Query
 					log.Debug("unable to locate native-sql query plan in cache; generating (" + spec.QueryString + ")");
 				}
 				plan = new NativeSQLQueryPlan(spec, factory);
+				planCache.Put(spec, plan);
 			}
 			else
 			{
@@ -119,15 +147,14 @@ namespace NHibernate.Engine.Query
 				}
 			}
 
-			planCache.Put(spec, plan);
 			return plan;
 		}
 
 		private ParameterMetadata BuildNativeSQLParameterMetadata(string sqlString)
 		{
-			ParamLocationRecognizer recognizer = ParamLocationRecognizer.parseLocations(sqlString);
+			ParamLocationRecognizer recognizer = ParamLocationRecognizer.ParseLocations(sqlString);
 
-			OrdinalParameterDescriptor[] ordinalDescriptors = new OrdinalParameterDescriptor[recognizer.OrdinalParameterLocationList.Count];
+			var ordinalDescriptors = new OrdinalParameterDescriptor[recognizer.OrdinalParameterLocationList.Count];
 			for (int i = 0; i < recognizer.OrdinalParameterLocationList.Count; i++)
 			{
 				int position = recognizer.OrdinalParameterLocationList[i];
@@ -177,12 +204,11 @@ namespace NHibernate.Engine.Query
 
 			public override bool Equals(object obj)
 			{
-				if (this == obj)
-				{
-					return true;
-				}
+				return this == obj || Equals(obj as HQLQueryPlanKey);
+			}
 
-				HQLQueryPlanKey that = obj as HQLQueryPlanKey;
+			public bool Equals(HQLQueryPlanKey that)
+			{
 				if (that == null)
 				{
 					return false;
@@ -245,17 +271,15 @@ namespace NHibernate.Engine.Query
 
 			public override bool Equals(object obj)
 			{
-				if (this == obj)
-				{
-					return true;
-				}
-				if (obj == null || GetType() != obj.GetType())
+				return this == obj || Equals(obj as FilterQueryPlanKey);
+			}
+
+			public bool Equals(FilterQueryPlanKey that)
+			{
+				if (that == null)
 				{
 					return false;
 				}
-
-				FilterQueryPlanKey that = (FilterQueryPlanKey)obj;
-
 				if (shallow != that.shallow)
 				{
 					return false;

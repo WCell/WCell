@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Type;
@@ -11,203 +10,83 @@ using NHibernate.Util;
 
 namespace NHibernate.Engine.Query
 {
+    public interface IQueryPlan
+    {
+        ParameterMetadata ParameterMetadata { get; }
+        Iesi.Collections.Generic.ISet<string> QuerySpaces { get; }
+        IQueryTranslator[] Translators { get; }
+        ReturnMetadata ReturnMetadata { get; }
+        void PerformList(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl, IList results);
+        int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor statelessSessionImpl);
+        IEnumerable<T> PerformIterate<T>(QueryParameters queryParameters, IEventSource session);
+        IEnumerable PerformIterate(QueryParameters queryParameters, IEventSource session);
+    }
+
+    public interface IQueryExpressionPlan : IQueryPlan
+    {
+        IQueryExpression QueryExpression { get; }
+    }
+
 	/// <summary> Defines a query execution plan for an HQL query (or filter). </summary>
 	[Serializable]
-	public class HQLQueryPlan
+	public class HQLQueryPlan : IQueryPlan
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(HQLQueryPlan));
+		protected static readonly ILogger Log = LoggerProvider.LoggerFor(typeof(HQLQueryPlan));
 
-		private readonly string sourceQuery;
-		private readonly IQueryTranslator[] translators;
-		private readonly string[] sqlStrings;
+		private readonly string _sourceQuery;
 
-		private readonly ParameterMetadata parameterMetadata;
-		private readonly ReturnMetadata returnMetadata;
-		private readonly HashedSet<string> querySpaces;
+        protected HQLQueryPlan(string sourceQuery, IQueryTranslator[] translators)
+        {
+            Translators = translators;
+            _sourceQuery = sourceQuery;
 
-		private readonly HashedSet<string> enabledFilterNames;
-		private readonly bool shallow;
+            FinaliseQueryPlan();
+        }
 
-		public HQLQueryPlan(string hql, bool shallow, 
-			IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
-			: this(hql, null, shallow, enabledFilters, factory)
+	    public Iesi.Collections.Generic.ISet<string> QuerySpaces
 		{
-		}
-
-		protected internal HQLQueryPlan(string hql, string collectionRole, bool shallow,
-			IDictionary<string, IFilter> enabledFilters, ISessionFactoryImplementor factory)
-		{
-			sourceQuery = hql;
-			this.shallow = shallow;
-
-			enabledFilterNames = new HashedSet<string>(enabledFilters.Keys);
-
-			HashedSet<string> combinedQuerySpaces = new HashedSet<string>();
-			string[] concreteQueryStrings = QuerySplitter.ConcreteQueries(hql, factory);
-			int length = concreteQueryStrings.Length;
-			translators = new IQueryTranslator[length];
-			List<string> sqlStringList = new List<string>();
-			for (int i = 0; i < length; i++)
-			{
-				if (collectionRole == null)
-				{
-					translators[i] =
-						factory.Settings.QueryTranslatorFactory.CreateQueryTranslator(hql, concreteQueryStrings[i], enabledFilters,
-						                                                              factory);
-					translators[i].Compile(factory.Settings.QuerySubstitutions, shallow);
-				}
-				else
-				{
-					translators[i] =
-						factory.Settings.QueryTranslatorFactory.CreateFilterTranslator(hql, concreteQueryStrings[i], enabledFilters,
-						                                                               factory);
-					((IFilterTranslator)translators[i]).Compile(collectionRole, factory.Settings.QuerySubstitutions, shallow);
-				}
-				foreach (string qs in translators[i].QuerySpaces)
-				{
-					combinedQuerySpaces.Add(qs);	
-				}
-				sqlStringList.AddRange(translators[i].CollectSqlStrings);
-			}
-
-			sqlStrings = sqlStringList.ToArray();
-			querySpaces = combinedQuerySpaces;
-
-			if (length == 0)
-			{
-				parameterMetadata = new ParameterMetadata(null, null);
-				returnMetadata = null;
-			}
-			else
-			{
-				parameterMetadata = BuildParameterMetadata(translators[0].GetParameterTranslations(), hql);
-				if (translators[0].IsManipulationStatement)
-				{
-					returnMetadata = null;
-				}
-				else
-				{
-					if (length > 1)
-					{
-						int returns = translators[0].ReturnTypes.Length;
-						returnMetadata = new ReturnMetadata(translators[0].ReturnAliases, new IType[returns]);
-					}
-					else
-					{
-						returnMetadata = new ReturnMetadata(translators[0].ReturnAliases, translators[0].ReturnTypes);
-					}
-				}
-			}
-
-		}
-
-		public string SourceQuery
-		{
-			get { return sourceQuery; }
-		}
-
-		public Iesi.Collections.Generic.ISet<string> QuerySpaces
-		{
-			get { return querySpaces; }
+		    get;
+		    private set;
 		}
 
 		public ParameterMetadata ParameterMetadata
 		{
-			get { return parameterMetadata; }
-		}
+            get;
+            private set;
+        }
 
 		public ReturnMetadata ReturnMetadata
 		{
-			get { return returnMetadata; }
-		}
-
-		public ISet EnabledFilterNames
-		{
-			get { return enabledFilterNames; }
-		}
+            get;
+            private set;
+        }
 
 		public string[] SqlStrings
 		{
-			get { return sqlStrings; }
-		}
-
-		public ISet UtilizedFilterNames
-		{
-			get
-			{
-				// TODO : add this info to the translator and aggregate it here...
-				return null;
-			}
-		}
-
-		public bool Shallow
-		{
-			get { return shallow; }
-		}
+            get;
+            private set;
+        }
 
 		public IQueryTranslator[] Translators
 		{
-			get
-			{
-				IQueryTranslator[] copy = new IQueryTranslator[translators.Length];
-				Array.Copy(translators, 0, copy, 0, copy.Length);
-				return copy;
-			}
-		}
-
-		private static ParameterMetadata BuildParameterMetadata(IParameterTranslations parameterTranslations, string hql)
-		{
-			long start = DateTime.Now.Ticks;
-			ParamLocationRecognizer recognizer = ParamLocationRecognizer.parseLocations(hql);
-			long end = DateTime.Now.Ticks;
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("HQL param location recognition took " + (end - start) + " mills (" + hql + ")");
-			}
-
-			int ordinalParamCount = parameterTranslations.OrdinalParameterCount;
-			int[] locations = recognizer.OrdinalParameterLocationList.ToArray();
-			if (parameterTranslations.SupportsOrdinalParameterMetadata && locations.Length != ordinalParamCount)
-			{
-				throw new HibernateException("ordinal parameter mismatch");
-			}
-			ordinalParamCount = locations.Length;
-			OrdinalParameterDescriptor[] ordinalParamDescriptors = new OrdinalParameterDescriptor[ordinalParamCount];
-			for (int i = 1; i <= ordinalParamCount; i++)
-			{
-				ordinalParamDescriptors[i - 1] =
-					new OrdinalParameterDescriptor(i,
-					                               parameterTranslations.SupportsOrdinalParameterMetadata
-					                               	? parameterTranslations.GetOrdinalParameterExpectedType(i)
-					                               	: null, locations[i - 1]);
-			}
-
-			Dictionary<string, NamedParameterDescriptor> namedParamDescriptorMap = new Dictionary<string, NamedParameterDescriptor>();
-			foreach (KeyValuePair<string, ParamLocationRecognizer.NamedParameterDescription> entry in recognizer.NamedParameterDescriptionMap)
-			{
-				string name = entry.Key;
-				ParamLocationRecognizer.NamedParameterDescription description = entry.Value;
-				namedParamDescriptorMap[name] =
-					new NamedParameterDescriptor(name, parameterTranslations.GetNamedParameterExpectedType(name),
-					                             description.BuildPositionsArray(), description.JpaStyle);
-
-			}
-			return new ParameterMetadata(ordinalParamDescriptors, namedParamDescriptorMap);
-		}
+            get;
+            private set;
+        }
 
 		public void PerformList(QueryParameters queryParameters, ISessionImplementor session, IList results)
 		{
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("find: " + SourceQuery);
+				Log.Debug("find: " + _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
+
 			bool hasLimit = queryParameters.RowSelection != null && queryParameters.RowSelection.DefinesLimits;
-			bool needsLimit = hasLimit && translators.Length > 1;
+			bool needsLimit = hasLimit && Translators.Length > 1;
 			QueryParameters queryParametersToUse;
 			if (needsLimit)
 			{
-				log.Warn("firstResult/maxResults specified on polymorphic query; applying in memory!");
+				Log.Warn("firstResult/maxResults specified on polymorphic query; applying in memory!");
 				RowSelection selection = new RowSelection();
 				selection.FetchSize = queryParameters.RowSelection.FetchSize;
 				selection.Timeout = queryParameters.RowSelection.Timeout;
@@ -218,12 +97,12 @@ namespace NHibernate.Engine.Query
 				queryParametersToUse = queryParameters;
 			}
 
-			IList combinedResults = results ?? new ArrayList();
+			IList combinedResults = results ?? new List<object>();
 			IdentitySet distinction = new IdentitySet();
 			int includedCount = -1;
-			for (int i = 0; i < translators.Length; i++)
+			for (int i = 0; i < Translators.Length; i++)
 			{
-				IList tmp = translators[i].List(session, queryParametersToUse);
+				IList tmp = Translators[i].List(session, queryParametersToUse);
 				if (needsLimit)
 				{
 					// NOTE : firstRow is zero-based
@@ -277,33 +156,51 @@ namespace NHibernate.Engine.Query
 			return new SafetyEnumerable<T>(PerformIterate(queryParameters, session));
 		}
 
-		private void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany,
-			out IEnumerable[] results, out IEnumerable result)
+        public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
+        {
+            if (Log.IsDebugEnabled)
+            {
+                Log.Debug("executeUpdate: " + _sourceQuery);
+                queryParameters.LogParameters(session.Factory);
+            }
+            if (Translators.Length != 1)
+            {
+                Log.Warn("manipulation query [" + _sourceQuery + "] resulted in [" + Translators.Length + "] split queries");
+            }
+            int result = 0;
+            for (int i = 0; i < Translators.Length; i++)
+            {
+                result += Translators[i].ExecuteUpdate(queryParameters, session);
+            }
+            return result;
+        }
+
+		void DoIterate(QueryParameters queryParameters, IEventSource session, out bool? isMany, out IEnumerable[] results, out IEnumerable result)
 		{
 			isMany = null;
 			results = null;
-			if (log.IsDebugEnabled)
+			if (Log.IsDebugEnabled)
 			{
-				log.Debug("enumerable: " + SourceQuery);
+				Log.Debug("enumerable: " + _sourceQuery);
 				queryParameters.LogParameters(session.Factory);
 			}
-			if (translators.Length == 0)
+			if (Translators.Length == 0)
 			{
 				result = CollectionHelper.EmptyEnumerable;
 			}
 			else
 			{
 				results = null;
-				bool many = translators.Length > 1;
+				bool many = Translators.Length > 1;
 				if (many)
 				{
-					results = new IEnumerable[translators.Length];
+					results = new IEnumerable[Translators.Length];
 				}
 
 				result = null;
-				for (int i = 0; i < translators.Length; i++)
+				for (int i = 0; i < Translators.Length; i++)
 				{
-					result = translators[i].GetEnumerable(queryParameters, session);
+					result = Translators[i].GetEnumerable(queryParameters, session);
 					if (many)
 						results[i] = result;
 				}
@@ -311,24 +208,59 @@ namespace NHibernate.Engine.Query
 			}
 		}
 
-		public int PerformExecuteUpdate(QueryParameters queryParameters, ISessionImplementor session)
-		{
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("executeUpdate: " + SourceQuery);
-				queryParameters.LogParameters(session.Factory);
-			}
-			if (translators.Length != 1)
-			{
-				log.Warn("manipulation query [" + SourceQuery + "] resulted in [" + translators.Length + "] split queries");
-			}
-			int result = 0;
-			for (int i = 0; i < translators.Length; i++)
-			{
-				result += translators[i].ExecuteUpdate(queryParameters, session);
-			}
-			return result;
-		}
+        void FinaliseQueryPlan()
+        {
+            BuildSqlStringsAndQuerySpaces();
+            BuildMetaData();
+        }
 
-	}
+	    void BuildMetaData()
+	    {
+            if (Translators.Length == 0)
+            {
+                ParameterMetadata = new ParameterMetadata(null, null);
+                ReturnMetadata = null;
+            }
+            else
+            {
+                ParameterMetadata = Translators[0].BuildParameterMetadata();
+
+                if (Translators[0].IsManipulationStatement)
+                {
+                    ReturnMetadata = null;
+                }
+                else
+                {
+                    if (Translators.Length > 1)
+                    {
+                        int returns = Translators[0].ReturnTypes.Length;
+                        ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, new IType[returns]);
+                    }
+                    else
+                    {
+                        ReturnMetadata = new ReturnMetadata(Translators[0].ReturnAliases, Translators[0].ReturnTypes);
+                    }
+                }
+            }
+        }
+
+	    void BuildSqlStringsAndQuerySpaces()
+        {
+            var combinedQuerySpaces = new HashedSet<string>();
+            var sqlStringList = new List<string>();
+
+            foreach (var translator in Translators)
+            {
+                foreach (var qs in translator.QuerySpaces)
+                {
+                    combinedQuerySpaces.Add(qs);
+                }
+
+                sqlStringList.AddRange(translator.CollectSqlStrings);
+            }
+
+            SqlStrings = sqlStringList.ToArray();
+            QuerySpaces = combinedQuerySpaces;
+        }
+    }
 }

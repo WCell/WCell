@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svnroot/nhibernate/!svn/ver/5173/trunk/nhibernate/src/NHibernate/Collection
+END
+PersistentList.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/3934/trunk/nhibernate/src/NHibernate/Collection/PersistentList.cs
+END
+PersistentSet.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4453/trunk/nhibernate/src/NHibernate/Collection/PersistentSet.cs
+END
+PersistentArrayHolder.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Collection/PersistentArrayHolder.cs
+END
+PersistentIdentifierBag.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5173/trunk/nhibernate/src/NHibernate/Collection/PersistentIdentifierBag.cs
+END
+PersistentMap.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4982/trunk/nhibernate/src/NHibernate/Collection/PersistentMap.cs
+END
+AbstractPersistentCollection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/4484/trunk/nhibernate/src/NHibernate/Collection/AbstractPersistentCollection.cs
+END
+IPersistentCollection.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Collection/IPersistentCollection.cs
+END
+PersistentBag.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/3934/trunk/nhibernate/src/NHibernate/Collection/PersistentBag.cs
+END

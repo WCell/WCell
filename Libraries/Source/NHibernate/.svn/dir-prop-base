@@ -1,0 +1,19 @@
+K 10
+svn:ignore
+V 141
+obj
+.#*
+*.user
+*.xsx
+AssemblyInfo.cs
+*.aps
+*.eto
+[Bb]in
+[Dd]ebug
+[Rr]elease
+*resharper*
+_ReSharper.NHibernate
+NHibernate.pidb
+NHibernate.suo
+
+END

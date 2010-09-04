@@ -14,7 +14,7 @@ namespace NHibernate.Mapping
 	/// <c>&lt;joined-subclass&gt;</c>.
 	/// </summary>
 	[Serializable]
-	public abstract class PersistentClass : IFilterable, IMetaAttributable
+	public abstract class PersistentClass : IFilterable, IMetaAttributable, ISqlCustomizable
 	{
 		private static readonly Alias PKAlias = new Alias(15, "PK");
 
@@ -42,7 +42,7 @@ namespace NHibernate.Mapping
 		private readonly List<Join> joins = new List<Join>();
 		private readonly List<Join> subclassJoins = new List<Join>();
 		private readonly IDictionary<string, string> filters = new Dictionary<string, string>();
-		protected readonly Iesi.Collections.Generic.ISet<string> synchronizedTables = new HashedSet<string>();
+		private readonly Iesi.Collections.Generic.ISet<string> synchronizedTables = new HashedSet<string>();
 		private string loaderName;
 		private bool? isAbstract;
 		private bool hasSubselectLoadableCollections;
@@ -59,7 +59,7 @@ namespace NHibernate.Mapping
 		private string temporaryIdTableName;
 		private string temporaryIdTableDDL;
 
-		private IDictionary<EntityMode, System.Type> tuplizerImpls;
+		private IDictionary<EntityMode, string> tuplizerImpls;
 
 		private Versioning.OptimisticLock optimisticLockMode;
 
@@ -104,7 +104,7 @@ namespace NHibernate.Mapping
 						return null;
 					try
 					{
-						mappedClass= ReflectHelper.ClassForName(className);
+						mappedClass = ReflectHelper.ClassForName(className);
 					}
 					catch (Exception cnfe)
 					{
@@ -132,7 +132,7 @@ namespace NHibernate.Mapping
 						return null;
 					try
 					{
-						proxyInterface= ReflectHelper.ClassForName(proxyInterfaceName);
+						proxyInterface = ReflectHelper.ClassForName(proxyInterfaceName);
 					}
 					catch (Exception cnfe)
 					{
@@ -179,7 +179,7 @@ namespace NHibernate.Mapping
 		/// </value>
 		/// <remarks>
 		/// The value of this is set by the <c>discriminator-value</c> attribute.  Each <c>&lt;subclass&gt;</c>
-		/// in a heirarchy must define a unique <c>discriminator-value</c>.  The default value 
+		/// in a hierarchy must define a unique <c>discriminator-value</c>.  The default value 
 		/// is the class name if no value is supplied.
 		/// </remarks>
 		public virtual string DiscriminatorValue
@@ -259,7 +259,7 @@ namespace NHibernate.Mapping
 
 		public virtual string EntityName
 		{
-			get{return entityName;}
+			get { return entityName; }
 			set { entityName = value == null ? null : String.Intern(value); }
 		}
 
@@ -309,7 +309,7 @@ namespace NHibernate.Mapping
 		/// </remarks>
 		public abstract IEnumerable<Table> TableClosureIterator { get; }
 
-		public abstract IEnumerable<IKeyValue> KeyClosureIterator { get;}
+		public abstract IEnumerable<IKeyValue> KeyClosureIterator { get; }
 
 		/// <summary>
 		/// Gets an <see cref="IEnumerable"/> of <see cref="Property"/> objects that
@@ -358,7 +358,7 @@ namespace NHibernate.Mapping
 		/// <summary>
 		/// When implemented by a class, gets or sets the <see cref="System.Type"/> of the Persister.
 		/// </summary>
-		public abstract System.Type EntityPersisterClass { get;set;}
+		public abstract System.Type EntityPersisterClass { get; set; }
 
 		/// <summary>
 		/// When implemented by a class, gets the <see cref="Table"/> of the class
@@ -515,7 +515,7 @@ namespace NHibernate.Mapping
 			get { return deleteCheckStyle; }
 		}
 
-		public virtual IDictionary<string,string> FilterMap
+		public virtual IDictionary<string, string> FilterMap
 		{
 			get { return filters; }
 		}
@@ -531,7 +531,13 @@ namespace NHibernate.Mapping
 			set { loaderName = value == null ? null : string.Intern(value); }
 		}
 
-		public abstract Iesi.Collections.Generic.ISet<string> SynchronizedTables { get; }
+		public virtual Iesi.Collections.Generic.ISet<string> SynchronizedTables
+		{
+			get
+			{
+				return synchronizedTables;
+			}
+		}
 
 		protected internal virtual IEnumerable<Property> NonDuplicatedPropertyIterator
 		{
@@ -565,14 +571,11 @@ namespace NHibernate.Mapping
 			get { return temporaryIdTableDDL; }
 		}
 
-		public virtual IDictionary<EntityMode, System.Type> TuplizerMap
+		public virtual IDictionary<EntityMode, string> TuplizerMap
 		{
 			get
 			{
-				if (tuplizerImpls == null)
-					return null;
-
-				return new Dictionary<EntityMode, System.Type>(tuplizerImpls);
+				return tuplizerImpls == null ? null : new UnmodifiableDictionary<EntityMode, string>(tuplizerImpls);
 			}
 		}
 
@@ -853,7 +856,7 @@ namespace NHibernate.Mapping
 				{
 					if (property == null)
 					{
-						// we are processing the root of the prpertyPath, so we have the following
+						// we are processing the root of the propertyPath, so we have the following
 						// considerations:
 						//		1) specifically account for identifier properties
 						//		2) specifically account for embedded composite-identifiers
@@ -893,7 +896,7 @@ namespace NHibernate.Mapping
 					else
 					{
 						//flat recursive algorithm
-						property = ((Component) property.Value).GetProperty(element);
+						property = ((Component)property.Value).GetProperty(element);
 					}
 				}
 			}
@@ -949,7 +952,7 @@ namespace NHibernate.Mapping
 				{
 					throw new MappingException(
 						string.Format("property mapping has wrong number of columns: {0} type: {1}",
-						              StringHelper.Qualify(EntityName, prop.Name), prop.Type.Name));
+									  StringHelper.Qualify(EntityName, prop.Name), prop.Type.Name));
 				}
 			}
 			CheckPropertyDuplication();
@@ -966,12 +969,12 @@ namespace NHibernate.Mapping
 			}
 		}
 
-		public MetaAttribute GetMetaAttribute(string name)
+		public MetaAttribute GetMetaAttribute(string attributeName)
 		{
-			if(metaAttributes==null)
+			if (metaAttributes == null)
 				return null;
 			MetaAttribute result;
-			metaAttributes.TryGetValue(name, out result);
+			metaAttributes.TryGetValue(attributeName, out result);
 			return result;
 		}
 
@@ -1151,11 +1154,11 @@ namespace NHibernate.Mapping
 			get { return identifierMapper != null; }
 		}
 
-		public void AddTuplizer(EntityMode entityMode, System.Type implClass)
+		public void AddTuplizer(EntityMode entityMode, string implClass)
 		{
 			if (tuplizerImpls == null)
 			{
-				tuplizerImpls = new Dictionary<EntityMode, System.Type>();
+				tuplizerImpls = new Dictionary<EntityMode, string>();
 			}
 			tuplizerImpls[entityMode] = implClass;
 		}
@@ -1164,20 +1167,22 @@ namespace NHibernate.Mapping
 		{
 			if (tuplizerImpls == null)
 				return null;
-			return tuplizerImpls[mode].AssemblyQualifiedName;
+			string result;
+			tuplizerImpls.TryGetValue(mode, out result);
+			return result;
 		}
 
 		public bool HasNaturalId()
 		{
 			foreach (Property property in RootClazz.PropertyIterator)
 			{
-				if(property.IsNaturalIdentifier)
+				if (property.IsNaturalIdentifier)
 					return true;
 			}
 			return false;
 		}
 
-		public abstract bool IsLazyPropertiesCacheable { get;}
+		public abstract bool IsLazyPropertiesCacheable { get; }
 
 	}
 }

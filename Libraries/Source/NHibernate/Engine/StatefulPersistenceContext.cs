@@ -6,7 +6,7 @@ using System.Security.Permissions;
 using System.Text;
 using Iesi.Collections;
 using Iesi.Collections.Generic;
-using log4net;
+
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
@@ -32,8 +32,8 @@ namespace NHibernate.Engine
 	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly ILog log = LogManager.GetLogger(typeof(StatefulPersistenceContext));
-		private static readonly ILog ProxyWarnLog = LogManager.GetLogger(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
+		private static readonly ILogger ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 
@@ -80,16 +80,16 @@ namespace NHibernate.Engine
 		// yet loaded ... for now, this is purely transient!
 		private Dictionary<CollectionKey, IPersistentCollection> unownedCollections;
 
-		private bool hasNonReadOnlyEntities = false;
+		private bool hasNonReadOnlyEntities;
 
 		[NonSerialized]
-		private int cascading = 0;
+		private int cascading;
 
 		[NonSerialized]
-		private bool flushing = false;
+		private bool flushing;
 
 		[NonSerialized]
-		private int loadCounter = 0;
+		private int loadCounter;
 
 		[NonSerialized]
 		private LoadContexts loadContexts;
@@ -101,6 +101,9 @@ namespace NHibernate.Engine
 		/// <param name="session">The session "owning" this context. </param>
 		public StatefulPersistenceContext(ISessionImplementor session)
 		{
+			loadCounter = 0;
+			flushing = false;
+			cascading = 0;
 			this.session = session;
 
 			entitiesByKey = new Dictionary<EntityKey, object>(InitCollectionSize);
@@ -333,7 +336,7 @@ namespace NHibernate.Engine
 		/// <list type="bullet">
 		/// <listheader><description>This differs from <see cref="GetDatabaseSnapshot"/> is two important respects:</description></listheader>
 		/// <item><description>no snapshot is obtained from the database if not already cached</description></item>
-		/// <item><description>an entry of NO_ROW here is interpretet as an exception</description></item>
+		/// <item><description>an entry of NO_ROW here is interpreted as an exception</description></item>
 		/// </list>
 		/// </remarks>
 		public object[] GetCachedDatabaseSnapshot(EntityKey key)
@@ -356,48 +359,46 @@ namespace NHibernate.Engine
 		/// </summary>
 		public object[] GetNaturalIdSnapshot(object id, IEntityPersister persister)
 		{
-			// todo Natural Identifier
-			//if (!persister.HasNaturalIdentifier)
-			//{
-			//  return null;
-			//}
+			if (!persister.HasNaturalIdentifier)
+			{
+				return null;
+			}
 
-			//// if the natural-id is marked as non-mutable, it is not retrieved during a
-			//// normal database-snapshot operation...
-			//int[] props = persister.NaturalIdentifierProperties;
-			//bool[] updateable = persister.PropertyUpdateability;
-			//bool allNatualIdPropsAreUpdateable = true;
-			//for (int i = 0; i < props.Length; i++)
-			//{
-			//  if (!updateable[props[i]])
-			//  {
-			//    allNatualIdPropsAreUpdateable = false;
-			//    break;
-			//  }
-			//}
+			// if the natural-id is marked as non-mutable, it is not retrieved during a
+			// normal database-snapshot operation...
+			int[] props = persister.NaturalIdentifierProperties;
+			bool[] updateable = persister.PropertyUpdateability;
+			bool allNatualIdPropsAreUpdateable = true;
+			for (int i = 0; i < props.Length; i++)
+			{
+				if (!updateable[props[i]])
+				{
+					allNatualIdPropsAreUpdateable = false;
+					break;
+				}
+			}
 
-			//if (allNatualIdPropsAreUpdateable)
-			//{
-			//  // do this when all the properties are updateable since there is
-			//  // a certain likelihood that the information will already be
-			//  // snapshot-cached.
-			//  object[] entitySnapshot = GetDatabaseSnapshot(id, persister);
-			//  if (entitySnapshot == NoRow)
-			//  {
-			//    return null;
-			//  }
-			//  object[] naturalIdSnapshot = new object[props.Length];
-			//  for (int i = 0; i < props.Length; i++)
-			//  {
-			//    naturalIdSnapshot[i] = entitySnapshot[props[i]];
-			//  }
-			//  return naturalIdSnapshot;
-			//}
-			//else
-			//{
-			//  return persister.GetNaturalIdentifierSnapshot(id, session);
-			//}
-			return null;
+			if (allNatualIdPropsAreUpdateable)
+			{
+				// do this when all the properties are updateable since there is
+				// a certain likelihood that the information will already be
+				// snapshot-cached.
+				object[] entitySnapshot = GetDatabaseSnapshot(id, persister);
+				if (entitySnapshot == NoRow)
+				{
+					return null;
+				}
+				object[] naturalIdSnapshot = new object[props.Length];
+				for (int i = 0; i < props.Length; i++)
+				{
+					naturalIdSnapshot[i] = entitySnapshot[props[i]];
+				}
+				return naturalIdSnapshot;
+			}
+			else
+			{
+				return persister.GetNaturalIdentifierSnapshot(id, session);
+			}
 		}
 
 		/// <summary> Add a canonical mapping from entity key to entity instance</summary>
@@ -465,7 +466,7 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary> 
-		/// Retreive the EntityEntry representation of the given entity. 
+		/// Retrieve the EntityEntry representation of the given entity. 
 		/// </summary>
 		/// <param name="entity">The entity for which to locate the EntityEntry. </param>
 		/// <returns> The EntityEntry for the given entity. </returns>
@@ -501,19 +502,19 @@ namespace NHibernate.Engine
 		{
 			AddEntity(entityKey, entity);
 
-			return AddEntry(entity, status, loadedState, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
+			return AddEntry(entity, status, loadedState, null, entityKey.Identifier, version, lockMode, existsInDatabase, persister, disableVersionIncrement, lazyPropertiesAreUnfetched);
 		}
 
 		/// <summary> 
 		/// Generates an appropriate EntityEntry instance and adds it 
 		/// to the event source's internal caches.
 		/// </summary>
-		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object id, object version,
-																LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
+		public EntityEntry AddEntry(object entity, Status status, object[] loadedState, object rowId, object id,
+																object version, LockMode lockMode, bool existsInDatabase, IEntityPersister persister,
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			EntityEntry e =
-				new EntityEntry(status, loadedState, null, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
+				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
 				                disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
@@ -571,14 +572,13 @@ namespace NHibernate.Engine
 			//{
 			//  value = wrapper.Element;
 			//}
-
-			if (value is INHibernateProxy)
+			var proxy = value as INHibernateProxy;
+			if (proxy != null)
 			{
 				if (log.IsDebugEnabled)
 				{
 					log.Debug("setting proxy identifier: " + id);
 				}
-				INHibernateProxy proxy = (INHibernateProxy)value;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				li.Identifier = id;
 				ReassociateProxy(li, proxy);
@@ -647,18 +647,14 @@ namespace NHibernate.Engine
 			//{
 			//  maybeProxy = wrapper.Element;
 			//}
-
-			if (maybeProxy is INHibernateProxy)
+			var proxy = maybeProxy as INHibernateProxy;
+			if (proxy != null)
 			{
-				INHibernateProxy proxy = (INHibernateProxy)maybeProxy;
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				ReassociateProxy(li, proxy);
 				return li.GetImplementation(); //initialize + unwrap the object 
 			}
-			else
-			{
-				return maybeProxy;
-			}
+			return maybeProxy;
 		}
 
 		/// <summary> 
@@ -763,20 +759,64 @@ namespace NHibernate.Engine
 			return GetEntity(new EntityKey(key, collectionPersister.OwnerEntityPersister, session.EntityMode));
 		}
 
+		/// <summary> Get the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> 
+		/// The owner, if its entity ID is available from the collection's loaded key
+		/// and the owner entity is in the persistence context; otherwise, returns null
+		/// </returns>
+		public virtual object GetLoadedCollectionOwnerOrNull(IPersistentCollection collection)
+		{
+			CollectionEntry ce = GetCollectionEntry(collection);
+			if (ce.LoadedPersister == null)
+			{
+				return null; // early exit...
+			}
+			object loadedOwner = null;
+			// TODO: an alternative is to check if the owner has changed; if it hasn't then
+			// return collection.getOwner()
+			object entityId = GetLoadedCollectionOwnerIdOrNull(ce);
+			if (entityId != null)
+			{
+				loadedOwner = GetCollectionOwner(entityId, ce.LoadedPersister);
+			}
+			return loadedOwner;
+		}
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="collection">The persistent collection </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		public virtual object GetLoadedCollectionOwnerIdOrNull(IPersistentCollection collection)
+		{
+			return GetLoadedCollectionOwnerIdOrNull(GetCollectionEntry(collection));
+		}
+
+		/// <summary> Get the ID for the entity that owned this persistent collection when it was loaded </summary>
+		/// <param name="ce">The collection entry </param>
+		/// <returns> the owner ID if available from the collection's loaded key; otherwise, returns null </returns>
+		private object GetLoadedCollectionOwnerIdOrNull(CollectionEntry ce)
+		{
+			if (ce == null || ce.LoadedKey == null || ce.LoadedPersister == null)
+			{
+				return null;
+			}
+			// TODO: an alternative is to check if the owner has changed; if it hasn't then
+			// get the ID from collection.getOwner()
+			return ce.LoadedPersister.CollectionType.GetIdOfOwnerOrNull(ce.LoadedKey, session);
+		}
+
 		/// <summary> add a collection we just loaded up (still needs initializing)</summary>
 		public void AddUninitializedCollection(ICollectionPersister persister, IPersistentCollection collection, object id)
 		{
-			CollectionEntry ce = new CollectionEntry(persister, id, flushing);
-			collection.CollectionSnapshot = ce; // NH Different behavior
+			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
-		public void AddUninitializedDetachedCollection(IPersistentCollection collection, ICollectionSnapshot snapshot)
+		public void AddUninitializedDetachedCollection(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			CollectionEntry ce = new CollectionEntry(snapshot, Session.Factory);
-			collection.CollectionSnapshot = ce; // NH Different behavior
-			AddCollection(collection, ce, ce.Key);
+			CollectionEntry ce = new CollectionEntry(persister, collection.Key);
+			AddCollection(collection, ce, collection.Key);
 		}
 
 		/// <summary> 
@@ -787,11 +827,7 @@ namespace NHibernate.Engine
 		/// <param name="persister"></param>
 		public void AddNewCollection(ICollectionPersister persister, IPersistentCollection collection)
 		{
-			CollectionEntry ce = AddCollection(collection);
-			if (persister.HasOrphanDelete)
-			{
-				ce.InitSnapshot(collection, persister);
-			}
+			AddCollection(collection, persister);
 		}
 
 		/// <summary> Add an collection to the cache, with a given collection entry. </summary>
@@ -822,31 +858,28 @@ namespace NHibernate.Engine
 
 		/// <summary> Add a collection to the cache, creating a new collection entry for it </summary>
 		/// <param name="collection">The collection for which we are adding an entry. </param>
-		private CollectionEntry AddCollection(IPersistentCollection collection)
+		/// <param name="persister">The collection persister </param>
+		private void AddCollection(IPersistentCollection collection, ICollectionPersister persister)
 		{
-			CollectionEntry ce = new CollectionEntry(collection);
+			CollectionEntry ce = new CollectionEntry(persister, collection);
 			collectionEntries[collection] = ce;
-			collection.CollectionSnapshot = ce;
-			return ce;
 		}
 
 		/// <summary> 
 		/// add an (initialized) collection that was created by another session and passed
 		/// into update() (ie. one with a snapshot and existing state on the database)
 		/// </summary>
-		public void AddInitializedDetachedCollection(IPersistentCollection collection,
-																								 ICollectionSnapshot snapshot)
+		public void AddInitializedDetachedCollection(ICollectionPersister collectionPersister, IPersistentCollection collection)
 		{
-			if (snapshot.WasDereferenced)
+			if (collection.IsUnreferenced)
 			{
 				//treat it just like a new collection
-				AddCollection(collection);
+				AddCollection(collection, collectionPersister);
 			}
 			else
 			{
-				CollectionEntry ce = new CollectionEntry(snapshot, session.Factory);
-				collection.CollectionSnapshot = ce; // NH Different behavior
-				AddCollection(collection, ce, ce.Key);
+				CollectionEntry ce = new CollectionEntry(collection, session.Factory);
+				AddCollection(collection, ce, collection.Key);
 			}
 		}
 
@@ -856,7 +889,6 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			ce.PostInitialize(collection);
-			collection.CollectionSnapshot = ce; // NH Different behavior
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1081,12 +1113,13 @@ namespace NHibernate.Engine
 			object entity = tempObject;
 			object tempObject2 = entityEntries[entity];
 			entityEntries.Remove(entity);
-			EntityEntry oldEntry = (EntityEntry)tempObject2;
+			EntityEntry oldEntry = (EntityEntry) tempObject2;
 
 			EntityKey newKey = new EntityKey(generatedId, oldEntry.Persister, Session.EntityMode);
 			AddEntity(newKey, entity);
-			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, generatedId, oldEntry.Version, oldEntry.LockMode,
-							 oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated, oldEntry.LoadedWithLazyPropertiesUnfetched);
+			AddEntry(entity, oldEntry.Status, oldEntry.LoadedState, oldEntry.RowId, generatedId, oldEntry.Version,
+			         oldEntry.LockMode, oldEntry.ExistsInDatabase, oldEntry.Persister, oldEntry.IsBeingReplicated,
+			         oldEntry.LoadedWithLazyPropertiesUnfetched);
 		}
 
 		#endregion
@@ -1126,7 +1159,7 @@ namespace NHibernate.Engine
 					CollectionEntry ce = (CollectionEntry)collectionEntry.Value;
 					if (ce.Role != null)
 					{
-						ce.SetLoadedPersister(Session.Factory.GetCollectionPersister(ce.Role));
+						ce.AfterDeserialize(Session.Factory);
 					}
 
 				}
@@ -1170,6 +1203,9 @@ namespace NHibernate.Engine
 		#region ISerializable Members
 		internal StatefulPersistenceContext(SerializationInfo info, StreamingContext context)
 		{
+			loadCounter = 0;
+			flushing = false;
+			cascading = 0;
 			entitiesByKey = (Dictionary<EntityKey, object>)info.GetValue("context.entitiesByKey", typeof(Dictionary<EntityKey, object>));
 			entitiesByUniqueKey = (Dictionary<EntityUniqueKey, object>)info.GetValue("context.entitiesByUniqueKey", typeof(Dictionary<EntityUniqueKey, object>));
 			entityEntries = (IdentityMap)info.GetValue("context.entityEntries", typeof(IdentityMap));

@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Context
+END
+CurrentSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2804/trunk/nhibernate/src/NHibernate/Context/CurrentSessionContext.cs
+END
+ThreadLocalSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Context/ThreadLocalSessionContext.cs
+END
+ReflectiveHttpContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/5113/trunk/nhibernate/src/NHibernate/Context/ReflectiveHttpContext.cs
+END
+ManagedWebSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/5113/trunk/nhibernate/src/NHibernate/Context/ManagedWebSessionContext.cs
+END
+CallSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/2804/trunk/nhibernate/src/NHibernate/Context/CallSessionContext.cs
+END
+ICurrentSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2804/trunk/nhibernate/src/NHibernate/Context/ICurrentSessionContext.cs
+END
+MapBasedSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2838/trunk/nhibernate/src/NHibernate/Context/MapBasedSessionContext.cs
+END
+WebSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/5113/trunk/nhibernate/src/NHibernate/Context/WebSessionContext.cs
+END
+ThreadStaticSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/3457/trunk/nhibernate/src/NHibernate/Context/ThreadStaticSessionContext.cs
+END
+WcfOperationSessionContext.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4698/trunk/nhibernate/src/NHibernate/Context/WcfOperationSessionContext.cs
+END

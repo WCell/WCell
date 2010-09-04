@@ -8,6 +8,7 @@ namespace NHibernate.Util
 {
 	public sealed class CollectionHelper
 	{
+		[Serializable]
 		private class EmptyEnumerator : IDictionaryEnumerator
 		{
 			public object Key
@@ -51,9 +52,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
+		[Serializable]
 		private class EmptyMapClass : IDictionary
 		{
-			private static readonly EmptyEnumerator EmptyEnumerator = new EmptyEnumerator();
+			private static readonly EmptyEnumerator emptyEnumerator = new EmptyEnumerator();
 
 			public bool Contains(object key)
 			{
@@ -72,7 +74,7 @@ namespace NHibernate.Util
 
 			IDictionaryEnumerator IDictionary.GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 
 			public void Remove(object key)
@@ -127,10 +129,11 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 		}
 
+		[Serializable]
 		private class EmptyListClass : IList
 		{
 			public int Add(object value)
@@ -221,7 +224,7 @@ namespace NHibernate.Util
 				return true;
 			}
 
-			if (c1 == null || c2 == null)
+			if(c1==null || c2==null)
 			{
 				return false;
 			}
@@ -274,6 +277,33 @@ namespace NHibernate.Util
 			return true;
 		}
 
+		public static bool DictionaryEquals<K, V>(IDictionary<K, V> a, IDictionary<K, V> b)
+		{
+			if (Equals(a, b))
+			{
+				return true;
+			}
+
+			if (a == null || b == null)
+			{
+				return false;
+			}
+
+			if (a.Count != b.Count)
+			{
+				return false;
+			}
+
+			foreach (K key in a.Keys)
+			{
+				if (!Equals(a[key], b[key]))
+				{
+					return false;
+				}
+			}
+
+			return true;
+		}
 		public static bool SetEquals(ISet a, ISet b)
 		{
 			if (Equals(a, b))
@@ -358,6 +388,7 @@ namespace NHibernate.Util
 		}
 
 		// ~~~~~~~~~~~~~~~~~~~~~~ Generics ~~~~~~~~~~~~~~~~~~~~~~
+		[Serializable]
 		private class EmptyEnumerator<TKey, TValue> : IEnumerator<KeyValuePair<TKey, TValue>>
 		{
 			#region IEnumerator<KeyValuePair<TKey,TValue>> Members
@@ -367,7 +398,7 @@ namespace NHibernate.Util
 				get
 				{
 					throw new InvalidOperationException(
-						string.Format("EmptyEnumerator<{0},{1}>.KeyValuePair", typeof (TKey), typeof (TValue)));
+						string.Format("EmptyEnumerator<{0},{1}>.KeyValuePair", typeof(TKey), typeof(TValue)));
 				}
 			}
 
@@ -397,13 +428,14 @@ namespace NHibernate.Util
 				get
 				{
 					throw new InvalidOperationException(
-						string.Format("EmptyEnumerator<{0},{1}>.Current", typeof (TKey), typeof (TValue)));
+						string.Format("EmptyEnumerator<{0},{1}>.Current", typeof(TKey), typeof(TValue)));
 				}
 			}
 
 			#endregion
 		}
 
+		[Serializable]
 		public class EmptyEnumerableClass<T> : IEnumerable<T>
 		{
 			#region IEnumerable<T> Members
@@ -419,13 +451,14 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<T>) this).GetEnumerator();
+				return ((IEnumerable<T>)this).GetEnumerator();
 			}
 
 			#endregion
 		}
 
-		private class EmptyEnumerator<T> : IEnumerator<T>
+		[Serializable]
+		private class EmptyEnumerator<T> : IEnumerator<T> 
 		{
 			#region IEnumerator<T> Members
 
@@ -466,9 +499,10 @@ namespace NHibernate.Util
 		/// <summary>
 		/// A read-only dictionary that is always empty and permits lookup by <see langword="null" /> key.
 		/// </summary>
+		[Serializable]
 		public class EmptyMapClass<TKey, TValue> : IDictionary<TKey, TValue>
 		{
-			private static readonly EmptyEnumerator<TKey, TValue> EmptyEnumerator = new EmptyEnumerator<TKey, TValue>();
+			private static readonly EmptyEnumerator<TKey, TValue> emptyEnumerator = new EmptyEnumerator<TKey, TValue>();
 
 			#region IDictionary<TKey,TValue> Members
 
@@ -479,12 +513,12 @@ namespace NHibernate.Util
 
 			public void Add(TKey key, TValue value)
 			{
-				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof (TKey), typeof (TValue)));
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof(TKey), typeof(TValue)));
 			}
 
 			public bool Remove(TKey key)
 			{
-				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof (TKey), typeof (TValue)));
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof(TKey), typeof(TValue)));
 			}
 
 			public bool TryGetValue(TKey key, out TValue value)
@@ -496,7 +530,7 @@ namespace NHibernate.Util
 			public TValue this[TKey key]
 			{
 				get { return default(TValue); }
-				set { throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.set_Item", typeof (TKey), typeof (TValue))); }
+				set { throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.set_Item", typeof(TKey), typeof(TValue))); }
 			}
 
 			public ICollection<TKey> Keys
@@ -515,12 +549,12 @@ namespace NHibernate.Util
 
 			public void Add(KeyValuePair<TKey, TValue> item)
 			{
-				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof (TKey), typeof (TValue)));
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Add", typeof(TKey), typeof(TValue)));
 			}
 
 			public void Clear()
 			{
-				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Clear", typeof (TKey), typeof (TValue)));
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Clear", typeof(TKey), typeof(TValue)));
 			}
 
 			public bool Contains(KeyValuePair<TKey, TValue> item)
@@ -534,7 +568,7 @@ namespace NHibernate.Util
 
 			public bool Remove(KeyValuePair<TKey, TValue> item)
 			{
-				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof (TKey), typeof (TValue)));
+				throw new NotSupportedException(string.Format("EmptyMapClass<{0},{1}>.Remove", typeof(TKey), typeof(TValue)));
 			}
 
 			public int Count
@@ -553,7 +587,7 @@ namespace NHibernate.Util
 
 			IEnumerator<KeyValuePair<TKey, TValue>> IEnumerable<KeyValuePair<TKey, TValue>>.GetEnumerator()
 			{
-				return EmptyEnumerator;
+				return emptyEnumerator;
 			}
 
 			#endregion
@@ -562,7 +596,7 @@ namespace NHibernate.Util
 
 			public IEnumerator GetEnumerator()
 			{
-				return ((IEnumerable<KeyValuePair<TKey, TValue>>) this).GetEnumerator();
+				return ((IEnumerable<KeyValuePair<TKey, TValue>>)this).GetEnumerator();
 			}
 
 			#endregion
@@ -648,5 +682,6 @@ namespace NHibernate.Util
 
 			return true;
 		}
+
 	}
 }

@@ -1,0 +1,425 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svnroot/nhibernate/!svn/ver/5161/trunk/nhibernate/src/NHibernate/Event
+END
+PostCollectionRecreateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PostCollectionRecreateEvent.cs
+END
+IRefreshEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IRefreshEventListener.cs
+END
+PreCollectionRemoveEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PreCollectionRemoveEvent.cs
+END
+FlushEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/FlushEvent.cs
+END
+IPostCollectionUpdateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPostCollectionUpdateEventListener.cs
+END
+IPreCollectionUpdateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPreCollectionUpdateEventListener.cs
+END
+PostLoadEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/PostLoadEvent.cs
+END
+LockEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/LockEvent.cs
+END
+IPostInsertEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Event/IPostInsertEventListener.cs
+END
+IDatabaseEventArgs.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/IDatabaseEventArgs.cs
+END
+MergeEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Event/MergeEvent.cs
+END
+IDestructible.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4001/trunk/nhibernate/src/NHibernate/Event/IDestructible.cs
+END
+IFlushEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IFlushEventListener.cs
+END
+PostCollectionUpdateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PostCollectionUpdateEvent.cs
+END
+IPostUpdateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPostUpdateEventListener.cs
+END
+EventListeners.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/4001/trunk/nhibernate/src/NHibernate/Event/EventListeners.cs
+END
+PreDeleteEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/4257/trunk/nhibernate/src/NHibernate/Event/PreDeleteEvent.cs
+END
+IMergeEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IMergeEventListener.cs
+END
+AbstractPreDatabaseOperationEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/5161/trunk/nhibernate/src/NHibernate/Event/AbstractPreDatabaseOperationEvent.cs
+END
+ISaveOrUpdateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/ISaveOrUpdateEventListener.cs
+END
+IDeleteEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IDeleteEventListener.cs
+END
+IPostDatabaseOperationEventArgs.cs
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/IPostDatabaseOperationEventArgs.cs
+END
+ListenerType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Event/ListenerType.cs
+END
+PreLoadEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/PreLoadEvent.cs
+END
+IInitializable.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/IInitializable.cs
+END
+IPreDeleteEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPreDeleteEventListener.cs
+END
+PersistEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3365/trunk/nhibernate/src/NHibernate/Event/PersistEvent.cs
+END
+IPostCollectionRecreateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPostCollectionRecreateEventListener.cs
+END
+IInitializeCollectionEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IInitializeCollectionEventListener.cs
+END
+IFlushEntityEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IFlushEntityEventListener.cs
+END
+RefreshEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/RefreshEvent.cs
+END
+ILoadEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/ILoadEventListener.cs
+END
+SaveOrUpdateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3057/trunk/nhibernate/src/NHibernate/Event/SaveOrUpdateEvent.cs
+END
+AbstractEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/AbstractEvent.cs
+END
+PreCollectionUpdateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PreCollectionUpdateEvent.cs
+END
+PostDeleteEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/PostDeleteEvent.cs
+END
+ReplicateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/ReplicateEvent.cs
+END
+EvictEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/EvictEvent.cs
+END
+PreInsertEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/4257/trunk/nhibernate/src/NHibernate/Event/PreInsertEvent.cs
+END
+InitializeCollectionEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/InitializeCollectionEvent.cs
+END
+LoadEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/LoadEvent.cs
+END
+IPreDatabaseOperationEventArgs.cs
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/IPreDatabaseOperationEventArgs.cs
+END
+IReplicateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IReplicateEventListener.cs
+END
+DirtyCheckEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/2972/trunk/nhibernate/src/NHibernate/Event/DirtyCheckEvent.cs
+END
+IEvictEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IEvictEventListener.cs
+END
+PreUpdateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/4257/trunk/nhibernate/src/NHibernate/Event/PreUpdateEvent.cs
+END
+IPreInsertEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPreInsertEventListener.cs
+END
+IPostCollectionRemoveEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPostCollectionRemoveEventListener.cs
+END
+IPreCollectionRemoveEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPreCollectionRemoveEventListener.cs
+END
+IPreUpdateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPreUpdateEventListener.cs
+END
+IEventSource.cs
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svnroot/nhibernate/!svn/ver/3745/trunk/nhibernate/src/NHibernate/Event/IEventSource.cs
+END
+PostInsertEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/PostInsertEvent.cs
+END
+AutoFlushEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svnroot/nhibernate/!svn/ver/3223/trunk/nhibernate/src/NHibernate/Event/AutoFlushEvent.cs
+END
+PreCollectionRecreateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 101
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PreCollectionRecreateEvent.cs
+END
+FlushEntityEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svnroot/nhibernate/!svn/ver/3057/trunk/nhibernate/src/NHibernate/Event/FlushEntityEvent.cs
+END
+PostCollectionRemoveEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 100
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/PostCollectionRemoveEvent.cs
+END
+LoadType.cs
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svnroot/nhibernate/!svn/ver/3520/trunk/nhibernate/src/NHibernate/Event/LoadType.cs
+END
+AbstractPostDatabaseOperationEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/AbstractPostDatabaseOperationEvent.cs
+END
+AbstractCollectionEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/AbstractCollectionEvent.cs
+END
+LoadEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svnroot/nhibernate/!svn/ver/3206/trunk/nhibernate/src/NHibernate/Event/LoadEventListener.cs
+END
+IPostDeleteEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPostDeleteEventListener.cs
+END
+PostUpdateEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svnroot/nhibernate/!svn/ver/4780/trunk/nhibernate/src/NHibernate/Event/PostUpdateEvent.cs
+END
+IAutoFlushEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IAutoFlushEventListener.cs
+END
+IPreCollectionRecreateEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/svnroot/nhibernate/!svn/ver/3720/trunk/nhibernate/src/NHibernate/Event/IPreCollectionRecreateEventListener.cs
+END
+DeleteEvent.cs
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svnroot/nhibernate/!svn/ver/3845/trunk/nhibernate/src/NHibernate/Event/DeleteEvent.cs
+END
+IPostLoadEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 97
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPostLoadEventListener.cs
+END
+IPreLoadEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPreLoadEventListener.cs
+END
+ILockEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/ILockEventListener.cs
+END
+IDirtyCheckEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 99
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IDirtyCheckEventListener.cs
+END
+IPersistEventListener.cs
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svnroot/nhibernate/!svn/ver/2991/trunk/nhibernate/src/NHibernate/Event/IPersistEventListener.cs
+END

@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Dialect/Lock
+END
+UpdateLockingStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/5130/trunk/nhibernate/src/NHibernate/Dialect/Lock/UpdateLockingStrategy.cs
+END
+ILockingStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 98
+/svnroot/nhibernate/!svn/ver/3313/trunk/nhibernate/src/NHibernate/Dialect/Lock/ILockingStrategy.cs
+END
+SelectLockingStrategy.cs
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svnroot/nhibernate/!svn/ver/4375/trunk/nhibernate/src/NHibernate/Dialect/Lock/SelectLockingStrategy.cs
+END
