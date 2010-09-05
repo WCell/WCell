@@ -414,6 +414,58 @@ namespace WCell.Util.Graphics
             return time;
         }
 
+        public bool IntersectsWith(Point p1, Point p2)
+        {
+            // Find min and max X for the segment
+
+            var minX = p1.X;
+            var maxX = p2.X;
+
+            if (p1.X > p2.X)
+            {
+                minX = p2.X;
+                maxX = p1.X;
+            }
+
+            // Find the intersection of the segment's and rectangle's x-projections
+
+            if (maxX > Right) maxX = Right;
+            if (minX < Left) minX = Left;
+
+            if (minX > maxX) // If their projections do not intersect return false
+            {
+                return false;
+            }
+
+            // Find corresponding min and max Y for min and max X we found before
+            var minY = p1.Y;
+            var maxY = p2.Y;
+
+            var dx = p2.X - p1.X;
+
+            if (Math.Abs(dx) > 0.000001)
+            {
+                var a = (p2.Y - p1.Y)/dx;
+                var b = p1.Y - a*p1.X;
+                minY = a*minX + b;
+                maxY = a*maxX + b;
+            }
+
+            if (minY > maxY)
+            {
+                var tmp = maxY;
+                maxY = minY;
+                minY = tmp;
+            }
+
+            // Find the intersection of the segment's and rectangle's y-projections
+
+            if (maxY > Bottom) maxY = Bottom;
+            if (minY < Top) minY = Top;
+
+            return !(minY > maxY);
+        }
+
         public void Intersect(Rect rect)
         {
             if (!IntersectsWith(rect))
