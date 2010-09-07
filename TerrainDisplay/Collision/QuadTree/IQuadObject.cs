@@ -6,6 +6,6 @@ namespace WCell.Collision
     public interface IQuadObject
     {
         Rect Bounds { get; }
-        event EventHandler BoundsChanged;
+        int NodeId { get; set; }
     }
 }

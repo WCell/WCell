@@ -25,12 +25,21 @@ namespace TerrainDisplay.MPQ.ADT.Components
             if ((Header.Used != true) || (Heights == null))
                 throw new Exception("This MH2O chunk is not used");
 
-            var heights = new float[Header.Width + 1, Header.Height + 1];
-            for (var r = 0; r <= Header.Height; r++)
+            //var heights = new float[Header.Width + 1, Header.Height + 1];
+            var heights = new float[TerrainConstants.UnitsPerChunkSide + 1,TerrainConstants.UnitsPerChunkSide + 1];
+            for (var r = 0; r <= TerrainConstants.UnitsPerChunkSide; r++)
             {
-                for (var c = 0; c <= Header.Width; c++)
+                for (var c = 0; c <= TerrainConstants.UnitsPerChunkSide; c++)
                 {
+                    // initialize to minimum value
+                    heights[c, r] = float.MinValue;
 
+                    if (((c < Header.XOffset) || (c > (Header.XOffset + Header.Height))) ||
+                        ((r < Header.YOffset) || (r > (Header.YOffset + Header.Width))))
+                    {
+                        continue;
+                    }
+                    
                     heights[c, r] = Heights[c + r * c];
                 }
             }
@@ -39,7 +48,8 @@ namespace TerrainDisplay.MPQ.ADT.Components
 
         public bool[,] GetRenderBitMapMatrix()
         {
-            var enabled = new bool[8, Header.Height];
+            // array will be initialized to false
+            var enabled = new bool[TerrainConstants.UnitsPerChunkSide, TerrainConstants.UnitsPerChunkSide];
             for (var r = 0; r < Header.Height; r++)
             {
                 for (var c = 7; c >= 0; c--)
@@ -48,6 +58,7 @@ namespace TerrainDisplay.MPQ.ADT.Components
 
                 }
             }
+
             return enabled;
         }
 

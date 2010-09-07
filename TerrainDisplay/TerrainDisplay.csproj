@@ -35,7 +35,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\Run\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,7 +45,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\Run\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -161,6 +161,7 @@
     <Compile Include="Recast\NavMesh\NavMeshDetailTriIndex.cs" />
     <Compile Include="Recast\NavMesh\NavMeshPolyDetail.cs" />
     <Compile Include="Renderers\RecastRendererBase.cs" />
+    <Compile Include="Utils\MathHelpers.cs" />
     <Compile Include="Utils\PositionUtil.cs" />
     <Compile Include="MPQ\Signatures.cs" />
     <Compile Include="MPQ\TerrainConstants.cs" />

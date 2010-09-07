@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using TerrainDisplay.Collision;
+using TerrainDisplay.Util;
 using TerrainDisplay.World.DBC;
 using WCell.Constants.World;
 using WCell.MPQTool;

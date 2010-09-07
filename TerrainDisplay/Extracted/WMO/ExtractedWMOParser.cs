@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using TerrainDisplay.MPQ.WMO.Components;
 using TerrainDisplay.Util;
+using WCell.Constants.World;
 
 namespace TerrainDisplay.Extracted.WMO
 {
@@ -12,7 +13,7 @@ namespace TerrainDisplay.Extracted.WMO
     {
         private const string fileType = "wmo";
 
-        public static ExtractedWMO Process(string basePath, int mapId, string path)
+        public static ExtractedWMO Process(string basePath, MapId mapId, string path)
         {
             basePath = Path.Combine(basePath, mapId.ToString());
             var filePath = Path.Combine(basePath, path);

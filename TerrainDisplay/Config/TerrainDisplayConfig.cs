@@ -21,18 +21,18 @@ namespace TerrainDisplay
 
         public static string WdtPath = "WORLD\\MAPS\\";
         public static string TerrainDisplayRoot = "../../";
-        public static string RunDir = TerrainDisplayRoot + "bin/";
-        public static string ContentDir = TerrainDisplayRoot + "../../";
+        public static string LibDir = TerrainDisplayRoot + "Lib/";
+        public static string RunDir = TerrainDisplayRoot + "Run/";
+        public static string ContentDir = RunDir + "Content/";
         public static string MapDir = ContentDir + "Maps/";
         public static string WMODir = ContentDir + "Maps/";
         public static string M2Dir = ContentDir + "Maps/";
-        public static string DBCDir = TerrainDisplayRoot + "../dbc/";
-        public static string LogFolder = ContentDir + "/Logs/";
+        public static string DBCDir = ContentDir + "dbc/";
+        public static string LogFolder = ContentDir + "Logs/";
 
         public static string MapDBCName = "Map.dbc";
 
         public static bool UseExtractedData = false;
-        public static string ExtractedDataPath = @"D:\Games\WCell\Run\Content\Maps";
         public static string MpqPath = @"D:\Games\MPQFiles";
         
     	public static string OutputDir = Path.GetFullPath(TerrainDisplayRoot + "output/");

@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using TerrainDisplay.Collision;
+using TerrainDisplay.MPQ.WMO;
+using WCell.Constants.World;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.ADT.Components;
@@ -17,13 +20,14 @@ namespace TerrainDisplay.Extracted
         public bool IsWMOOnly;
         public List<ExtractedWMODefinition> WMODefs;
         public List<ExtractedMapM2Definition> M2Defs;
+        public QuadTree<ExtractedADTChunk> QuadTree;
         public ExtractedADTChunk[,] Chunks;
 
-        private int _mapId;
+        private MapId _mapId;
         private int _tileX;
         private int _tileY;
 
-        public ExtractedADT(int mapId, int tileX, int tileY)
+        public ExtractedADT(MapId mapId, int tileX, int tileY)
         {
             _mapId = mapId;
             _tileX = tileX;
@@ -49,7 +53,7 @@ namespace TerrainDisplay.Extracted
 
         public override void GenerateHeightVertexAndIndices()
         {
-            TerrainVertices = new List<Vector3>();
+            //TerrainVertices = new List<Vector3>();
             Indices = new List<int>();
 
             for (var indexX = 0; indexX < TerrainConstants.ChunksPerTileSide; indexX++)
@@ -57,7 +61,7 @@ namespace TerrainDisplay.Extracted
                 for (var indexY = 0; indexY < TerrainConstants.ChunksPerTileSide; indexY++)
                 {
                     GenerateHeightIndices(indexY, indexX, TerrainVertices.Count, Indices);
-                    GenerateHeightVertices(indexY, indexX, TerrainVertices);
+                    //GenerateHeightVertices(indexY, indexX, TerrainVertices);
                 }
             }
         }
@@ -138,89 +142,112 @@ namespace TerrainDisplay.Extracted
 
         public override int GenerateHeightVertices(int indexY, int indexX, ICollection<Vector3> vertices)
         {
-            var mcnk = Chunks[indexY, indexX];
-            var lowResMap = mcnk.HeightMap;
-            var medianHeight = mcnk.MedianHeight;
+            return 0;
+            //var mcnk = Chunks[indexY, indexX];
+            //var lowResMap = mcnk.HeightMap;
+            //var medianHeight = mcnk.MedianHeight;
 
-            var counter = 0;
-            for (var xStep = 0; xStep < TerrainConstants.UnitsPerChunkSide + 1; xStep++)
-            {
-                for (var yStep = 0; yStep < TerrainConstants.UnitsPerChunkSide + 1; yStep++)
-                {
-                    var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (indexX * TerrainConstants.ChunkSize) -
-                               (xStep * TerrainConstants.UnitSize);
-                    var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (indexY * TerrainConstants.ChunkSize) -
-                               (yStep * TerrainConstants.UnitSize);
+            //var counter = 0;
+            //for (var xStep = 0; xStep < TerrainConstants.UnitsPerChunkSide + 1; xStep++)
+            //{
+            //    for (var yStep = 0; yStep < TerrainConstants.UnitsPerChunkSide + 1; yStep++)
+            //    {
+            //        var xPos = TerrainConstants.CenterPoint - (_tileX * TerrainConstants.TileSize) - (indexX * TerrainConstants.ChunkSize) -
+            //                   (xStep * TerrainConstants.UnitSize);
+            //        var yPos = TerrainConstants.CenterPoint - (_tileY * TerrainConstants.TileSize) - (indexY * TerrainConstants.ChunkSize) -
+            //                   (yStep * TerrainConstants.UnitSize);
 
-                    float zPos;
-                    if (mcnk.IsFlat)
-                    {
-                        zPos = medianHeight;
-                    }
-                    else
-                    {
-                        zPos = lowResMap[yStep, xStep] + medianHeight;
-                    }
+            //        float zPos;
+            //        if (mcnk.IsFlat)
+            //        {
+            //            zPos = medianHeight;
+            //        }
+            //        else
+            //        {
+            //            zPos = lowResMap[yStep, xStep] + medianHeight;
+            //        }
 
-                    var position = new Vector3(xPos, yPos, zPos);
-                    vertices.Add(position);
-                    counter++;
-                }
-            }
-            return counter;
+            //        var position = new Vector3(xPos, yPos, zPos);
+            //        vertices.Add(position);
+            //        counter++;
+            //    }
+            //}
+            //return counter;
         }
 
         public override void GenerateHeightIndices(int indexY, int indexX, int offset, List<int> indices)
         {
-            var mcnk = Chunks[indexY, indexX];
-
-            var holesMap = new bool[4, 4];
-            if (mcnk.HasHoles)
+            var chunk = Chunks[indexY, indexX];
+            foreach (var index3 in chunk.TerrainTris)
             {
-                holesMap = mcnk.HolesMap;
+                indices.Add(index3.Index0);
+                indices.Add(index3.Index1);
+                indices.Add(index3.Index2);
             }
 
-            for (var row = 0; row < 8; row++)
+            //var holesMap = new bool[4, 4];
+            //if (mcnk.HasHoles)
+            //{
+            //    holesMap = mcnk.HolesMap;
+            //}
+
+            //for (var row = 0; row < 8; row++)
+            //{
+            //    for (var col = 0; col < 8; col++)
+            //    {
+            //        if (holesMap[col / 2, row / 2]) continue;
+            //        //{
+            //        //    indices.Add(offset + ((row + 1) * (8 + 1) + col));
+            //        //    indices.Add(offset + (row * (8 + 1) + col));
+            //        //    indices.Add(offset + (row * (8 + 1) + col + 1));
+
+            //        //    indices.Add(offset + ((row + 1) * (8 + 1) + col + 1));
+            //        //    indices.Add(offset + ((row + 1) * (8 + 1) + col));
+            //        //    indices.Add(offset + (row * (8 + 1) + col + 1));
+            //        //    continue;
+            //        //}
+            //        //* The order metter*/
+            //        /*This 3 index add the up triangle
+            //                    *
+            //                    *0--1--2
+            //                    *| /| /
+            //                    *|/ |/ 
+            //                    *9  10 11
+            //                    */
+
+            //        indices.Add(offset + ((row + 1) * (8 + 1) + col)); //9 ... 10
+            //        indices.Add(offset + (row * (8 + 1) + col)); //0 ... 1
+            //        indices.Add(offset + (row * (8 + 1) + col + 1)); //1 ... 2
+
+            //        /*This 3 index add the low triangle
+            //                     *
+            //                     *0  1   2
+            //                     *  /|  /|
+            //                     * / | / |
+            //                     *9--10--11
+            //                     */
+
+            //        indices.Add(offset + ((row + 1) * (8 + 1) + col + 1));
+            //        indices.Add(offset + ((row + 1) * (8 + 1) + col));
+            //        indices.Add(offset + (row * (8 + 1) + col + 1));
+            //    }
+            //}
+        }
+
+        public override bool GetPotentialColliders(Ray2D ray2D, List<Index3> results)
+        {
+            if (results == null)
             {
-                for (var col = 0; col < 8; col++)
-                {
-                    if (holesMap[col / 2, row / 2]) continue;
-                    //{
-                    //    indices.Add(offset + ((row + 1) * (8 + 1) + col));
-                    //    indices.Add(offset + (row * (8 + 1) + col));
-                    //    indices.Add(offset + (row * (8 + 1) + col + 1));
-
-                    //    indices.Add(offset + ((row + 1) * (8 + 1) + col + 1));
-                    //    indices.Add(offset + ((row + 1) * (8 + 1) + col));
-                    //    indices.Add(offset + (row * (8 + 1) + col + 1));
-                    //    continue;
-                    //}
-                    //* The order metter*/
-                    /*This 3 index add the up triangle
-                                *
-                                *0--1--2
-                                *| /| /
-                                *|/ |/ 
-                                *9  10 11
-                                */
-
-                    indices.Add(offset + ((row + 1) * (8 + 1) + col)); //9 ... 10
-                    indices.Add(offset + (row * (8 + 1) + col)); //0 ... 1
-                    indices.Add(offset + (row * (8 + 1) + col + 1)); //1 ... 2
-
-                    /*This 3 index add the low triangle
-                                 *
-                                 *0  1   2
-                                 *  /|  /|
-                                 * / | / |
-                                 *9--10--11
-                                 */
-
-                    indices.Add(offset + ((row + 1) * (8 + 1) + col + 1));
-                    indices.Add(offset + ((row + 1) * (8 + 1) + col));
-                    indices.Add(offset + (row * (8 + 1) + col + 1));
-                }
+                results = new List<Index3>();
             }
+
+            var chunks = QuadTree.Query(ray2D);
+            foreach (var chunk in chunks)
+            {
+                results.AddRange(chunk.TerrainTris);
+            }
+
+            return true;
         }
     }
 }

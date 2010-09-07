@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.World;
 using WCell.Util.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using TerrainDisplay;
@@ -17,7 +18,7 @@ namespace TerrainDisplay.Extracted
         private List<ExtractedWMO> _WMOs;
         private List<ExtractedM2> _WMOM2s;
         private string _baseDirectory;
-        private int _mapId;
+        private MapId _mapId;
 
         private List<Vector3> _wmoVertices;
         private List<int> _wmoIndices;
@@ -26,7 +27,7 @@ namespace TerrainDisplay.Extracted
         private List<Vector3> _wmoLiquidVertices;
         private List<int> _wmoLiquidIndices;
 
-        public ExtractedWMOManager(string _baseDirectory, int _mapId)
+        public ExtractedWMOManager(string _baseDirectory, MapId _mapId)
         {
             this._baseDirectory = _baseDirectory;
             this._mapId = _mapId;
@@ -225,6 +226,9 @@ namespace TerrainDisplay.Extracted
 
         private void GenerateVerticesAndIndices()
         {
+            _wmoIndices = new List<int>();
+            _wmoM2Indices = new List<int>();
+            _wmoLiquidIndices = new List<int>();
             _wmoVertices = new List<Vector3>();
             _wmoM2Vertices = new List<Vector3>();
             _wmoLiquidVertices = new List<Vector3>();
@@ -237,11 +241,8 @@ namespace TerrainDisplay.Extracted
                     if (group == null) continue;
 
                     var offset = _wmoVertices.Count;
-                    foreach (var vec in group.WmoVertices)
-                    {
-                        _wmoVertices.Add(vec);
-                    }
-
+                    _wmoVertices.AddRange(group.WmoVertices);
+                    
                     foreach (var index in group.Tree.Indices)
                     {
                         _wmoIndices.Add(index + offset);
@@ -250,6 +251,7 @@ namespace TerrainDisplay.Extracted
                     if (!group.HasLiquid) continue;
 
                     offset = _wmoLiquidVertices.Count;
+                    _wmoLiquidVertices.AddRange(group.LiquidVertices);
                     for (var row = 0; row < group.LiqTileCountX; row++)
                     {
                         for (var col = 0; col < group.LiqTileCountY; col++)
@@ -282,11 +284,8 @@ namespace TerrainDisplay.Extracted
             {
                 if (m2 == null) continue;
                 var offset = _wmoM2Vertices.Count;
-                foreach (var vec in m2.BoundingVertices)
-                {
-                    _wmoM2Vertices.Add(vec);
-                }
-
+                _wmoM2Vertices.AddRange(m2.BoundingVertices);
+                
                 foreach (var index3 in m2.BoundingTriangles)
                 {
                     _wmoM2Indices.Add(index3.Index0 + offset);

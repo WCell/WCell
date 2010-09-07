@@ -264,6 +264,19 @@ namespace TerrainDisplay.Util
             return list;
         }
 
+        public static int[] ReadInt32Array(this BinaryReader br)
+        {
+            var length = br.ReadInt32();
+            if (length == 0) return null;
+
+            var array = new int[length];
+            for (var i = 0; i < length; i++)
+            {
+                array[i] = br.ReadInt32();
+            }
+            return array;
+        }
+
         public static List<Vector3> ReadVector3List(this BinaryReader br)
         {
             var count = br.ReadInt32();
@@ -284,6 +297,16 @@ namespace TerrainDisplay.Util
                 list.Add(br.ReadIndex3());
             }
             return list;
+        }
+
+        public static Rect ReadRect(this BinaryReader br)
+        {
+            var x = br.ReadSingle();
+            var y = br.ReadSingle();
+            var width = br.ReadSingle();
+            var height = br.ReadSingle();
+
+            return new Rect(x, y, width, height);
         }
 
         /// <summary>
@@ -373,6 +396,12 @@ namespace TerrainDisplay.Util
 
         public static void Write(this BinaryWriter writer, ICollection<int> list)
         {
+            if (list == null)
+            {
+                writer.Write(0);
+                return;
+            }
+
             writer.Write(list.Count);
             foreach (var item in list)
             {
@@ -396,6 +425,14 @@ namespace TerrainDisplay.Util
             {
                 writer.Write(item);
             }
+        }
+
+        public static void Write(this BinaryWriter writer, Rect rect)
+        {
+            writer.Write(rect.X);
+            writer.Write(rect.Y);
+            writer.Write(rect.Width);
+            writer.Write(rect.Height);
         }
     }
 }

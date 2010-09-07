@@ -322,8 +322,8 @@ namespace TerrainDisplay.MPQ.WMO
 
                 wmo.Materials[i] = mt;
 
-                if (mt.Flags != 0)
-                    Console.WriteLine();
+                //if (mt.Flags != 0)
+                    //Console.WriteLine();
             }
         }
 

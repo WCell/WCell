@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using TerrainDisplay.Collision;
 using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.Util;
 using TerrainDisplay.Extracted.ADT;
 using TerrainDisplay.Extracted.M2;
 using TerrainDisplay.Extracted.WMO;
+using WCell.Constants.World;
 
 namespace TerrainDisplay.Extracted
 {
@@ -16,7 +18,7 @@ namespace TerrainDisplay.Extracted
     {
         private const string FileTypeId = "ter";
 
-        public static ExtractedADT Process(string filePath, int mapId, int tileX, int tileY)
+        public static ExtractedADT Process(string filePath, MapId mapId, int tileX, int tileY)
         {
             if (!File.Exists(filePath))
             {
@@ -45,10 +47,16 @@ namespace TerrainDisplay.Extracted
                 }
 
                 ReadMapM2Defs(br, adt);
+                ReadQuadTree(br, adt);
+
+                adt.TerrainVertices = br.ReadVector3List();
+
                 ReadADTChunks(br, adt);
 
                 br.Close();
             }
+
+            LoadQuadTree(adt);
 
             return adt;
         }
@@ -92,6 +100,11 @@ namespace TerrainDisplay.Extracted
             adt.M2Defs = m2DefList;
         }
 
+        private static void ReadQuadTree(BinaryReader br, ExtractedADT adt)
+        {
+            adt.QuadTree = QuadTree<ExtractedADTChunk>.LoadFromFile(br);
+        }
+
         private static void ReadADTChunks(BinaryReader br, ExtractedADT adt)
         {
             var chunks = new ExtractedADTChunk[TerrainConstants.ChunksPerTileSide, TerrainConstants.ChunksPerTileSide];
@@ -107,24 +120,28 @@ namespace TerrainDisplay.Extracted
 
         private static ExtractedADTChunk ReadADTChunk(BinaryReader br)
         {
-            var chunk = new ExtractedADTChunk {
-                                                  IsFlat = br.ReadBoolean(),
-                                                  MedianHeight = br.ReadSingle(),
-                                                  M2References = br.ReadInt32List(),
-                                                  WMOReferences = br.ReadInt32List(),
-                                                  HasHoles = br.ReadBoolean()
-                                              };
-            if (chunk.HasHoles)
+            var chunk = new ExtractedADTChunk
             {
-                ReadChunkHolesMap(br, chunk);
-            }
+                NodeId = br.ReadInt32(),
+                IsFlat = br.ReadBoolean(),
+                MedianHeight = br.ReadSingle(),
+                M2References = br.ReadInt32List(),
+                WMOReferences = br.ReadInt32List(),
+                TerrainTris = br.ReadIndex3List(),
+                HasLiquid = br.ReadBoolean()
+                //HasHoles = br.ReadBoolean()
+            };
 
-            if (!chunk.IsFlat)
-            {
-                ReadChunkHeightMap(br, chunk);
-            }
+            //if (chunk.HasHoles)
+            //{
+            //    ReadChunkHolesMap(br, chunk);
+            //}
 
-            chunk.HasLiquid = br.ReadBoolean();
+            //if (!chunk.IsFlat)
+            //{
+            //    ReadChunkHeightMap(br, chunk);
+            //}
+
             if (!chunk.HasLiquid) return chunk;
 
             chunk.LiquidFlags = (MH2OFlags) br.ReadUInt16();
@@ -142,30 +159,30 @@ namespace TerrainDisplay.Extracted
             return chunk;
         }
 
-        private static void ReadChunkHolesMap(BinaryReader br, ExtractedADTChunk chunk)
-        {
-            chunk.HolesMap = new bool[4,4];
-            for (var x = 0; x < 4; x++)
-            {
-                for (var y = 0; y < 4; y++)
-                {
-                    chunk.HolesMap[y, x] = br.ReadBoolean();
-                }
-            }
-        }
+        //private static void ReadChunkHolesMap(BinaryReader br, ExtractedADTChunk chunk)
+        //{
+        //    chunk.HolesMap = new bool[4,4];
+        //    for (var x = 0; x < 4; x++)
+        //    {
+        //        for (var y = 0; y < 4; y++)
+        //        {
+        //            chunk.HolesMap[y, x] = br.ReadBoolean();
+        //        }
+        //    }
+        //}
 
-        private static void ReadChunkHeightMap(BinaryReader br, ExtractedADTChunk chunk)
-        {
-            var heightMap = new float[TerrainConstants.UnitsPerChunkSide + 1,TerrainConstants.UnitsPerChunkSide + 1];
-            for (var x = 0; x < TerrainConstants.UnitsPerChunkSide + 1; x++)
-            {
-                for (var y = 0; y < TerrainConstants.UnitsPerChunkSide + 1; y++)
-                {
-                    heightMap[y, x] = br.ReadSingle();
-                }
-            }
-            chunk.HeightMap = heightMap;
-        }
+        //private static void ReadChunkHeightMap(BinaryReader br, ExtractedADTChunk chunk)
+        //{
+        //    var heightMap = new float[TerrainConstants.UnitsPerChunkSide + 1,TerrainConstants.UnitsPerChunkSide + 1];
+        //    for (var x = 0; x < TerrainConstants.UnitsPerChunkSide + 1; x++)
+        //    {
+        //        for (var y = 0; y < TerrainConstants.UnitsPerChunkSide + 1; y++)
+        //        {
+        //            heightMap[y, x] = br.ReadSingle();
+        //        }
+        //    }
+        //    chunk.HeightMap = heightMap;
+        //}
 
         private static void ReadChunkLiquidMap(BinaryReader br, ExtractedADTChunk chunk)
         {
@@ -191,6 +208,15 @@ namespace TerrainDisplay.Extracted
                 }
             }
             chunk.LiquidHeights = liquidHeights;
+        }
+
+        private static void LoadQuadTree(ExtractedADT adt)
+        {
+            foreach (var chunk in adt.Chunks)
+            {
+                adt.QuadTree.Insert(chunk);
+                chunk.Bounds = adt.QuadTree.Nodes[chunk.NodeId].Bounds;
+            }
         }
     }
 }

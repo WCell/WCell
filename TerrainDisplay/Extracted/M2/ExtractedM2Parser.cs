@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using TerrainDisplay.Util;
+using WCell.Constants.World;
 
 namespace TerrainDisplay.Extracted.M2
 {
@@ -11,7 +12,7 @@ namespace TerrainDisplay.Extracted.M2
     {
         private const string fileType = "m2x";
         
-        public static ExtractedM2 Process(string basePath, int mapId, string path)
+        public static ExtractedM2 Process(string basePath, MapId mapId, string path)
         {
             basePath = Path.Combine(basePath, mapId.ToString());
             var filePath = Path.Combine(basePath, path);

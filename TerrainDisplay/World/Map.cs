@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using NLog;
+using TerrainDisplay.Collision;
+using TerrainDisplay.Extracted;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
 
@@ -8,14 +11,48 @@ namespace TerrainDisplay.World
 {
     internal class Map
     {
+        private const string Extension = ".map";
         private static readonly Logger log = LogManager.GetCurrentClassLogger();
-        internal MapId MapId;
-        private readonly Dictionary<TileIdentifier, Tile> _tiles; 
+        public MapId MapId;
+        public QuadTree<Tile> QuadTree;
+        private readonly Dictionary<TileIdentifier, Tile> _tiles;
+        public bool IsWMOOnly;
+        public bool[,] TileProfile;
 
 
         internal static bool TryLoad(MapId mapId, out Map map)
         {
-            throw new NotImplementedException();
+            map = null;
+            var basePath = TerrainDisplayConfig.MapDir;
+            var mapPath = Path.Combine(basePath, mapId.ToString());
+            var fileName = string.Format("{0}{1}", mapId, Extension);
+            var filePath = Path.Combine(mapPath, fileName);
+
+            if (!Directory.Exists(mapPath))
+            {
+                log.Warn("Unable to find requested .map dir: {0}", mapPath);
+                return false;
+            }
+            if (!File.Exists(filePath))
+            {
+                log.Warn("Unable to find requested .map file: {0}", filePath);
+                return false;
+            }
+
+            using(var file = File.OpenRead(filePath))
+            {
+                map = ReadWDTInfo(file);
+                file.Close();
+                
+                if (map == null)
+                {
+                    log.Warn("Unable to load the requested .map file: {0}", filePath);
+                    return false;
+                }
+            }
+
+            map.MapId = mapId;
+            return true;
         }
 
         /// <summary>
@@ -140,11 +177,63 @@ namespace TerrainDisplay.World
             return true;
         }
 
-        internal Map(MapId mapId)
+        public Map(MapId mapId) : this()
         {
             MapId = mapId;
-            _tiles =
-                new Dictionary<TileIdentifier, Tile>(TerrainConstants.TilesPerMapSide*TerrainConstants.TilesPerMapSide);
         }
+
+        private Map()
+        {
+            const int numTiles = TerrainConstants.TilesPerMapSide * TerrainConstants.TilesPerMapSide;
+            _tiles = new Dictionary<TileIdentifier, Tile>(numTiles);
+
+            const float baseLength = TerrainConstants.MapLength / 2.0f;
+            var basePosition = new Point(baseLength, baseLength);
+            QuadTree = new QuadTree<Tile>(basePosition, TerrainConstants.TilesPerMapSide, TerrainConstants.TileSize);
+        }
+
+        #region Read Map File
+
+        private static Map ReadWDTInfo(Stream file)
+        {
+            var br = new BinaryReader(file);
+            var fileTypeId = br.ReadString();
+            if (!fileTypeId.Equals(fileTypeId)) return null;
+
+            var isWMOOnly = br.ReadBoolean();
+            var tileProfile = ReadTileProfile(br, isWMOOnly);
+
+            var map = new Map
+            {
+                IsWMOOnly = isWMOOnly,
+                TileProfile = tileProfile
+            };
+            return map;
+        }
+
+        private static bool[,] ReadTileProfile(BinaryReader br, bool isWMOOnly)
+        {
+            bool[,] profile;
+            if (isWMOOnly)
+            {
+                profile = new bool[1,1];
+                profile[0, 0] = true;
+                return profile;
+            }
+
+            profile = new bool[TerrainConstants.TilesPerMapSide,TerrainConstants.TilesPerMapSide];
+            for (var x = 0; x < TerrainConstants.MapTileCount; x++)
+            {
+                // Columns are along the y-axis
+                for (var y = 0; y < TerrainConstants.MapTileCount; y++)
+                {
+                    // Stored as [col, row], that's weird.
+                    profile[y, x] = br.ReadBoolean();
+                }
+            }
+            return profile;
+        }
+
+        #endregion
     }
 }

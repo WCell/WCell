@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using TerrainDisplay.Collision;
+using TerrainDisplay.Util;
 using WCell.Constants.World;
 using WCell.Util.Graphics;
 using TerrainDisplay;
@@ -17,7 +18,7 @@ namespace TerrainDisplay.Extracted
 {
     public class ExtractedTerrainManager : ITerrainManager
     {
-        private int _mapId;
+        private MapId _mapId;
         private string _baseDirectory;
         private WDT _wdt;
 
@@ -70,7 +71,7 @@ namespace TerrainDisplay.Extracted
 
         public ExtractedTerrainManager(string dataPath, TileIdentifier tileId)
         {
-            _mapId = (int)tileId.MapId;
+            _mapId = tileId.MapId;
             _baseDirectory = dataPath;
 
             _adtManager = new ExtractedADTManager(this, _baseDirectory, _mapId);

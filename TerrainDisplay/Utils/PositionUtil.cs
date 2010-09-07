@@ -3,7 +3,7 @@ using System.IO;
 using NLog;
 using WCell.Util.Graphics;
 
-namespace TerrainDisplay
+namespace TerrainDisplay.Util
 {
     public static class PositionUtil
     {
@@ -88,19 +88,35 @@ namespace TerrainDisplay
             return  VerifyTileCoord(worldPos, tileX, tileY);
         }
 
+        internal static void GetChunkXYForPos(Vector3 worldPos, out int chunkX, out int chunkY)
+        {
+            var tileFractionX = GetTileFraction(worldPos.X);
+            var tileFractionY = GetTileFraction(worldPos.Y);
+
+            chunkX = (int) GetChunkFraction(tileFractionX);
+            chunkY = (int) GetChunkFraction(tileFractionY);
+        }
+
         internal static Rect GetTileBoundingRect(TileIdentifier tileId)
         {
             var tileX = tileId.TileX;
             var tileY = tileId.TileY;
             var x = TerrainConstants.CenterPoint - (tileX*TerrainConstants.TileSize);
+            var botX = x - TerrainConstants.TileSize;
             var y = TerrainConstants.CenterPoint - (tileY*TerrainConstants.TileSize);
+            var botY = y - TerrainConstants.TileSize;
 
-            return new Rect(x, y, TerrainConstants.TileSize, TerrainConstants.TileSize);
+            return new Rect(new Point(x, y), new Point(TerrainConstants.TileSize, TerrainConstants.TileSize));
         }
 
         private static float GetTileFraction(float loc)
         {
             return ((TerrainConstants.CenterPoint - loc) / TerrainConstants.TileSize);
+        }
+
+        private static float GetChunkFraction(float tileFraction)
+        {
+            return (tileFraction - (int) tileFraction)*TerrainConstants.ChunksPerTileSide;
         }
 
         private static bool VerifyTileCoord(Vector3 worldPos, int tileX, int tileY)

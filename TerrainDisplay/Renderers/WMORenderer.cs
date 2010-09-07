@@ -50,7 +50,7 @@ namespace TerrainDisplay.MPQ.WMO
             vertices = _manager.WmoM2Vertices;
             for (var i = 0; i < vertices.Count; i++)
             {
-                var vec = vertices[i + vecOffset];
+                var vec = vertices[i];
                 PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
                 _cachedVertices[i + vecOffset] = new VertexPositionNormalColored(vec.ToXna(), WMOModelColor,
                                                                                  Vector3.Down);
@@ -67,7 +67,7 @@ namespace TerrainDisplay.MPQ.WMO
             vertices = _manager.WmoLiquidVertices;
             for (var i = 0; i < vertices.Count; i++)
             {
-                var vec = vertices[i + vecOffset];
+                var vec = vertices[i];
                 PositionUtil.TransformWoWCoordsToXNACoords(ref vec);
                 _cachedVertices[i + vecOffset] = new VertexPositionNormalColored(vec.ToXna(), WMOWaterColor,
                                                                                  Vector3.Down);

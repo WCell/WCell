@@ -26,7 +26,7 @@ namespace TerrainExtractor.Extractors
         public static Dictionary<string, WMORoot> LoadedWMORoots = new Dictionary<string, WMORoot>();
         
 
-		public static void PrepareExtractor()
+		public static void Prepare()
 		{
             WDTExtractor.Parsed += ExtractMapObjects;
 		}
@@ -47,6 +47,7 @@ namespace TerrainExtractor.Extractors
                     for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
                     {
                         if (!wdt.TileProfile[tileY, tileX]) continue;
+                        if (tileX != 49 || tileY != 36) continue;
 
                         ADT adt = null;
                         if (TileExtractor.TerrainInfo != null)

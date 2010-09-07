@@ -18,7 +18,13 @@ namespace TerrainDisplay.Collision.QuadTree
             get; 
             private set;
         }
-        
+
+        public int NodeId
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
         public M2Holder(M2 model)
         {
             Model = model;

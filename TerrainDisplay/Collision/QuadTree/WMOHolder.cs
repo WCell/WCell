@@ -13,6 +13,13 @@ namespace TerrainDisplay.Collision.QuadTree
         private WMORoot WMO;
 
         public Rect Bounds { get; private set; }
+
+        public int NodeId
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
         public event EventHandler BoundsChanged;
 
         public WMOHolder(WMORoot wmo)

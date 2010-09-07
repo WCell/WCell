@@ -18,6 +18,12 @@ namespace TerrainDisplay.Collision
             private set;
         }
 
+        public int NodeId
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
         public int[] Indices
         {
             get; 

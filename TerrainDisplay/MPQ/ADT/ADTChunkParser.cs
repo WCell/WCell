@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using TerrainDisplay.MPQ.WMO;
+using WCell.Collision;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 
 namespace TerrainDisplay.MPQ.ADT
 {
-    public class ADTChunk
+    public class ADTChunk : IQuadObject
     {
         public MCNK Header = new MCNK();
 
@@ -36,7 +37,19 @@ namespace TerrainDisplay.MPQ.ADT
 
         public bool IsFlat;
 
-        
+        private Rect _bounds = Rect.Empty;
+        public Rect Bounds
+        {
+            get { return _bounds; }
+            set { _bounds = value; }
+        }
+
+        private int _nodeId = -1;
+        public int NodeId
+        {
+            get { return _nodeId; } 
+            set { _nodeId = value; }
+        }
     }
 
     public static class ADTChunkParser
@@ -99,7 +112,7 @@ namespace TerrainDisplay.MPQ.ADT
             var sig = fileReader.ReadUInt32();
             if (sig != Signatures.MCNK)
             {
-                Console.WriteLine();
+                //Console.WriteLine();
             }
 
             var mcnkSize = fileReader.ReadUInt32();

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TerrainDisplay.Collision;
+using TerrainDisplay.MPQ.WMO;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay.MPQ.ADT
@@ -10,8 +11,7 @@ namespace TerrainDisplay.MPQ.ADT
         public List<Vector3> LiquidVertices;
         public List<int> Indices;
         public List<Vector3> TerrainVertices;
-        public QuadTree<TerrainTriangleHolder> QuadTree;
-
+        
         public abstract void GenerateLiquidVertexAndIndices();
         public abstract void GenerateHeightVertexAndIndices();
 
@@ -50,5 +50,7 @@ namespace TerrainDisplay.MPQ.ADT
         /// <param name="offset">The number to add to the indices so as to match the end of the Vertices list.</param>
         /// <param name="indices">The Collection to add the indices to.</param>
         public abstract void GenerateHeightIndices(int indexY, int indexX, int offset, List<int> indices);
+
+        public abstract bool GetPotentialColliders(Ray2D ray2D, List<Index3> results);
     }
 }

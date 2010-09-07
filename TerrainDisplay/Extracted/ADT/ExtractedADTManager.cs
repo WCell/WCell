@@ -5,20 +5,17 @@ using System.Linq;
 using System.Text;
 using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.ADT;
+using WCell.Constants.World;
 
 namespace TerrainDisplay.Extracted
 {
     public class ExtractedADTManager : IADTManager
     {
         private ExtractedTerrainManager _terrainManager;
-        private int _mapId;
+        private MapId _mapId;
         private string _basePath;
-        private IList<ADTBase> _mapTiles;
 
-        public IList<ADTBase> MapTiles
-        {
-            get { return _mapTiles; }
-        }
+        public IList<ADTBase> MapTiles { get; private set; }
 
         public bool LoadTile(TileIdentifier tileId)
         {
@@ -54,17 +51,17 @@ namespace TerrainDisplay.Extracted
             currentADT.GenerateHeightVertexAndIndices();
             currentADT.GenerateLiquidVertexAndIndices();
 
-            _mapTiles.Add(currentADT);
+            MapTiles.Add(currentADT);
 
             return true;
         }
 
-        public ExtractedADTManager(ExtractedTerrainManager terrainManager, string basePath, int mapId)
+        public ExtractedADTManager(ExtractedTerrainManager terrainManager, string basePath, MapId mapId)
         {
             _mapId = mapId;
             _terrainManager = terrainManager;
             _basePath = basePath;
-            _mapTiles = new List<ADTBase>();
+            MapTiles = new List<ADTBase>();
         }
     }
 }

@@ -5,6 +5,7 @@ using TerrainDisplay.MPQ;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
+using WCell.MPQTool.StormLibWrapper;
 using WCell.Util.Graphics;
 
 namespace TerrainDisplay
@@ -20,13 +21,15 @@ namespace TerrainDisplay
 		static void Main(string[] args)
 		{
             TerrainDisplayConfig.Initialize();
-            
+            NativeMethods.StormLibFolder = TerrainDisplayConfig.LibDir;
+		    NativeMethods.InitAPI();
+
             var defaultTileId = TileIdentifier.DefaultTileIdentifier;
 			var useExtractedData = TerrainDisplayConfig.UseExtractedData;
 
 			if (useExtractedData)
 			{
-			    TerrainManager = new ExtractedTerrainManager(TerrainDisplayConfig.ExtractedDataPath, defaultTileId);
+			    TerrainManager = new ExtractedTerrainManager(TerrainDisplayConfig.MapDir, defaultTileId);
 			}
 			else
 			{
@@ -36,7 +39,7 @@ namespace TerrainDisplay
 			TerrainManager.LoadTile(defaultTileId);
 
 			AvatarPosition = new Vector3(TerrainConstants.CenterPoint - (defaultTileId.TileX + 1)*TerrainConstants.TileSize,
-										  TerrainConstants.CenterPoint - (defaultTileId.TileY + 1)*TerrainConstants.TileSize,
+										  TerrainConstants.CenterPoint - (defaultTileId.TileY)*TerrainConstants.TileSize,
 										  100.0f);
 			
 			PositionUtil.TransformWoWCoordsToXNACoords(ref AvatarPosition);
@@ -51,7 +54,6 @@ namespace TerrainDisplay
         static TerrainProgram()
         {
             new TerrainDisplayConfig();
-            new TileIdentifier();
         }
 	}
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using TerrainDisplay.Util;
 using TerrainDisplay.World.DBC;
 using WCell.Constants.World;
 using WCell.Util.Graphics;

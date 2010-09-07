@@ -60,6 +60,7 @@ namespace TerrainDisplay.MPQ.ADT
 
             currentADT.GenerateHeightVertexAndIndices();
             currentADT.GenerateLiquidVertexAndIndices();
+            currentADT.LoadQuadTree();
 
             _ADTs.Add(currentADT);
 

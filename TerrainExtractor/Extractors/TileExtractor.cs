@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using NLog;
 using TerrainDisplay;
+using TerrainDisplay.Collision;
 using TerrainDisplay.MPQ.ADT;
 using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.MPQ.M2;
@@ -69,10 +70,11 @@ namespace TerrainExtractor.Extractors
 			{
 				for (var tileY = 0; tileY < TerrainConstants.TilesPerMapSide; tileY++)
 				{
-					var adt = TerrainInfo[tileY, tileX];
+                    var adt = TerrainInfo[tileY, tileX];
 					if (adt == null) continue;
-					
-					using (var file = File.Create(Path.Combine(path, TerrainConstants.GetMapFilename(tileX, tileY))))
+
+				    var filePath = Path.Combine(path, TerrainConstants.GetMapFilename(tileX, tileY));
+					using (var file = File.Create(filePath))
 					{
 					    WriteTileInfo(file, adt);
                         file.Close();
@@ -137,6 +139,7 @@ namespace TerrainExtractor.Extractors
 				for (var y = 0; y < TerrainConstants.TilesPerMapSide; y++)
 				{
 					if (!wdt.TileProfile[y, x]) continue;
+                    if (x != 49 || y != 36) continue;
 
 				    var tileId = new TileIdentifier
 				    {
@@ -153,6 +156,9 @@ namespace TerrainExtractor.Extractors
                     // Load in the WMORoots and their DoodadDefinitions
                     // Load in the ADTs referenced M2Models
 				    PrepareChunkInfo(wdt.Manager, adt);
+
+				    ReduceTerrainTris(adt);
+				    LoadQuadTree(adt);
 
 					mapTiles[y, x] = adt;
 				}
@@ -206,6 +212,16 @@ namespace TerrainExtractor.Extractors
                 }
             }
 	    }
+
+        private static void ReduceTerrainTris(ADT adt)
+        {
+            adt.GenerateHeightVertexAndIndices();
+        }
+
+        private static void LoadQuadTree(ADT adt)
+        {
+            adt.LoadQuadTree();
+        }
 
         private static void LoadWMO(MpqManager manager, MapObjectDefinition def)
 	    {
@@ -347,7 +363,9 @@ namespace TerrainExtractor.Extractors
 	            min = Math.Min(height, min);
 	            max = Math.Max(height, max);
 	        }
-	        chunk.IsFlat = (Math.Abs(max - min) < 1.0f);
+	        chunk.IsFlat = (Math.Abs(max - min) < 0.1f);
+            if (chunk.IsFlat)
+                Console.WriteLine("Found flat chunk: {0},{1}.", chunk.Header.IndexX, chunk.Header.IndexY);
 
 	        chunk.WaterInfo = adt.LiquidInfo[chunkY, chunkX];
 	        PrepareWaterInfo(chunk.WaterInfo);
@@ -397,7 +415,7 @@ namespace TerrainExtractor.Extractors
         }
         #endregion
 
-		#region Write
+		#region Write to File
 		public static void WriteTileInfo(FileStream file, ADT adt)
 		{
 			var writer = new BinaryWriter(file);
@@ -408,6 +426,10 @@ namespace TerrainExtractor.Extractors
 
             if (adt.IsWMOOnly) return;
             WriteM2Defs(writer, adt.DoodadDefinitions);
+
+		    WriteQuadTree(writer, adt.QuadTree);
+
+            writer.Write(adt.TerrainVertices);
 
 			for (var x = 0; x < TerrainConstants.ChunksPerTileSide; x++)
 			{
@@ -435,28 +457,69 @@ namespace TerrainExtractor.Extractors
             }
         }
 
-	    private static void WriteChunkInfo(BinaryWriter writer, ADTChunk chunk)
+        private static void WriteM2Defs(BinaryWriter writer, IEnumerable<MapDoodadDefinition> defs)
+        {
+            var defList = new List<MapDoodadDefinition>();
+            foreach (var def in defs)
+            {
+                if (ModelsToIgnore.Contains(def.FilePath)) continue;
+                defList.Add(def);
+            }
+
+            writer.Write(defList.Count);
+            foreach (var def in defList)
+            {
+                writer.Write(def.UniqueId);
+                writer.Write(def.FilePath);
+                writer.Write(def.Extents);
+                writer.Write(def.Position);
+                writer.Write(def.WorldToModel);
+                writer.Write(def.ModelToWorld);
+            }
+        }
+
+        private static void WriteQuadTree(BinaryWriter writer, QuadTree<ADTChunk> tree)
+        {
+            writer.Write(tree.Nodes.Count);
+            foreach (var node in tree.Nodes)
+            {
+                writer.Write(node.ParentId);
+                if (node.ChildIds.IsNullOrEmpty())
+                {
+                    writer.Write(0);
+                }
+                else
+                {
+                    writer.Write(node.ChildIds);
+                }
+                writer.Write(node.Bounds);
+            }
+        }
+
+        private static void WriteChunkInfo(BinaryWriter writer, ADTChunk chunk)
 	    {
+            writer.Write(chunk.NodeId);
 	        writer.Write(chunk.IsFlat);
 	        // The base height for this chunk
 	        writer.Write(chunk.Header.Z);
 	        // The wmos and m2s (UniqueIds) that overlap this chunk
 	        WriteChunkModelRefs(writer, chunk.DoodadRefs);
 	        WriteChunkObjRefs(writer, chunk.ObjectRefs);
-            
-            writer.Write(chunk.Header.Holes > 0);
-            if (chunk.Header.Holes > 0)
-            {
-                WriteChunkHolesMap(writer, chunk.Header.GetHolesMap());
-            }
 
-	        // The height map
-	        if (!chunk.IsFlat)
-	        {
-	            WriteChunkHeightMap(writer, chunk);
-	        }
+            writer.Write(chunk.TerrainTris);
+            //writer.Write(chunk.Header.Holes > 0);
+            //if (chunk.Header.Holes > 0)
+            //{
+            //    WriteChunkHolesMap(writer, chunk.Header.GetHolesMap());
+            //}
 
-	        // The liquid information
+            //// The height map
+            //if (!chunk.IsFlat)
+            //{
+            //    WriteChunkHeightMap(writer, chunk);
+            //}
+
+	        // The liquid information);
             if (chunk.WaterInfo == null)
             {
                 writer.Write(false);
@@ -516,9 +579,9 @@ namespace TerrainExtractor.Extractors
 
 	    private static void WriteWaterHeights(BinaryWriter writer, float[,] heights)
         {
-            for (var x = 0; x < TerrainConstants.UnitsPerChunkSide + 1; x++)
+            for (var x = 0; x < (TerrainConstants.UnitsPerChunkSide + 1); x++)
             {
-                for (var y = 0; y < TerrainConstants.UnitsPerChunkSide + 1; y++)
+                for (var y = 0; y < (TerrainConstants.UnitsPerChunkSide + 1); y++)
                 {
                     writer.Write(heights[y, x]);
                 }
@@ -527,11 +590,11 @@ namespace TerrainExtractor.Extractors
 
         private static void WriteWaterRenderBits(BinaryWriter writer, bool[,] render)
         {
-            for (var x = 0; x < TerrainConstants.UnitsPerChunkSide; x++)
+            for (var r = 0; r < TerrainConstants.UnitsPerChunkSide; r++)
             {
-                for (var y = 0; y < TerrainConstants.UnitsPerChunkSide; y++)
+                for (var c = 0; c < TerrainConstants.UnitsPerChunkSide; c++)
                 {
-                    writer.Write(render[y, x]);
+                    writer.Write(render[c, r]);
                 }
             }
         }
@@ -545,27 +608,6 @@ namespace TerrainExtractor.Extractors
                 {
                     writer.Write(heightMap[y, x]);
                 }
-            }
-        }
-
-        private static void WriteM2Defs(BinaryWriter writer, IEnumerable<MapDoodadDefinition> defs)
-        {
-            var defList = new List<MapDoodadDefinition>();
-            foreach (var def in defs)
-            {
-                if (ModelsToIgnore.Contains(def.FilePath)) continue;
-                defList.Add(def);
-            }
-            
-            writer.Write(defList.Count);
-            foreach (var def in defList)
-            {
-                writer.Write(def.UniqueId);
-                writer.Write(def.FilePath);
-                writer.Write(def.Extents);
-                writer.Write(def.Position);
-                writer.Write(def.WorldToModel);
-                writer.Write(def.ModelToWorld);
             }
         }
         #endregion

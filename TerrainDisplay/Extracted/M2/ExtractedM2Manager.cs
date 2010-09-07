@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using WCell.Constants.World;
 using WCell.Util.Graphics;
 using TerrainDisplay.MPQ.ADT.Components;
 using TerrainDisplay.MPQ.M2;
@@ -8,7 +9,7 @@ namespace TerrainDisplay.Extracted
 {
     public class ExtractedM2Manager : IM2Manager
     {
-        private int _mapId;
+        private MapId _mapId;
         private string _basePath;
         public List<ExtractedM2> Models;
 
@@ -41,7 +42,7 @@ namespace TerrainDisplay.Extracted
             set { _renderIndices = value; }
         }
 
-        public ExtractedM2Manager(string basePath, int mapId)
+        public ExtractedM2Manager(string basePath, MapId mapId)
         {
             _basePath = basePath;
             _mapId = mapId;
