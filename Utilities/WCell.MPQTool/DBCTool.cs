@@ -434,6 +434,7 @@ namespace WCell.MPQTool
         {
         	LogUtil.SetupConsoleLogging();
             var config = MPQToolConfig.Instance;
+            NativeMethods.InitAPI();
             new DBCTool().Dump();
             
             // Compare(40f, 90f);
