@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				ContentHandler.PurgeCache();
+				ContentMgr.PurgeCache();
 				trigger.Reply("Done.");
 			}
 		}

@@ -212,6 +212,17 @@ namespace WCell.RealmServer.NPCs
 		[NotVariable]
 		internal static Spell[][] PetSpells;
 
+		#region Get*
+		public static NPCEntry GetEntry(uint id, uint difficultyIndex)
+		{
+			var entry = GetEntry(id);
+			if (entry != null)
+			{
+				return entry.GetEntry(difficultyIndex);
+			}
+			return null;
+		}
+
 		public static NPCEntry GetEntry(uint id)
 		{
 			if (id >= Entries.Length)
@@ -221,6 +232,16 @@ namespace WCell.RealmServer.NPCs
 				return entry;
 			}
 			return Entries[id];
+		}
+
+		public static NPCEntry GetEntry(NPCId id, uint difficultyIndex)
+		{
+			var entry = GetEntry(id);
+			if (entry != null)
+			{
+				return entry.GetEntry(difficultyIndex);
+			}
+			return null;
 		}
 
 		public static NPCEntry GetEntry(NPCId id)
@@ -233,6 +254,27 @@ namespace WCell.RealmServer.NPCs
 			}
 			return Entries[(uint)id];
 		}
+
+		public static SpawnEntry GetSpawnEntry(uint id)
+		{
+			if (id >= SpawnEntries.Length)
+			{
+				return null;
+			}
+			return SpawnEntries[id];
+		}
+
+		public static List<SpawnEntry> GetSpawnEntries(MapId map)
+		{
+			return SpawnEntriesByMap[(int)map];
+		}
+
+		public static NPCEquipmentEntry GetEquipment(uint equipId)
+		{
+			return EquipmentEntries.Get(equipId);
+		}
+		#endregion
+
 
 		/// <summary>
 		/// Creates a new custom NPCEntry with the given Id.
@@ -263,25 +305,6 @@ namespace WCell.RealmServer.NPCs
 			entry.Id = id;
 			CustomEntries.Add(id, entry);
 			entry.FinalizeDataHolder();
-		}
-
-		public static SpawnEntry GetSpawnEntry(uint id)
-		{
-			if (id >= SpawnEntries.Length)
-			{
-				return null;
-			}
-			return SpawnEntries[id];
-		}
-
-		public static List<SpawnEntry> GetSpawnEntries(MapId map)
-		{
-			return SpawnEntriesByMap[(int)map];
-		}
-
-		public static NPCEquipmentEntry GetEquipment(uint equipId)
-		{
-			return EquipmentEntries.Get(equipId);
 		}
 
 		internal static uint GenerateUniqueLowId()
@@ -480,9 +503,8 @@ namespace WCell.RealmServer.NPCs
 			}
 			FactionMgr.Initialize();
 
-			ContentHandler.Load<NPCEquipmentEntry>();
-			ContentHandler.Load<NPCEntry>();
-			ContentHandler.Load<NPCAiText>();
+			ContentMgr.Load<NPCEquipmentEntry>();
+			ContentMgr.Load<NPCEntry>();
 
 			EntriesLoaded = true;
 
@@ -531,13 +553,13 @@ namespace WCell.RealmServer.NPCs
 			{
 				return;
 			}
-			ContentHandler.Load<SpawnEntry>();
+			ContentMgr.Load<SpawnEntry>();
 			SpawnsLoaded = true;
 		}
 
 		public static void LoadWaypoints()
 		{
-			ContentHandler.Load<WaypointEntry>();
+			ContentMgr.Load<WaypointEntry>();
 		}
 
 		[Initialization]
@@ -594,7 +616,7 @@ namespace WCell.RealmServer.NPCs
 		#region Trainers
 		private static void LoadTrainers()
 		{
-			ContentHandler.Load<TrainerSpellEntry>();
+			ContentMgr.Load<TrainerSpellEntry>();
 		}
 
 		static void OnNewTrainer(NPC npc)
@@ -701,7 +723,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadVendors()
 		{
 			LoadItemExtendedCostEntries();
-			ContentHandler.Load<VendorItemEntry>();
+			ContentMgr.Load<VendorItemEntry>();
 		}
 
 		static void LoadItemExtendedCostEntries()
@@ -791,7 +813,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				if (spawn != null)
 				{
-					var distSq = pos.Position.GetDistanceSquared(spawn.Position);
+					var distSq = pos.Position.DistanceSquared(spawn.Position);
 					if (distSq < distanceSq)
 					{
 						distanceSq = distSq;

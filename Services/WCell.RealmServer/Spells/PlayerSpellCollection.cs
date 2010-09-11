@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Castle.ActiveRecord;
+using Cell.Core;
+using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
@@ -10,6 +12,7 @@ using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Talents;
 using WCell.Util.Threading;
 using WCell.RealmServer.Database;
 using WCell.Util;
@@ -19,9 +22,21 @@ namespace WCell.RealmServer.Spells
 {
 	public class PlayerSpellCollection : SpellCollection
 	{
-		private Timer m_offlineCooldownTimer;
-		private object m_lock;
-		private uint m_ownerId;
+		static readonly ObjectPool<PlayerSpellCollection> PlayerSpellCollectionPool =
+			new ObjectPool<PlayerSpellCollection>(() => new PlayerSpellCollection());
+
+		public static PlayerSpellCollection Obtain(Character chr)
+		{
+			var spells = PlayerSpellCollectionPool.Obtain();
+			spells.Initialize(chr);
+
+			// runes
+			if (spells.Runes != null)
+			{
+				spells.Runes.InitRunes(chr);
+			}
+			return spells;
+		}
 
 		/// <summary>
 		/// Whether to send Update Packets
@@ -32,36 +47,72 @@ namespace WCell.RealmServer.Spells
 		/// All current Spell-cooldowns. 
 		/// Each SpellId has an expiry time associated with it
 		/// </summary>
-		protected Dictionary<uint, ISpellIdCooldown> m_idCooldowns;
+		protected List<ISpellIdCooldown> m_idCooldowns;
 		/// <summary>
 		/// All current category-cooldowns. 
 		/// Each category has an expiry time associated with it
 		/// </summary>
-		protected Dictionary<uint, ISpellCategoryCooldown> m_categoryCooldowns;
+		protected List<ISpellCategoryCooldown> m_categoryCooldowns;
 
 		/// <summary>
 		/// The runes of this Player (if any)
 		/// </summary>
 		private RuneSet m_runes;
 
-		public PlayerSpellCollection(Character owner)
-			: base(owner)
+		#region Init & Cleanup
+		private PlayerSpellCollection()
 		{
+			m_idCooldowns =  new List<ISpellIdCooldown>(5);
+			m_categoryCooldowns =  new List<ISpellCategoryCooldown>(5);
+		}
+
+		protected override void Initialize(Unit owner)
+		{
+			base.Initialize(owner);
+
+			var chr = (Character)owner;
 			m_sendPackets = false;
 			if (owner.Class == Constants.ClassId.DeathKnight)
 			{
-				m_runes = new RuneSet(owner);
+				m_runes = new RuneSet(chr);
 			}
 		}
 
-		public Dictionary<uint, ISpellIdCooldown> IdCooldowns
+		protected internal override void Recycle()
+		{
+			base.Recycle();
+
+			m_idCooldowns.Clear();
+			m_categoryCooldowns.Clear();
+
+			if (m_runes != null)
+			{
+				m_runes.Dispose();
+				m_runes = null;
+			}
+
+			PlayerSpellCollectionPool.Recycle(this);
+		}
+		#endregion
+
+		public IEnumerable<ISpellIdCooldown> IdCooldowns
 		{
 			get { return m_idCooldowns; }
 		}
 
-		public Dictionary<uint, ISpellCategoryCooldown> CategoryCooldowns
+		public IEnumerable<ISpellCategoryCooldown> CategoryCooldowns
 		{
 			get { return m_categoryCooldowns; }
+		}
+
+		public int IdCooldownCount
+		{
+			get { return m_idCooldowns.Count; }
+		}
+
+		public int CategoryCooldownCount
+		{
+			get { return m_categoryCooldowns.Count; }
 		}
 
 		/// <summary>
@@ -109,7 +160,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Teaches a new spell to the unit. Also sends the spell learning animation, if applicable.
 		/// </summary>
-		void AddSpell(Spell spell, bool isNew)
+		void AddSpell(Spell spell, bool sendPacket)
 		{
 			// make sure the char knows the skill that this spell belongs to
 			if (spell.Ability != null)
@@ -128,17 +179,23 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (!m_byId.ContainsKey(spell.Id))
+			if (!m_byId.ContainsKey(spell.SpellId))
 			{
-				if (m_sendPackets && isNew)
+				var owner = OwnerChar;
+				if (m_sendPackets && sendPacket)
 				{
-					SpellHandler.SendLearnedSpell(OwnerChar.Client, spell.Id);
+					SpellHandler.SendLearnedSpell(owner.Client, spell.Id);
 					if (!spell.IsPassive)
 					{
-						SpellHandler.SendVisual(Owner, 362);	// ouchy: Unnamed constants 
+						SpellHandler.SendVisual(owner, 362);	// ouchy: Unnamed constants 
 					}
 				}
-				OwnerChar.m_record.AddSpell(spell.Id);
+
+				var specIndex = GetSpecIndex(spell);
+				var spells = GetSpellList(spell);
+				var newRecord = new SpellRecord(spell.SpellId, owner.EntityId.Low, specIndex);
+				newRecord.SaveLater();
+				spells.Add(newRecord);
 
 				base.AddSpell(spell);
 			}
@@ -149,9 +206,9 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Replaces or (if newSpell == null) removes oldSpell.
 		/// </summary>
-		public override void Replace(Spell oldSpell, Spell newSpell)
+		public override bool Replace(Spell oldSpell, Spell newSpell)
 		{
-			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.Id);
+			var hasOldSpell = oldSpell != null && m_byId.Remove(oldSpell.SpellId);
 			if (hasOldSpell)
 			{
 				OnRemove(oldSpell);
@@ -160,8 +217,8 @@ namespace WCell.RealmServer.Spells
 					if (m_sendPackets)
 					{
 						SpellHandler.SendSpellRemoved(OwnerChar, oldSpell.Id);
-						return;
 					}
+					return true;
 				}
 			}
 
@@ -174,6 +231,7 @@ namespace WCell.RealmServer.Spells
 
 				AddSpell(newSpell, !hasOldSpell);
 			}
+			return hasOldSpell;
 		}
 
 		/// <summary>
@@ -181,47 +239,45 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private void OnRemove(Spell spell)
 		{
-			if (spell.Ability != null)
+			var chr = OwnerChar;
+			if (spell.RepresentsSkillTier)
 			{
-				OwnerChar.Skills.Remove(spell.Ability.Skill.Id);
-			}
-			OwnerChar.m_record.RemoveSpell(spell.Id);
-		}
-
-		/// <summary>
-		/// Called when the player logs out
-		/// </summary>
-		internal void OnOwnerLoggedOut()
-		{
-			m_ownerId = Owner.EntityId.Low;
-			Owner = null;
-			m_sendPackets = false;
-			m_lock = new object();
-			SpellHandler.PlayerSpellCollections[m_ownerId] = this;
-
-			if (m_runes != null)
-			{
-				m_runes.OnOwnerLoggedOut();
+				// TODO: Skill might now be represented by a lower tier, and only the MaxValue changes
+				chr.Skills.Remove(spell.Ability.Skill.Id);
 			}
 
-			m_offlineCooldownTimer = new Timer(FinalizeCooldowns);
-			m_offlineCooldownTimer.Change(SpellHandler.DefaultCooldownSaveDelay, TimeSpan.Zero);
-		}
-
-		/// <summary>
-		/// Called when the player logs back in
-		/// </summary>
-		internal void OnReconnectOwner(Character owner)
-		{
-			lock (m_lock)
+			// figure out from where to remove and do it
+			var spells = GetSpellList(spell);
+			for (var i = 0; i < spells.Count; i++)
 			{
-				if (m_offlineCooldownTimer != null)
+				var record = spells[i];
+				if (record.SpellId == spell.SpellId)
 				{
-					m_offlineCooldownTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					m_offlineCooldownTimer = null;
+					// delete and remove
+					RealmServer.Instance.AddMessage(new Message(record.Delete));
+					spells.RemoveAt(i);
+					return;
 				}
 			}
-			Owner = owner;
+		}
+
+		int GetSpecIndex(Spell spell)
+		{
+			var chr = OwnerChar;
+			return spell.IsTalent ? chr.Talents.CurrentSpecIndex : SpellRecord.NoSpecIndex;
+		}
+
+		List<SpellRecord> GetSpellList(Spell spell)
+		{
+			var chr = OwnerChar;
+			if (spell.IsTalent)
+			{
+				return chr.CurrentSpecProfile.TalentSpells;
+			}
+			else
+			{
+				return chr.Record.AbilitySpells;
+			}
 		}
 
 		public override void Clear()
@@ -284,7 +340,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Add everything to the caster that this spell requires
 		/// </summary>
-		public void SatisfyConstraintsFor(Spell spell)
+		public void AddSpellRequirements(Spell spell)
 		{
 			var chr = OwnerChar;
 			// add reagents
@@ -350,22 +406,27 @@ namespace WCell.RealmServer.Spells
 
 		#region Cooldowns
 		/// <summary>
-		/// Tries to add the given Spell to the cooldown List.
-		/// Returns false if Spell is still cooling down.
+		/// Returns true if spell is currently cooling down.
+		/// Removes expired cooldowns of that spell.
 		/// </summary>
-		public bool CheckCooldown(Spell spell)
+		public override bool IsReady(Spell spell)
 		{
 			// check for individual cooldown
 			ISpellIdCooldown idCooldown = null;
-			if (m_idCooldowns != null)
+			if (spell.CooldownTime > 0)
 			{
-				if (m_idCooldowns.TryGetValue(spell.Id, out idCooldown))
+				for (var i = 0; i < m_idCooldowns.Count; i++)
 				{
-					if (idCooldown.Until > DateTime.Now)
+					idCooldown = m_idCooldowns[i];
+					if (idCooldown.SpellId == spell.Id)
 					{
-						return false;
+						if (idCooldown.Until > DateTime.Now)
+						{
+							return false;
+						}
+						m_idCooldowns.RemoveAt(i);
+						break;
 					}
-					m_idCooldowns.Remove(spell.Id);
 				}
 			}
 
@@ -373,24 +434,26 @@ namespace WCell.RealmServer.Spells
 			ISpellCategoryCooldown catCooldown = null;
 			if (spell.CategoryCooldownTime > 0)
 			{
-				if (m_categoryCooldowns != null)
+				for (var i = 0; i < m_categoryCooldowns.Count; i++)
 				{
-					if (m_categoryCooldowns.TryGetValue(spell.Category, out catCooldown))
+					catCooldown = m_categoryCooldowns[i];
+					if (catCooldown.CategoryId == spell.Category)
 					{
 						if (catCooldown.Until > DateTime.Now)
 						{
 							return false;
 						}
-						m_categoryCooldowns.Remove(spell.Category);
+						m_categoryCooldowns.RemoveAt(i);
+						break;
 					}
 				}
 			}
 
-			// enqueue delete task for consistent cooldowns
-			if (idCooldown is ConsistentSpellIdCooldown || catCooldown is ConsistentSpellCategoryCooldown)
+			// enqueue task to delete persistent cooldowns
+			if (idCooldown is PersistentSpellIdCooldown || catCooldown is PersistentSpellCategoryCooldown)
 			{
-				var removedId = idCooldown as ConsistentSpellIdCooldown;
-				var removedCat = catCooldown as ConsistentSpellCategoryCooldown;
+				var removedId = idCooldown as PersistentSpellIdCooldown;
+				var removedCat = catCooldown as PersistentSpellCategoryCooldown;
 				RealmServer.Instance.AddMessage(new Message(() =>
 				{
 					if (removedId != null)
@@ -408,7 +471,6 @@ namespace WCell.RealmServer.Spells
 
 		public override void AddCooldown(Spell spell, Item casterItem)
 		{
-			// TODO: Add cooldown mods
 			var itemSpell = casterItem != null && casterItem.Template.UseSpell != null;
 
 			var cd = 0;
@@ -433,10 +495,6 @@ namespace WCell.RealmServer.Spells
 
 			if (cd > 0)
 			{
-				if (m_idCooldowns == null)
-				{
-					m_idCooldowns = new Dictionary<uint, ISpellIdCooldown>();
-				}
 				var idCooldown = new SpellIdCooldown
 				{
 					SpellId = spell.Id,
@@ -447,15 +505,11 @@ namespace WCell.RealmServer.Spells
 				{
 					idCooldown.ItemId = casterItem.Template.Id;
 				}
-				m_idCooldowns[spell.Id] = idCooldown;
+				m_idCooldowns.Add(idCooldown);
 			}
 
 			if (spell.CategoryCooldownTime > 0)
 			{
-				if (m_categoryCooldowns == null)
-				{
-					m_categoryCooldowns = new Dictionary<uint, ISpellCategoryCooldown>();
-				}
 				var catCooldown = new SpellCategoryCooldown
 				{
 					SpellId = spell.Id,
@@ -471,108 +525,55 @@ namespace WCell.RealmServer.Spells
 				{
 					catCooldown.CategoryId = spell.Category;
 				}
-				m_categoryCooldowns[spell.Category] = catCooldown;
+				m_categoryCooldowns.Add(catCooldown);
 			}
 
-		}
-
-		/// <summary>
-		/// Returns whether the given spell is still cooling down
-		/// </summary>
-		public override bool IsReady(Spell spell)
-		{
-			ISpellCategoryCooldown catCooldown;
-			if (m_categoryCooldowns != null)
-			{
-				if (m_categoryCooldowns.TryGetValue(spell.Category, out catCooldown))
-				{
-					if (catCooldown.Until > DateTime.Now)
-					{
-						return true;
-					}
-
-					m_categoryCooldowns.Remove(spell.Category);
-					if (catCooldown is ActiveRecordBase)
-					{
-						RealmServer.Instance.AddMessage(new Message(() => ((ActiveRecordBase)catCooldown).Delete()));
-					}
-				}
-			}
-
-			ISpellIdCooldown idCooldown;
-			if (m_idCooldowns != null)
-			{
-				if (m_idCooldowns.TryGetValue(spell.Id, out idCooldown))
-				{
-					if (idCooldown.Until > DateTime.Now)
-					{
-						return true;
-					}
-
-					m_idCooldowns.Remove(spell.Id);
-					if (idCooldown is ActiveRecordBase)
-					{
-						RealmServer.Instance.AddMessage(() => ((ActiveRecordBase)idCooldown).Delete());
-					}
-				}
-			}
-			return false;
 		}
 
 		/// <summary>
 		/// Clears all pending spell cooldowns.
 		/// </summary>
-		/// <remarks>Requires IO-Context.</remarks>
 		public override void ClearCooldowns()
 		{
 			// send cooldown updates to client
-			if (m_idCooldowns != null)
+			foreach (var cd in m_idCooldowns)
 			{
-				foreach (var pair in m_idCooldowns)
-				{
-					SpellHandler.SendClearCoolDown(OwnerChar, (SpellId)pair.Key);
-				}
-				m_idCooldowns.Clear();
+				SpellHandler.SendClearCoolDown(OwnerChar, (SpellId)cd.SpellId);
 			}
-			if (m_categoryCooldowns != null)
+
+			foreach (var spell in m_byId.Values)
 			{
-				foreach (var spell in m_byId.Values)
+				foreach (var cd in m_categoryCooldowns)
 				{
-					if (m_categoryCooldowns.ContainsKey(spell.Category))
+					if (spell.Category == cd.CategoryId)
 					{
 						SpellHandler.SendClearCoolDown(OwnerChar, spell.SpellId);
+						break;
 					}
 				}
 			}
 
 			// remove and delete all cooldowns
-			var cds = m_idCooldowns;
-			var catCds = m_categoryCooldowns;
-			m_idCooldowns = null;
-			m_categoryCooldowns = null;
+			var cds = m_idCooldowns.ToArray();
+			var catCds = m_categoryCooldowns.ToArray();
+			m_idCooldowns.Clear();
+			m_categoryCooldowns.Clear();
+
 			RealmServer.Instance.AddMessage(new Message(() =>
 			{
-				if (cds != null)
+				foreach (var cooldown in cds)
 				{
-					foreach (var cooldown in cds.Values)
+					if (cooldown is ActiveRecordBase)
 					{
-						if (cooldown is ActiveRecordBase)
-						{
-							((ActiveRecordBase)cooldown).Delete();
-						}
+						((ActiveRecordBase)cooldown).Delete();
 					}
-					cds.Clear();
 				}
-				if (catCds != null)
+				foreach (var cooldown in catCds)
 				{
-					foreach (var cooldown in catCds.Values)
+					if (cooldown is ActiveRecordBase)
 					{
-						if (cooldown is ActiveRecordBase)
-						{
-							((ActiveRecordBase)cooldown).Delete();
-						}
+						((ActiveRecordBase)cooldown).Delete();
 					}
-					catCds.Clear();
 				}
 			}));
 
@@ -589,49 +590,25 @@ namespace WCell.RealmServer.Spells
 		public override void ClearCooldown(Spell cooldownSpell, bool alsoCategory = true)
 		{
 			var ownerChar = OwnerChar;
-			if (ownerChar != null)
+
+			// send cooldown update to client
+			SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
+			if (alsoCategory && cooldownSpell.Category != 0)
 			{
-				// send cooldown update to client
-				SpellHandler.SendClearCoolDown(ownerChar, cooldownSpell.SpellId);
-				if (alsoCategory && cooldownSpell.Category != 0)
+				foreach (var spell in m_byId.Values)
 				{
-					foreach (var spell in m_byId.Values)
+					if (spell.Category == cooldownSpell.Category)
 					{
-						if (spell.Category == cooldownSpell.Category)
-						{
-							SpellHandler.SendClearCoolDown(ownerChar, spell.SpellId);
-						}
+						SpellHandler.SendClearCoolDown(ownerChar, spell.SpellId);
 					}
 				}
 			}
 
 			// remove and delete
-			ISpellIdCooldown idCooldown;
-			ISpellCategoryCooldown catCooldown;
-			if (m_idCooldowns != null)
-			{
-				if (m_idCooldowns.TryGetValue(cooldownSpell.Id, out idCooldown))
-				{
-					m_idCooldowns.Remove(cooldownSpell.Id);
-				}
-			}
-			else
-			{
-				idCooldown = null;
-			}
+			ISpellIdCooldown idCooldown = m_idCooldowns.RemoveFirst(cd => cd.SpellId == cooldownSpell.Id);
+			ISpellCategoryCooldown catCooldown = m_categoryCooldowns.RemoveFirst(cd => cd.CategoryId == cooldownSpell.Category);
 
-			if (alsoCategory && m_categoryCooldowns != null)
-			{
-				if (m_categoryCooldowns.TryGetValue(cooldownSpell.Category, out catCooldown))
-				{
-					m_categoryCooldowns.Remove(cooldownSpell.Id);
-				}
-			}
-			else
-			{
-				catCooldown = null;
-			}
-
+			// enqueue task
 			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)
 			{
 				RealmServer.Instance.AddMessage(new Message(() =>
@@ -649,28 +626,18 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		private void FinalizeCooldowns(object sender)
+		private void SaveCooldowns()
 		{
-			lock (m_lock)
-			{
-				if (m_offlineCooldownTimer != null)
-				{
-					m_offlineCooldownTimer = null;
-					FinalizeCooldowns(ref m_idCooldowns);
-					FinalizeCooldowns(ref m_categoryCooldowns);
-				}
-			}
+			SaveCooldowns(m_idCooldowns);
+			SaveCooldowns(m_categoryCooldowns);
 		}
 
-		private void FinalizeCooldowns<T>(ref Dictionary<uint, T> cooldowns) where T : ICooldown
+		private void SaveCooldowns<T>(List<T> cooldowns) where T : ICooldown
 		{
-			if (cooldowns == null)
-				return;
-
-			Dictionary<uint, T> newCooldowns = null;
-			foreach (ICooldown cooldown in cooldowns.Values)
+			for (var i = cooldowns.Count - 1; i >= 0; i--)
 			{
-				if (cooldown.Until < DateTime.Now + TimeSpan.FromMinutes(1))
+				ICooldown cooldown = cooldowns[i];
+				if (cooldown.Until < DateTime.Now.AddMilliseconds(SpellHandler.MinCooldownSaveTimeMillis))
 				{
 					// already expired or will expire very soon
 					if (cooldown is ActiveRecordBase)
@@ -678,30 +645,27 @@ namespace WCell.RealmServer.Spells
 						// delete
 						((ActiveRecordBase)cooldown).Delete();
 					}
+					cooldowns.RemoveAt(i);
 				}
 				else
 				{
-					if (newCooldowns == null)
-					{
-						newCooldowns = new Dictionary<uint, T>();
-					}
-
 					var cd = cooldown.AsConsistent();
-					//if (cd.CharId != m_ownerId)
-					cd.CharId = m_ownerId;
-					cd.SaveAndFlush(); // update or create
-					newCooldowns.Add(cd.Identifier, (T) cd);
+					cd.CharId = Owner.EntityId.Low;
+					cd.Save(); // update or create
+					cooldowns.Add((T)cd);
 				}
 			}
-			cooldowns = newCooldowns;
 		}
+
 		#endregion
 
+		#region Save / Load
 		/// <summary>
 		/// Called to save runes (cds & spells are saved in another way)
 		/// </summary>
 		internal void OnSave()
 		{
+			SaveCooldowns();
 			if (m_runes != null)
 			{
 				var record = OwnerChar.Record;
@@ -709,5 +673,78 @@ namespace WCell.RealmServer.Spells
 				record.RuneCooldowns = m_runes.Cooldowns;
 			}
 		}
+
+		internal void LoadSpells()
+		{
+			var owner = OwnerChar;
+			var ownerRecord = owner.Record;
+
+			var dbSpells = SpellRecord.LoadAllRecordsFor(owner.EntityId.Low);
+			var specs = owner.SpecProfiles;
+			foreach (var record in dbSpells)
+			{
+				var spell = record.Spell;
+				if (spell == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn("Character \"{0}\" had invalid spell: {1} ({2})", this, record.SpellId,
+															(uint)record.SpellId);
+					continue;
+				}
+
+				if (spell.IsTalent)
+				{
+					if (record.SpecIndex < 0 || record.SpecIndex >= specs.Length)
+					{
+						LogManager.GetCurrentClassLogger().Warn(
+							"Character \"{0}\" had Talent-Spell {1} ({2}) but with invalid SpecIndex: {3}", this, record.SpellId,
+							(uint)record.SpellId, record.SpecIndex);
+						continue;
+					}
+					specs[record.SpecIndex].TalentSpells.Add(record);
+				}
+				else
+				{
+					ownerRecord.AbilitySpells.Add(record);
+					OnlyAdd(spell);		// add ability spell
+				}
+			}
+
+			// add talent spells
+			foreach (var spell in owner.CurrentSpecProfile.TalentSpells)
+			{
+				OnlyAdd(spell);
+			}
+		}
+
+		internal void LoadCooldowns()
+		{
+			var owner = OwnerChar;
+			var now = DateTime.Now;
+
+			foreach (var cd in PersistentSpellIdCooldown.LoadIdCooldownsFor(owner.EntityId.Low))
+			{
+				if (cd.Until > now)
+				{
+					m_idCooldowns.Add(cd);
+				}
+				else
+				{
+					cd.Delete();
+				}
+			}
+
+			foreach (var cd in PersistentSpellCategoryCooldown.LoadCategoryCooldownsFor(owner.EntityId.Low))
+			{
+				if (cd.Until > now)
+				{
+					m_categoryCooldowns.Add(cd);
+				}
+				else
+				{
+					cd.Delete();
+				}
+			}
+		}
+		#endregion
 	}
 }

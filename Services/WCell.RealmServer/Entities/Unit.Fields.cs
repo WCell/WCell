@@ -141,6 +141,12 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_target != value)
 				{
+					if (IsFighting)
+					{
+						log.Warn("Tried to change Target while fighting for: {0}", this);
+						return;	
+					}
+
 					if (value != null)
 					{
 						SetEntityId(UnitFields.TARGET, value.EntityId);
@@ -261,26 +267,26 @@ namespace WCell.RealmServer.Entities
 
 		public override int CasterLevel
 		{
-			get
-			{
-				return Level;
-			}
+			get { return Level; }
 		}
 
 		public override Faction Faction
 		{
-			get
-			{
-				return m_faction;
-			}
+			get { return m_faction; }
 			set
 			{
 				if (value == null)
 				{
 					throw new NullReferenceException(string.Format("Faction cannot be set to null (Unit: {0}, Region: {1})", this, m_region));
 				}
+
+				var affinityChanged = m_faction != null;
 				m_faction = value;
 				SetUInt32(UnitFields.FACTIONTEMPLATE, value.Template.Id);
+				if (affinityChanged)
+				{
+					OnAffinityChanged();
+				}
 			}
 		}
 
@@ -1394,7 +1400,7 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				SetInt32(UnitFields.BASE_HEALTH, value);
-				this.UpdateHealth();
+				this.UpdateMaxHealth();
 			}
 		}
 
@@ -1419,7 +1425,7 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				m_maxHealthModFlat = value;
-				this.UpdateHealth();
+				this.UpdateMaxHealth();
 			}
 		}
 
@@ -1429,7 +1435,7 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				SetFloat(UnitFields.MAXHEALTHMODIFIER, value);
-				this.UpdateHealth();
+				this.UpdateMaxHealth();
 			}
 		}
 
@@ -1467,10 +1473,10 @@ namespace WCell.RealmServer.Entities
 			{
 				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent | AuraStateMask.HealthAbove75Pct));
 			}
-			else 
+			else
 			{
 				AuraState = (AuraState & ~(AuraStateMask.Health35Percent | AuraStateMask.Health20Percent)) |
-				            AuraStateMask.HealthAbove75Pct;
+							AuraStateMask.HealthAbove75Pct;
 			}
 		}
 		#endregion
@@ -1549,13 +1555,12 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		internal int UpdatePower(int delayMillis)
+		internal void UpdatePower(int delayMillis)
 		{
 			var val = Power;
 			val += (m_PowerRegenPerTick * delayMillis + 500) / PowerFormulas.RegenTickDelayMillis;	// rounding
 			val = MathUtil.ClampMinMax(val, 0, MaxPower);
 			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
-			return val;
 		}
 
 		/// <summary>

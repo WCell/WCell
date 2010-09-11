@@ -23,7 +23,7 @@ namespace WCell.Tools.Maps
 			Vector3 min;
 			Vector3 max;
 
-			if ((wdt.Header.Header1 & WDTFlags.GlobalWMO) != 0)
+			if (wdt.Header.Header1.HasFlag(WDTFlags.GlobalWMO))
 			{
 				const float maxDim = TerrainConstants.TileSize * (32.0f);
 
@@ -121,10 +121,14 @@ namespace WCell.Tools.Maps
 			}
 
 			// TODO: Region bounds that in the file are a little off
-			min.X -= 200;
-			min.Y -= 200;
-			max.X += 200;
-			max.Y += 200;
+			min.X -= 200.0f;
+			min.Y -= 200.0f;
+		    max.X += 200.0f;
+			max.Y += 200.0f;
+
+            // Some bounding boxes (specifically the ones for the WMO-only tiles) have incorrect Z spans
+            min.Z = -2048.0f;
+            max.Z = 2048.0f;
 
 			//text.WriteLine(dbcMapEntry.Id + "\t" + wdtName + "\tMin: " + min + "\tMax: " + max);
 			Boundaries[wdt.Entry.Id] = new BoundingBox(min, max);

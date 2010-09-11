@@ -278,7 +278,7 @@ namespace WCell.RealmServer.Tests
 		public static void EnsureDBSetup()
 		{
 			EnsureMinimalSetup();
-			if (!RealmDBUtil.Initialized)
+			if (!RealmDBMgr.Initialized)
 			{
 				ResetDB();
 			}
@@ -290,7 +290,7 @@ namespace WCell.RealmServer.Tests
 
 			if (!RealmServer.Instance.IsRunning)
 			{
-				var dbSetup = RealmDBUtil.Initialized;
+				var dbSetup = RealmDBMgr.Initialized;
 
 				RealmServer.Instance.Start();
 				RealmServer.Instance.AuthClient.IsRunning = false;
@@ -308,7 +308,7 @@ namespace WCell.RealmServer.Tests
 
 		public static void ResetDB()
 		{
-			RealmDBUtil.Initialize();
+			RealmDBMgr.Initialize();
 
 			int count = CharacterRecord.GetCount();
 

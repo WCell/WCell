@@ -1,6 +1,7 @@
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Core.Initialization;
+using WCell.Core.Timers;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Instances;
@@ -199,8 +200,7 @@ namespace WCell.Addons.Default.Instances
 
 		public override void OnEnterCombat()
 		{
-			m_owner.PlaySound(5774);
-			NPC.Yell("Van Cleef pay big for your heads!");
+			m_owner.PlayTextAndSoundByEnglishPrefix("Van");	// Van Cleef pay big...
 			base.OnEnterCombat();
 		}
 
@@ -227,13 +227,10 @@ namespace WCell.Addons.Default.Instances
 	public class SneedShredderAttackAction : AIAttackAction
 	{
 		internal static Spell terrify, distractingPain, ejectSneed;
-		private DateTime timeSinceLastInterval;
-		private const int interVal = 1;
-		private int distractinPainTick;
-		private int terrifyTick;
+		private IUpdateObjectAction distractingPainTimer, terrifyTimer;
 
 		[Initialization(InitializationPass.Second)]
-		static void InitSneed()
+		public static void InitSneed()
 		{
 			// remember the Spells for later use
 			terrify = SpellHandler.Get(SpellId.Terrify);
@@ -248,58 +245,38 @@ namespace WCell.Addons.Default.Instances
 
 		public override void Start()
 		{
-			terrifyTick = 0;
-			distractinPainTick = 0;
-			timeSinceLastInterval = DateTime.Now;
+			distractingPainTimer = m_owner.CallPeriodically(12000, CastDistractingPain);
+			terrifyTimer = m_owner.CallPeriodically(21000, CastTerrify);
+
 			base.Start();
 		}
 
-		public override void Update()
+		public override void Stop()
 		{
-			var timeNow = DateTime.Now;
-			var timeBetween = timeNow - timeSinceLastInterval;
-
-			if (timeBetween.TotalSeconds >= interVal)
-			{
-				timeSinceLastInterval = timeNow;
-				if (CheckSpellCast())	// cast one of Sneed's special Spells
-				{
-					// idle a little after casting a spell
-					m_owner.Idle(1000);
-					return;
-				}
-			}
-
-			base.Update();
+			// remove spell cast timers
+			m_owner.RemoveUpdateAction(distractingPainTimer);
+			m_owner.RemoveUpdateAction(terrifyTimer);
+			base.Stop();
 		}
 
-		private bool CheckSpellCast()
+		void CastDistractingPain(WorldObject owner)
 		{
-			terrifyTick++;
-			distractinPainTick++;
-
-			if (distractinPainTick >= 12)
+			var chr = owner.GetNearbyRandomHostileCharacter();
+			if (chr != null)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
-				if (chr != null)
-				{
-					distractinPainTick = 0;
-					m_owner.SpellCast.Start(distractingPain, false, chr);
-				}
-				return true;
+				owner.SpellCast.Start(distractingPain, false, chr);
+				m_owner.Idle(1000);	// idle a little after casting a spell
 			}
+		}
 
-			if (terrifyTick >= 21)
+		void CastTerrify(WorldObject owner)
+		{
+			var chr = m_owner.GetNearbyRandomHostileCharacter();
+			if (chr != null)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
-				if (chr != null)
-				{
-					terrifyTick = 0;
-					m_owner.SpellCast.Start(terrify, false, chr);
-				}
-				return true;
+				m_owner.SpellCast.Start(terrify, false, chr);
+				m_owner.Idle(1000);	// idle a little after casting a spell
 			}
-			return false;
 		}
 	}
 
@@ -313,7 +290,7 @@ namespace WCell.Addons.Default.Instances
 		private static Spell disarm;
 
 		[Initialization(InitializationPass.Second)]
-		static void InitSneed()
+		public static void InitSneed()
 		{
 			disarm = SpellHandler.Get(6713);  //disarm
 		}
@@ -354,7 +331,7 @@ namespace WCell.Addons.Default.Instances
 			if (disarmTick >= 10)
 			{
 				disarmTick = 0;
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					m_owner.SpellCast.Start(disarm, false, chr);
@@ -391,7 +368,7 @@ namespace WCell.Addons.Default.Instances
 		private static Spell smiteBuff;
 
 		[Initialization(InitializationPass.Second)]
-		static void InitSmite()
+		public static void InitSmite()
 		{
 			smiteStomp = SpellHandler.Get(SpellId.SmiteStomp);
 			smiteBuff = SpellHandler.Get(SpellId.SmitesHammer);
@@ -440,6 +417,7 @@ namespace WCell.Addons.Default.Instances
 		/// </summary>
 		public void MoveToChest()
 		{
+			m_owner.IsInCombat = false;
 			m_owner.Target = null;				// deselect target so client wont display npc facing the last guy
 			m_owner.MoveToThenExecute(ChestLocation, unit => StartUsingChest());
 		}
@@ -452,11 +430,11 @@ namespace WCell.Addons.Default.Instances
 			m_owner.Brain.StopCurrentAction();
 
 			// look at chest and kneel in front of it
-			m_owner.Face(5.47f);
+			m_owner.Face(ChestLocation);
 			m_owner.StandState = StandState.Kneeling;
 			m_owner.Emote(EmoteType.SimpleApplaud);
 
-			m_owner.IdleThenExecute(2000, LeaveChest);	// wait 2 seconds
+			m_owner.IdleThenExecute(2000, LeaveChest);	// wait 2 seconds then leave and continue doing what we did before
 		}
 
 		/// <summary>

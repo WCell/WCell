@@ -29,29 +29,29 @@ namespace WCell.Constants.Pets
 		int ActionId
 		{
 			get { return (int)(m_ActionId & ActionMask); }
-			set
-			{
-				m_ActionId &= ~ActionMask;
-				m_ActionId |= ((uint)value & ActionMask);
-			}
 		}
 
 		public PetAction Action
 		{
 			get { return (PetAction)ActionId; }
-			set { ActionId = (int)value; }
+			set { Raw = (uint) value; }
 		}
 
 		public SpellId SpellId
 		{
 			get { return (SpellId)ActionId; }
-			set { ActionId = (int)value; }
+		}
+
+		public void SetSpell(SpellId id, PetActionType type)
+		{
+			Raw = (uint)id;
+			Type = type;
 		}
 
 		public PetAttackMode AttackMode
 		{
 			get { return (PetAttackMode)((byte)ActionId); }
-			set { ActionId = (int)value; }
+			set { Raw = (uint) value; }
 		}
 
 		public bool IsAutoCastEnabled
@@ -99,11 +99,7 @@ namespace WCell.Constants.Pets
 
 		public static implicit operator PetActionEntry(uint data)
 		{
-			return new PetActionEntry
-			{
-				ActionId = (int)GetActionId(data),
-				Type = GetType(data)
-			};
+			return new PetActionEntry { Raw = data };
 		}
 
 		public static implicit operator uint(PetActionEntry entry)

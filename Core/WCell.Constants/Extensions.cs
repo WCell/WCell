@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Achievements;
 using WCell.Constants.Login;
 using WCell.Constants.NPCs;
 using WCell.Constants.Items;
@@ -124,6 +125,11 @@ namespace WCell.Constants
 		{
 			return (flags & otherFlags) != 0;
 		}
+
+        public static bool HasAnyFlag(this AchievementFlags flags, AchievementFlags otherFlags)
+        {
+            return (flags & otherFlags) != 0;
+        }
 
 		public static ShapeshiftMask ToMask(this ShapeshiftForm form)
 		{

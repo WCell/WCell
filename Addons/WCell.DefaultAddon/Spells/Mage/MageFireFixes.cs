@@ -36,6 +36,28 @@ namespace WCell.Addons.Default.Spells.Mage
 				effect.AffectMask = burnoutEffect.AffectMask;		// set the correct affect mask
 				effect.TriggerSpellId = SpellId.ClassSkillBurnout;	// trigger the mana consumption spell
 			});
+
+			// Improved Scorch has the wrong trigger
+			SpellLineId.MageFireImprovedScorch.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;	// proc on all spell casts of Scorch
+			});
+
+			// Impact needs the right triggers
+			SpellLineId.MageFireImpact.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				// triggerEffect.AddAffectingSpells(...); // TODO: Triggered by all damaging spells
+			});
+			// Impact's triggered effect also needs some adjustments
+			SpellHandler.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
+				triggerEffect.ImplicitTargetA = ImplicitTargetType.SingleEnemy;
+				triggerEffect.AddAffectingSpells(SpellLineId.MageFireBlast);		// triggered by fire blast only
+			}, SpellId.EffectImpactRank1);
 		}
 	}
 

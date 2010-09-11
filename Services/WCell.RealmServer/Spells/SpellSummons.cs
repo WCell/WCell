@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				minion = entry.Create();
+				minion = entry.Create(cast.TargetMap.DifficultyIndex);
 
 				minion.Position = targetLoc;
 				minion.Brain.IsRunning = true;
@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Spells
 	{
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
-			var npc = entry.Create(cast.Map, targetLoc);
+			var npc = entry.SpawnAt(cast.Map, targetLoc);
 			npc.RemainingDecayDelayMillis = cast.Spell.GetDuration(cast.CasterReference);
 			npc.Creator = cast.CasterReference.EntityId;	// should be right
 			return npc;

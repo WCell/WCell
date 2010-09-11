@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Talents
 					}
 					diff = m_rank - value;
 
-					Talents.Owner.UpdateFreeTalentPointsSilently(diff);
+					Talents.UpdateFreeTalentPointsSilently(diff);
 
 					for (var i = m_rank; i >= value + 1; i--)
 					{
@@ -89,12 +89,8 @@ namespace WCell.RealmServer.Talents
 
 					if (value < 0)
 					{
+						// remove from TalentCollection
 						Talents.ById.Remove(Entry.Id);
-					}
-					else
-					{
-						// start next higher rank
-						((Unit)Talents.Owner).Auras.CreateSelf(Entry.Spells[value]);
 					}
 				}
 				else if (value > m_rank)
@@ -113,7 +109,7 @@ namespace WCell.RealmServer.Talents
 					}
 
 					// take points
-					Talents.Owner.UpdateFreeTalentPointsSilently(-diff);
+					Talents.UpdateFreeTalentPointsSilently(-diff);
 				}
 				else
 				{
@@ -146,7 +142,7 @@ namespace WCell.RealmServer.Talents
 			Rank = -1;
 			if (update)
 			{
-				TalentHandler.SendTalentGroupList(Talents.Owner);
+				TalentHandler.SendTalentGroupList(Talents);
 			}
 		}
 	}

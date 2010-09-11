@@ -157,7 +157,7 @@ namespace WCell.RealmServer.GameObjects
 				GOMgr.Entries.TryGetValue((uint)EntryId, out Entry);
 				if (Entry == null)
 				{
-					ContentHandler.OnInvalidDBData("GOTemplate ({0}) had an invalid EntryId.", this);
+					ContentMgr.OnInvalidDBData("GOTemplate ({0}) had an invalid EntryId.", this);
 					return;
 				}
 			}

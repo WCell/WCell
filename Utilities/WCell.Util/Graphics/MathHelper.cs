@@ -19,5 +19,15 @@ namespace WCell.Util.Graphics
         }
 
 
+
+        internal static float Max(float f1, float f2)
+        {
+            return (f1 > f2) ? f1 : f2;
+        }
+
+        internal static float Min(float f1, float f2)
+        {
+            return (f1 < f2) ? f1 : f2; 
+        }
     }
 }

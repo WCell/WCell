@@ -306,18 +306,27 @@ namespace WCell.Util.Graphics
                 return new Point(Right, Bottom);
             }
         }
+        
+        /// <summary>
+        /// Whether the rectangle contains the given Point. 
+        /// Points laying on the rectangles border are considered to be contained.
+        /// </summary>
         public bool Contains(Point point)
         {
             return Contains(point.X, point.Y);
         }
 
-        public bool Contains(float x, float y)
+        /// <summary>
+        /// Whether the rectangle contains the given Point(x, y). 
+        /// Points laying on the rectangles border are considered to be contained.
+        /// </summary>
+        public bool Contains(float xPos, float yPos)
         {
             if (IsEmpty)
             {
                 return false;
             }
-            return ContainsInternal(x, y);
+            return ContainsInternal(xPos, yPos);
         }
 
         public bool Contains(Rect rect)
@@ -326,7 +335,8 @@ namespace WCell.Util.Graphics
             {
                 return false;
             }
-            return ((((x <= rect.x) && (y <= rect.y)) && ((x + width) >= (rect.x + rect.width))) && ((y + height) >= (rect.y + rect.height)));
+            return ((((x <= rect.x) && (y <= rect.y)) &&
+                     ((x + width) >= (rect.x + rect.width))) && ((y + height) >= (rect.y + rect.height)));
         }
 
         public bool IntersectsWith(Rect rect)
@@ -336,6 +346,124 @@ namespace WCell.Util.Graphics
                 return false;
             }
             return ((((rect.Left <= Right) && (rect.Right >= Left)) && (rect.Top <= Bottom)) && (rect.Bottom >= Top));
+        }
+
+        public bool IntersectsWith(Ray2D ray)
+        {
+            var time = IntersectWith(ray);
+            return time.HasValue;
+        }
+
+        public float? IntersectWith(Ray2D ray)
+        {
+            var time = 0.0f;
+            var maxValue = float.MaxValue;
+            
+            if (Math.Abs(ray.Direction.X) < 1E-06f)
+            {
+                if ((ray.Position.X < X) || (ray.Position.X > Right))
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                var invDenom = 1f / ray.Direction.X;
+                var time0 = (X - ray.Position.X) * invDenom;
+                var time1 = (Right - ray.Position.X) * invDenom;
+                if (time0 > time1)
+                {
+                    var temp = time0;
+                    time0 = time1;
+                    time1 = temp;
+                }
+                time = MathHelper.Max(time0, time);
+                maxValue = MathHelper.Min(time1, maxValue);
+                if (time > maxValue)
+                {
+                    return null;
+                }
+            }
+
+            if (Math.Abs(ray.Direction.Y) < 1E-06f)
+            {
+                if ((ray.Position.Y < Y) || (ray.Position.Y > Bottom))
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                var invDenom = 1f / ray.Direction.Y;
+                var time0 = (Y - ray.Position.Y) * invDenom;
+                var time1 = (Bottom - ray.Position.Y) * invDenom;
+                if (time0 > time1)
+                {
+                    var temp = time0;
+                    time0 = time1;
+                    time1 = temp;
+                }
+                time = MathHelper.Max(time0, time);
+                maxValue = MathHelper.Min(time1, maxValue);
+                if (time > maxValue)
+                {
+                    return null;
+                }
+            }
+
+            return time;
+        }
+
+        public bool IntersectsWith(Point p1, Point p2)
+        {
+            // Find min and max X for the segment
+
+            var minX = p1.X;
+            var maxX = p2.X;
+
+            if (p1.X > p2.X)
+            {
+                minX = p2.X;
+                maxX = p1.X;
+            }
+
+            // Find the intersection of the segment's and rectangle's x-projections
+
+            if (maxX > Right) maxX = Right;
+            if (minX < Left) minX = Left;
+
+            if (minX > maxX) // If their projections do not intersect return false
+            {
+                return false;
+            }
+
+            // Find corresponding min and max Y for min and max X we found before
+            var minY = p1.Y;
+            var maxY = p2.Y;
+
+            var dx = p2.X - p1.X;
+
+            if (Math.Abs(dx) > 0.000001)
+            {
+                var a = (p2.Y - p1.Y)/dx;
+                var b = p1.Y - a*p1.X;
+                minY = a*minX + b;
+                maxY = a*maxX + b;
+            }
+
+            if (minY > maxY)
+            {
+                var tmp = maxY;
+                maxY = minY;
+                minY = tmp;
+            }
+
+            // Find the intersection of the segment's and rectangle's y-projections
+
+            if (maxY > Bottom) maxY = Bottom;
+            if (minY < Top) minY = Top;
+
+            return !(minY > maxY);
         }
 
         public void Intersect(Rect rect)
@@ -359,6 +487,118 @@ namespace WCell.Util.Graphics
         {
             rect1.Intersect(rect2);
             return rect1;
+        }
+
+        public bool ClipRay(Ray2D ray2d, out Vector2 new1, out Vector2 new2)
+        {
+            var point1 = ray2d.Position;
+            var point2 = ray2d.Position + ray2d.Direction*float.MaxValue;
+
+            return ClipLine(point1, point2, out new1, out new2);
+        }
+
+        public bool ClipLine(Vector2 point1, Vector2 point2, out Vector2 new1, out Vector2 new2)
+        {
+            new1 = point1;
+            new2 = point2;
+
+            var x1 = point1.X;
+            var y1 = point1.Y;
+            var x2 = point2.X;
+            var y2 = point2.Y;
+
+            var minX = x;
+            var minY = y;
+            var maxX = x + height;
+            var maxY = y + height;
+
+            var p1Flags = CalcOutFlags(x1, y1);
+            var p2Flags = CalcOutFlags(x2, y2);
+
+            while ((p1Flags | p2Flags) != OutFlags.None)
+            {
+                if ((p1Flags & p2Flags) != OutFlags.None) return false;
+
+                var dx = (x2 - x1);
+                var dy = (y2 - y1);
+
+                if (p1Flags != OutFlags.None)
+                {
+                    // first point is outside, so we update it against one of the
+                    // four sides then continue
+                    if ((p1Flags & OutFlags.Left) == OutFlags.Left
+                        && dx != 0.0)
+                    {
+                        y1 = y1 + (minX - x1)*dy/dx;
+                        x1 = minX;
+                    }
+                    else if ((p1Flags & OutFlags.Right) == OutFlags.Right
+                             && dx != 0.0)
+                    {
+                        y1 = y1 + (maxX - x1)*dy/dx;
+                        x1 = maxX;
+                    }
+                    else if ((p1Flags & OutFlags.Bottom) == OutFlags.Bottom
+                             && dy != 0.0)
+                    {
+                        x1 = x1 + (maxY - y1)*dx/dy;
+                        y1 = maxY;
+                    }
+                    else if ((p1Flags & OutFlags.Top) == OutFlags.Top
+                             && dy != 0.0)
+                    {
+                        x1 = x1 + (minY - y1)*dx/dy;
+                        y1 = minY;
+                    }
+                    p1Flags = CalcOutFlags(x1, y1);
+                }
+                else if (p2Flags != OutFlags.None)
+                {
+                    // second point is outside, so we update it against one of the
+                    // four sides then continue
+                    if ((p2Flags & OutFlags.Left) == OutFlags.Left
+                        && dx != 0.0)
+                    {
+                        y2 = y2 + (minX - x2)*dy/dx;
+                        x2 = minX;
+                    }
+                    else if ((p2Flags & OutFlags.Right) == OutFlags.Right
+                             && dx != 0.0)
+                    {
+                        y2 = y2 + (maxX - x2)*dy/dx;
+                        x2 = maxX;
+                    }
+                    else if ((p2Flags & OutFlags.Bottom) == OutFlags.Bottom
+                             && dy != 0.0)
+                    {
+                        x2 = x2 + (maxY - y2)*dx/dy;
+                        y2 = maxY;
+                    }
+                    else if ((p2Flags & OutFlags.Top) == OutFlags.Top
+                             && dy != 0.0)
+                    {
+                        x2 = x2 + (minY - y2)*dx/dy;
+                        y2 = minY;
+                    }
+                    p2Flags = CalcOutFlags(x2, y2);
+                }
+            }
+
+            new1 = new Vector2(x1, y1);
+            new2 = new Vector2(x2, y2);
+            return true;
+        }
+
+        private OutFlags CalcOutFlags(float x1, float y1)
+        {
+            var flags = OutFlags.None;
+            if (x1 < Left) flags |= OutFlags.Left;
+            else if (x1 > Right) flags |= OutFlags.Right;
+
+            if (y1 < Top) flags |= OutFlags.Top;
+            else if (y1 > Bottom) flags |= OutFlags.Bottom;
+
+            return flags;
         }
 
         public void Union(Rect rect)
@@ -483,9 +723,9 @@ namespace WCell.Util.Graphics
             }
         }
 
-        private bool ContainsInternal(float x, float y)
+        private bool ContainsInternal(float xPos, float yPos)
         {
-            return ((((x >= this.x) && ((x - width) <= this.x)) && (y >= this.y)) && ((y - height) <= this.y));
+            return ((((xPos >= x) && ((xPos - width) <= x)) && (yPos >= y)) && ((yPos - height) <= y));
         }
 
         static Rect()
@@ -498,5 +738,15 @@ namespace WCell.Util.Graphics
                 height = float.NegativeInfinity
             };
         }
-    } 
+    }
+
+    [Flags]
+    enum OutFlags : byte
+    {
+        None = 0x00,
+        Top = 0x01,
+        Bottom = 0x02,
+        Left = 0x04,
+        Right = 0x08
+    }
 }

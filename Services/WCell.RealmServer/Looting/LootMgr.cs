@@ -96,15 +96,15 @@ namespace WCell.RealmServer.Looting
 		{
 			if (!Loaded)
 			{
-				ContentHandler.Load<NPCLootItemEntry>();
-				ContentHandler.Load<ItemLootItemEntry>();
-				ContentHandler.Load<GOLootItemEntry>();
-				ContentHandler.Load<FishingLootItemEntry>();
-				ContentHandler.Load<MillingLootItemEntry>();
-				ContentHandler.Load<PickPocketLootItemEntry>();
-				ContentHandler.Load<ProspectingLootItemEntry>();
-				ContentHandler.Load<DisenchantingLootItemEntry>();
-				ContentHandler.Load<ReferenceLootItemEntry>();
+				ContentMgr.Load<NPCLootItemEntry>();
+				ContentMgr.Load<ItemLootItemEntry>();
+				ContentMgr.Load<GOLootItemEntry>();
+				ContentMgr.Load<FishingLootItemEntry>();
+				ContentMgr.Load<MillingLootItemEntry>();
+				ContentMgr.Load<PickPocketLootItemEntry>();
+				ContentMgr.Load<ProspectingLootItemEntry>();
+				ContentMgr.Load<DisenchantingLootItemEntry>();
+				ContentMgr.Load<ReferenceLootItemEntry>();
 
 				for (var i = ReferenceEntries.Count - 1; i >= 0; i--)
 				{

@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_owner.Position.GetDistanceSquared(ref m_destination) < 1f;
+				return m_owner.Position.DistanceSquared(ref m_destination) < 1f;
 			}
 		}
 

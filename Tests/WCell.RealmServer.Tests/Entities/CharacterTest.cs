@@ -394,7 +394,7 @@ namespace WCell.RealmServer.Tests.Entities
 			var learntRank = 2;
 
 			chr1.EnsureInWorldAndLiving();
-			chr1.Talents.Owner.FreeTalentPoints = 12;
+			chr1.Talents.Owner.Level = 50;
 			chr1.Talents.Set(learntTalent, learntRank);
 
 			var chr2 = Setup.AllianceCharacterPool.Create();
@@ -427,7 +427,7 @@ namespace WCell.RealmServer.Tests.Entities
 
 
 			var talentInfo = client2.DequeueSMSGInfo(RealmServerOpCode.SMSG_INSPECT_TALENT);
-			Assert.AreEqual(chr1.Talents.Owner.FreeTalentPoints, (int)talentInfo.Parser.ParsedPacket["FreePoints"].UIntValue);
+			Assert.AreEqual(chr1.Talents.GetFreeTalentPointsForLevel(chr1.Level), (int)talentInfo.Parser.ParsedPacket["FreePoints"].UIntValue);
 
 			var talentParser = talentInfo.Parser.Packet;
 			var bytes = talentParser.ReadBytes(((int)learntTalent.Index / 8) + 1);

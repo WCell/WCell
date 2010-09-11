@@ -90,7 +90,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 
 			if (m_path == null)
 			{
-				ContentHandler.OnInvalidDBData("GOEntry for MOTransport \"{0}\" has invalid Path-id (Field 0): " + TaxiPathId, this);
+				ContentMgr.OnInvalidDBData("GOEntry for MOTransport \"{0}\" has invalid Path-id (Field 0): " + TaxiPathId, this);
 			}
 			else
 			{

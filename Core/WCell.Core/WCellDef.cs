@@ -38,6 +38,8 @@ namespace WCell.Core
 
         public const string DBC_ACHIEVEMENTS = "Achievement.dbc";
 
+        public const string DBC_CHARTITLES = "CharTitles.dbc";
+
         public const string DBC_ACHIEVEMENT_CATEGORIES = "Achievement_Category.dbc";
 
         public const string DBC_ACHIEVEMENT_CRITERIAS = "Achievement_Criteria.dbc";
@@ -95,6 +97,8 @@ namespace WCell.Core
 		public const string DBC_ITEMRANDOMSUFFIX = "ItemRandomSuffix.dbc";
 
         public const string DBC_MAPDIFFICULTY = "MapDifficulty.dbc";
+
+        public const string DBC_WORLDMAPOVERLAY = "WorldMapOverlay.dbc";
 
         public const string DBC_PVPDIFFICULTY = "PvpDifficulty.dbc";
 

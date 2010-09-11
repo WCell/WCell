@@ -5,6 +5,7 @@ using System.Text;
 using Castle.ActiveRecord;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.Core.Database;
 
 namespace WCell.RealmServer.Items
 {
@@ -18,36 +19,62 @@ namespace WCell.RealmServer.Items
 
 		protected override void OnLoad()
 		{
-			// existing item: Load petition info from DB
-			// TODO: Consider when to load from DB
-			m_Petition = PetitionRecord.Find((int)EntityId.Low);
+			m_Petition = PetitionRecord.Find((int)Owner.EntityId.Low);
 		}
+
+        protected internal override void DoDestroy()
+        {
+            Petition.Delete();
+            base.DoDestroy();
+        }
 
 		public PetitionRecord Petition
 		{
 			get { return m_Petition; }
+            set { m_Petition = value; }
 		}
 	}
 
-	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class PetitionRecord : ActiveRecordBase<PetitionRecord>
+	[ActiveRecord("PetitionRecord", Access = PropertyAccess.Property)]
+	public class PetitionRecord : WCellRecord<PetitionRecord>
 	{
-		[Field(NotNull = true)]
-		private int m_OwnerId;
 
-		public PetitionRecord(uint ownerId, uint itemId)
+		[Field("Type", NotNull = true)]
+		private int m_Type;
+
+        [PrimaryKey(PrimaryKeyType.Assigned, "OwnerId")]
+        private int m_OwnerId
+        {
+            get;
+            set;
+        }
+
+        public PetitionRecord()
+        {
+        }
+
+		public PetitionRecord(string name, uint ownerId, uint itemId, PetitionType type)
 		{
+            Name = name;
 			OwnerId = ownerId;
-			ItemId = (int) itemId;
-			SignedIds = new List<int>(3);
+			ItemId = (int)itemId;
+			SignedIds = new List<uint>(9);
+            Type = type;
 		}
 
-		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public int ItemId
+        [Property("ItemId", NotNull = true)]
+		private int ItemId
 		{
 			get;
-			private set;
+			set;
 		}
+
+        [Property("Name", NotNull = true, Unique = true)]
+        public string Name
+        {
+            get;
+            set;
+        }
 
 		public uint OwnerId
 		{
@@ -55,15 +82,14 @@ namespace WCell.RealmServer.Items
 			set { m_OwnerId = (int)value; }
 		}
 
-		[Property(NotNull = true)]
-		public PetitionType Type
-		{
-			get;
-			set;
-		}
+        public PetitionType Type
+        {
+            get { return (PetitionType)m_Type; }
+            set { m_Type = (int)value; }
+        }
 
-		[Property(NotNull = true)]
-		public List<int> SignedIds
+		[Property("SignedIds", NotNull = true)]
+		public List<uint> SignedIds
 		{
 			get;
 			set;
@@ -71,12 +97,27 @@ namespace WCell.RealmServer.Items
 
 		public void AddSignature(uint signedId)
 		{
-			SignedIds.Add((int)signedId);
+			SignedIds.Add(signedId);
+            Update();
 		}
 
-		public static PetitionRecord LoadRecord(uint id)
+		public static PetitionRecord LoadRecord(int ownerId)
 		{
-			return Find((int)id);
+			return Find(ownerId);
 		}
+
+        public static bool CanBuyPetition(uint ownerId)
+        {
+            if(Exists((int)ownerId))
+                return false;
+            else
+                return true;
+        }
+
+        public static PetitionRecord LoadRecordByItemId(uint itemId)
+        {
+            var property = FindAllByProperty("ItemId", (int)itemId);
+            return property[0];
+        }
 	}
 }

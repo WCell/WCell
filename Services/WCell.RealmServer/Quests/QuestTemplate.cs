@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Quests
 		/// <summary>
 		/// 
 		/// </summary>
-		public uint RewardTitleId;
+		public TitleId RewardTitleId;
 
 		/* 
 		public uint PlayerKillCount;
@@ -218,12 +218,11 @@ namespace WCell.RealmServer.Quests
 		public string[] Titles;
 
 		/// <summary>
-		/// Title (name) of the quest to be shown in <see cref="QuestLog"/>.
+		/// Title (name) of the quest to be shown in <see cref="QuestLog"/> in the server's default language.
 		/// </summary>
-		[NotPersistent]
-		public string Title
+		public string DefaultTitle
 		{
-			get { return Titles != null ? Titles.LocalizeWithDefaultLocale() : "[unknown]"; }
+			get { return Titles != null ? Titles.LocalizeWithDefaultLocale() : "[unknown Quest]"; }
 		}
 
 		/// <summary>
@@ -232,8 +231,11 @@ namespace WCell.RealmServer.Quests
 		[Persistent((int)ClientLocale.End)]
 		public string[] Instructions;
 
+		/// <summary>
+		/// Objective of the quest to be shown in <see cref="QuestLog"/> in the server's default language.
+		/// </summary>
 		[NotPersistent]
-		public string Objective
+		public string DefaultObjective
 		{
 			get { return Instructions.LocalizeWithDefaultLocale(); }
 		}
@@ -245,7 +247,7 @@ namespace WCell.RealmServer.Quests
 		public string[] Details;
 
 		[NotPersistent]
-		public string Detail
+		public string DefaultDetailText
 		{
 			get { return Details.LocalizeWithDefaultLocale(); }
 		}
@@ -257,7 +259,7 @@ namespace WCell.RealmServer.Quests
 		public string[] EndTexts;
 
 		[NotPersistent]
-		public string EndText
+		public string DefaultEndText
 		{
 			get { return EndTexts.LocalizeWithDefaultLocale(); }
 		}
@@ -326,7 +328,7 @@ namespace WCell.RealmServer.Quests
 		public string[] OfferRewardTexts;
 
 		[NotPersistent]
-		public string OfferRewardText
+		public string DefaultOfferRewardText
 		{
 			get { return OfferRewardTexts.LocalizeWithDefaultLocale(); }
 		}
@@ -339,7 +341,7 @@ namespace WCell.RealmServer.Quests
 		public string[] ProgressTexts;
 
 		[NotPersistent]
-		public string ProgressText
+		public string DefaultProgressText
 		{
 			get { return ProgressTexts.LocalizeWithDefaultLocale(); }
 		}
@@ -1011,19 +1013,22 @@ namespace WCell.RealmServer.Quests
 			{
 				if (RewardReputations[i].Faction != 0)
 				{
-				    int value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
+				    var value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
 					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
-			//TODO Give RewardTitle
-			//chr.Titles.Add(RewardTitle);
-			return true;
+            if (RewardTitleId != TitleId.None)
+            {
+                receiver.SetTitle(RewardTitleId, false);
+            }
+		    return true;
 		}
 
         public int CalcRewRep(int valueId, int value)
         {
             if (value != 0)
                 return value*100;
+
             var index = (valueId > 0) ? 0 : 1; 
             return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
         }
@@ -1109,7 +1114,7 @@ namespace WCell.RealmServer.Quests
 
 		public override string ToString()
 		{
-			return Title + " (Id: " + Id + ")";
+			return DefaultTitle + " (Id: " + Id + ")";
 		}
 
 		#region Events

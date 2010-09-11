@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Entities
 	/// <summary>
 	/// Represents a non-player character.
 	/// </summary>
-	public partial class NPC : Unit, IQuestHolder, IHasTalents
+	public partial class NPC : Unit, IQuestHolder
 	{
 		public static float BossSpellCritChance = 5f;
 
@@ -71,21 +71,23 @@ namespace WCell.RealmServer.Entities
 		protected TimerEntry m_decayTimer;
 		private string m_name;
 		protected IPetRecord m_PetRecord;
-		protected TalentCollection m_petTalents;
+		protected PetTalentCollection m_petTalents;
 		protected ThreatCollection m_threatCollection;
 		protected AIGroup m_group;
 
 		internal protected NPC()
 		{
 			m_threatCollection = new ThreatCollection();
+
+			// auras
+			m_auras = new NPCAuraCollection(this);
+
+			m_spells = NPCSpellCollection.Obtain(this);
 		}
 
 		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
-			// auras
-			m_auras = new NPCAuraCollection(this);
-
 			SpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
@@ -99,10 +101,6 @@ namespace WCell.RealmServer.Entities
 				{
 					DisplayId = spawnEntry.DisplayIdOverride;
 				}
-				else if (entry.ModelInfos != null && entry.ModelInfos.Length > 0)
-				{
-					Model = entry.ModelInfos.GetRandom();
-				}
 			}
 			else
 			{
@@ -110,10 +108,44 @@ namespace WCell.RealmServer.Entities
 				spawnEntry = entry.FirstSpawnEntry;
 			}
 
+			GenerateId(entry.Id);
+
+			SetEntry(entry);
+		}
+
+		public void SetEntry(NPCId entryId)
+		{
+			var entry = NPCMgr.GetEntry(entryId);
+			SetEntry(entry);
+		}
+
+		public void SetEntry(NPCEntry entry)
+		{
 			Entry = entry;
+
+			if (m_spawnPoint == null || m_spawnPoint.SpawnEntry.DisplayIdOverride == 0)
+			{
+				if (entry.ModelInfos.Length > 0)
+				{
+					Model = entry.ModelInfos.GetRandom();
+				}
+			}
 			NativeDisplayId = DisplayId;
 
+			if (m_brain != null)
+			{
+				// overriding already existing entry
+			}
+			else
+			{
+				// new
+				m_Movement = new Movement(this);
+				m_brain = m_entry.BrainCreator(this);
+				m_brain.IsRunning = true;
+			}
+
 			// misc stuff
+			Name = m_entry.DefaultName;
 			Faction = entry.Faction;
 			NPCFlags = entry.NPCFlags;
 			UnitFlags = entry.UnitFlags;
@@ -160,9 +192,15 @@ namespace WCell.RealmServer.Entities
 			SetUInt32(UnitFields.MAXHEALTH, health);
 			SetUInt32(UnitFields.BASE_HEALTH, health);
 
-			if (spawnEntry == null || !spawnEntry.IsDead)
+			if (m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
 			{
 				SetUInt32(UnitFields.HEALTH, health);
+			}
+
+			if (m_entry.Regenerates)
+			{
+				Regenerates = true;
+				HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
 			}
 
 			var mana = entry.GetRandomMana();
@@ -171,8 +209,6 @@ namespace WCell.RealmServer.Entities
 			SetInt32(UnitFields.POWER1, mana);
 
 			HoverHeight = entry.HoverHeight;
-
-			m_Movement = new Movement(this);
 
 			PowerCostMultiplier = 1f;
 
@@ -190,16 +226,6 @@ namespace WCell.RealmServer.Entities
 				Flying++;
 			}
 
-			if (m_entry.Spells != null)
-			{
-				EnsureSpells();
-			}
-
-			if (IsImmovable)
-			{
-				InitImmovable();
-			}
-
 			AddStandardEquipment();
 			if (m_entry.AddonData != null)
 			{
@@ -214,16 +240,17 @@ namespace WCell.RealmServer.Entities
 
 			CanMelee = m_mainWeapon != GenericWeapon.Peace;
 
-			m_brain = m_entry.BrainCreator(this);
-			m_brain.IsRunning = true;
+			if (IsImmovable)
+			{
+				InitImmovable();
+			}
 
 			AddMessage(() =>
 			{
 				// Set Level/Scale after NPC is in world:
 				if (!HasPlayerMaster)
 				{
-					var level = entry.GetRandomLevel();
-					Level = level;
+					Level = entry.GetRandomLevel();
 				}
 				else
 				{
@@ -334,29 +361,14 @@ namespace WCell.RealmServer.Entities
 			}
 			private set
 			{
-				if (m_entry != null)
-				{
-					throw new InvalidOperationException("Trying to change Entry of NPC: " + this);
-				}
-
 				m_entry = value;
-				GenerateId(value.Id);
-				if (m_entry.Regenerates)
-				{
-					Regenerates = true;
-					HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
-				}
-				m_name = m_entry.DefaultName;
 				EntryId = value.Id;
 			}
 		}
 
 		public override string Name
 		{
-			get
-			{
-				return m_name;
-			}
+			get { return m_name; }
 			set
 			{
 				m_name = value;
@@ -453,19 +465,12 @@ namespace WCell.RealmServer.Entities
 
 		public NPCSpellCollection NPCSpells
 		{
-			get
-			{
-				if (m_spells == null)
-				{
-					m_spells = new NPCSpellCollection(this);
-				}
-				return (NPCSpellCollection)m_spells;
-			}
+			get { return (NPCSpellCollection)m_spells; }
 		}
 
 		public override SpellCollection Spells
 		{
-			get { return NPCSpells; }	// ensure that spell collection is created
+			get { return m_spells; }
 		}
 
 		public override SpawnPoint SpawnPoint
@@ -834,27 +839,6 @@ namespace WCell.RealmServer.Entities
 			return mask.HasFlag((CreatureMask)(1 << ((int)Entry.Type - 1)));
 		}
 
-		internal void SetScale()
-		{
-			var level = Level;
-			if (HasMaster && m_entry.Family != null)
-			{
-				if (level >= m_entry.Family.MaxScaleLevel)
-				{
-					ScaleX = m_entry.Family.MaxScale * m_entry.Scale;
-				}
-				else
-				{
-					ScaleX = (m_entry.Family.MinScale + ((m_entry.Family.MaxScaleLevel - level) * m_entry.Family.ScaleStep)) *
-						m_entry.Scale;
-				}
-			}
-			else
-			{
-				ScaleX = m_entry.Scale;
-			}
-		}
-
 		#region Movement / Transport
 		protected internal override void OnEnterRegion()
 		{
@@ -990,7 +974,6 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
-			Target = null;
 			m_auras.ClearWithoutCleanup();
 			base.DeleteNow();
 		}
@@ -1008,7 +991,15 @@ namespace WCell.RealmServer.Entities
 		#region Combat
 		public override float MaxAttackRange
 		{
-			get { return Math.Max(base.MaxAttackRange, NPCSpells.MaxCombatSpellRange); }
+			get
+			{
+				var range = base.MaxAttackRange;
+				if (m_spells != null && NPCSpells.MaxCombatSpellRange > range)
+				{
+					range = NPCSpells.MaxCombatSpellRange;
+				}
+				return range;
+			}
 		}
 
 		protected override void OnEnterCombat()
@@ -1070,62 +1061,34 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Talk
-		public override void Say(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, message);
-		}
-
-		public void Say(string message, float radius)
+		public override void Say(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, message, radius);
 		}
 
-		public void Say(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Say(string[] localizedMsgs, float radius)
+		public override void Say(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterSay, SpokenLanguage, localizedMsgs, radius);
 		}
 
-		public override void Yell(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, message);
-		}
 
-		public void Yell(string message, float radius)
+		public override void Yell(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, message, radius);
 		}
 
-		public void Yell(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Yell(string[] localizedMsgs, float radius)
+		public override void Yell(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, SpokenLanguage, localizedMsgs, radius);
 		}
 
-		public override void Emote(string message)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message);
-		}
 
-		public void Emote(string message, float radius)
+		public override void Emote(float radius, string message)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message, radius);
 		}
 
-		public void Emote(string[] localizedMsgs)
-		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs);
-		}
-
-		public void Emote(string[] localizedMsgs, float radius)
+		public void Emote(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs, radius);
 		}
@@ -1134,9 +1097,9 @@ namespace WCell.RealmServer.Entities
 		/// Yells to everyone within the region to hear
 		/// </summary>
 		/// <param name="message"></param>
-		public virtual void YellToRegion(string message)
+		public void YellToRegion(string[] messages)
 		{
-			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterYell, ChatLanguage.Universal, message, -1);
+			Yell(-1, messages);
 		}
 		#endregion
 

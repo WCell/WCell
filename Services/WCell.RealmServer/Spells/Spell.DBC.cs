@@ -215,7 +215,7 @@ namespace WCell.RealmServer.Spells
 					spell.AttributesExD = (SpellAttributesExD)GetUInt32(rawData, currentIndex++);          // 8
 					spell.AttributesExE = (SpellAttributesExE)GetUInt32(rawData, currentIndex++);          // 9
 					spell.AttributesExF = (SpellAttributesExF)GetUInt32(rawData, currentIndex++);          // 10
-					spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);             // 11
+					spell.RequiredShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);     // 11
 					spell.Unk_322_1 = GetUInt32(rawData, currentIndex++);                                  // 12
 					spell.ExcludeShapeshiftMask = (ShapeshiftMask)GetUInt32(rawData, currentIndex++);      // 13
 					spell.Unk_322_2 = GetUInt32(rawData, currentIndex++);                                  // 14
@@ -238,7 +238,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcCastTimeReader.Entries.TryGetValue(castTimeIndex, out spell.CastDelay))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid CastTime-Entry: {1}", spell.Name, castTimeIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid CastTime-Entry: {1}", spell.Name, castTimeIndex);
 						}
 					}
 
@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcDurationReader.Entries.TryGetValue(durationIndex, out spell.Durations))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Duration-Entry: {1}", spell.Name, durationIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Duration-Entry: {1}", spell.Name, durationIndex);
 						}
 					}
 
@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Spells
 					{
 						if (!mappeddbcRangeReader.Entries.TryGetValue(rangeIndex, out spell.Range))
 						{
-							ContentHandler.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Range-Entry: {1}", spell.Name, rangeIndex);
+							ContentMgr.OnInvalidClientData("DBC Spell \"{0}\" referred to invalid Range-Entry: {1}", spell.Name, rangeIndex);
 						}
 					}
 

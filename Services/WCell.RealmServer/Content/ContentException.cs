@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Content
 		{
 			get
 			{
-				return "<" + ContentHandler.ContentProviderName +"> " + base.Message;
+				return "<" + ContentMgr.ContentProviderName +"> " + base.Message;
 			}
 		}
 	}

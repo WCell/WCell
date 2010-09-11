@@ -179,13 +179,13 @@ namespace WCell.RealmServer.RacesClasses
 			{
 				InitClasses();
 				InitRaces();
-				ContentHandler.Load<ClassLevelSetting>();
-				ContentHandler.Load<Archetype>();
+				ContentMgr.Load<ClassLevelSetting>();
+				ContentMgr.Load<Archetype>();
 
-				ContentHandler.Load<PlayerSpellEntry>();
+				ContentMgr.Load<PlayerSpellEntry>();
 				//ContentHandler.Load<PlayerSkillEntry>();
-				ContentHandler.Load<PlayerActionButtonEntry>();
-				ContentHandler.Load<LevelStatInfo>();
+				ContentMgr.Load<PlayerActionButtonEntry>();
+				ContentMgr.Load<LevelStatInfo>();
 
 				if (ItemMgr.Loaded)
 				{

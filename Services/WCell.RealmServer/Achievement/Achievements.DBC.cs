@@ -63,18 +63,22 @@ namespace WCell.RealmServer.Achievement
 			entry.AchievementCriteriaId = (AchievementCriteriaId)GetUInt32(rawData, 0);
 			entry.AchievementEntryId = (AchievementEntryId)GetUInt32(rawData, 1);
 
+
+			var achievement = entry.AchievementEntry;
+			if (achievement == null)
+			{
+				// invalid criteria does not belong to any entry
+				return;
+			}
+
+			// add criterion to achievement
+			achievement.Criteria.Add(entry);
+
 			CopyTo(rawData, 3, Marshal.SizeOf(typeof(AchievementCriteriaEntry)), entry);
 
 			entry.CompletionFlag = GetUInt32(rawData, 26);
 			entry.GroupFlag = (AchievementCriteriaGroupFlags) GetUInt32(rawData, 27);
 			entry.TimeLimit = GetUInt32(rawData, 29);
-
-			var achievement = entry.AchievementEntry;
-			if (achievement != null)
-			{
-				// add criterion to achievement
-				achievement.Criteria.Add(entry);
-			}
 
 			// add to critera map
 			var list = AchievementMgr.GetEntriesByCriterion(criteriaType);

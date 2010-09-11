@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="AchievementReward">
+    <DefaultTable>achievement_reward</DefaultTable>
+    <Flat Name="AchievementEntryId" Column="entry" />
+    <Flat Name="Gender" Column="gender" />
+    <Flat Name="AllianceTitle" Column="title_A" />
+    <Flat Name="HordeTitle" Column="title_H" />
+    <Flat Name="Item" Column="item" />
+    <Flat Name="Sender" Column="sender" />
+
+    <FlatArray Name="Subjects">
+      <Column Name="subject" />
+      <Column Name="subject_loc1" Table="locales_achievement_reward" />
+      <Column Name="subject_loc2" Table="locales_achievement_reward" />
+      <Column Name="subject_loc3" Table="locales_achievement_reward" />
+      <Column Name="subject_loc4" Table="locales_achievement_reward" />
+      <Column Name="subject_loc5" Table="locales_achievement_reward" />
+      <Column Name="subject_loc6" Table="locales_achievement_reward" />
+      <Column Name="subject_loc7" Table="locales_achievement_reward" />
+    </FlatArray>
+
+    <FlatArray Name="Bodies">
+      <Column Name="text" />
+      <Column Name="text_loc1" Table="locales_achievement_reward" />
+      <Column Name="text_loc2" Table="locales_achievement_reward" />
+      <Column Name="text_loc3" Table="locales_achievement_reward" />
+      <Column Name="text_loc4" Table="locales_achievement_reward" />
+      <Column Name="text_loc5" Table="locales_achievement_reward" />
+      <Column Name="text_loc6" Table="locales_achievement_reward" />
+      <Column Name="text_loc7" Table="locales_achievement_reward" />
+    </FlatArray>
+    
+  </DataHolder>
+</DataHolders>

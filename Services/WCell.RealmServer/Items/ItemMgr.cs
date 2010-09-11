@@ -639,8 +639,8 @@ namespace WCell.RealmServer.Items
 			if (!Loaded)
 			{
 				//ContentHandler.Load<ItemRandomSuffixInfo>();
-				ContentHandler.Load<ItemTemplate>();
-				ContentHandler.Load<ItemRandomEnchantEntry>();
+				ContentMgr.Load<ItemTemplate>();
+				ContentMgr.Load<ItemRandomEnchantEntry>();
 
 				OnLoaded();
 
@@ -710,7 +710,7 @@ namespace WCell.RealmServer.Items
 					var item = GetTemplate(itemInfo.ItemId);
 					if (item == null)
 					{
-						ContentHandler.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
+						ContentMgr.OnInvalidDBData("QuestTemplate \"{0}\" refered to non-existing Item: {1}",
 													   quest, itemInfo);
 					}
 					else
@@ -736,7 +736,7 @@ namespace WCell.RealmServer.Items
 					var quest = QuestMgr.GetTemplate(item.QuestId);
 					if (quest == null)
 					{
-						ContentHandler.OnInvalidDBData("Item {0} had invalid QuestId: {1}", item, item.QuestId);
+						ContentMgr.OnInvalidDBData("Item {0} had invalid QuestId: {1}", item, item.QuestId);
 						continue;
 					}
 					quest.Starters.Add(item);

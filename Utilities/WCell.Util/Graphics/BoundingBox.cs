@@ -109,6 +109,32 @@ namespace WCell.Util.Graphics
             Max = new Vector3(maxX, maxY, maxZ);
         }
 
+        public BoundingBox(IEnumerable<Vector3> vectors)
+        {
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var minZ = float.MaxValue;
+
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
+            var maxZ = float.MinValue;
+
+            foreach (var vector in vectors)
+            {
+                minX = Math.Min(vector.X, minX);
+                maxX = Math.Max(vector.X, maxX);
+
+                minY = Math.Min(vector.Y, minY);
+                maxY = Math.Max(vector.Y, maxY);
+
+                minZ = Math.Min(vector.Z, minZ);
+                maxZ = Math.Max(vector.Z, maxZ);
+            }
+
+            Min = new Vector3(minX, minY, minZ);
+            Max = new Vector3(maxX, maxY, maxZ);
+        }
+
 		public float Width
 		{
 			get { return Max.X - Min.X; }
@@ -156,7 +182,7 @@ namespace WCell.Util.Graphics
 		public IntersectionType Intersects(ref BoundingSphere sphere)
 		{
 			Vector3 clampedCenter = sphere.Center.Clamp(ref Min, ref Max);
-			float dist = sphere.Center.GetDistanceSquared(ref clampedCenter);
+			float dist = sphere.Center.DistanceSquared(ref clampedCenter);
 			float radius = sphere.Radius;
 
 			if (dist > (radius * radius))
@@ -176,6 +202,19 @@ namespace WCell.Util.Graphics
 
 			return IntersectionType.Intersects;
 		}
+
+        public bool Intersects(BoundingBox box)
+        {
+            if ((this.Max.X < box.Min.X) || (this.Min.X > box.Max.X))
+            {
+                return false;
+            }
+            if ((this.Max.Y < box.Min.Y) || (this.Min.Y > box.Max.Y))
+            {
+                return false;
+            }
+            return ((this.Max.Z >= box.Min.Z) && (this.Min.Z <= box.Max.Z));
+        }
 
 		/// <summary>
 		/// Checks whether the <see cref="BoundingBox" /> contains the given <see cref="BoundingBox" />.
@@ -211,6 +250,24 @@ namespace WCell.Util.Graphics
 			       && (Min.Y <= point.Y && point.Y <= Max.Y)
 			       && (Min.Z <= point.Z && point.Z <= Max.Z);
 		}
+
+        public ContainmentType Contains(BoundingSphere sphere)
+        {
+            float num2;
+            Vector3 vector;
+            Vector3.Clamp(ref sphere.Center, ref this.Min, ref this.Max, out vector);
+            Vector3.DistanceSquared(ref sphere.Center, ref vector, out num2);
+            float radius = sphere.Radius;
+            if (num2 > (radius * radius))
+            {
+                return ContainmentType.Disjoint;
+            }
+            if (((((this.Min.X + radius) <= sphere.Center.X) && (sphere.Center.X <= (this.Max.X - radius))) && (((this.Max.X - this.Min.X) > radius) && ((this.Min.Y + radius) <= sphere.Center.Y))) && (((sphere.Center.Y <= (this.Max.Y - radius)) && ((this.Max.Y - this.Min.Y) > radius)) && ((((this.Min.Z + radius) <= sphere.Center.Z) && (sphere.Center.Z <= (this.Max.Z - radius))) && ((this.Max.X - this.Min.X) > radius))))
+            {
+                return ContainmentType.Contains;
+            }
+            return ContainmentType.Intersects;
+        }
 
 		/// <summary>
 		/// Checks equality of two boxes.

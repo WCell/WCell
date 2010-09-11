@@ -56,7 +56,10 @@ namespace WCell.RealmServer.Spells
 		[NotVariable]
 		public static bool AnimateSpellAdd = true;
 
-		public static TimeSpan DefaultCooldownSaveDelay = TimeSpan.FromMinutes(30);
+		/// <summary>
+		/// Minimum length of cooldowns that are to be saved to DB in milliseconds
+		/// </summary>
+		public static int MinCooldownSaveTimeMillis = 30;
 
 		public static float SpellCritBaseFactor = 1.5f;
 
@@ -92,12 +95,6 @@ namespace WCell.RealmServer.Spells
 			new SynchronizedDictionary<EntityId, DynamicObject>();
 
 		public static readonly List<Spell> QuestCompletors = new List<Spell>(100);
-
-		/// <summary>
-		/// All PlayerSpellCollections of logged out Characters with pending cooldown updates
-		/// </summary>
-		public static readonly Dictionary<uint, PlayerSpellCollection> PlayerSpellCollections =
-			new SynchronizedDictionary<uint, PlayerSpellCollection>(500);
 
 		public static readonly Dictionary<uint, Dictionary<uint, Spell>> NPCSpells =
 			new Dictionary<uint, Dictionary<uint, Spell>>(1000);
@@ -332,7 +329,7 @@ namespace WCell.RealmServer.Spells
 				Spell.InitDbcs();
 				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
 
-				ContentHandler.Load<SpellLearnRelation>();
+				ContentMgr.Load<SpellLearnRelation>();
 				InitSummonHandlers();
 				SkillHandler.Initialize();
 				TalentMgr.Initialize();
@@ -392,9 +389,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		private static void LoadOverrides()
 		{
-			var mapper = ContentHandler.GetMapper<Spell>();
+			var mapper = ContentMgr.GetMapper<Spell>();
 			mapper.AddObjectsUInt(ById);
-			ContentHandler.Load(mapper);
+			ContentMgr.Load(mapper);
 		}
 
 		internal static void InitTools()

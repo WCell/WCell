@@ -17,6 +17,8 @@
 using System;
 using System.Collections.Generic;
 using WCell.Constants;
+using WCell.Constants.Achievements;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -27,6 +29,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Factions;
@@ -46,7 +49,6 @@ using WCell.RealmServer.Mail;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.Network;
-using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Privileges;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Skills;
@@ -60,6 +62,7 @@ using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
 using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Titles;
 
 namespace WCell.RealmServer.Entities
 {
@@ -100,6 +103,7 @@ namespace WCell.RealmServer.Entities
 		protected GroupUpdateFlags m_groupUpdateFlags = GroupUpdateFlags.None;
 
 		protected GuildMember m_guildMember;
+        protected ArenaTeamMember[] m_arenaTeamMember = new ArenaTeamMember[3];
 
 		/// <summary>
 		/// All skills of this Character
@@ -566,10 +570,10 @@ namespace WCell.RealmServer.Entities
 			set { SetInt32(PlayerFields.WATCHED_FACTION_INDEX, value); }
 		}
 
-		public uint ChosenTitle
+        public TitleBitId ChosenTitle
 		{
-			get { return GetUInt32(PlayerFields.CHOSEN_TITLE); }
-			set { SetUInt32(PlayerFields.CHOSEN_TITLE, value); }
+            get { return (TitleBitId)GetUInt32(PlayerFields.CHOSEN_TITLE); }
+			set { SetUInt32(PlayerFields.CHOSEN_TITLE, (uint)value); }
 		}
 
 		public CharTitlesMask KnownTitleMask
@@ -650,6 +654,11 @@ namespace WCell.RealmServer.Entities
 			internal set { SetUInt32(PlayerFields.GUILDRANK, value); }
 		}
 
+        public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
+        {
+            SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
+        }
+
 		/// <summary>
 		/// The 3 classmasks of spells to not use require reagents for
 		/// </summary>
@@ -713,44 +722,6 @@ namespace WCell.RealmServer.Entities
 			{
 				var rating = ratings[i];
 				ModCombatRating((CombatRating)rating, delta);
-			}
-		}
-
-		private void UpdateChancesByCombatRating(CombatRating rating)
-		{
-			// TODO: Update influence
-			switch (rating)
-			{
-				case CombatRating.Dodge:
-					UnitUpdates.UpdateDodgeChance(this);
-					break;
-				case CombatRating.Parry:
-					UnitUpdates.UpdateParryChance(this);
-					break;
-				case CombatRating.Block:
-					UnitUpdates.UpdateBlockChance(this);
-					break;
-				case CombatRating.MeleeCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.RangedCritChance:
-					UnitUpdates.UpdateCritChance(this);
-					break;
-				case CombatRating.SpellCritChance:
-					UnitUpdates.UpdateSpellCritChance(this);
-					break;
-				case CombatRating.DefenseSkill:
-					UnitUpdates.UpdateDefense(this);
-					break;
-				case CombatRating.MeleeHitChance:
-					UnitUpdates.UpdateMeleeHitChance(this);
-					break;
-				case CombatRating.RangedHitChance:
-					UnitUpdates.UpdateRangedHitChance(this);
-					break;
-				case CombatRating.Expertise:
-					UnitUpdates.UpdateExpertise(this);
-					break;
 			}
 		}
 
@@ -1168,12 +1139,13 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
-			var actions = m_record.ActionButtons;
+			CurrentSpecProfile.IsDirty = true;
+			var actions = CurrentSpecProfile.ActionButtons;
 			btnIndex = btnIndex * 4;
 			if (action == 0)
 			{
 				// unset it
-				Array.Copy(ActionButton.Empty, 0, actions, btnIndex, ActionButton.Size);
+				Array.Copy(ActionButton.EmptyButton, 0, actions, btnIndex, ActionButton.Size);
 			}
 			else
 			{
@@ -1182,6 +1154,7 @@ namespace WCell.RealmServer.Entities
 				actions[btnIndex + 2] = (byte)((action & 0xFF000) >> 16);
 				actions[btnIndex + 3] = type;
 			}
+
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
@@ -1205,7 +1178,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(ActionButton btn, bool update = true)
 		{
-			btn.Set(m_record.ActionButtons);
+			btn.Set(CurrentSpecProfile.ActionButtons);
+			CurrentSpecProfile.IsDirty = true;
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
@@ -1217,41 +1191,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public byte[] ActionButtons
 		{
-			get { return m_record.ActionButtons; }
-			internal set { m_record.ActionButtons = value; }
+			get { return CurrentSpecProfile.ActionButtons; }
 		}
-
-		public struct ActionButton
-		{
-			public const uint Size = 4;
-			public const uint MaxAmount = 144;
-
-			public static readonly byte[] Empty = new byte[Size];
-
-			public uint Index;
-			public ushort Action;
-			public byte Type;
-			public byte Info;
-
-			public void Set(byte[] actions)
-			{
-				var index = Index * 4;
-				actions[index] = (byte)(Action & 0x00FF);
-				actions[index + 1] = (byte)((Action & 0xFF00) >> 8);
-				actions[index + 2] = Type;
-				actions[index + 3] = Info;
-			}
-
-			public static void Set(byte[] actions, uint index, ushort action, byte type, byte info)
-			{
-				index = index * 4;
-				actions[index] = (byte)(action & 0x00FF);
-				actions[index + 1] = (byte)((action & 0xFF00) >> 8);
-				actions[index + 2] = type;
-				actions[index + 3] = info;
-			}
-		}
-
 		#endregion
 
 		#region Custom Properties
@@ -1273,7 +1214,6 @@ namespace WCell.RealmServer.Entities
 		public Ticket Ticket { get; internal set; }
 
 		#region Base Unit Fields Overrides
-
 		public override int Health
 		{
 			get { return base.Health; }
@@ -1347,7 +1287,6 @@ namespace WCell.RealmServer.Entities
 				base.Level = value;
 				//Update Group Update flags
 				GroupUpdateFlags |= GroupUpdateFlags.Level;
-				this.UpdateLevel();
 			}
 		}
 
@@ -1443,6 +1382,11 @@ namespace WCell.RealmServer.Entities
 				var value = (byte)(byteVal | (1 << bit));
 				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + (zone.ExplorationBit >> 5), index % 4, value);
 				m_record.ExploredZones[index] = value;
+
+                foreach (var worldMapOverlay in zone.WorldMapOverlays)
+			    {
+                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);   
+			    }
 			}
 
 			foreach (var child in zone.ChildZones)
@@ -1474,7 +1418,7 @@ namespace WCell.RealmServer.Entities
 
 		#endregion
 
-		#region Properties
+		#region Misc Properties
 
 		public override bool IsInWorld
 		{
@@ -1550,6 +1494,14 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 		}
+
+        /// <summary>
+        /// The ArenaTeamMember object of this Character (if it he/she is in an arena team)
+        /// </summary>
+        public ArenaTeamMember[] ArenaTeamMember
+        {
+            get { return m_arenaTeamMember; }
+        }
 
 		/// <summary>
 		/// Characters get disposed after Logout sequence completed and
@@ -2035,7 +1987,7 @@ namespace WCell.RealmServer.Entities
 
 				//m_record.FreeTalentPoints = value;
 				SetUInt32(PlayerFields.CHARACTER_POINTS1, (uint)value);
-				TalentHandler.SendTalentGroupList(this);
+				TalentHandler.SendTalentGroupList(m_talents);
 			}
 		}
 
@@ -2083,6 +2035,64 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return RelationMgr.Instance.HasPassiveRelations(EntityId.Low, CharacterRelationType.GuildInvite); }
 		}
+
+        public bool HasTitle(TitleId titleId)
+        {
+            var titleEntry = TitleMgr.GetTitleEntry(titleId);
+            if(titleEntry == null)
+            {
+                // TO-DO: report about an error
+                return false;
+            }
+            var bitIndex = titleEntry.BitIndex;
+
+            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
+            uint flag = (uint)(1 << (int)bitIndex % 32);
+
+            return ((CharTitlesMask) GetUInt32(fieldIndexOffset)).HasFlag((CharTitlesMask) flag);
+        }
+
+        public bool HasTitle(TitleBitId titleBitId)
+        {
+            CharacterTitleEntry titleEntry = TitleMgr.GetTitleEntry(titleBitId);
+            if (titleEntry == null)
+                return false;
+            return HasTitle(titleEntry.TitleId);
+        }
+
+        public void SetTitle(TitleId titleId, bool lost)
+        {
+            var titleEntry = TitleMgr.GetTitleEntry(titleId);
+            if (titleEntry == null)
+            {
+                log.Warn(string.Format("TitleId: {0} could not be found.", (uint) titleId));
+                return;
+            }
+            var bitIndex = titleEntry.BitIndex;
+
+            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
+            var flag = (uint)(1 << (int)bitIndex % 32);
+
+            if(lost)
+            {
+                if (!HasTitle(titleId))
+                    return;
+
+                var value = GetUInt32(fieldIndexOffset) & ~flag;
+                SetUInt32(fieldIndexOffset, value);
+            }
+            else
+            {
+                if (HasTitle(titleId))
+                    return;
+
+                var value = GetUInt32(fieldIndexOffset) | flag;
+                SetUInt32(fieldIndexOffset, value);
+            }
+
+            TitleHandler.SendTitleEarned(this, titleEntry, lost);
+
+        }
 
 		#endregion
 	}

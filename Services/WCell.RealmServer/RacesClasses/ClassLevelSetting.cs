@@ -25,7 +25,7 @@ namespace WCell.RealmServer.RacesClasses
 			var clss = ArchetypeMgr.GetClass(ClassId);
 			if (clss == null)
 			{
-				ContentHandler.OnInvalidDBData("Invalid ClassId in BaseClassSetting: {0} ({1})", ClassId, (int)ClassId);
+				ContentMgr.OnInvalidDBData("Invalid ClassId in BaseClassSetting: {0} ({1})", ClassId, (int)ClassId);
 			}
 			else
 			{

@@ -4,6 +4,11 @@
     <DefaultTable>creature_template</DefaultTable>
 
     <Flat Name="Id" Column="entry" Type="UInt32" />
+    <FlatArray Name="DifficultyOverrideEntryIds">
+      <Column Name="difficulty_entry_1"/>
+      <Column Name="difficulty_entry_2"/>
+      <Column Name="difficulty_entry_3"/>
+    </FlatArray>
     <FlatArray Name="DisplayIds">
       <Column Name="modelid_A"/>
       <Column Name="modelid_A2"/>

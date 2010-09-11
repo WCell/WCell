@@ -144,8 +144,8 @@ namespace WCell.Tools.Spells
 				return;
 			}
 
-			RealmDBUtil.Initialize();
-			ContentHandler.Initialize();
+			RealmDBMgr.Initialize();
+			ContentMgr.Initialize();
 			SpellHandler.LoadSpells();
 			SpellHandler.Initialize2();
 

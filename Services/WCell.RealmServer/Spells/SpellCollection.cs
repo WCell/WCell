@@ -18,8 +18,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Castle.ActiveRecord;
+using Cell.Core;
 using NLog;
 using WCell.Constants.Spells;
+using WCell.RealmServer.Misc;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.Util.NLog;
 using WCell.Util.Threading;
@@ -34,32 +37,40 @@ namespace WCell.RealmServer.Spells
 	/// </summary>
 	public abstract class SpellCollection : IEnumerable<Spell>
 	{
-		public static readonly int SpellEnhancerCount = (int)Utility.GetMaxEnum<SpellModifierType>() + 1;
+		public static readonly ObjectPool<List<Spell>> SpellListPool = ObjectPoolMgr.CreatePool(() => new List<Spell>(), true);
 
 		/// <summary>
 		/// All spells by id
 		/// </summary>
-		protected Dictionary<uint, Spell> m_byId;
+		protected Dictionary<SpellId, Spell> m_byId;
 
 		/// <summary>
 		/// Additional effects to be triggered when casting certain Spells
 		/// </summary>
 		private List<AddTargetTriggerHandler> m_TargetTriggers;
 
-
-		protected SpellCollection(Unit owner)
-			: this(owner, true)
+		#region Init & Cleanup
+		protected SpellCollection()
 		{
-
+			m_byId = new Dictionary<SpellId, Spell>();
 		}
 
-		protected SpellCollection(Unit owner, bool initDictionary)
+		protected virtual void Initialize(Unit owner)
 		{
-			if (initDictionary)
-				m_byId = new Dictionary<uint, Spell>(60);
-
 			Owner = owner;
 		}
+
+		protected internal virtual void Recycle()
+		{
+			Owner = null;
+
+			m_byId.Clear();
+			if (m_TargetTriggers != null)
+			{
+				m_TargetTriggers.Clear();
+			}
+		}
+		#endregion
 
 		/// <summary>
 		/// Required by SpellCollection
@@ -83,10 +94,9 @@ namespace WCell.RealmServer.Spells
 			get { return m_byId.Count > 0; }
 		}
 
-		public Dictionary<uint, Spell> SpellsById
+		public IEnumerable<Spell> AllSpells
 		{
-			get { return m_byId; }
-			internal set { m_byId = value; }
+			get { return m_byId.Values; }
 		}
 
 		/// <summary>
@@ -113,7 +123,7 @@ namespace WCell.RealmServer.Spells
 		public virtual void AddSpell(Spell spell)
 		{
 			//Add(id, spell, true);
-			m_byId[spell.Id] = spell;
+			m_byId[spell.SpellId] = spell;
 			OnAdd(spell);
 		}
 
@@ -170,22 +180,22 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void OnlyAdd(SpellId id)
 		{
-			m_byId.Add((uint)id, SpellHandler.ById.Get((uint)id));
+			m_byId.Add(id, SpellHandler.ById.Get((uint)id));
 		}
 
 		public void OnlyAdd(Spell spell)
 		{
-			m_byId.Add(spell.Id, spell);
+			m_byId.Add(spell.SpellId, spell);
 		}
 
 		public bool Contains(uint id)
 		{
-			return m_byId.ContainsKey(id);
+			return m_byId.ContainsKey((SpellId)id);
 		}
 
 		public bool Contains(SpellId id)
 		{
-			return m_byId.ContainsKey((uint)id);
+			return m_byId.ContainsKey(id);
 		}
 
 		public Spell this[SpellId id]
@@ -193,7 +203,7 @@ namespace WCell.RealmServer.Spells
 			get
 			{
 				Spell spell;
-				m_byId.TryGetValue((uint)id, out spell);
+				m_byId.TryGetValue(id, out spell);
 				return spell;
 			}
 		}
@@ -203,7 +213,7 @@ namespace WCell.RealmServer.Spells
 			get
 			{
 				Spell spell;
-				m_byId.TryGetValue(id, out spell);
+				m_byId.TryGetValue((SpellId)id, out spell);
 				return spell;
 			}
 		}
@@ -243,9 +253,9 @@ namespace WCell.RealmServer.Spells
 			return true;
 		}
 
-		public virtual void Remove(Spell spell)
+		public virtual bool Remove(Spell spell)
 		{
-			Replace(spell, null);
+			return Replace(spell, null);
 		}
 
 		public virtual void Clear()
@@ -266,7 +276,7 @@ namespace WCell.RealmServer.Spells
 		public void Replace(SpellId oldSpellId, SpellId newSpellId)
 		{
 			Spell oldSpell, newSpell = SpellHandler.Get(newSpellId);
-			if (m_byId.TryGetValue((uint)oldSpellId, out oldSpell))
+			if (m_byId.TryGetValue(oldSpellId, out oldSpell))
 			{
 				Replace(oldSpell, newSpell);
 			}
@@ -275,18 +285,27 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Replaces or (if newSpell == null) removes oldSpell; does nothing if oldSpell doesn't exist.
 		/// </summary>
-		public virtual void Replace(Spell oldSpell, Spell newSpell)
+		public virtual bool Replace(Spell oldSpell, Spell newSpell)
 		{
 			//if (m_byId.Remove((uint)oldSpell))
-			m_byId.Remove(oldSpell.Id);
-			if (oldSpell.IsPassive)
+			if (m_byId.Remove(oldSpell.SpellId))
 			{
-				Owner.Auras.Cancel(oldSpell);
+				if (oldSpell.IsPassive)
+				{
+					Owner.Auras.Cancel(oldSpell);
+				}
+				if (newSpell != null)
+				{
+					AddSpell(newSpell);
+				}
+				return true;
 			}
+
 			if (newSpell != null)
 			{
 				AddSpell(newSpell);
 			}
+			return false;
 		}
 
 		public virtual void AddDefaultSpells()

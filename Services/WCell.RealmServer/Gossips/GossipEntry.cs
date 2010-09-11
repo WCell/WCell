@@ -159,7 +159,7 @@ namespace WCell.RealmServer.Gossips
 		{
 			if (m_Entries == null)
 			{
-				ContentHandler.OnInvalidDBData("Entries is null in: " + this);
+				ContentMgr.OnInvalidDBData("Entries is null in: " + this);
 				return;
 			}
 
@@ -179,7 +179,7 @@ namespace WCell.RealmServer.Gossips
 			}
 			else
 			{
-				ContentHandler.OnInvalidDBData("Invalid id: " + this);
+				ContentMgr.OnInvalidDBData("Invalid id: " + this);
 			}
 		}
 

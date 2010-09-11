@@ -14,27 +14,40 @@ namespace WCell.MPQTool.StormLibWrapper
     {
         public const int MAX_PATH = 260;
         public const string StormLibDllName = "StormLib.dll";
-		const string StormLibFolder = "../../Libraries/Binaries/Release/Stormlib/";
-		private const string StormLib64 = StormLibFolder + "StormLib64.dll";
-		private const string StormLib32 = StormLibFolder + "StormLib32.dll";
-
+		public static string StormLibFolder = "../../Libraries/Binaries/Release/Stormlib/";
+		
 		static NativeMethods()
 		{
-			InitAPI();
+			//InitAPI();
 		}
 
-		static void InitAPI()
-		{
-			if (Environment.Is64BitProcess)
+        public static string StormLib64
+        {
+            get
+            {
+                return (StormLibFolder + "StormLib64.dll");
+            }
+        }
+
+        public static string StormLib32
+        {
+            get
+            {
+                return (StormLibFolder + "StormLib32.dll");
+            }
+        }
+
+        public static void InitAPI()
+        {
+            if (Environment.Is64BitProcess)
 			{
 				File.Copy(Path.GetFullPath(StormLib64), StormLibDllName, true);
+			    return;
 			}
-			else
-			{
-				File.Copy(Path.GetFullPath(StormLib32), StormLibDllName, true);
-			}
-		}
-        
+
+            File.Copy(Path.GetFullPath(StormLib32), StormLibDllName, true);
+        }
+
         /// Return Type: BOOL->int
         ///lpFileName: LPCSTR->CHAR*
         ///dwPriority: DWORD->unsigned int
@@ -66,13 +79,13 @@ namespace WCell.MPQTool.StormLibWrapper
         ///dwSearchScope: DWORD->unsigned int
         ///hFile: HANDLE*
         [DllImport(StormLibDllName, EntryPoint = "SFileOpenFileEx")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr OpenFileEx(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName, OpenFileFlags searchScope, out IntPtr fileHandle);
 
 
         [DllImport(StormLibDllName, EntryPoint = "SFileHasFile")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        public static extern IntPtr HasFile(IntPtr archiveHandle, [In] [MarshalAs(UnmanagedType.LPStr)] string fileName);
 
         /// <summary>
         /// Returns data about the first file in the ListFile that matches the given search mask
@@ -93,8 +106,7 @@ namespace WCell.MPQTool.StormLibWrapper
         /// <param name="fileData">A FileFindData structure with the search result.</param>
         /// <returns>A handle for the updated Search object</returns>
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindNextFile")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
+        public static extern IntPtr ListFileFindNext(IntPtr searchHandle, out FileFindData fileData);
 
 
         [DllImport(StormLibDllName, EntryPoint = "SListFileFindClose")]

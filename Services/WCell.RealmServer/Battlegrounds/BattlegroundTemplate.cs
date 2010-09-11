@@ -71,14 +71,14 @@ namespace WCell.RealmServer.Battlegrounds
 			RegionTemplate = World.GetRegionTemplate(RegionId);
 			if (RegionTemplate == null)
 			{
-				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
 					RegionId, (int)RegionId);
 				return;
 			}
 
 			if (BattlegroundMgr.Templates.Length <= (int)Id)
 			{
-				ContentHandler.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid BG-Id: {0} (#{1})",
 					Id, (int)Id);
 				return;
 			}

@@ -91,7 +91,7 @@ namespace WCell.RealmServer.RacesClasses
             var setting = Settings[level];
             if (setting == null)
             {
-                ContentHandler.OnInvalidDBData("{0} has no ClassLevelSetting for level {1}", this, level);
+                ContentMgr.OnInvalidDBData("{0} has no ClassLevelSetting for level {1}", this, level);
                 return new ClassLevelSetting();
             }
             return setting;

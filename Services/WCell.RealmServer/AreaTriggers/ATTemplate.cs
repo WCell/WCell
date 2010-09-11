@@ -89,7 +89,7 @@ namespace WCell.RealmServer.AreaTriggers
 			var trigger = AreaTriggerMgr.AreaTriggers.Get(Id);
 			if (trigger == null)
 			{
-				ContentHandler.OnInvalidDBData("AreaTriggerEntry {0} (#{1}, Type: {2}) had invalid AreaTrigger-id.", Name, Id, Type);
+				ContentMgr.OnInvalidDBData("AreaTriggerEntry {0} (#{1}, Type: {2}) had invalid AreaTrigger-id.", Name, Id, Type);
 				return;
 			}
 			else

@@ -278,6 +278,19 @@ namespace WCell.RealmServer.AI
 
 			return targets;
 		}
+
+		/// <summary>
+		/// Returns the aggressor at the given 0-based index within the collection; or the next one above, if there is no such target.
+		/// Note: The aggressor with Rank = 0 is usually the CurrentAggressor
+		/// </summary>
+		public Unit GetAggressorByThreatRank(int rank)
+		{
+			if (AggressorPairs.Count <= rank)
+			{
+				return AggressorPairs[AggressorPairs.Count - 1].Key;
+			}
+			return AggressorPairs[rank].Key;
+		}
 		#endregion
 
 		#region Removal

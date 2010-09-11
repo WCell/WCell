@@ -527,7 +527,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Adds an already created Aura
+		/// Adds and starts an already created Aura
 		/// </summary>
 		public void AddAura(Aura aura)
 		{

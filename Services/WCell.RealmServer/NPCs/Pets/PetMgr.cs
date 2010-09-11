@@ -34,6 +34,11 @@ namespace WCell.RealmServer.NPCs.Pets
 		public static int MaxFeedPetHappinessGain = 33000;
 
 		/// <summary>
+		/// Need at least level 20 for a pet to have talents
+		/// </summary>
+		public static int MinPetTalentLevel = 20;
+
+		/// <summary>
 		/// Hunter pets must not have less than ownerlevel - MaxMinionLevelDifference.
 		/// They gain levels if they have less.
 		/// </summary>
@@ -69,21 +74,14 @@ namespace WCell.RealmServer.NPCs.Pets
 		/// </summary>
 		public static readonly int PetSpellDamageOfOwnerPercent = 13;
 
-		/// <summary>
-		/// The default set of actions for every new Pet
-		/// </summary>
-		public static readonly PetActionEntry[] DefaultActions = new PetActionEntry[PetConstants.PetActionCount];
-
 		internal static readonly NHIdGenerator PetNumberGenerator = new NHIdGenerator(typeof(PermanentPetRecord), "m_PetNumber");
 
-		[NotVariable]
-		public static uint[] StableSlotPrices = new uint[PetConstants.MaxStableSlots];
 
 		[NotVariable]
-		public static readonly int[] PetTalentResetPriceTiers = {
-            1000, 5000, 10000, 20000, 30000, 40000, 50000, 60000,
-            70000, 80000, 90000, 100000
-        };
+		public static int MaxStableSlots;
+
+		[NotVariable]
+		public static uint[] StableSlotPrices;
 		#endregion
 
 		#region Init
@@ -97,77 +95,17 @@ namespace WCell.RealmServer.NPCs.Pets
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void InitEntries()
 		{
-			ContentHandler.Load<PetLevelStatInfo>();
+			ContentMgr.Load<PetLevelStatInfo>();
 		}
 
 		private static void InitMisc()
 		{
-
-			// Set the Default PetActions
-			var i = 0;
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Action = PetAction.Attack,
-				Type = PetActionType.SetAction
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Action = PetAction.Follow,
-				Type = PetActionType.SetAction
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Action = PetAction.Stay,
-				Type = PetActionType.SetAction
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Action = 0,
-				Type = PetActionType.CastSpell2
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Type = PetActionType.CastSpell3
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Type = PetActionType.CastSpell4
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				Type = PetActionType.CastSpell5
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				AttackMode = PetAttackMode.Aggressive,
-				Type = PetActionType.SetMode
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				AttackMode = PetAttackMode.Defensive,
-				Type = PetActionType.SetMode
-			};
-
-			DefaultActions[i++] = new PetActionEntry
-			{
-				AttackMode = PetAttackMode.Passive,
-				Type = PetActionType.SetMode
-			};
-
 			// Read in the prices for Stable Slots from the dbc
 			var stableSlotPriceReader =
 				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
 					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_STABLESLOTPRICES));
-			stableSlotPriceReader.EntryList.CopyTo(StableSlotPrices, 0);
+			StableSlotPrices = stableSlotPriceReader.EntryList.ToArray();
+			MaxStableSlots = StableSlotPrices.Length;
 		}
 
 		#endregion
@@ -295,6 +233,15 @@ namespace WCell.RealmServer.NPCs.Pets
 		#endregion
 
 		#region Stables
+		public static uint GetStableSlotPrice(int slot)
+		{
+			if (slot > StableSlotPrices.Length)
+			{
+				return StableSlotPrices[StableSlotPrices.Length - 1];
+			}
+			return StableSlotPrices[slot];
+		}
+
 		public static void DeStablePet(Character chr, NPC stableMaster, uint petNumber)
 		{
 			if (!CheckForStableMasterCheats(chr, stableMaster))
@@ -324,12 +271,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			{
 				chr.StablePet();
 				PetHandler.SendStableResult(chr, StableResult.StableSuccess);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr, StableResult.Fail);
-				return;
 			}
 		}
 
@@ -351,12 +296,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			if (!chr.TrySwapStabledPet(stabledPet))
 			{
 				PetHandler.SendStableResult(chr, StableResult.Fail);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr, StableResult.DeStableSuccess);
-				return;
 			}
 		}
 
@@ -370,12 +313,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			if (!chr.TryBuyStableSlot())
 			{
 				PetHandler.SendStableResult(chr.Client, StableResult.NotEnoughMoney);
-				return;
 			}
 			else
 			{
 				PetHandler.SendStableResult(chr.Client, StableResult.BuySlotSuccess);
-				return;
 			}
 		}
 
@@ -414,7 +355,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 			if (stableMaster == null || !stableMaster.IsStableMaster)
 			{
-				log.Warn("Client {0} requested retreival of stabled pet from invalid NPC: {1}", chr.Client, stableMaster);
+				log.Warn("Character \"{0}\" requested retreival of stabled pet from invalid NPC: {1}", chr, stableMaster);
 				return false;
 			}
 
@@ -430,24 +371,6 @@ namespace WCell.RealmServer.NPCs.Pets
 		#endregion
 
 		#region Talents
-		public static void LearnPetTalent(Character chr, NPC pet, TalentId talentId, int rank)
-		{
-			if (chr.ActivePet != pet) return;
-
-			SpellId spell;
-			if (pet.Talents.Learn(talentId, rank, out spell))
-			{
-				PetHandler.SendPetLearnedSpell(chr, spell);
-			}
-		}
-
-		public static void ResetPetTalents(Character chr, NPC pet)
-		{
-			if (chr.ActivePet != pet) return;
-
-			chr.ResetPetTalents();
-		}
-
 		/// <summary>
 		/// Calculates the number of base Talent points a pet should have
 		///   based on its level.
@@ -465,6 +388,7 @@ namespace WCell.RealmServer.NPCs.Pets
 
 		#endregion
 
+		#region Records
 		internal static PermanentPetRecord CreatePermanentPetRecord(NPCEntry entry, uint ownerId)
 		{
 			var record = CreateDefaultPetRecord<PermanentPetRecord>(entry, ownerId);
@@ -482,10 +406,10 @@ namespace WCell.RealmServer.NPCs.Pets
 			record.OwnerId = ownerId;
 			record.AttackMode = mode;
 			record.Flags = PetFlags.None;
-			record.Actions = DefaultActions;
 			record.EntryId = entry.NPCId;
 			return record;
 		}
+		#endregion
 	} // end class
 
 

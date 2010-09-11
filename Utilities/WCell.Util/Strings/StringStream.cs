@@ -432,17 +432,11 @@ namespace WCell.Util.Strings
 			return result;
 		}
 
-		/// <returns><code>NextWordsArray(count, " ")</code></returns>
-		public string[] NextWordsArray(int count)
-		{
-			return NextWordsArray(count, " ");
-		}
-
 		/// <returns>The next <code>count</code> word seperated by <code>seperator</code> as an array of strings.</returns>
-		public string[] NextWordsArray(int count, string separator)
+		public string[] NextWordsArray(int maxCount = int.MaxValue, string separator = " ")
 		{
-			var words = new string[count];
-			for (int i = 0; i < count && HasNext; i++)
+			var words = new string[maxCount];
+			for (int i = 0; i < maxCount && HasNext; i++)
 			{
 				words[i] = NextWord(separator);
 			}

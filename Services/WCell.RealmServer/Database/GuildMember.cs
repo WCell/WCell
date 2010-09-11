@@ -1,12 +1,13 @@
 using System;
 using Castle.ActiveRecord;
+using WCell.Core.Database;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Guilds
 {
 	[ActiveRecord("GuildMember", Access = PropertyAccess.Property)]
-	public partial class GuildMember : ActiveRecordBase<GuildMember>
+	public partial class GuildMember : WCellRecord<GuildMember>
 	{
 		[PrimaryKey(PrimaryKeyType.Assigned)]
 		public long CharacterLowId

@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Instances
 		{
 			if (instance != null)
 			{
-				instance.m_difficulty = template.RegionTemplate.Difficulties.Get(difficultyIndex) ?? template.RegionTemplate.Difficulties[0];
+				instance.m_difficulty = template.RegionTemplate.GetDifficulty(difficultyIndex) ?? template.RegionTemplate.Difficulties[0];
 
 				if (creator != null)
 				{
@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Instances
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				GlobalResetTimers = GlobalInstanceTimer.LoadTimers();
 			}
 		}

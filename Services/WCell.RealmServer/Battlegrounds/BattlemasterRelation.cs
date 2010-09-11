@@ -34,14 +34,14 @@ namespace WCell.RealmServer.Battlegrounds
 			var bm = NPCMgr.GetEntry(BattleMasterId);
 			if (bm == null)
 			{
-				ContentHandler.OnInvalidDBData("Invalid BattleMaster in: " + this);
+				ContentMgr.OnInvalidDBData("Invalid BattleMaster in: " + this);
 			}
 			else
 			{
 				var bg = BattlegroundMgr.GetTemplate(BattlegroundId);
 				if (bg == null)
 				{
-					ContentHandler.OnInvalidDBData("Invalid Battleground in: " + this);
+					ContentMgr.OnInvalidDBData("Invalid Battleground in: " + this);
 				}
 				else
 				{

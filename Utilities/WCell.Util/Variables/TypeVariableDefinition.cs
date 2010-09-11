@@ -118,30 +118,18 @@ namespace WCell.Util.Variables
 
 		public Type VariableType
 		{
-			get
-			{
-				return m_Member.GetVariableType();
-			}
+			get { return m_Member.GetVariableType(); }
 		}
 
 		public object Value
 		{
-			get
-			{
-				return m_Member.GetUnindexedValue(Object);
-			}
-			set
-			{
-				m_Member.SetUnindexedValue(Object, value);
-			}
+			get { return m_Member.GetUnindexedValue(Object); }
+			set { m_Member.SetUnindexedValue(Object, value); }
 		}
 
 		public string TypeName
 		{
-			get
-			{
-				return VariableType.Name;
-			}
+			get { return VariableType.Name; }
 		}
 
 		public bool TrySet(string strValue)
@@ -191,7 +179,7 @@ namespace WCell.Util.Variables
 					{
 						Value = Activator.CreateInstance(type);
 					}
-					((IXmlSerializable) Value).ReadXml(reader);
+					((IXmlSerializable)Value).ReadXml(reader);
 				}
 				else if (type.IsSimpleType())
 				{
@@ -217,7 +205,7 @@ namespace WCell.Util.Variables
 						}
 						else
 						{
-							collection = (IList) Activator.CreateInstance(type);
+							collection = (IList)Activator.CreateInstance(type);
 							ReadCollection(reader, collection);
 							Value = collection;
 						}

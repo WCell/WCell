@@ -43,7 +43,7 @@ namespace WCell.Addons.Default.Instances
 		{
 			m_svala = svala;
 
-			m_arthasMirror = arthasMirrorEntry.Create();
+			m_arthasMirror = arthasMirrorEntry.Create(DifficultyIndex);
 			m_arthasMirror.Orientation = 1.58825f;
 			AddObject(m_arthasMirror, arthasPosition);
 
@@ -69,6 +69,7 @@ namespace WCell.Addons.Default.Instances
 			IsAIFrozen = true;
 
 			// let Svala look at Arthas
+			m_svala.IsInCombat = false;
 			m_svala.Target = m_arthasMirror;
 			m_svala.CallDelayed(8000, cb =>
 			{

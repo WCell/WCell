@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Messages to be processed by the region after updating of the environment (sending of Update deltas etc).
 		/// </summary>
-		private LockfreeQueue<Action> m_environmentQueue = new LockfreeQueue<Action>();
+		private readonly LockfreeQueue<Action> m_environmentQueue = new LockfreeQueue<Action>();
 
 		protected bool m_initialized;
 
@@ -261,7 +261,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var ac = action;
 				// need to Add a message because Update state will be reset after method call
-				AddMessage(() => ac());
+				AddMessage(ac);
 			}
 
 			// check rest state
@@ -274,6 +274,9 @@ namespace WCell.RealmServer.Entities
 			WorldObjectSetPool.Recycle(toRemove);
 		}
 
+		/// <summary>
+		/// Check if this Character is still resting (if it was resting before)
+		/// </summary>
 		void UpdateRestState()
 		{
 			if (!m_restTrigger.IsInArea(this))

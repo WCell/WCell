@@ -21,7 +21,7 @@ namespace WCell.RealmServer.Quests
 
 			if (template == null)
 			{
-				ContentHandler.OnInvalidDBData(GetType().Name + " (QuestGiverId: {0}) referred to invalid QuestId: " +
+				ContentMgr.OnInvalidDBData(GetType().Name + " (QuestGiverId: {0}) referred to invalid QuestId: " +
 					QuestId, QuestGiverId);
 			}
 			else
@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Quests
 				var entry = GOMgr.GetEntry(QuestGiverId);
 				if (entry == null)
 				{
-					ContentHandler.OnInvalidDBData(GetType().Name + " (QuestId: {0}) referred to invalid QuestGiverId: " +
+					ContentMgr.OnInvalidDBData(GetType().Name + " (QuestId: {0}) referred to invalid QuestGiverId: " +
 						QuestGiverId, QuestId);
 				}
 				else
@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Quests
 								break;
 							}
 						default:
-							ContentHandler.OnInvalidDBData(GetType().Name + " (Quest: {0}, QuestGiver: {1}) had invalid QuestGiverRelationType: " +
+							ContentMgr.OnInvalidDBData(GetType().Name + " (Quest: {0}, QuestGiver: {1}) had invalid QuestGiverRelationType: " +
 														 RelationType, QuestId, QuestGiverId);
 							break;
 					}
@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Quests
 
 			if (template == null)
 			{
-				ContentHandler.OnInvalidDBData(GetType().Name + " (QuestGiverId: {0}) refers to invalid QuesIdt: " +
+				ContentMgr.OnInvalidDBData(GetType().Name + " (QuestGiverId: {0}) refers to invalid QuesIdt: " +
 					QuestId, QuestGiverId);
 			}
 			else
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Quests
 				var entry = NPCMgr.GetEntry(QuestGiverId);
 				if (entry == null)
 				{
-					ContentHandler.OnInvalidDBData(GetType().Name + " (QuestId: {0}) refers to invalid QuestGiverId: " +
+					ContentMgr.OnInvalidDBData(GetType().Name + " (QuestId: {0}) refers to invalid QuestGiverId: " +
 						QuestGiverId, QuestId);
 				}
 				else
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Quests
 							    break;
 							}
 						default:
-							ContentHandler.OnInvalidDBData(GetType().Name + " (Quest: {0}, QuestGiver: {1}) had invalid QuestGiverRelationType: " +
+							ContentMgr.OnInvalidDBData(GetType().Name + " (Quest: {0}, QuestGiver: {1}) had invalid QuestGiverRelationType: " +
 														 RelationType, QuestId, QuestGiverId);
 							break;
 					}

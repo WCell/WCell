@@ -153,7 +153,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (shieldSlamTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					shieldSlamTick = 0;
@@ -221,7 +221,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (chainLightTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					chainLightTick = 0;
@@ -232,7 +232,7 @@ namespace WCell.Addons.Default.Instances
 			}
 			if (demoralizeTick >= 21)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					demoralizeTick = 0;
@@ -297,7 +297,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (bazilBombTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					bazilBombTick = 0;
@@ -362,7 +362,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (intimidationTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					intimidationTick = 0;
@@ -427,7 +427,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (convictrendTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					convictrendTick = 0;
@@ -492,7 +492,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (demoralizeTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					demoralizeTick = 0;
@@ -560,7 +560,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (prisonKickTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					prisonKickTick = 0;
@@ -570,7 +570,7 @@ namespace WCell.Addons.Default.Instances
 			}
 			if (prisonKickTick >= 24)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					prisonDisarmTick = 0;
@@ -635,7 +635,7 @@ namespace WCell.Addons.Default.Instances
 
 			if (backhandTick >= 12)
 			{
-				var chr = m_owner.GetNearbyRandomCharacter();
+				var chr = m_owner.GetNearbyRandomHostileCharacter();
 				if (chr != null)
 				{
 					backhandTick = 0;

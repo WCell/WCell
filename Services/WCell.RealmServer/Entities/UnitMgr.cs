@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 			loaded = true;
-			ContentHandler.Load<UnitModelInfo>();
+			ContentMgr.Load<UnitModelInfo>();
 		}
 
 		public static UnitModelInfo GetModelInfo(uint displayId)

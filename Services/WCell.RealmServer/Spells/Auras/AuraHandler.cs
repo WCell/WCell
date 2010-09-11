@@ -215,6 +215,8 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModDetectRange] = () => new ModDetectRangeHandler();
 			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
 			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
+			EffectHandlers[(int)AuraType.ModAttackerSpellCritChance] = () => new ModAttackerSpellCritChanceHandler();
+			
 
 			// make sure, there are no missing handlers
 			for (var i = 0; i < (int)AuraType.End; i++)

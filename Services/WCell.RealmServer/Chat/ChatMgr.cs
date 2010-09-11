@@ -109,10 +109,10 @@ namespace WCell.RealmServer.Chat
 			if (msg.Length == 0)
 				return;
 
-			SayYellEmote(sender, type, language, msg);
+			SayYellEmote(sender, type, language, msg, type == ChatMsgType.Yell ? YellRadius : ListeningRadius);
 		}
 
-		public static void SayYellEmote(this Character sender, ChatMsgType type, ChatLanguage language, string msg)
+		public static void SayYellEmote(this Character sender, ChatMsgType type, ChatLanguage language, string msg, float radius)
 		{
 			if (RealmCommandHandler.HandleCommand(sender, msg, sender.Target as Character))
 				return;
@@ -164,13 +164,13 @@ namespace WCell.RealmServer.Chat
 					return true;
 				};
 
-				if (type == ChatMsgType.Yell)
+				if (radius == WorldObject.BroadcastRange)
 				{
-					sender.IterateEnvironment(YellRadius, iterator);
+					sender.NearbyObjects.Iterate(iterator);
 				}
 				else
 				{
-					sender.NearbyObjects.Iterate(iterator);
+					sender.IterateEnvironment(radius, iterator);
 				}
 
 				if (pckt != null)

@@ -7,9 +7,9 @@ namespace WCell.Constants.Pets
 {
 	public enum PetTalentType
 	{
-		None = -1,
 		Ferocity = 0,
 		Tenacity = 1,
-		Cunning = 2
+		Cunning = 2,
+		End
 	}
 }

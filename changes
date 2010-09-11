@@ -1,1 +1,4 @@
-- renamed Group.QuestSomethingSomething to Group.OnKill
+- added NPC.SetEntry methods to dynamically change the entire NPC
+- fixed small bugs with taming pets 
+- fixed DruidSavageDefense
+- 

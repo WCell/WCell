@@ -50,6 +50,29 @@ namespace WCell.RealmServer.NPCs
 			set;
 		}
 
+		[Persistent((int)RaidDifficulty.End - 1)]
+		public NPCId[] DifficultyOverrideEntryIds = new NPCId[(int)RaidDifficulty.End - 1];
+
+		/// <summary>
+		/// Returns the NPCEntry for the given difficulty
+		/// </summary>
+		public NPCEntry GetEntry(uint difficultyIndex)
+		{
+			if (difficultyIndex != 0)
+			{
+				var id = DifficultyOverrideEntryIds.Get(difficultyIndex-1);
+				if (id != 0)
+				{
+					var entry = NPCMgr.GetEntry(id);
+					if (entry != null)
+					{
+						return entry;
+					}
+				}
+			}
+			return this;
+		}
+
 		[Persistent((int)ClientLocale.End)]
 		public string[] Names = new string[(int)ClientLocale.End];
 
@@ -385,9 +408,17 @@ namespace WCell.RealmServer.NPCs
 
 		public float HoverHeight;
 
+		/// <summary>
+		/// Necessary for caching
+		/// </summary>
 		public IWorldLocation[] GetInWorldTemplates()
 		{
 			return SpawnEntries.ToArray();
+		}
+
+		public bool HasScalableStats
+		{
+			get { return PetLevelStatInfos != null; }
 		}
 
 		[NotPersistent]
@@ -424,7 +455,7 @@ namespace WCell.RealmServer.NPCs
 		/// Usable Spells to be casted by Mobs of this Type
 		/// </summary>
 		[NotPersistent]
-		public Dictionary<uint, Spell> Spells;
+		public Dictionary<SpellId, Spell> Spells;
 
 		[NotPersistent]
 		public SpellTriggerInfo SpellTriggerInfo;
@@ -490,10 +521,10 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (Spells == null)
 			{
-				Spells = new Dictionary<uint, Spell>(5);
+				Spells = new Dictionary<SpellId, Spell>(5);
 			}
 			OnSpellAdded(spell);
-			Spells[spell.Id] = spell;
+			Spells[spell.SpellId] = spell;
 		}
 
 		private void OnSpellAdded(Spell spell)
@@ -679,7 +710,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (string.IsNullOrEmpty(DefaultName))
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no name: " + this);
+				ContentMgr.OnInvalidDBData("NPCEntry has no name: " + this);
 				return;
 			}
 
@@ -767,7 +798,7 @@ namespace WCell.RealmServer.NPCs
 
 			if (AllianceFaction == null)
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
+				ContentMgr.OnInvalidDBData("NPCEntry has no valid Faction: " + this);
 				AllianceFaction = NPCMgr.DefaultFaction;
 				HordeFaction = AllianceFaction;
 			}
@@ -829,7 +860,7 @@ namespace WCell.RealmServer.NPCs
 
 			if (x == 0)
 			{
-				ContentHandler.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
+				ContentMgr.OnInvalidDBData("NPCEntry has no valid DisplayId: {0} ({1})", this, DisplayIds.ToString(", "));
 				return;
 			}
 
@@ -887,38 +918,37 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public NPCCreator NPCCreator;
 
-		public NPC Create()
+		public NPC Create(uint difficulty = 0u)
 		{
-			return Create((SpawnPoint)null);
+			return NPCCreator(GetEntry(difficulty));
 		}
 
 		public NPC Create(SpawnPoint spawn)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(spawn.Region.DifficultyIndex);
 			npc.SetupNPC(this, spawn);
 			return npc;
 		}
 
-		public NPC Create(Region rgn, Vector3 pos)
+		public NPC SpawnAt(Region rgn, Vector3 pos)
 		{
-			var npc = NPCCreator(this);
-			npc.SetupNPC(this, null);
+			var npc = Create(rgn.DifficultyIndex);
 			rgn.AddObject(npc, pos);
 			return npc;
 		}
 
-		public NPC Create(IWorldZoneLocation loc)
+		public NPC SpawnAt(IWorldZoneLocation loc)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(loc.Region.DifficultyIndex);
 			npc.SetupNPC(this, null);
 			npc.Zone = loc.GetZone();
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;
 		}
 
-		public NPC Create(IWorldLocation loc)
+		public NPC SpawnAt(IWorldLocation loc)
 		{
-			var npc = NPCCreator(this);
+			var npc = Create(loc.Region.DifficultyIndex);
 			npc.SetupNPC(this, null);
 			loc.Region.AddObject(npc, loc.Position);
 			return npc;

@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Guilds
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				guilds = ActiveRecordBase<Guild>.FindAll();
 			}
 #endif

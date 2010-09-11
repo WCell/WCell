@@ -7,6 +7,7 @@ using WCell.Core;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
 using WCell.Constants.World;
@@ -21,11 +22,6 @@ namespace WCell.RealmServer.RacesClasses
 	[DataHolder]
 	public class Archetype : IDataHolder
 	{
-		public static byte[] CreateActionButtons()
-		{
-			return new byte[Character.ActionButton.MaxAmount * Character.ActionButton.Size];
-		}
-
 		public ClassId ClassId;
 		public RaceId RaceId;
 
@@ -77,7 +73,7 @@ namespace WCell.RealmServer.RacesClasses
 		public readonly List<ItemStack> FemaleItems = new List<ItemStack>();
 
 		[NotPersistent]
-		public byte[] ActionButtons = CreateActionButtons();
+		public byte[] ActionButtons = ActionButton.CreateEmptyActionButtonBar();
 
 		[NotPersistent]
 		public ChatLanguage[] SpokenLanguages;

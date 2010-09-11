@@ -82,6 +82,7 @@ namespace WCell.RealmServer.AI.Brains
         #region Private Members
         private List<EmoteData>[] m_emoteData;
         #endregion
+
         #region Constructors
 
         public MobBrain(NPC owner)

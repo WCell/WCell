@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Quests
 
 				Templates = new QuestTemplate[30000];
 
-				ContentHandler.Load<QuestTemplate>();
+				ContentMgr.Load<QuestTemplate>();
 				CreateGraph();
 				Loaded = true;
 
@@ -190,7 +190,7 @@ namespace WCell.RealmServer.Quests
 						var nextQuest = GetTemplate((uint)Math.Abs(quest.NextQuestId));
 						if (nextQuest == null)
 						{
-							ContentHandler.OnInvalidDBData("NextQuestId {0} is invalid in: {1}", quest.NextQuestId, quest);
+							ContentMgr.OnInvalidDBData("NextQuestId {0} is invalid in: {1}", quest.NextQuestId, quest);
 						}
 						else
 						{
@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Quests
 						var nextQuest = GetTemplate((uint)Math.Abs(quest.NextQuestId));
 						if (nextQuest == null)
 						{
-							ContentHandler.OnInvalidDBData("NextQuestId {0} is invalid in: {1}", quest.NextQuestId, quest);
+							ContentMgr.OnInvalidDBData("NextQuestId {0} is invalid in: {1}", quest.NextQuestId, quest);
 						}
 						else
 						{
@@ -301,7 +301,7 @@ namespace WCell.RealmServer.Quests
 		[DependentInitialization(typeof(QuestMgr))]
 		public static void EnsureNPCRelationsLoaded()
 		{
-			ContentHandler.Load<NPCQuestGiverRelation>();
+			ContentMgr.Load<NPCQuestGiverRelation>();
 		}
 
 		/// <summary>
@@ -313,7 +313,7 @@ namespace WCell.RealmServer.Quests
 		[DependentInitialization(typeof(QuestMgr))]
 		public static void EnsureGOQuestRelationsLoaded()
 		{
-			ContentHandler.Load<GOQuestGiverRelation>();
+			ContentMgr.Load<GOQuestGiverRelation>();
 		}
 
 		/// <summary>

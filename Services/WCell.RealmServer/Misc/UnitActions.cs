@@ -815,7 +815,7 @@ namespace WCell.RealmServer.Misc
 					Victim.OnDefend(this);
 					Attacker.OnAttack(this);
 
-					Resisted = MathUtil.RoundInt(ResistPct*Damage/100f);
+					Resisted = MathUtil.RoundInt(ResistPct * Damage / 100f);
 					if (Absorbed > 0)
 					{
 						HitFlags |= HitFlags.Absorb_1 | HitFlags.Absorb_2;
@@ -1134,11 +1134,19 @@ namespace WCell.RealmServer.Misc
 				}
 			}
 
-			// AttackerCritChance is not reflected in the tooltip but affects the crit chance against the Victim (increased/reduced)
-			var attackerCritChance = Victim.FloatMods[(int)StatModifierFloat.AttackerCritChance] * 100;
-			chance = UnitUpdates.GetMultiMod(attackerCritChance, chance);
+			// attackerCritChance is not shown in the tooltip but affects the crit chance against the Victim
+			int attackerCritChance = 1;
+			if (UsedSchool == DamageSchool.Physical)
+			{
+				attackerCritChance += Victim.AttackerPhysicalCritChancePercentMod;
+			}
+			else
+			{
+				attackerCritChance += Victim.AttackerSpellCritChancePercentMod;
+			}
 
-			chance -= (int)(Victim.GetResiliencePct() * 100); //resilience
+			chance = (chance * attackerCritChance + 50) / 100;	// rounded
+			chance -= (int)((Victim.GetResiliencePct() + 50f) * 100); //resilience
 
 			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
@@ -1271,7 +1279,7 @@ namespace WCell.RealmServer.Misc
 
 			if (SpellEffect != null && Spell.AttributesExD.HasFlag(SpellAttributesExD.CannotBeAbsorbed))
 			{
-				return 0 ;
+				return 0;
 			}
 
 			if (schools.HasAnyFlag(UsedSchool))

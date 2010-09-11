@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Mail
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				CreateIdGenerators();
 			}
 

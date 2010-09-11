@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Formulas
 		[Initialization(InitializationPass.Fifth, "Initialize Experience-Table")]
 		public static void Initialize()
 		{
-			ContentHandler.Load<LevelXp>();
+			ContentMgr.Load<LevelXp>();
 		}
 
 		/// <summary>

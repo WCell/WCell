@@ -1,13 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
+using WCell.Constants.ArenaTeams;
 using WCell.Constants.Items;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Network;
+using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Guilds;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Network;
@@ -168,7 +171,6 @@ namespace WCell.RealmServer.Handlers
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
 				}
 				chr.Client.Send(packet);
-				chr.SendSystemMessage("Sent arena packet.");
 			}
 		}
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_BUY)]
@@ -207,6 +209,8 @@ namespace WCell.RealmServer.Handlers
 			{
 				ItemId itemId = 0;
 				uint cost = 0;
+                PetitionType type = PetitionType.None;
+
 				if (petitioner.IsGuildPetitioner)
 				{
 					if (chr.IsInGuild)
@@ -225,6 +229,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					itemId = PetitionerEntry.GuildPetitionEntry.ItemId;
 					cost = GuildMgr.GuildCharterCost;
+                    type = PetitionType.Guild;
 				}
 				else if (petitioner.IsArenaPetitioner)
 				{
@@ -233,20 +238,33 @@ namespace WCell.RealmServer.Handlers
 						case 1:
 							itemId = PetitionerEntry.ArenaPetition2v2Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition2v2Entry.Cost;
+                            type = PetitionType.Arena2vs2;
 							break;
 						case 2:
 							itemId = PetitionerEntry.ArenaPetition3v3Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition3v3Entry.Cost;
+                            type = PetitionType.Arena3vs3;
 							break;
 						case 3:
 							itemId = PetitionerEntry.ArenaPetition5v5Entry.ItemId;
 							cost = PetitionerEntry.ArenaPetition5v5Entry.Cost;
+                            type = PetitionType.Arena5vs5;
 							break;
 						default:
 							return;
 					}
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
 				}
-				if (itemId != 0 && cost != 0)
+				if (itemId != 0 && cost != 0 && type != PetitionType.None)
 				{
 					var templ = ItemMgr.GetTemplate(itemId);
 					if (templ == null)
@@ -257,6 +275,10 @@ namespace WCell.RealmServer.Handlers
 					{
 						SendBuyError(chr, petitioner, itemId, BuyItemError.NotEnoughMoney);
 					}
+                    else if (!PetitionRecord.CanBuyPetition(chr.EntityId.Low))
+                    {
+                        chr.SendSystemMessage("You can't buy another petition !");
+                    }
 					else
 					{
 						var slotId = chr.Inventory.FindFreeSlot(templ, 1);
@@ -266,10 +288,14 @@ namespace WCell.RealmServer.Handlers
 						}
 						else
 						{
-							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true);
-							chr.Money -= cost;
+							var item = slotId.Container.AddUnchecked(slotId.Slot, templ, 1, true) as PetitionCharter;
+                            item.Petition = new PetitionRecord(name, chr.EntityId.Low, item.EntityId.Low, type);
+                            item.Petition.Create();
 
-							item.SetEnchantId(EnchantSlot.Permanent, item.EntityId.Low);
+							chr.Money -= cost;
+                            
+							item.SetEnchantId(EnchantSlot.Permanent, item.EntityId.Low);                           
+
 						}
 					}
 				}
@@ -279,44 +305,208 @@ namespace WCell.RealmServer.Handlers
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_SHOW_SIGNATURES)]
 		public static void HandlePetitionShowSigns(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var petitionGuid = packet.ReadEntityId();
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            SendPetitionSignatures(client, charter); 
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_SIGN)]
 		public static void HandlePetitionSign(IRealmClient client, RealmPacketIn packet)
-		{
-			// TODO: 
+	    {
+			var petitionGuid = packet.ReadEntityId();
+             
 		}
 
+        [PacketHandler(RealmServerOpCode.MSG_PETITION_RENAME)]
+        public static void HandlePetitionRename(IRealmClient client, RealmPacketIn packet)
+        {
+            var petitionGuid = packet.ReadEntityId();
+            var newName = packet.ReadCString().Trim();
+
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            var chr = client.ActiveCharacter;
+
+                if(charter.Petition.Type == PetitionType.Guild)
+                {
+                    if (!GuildMgr.IsValidGuildName(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (GuildMgr.DoesGuildExist(newName))
+                    {
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, newName, GuildResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!ArenaTeamMgr.IsValidArenaTeamName(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_INVALID);
+                        return;
+                    }
+                    else if (ArenaTeamMgr.DoesArenaTeamExist(newName))
+                    {
+                        ArenaTeamHandler.SendResult(chr, ArenaTeamCommandId.CREATE, newName, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                        return;
+                    }
+                }
+
+            charter.Petition.Name = newName;
+            charter.Petition.Update();
+
+            SendPetitionRename(client, charter);
+        }
 		[PacketHandler(RealmServerOpCode.MSG_PETITION_DECLINE)]
 		public static void HandlePetitionDecline(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+			var petitionGuid = packet.ReadEntityId();
+
+            //SendPetitionDecline(client, petition);
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_OFFER_PETITION)]
 		public static void HandlePetitionOffer(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var unk = packet.ReadUInt32();
+            var petitionId = packet.ReadEntityId();
+            var playerId = packet.ReadEntityId();
+
+            var player = World.GetCharacter(playerId.Low);
+            var petition = PetitionRecord.LoadRecordByItemId(petitionId.Low);
+
+            var namePlayer = player.Name;
+
+            if (player.Faction != client.ActiveCharacter.Faction)
+            {
+                if (petition.Type == PetitionType.Guild)
+                    GuildHandler.SendResult(client, GuildCommandId.CREATE, client.ActiveCharacter.Name, GuildResult.NOT_ALLIED);
+                else
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.INVITE, ArenaTeamResult.NOT_ALLIED);
+                return;
+            }
+
+            if (petition.Type == PetitionType.Guild)
+            {
+                if (player.IsInGuild)
+                {
+                    GuildHandler.SendResult(client, GuildCommandId.INVITE, namePlayer, GuildResult.ALREADY_IN_GUILD_S);
+                    return;
+                }
+            }
+            else 
+            {
+                if (player.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)petition.Type)] != null)
+                {
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.ALREADY_IN_ARENA_TEAM_S);
+                    return;
+                }
+                else if (player.Level < 80)
+                {
+                    ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, string.Empty, namePlayer, ArenaTeamResult.TARGET_TOO_LOW);
+                    return;
+                }
+            }
+
+            SendPetitionSignatures(player.Client, client.ActiveCharacter.Inventory.GetItem(petitionId) as PetitionCharter);            
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_TURN_IN_PETITION)]
 		public static void HandlePetitionTurnIn(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var petitionGuid = packet.ReadEntityId();
+            var petition = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            var name = petition.Petition.Name;
+            var type = petition.Petition.Type;
+
+            if (petition.Petition.SignedIds.Count < ((uint)type - 1))
+            {
+                SendPetitionTurnInResults(client, PetitionTurns.NEED_MORE_SIGNATURES);
+                return;
+            }
+            if (type == PetitionType.Guild && client.ActiveCharacter.IsInGuild)
+            {
+                SendPetitionTurnInResults(client, PetitionTurns.ALREADY_IN_GUILD);
+                return;
+            }
+            else if (client.ActiveCharacter.ArenaTeamMember[(uint)ArenaTeamMgr.GetSlotByType((uint)type)] != null)
+            {
+                ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.ALREADY_IN_ARENA_TEAM);
+                return;
+            }
+            else if (type == PetitionType.Guild && GuildMgr.DoesGuildExist(name))
+            {
+                GuildHandler.SendResult(client, GuildCommandId.CREATE, name, GuildResult.NAME_EXISTS);
+                return;
+            }
+            else if (ArenaTeamMgr.DoesArenaTeamExist(name))
+            {
+                ArenaTeamHandler.SendResult(client, ArenaTeamCommandId.CREATE, name, string.Empty, ArenaTeamResult.NAME_EXISTS);
+                return;
+            }
+            else
+            {
+                petition.Destroy();
+                if (type == PetitionType.Guild)
+                {
+                    var guild = new Guild(client.ActiveCharacter.Record, name);
+                    foreach (var chr in petition.Petition.SignedIds)
+                    {
+                        if(chr == 0)
+                            continue;
+                        else
+                        {
+                            var character = World.GetCharacter(chr);
+                            guild.AddMember(character);
+                        }
+                    }
+                }
+                else
+                {
+                    var team = new ArenaTeam(client.ActiveCharacter.Record, name, (uint)type);
+                    foreach (var chr in petition.Petition.SignedIds)
+                    {
+                        if(chr == 0)
+                            continue;
+                        else
+                        {
+                            var character = World.GetCharacter(chr);
+                            team.AddMember(character);
+                        }
+                    }
+                }
+
+                SendPetitionTurnInResults(client, PetitionTurns.OK);
+            }
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_PETITION_QUERY)]
 		public static void HandlePetitionQuery(IRealmClient client, RealmPacketIn packet)
 		{
-			// TODO: 
+            var petitionLowId = packet.ReadUInt32();
+            var petitionGuid = packet.ReadEntityId();
+
+            var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            SendPetitionQueryResponse(client, charter);
 		}
 
-		public static void SendPetitionSignatures(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionSignatures(IPacketReceiver client, PetitionCharter charter)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES))
+            var signs = charter.Petition.SignedIds;
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES, 8+8+4+1+signs.Count*12))
 			{
-				// TODO: 
+                packet.WriteULong(charter.EntityId.Full);
+                packet.WriteULong(charter.Owner.EntityId.Full);
+                packet.WriteUInt(charter.EntityId.Low);
+                packet.WriteByte(signs.Count);
+                
+                foreach(var guid in signs)
+                {
+                    packet.WriteULong(guid);
+                    packet.WriteUInt(0);
+                }
+
 				client.Send(packet);
 			}
 		}
@@ -330,30 +520,80 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetitionDecline(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionDecline(IPacketReceiver client, PetitionRecord record)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE))
 			{
-				// TODO: 
+                
+				// TODO
 				client.Send(packet);
 			}
 		}
 
-		public static void SendPetitionTurnInResults(IPacketReceiver client, GuildTabardResult result)
+		public static void SendPetitionTurnInResults(IPacketReceiver client, PetitionTurns result)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TURN_IN_PETITION_RESULTS))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_TURN_IN_PETITION_RESULTS, 4))
 			{
-				// TODO: 
+				packet.WriteUInt((uint)result); 
 				client.Send(packet);
 			}
 		}
 
-		public static void SendPetitionQueryResponse(IPacketReceiver client, GuildTabardResult result)
+        public static void SendPetitionRename(IPacketReceiver client, PetitionCharter petition)
+        {
+            var name = petition.Petition.Name;
+            using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_RENAME, 8 + name.Length + 1))
+            {
+                packet.WriteULong(petition.EntityId.Full);
+                packet.WriteCString(name);
+
+                client.Send(packet);
+            }
+        }
+
+		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
+            string name = charter.Petition.Name;
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
 			{
-				// TODO: 
-				client.Send(packet);
+                packet.WriteUInt(charter.EntityId.Low);
+                packet.WriteULong(charter.Owner.EntityId.Full);
+                packet.WriteCString(name);
+                packet.WriteByte(0);
+
+                var type = (uint)charter.Petition.Type;
+                if(type == (uint)PetitionType.Guild)
+                {
+                    packet.WriteUInt(type);
+                    packet.WriteUInt(type);
+                    packet.WriteUInt(0);
+                }
+                else
+                {
+                    packet.WriteUInt(type-1);
+                    packet.WriteUInt(type-1);
+                    packet.WriteUInt(type);
+                }
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUShort(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+                packet.WriteUInt(0);
+
+                for(int i = 0; i < 10; ++i)
+                    packet.WriteByte(0);
+
+                packet.WriteUInt(0);
+
+                if(type == (uint)PetitionType.Guild)
+                    packet.WriteUInt(0);
+                else
+                    packet.WriteUInt(1);
+
+                client.Send(packet);
 			}
 		}
 		#endregion

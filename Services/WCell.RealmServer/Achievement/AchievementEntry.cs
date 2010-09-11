@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using WCell.Constants;
 using WCell.Constants.Achievements;
-using WCell.Constants.Factions;
 using WCell.Constants.World;
 
 namespace WCell.RealmServer.Achievement
@@ -32,5 +29,17 @@ namespace WCell.RealmServer.Achievement
 		/// List of criteria that needs to be satisfied to achieve this achievement
 		/// </summary>
     	public readonly List<AchievementCriteriaEntry> Criteria = new List<AchievementCriteriaEntry>();
+
+        /// <summary>
+        /// List of all rewards that will be given once achievement is completed.
+        /// </summary>
+        public readonly List<AchievementReward> Rewards = new List<AchievementReward>();
+
+        public bool IsRealmFirstType()
+        {
+            return Flags.HasAnyFlag(AchievementFlags.RealmFirstKill | AchievementFlags.RealmFirstReach);
+            //return (Flags.HasFlag(AchievementFlags.RealmFirstReach) || Flags.HasFlag(AchievementFlags.RealmFirstKill);
+
+        }
     }
 }

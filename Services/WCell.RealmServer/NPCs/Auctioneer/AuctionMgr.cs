@@ -92,7 +92,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 			catch (Exception e)
 			{
-				RealmDBUtil.OnDBError(e);
+				RealmDBMgr.OnDBError(e);
 				FetchAuctions();
 			}
 #endif
@@ -142,7 +142,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				}
 				catch (Exception e)
 				{
-					RealmDBUtil.OnDBError(e);
+					RealmDBMgr.OnDBError(e);
 					foreach (var itemRecord in ItemRecord.LoadAuctionedItems())
 					{
 						_auctionedItems.Add(itemRecord.EntityLowId, itemRecord);

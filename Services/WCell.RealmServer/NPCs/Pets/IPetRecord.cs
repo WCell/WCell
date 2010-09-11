@@ -18,11 +18,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-        PetType Type
-        {
-            get; set;
-        }
-
 		NPCId EntryId
 		{
 			get;
@@ -59,15 +54,6 @@ namespace WCell.RealmServer.NPCs.Pets
 			set;
 		}
 
-		/// <summary>
-		/// TODO: Save to DB (uint array)
-		/// </summary>
-		PetActionEntry[] Actions
-		{
-			get;
-			set;
-		}
-
 		PetState PetState
 		{
 			get;
@@ -95,6 +81,12 @@ namespace WCell.RealmServer.NPCs.Pets
 		bool IsDirty
 		{
 			get;
+		}
+
+		uint[] ActionButtons
+		{
+			get;
+			set;
 		}
 
 		void Save();

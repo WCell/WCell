@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Global
 		[Initialization(InitializationPass.Third, "Initialize WorldLocations")]
 		public static void Initialize()
 		{
-			ContentHandler.Load<WorldZoneLocation>();
+			ContentMgr.Load<WorldZoneLocation>();
 			LocationCache = WorldLocations.Values.ToArray();
 
 			Stormwind = GetFirstMatch("Stormwind");

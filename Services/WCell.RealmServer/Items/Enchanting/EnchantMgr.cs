@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Items.Enchanting
 			var spell = SpellHandler.Get(effect.Misc);
 			if (spell == null)
 			{
-				ContentHandler.OnInvalidClientData("Enchantment Effect {0} had invalid SpellId: {1}", effect, (SpellId)effect.Misc);
+				ContentMgr.OnInvalidClientData("Enchantment Effect {0} had invalid SpellId: {1}", effect, (SpellId)effect.Misc);
 			}
 			else
 			{

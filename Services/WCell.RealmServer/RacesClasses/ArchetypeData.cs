@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
 
@@ -26,14 +27,14 @@ namespace WCell.RealmServer.RacesClasses
 			var spell = SpellHandler.Get(SpellId);
 			if (spell == null)
 			{
-				ContentHandler.OnInvalidDBData(GetType().Name + " for \"{0} {1}\" refers to invalid Spell: {2}.", Race, Class, this);
+				ContentMgr.OnInvalidDBData(GetType().Name + " for \"{0} {1}\" refers to invalid Spell: {2}.", Race, Class, this);
 			}
 			else
 			{
 				var archetypes = ArchetypeMgr.GetArchetypes(Race, Class);
 				if (archetypes == null)
 				{
-					ContentHandler.OnInvalidDBData(GetType().Name + " \"{0}\" refers to invalid Archetype: {1} {2}.", this, Race, Class);
+					ContentMgr.OnInvalidDBData(GetType().Name + " \"{0}\" refers to invalid Archetype: {1} {2}.", this, Race, Class);
 				}
 				else
 				{
@@ -115,13 +116,13 @@ namespace WCell.RealmServer.RacesClasses
 			var archetypes = ArchetypeMgr.GetArchetypes(Race, Class);
 			if (archetypes == null)
 			{
-				ContentHandler.OnInvalidDBData(GetType().Name + " \"{0}\" refers to invalid Archetype: {1} {2}.", this, Race, Class);
+				ContentMgr.OnInvalidDBData(GetType().Name + " \"{0}\" refers to invalid Archetype: {1} {2}.", this, Race, Class);
 			}
 			else
 			{
 				foreach (var archetype in archetypes)
 				{
-					Character.ActionButton.Set(archetype.ActionButtons, Index, Action, Type, Info);
+					ActionButton.Set(archetype.ActionButtons, Index, Action, Type, Info);
 				}
 			}
 		}

@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public BindingType BindingType;
 
-		public void Finalize(RegionTemplate region)
+		internal void Finalize(RegionTemplate region)
 		{
 			Region = region;
 			if (ResetTime == 0)
@@ -22,13 +22,17 @@ namespace WCell.RealmServer.Global
 				ResetTime = region.DefaultResetTime;
 			}
 
-			foreach (var diff in Region.Difficulties)
+			if (MaxPlayerCount != 0)
 			{
-				if (diff.MaxPlayerCount == MaxPlayerCount)
+				// use heuristics to determine whether we have a heroic difficulty:
+				foreach (var diff in Region.Difficulties)
 				{
-					// Second entry with the same player count -> Probably heroic
-					IsHeroic = true;
-					break;
+					if (diff != null && diff.MaxPlayerCount == MaxPlayerCount)
+					{
+						// Second entry with the same player count -> Probably heroic
+						IsHeroic = true;
+						break;
+					}
 				}
 			}
 

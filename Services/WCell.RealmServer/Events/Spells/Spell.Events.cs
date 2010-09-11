@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.RealmServer.Spells
@@ -73,6 +74,18 @@ namespace WCell.RealmServer.Spells
 			if (evt != null)
 			{
 				evt(aura);
+			}
+		}
+
+
+		/// <summary>
+		/// Will let the Caster play the given text and sound after casting
+		/// </summary>
+		public void AddTextAndSoundEvent(NPCAiText text)
+		{
+			if (text != null)
+			{
+				Casted += cast => cast.CasterObject.PlayTextAndSound(text);
 			}
 		}
 	}
