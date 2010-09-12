@@ -156,15 +156,15 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			{
 				if (spell.CasterIsTarget)
 				{
-					if (m_owner.Auras[new AuraIndexId(spell.AuraUID, true)] != null)
+					if (m_owner.Auras.Contains(new AuraIndexId(spell.AuraUID, true)))
 					{
 						// caster already has Aura
 						return false;
 					}
 				}
-				else
+				else if (spell.HasTargets && !spell.IsAreaSpell)
 				{
-					if (m_target.Auras[spell] != null)
+					if (m_target.Auras.Contains(spell))
 					{
 						// target already has Aura
 						return false;
