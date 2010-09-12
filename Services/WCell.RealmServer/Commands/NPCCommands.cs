@@ -343,8 +343,14 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					rgn = trigger.Args.Target.Region;
-					phase = trigger.Args.Target.Phase;
+					var target = trigger.Args.Target;
+					if (target == null)
+					{
+						trigger.Reply("Must have target or specify destination (using the -d switch).");
+						return;
+					}
+					rgn = target.Region;
+					phase = target.Phase;
 				}
 
 				if (rgn == null)

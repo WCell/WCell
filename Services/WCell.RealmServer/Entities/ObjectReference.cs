@@ -100,5 +100,18 @@ namespace WCell.RealmServer.Entities
 		//        return WorldMgr.GetObject(Id) as DynamicObject;
 		//    }
 		//}
+
+		public override string ToString()
+		{
+			var obj = Object;
+			if (obj != null)
+			{
+				return obj.ToString();
+			}
+			else
+			{
+				return string.Format("Object with Id: {0}", EntityId);
+			}
+		}
 	}
 }

@@ -483,7 +483,7 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			catch (Exception ex)
 			{
-				LogUtil.ErrorException(ex, "Unable to add new Aura {0} to {1}", spell, m_owner);
+				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
 			}
 			return null;
 		}
@@ -542,7 +542,7 @@ namespace WCell.RealmServer.Spells.Auras
 			var id = aura.Id;
 			if (m_auras.ContainsKey(aura.Id))
 			{
-				LogManager.GetCurrentClassLogger().Warn("Tried to add Aura \"{0}\" when it was already added, to {1}", aura, Owner);
+				LogManager.GetCurrentClassLogger().Warn("Tried to add Aura \"{0}\" by \"{1}\" when it was already added, to: {2}", aura, aura.CasterReference, Owner);
 				return;
 			}
 			m_auras.Add(id, aura);
