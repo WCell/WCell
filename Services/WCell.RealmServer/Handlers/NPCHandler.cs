@@ -143,31 +143,22 @@ namespace WCell.RealmServer.Handlers
 				else if (petitioner.IsArenaPetitioner)
 				{
 					// Arena petitioner
-					chr.SendSystemMessage("Building arena packet.");
-					//packet.Write(3);
-
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.RequiredSignatures);
 
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.RequiredSignatures);
 
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
 				}
 				chr.Client.Send(packet);
@@ -362,8 +353,9 @@ namespace WCell.RealmServer.Handlers
 		public static void HandlePetitionDecline(IRealmClient client, RealmPacketIn packet)
 		{
 			var petitionGuid = packet.ReadEntityId();
+            var petitionRecord = PetitionRecord.LoadRecordByItemId(petitionGuid.Low);
 
-            //SendPetitionDecline(client, petition);
+            SendPetitionDecline(client, client.ActiveCharacter, petitionRecord);
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_OFFER_PETITION)]
@@ -520,13 +512,17 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetitionDecline(IPacketReceiver client, PetitionRecord record)
+		public static void SendPetitionDecline(IPacketReceiver client, Character chr, PetitionRecord record)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE, 8))
 			{
-                
-				// TODO
-				client.Send(packet);
+                var character = World.GetCharacter(record.OwnerId);
+                if(character != null)
+                {
+				    packet.WriteULong(chr.EntityId.Full);
+
+				    character.Client.Send(packet);
+                }
 			}
 		}
 
@@ -554,7 +550,7 @@ namespace WCell.RealmServer.Handlers
 		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
             string name = charter.Petition.Name;
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE, 4 + 8 + name.Length + 1 + 1 + 4 * 12 + 2 + 10))
 			{
                 packet.WriteUInt(charter.EntityId.Low);
                 packet.WriteULong(charter.Owner.EntityId.Full);
