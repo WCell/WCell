@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Handlers
 
 				if (!acc.Role.IsStaff)
 				{
-					if (archetype.Class.StartLevel > 1 && acc.HighestCharLevel < archetype.Class.StartLevel)
+					if (archetype.Class.StartLevel > BaseClass.DefaultStartLevel && acc.HighestCharLevel < archetype.Class.StartLevel)
 					{
 						SendCharCreateReply(client, LoginErrorCode.CHAR_CREATE_LEVEL_REQUIREMENT);
 						return;
