@@ -17,46 +17,46 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                 new GossipMenuItem(GossipMenuIcon.Trade, "Auction House",
                                    convo =>
                                    GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9858.326f,
-                                                               2340.811f, 7, "Darnassus Auction House")));
+                                                               2340.811f, 7, "Darnassus Auction House")),
             new GossipMenuItem(GossipMenuIcon.Talk, "The Bank",
                                convo =>
                                GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9936.607f, 2516.145f, 7,
-                                                           "Darnassus Bank"));
+                                                           "Darnassus Bank")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Hippogryph Master",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9945.578f, 2618.262f, 7,
-                                                       "Rut'theran Village"));
+                                                       "Rut'theran Village")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Guild Master",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 10076.19f, 2199.77f, 7,
-                                                       "Darnassus Guild Master"));
+                                                       "Darnassus Guild Master")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "The Inn",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 10127.67f, 2224.849f, 7,
-                                                       "Darnassus Inn"));
+                                                       "Darnassus Inn")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Mailbox",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9941.858f, 2497.169f, 7,
-                                                       "Darnassus Mailbox"));
+                                                       "Darnassus Mailbox")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Stable Master",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 10167.46f, 2522.8f, 7,
-                                                       "Alassin"));
+                                                       "Alassin")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Weapons Trainer",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9908.618f, 2329.354f, 7,
-                                                       "Ilyenia Moonfire"));
+                                                       "Ilyenia Moonfire")),
             
             new GossipMenuItem(GossipMenuIcon.Talk, "Battlemaster",
                            convo =>
                            GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9975.605f, 2324.583f, 7,
-                                                       "Battlemasters Darnassus"));
+                                                       "Battlemasters Darnassus")),
             new GossipMenuItem("Class Trainer",
                                new GossipMenu(
                                    new GossipMenuItem(GossipMenuIcon.Talk, "Druid",
@@ -87,7 +87,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                                    new GossipMenuItem(GossipMenuIcon.Talk, "Warrior",
                                                       convo =>
                                                       GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, 9940.102f, 2284.522f, 7,
-                                                                                  "Warrior's Terrace"))));
+                                                                                  "Warrior's Terrace")))),
             new GossipMenuItem("Profession Trainer",
                                new GossipMenu(
                                    new GossipMenuItem(GossipMenuIcon.Talk, "Alchemy",
@@ -140,7 +140,11 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                                                       GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None,
                                                                                   10080.7f, 2267.028f, 7,
                                                                                   "Darnassus Tailor"))
-                                   ));
-        }
+                                   )  ) ) 
+            {
+
+                KeepOpen = true
+            };
+        }        
     }
 }
