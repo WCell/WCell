@@ -90,6 +90,7 @@ namespace WCell.RealmServer.Spells
 		void CreateAuras(ref List<CastMiss> missedTargets, ref List<IAura> auras, DynamicObject dynObj)
 		{
 			auras = AuraListPool.Obtain();
+
 			var allowDead = m_spell.PersistsThroughDeath;
 
 			// create AreaAura

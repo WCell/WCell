@@ -1135,7 +1135,7 @@ namespace WCell.RealmServer.Database
 		{
 			Race = archetype.Race.Id;
 			Class = archetype.Class.Id;
-			Level = Math.Max(archetype.Class.StartLevel, BaseClass.DefaultStartLevel);
+			Level = archetype.Class.ActualStartLevel;
 			PositionX = archetype.StartPosition.X;
 			PositionY = archetype.StartPosition.Y;
 			PositionZ = archetype.StartPosition.Z;
