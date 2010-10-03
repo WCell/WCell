@@ -179,6 +179,7 @@
     <Compile Include="Commands\TeleSpellCommand.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Darnassus.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Ironforge.cs" />
+    <Compile Include="Gossip\Guard Gossip\Alliance\Stormwind.cs" />
     <Compile Include="Gossip\Guard Gossip\Horde\Orgrimmar.cs" />
     <Compile Include="Gossip\Guard Gossip\Horde\Undercity.cs" />
     <Compile Include="Gossip\Guard Gossip\Neutral\Shattrath.cs" />
