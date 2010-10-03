@@ -32,7 +32,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Priest",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4627f,-926.45f, 7, "Hall of Mysteries")),
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Rogue",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4647.83f,-1124f, 7,"Ironforge Rogue Trainer")),
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Warlock",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4605f,-1110.45f, 7,"Ironforge Warlock Trainer")),
-                                       new GossipMenuItem(GossipMenuIcon.Talk, "Warrior",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -5023.08f,-1253.68f, 7, "Hall of Arms")),
+                                       new GossipMenuItem(GossipMenuIcon.Talk, "Warrior",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -5023.08f,-1253.68f, 7, "Hall of Arms"))
                                   )
                     ),
                 new GossipMenuItem("A Profession Trainer",new GossipMenu(new GossipMenuItem(GossipMenuIcon.Talk, "Alchemy",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None,-4858.5f, -1241.83f, 7,"Berryfizz's Potions and Mixed Drinks")),
