@@ -58,6 +58,20 @@ namespace WCell.Addons.Default.Spells.Mage
 				triggerEffect.ImplicitTargetA = ImplicitTargetType.SingleEnemy;
 				triggerEffect.AddAffectingSpells(SpellLineId.MageFireBlast);		// triggered by fire blast only
 			}, SpellId.EffectImpactRank1);
+
+			// Combustion should proc
+			SpellLineId.MageFireCombustion.Apply(spell =>
+			{
+				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
+
+				var modEffect = spell.GetEffect(AuraType.AddModifierPercent);
+
+				// the trigger effect is actually supposed to be proc'ed by the same spells that have their crit damage increased
+				var triggerEffect = spell.GetEffect(SpellEffectType.TriggerSpell);
+				triggerEffect.EffectType = SpellEffectType.ApplyAura;
+				triggerEffect.AuraType = AuraType.ProcTriggerSpell;
+				triggerEffect.AffectMask = modEffect.AffectMask;
+			});
 		}
 	}
 

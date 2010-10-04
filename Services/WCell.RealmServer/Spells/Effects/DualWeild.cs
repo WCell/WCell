@@ -33,17 +33,19 @@ namespace WCell.RealmServer.Spells.Effects
 
 		protected override void Apply(WorldObject target)
 		{
-			var skills = ((Character)target).Skills;
-			if (skills != null)
+			if (target is Character)
 			{
-				skills.TryLearn(SkillId.DualWield);
+				var skills = ((Character) target).Skills;
+				if (skills != null)
+				{
+					skills.TryLearn(SkillId.DualWield);
+				}
+				// TODO: What if it cannot be learnt?
 			}
-			// TODO: What if it cannot be learnt?
-		}
-
-		public override ObjectTypes TargetType
-		{
-			get { return ObjectTypes.Player; }
+			else
+			{
+				// TODO: Do NPCs need this skill for anything really?
+			}
 		}
 	}
 }

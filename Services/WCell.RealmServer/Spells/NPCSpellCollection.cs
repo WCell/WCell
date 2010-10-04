@@ -117,10 +117,7 @@ namespace WCell.RealmServer.Spells
 			{
 				MaxCombatSpellRange = Math.Max(MaxCombatSpellRange, Owner.GetSpellMaxRange(spell, null));
 			}
-			if (!spell.IsPassive)
-			{
-				AddReadySpell(spell);
-			}
+			AddReadySpell(spell);
 		}
 
 		/// <summary>
@@ -130,7 +127,10 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void AddReadySpell(Spell spell)
 		{
-			m_readySpells.Add(spell);
+			if (!spell.IsPassive)
+			{
+				m_readySpells.Add(spell);
+			}
 		}
 
 		public override void Clear()
@@ -221,7 +221,7 @@ namespace WCell.RealmServer.Spells
 						{
 							var cd = m_cooldowns[i];
 							Owner.RemoveUpdateAction(cd);
-							m_readySpells.Add(cd.Spell);
+							AddReadySpell(cd.Spell);
 						}
 					}
 				});
@@ -232,7 +232,7 @@ namespace WCell.RealmServer.Spells
 			return m_readySpells.Contains(spell);
 		}
 
-		public override void ClearCooldown(Spell spell, bool alsoCategory)
+		public override void ClearCooldown(Spell spell, bool alsoCategory = true)
 		{
 			if (m_cooldowns != null)
 			{
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Spells
 					if (cd.Spell.Id == spell.Id)
 					{
 						m_cooldowns.Remove(cd);
-						m_readySpells.Add(cd.Spell);
+						AddReadySpell(cd.Spell);
 						break;
 					}
 				}

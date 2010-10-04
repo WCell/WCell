@@ -205,6 +205,12 @@ namespace WCell.RealmServer.Spells
 
 			IsEnhancer = IsAuraEffect && (AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent);
 
+			if (MiscValueType == typeof(DamageSchoolMask))
+			{
+				// make sure that only valid schools are used
+				MiscValue = MiscValue & (int)DamageSchoolMask.AllSchools;
+			}
+
 			MiscBitSet = MiscValue > 0 ? Utility.GetSetIndices((uint)MiscValue) : new uint[0];
 
 			MinValue = BasePoints; // + DiceCount; TODO: check this!
@@ -883,32 +889,6 @@ namespace WCell.RealmServer.Spells
 		{
 			AuraEffectMiscValueBTypes[(int)auraType] = type;
 		}
-		#endregion
-
-		#region MiscValue Types
-		public Type MiscValueType
-		{
-			get
-			{
-				if (IsAuraEffect)
-				{
-					return GetAuraEffectMiscValueType(AuraType);
-				}
-				return GetSpellEffectEffectMiscValueType(EffectType);
-			}
-		}
-
-		public Type MiscValueBType
-		{
-			get
-			{
-				if (IsAuraEffect)
-				{
-					return GetAuraEffectMiscValueBType(AuraType);
-				}
-				return GetSpellEffectEffectMiscValueBType(EffectType);
-			}
-		}
 
 		internal static void InitMiscValueTypes()
 		{
@@ -962,8 +942,6 @@ namespace WCell.RealmServer.Spells
 
 			SetSpellEffectEffectMiscValueBType(SpellEffectType.Summon, typeof(SummonType));
 
-
-
 			TargetAreaEffects.AddRange(new[] {ImplicitTargetType.AllAroundLocation,
 			          ImplicitTargetType.AllEnemiesInArea,
 			          ImplicitTargetType.AllEnemiesInAreaChanneled,
@@ -985,6 +963,32 @@ namespace WCell.RealmServer.Spells
 						ImplicitTargetType.NatureSummonLocation,
 						ImplicitTargetType.TargetAtOrientationOfCaster,
 						ImplicitTargetType.Tranquility});
+		}
+		#endregion
+
+		#region MiscValue Types
+		public Type MiscValueType
+		{
+			get
+			{
+				if (IsAuraEffect)
+				{
+					return GetAuraEffectMiscValueType(AuraType);
+				}
+				return GetSpellEffectEffectMiscValueType(EffectType);
+			}
+		}
+
+		public Type MiscValueBType
+		{
+			get
+			{
+				if (IsAuraEffect)
+				{
+					return GetAuraEffectMiscValueBType(AuraType);
+				}
+				return GetSpellEffectEffectMiscValueBType(EffectType);
+			}
 		}
 		#endregion
 
