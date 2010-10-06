@@ -6,27 +6,29 @@ using WCell.RealmServer.Handlers;
 
 namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
 {
-    class Ironforge : GossipMenu
+    class Stormwind : GossipMenu
     {
         [Initialization]
         [DependentInitialization(typeof(NPCMgr))]
-        public static void CreateIronforgeGossipMenu()
+        public static void CreateStormwindGossipMenu()
         {
-            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.IronforgeGuard);
+            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.StormwindGuard);
             entry.DefaultGossip = new GossipMenu(
-                new GossipMenuItem(GossipMenuIcon.Talk, "Auction House",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4597.39f, -911.6f,7, "Ironforge Auction House")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Bank of Ironforge",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4891.9f, -991.47f,7, "The Vault")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Deeprun Tram",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4835.27f,-1294.69f, 7, "The Deeprun Tram")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Gryphon Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4821.52f, -1152.3f,7, "Ironforge Gryphon Master")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Guild Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -5021f, -996.45f, 7,"Ironforge Visitor's Center")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "The Inn",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4850.47f, -872.57f,7, "Stonefire Tavern")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "The Mailbox",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4845.7f, -880.55f,7, "Ironforge Mailbox")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Stable Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -5010f, -1262f, 7,"Ulbrek Firehand")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "Weapons Trainer",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -5040f, -1201.88f,7, "Bixi and Buliwyf")),
-                new GossipMenuItem(GossipMenuIcon.Talk, "The Battlemaster",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -5047.87f,-1263.77f, 7, "Battlemasters Ironforge")),
-                new GossipMenuItem("A Class Trainer",new GossipMenu(
-                                       new GossipMenuItem(GossipMenuIcon.Talk, "Druid",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -8737.481f,-1058.529f, 7, "The Park")),
-                                       new GossipMenuItem(GossipMenuIcon.Talk, "Hunter",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -8423.877f,-552.1997f, 7, "Hunter Lodge")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Auction House", convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None,-8815.65f,665.4402f,7,"Stormwind Auction House")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Bank of Stormwind",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -4891.9f, -991.47f,7, "Stormwind Bank")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Stormwind Harbor",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None,-8577.078f,988.1891f,7,"Stormwind Harbor")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Deeprun Tram",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8391.07f,570.8477f,7, "The Deeprun Tram")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "The Inn",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8861.762f, -664.0831f,7, "The Gilded Rose")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Gryphon Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8837.699f, -487.6247f,7, "Stormwind Gryphon Master")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Guild Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8886.755f, -600.606f, 7,"Stormwind Visitor's Center")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Locksmith",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8424.989f, -627.3555f,7, "Stormwind Locksmith")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Stable Master",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8432.932f, -554.4769f, 7,"Jenova Stoneshield")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Weapons Trainer",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8796.248f, -613.0318f,7, "Woo Ping")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Officers' Lounge",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8767.027f, -409.2762f,7, "Champions' Hall")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Battlemaster",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8393.95f,-270.5327f, 7, "Battlemasters Stormwind")),
+                new GossipMenuItem(GossipMenuIcon.Talk, "Barber",convo =>GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.None, -8746.796f,-658.101f, 7, "Stormwind Barber")),
+                // How far I got last time
+                new GossipMenuItem("A Class Trainer",new GossipMenu(new GossipMenuItem(GossipMenuIcon.Talk, "Hunter",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -5023f,-1253.68f, 7, "Hall of Arms")),
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Mage",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4627f,-926.45f, 7, "Hall of Mysteries")),
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Paladin",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4627.02f,-926.45f, 7, "Hall of Mysteries")),
                                        new GossipMenuItem(GossipMenuIcon.Talk, "Priest",convo =>GossipHandler.SendGossipPOI(convo.Character,GossipPOIFlags.None, -4627f,-926.45f, 7, "Hall of Mysteries")),

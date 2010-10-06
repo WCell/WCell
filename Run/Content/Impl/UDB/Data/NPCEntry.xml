@@ -10,10 +10,10 @@
       <Column Name="difficulty_entry_3"/>
     </FlatArray>
     <FlatArray Name="DisplayIds">
-      <Column Name="modelid_A"/>
-      <Column Name="modelid_A2"/>
-      <Column Name="modelid_H"/>
-      <Column Name="modelid_H2"/>
+      <Column Name="modelid_1"/>
+      <Column Name="modelid_2"/>
+      <Column Name="modelid_3"/>
+      <Column Name="modelid_4"/>
     </FlatArray>
     <FlatArray Name="Names">
       <Column Name="name" />
