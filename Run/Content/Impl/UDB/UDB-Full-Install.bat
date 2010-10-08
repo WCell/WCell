@@ -141,14 +141,14 @@ GOTO extract-error1
 
 :unzip
 ECHO.
-7za e -y %udbdir%Full_DB\%udb-main%.zip -o%udbdir%Full_DB\
+7za e -y %udbdir%\Full_DB\%udb-main%.zip -o%udbdir%\Full_DB\
 ECHO.
 PAUSE.
 GOTO menu
 
 :unrar
 ECHO.
-unrar x -y %udbdir%Full_DB\%udb-main%.rar %udbdir%Full_DB\
+unrar x -y %udbdir%\Full_DB\%udb-main%.rar %udbdir%\Full_DB\
 ECHO.
 PAUSE
 GOTO menu
