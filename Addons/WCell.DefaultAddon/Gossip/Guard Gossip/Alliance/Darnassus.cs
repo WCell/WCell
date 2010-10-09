@@ -13,7 +13,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
         public static void CreateDarnassusGossipMenu()
         {
             var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.DarnassusSentinel);
-#region MainMenu
+            #region MainMenu
 
             entry.DefaultGossip = new GossipMenu(
                 new GossipMenuItem(GossipMenuIcon.Trade, "Auction House",
@@ -115,6 +115,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                                                                                       "Warrior's Terrace")))),
 
                 #endregion
+
                 #region ProfessionTrainerMenu
                 new GossipMenuItem("Profession Trainer",
                                    new GossipMenu(
