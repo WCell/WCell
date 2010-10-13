@@ -4,6 +4,7 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Interaction;
 using WCell.RealmServer.Network;
+using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -122,11 +123,19 @@ namespace WCell.RealmServer.Handlers
                                                 CharacterRelationType.Muted);
         }*/
 
-        /*
+        
         [ClientPacketHandler(RealmServerOpCode.CMSG_BUG)]
         public static void BugRequest(IRealmClient client, RealmPacketIn packet)
         {
+            var isSuggestion = packet.ReadUInt32();
+            var contentLen = packet.ReadUInt32();
+            var content = packet.ReadString();
+            var typeLen = packet.ReadUInt32();
+            var type = packet.ReadString();
+
+            // TO-DO : Escape strings
+            //BugReport.CreateNewBugReport(type, content);
         }
-        */
+        
 	}
 }
