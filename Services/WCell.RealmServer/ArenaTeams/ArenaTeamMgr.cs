@@ -183,6 +183,7 @@ namespace WCell.RealmServer.ArenaTeams
                     throw new Exception("Invalid Type of arena team !");
             }
         }
+
         #region Checks
         public static bool CanUseName(string name)
         {
