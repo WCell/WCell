@@ -52,6 +52,9 @@ namespace WCell.Addons.Default.Spells.Warrior
 				var effect = spell.AddEffect(SpellEffectType.SchoolDamage, ImplicitTargetType.SingleEnemy);
 				effect.APValueFactor = 0.12f;
 			});
+
+            // There is only one shout per warrior
+            AuraHandler.AddAuraCasterGroup(SpellLineId.WarriorBattleShout, SpellLineId.WarriorCommandingShout);
 		}
 	}
 }
