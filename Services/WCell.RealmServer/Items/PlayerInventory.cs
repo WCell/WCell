@@ -2185,7 +2185,7 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
-		/// Returns the amount of Itesm of the given Set that the owner currently has equipped.
+		/// Returns the amount of Items of the given Set that the owner currently has equipped.
 		/// </summary>
 		/// <param name="set"></param>
 		/// <returns></returns>

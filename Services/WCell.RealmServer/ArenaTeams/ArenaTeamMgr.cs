@@ -122,7 +122,7 @@ namespace WCell.RealmServer.ArenaTeams
         #endregion
 
         /// <summary>
-        /// New or loaded Arena Team
+        /// New or loaded arena team
         /// </summary>
         /// <param name="guild"></param>
         public static void RegisterArenaTeam(ArenaTeam team)

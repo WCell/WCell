@@ -108,9 +108,18 @@ namespace WCell.RealmServer.Achievement
 			SetEntryCreator(AchievementCriteriaType.ReachTeamRating, () => new ReachTeamRatingAchievementCriteriaEntry());                      // 39
             SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
             SetEntryCreator(AchievementCriteriaType.ExploreArea, () => new ExploreAreaAchievementCriteriaEntry());                              // 43
+            SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60
+            SetEntryCreator(AchievementCriteriaType.MoneyFromQuestReward, () => new IncrementAtValue1AchievementCriteriaEntry());               // 62
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForTravelling, () => new IncrementAtValue1AchievementCriteriaEntry());             // 63
+            SetEntryCreator(AchievementCriteriaType.GoldSpentAtBarber, () => new IncrementAtValue1AchievementCriteriaEntry());                  // 65
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForMail, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 66                                      
+            SetEntryCreator(AchievementCriteriaType.LootMoney, () => new IncrementAtValue1AchievementCriteriaEntry());                          // 67          
 			SetEntryCreator(AchievementCriteriaType.WinDuel, () => new WinDuelLevelAchievementCriteriaEntry());									// 76
 			SetEntryCreator(AchievementCriteriaType.LoseDuel, () => new LoseDuelLevelAchievementCriteriaEntry());								// 77					
-			//TODO: Add more types.
+			SetEntryCreator(AchievementCriteriaType.TotalDamageReceived, () => new IncrementAtValue1AchievementCriteriaEntry());                // 103
+            SetEntryCreator(AchievementCriteriaType.TotalHealingReceived, () => new IncrementAtValue1AchievementCriteriaEntry());               // 105
+            //TODO: Add more types.
 		}
 
 		static void LoadDBCs()
