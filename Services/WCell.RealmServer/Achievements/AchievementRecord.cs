@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="AchievementRecord"/> object</returns>
-		public static AchievementRecord CreateNewAchievementRecord(Character chr, AchievementEntryId achievementEntryId)
+		public static AchievementRecord CreateNewAchievementRecord(Character chr, uint achievementEntryId)
 		{
 			AchievementRecord record;
 
@@ -83,9 +83,9 @@ namespace WCell.RealmServer.Achievement
 			set { _characterGuid = (int)value; }
 		}
 
-		public AchievementEntryId AchievementEntryId
+		public uint AchievementEntryId
 		{
-			get { return (AchievementEntryId)_achievementEntryId; }
+			get { return (uint)_achievementEntryId; }
 			set { _achievementEntryId = (int)value; }
 		}
 
@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Achievement
 			return FindAll(Restrictions.Eq("_characterGuid", chrId));
 		}
 
-        public static AchievementRecord[] Load(AchievementEntryId[] achievementEntryIds)
+        public static AchievementRecord[] Load(uint[] achievementEntryIds)
         {
             return FindAll(Restrictions.In("_achievementEntryId", achievementEntryIds));
         }

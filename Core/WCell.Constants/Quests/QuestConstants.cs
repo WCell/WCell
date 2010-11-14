@@ -25,6 +25,7 @@ namespace WCell.Constants.Quests
 		public const int MaxRewardChoiceItems = 6;
 		public const int MaxObjectInteractions = 4;
 		public const int MaxReceivedItems = 4;
+        public const int MaxObjectiveTexts = 4;
 		public const int MaxRequirements = 4;
 		public const int MaxEmotes = 4;
 		public const int MaxQuestsPerQuestGiver = 20;

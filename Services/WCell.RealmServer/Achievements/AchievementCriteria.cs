@@ -28,12 +28,18 @@ namespace WCell.RealmServer.Achievement
 	public abstract class AchievementCriteriaEntry
 	{
 		public AchievementCriteriaType Criteria;
-		public AchievementCriteriaId AchievementCriteriaId;
-		public AchievementEntryId AchievementEntryId;
+		public uint AchievementCriteriaId;
+		public uint AchievementEntryId;
 
 		public uint CompletionFlag;							// 26
 		public AchievementCriteriaGroupFlags GroupFlag;		// 27
-		public uint TimeLimit;								// 29
+		public uint TimeLimit;
+        								// 29
+        
+        public AchievementCriteriaRequirementSet RequirementsSet
+        {
+            get { return AchievementMgr.GetCriteriaRequirementSet(AchievementCriteriaId); }
+        }
 
 		public AchievementEntry AchievementEntry
 		{
@@ -46,7 +52,7 @@ namespace WCell.RealmServer.Achievement
 		}
 
 		public virtual void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
-		{
+		{ 
 		}
 	}
 
@@ -126,11 +132,11 @@ namespace WCell.RealmServer.Achievement
 	public class CompleteAchievementAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
 		// 8
-		public AchievementEntryId AchievementToCompleteId;
+		public uint AchievementToCompleteId;
 
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
-			if(AchievementToCompleteId == (AchievementEntryId)value1)
+			if(AchievementToCompleteId == value1)
 				achievements.SetCriteriaProgress(this, value2);
 		}
 

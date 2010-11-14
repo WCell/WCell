@@ -2,6 +2,11 @@
 <Tables>
   <DBVersion Table="db_version" Column="version" MinVersion="1" MaxVersion="1" />
 
+  <Table Name="achievement_criteria_requirement" MainDataHolder="AchievementCriteriaRequirement">
+	<PrimaryColumn Name="criteria_id" TypeName="UInt32"/>
+	<PrimaryColumn Name="type" TypeName="UInt32"/>
+  </Table>
+  
   <Table Name="achievement_reward" MainDataHolder="AchievementReward">
     <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>

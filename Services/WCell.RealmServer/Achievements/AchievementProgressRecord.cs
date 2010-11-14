@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="account">the account this character is on</param>
 		/// <param name="name">the name of the new character</param>
 		/// <returns>the <seealso cref="AchievementProgressRecord"/> object</returns>
-		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, AchievementCriteriaId achievementCriteriaId, uint counter)
+		public static AchievementProgressRecord CreateAchievementProgressRecord(Character chr, uint achievementCriteriaId, uint counter)
 		{
 			AchievementProgressRecord record;
 
@@ -92,9 +92,9 @@ namespace WCell.RealmServer.Achievement
 			set { _characterGuid = (int)value; }
 		}
 
-		public AchievementCriteriaId AchievementCriteriaId
+		public uint AchievementCriteriaId
 		{
-			get { return (AchievementCriteriaId)_achievementCriteriaId; }
+			get { return (uint)_achievementCriteriaId; }
 			set { _achievementCriteriaId = (int)value; }
 		}
 
