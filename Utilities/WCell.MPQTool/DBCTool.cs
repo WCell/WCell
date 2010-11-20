@@ -229,6 +229,31 @@ namespace WCell.MPQTool
 
 				string response;
 				var curDir = new FileInfo(".");
+
+				do
+				{
+					Console.WriteLine("Is this the correct path for your WoW installation?");
+					Console.WriteLine("Press y to confirm or n to re-enter location.");
+					response = Console.ReadLine();
+					if (response == null)
+					{
+						// program shutdown
+						return;
+					}
+
+					if (!response.StartsWith("y"))
+					{
+						Console.WriteLine("Please enter your wow directory.");
+						m_wowDir = Console.ReadLine();
+						if (m_wowDir == null)
+						{
+							// program shutdown
+							return;
+						}
+					}
+				}
+				while (!response.StartsWith("y"));
+
 				do
 				{
 					var outputDir = new DirectoryInfo(DBCOutputDir);
