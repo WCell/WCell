@@ -4,13 +4,6 @@
              xsi:schemaLocation=". ../../../../Utilities/WCell.PacketAnalyzer/Xml/PacketAnalyzerSchema.xsd"
              Version="4">
 
-  <RealmPacket OpCode="CMSG_GAMEOBJ_USE">
-    <Simple>
-      <Name>ObjectId</Name>
-      <Type>Guid</Type>
-    </Simple>
-  </RealmPacket>
-
   <RealmPacket OpCode="CMSG_GAMEOBJ_REPORT_USE">
     <Simple>
       <Name>ObjectId</Name>

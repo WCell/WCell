@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Quests
         /// <summary>
         /// The Honor Reward Level that is used to determine the honor reward upon completion.
         /// </summary>
-        public static readonly QuestHonorInfo[] QuestHonorInfos = new QuestHonorInfo[200];
+        public static readonly QuestHonorInfo[] QuestHonorInfos = new QuestHonorInfo[2000];
 
 		/// <summary>
 		/// Amount of levels above the Character level at which a player is not allowed to do the Quest

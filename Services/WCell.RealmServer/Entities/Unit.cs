@@ -393,9 +393,6 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			// exit combat mode etc
-			Target = null;
-
 			m_auras.RemoveWhere(aura => !aura.Spell.PersistsThroughDeath);
 
 			this.UpdatePowerRegen();
@@ -412,6 +409,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			OnDeath();
+
+			// exit combat mode etc
+			Target = null;
 		}
 
 		protected abstract bool OnBeforeDeath();

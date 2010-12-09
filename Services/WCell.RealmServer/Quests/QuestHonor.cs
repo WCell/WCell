@@ -17,6 +17,7 @@ namespace WCell.RealmServer.Quests
     {
         public override void Convert(byte[] rawData)
         {
+			// TODO: Fix this (it's not per level)
             var honorInfo = new QuestHonorInfo
             {
                 Level = GetInt32(rawData, 0) - 1,

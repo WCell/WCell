@@ -51,11 +51,6 @@ namespace WCell.RealmServer.GameObjects
 			}
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_USE)]
-		public static void HandleGOUse(IRealmClient client, RealmPacketIn packet)
-		{
-		}
-
 		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_REPORT_USE)]
 		public static void HandleGOReportUse(IRealmClient client, RealmPacketIn packet)
 		{

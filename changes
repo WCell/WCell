@@ -1,2 +1,2 @@
-- fixed ModBaseResistancePercentHandler
-- fixed GUI resistances display
+- fixed Quest loading (however quest-honor calculations are off)
+- fixed an aggro bug where one does not leave combat when opponent dies
