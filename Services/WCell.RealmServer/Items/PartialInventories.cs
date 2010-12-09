@@ -316,11 +316,6 @@ namespace WCell.RealmServer.Items
 			get { return m_inventory.Items[(int)slot]; }
 		}
 
-		public Item Weapon
-		{
-			get { return m_inventory.Items[(int)EquipmentSlot.MainHand]; }
-		}
-
 		#region IItemSlotHandler
 		/// <summary>
 		/// Is called before adding to check whether the item may be added to the corresponding slot 

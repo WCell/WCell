@@ -659,7 +659,7 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
 		/// </summary>
-		public override int FindFreeSlot()
+		public override int FindFreeSlott(int offset, int end)
 		{
 			var slot = BackPack.FindFreeSlot();
 			return slot;

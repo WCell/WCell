@@ -427,6 +427,7 @@ namespace WCell.RealmServer.Entities
 		#region Overrides
 		protected override void OnResistanceChanged(DamageSchool school)
 		{
+			base.OnResistanceChanged(school);
 			if (m_activePet != null && m_activePet.IsHunterPet)
 			{
 				m_activePet.UpdatePetResistance(school);

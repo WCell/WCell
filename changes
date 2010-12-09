@@ -1,4 +1,2 @@
-- added NPC.SetEntry methods to dynamically change the entire NPC
-- fixed small bugs with taming pets 
-- fixed DruidSavageDefense
-- 
+- fixed ModBaseResistancePercentHandler
+- fixed GUI resistances display

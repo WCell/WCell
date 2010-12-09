@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			for (var i = 0; i < m_spellEffect.MiscBitSet.Length; i++)
 			{
 				var school = (DamageSchool)m_spellEffect.MiscBitSet[i];
-				m_aura.Auras.Owner.RemoveResistanceBuff(school, -EffectValue);
+				m_aura.Auras.Owner.RemoveResistanceBuff(school, EffectValue);
 			}
 		}
 	}

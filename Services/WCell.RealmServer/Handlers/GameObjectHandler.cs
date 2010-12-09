@@ -54,6 +54,11 @@ namespace WCell.RealmServer.GameObjects
 		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_USE)]
 		public static void HandleGOUse(IRealmClient client, RealmPacketIn packet)
 		{
+		}
+
+		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_REPORT_USE)]
+		public static void HandleGOReportUse(IRealmClient client, RealmPacketIn packet)
+		{
 			var goId = packet.ReadEntityId();
 
 			var go = client.ActiveCharacter.Region.GetGO(goId.Low);
@@ -61,11 +66,6 @@ namespace WCell.RealmServer.GameObjects
 			{
 				go.Use(client.ActiveCharacter);
 			}
-		}
-
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_REPORT_USE)]
-		public static void HandleGOReportUse(IRealmClient client, RealmPacketIn packet)
-		{
 		}
 
         public static void SendGameObjectInfo(IRealmClient client, GOEntry entry)

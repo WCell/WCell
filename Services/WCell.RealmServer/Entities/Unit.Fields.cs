@@ -853,7 +853,6 @@ namespace WCell.RealmServer.Entities
 				value = 0;
 			}
 			m_baseResistances[(uint)school] = value;
-			SetInt32(UnitFields.RESISTANCES + (int)school, value);
 			OnResistanceChanged(school);
 		}
 
@@ -925,6 +924,17 @@ namespace WCell.RealmServer.Entities
 
 		protected virtual void OnResistanceChanged(DamageSchool school)
 		{
+			SetInt32(UnitFields.RESISTANCES + (int)school, GetBaseResistance(school) + GetResistanceBuffPositive(school) - GetResistanceBuffNegative(school));
+		}
+
+		public int GetResistanceBuffPositive(DamageSchool school)
+		{
+			return GetInt32(UnitFields.RESISTANCEBUFFMODSPOSITIVE + (int)school);
+		}
+
+		public int GetResistanceBuffNegative(DamageSchool school)
+		{
+			return GetInt32(UnitFields.RESISTANCEBUFFMODSNEGATIVE + (int)school);
 		}
 
 		public int ArmorBuffPositive
