@@ -22,8 +22,8 @@ namespace WCell.RealmServer.Achievement
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
-		internal Dictionary<AchievementEntryId, AchievementRecord> m_completedAchievements = new Dictionary<AchievementEntryId, AchievementRecord>();
-		internal Dictionary<AchievementCriteriaId, AchievementProgressRecord> m_progressRecords = new Dictionary<AchievementCriteriaId, AchievementProgressRecord>();
+		internal Dictionary<uint, AchievementRecord> m_completedAchievements = new Dictionary<uint, AchievementRecord>();
+		internal Dictionary<uint, AchievementProgressRecord> m_progressRecords = new Dictionary<uint, AchievementProgressRecord>();
 		internal Character m_owner;
 
 		public AchievementCollection(Character chr)
@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Achievement
 		/// </summary>
 		/// <param name="achievementEntry"></param>
 		/// <returns></returns>
-		public bool HasCompleted(AchievementEntryId achievementEntry)
+		public bool HasCompleted(uint achievementEntry)
 		{
 			return m_completedAchievements.ContainsKey(achievementEntry);
 		}
@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Achievement
 		/// </summary>
 		/// <param name="achievementCriteriaId"></param>
 		/// <returns></returns>
-		public AchievementProgressRecord GetAchievementCriteriaProgress(AchievementCriteriaId achievementCriteriaId)
+		public AchievementProgressRecord GetAchievementCriteriaProgress(uint achievementCriteriaId)
 		{
 			AchievementProgressRecord entry;
 			m_progressRecords.TryGetValue(achievementCriteriaId, out entry);
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Achievement
             if (!AchievementMgr.IsRealmFirst(achievementEntry.ID))
                 return false;
 
-			AchievementEntryId achievementForTestId = (achievementEntry.RefAchievement != 0)
+			uint achievementForTestId = (achievementEntry.RefAchievement != 0)
 														? achievementEntry.RefAchievement
 														: achievementEntry.ID;
 
@@ -159,7 +159,7 @@ namespace WCell.RealmServer.Achievement
 		/// Adds a new achievement to the list, when achievement is earned.
 		/// </summary>
 		/// <param name="achievementEntry"></param>
-		public void EarnAchievement(AchievementEntryId achievementEntryId)
+		public void EarnAchievement(uint achievementEntryId)
 		{
 		    var achievementEntry = AchievementMgr.GetAchievementEntry(achievementEntryId);
             if(achievementEntry!= null)
@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Achievement
 		/// </summary>
 		/// <param name="achievementCriteriaId"></param>
 		/// <returns></returns>
-		internal AchievementProgressRecord GetOrCreateProgressRecord(AchievementCriteriaId achievementCriteriaId)
+		internal AchievementProgressRecord GetOrCreateProgressRecord(uint achievementCriteriaId)
 		{
 			AchievementProgressRecord achievementProgressRecord;
 			if (!m_progressRecords.TryGetValue(achievementCriteriaId, out achievementProgressRecord))
@@ -222,7 +222,7 @@ namespace WCell.RealmServer.Achievement
 		/// </summary>
 		/// <param name="achievementEntryId"></param>
 		/// <returns></returns>
-		public bool RemoveAchievement(AchievementEntryId achievementEntryId)
+		public bool RemoveAchievement(uint achievementEntryId)
 		{
 			AchievementRecord achievementRecord;
 			if (m_completedAchievements.TryGetValue(achievementEntryId, out achievementRecord))
@@ -247,7 +247,7 @@ namespace WCell.RealmServer.Achievement
 		/// </summary>
 		/// <param name="achievementCriteriaId"></param>
 		/// <returns></returns>
-		public bool RemoveProgress(AchievementCriteriaId achievementCriteriaId)
+		public bool RemoveProgress(uint achievementCriteriaId)
 		{
 			AchievementProgressRecord achievementProgressRecord;
 			if (m_progressRecords.TryGetValue(achievementCriteriaId, out achievementProgressRecord))
@@ -302,7 +302,6 @@ namespace WCell.RealmServer.Achievement
 			// Skip achievements that require to be groupfree and 
 			if (achievementCriteriaEntry.GroupFlag.HasFlag(AchievementCriteriaGroupFlags.AchievementCriteriaGroupNotInGroup) && Owner.IsInGroup)
 				return false;
-
 			return true;
 		}
 
@@ -313,10 +312,10 @@ namespace WCell.RealmServer.Achievement
 		/// <param name="value1"></param>
 		/// <param name="value2"></param>
 		/// <param name="involved"></param>
-		internal void CheckPossibleAchievementUpdates(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, ObjectBase involved = null)
+		internal void CheckPossibleAchievementUpdates(AchievementCriteriaType type, uint value1 = 0u, uint value2 = 0u, Unit involved = null)
 		{
 			// Get all the related criterions.
-			var list = AchievementMgr.GetEntriesByCriterion(type);
+			var list = AchievementMgr.GetCriteriaEntriesByType(type);
 			if (list != null)
 			{
 				foreach (var entry in list)

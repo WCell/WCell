@@ -1088,7 +1088,7 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message, radius);
 		}
 
-		public void Emote(float radius, string[] localizedMsgs)
+		public override void Emote(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs, radius);
 		}

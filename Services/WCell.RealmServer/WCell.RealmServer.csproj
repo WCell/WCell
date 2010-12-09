@@ -184,12 +184,13 @@
     <Compile Include="..\..\Utilities\WCell.SolutionItems\SolutionInfo.cs">
       <Link>Properties\SolutionInfo.cs</Link>
     </Compile>
-    <Compile Include="Achievement\AchievementCriteria.cs" />
-    <Compile Include="Achievement\AchievementCategoryEntry.cs" />
-    <Compile Include="Achievement\AchievementCollection.cs" />
-    <Compile Include="Achievement\AchievementRecord.cs" />
-    <Compile Include="Achievement\AchievementProgressRecord.cs" />
-    <Compile Include="Achievement\AchievementReward.cs" />
+    <Compile Include="Achievements\AchievementCriteria.cs" />
+    <Compile Include="Achievements\AchievementCategoryEntry.cs" />
+    <Compile Include="Achievements\AchievementCollection.cs" />
+    <Compile Include="Achievements\AchievementRecord.cs" />
+    <Compile Include="Achievements\AchievementProgressRecord.cs" />
+    <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
+    <Compile Include="Achievements\AchievementReward.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />
     <Compile Include="ArenaTeams\ArenaTeamStats.cs" />
@@ -218,6 +219,8 @@
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Misc\ActionBar.cs" />
+    <Compile Include="Misc\BugReport.cs" />
+    <Compile Include="Quests\QuestHonor.cs" />
     <Compile Include="Spells\AISpellCastSettings.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
@@ -378,9 +381,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Achievement\AchievementEntry.cs" />
-    <Compile Include="Achievement\AchievementMgr.cs" />
-    <Compile Include="Achievement\Achievements.DBC.cs" />
+    <Compile Include="Achievements\AchievementEntry.cs" />
+    <Compile Include="Achievements\AchievementMgr.cs" />
+    <Compile Include="Achievements\Achievements.DBC.cs" />
     <Compile Include="Addons\RealmAddonMgr.cs" />
     <Compile Include="AI\Actions\AIActionCollection.cs" />
     <Compile Include="AI\Actions\AIActionCreatorCollection.cs" />

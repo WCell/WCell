@@ -2,12 +2,12 @@ using WCell.RealmServer.Instances;
 
 ///
 /// This file was automatically created, using WCell's CodeFileWriter
-/// Date: 9/1/2009
+/// Date: 4/23/2010
 ///
 
 namespace WCell.Addons.Default.Instances
 {
-	public class AuchindounManaTombs : DungeonInstance
+	public class TheRubySanctum : RaidInstance
 	{
 	}
 

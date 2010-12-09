@@ -38,12 +38,12 @@ namespace WCell.RealmServer.Handlers
         }
 
         //SMSG_ACHIEVEMENT_EARNED
-        public static void SendAchievementEarned(AchievementEntryId achievementEntryId, Character chr)
+        public static void SendAchievementEarned(uint achievementEntryId, Character chr)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ACHIEVEMENT_EARNED, 8 + 4 + 4))
             {
                 chr.EntityId.WritePacked(packet);
-                packet.WriteUInt((uint)achievementEntryId);
+                packet.WriteUInt(achievementEntryId);
                 packet.WriteDateTime(DateTime.Now);
                 packet.WriteUInt(0);
                 chr.SendPacketToArea(packet, true);
@@ -51,19 +51,19 @@ namespace WCell.RealmServer.Handlers
         }
 
         //SMSG_SERVER_FIRST_ACHIEVEMENT
-        public static void SendServerFirstAchievement(AchievementEntryId achievementEntryId, Character chr)
+        public static void SendServerFirstAchievement(uint achievementEntryId, Character chr)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_SERVER_FIRST_ACHIEVEMENT, chr.Name.Length + 1 + 8 + 4 + 4))
             {
                 packet.WriteCString(chr.Name);
                 packet.Write(chr.EntityId);
-                packet.WriteUInt((uint)achievementEntryId);
+                packet.WriteUInt(achievementEntryId);
                 packet.WriteUInt(0);
                 World.Broadcast(packet);
             }
         }
 
-        public static RealmPacketOut CreateAchievementEarnedToGuild(AchievementEntryId achievementEntryId, Character chr)
+        public static RealmPacketOut CreateAchievementEarnedToGuild(uint achievementEntryId, Character chr)
         {
             // Must be a better way to do this.
             const string msg = "|Hplayer:$N|h[$N]|h has earned the achievement $a!";
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Handlers
             packet.Write(chr.EntityId);
             packet.WriteUIntPascalString(msg);
             packet.WriteByte(0);
-            packet.WriteUInt((uint) achievementEntryId);
+            packet.WriteUInt(achievementEntryId);
             return packet;
         }
 

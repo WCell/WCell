@@ -7,6 +7,7 @@ using WCell.Core.Network;
 using WCell.RealmServer.Network;
 using WCell.Util;
 using WCell.RealmServer.ArenaTeams;
+using WCell.RealmServer.Global;
 
 namespace WCell.RealmServer.Handlers
 {
@@ -14,8 +15,31 @@ namespace WCell.RealmServer.Handlers
     {
         private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 
+
+        [ClientPacketHandler(RealmServerOpCode.CMSG_ARENA_TEAM_QUERY)]
+        public static void HandleArenaTeamQuery(IRealmClient client, RealmPacketIn packet)
+        {
+            var arenaTeamId = packet.ReadUInt32();
+            var team = ArenaTeamMgr.GetArenaTeam(arenaTeamId);
+            if (team != null)
+            {
+                SendArenaTeamQueryResponse(client, team);
+            }
+        }
+
+        [ClientPacketHandler(RealmServerOpCode.CMSG_ARENA_TEAM_ROSTER)]
+        public static void HandleArenaTeamRoster(IRealmClient client, RealmPacketIn packet)
+        {
+            var arenaTeamId = packet.ReadUInt32();
+            var team = ArenaTeamMgr.GetArenaTeam(arenaTeamId);
+            if (team != null)
+            {
+                SendArenaTeamRosterResponse(client, team);
+            }
+        }
+
         /// <summary>
-        /// Sends a arena team query response to the client.
+        /// Sends an arena team query response to the client.
         /// </summary>
         /// <param name="client">the client to send to</param>
         /// <param name="team">arena team to be sent</param>
@@ -31,6 +55,13 @@ namespace WCell.RealmServer.Handlers
             }
         }
 
+        public static void SendArenaTeamRosterResponse(IPacketReceiver client, ArenaTeam team)
+        {
+            using (var packet = CreateArenaTeamRosterResponsePacket(team))
+            {
+                client.Send(packet);
+            }
+        }
         private static RealmPacketOut CreateArenaTeamQueryResponsePacket(ArenaTeam team)
 		{
 			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_QUERY_RESPONSE, 4*7+team.Name.Length+1);
@@ -65,6 +96,34 @@ namespace WCell.RealmServer.Handlers
             return packet;
         }
 
+        private static RealmPacketOut CreateArenaTeamRosterResponsePacket(ArenaTeam team)
+        {
+            var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ARENA_TEAM_ROSTER, 100);
+
+            packet.WriteUInt(team.Id);
+            packet.WriteByte(0);
+            packet.WriteUInt(team.MemberCount);
+            packet.WriteUInt(team.Type);
+
+            foreach (var member in team.Members.Values)
+            {
+                packet.WriteULong(member.Character.EntityId.Full);
+                var pl = World.GetCharacter(member.Character.EntityId.Low);
+                packet.WriteByte((pl != null) ? 1 : 0);
+                packet.WriteCString(member.Character.Name);
+                packet.WriteByte((team.Leader == member) ? 0 : 1);
+                packet.WriteByte((pl != null) ? pl.Level : 0);
+                packet.WriteUInt((uint)member.Class);
+                packet.WriteUInt(member.gamesWeek);
+                packet.WriteUInt(member.winsWeek);
+                packet.WriteUInt(member.gamesSeason);
+                packet.WriteUInt(member.winsSeason);
+                packet.WriteUInt(member.personalRating);
+                packet.WriteFloat(0.0f);
+                packet.WriteFloat(0.0f);
+            }
+            return packet;
+        }
         /// <summary>
         /// Sends result of actions connected with arenas
         /// </summary>

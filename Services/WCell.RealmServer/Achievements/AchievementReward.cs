@@ -10,13 +10,14 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Mail;
 using WCell.Util.Data;
+using WCell.Core.Database;
 
 namespace WCell.RealmServer.Achievement
 {
     [DataHolder]
     public class AchievementReward : IDataHolder
     {
-        public AchievementEntryId AchievementEntryId;
+        public uint AchievementEntryId;
         public GenderType Gender;
         public TitleId AllianceTitle;
         public TitleId HordeTitle;

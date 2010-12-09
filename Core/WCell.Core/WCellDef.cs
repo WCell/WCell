@@ -172,6 +172,8 @@ namespace WCell.Core
 
         public const string DBC_SPELLRUNECOST = "SpellRuneCost.dbc";
 
+        public const string DBC_TEAMCONTRIBUTIONPOINTS = "TeamContributionPoints.dbc";
+
 		public const int SERVER_UPDATE_INTERVAL = 50;
 
 		public const long MAX_NETWORK_SEND_DELTA = 50;

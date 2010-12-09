@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Lang
 		}
 
 		/// <summary>
-		/// Returns the entry at the index that equals the numeric value of locale
+		/// Returns the entry at the index that equals the numeric value of the default locale
 		/// </summary>
 		public static string LocalizeWithDefaultLocale(this string[] texts)
 		{

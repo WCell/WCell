@@ -264,6 +264,18 @@ namespace WCell.RealmServer.Quests
 			get { return EndTexts.LocalizeWithDefaultLocale(); }
 		}
 
+        ///<summary>
+        /// Text which is displayed in quest objectives window once all objectives are completed 
+        /// </summary>
+        [Persistent((int)ClientLocale.End)]
+        public string[] CompletedTexts;
+
+        [NotPersistent]
+        public string DefaultCompletedText
+        {
+            get { return CompletedTexts.LocalizeWithDefaultLocale(); }
+        }
+
 		/// <summary>
 		/// Array of interactions containing ID, index and quantity.
 		/// </summary>
@@ -445,6 +457,11 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		[Persistent(QuestConstants.MaxObjectInteractions)]
 		public SpellId[] SpellCastObjectives = new SpellId[4];
+
+        /// <summary>
+        /// Number of players to kill
+        /// </summary>
+        public uint PlayersSlain;
 		#endregion
 
 		#region QuestRewards
@@ -454,6 +471,12 @@ namespace WCell.RealmServer.Quests
 		[Persistent(QuestConstants.MaxReputations)]
 		public ReputationReward[] RewardReputations = new ReputationReward[5];
 
+        public uint RewHonorAddition;
+
+        /// <summary>
+        /// Multiplier of reward honor
+        /// </summary>
+        public float RewHonorMultiplier;
 		#endregion
 
 		#region QuestEmotes
@@ -1006,7 +1029,7 @@ namespace WCell.RealmServer.Quests
 
 			if (RewMoney > 0)
 			{
-				receiver.Money = (uint)(receiver.Money + RewMoney);
+				receiver.Money += (uint)RewMoney;
 			}
 
 			for (var i = 0; i < QuestConstants.MaxReputations; i++)
@@ -1031,6 +1054,21 @@ namespace WCell.RealmServer.Quests
 
             var index = (valueId > 0) ? 0 : 1; 
             return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
+        }
+
+        public int CalcRewardHonor(Character character)
+        {
+            int fullhonor = 0;
+            if(RewHonorAddition > 0 || RewHonorMultiplier > 0.0f)
+            {
+                var info = QuestMgr.QuestHonorInfos.Get(Level);      
+                if(info != null)
+                {
+                    fullhonor = (int)(info.RewHonor * RewHonorMultiplier * 0.1000000014901161);
+                    fullhonor += (int)RewHonorAddition;                   
+                }          
+            }
+            return fullhonor;
         }
 
         public int CalcRewardXp(Character character)
