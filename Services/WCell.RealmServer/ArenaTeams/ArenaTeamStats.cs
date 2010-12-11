@@ -48,6 +48,11 @@ namespace WCell.RealmServer.ArenaTeams
             set { _rank = (int)value; }
         }
 
+        public ArenaTeamStats()
+        {
+            
+        }
+
         public ArenaTeamStats(ArenaTeam arenaTeam)
         {
             team = arenaTeam;

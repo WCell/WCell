@@ -118,9 +118,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Castle.ActiveRecord, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+    <Reference Include="Castle.ActiveRecord, Version=2.1.2.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.ActiveRecord.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.ActiveRecord.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=04f2a0efba3ae860, processorArchitecture=MSIL">

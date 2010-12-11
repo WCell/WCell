@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Database
 
 		void InitItemRecord()
 		{
-			var cfg = ActiveRecordBase.Holder.GetConfiguration(typeof(ActiveRecordBase));
+			var cfg = ActiveRecordMediator.GetSessionFactoryHolder().GetConfiguration(typeof(ActiveRecordBase));
 			// cfg.SetListener(MyIPostLoadEventListener);
 		}
 

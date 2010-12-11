@@ -1,8 +1,0 @@
-K 10
-svn:ignore
-V 51
-Hql.tokens
-HqlSqlWalker.tokens
-SqlGenerator.tokens
-
-END

@@ -25,7 +25,7 @@ namespace WCell.RealmServer.Content
 
 		public object Read(IDataReader reader, int index)
 		{
-			return m_Type.NullSafeGet(reader, index);
+			return m_Type.Get(reader, index);
 		}
 	}
 
@@ -39,6 +39,16 @@ namespace WCell.RealmServer.Content
 			StandardConverters[typeof(uint)] = new ToUIntConverter();
 			StandardConverters[typeof(string)] = new ToStringConverter();
 		}
+
+        private static Boolean IsNullableEnum(Type typeClass)
+        {
+            if (!typeClass.IsGenericType) return false;
+            Type nullable = typeof(Nullable<>);
+            if (!nullable.Equals(typeClass.GetGenericTypeDefinition())) return false;
+
+            Type genericClass = typeClass.GetGenericArguments()[0];
+            return genericClass.IsSubclassOf(typeof(Enum));
+        }
 
 		public IConverter GetStandardConverter(Type type)
 		{
@@ -65,7 +75,7 @@ namespace WCell.RealmServer.Content
 			{
 				hibernateType = NHibernateUtil.Enum(type);
 			}
-			else if (TypeFactory.IsNullableEnum(type))
+			else if (IsNullableEnum(type))
 			{
 				hibernateType = NHibernateUtil.Enum(type.GetGenericArguments()[0]);
 			}
