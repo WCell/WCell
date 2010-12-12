@@ -85,15 +85,13 @@ namespace WCell.RealmServer.Battlegrounds
 
             Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId))];
 
-            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == RegionId)))
             {
-                if (entry.mapId == RegionId)
                     Difficulties[entry.bracketId] = entry;
             }
-
-            RegionTemplate.MinLevel = Math.Max(1, MinLevel);
-            RegionTemplate.MaxLevel = Math.Max(MinLevel, MaxLevel);
-
+            
+            MinLevel = RegionTemplate.MinLevel = Difficulties.First().minLevel;
+            MaxLevel = RegionTemplate.MaxLevel = Difficulties.Last().maxLevel;
 			BattlegroundMgr.Templates[(int)Id] = this;
 
 			CreateQueues();
