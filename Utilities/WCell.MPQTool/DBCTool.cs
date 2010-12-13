@@ -35,6 +35,8 @@ namespace WCell.MPQTool
 		public string DBCOutputDir;
 		public DirectoryInfo DumpDir = new DirectoryInfo(string.Format("Output"));
 
+		static bool m_automaticSearchFailed;
+
 		static string m_wowDir;
 
 		public string WowDir
@@ -191,6 +193,7 @@ namespace WCell.MPQTool
 				Console.WriteLine("Found WoW in: " + m_wowDir);
 				return Path.GetFullPath(m_wowDir);
 			}
+			m_automaticSearchFailed = true;
 			throw new Exception("Could not find WoW directory.");
 		}
 
@@ -223,10 +226,30 @@ namespace WCell.MPQTool
 				}
 				Console.WriteLine();
 
-				m_wowDir = FindWowDir(wowDir);
-
-				Console.WriteLine("Found WoW in: " + m_wowDir);
-
+				try
+				{
+					m_wowDir = FindWowDir(wowDir);
+				}
+				catch (Exception e)
+				{
+					if(m_automaticSearchFailed)
+					{
+						Console.WriteLine("WoW was not found");
+						Console.WriteLine("Enter path manually and try again? (y/n)");
+						var resp = Console.ReadLine();
+						if(resp.StartsWith("y"))
+						{
+							Console.WriteLine();
+							Console.WriteLine("Enter your WoW directory: ");
+							m_wowDir = FindWowDir(Console.ReadLine());
+						}
+						else
+						{
+							return;
+						}
+					}
+				}
+				
 				string response;
 				var curDir = new FileInfo(".");
 
@@ -234,6 +257,7 @@ namespace WCell.MPQTool
 				{
 					Console.WriteLine("Is this the correct path for your WoW installation?");
 					Console.WriteLine("Press y to confirm or n to re-enter location.");
+
 					response = Console.ReadLine();
 					if (response == null)
 					{
