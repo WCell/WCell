@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Items>
+    <Item Key="Sample">
+      <Value>This is a localizable sample entry</Value>
+    </Item>
+    <Item Key="Trade">
+      <Value>Trade</Value>
+    </Item>
+  </Items>
+</Translation>
