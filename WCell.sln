@@ -95,6 +95,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthServer", "AuthServer", 
 		Run\AuthContent\Lang\English.xml = Run\AuthContent\Lang\English.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DefaultAddon", "DefaultAddon", "{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79}"
+	ProjectSection(SolutionItems) = preProject
+		Run\RealmServerAddons\DefaultAddon\Lang\English.xml = Run\RealmServerAddons\DefaultAddon\Lang\English.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -425,11 +430,12 @@ Global
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
+		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

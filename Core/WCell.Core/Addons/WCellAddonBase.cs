@@ -20,7 +20,7 @@ namespace WCell.Core.Addons
 		/// <summary>
 		/// The <see cref="WCellAddonContext"/> that was used to load this Addon.
 		/// </summary>
-		public static WCellAddonContext Context
+		public WCellAddonContext Context
 		{
 			get;
 			private set;

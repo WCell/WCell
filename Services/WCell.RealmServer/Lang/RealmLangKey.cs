@@ -142,6 +142,9 @@ namespace WCell.RealmServer.Lang
         // ########################################################################
         // Error notifications
         FeatureNotYetImplemented,
-        InvalidClass
+        InvalidClass,
+
+		// Other
+		Goodbye
 	}
 }

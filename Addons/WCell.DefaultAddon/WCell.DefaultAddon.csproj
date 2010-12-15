@@ -22,14 +22,15 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Run\Debug\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\DefaultAddon\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\Run\Debug\RealmServerAddons\WCell.DefaultAddon.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -226,6 +227,8 @@
     <Compile Include="Instances\Northrend\VaultOfArchavon.cs" />
     <Compile Include="Instances\Northrend\VioletHold.cs" />
     <Compile Include="Items\PlayerAbilityItemFixes.cs" />
+    <Compile Include="Lang\AddonMsgKey.cs" />
+    <Compile Include="Lang\DefaultAddonLocalizer.cs" />
     <Compile Include="MiscFixes\ShapeshiftFixes.cs" />
     <Compile Include="NPCs\NPCCorrections.cs" />
     <Compile Include="DefaultAddon.cs" />

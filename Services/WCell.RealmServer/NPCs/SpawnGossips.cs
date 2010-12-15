@@ -29,7 +29,7 @@ namespace WCell.RealmServer.NPCs
 			AddItem(new GossipMenuItem("Waypoint List", WPMenu = CreateWaypointMenu()));
 			AddItem(new GossipMenuItem("Add new Wapyoint", HandleAddWP));
 
-			AddQuitMenuItem("Done");
+			AddQuitMenuItem();
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				menu.AddItem(new WPItem(m_point, wp));
 			}
-			menu.AddQuitMenuItem("Done");
+			menu.AddQuitMenuItem();
 			return menu;
 		}
 
