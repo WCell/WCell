@@ -6,160 +6,165 @@ namespace WCell.RealmServer.Gossips
 	#region LocalizeGossipMenuItem
 	public class LocalizedGossipMenuItem : GossipMenuItemBase
 	{
-		public readonly string[] Texts = new string[(int)ClientLocale.End];
+		public readonly TranslatableItem Text;
 
 		/// <summary>
 		/// If set, will show an Accept/Cancel dialog with this text to the player
 		/// when selecting this Item.
 		/// </summary>
-		public string[] ConfirmTexts = new string[(int)ClientLocale.End];
+		public TranslatableItem ConfirmText;
 
 
 		public LocalizedGossipMenuItem()
 		{
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon type, string[] texts)
+		public LocalizedGossipMenuItem(GossipMenuIcon type, TranslatableItem text)
 		{
 			Icon = type;
-			Texts = texts;
+			Text = text;
 		}
 
-		public LocalizedGossipMenuItem(string[] texts)
-			: this(GossipMenuIcon.Talk, texts)
+		public LocalizedGossipMenuItem(TranslatableItem text)
+			: this(GossipMenuIcon.Talk, text)
 		{
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, IGossipAction action)
-			: this(texts)
+		public LocalizedGossipMenuItem(RealmLangKey msgKey)
+		{
+			Text = new TranslatableItem(msgKey);
+		}
+
+		public LocalizedGossipMenuItem(TranslatableItem text, IGossipAction action)
+			: this(text)
 		{
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, GossipActionHandler callback)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback)
+			: this(text)
 		{
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, GossipActionHandler callback, string[] confirmTexts)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, TranslatableItem confirmText)
+			: this(text)
 		{
-			ConfirmTexts = confirmTexts;
+			ConfirmText = confirmText;
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
+			: this(text)
 		{
 			Action = new DefaultGossipAction(callback);
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, GossipMenu subMenu)
-			: this(texts, (IGossipAction)null, subMenu)
+		public LocalizedGossipMenuItem(TranslatableItem text, GossipMenu subMenu)
+			: this(text, (IGossipAction)null, subMenu)
 		{
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, GossipActionHandler callback, GossipMenu subMenu)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, GossipMenu subMenu)
+			: this(text)
 		{
 			Action = new DefaultGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, IGossipAction action, GossipMenu subMenu)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, IGossipAction action, GossipMenu subMenu)
+			: this(text)
 		{
 			Action = action;
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(string[] texts, params LocalizedGossipMenuItem[] items)
-			: this(texts)
+		public LocalizedGossipMenuItem(TranslatableItem text, params LocalizedGossipMenuItem[] items)
+			: this(text)
 		{
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string[] texts, params LocalizedGossipMenuItem[] items)
-			: this(texts)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, TranslatableItem text, params LocalizedGossipMenuItem[] items)
+			: this(text)
 		{
 			Icon = icon;
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string[] texts, IGossipAction action)
-			: this(texts)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, TranslatableItem text, IGossipAction action)
+			: this(text)
 		{
 			Icon = icon;
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipActionHandler callback)
-			: this(texts)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, TranslatableItem text, GossipActionHandler callback)
+			: this(text)
 		{
 			Icon = icon;
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon type, RealmLangKey langKey)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
-			Icon = type;
-			Texts = RealmLocalizer.Instance.GetTranslations(langKey);
+			Icon = icon;
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey)
-			: this(GossipMenuIcon.Talk, langKey)
+		public LocalizedGossipMenuItem(RealmLangKey msgKey, params object[] msgArgs)
+			: this(GossipMenuIcon.Talk, new TranslatableItem(msgKey, msgArgs))
 		{
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, IGossipAction action)
-			: this(langKey)
+		public LocalizedGossipMenuItem(IGossipAction action, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback)
-			: this(langKey)
+		public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, RealmLangKey confirmLangKey)
-			: this(langKey)
+		public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey confirmLangKey, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
-			ConfirmTexts = RealmLocalizer.Instance.GetTranslations(confirmLangKey);
+			ConfirmText = new TranslatableItem(confirmLangKey);
 			Action = new DefaultGossipAction(callback);
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
-			: this(langKey)
+		//public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params LocalizedGossipMenuItem[] items)
+		//    : this(new TranslatableItem(msgKey))
+		//{
+		//    Action = new DefaultGossipAction(callback);
+		//    SubMenu = new GossipMenu(items);
+		//}
+
+		public LocalizedGossipMenuItem(GossipMenu subMenu, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs, (IGossipAction)null, subMenu)
 		{
-			Action = new DefaultGossipAction(callback);
-			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipMenu subMenu)
-			: this(langKey, (IGossipAction)null, subMenu)
-		{
-		}
-
-		public LocalizedGossipMenuItem(RealmLangKey langKey, GossipActionHandler callback, GossipMenu subMenu)
-			: this(langKey)
+		public LocalizedGossipMenuItem(GossipActionHandler callback, GossipMenu subMenu, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Action = new DefaultGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, IGossipAction action, GossipMenu subMenu)
-			: this(langKey)
+		public LocalizedGossipMenuItem(IGossipAction action, GossipMenu subMenu, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Action = action;
 			SubMenu = subMenu;
 		}
 
-		public LocalizedGossipMenuItem(RealmLangKey langKey, params LocalizedGossipMenuItem[] items)
-			: this(langKey)
+		public LocalizedGossipMenuItem(RealmLangKey msgKey, params LocalizedGossipMenuItem[] items)
+			: this(msgKey)
 		{
 			SubMenu = new GossipMenu(items);
 		}
@@ -171,19 +176,141 @@ namespace WCell.RealmServer.Gossips
 			SubMenu = new GossipMenu(items);
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey langKey, IGossipAction action)
-			: this(langKey)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, IGossipAction action, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Icon = icon;
 			Action = action;
 		}
 
-		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey langKey, GossipActionHandler callback)
-			: this(langKey)
+		public LocalizedGossipMenuItem(GossipMenuIcon icon, GossipActionHandler callback, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
 		{
 			Icon = icon;
 			Action = new DefaultGossipAction(callback);
 		}
+
+		public string DefaultText
+		{
+			get { return Text.TranslateDefault(); }
+		}
+
+		public string DefaultConfirmText
+		{
+			get { return ConfirmText.TranslateDefault(); }
+		}
+
+		public override string GetText(GossipConversation convo)
+		{
+			return Text.Translate(convo.User.Locale);
+		}
+
+		public override string GetConfirmText(GossipConversation convo)
+		{
+			return ConfirmText.Translate(convo.User.Locale);
+		}
+	}
+	#endregion
+
+	#region MultiStringGossipMenuItem
+	public class MultiStringGossipMenuItem : GossipMenuItemBase
+	{
+		public readonly string[] Texts = new string[(int)ClientLocale.End];
+
+		/// <summary>
+		/// If set, will show an Accept/Cancel dialog with this text to the player
+		/// when selecting this Item.
+		/// </summary>
+		public string[] ConfirmTexts = new string[(int)ClientLocale.End];
+
+
+		public MultiStringGossipMenuItem()
+		{
+		}
+
+		public MultiStringGossipMenuItem(GossipMenuIcon type, string[] texts)
+		{
+			Icon = type;
+			Texts = texts;
+		}
+
+		public MultiStringGossipMenuItem(string[] texts)
+			: this(GossipMenuIcon.Talk, texts)
+		{
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, IGossipAction action)
+			: this(texts)
+		{
+			Action = action;
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback)
+			: this(texts)
+		{
+			Action = new DefaultGossipAction(callback);
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, string[] confirmTexts)
+			: this(texts)
+		{
+			ConfirmTexts = confirmTexts;
+			Action = new DefaultGossipAction(callback);
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, params MultiStringGossipMenuItem[] items)
+			: this(texts)
+		{
+			Action = new DefaultGossipAction(callback);
+			SubMenu = new GossipMenu(items);
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, GossipMenu subMenu)
+			: this(texts, (IGossipAction)null, subMenu)
+		{
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, GossipMenu subMenu)
+			: this(texts)
+		{
+			Action = new DefaultGossipAction(callback);
+			SubMenu = subMenu;
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, IGossipAction action, GossipMenu subMenu)
+			: this(texts)
+		{
+			Action = action;
+			SubMenu = subMenu;
+		}
+
+		public MultiStringGossipMenuItem(string[] texts, params MultiStringGossipMenuItem[] items)
+			: this(texts)
+		{
+			SubMenu = new GossipMenu(items);
+		}
+
+		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, params MultiStringGossipMenuItem[] items)
+			: this(texts)
+		{
+			Icon = icon;
+			SubMenu = new GossipMenu(items);
+		}
+
+		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, IGossipAction action)
+			: this(texts)
+		{
+			Icon = icon;
+			Action = action;
+		}
+
+		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipActionHandler callback)
+			: this(texts)
+		{
+			Icon = icon;
+			Action = new DefaultGossipAction(callback);
+		}
+
 
 		public string DefaultText
 		{
@@ -323,23 +450,38 @@ namespace WCell.RealmServer.Gossips
 	#endregion
 
 	#region QuitGossipMenuItem
-	public class QuitGossipMenuItem : GossipMenuItem
+	public class QuitGossipMenuItem : LocalizedGossipMenuItem
 	{
-		public QuitGossipMenuItem(GossipMenuIcon type, string text)
-			: base(type, text)
+		public QuitGossipMenuItem(GossipMenuIcon type = GossipMenuIcon.Talk, RealmLangKey msg = RealmLangKey.Done)
+			: base(type, msg, new object[0])
 		{
 		}
 
-		public QuitGossipMenuItem(string text)
-			: base(text)
+		public QuitGossipMenuItem(GossipMenuIcon type, RealmLangKey msg, params object[] args)
+			: base(type, msg, args)
 		{
-			Action = new DefaultGossipAction((convo) => {
+		}
+
+		public QuitGossipMenuItem(RealmLangKey msg)
+			: base(msg, new object[0])
+		{
+			Action = new DefaultGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
 
-		public QuitGossipMenuItem(string text, GossipActionHandler callback) :
-			base(text)
+		public QuitGossipMenuItem(RealmLangKey msg, params object[] args)
+			: base(msg, args)
+		{
+			Action = new DefaultGossipAction((convo) =>
+			{
+				convo.Character.GossipConversation.StayOpen = false;
+			});
+		}
+
+		public QuitGossipMenuItem(GossipActionHandler callback, RealmLangKey msg, params object[] args) :
+			base(msg, args)
 		{
 			Action = new DefaultGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
@@ -347,17 +489,7 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(string text, GossipActionHandler callback, string confirmText)
-			: base(text)
-		{
-			ConfirmText = confirmText;
-			Action = new DefaultGossipAction((convo) => {
-				convo.Character.GossipConversation.StayOpen = false;
-				callback(convo);
-			});
-		}
-
-		public QuitGossipMenuItem(string text, GossipActionHandler callback, params GossipMenuItem[] items)
+		public QuitGossipMenuItem(RealmLangKey text, GossipActionHandler callback, params GossipMenuItem[] items)
 			: base(text, items)
 		{
 			Action = new DefaultGossipAction((convo) => {
@@ -366,16 +498,16 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(string text, GossipMenu subMenu)
-			: base(text, subMenu)
+		public QuitGossipMenuItem(GossipMenu subMenu, RealmLangKey msg, params object[] args)
+			: base(subMenu, msg, args)
 		{
 			Action = new DefaultGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
 
-		public QuitGossipMenuItem(string text, GossipActionHandler callback, GossipMenu subMenu)
-			: base(text, subMenu)
+		public QuitGossipMenuItem(GossipActionHandler callback, GossipMenu subMenu, RealmLangKey msg, params object[] args)
+			: base(subMenu, msg, args)
 		{
 			Action = new DefaultGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
@@ -383,7 +515,7 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(string text, params GossipMenuItem[] items)
+		public QuitGossipMenuItem(RealmLangKey text, params GossipMenuItem[] items)
 			: base(text, items)
 		{
 			Action = new DefaultGossipAction((convo) => {
@@ -391,7 +523,7 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(GossipMenuIcon icon, string text, params GossipMenuItem[] items)
+		public QuitGossipMenuItem(GossipMenuIcon icon, RealmLangKey text, params GossipMenuItem[] items)
 			: base(icon, text, items)
 		{
 			Action = new DefaultGossipAction((convo) => {
@@ -399,8 +531,8 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(GossipMenuIcon icon, string text, GossipActionHandler callback)
-			: base(icon, text)
+		public QuitGossipMenuItem(GossipMenuIcon icon, GossipActionHandler callback, RealmLangKey msg, params object[] args)
+			: base(icon, msg, args)
 		{
 			Action = new DefaultGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;

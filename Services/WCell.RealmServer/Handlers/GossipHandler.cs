@@ -171,16 +171,16 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Send Point of interest which will then appear on the minimap
 		/// </summary>
-		public static void SendGossipPOI(IPacketReceiver rcv, GossipPOIFlags flags, float x, float y, int extra, string name)
+        public static void SendGossipPOI(IPacketReceiver rcv, GossipPOIFlags Flags, float X, float Y, int Data, int Icon, string Name)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_POI))
 			{
-				packet.Write((uint)flags);
-				packet.Write(x);
-				packet.Write(y);
-				packet.Write(extra);
-				packet.Write(0);
-				packet.WriteCString(name);
+				packet.Write((uint)Flags);
+				packet.Write(X);
+				packet.Write(Y);
+				packet.Write(Data);
+				packet.Write(Icon);
+				packet.WriteCString(Name);
 				rcv.Send(packet);
 			}
 		}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
 {
@@ -173,9 +174,14 @@ namespace WCell.RealmServer.Gossips
 			return new GossipMenu(m_bodyTextID + 1000);
 		}
 
-		public void AddQuitMenuItem(string text)
+		public void AddQuitMenuItem(RealmLangKey msg = RealmLangKey.Done)
 		{
-			AddItem(new QuitGossipMenuItem(text));
+			AddItem(new QuitGossipMenuItem(msg, new object[0]));
+		}
+
+		public void AddQuitMenuItem(RealmLangKey msg, params object[] args)
+		{
+			AddItem(new QuitGossipMenuItem(msg, args));
 		}
 
 		public void AddQuitMenuItem(string text, GossipActionHandler callback)

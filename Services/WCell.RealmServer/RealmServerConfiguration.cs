@@ -33,7 +33,6 @@ using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Util.NLog;
-using WCell.RealmServer.Addons;
 
 namespace WCell.RealmServer
 {
@@ -63,7 +62,9 @@ namespace WCell.RealmServer
 			}
 		}
 
-		private static string contentDirName = "../Content/";
+		public static readonly string BinaryRoot = "../";
+
+		private static string contentDirName = BinaryRoot + "Content/";
 
 		public readonly static HashSet<string> BadWords = new HashSet<string>();
 

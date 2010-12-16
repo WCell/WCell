@@ -137,41 +137,42 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("POI");
-			EnglishParamInfo = "[-[e][f] <extra> <flags>] <x> <y> [<name>]";
+			EnglishParamInfo = "[-[d][f] <Data> <Flags>] <x> <y> [<name>]";
 			EnglishDescription = "Sends a Point of interest entry to the target (shows up on the minimap while not too close).";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var mod = trigger.Text.NextModifiers();
-			int extra;
-			GossipPOIFlags flags;
-			if (mod.Contains("e"))
+			int Data;
+			GossipPOIFlags Flags;
+			if (mod.Contains("d"))
 			{
-				extra = trigger.Text.NextInt(0);
+				Data = trigger.Text.NextInt(0);
 			}
 			else
 			{
-				extra = 0;
+				Data = 0;
 			}
 			if (mod.Contains("f"))
 			{
-				flags = trigger.Text.NextEnum(GossipPOIFlags.None);
+				Flags = trigger.Text.NextEnum(GossipPOIFlags.None);
 			}
 			else
 			{
-				flags = GossipPOIFlags.None;
+				Flags = GossipPOIFlags.Six;
 			}
-			var x = trigger.Text.NextFloat();
-			var y = trigger.Text.NextFloat();
-			var name = trigger.Text.Remainder;
+			var X = trigger.Text.NextFloat();
+			var Y = trigger.Text.NextFloat();
+            var Icon = 7;
+            var Name = trigger.Text.Remainder;
 
-			if (name.Length == 0)
+			if (Name.Length == 0)
 			{
-				name = trigger.Args.User.Name;
+				Name = trigger.Args.User.Name;
 			}
 
-			GossipHandler.SendGossipPOI(trigger.Args.Target as Character, flags, x, y, extra, name);
+			GossipHandler.SendGossipPOI(trigger.Args.Target as Character, Flags, X, Y, Data, Icon, Name);
 		}
 
 		public override ObjectTypeCustom TargetTypes

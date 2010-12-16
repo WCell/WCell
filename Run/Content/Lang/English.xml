@@ -341,5 +341,8 @@
     <Item Key="InvalidClass">
       <Value>Invalid Class.</Value>
     </Item>
+    <Item Key ="Goodbye">
+      <Value>Goodbye!</Value>
+    </Item>
   </Items>
 </Translation>
