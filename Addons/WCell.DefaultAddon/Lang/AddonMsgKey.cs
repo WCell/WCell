@@ -9,7 +9,13 @@ namespace WCell.Addons.Default.Lang
 	{
 		Sample,
 		Trade,
-
+        
+        ABOnStart,
+        ABOnFinish,
+        ABOnPrepareHalfTime,
+        ABOnPrepare,
+        ABOnLeave,
+        ABOnEnter,
 		End
 	}
 }

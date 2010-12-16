@@ -1,5 +1,6 @@
 using System.Linq;
 using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
+using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.World;
@@ -137,7 +138,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnStart();
 
-            Characters.SendSystemMessage("Let the battle for Arathi Basin begin!");
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnStart));
 
             _allianceDoor.State = GameObjectState.Disabled;
             _hordeDoor.State = GameObjectState.Disabled;
@@ -150,13 +151,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             base.OnFinish(disposing);
             foreach (var character in Characters)
             {
-                character.SendSystemMessage("The battle has ended!");
+                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnFinish));
             }
         }
         protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            var msg = string.Format("The battle for Arathi Basin begins in {0} seconds.", PreparationTimeMillis / 2000);
+            var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnPrepareHalfTime, PreparationTimeMillis / 2000);
             Characters.SendSystemMessage(msg);
         }
 
@@ -166,7 +167,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             base.OnPrepare();
 
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
-            Characters.SendSystemMessage("The battle for Arathi Basin begins in {0}.", time);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnPrepare, time));
         }
 
         /// <summary>
@@ -177,7 +178,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnLeave(chr);
 
-            Characters.SendSystemMessage("{0} has left the battle!", chr.Name);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnLeave, chr.Name));
         }
 
         /// <summary>
@@ -188,7 +189,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnEnter(chr);
 
-            Characters.SendSystemMessage("{0} has entered the battle!", chr.Name);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnEnter, chr.Name));
         }
 
         protected override void SpawnGOs()

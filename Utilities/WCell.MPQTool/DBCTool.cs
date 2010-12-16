@@ -235,10 +235,6 @@ namespace WCell.MPQTool
 
 				do
 				{
-<<<<<<< HEAD
-					Console.WriteLine("Is this the correct path for your WoW installation?");
-					Console.WriteLine("Press y to confirm or n to re-enter location.");
-=======
 					if (m_wowDir != null)
 					{
 						Console.WriteLine("Is this the correct path for your WoW installation?");
@@ -248,8 +244,6 @@ namespace WCell.MPQTool
 					{
 						Console.WriteLine("Could not find a valid WoW installation - Please enter the path manually.");
 					}
-
->>>>>>> c30b96f7f9218baae1bb2e72866ddcd1293c3060
 					response = Console.ReadLine();
 					if (response == null)
 					{

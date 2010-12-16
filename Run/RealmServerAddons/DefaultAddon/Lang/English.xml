@@ -7,5 +7,26 @@
     <Item Key="Trade">
       <Value>Trade</Value>
     </Item>
+	
+	<!-- Arathi Basin -->
+	<Item Key="ABOnStart">
+	  <Value>Let the battle for Arathi Basin begin!</Value>
+	</Item>
+	<Item Key="ABOnFinish">
+	  <Value>The battle has ended!</Value>
+	</Item>
+	<Item Key="ABOnPrepareHalfTime">
+	  <Value>The battle for Arathi Basin begins in {0} seconds</Value>
+	</Item>
+	<Item Key="ABOnPrepare">
+	  <Value>The battle for Arathi Basin begins in {0}</Value>
+	</Item>
+	<Item Key="ABOnLeave">
+	  <Value>{0} has left the battle!</Value>
+	</Item>
+	<Item Key="ABOnEnter">
+	  <Value>{0} has entered the battle!</Value>
+	</Item>
+	
   </Items>
 </Translation>
