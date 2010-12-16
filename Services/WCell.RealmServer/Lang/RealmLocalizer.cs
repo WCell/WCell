@@ -24,9 +24,7 @@ namespace WCell.RealmServer.Lang
 
 				try
 				{
-					instance = new RealmLocalizer(ClientLocale.English,
-												  RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
-
+					instance = new RealmLocalizer(ClientLocale.English, RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
 					instance.LoadTranslations();
 				}
 				catch (Exception e)

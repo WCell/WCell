@@ -191,7 +191,7 @@ namespace WCell.MPQTool
 				Console.WriteLine("Found WoW in: " + m_wowDir);
 				return Path.GetFullPath(m_wowDir);
 			}
-			throw new Exception("Could not find WoW directory.");
+			return null;
 		}
 
 		public void Dump()
@@ -225,15 +225,31 @@ namespace WCell.MPQTool
 
 				m_wowDir = FindWowDir(wowDir);
 
-				Console.WriteLine("Found WoW in: " + m_wowDir);
+				if (m_wowDir != null)
+				{
+					Console.WriteLine("Found WoW in: " + m_wowDir);
+				}
 
 				string response;
 				var curDir = new FileInfo(".");
 
 				do
 				{
+<<<<<<< HEAD
 					Console.WriteLine("Is this the correct path for your WoW installation?");
 					Console.WriteLine("Press y to confirm or n to re-enter location.");
+=======
+					if (m_wowDir != null)
+					{
+						Console.WriteLine("Is this the correct path for your WoW installation?");
+						Console.WriteLine("Press y to confirm or n to re-enter location.");
+					}
+					else
+					{
+						Console.WriteLine("Could not find a valid WoW installation - Please enter the path manually.");
+					}
+
+>>>>>>> c30b96f7f9218baae1bb2e72866ddcd1293c3060
 					response = Console.ReadLine();
 					if (response == null)
 					{
@@ -309,7 +325,6 @@ namespace WCell.MPQTool
 					Console.ResetColor();
 				}
 			}
-
 			catch (Exception ex)
 			{
 				LogUtil.ErrorException(ex, "Export failed. Make sure, you configured your build correctly.");
