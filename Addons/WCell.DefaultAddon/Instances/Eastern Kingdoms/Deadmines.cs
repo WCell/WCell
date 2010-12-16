@@ -64,7 +64,7 @@ namespace WCell.Addons.Default.Instances
 				var instance = sneed.Region as Deadmines;
 				if (instance != null)
 				{
-					var door = instance.sneedDoor;
+					GameObject door = instance.sneedDoor;
 					if (door != null && door.IsInWorld)
 					{
 						// Open the door
@@ -88,7 +88,7 @@ namespace WCell.Addons.Default.Instances
 				var instance = gilnid.Region as Deadmines;
 				if (instance != null)
 				{
-					var door = instance.gilnidDoor;
+					GameObject door = instance.gilnidDoor;
 
 					if (door != null && door.IsInWorld)
 					{
@@ -118,7 +118,7 @@ namespace WCell.Addons.Default.Instances
 		[DependentInitialization(typeof(GOMgr))]
 		public static void InitGOs()
 		{
-			var rhahkzorDoorEntry = GOMgr.GetEntry(GOEntryId.FactoryDoor);		// 13965
+			GOEntry rhahkzorDoorEntry = GOMgr.GetEntry(GOEntryId.FactoryDoor);		// 13965
 
 			if (rhahkzorDoorEntry != null)
 			{
@@ -133,7 +133,7 @@ namespace WCell.Addons.Default.Instances
 				};
 			}
 
-			var sneedDoorEntry = GOMgr.GetEntry(17153u);
+			GOEntry sneedDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
 			var sneedDoorCord = new Vector3(-290.294f, -536.96f, 49.4353f);
 			if (sneedDoorEntry != null)
 			{
@@ -148,7 +148,7 @@ namespace WCell.Addons.Default.Instances
 				};
 			}
 
-			var gilnidDoorEntry = GOMgr.GetEntry(17153u);
+            GOEntry gilnidDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
 			var gilnidDoorCord = new Vector3(-168.514f, -579.861f, 19.3159f);
 			if (gilnidDoorEntry != null)
 			{
@@ -168,7 +168,7 @@ namespace WCell.Addons.Default.Instances
 
 			defiasCannonEntry.Used += (cannon, user) =>
 			{
-				var door = cannon.GetNearbyGO(GOEntryId.IronCladDoor);
+				GameObject door = cannon.GetNearbyGO(GOEntryId.IronCladDoor);
 				if (door != null && door.IsInWorld)
 				{
 					// the cannon destroys the door
@@ -263,7 +263,7 @@ namespace WCell.Addons.Default.Instances
 
 		void CastDistractingPain(WorldObject owner)
 		{
-			var chr = owner.GetNearbyRandomHostileCharacter();
+			Character chr = owner.GetNearbyRandomHostileCharacter();
 			if (chr != null)
 			{
 				owner.SpellCast.Start(distractingPain, false, chr);
@@ -273,7 +273,7 @@ namespace WCell.Addons.Default.Instances
 
 		void CastTerrify(WorldObject owner)
 		{
-			var chr = m_owner.GetNearbyRandomHostileCharacter();
+			Character chr = m_owner.GetNearbyRandomHostileCharacter();
 			if (chr != null)
 			{
 				m_owner.SpellCast.Start(terrify, false, chr);
@@ -389,7 +389,7 @@ namespace WCell.Addons.Default.Instances
 		{
 			if (phase < 2)
 			{
-				var hpPct = m_owner.HealthPct;
+				int hpPct = m_owner.HealthPct;
 				if (hpPct <= 33 && phase == 1)
 				{
 					// when below 33% health, do second special action

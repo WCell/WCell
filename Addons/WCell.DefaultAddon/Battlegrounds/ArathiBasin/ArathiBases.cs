@@ -4,11 +4,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 {
     public enum ArathiBases
     {
-        GoldMine = 0,
-        Blacksmith = 1,
-        Lumbermill = 2,
-        Stables = 3,
-        Farm = 4,
+        Blacksmith = 0,
+        Stables = 1,
+        Farm = 2,
+        Lumbermill = 3,
+        GoldMine = 4,
         End = 5
     }
 }

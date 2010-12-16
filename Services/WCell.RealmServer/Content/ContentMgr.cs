@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Content
 				}
 				catch (Exception e)
 				{
-					throw new ContentException(e, "Unable to validate version of database content - Reqired " + dbVersion);
+					throw new ContentException(e, "Unable to validate version of database content - Required " + dbVersion);
 				}
 
 				//var minVersion = dbVersion.MinVersion;

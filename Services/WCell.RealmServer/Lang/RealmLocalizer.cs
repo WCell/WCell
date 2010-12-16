@@ -60,10 +60,10 @@ namespace WCell.RealmServer.Lang
 			else
 			{
 				var mins = seconds / 60;
-				time = mins + (mins == 1 ? "minute" : "minutes");
+				time = mins + (mins == 1 ? " minute" : " minutes");
 				if (seconds % 60 != 0)
 				{
-					time += " and " + seconds + (seconds == 1 ? "second" : "seconds");
+					time += " and " + seconds + (seconds == 1 ? " second" : " seconds");
 				}
 			}
 			return time;
