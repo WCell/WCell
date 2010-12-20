@@ -316,16 +316,17 @@ namespace WCell.AuthServer
 			var status = Status;
 			var flags = Flags;
 			var name = Name;
+
 			if (!ClientVersion.IsSupported(client.Info.Version))
 			{
+				// if client is not supported, flag realm as offline and append the required client version
 				flags = RealmFlags.Offline;
 				name += " [" + ClientVersion.BasicString + "]";
 			}
             else if (Flags.HasFlag(RealmFlags.Offline) && Status == RealmStatus.Locked)
             {
-            	var acc = client.Account;
-                var role = acc.Role;
-                if (role.IsStaff)
+				// let staff members join anyway
+				if (client.Account.Role.IsStaff)
                 {
                     status = RealmStatus.Open;
                 	flags = RealmFlags.None;
@@ -348,7 +349,7 @@ namespace WCell.AuthServer
 
 		public override string ToString()
 		{
-			return Name + " @ " + Address;
+			return Name + " @ " + AddressString;
 		}
     }
 }
