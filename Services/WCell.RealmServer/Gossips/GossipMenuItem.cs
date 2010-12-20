@@ -44,20 +44,20 @@ namespace WCell.RealmServer.Gossips
 		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, TranslatableItem confirmText)
 			: this(text)
 		{
 			ConfirmText = confirmText;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, params LocalizedGossipMenuItem[] items)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = new GossipMenu(items);
 		}
 
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Gossips
 		public LocalizedGossipMenuItem(TranslatableItem text, GossipActionHandler callback, GossipMenu subMenu)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
@@ -104,7 +104,7 @@ namespace WCell.RealmServer.Gossips
 			: this(text)
 		{
 			Icon = icon;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public LocalizedGossipMenuItem(GossipMenuIcon icon, RealmLangKey msgKey, params object[] msgArgs)
@@ -127,14 +127,14 @@ namespace WCell.RealmServer.Gossips
 		public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params object[] msgArgs)
 			: this(msgKey, msgArgs)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey confirmLangKey, RealmLangKey msgKey, params object[] msgArgs)
 			: this(msgKey, msgArgs)
 		{
 			ConfirmText = new TranslatableItem(confirmLangKey);
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		//public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params LocalizedGossipMenuItem[] items)
@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Gossips
 		public LocalizedGossipMenuItem(GossipActionHandler callback, GossipMenu subMenu, RealmLangKey msgKey, params object[] msgArgs)
 			: this(msgKey, msgArgs)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Gossips
 			: this(msgKey, msgArgs)
 		{
 			Icon = icon;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public string DefaultText
@@ -248,20 +248,20 @@ namespace WCell.RealmServer.Gossips
 		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback)
 			: this(texts)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, string[] confirmTexts)
 			: this(texts)
 		{
 			ConfirmTexts = confirmTexts;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, params MultiStringGossipMenuItem[] items)
 			: this(texts)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = new GossipMenu(items);
 		}
 
@@ -273,7 +273,7 @@ namespace WCell.RealmServer.Gossips
 		public MultiStringGossipMenuItem(string[] texts, GossipActionHandler callback, GossipMenu subMenu)
 			: this(texts)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
@@ -308,7 +308,7 @@ namespace WCell.RealmServer.Gossips
 			: this(texts)
 		{
 			Icon = icon;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 
@@ -374,20 +374,20 @@ namespace WCell.RealmServer.Gossips
 		public GossipMenuItem(string text, GossipActionHandler callback)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public GossipMenuItem(string text, GossipActionHandler callback, string confirmText)
 			: this(text)
 		{
 			ConfirmText = confirmText;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public GossipMenuItem(string text, GossipActionHandler callback, params GossipMenuItem[] items)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = new GossipMenu(items);
 		}
 
@@ -399,7 +399,7 @@ namespace WCell.RealmServer.Gossips
 		public GossipMenuItem(string text, GossipActionHandler callback, GossipMenu subMenu)
 			: this(text)
 		{
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 			SubMenu = subMenu;
 		}
 
@@ -434,7 +434,7 @@ namespace WCell.RealmServer.Gossips
 			: this(text)
 		{
 			Icon = icon;
-			Action = new DefaultGossipAction(callback);
+			Action = new NonNavigatingGossipAction(callback);
 		}
 
 		public override string GetText(GossipConversation convo)
@@ -465,7 +465,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey msg)
 			: base(msg, new object[0])
 		{
-			Action = new DefaultGossipAction((convo) =>
+			Action = new NonNavigatingGossipAction((convo) =>
 			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
@@ -474,7 +474,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey msg, params object[] args)
 			: base(msg, args)
 		{
-			Action = new DefaultGossipAction((convo) =>
+			Action = new NonNavigatingGossipAction((convo) =>
 			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
@@ -483,7 +483,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipActionHandler callback, RealmLangKey msg, params object[] args) :
 			base(msg, args)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -492,7 +492,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey text, GossipActionHandler callback, params GossipMenuItem[] items)
 			: base(text, items)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -501,7 +501,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenu subMenu, RealmLangKey msg, params object[] args)
 			: base(subMenu, msg, args)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -509,7 +509,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipActionHandler callback, GossipMenu subMenu, RealmLangKey msg, params object[] args)
 			: base(subMenu, msg, args)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey text, params GossipMenuItem[] items)
 			: base(text, items)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -526,7 +526,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenuIcon icon, RealmLangKey text, params GossipMenuItem[] items)
 			: base(icon, text, items)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -534,7 +534,7 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenuIcon icon, GossipActionHandler callback, RealmLangKey msg, params object[] args)
 			: base(icon, msg, args)
 		{
-			Action = new DefaultGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) => {
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -565,7 +565,7 @@ namespace WCell.RealmServer.Gossips
 			set;
 		}
 
-		public void SetAction(DefaultGossipAction action)
+		public void SetAction(NonNavigatingGossipAction action)
 		{
 			Action = action;
 		}

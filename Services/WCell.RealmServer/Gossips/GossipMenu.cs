@@ -186,7 +186,7 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddQuitMenuItem(string text, GossipActionHandler callback)
 		{
-			var action = new DefaultGossipAction(convo => {
+			var action = new NonNavigatingGossipAction(convo => {
 				callback(convo);
 				convo.Character.GossipConversation.StayOpen = false;
 			});
@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo => {
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
@@ -208,7 +208,7 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text, GossipActionHandler callback)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo => {
 				callback(convo);
 				convo.Character.GossipConversation.GoBack();
 			});
