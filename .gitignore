@@ -6,7 +6,6 @@ obj
 *.vs10x
 Run/Content/dbc*
 Run/Content/Maps/*
-Run/Docs/*
 Run/Debug/*
 Run/Release/*
 TestResults/*
