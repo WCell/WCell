@@ -4,6 +4,8 @@ obj
 *.cache
 *_ReSharper.*
 *.vs10x
+*.bak
+
 Run/Content/dbc*
 Run/Content/Maps/*
 Run/Debug/*
