@@ -55,6 +55,8 @@ namespace WCell.Tools.Maps
                 {
                     WriteTileInfo(file, adt);
                 }
+
+                log.Info("Extracted {0}.", (MapId)wdt.Entry.Id);
 				return;
 			}
 
