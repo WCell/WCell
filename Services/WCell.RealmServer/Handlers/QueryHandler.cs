@@ -208,8 +208,7 @@ namespace WCell.RealmServer.Handlers
 			//}
 			//else
 
-			var text = GossipMgr.NPCTexts.GetValue(textId);
-
+			var text = GossipMgr.GetEntry(textId);
 			if (text == null)
 			{
 				SendNPCTextUpdateSimple(client.ActiveCharacter,

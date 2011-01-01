@@ -32,7 +32,12 @@ namespace WCell.RealmServer.Gossips
 
 		internal static IDictionary<uint, IGossipEntry> NPCTexts = new Dictionary<uint, IGossipEntry>(5000);
 
-		internal static int gossipCount;
+		public static IGossipEntry GetEntry(uint id)
+		{
+			IGossipEntry entry;
+			NPCTexts.TryGetValue(id, out entry);
+			return entry;
+		}
 
 		[Variable(false)]
 		public static uint DefaultTextId = 91800;
@@ -119,6 +124,8 @@ namespace WCell.RealmServer.Gossips
 			Loaded = true;
 
 			ContentMgr.Load<GossipEntry>();
+			ContentMgr.Load<NPCGossipRelation>();
+
 			AddDefaultGossipOptions();
 		}
 

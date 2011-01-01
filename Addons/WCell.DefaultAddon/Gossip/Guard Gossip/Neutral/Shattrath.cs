@@ -11,6 +11,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Neutral
         public static void CreateShattrathGossipMenu(uint npcID)
         {
             NPCEntry entry = NPCMgr.GetEntry(npcID);
+
             entry.DefaultGossip = new GossipMenu(
                 new GossipMenuItem(GossipMenuIcon.Talk, "World's End Tavern",
                     convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, -1760.4f, 5166.9f, 7, 7, "World's End Tavern")),
