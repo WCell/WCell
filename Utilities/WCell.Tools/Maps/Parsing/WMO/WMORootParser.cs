@@ -532,7 +532,9 @@ namespace WCell.Tools.Maps.Parsing.WMO
 
                 if (dd.NameIndex != -1)
                 {
-                    dd.FilePath = wmo.DoodadFiles[dd.NameIndex];
+                    string filePath;
+                    if (wmo.DoodadFiles.TryGetValue(dd.NameIndex, out filePath))
+                        dd.FilePath = filePath;
                 }
 
                 wmo.DoodadDefinitions[i] = dd;
