@@ -311,7 +311,7 @@ namespace WCell.RealmServer.Gossips
 			Action = action;
 		}
 
-		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipMenu subMenu, IGossipAction action)
+		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, IGossipAction action, GossipMenu subMenu)
 			: this(texts)
 		{
 			Icon = icon;
