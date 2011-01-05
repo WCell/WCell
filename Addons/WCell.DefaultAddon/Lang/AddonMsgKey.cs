@@ -10,13 +10,29 @@ namespace WCell.Addons.Default.Lang
 		Sample,
 		Trade,
         
+        #region Arathi Basin
         ABOnStart,
         ABOnFinish,
         ABOnPrepareHalfTime,
         ABOnPrepare,
         ABOnLeave,
         ABOnEnter,
-        
+        #endregion
+
+        #region Warsong Gulch
+        WSOnStart,
+        WSOnFinish,
+        WSOnPrepareHalfTime,
+        WSOnPrepare,
+        WSOnLeave,
+        WSOnEnter,
+        WSPickupFlag,
+        WSCaptureFlag,
+        WSDropFlag,
+        WSReturnFlag,
+        WSReturnFlagByPlayer,
+        #endregion
+
         #region Guard Gossip Items
         GuardBank,
         GuardIronforge,
@@ -90,6 +106,7 @@ namespace WCell.Addons.Default.Lang
         ProfSkinning,
         ProfTailoring,
         #endregion
+
 		End
 	}
 }

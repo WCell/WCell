@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Addons.Default.Lang;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
@@ -200,8 +201,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			_flagPickUpTime = DateTime.Now;
 			_isFlagHome = false;
 
-			Instance.Characters.SendSystemMessage("{0} has picked up the {1} flag!", chr.Name, Name);
-
+			Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSPickupFlag, Name, chr.Name));
 			var evt = FlagPickedUp;
 			if (evt != null)
 			{
@@ -216,7 +216,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			IsFlagCap = true;
 
-			var msg = capturer.Name + " has captured the " + Name + " flag!";
+			var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSCaptureFlag, capturer.Name, Name);
 			ChatMgr.SendSystemMessage(Instance.Characters, msg);
 
 			Opponent.Score++;
@@ -255,7 +255,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				FlagCarrier.SpellCast.Trigger(_flagDropSpell);
 				FlagCarrier.Auras.CreateSelf(_flagDropDebuff, false); // confirmed from logs
 
-				var msg = FlagCarrier.Name + " has dropped the " + Name + " flag!";
+                var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSDropFlag, Name, FlagCarrier.Name);
 				ChatMgr.SendSystemMessage(Instance.Characters, msg);
 
 				OnFlagAuraRemoved(FlagCarrier);
@@ -307,14 +307,14 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			if (returner != null)
 			{
-				var msg = returner.Name + " has returned the " + Name + " flag!";
+				var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSReturnFlagByPlayer, Name, returner.Name);
 				ChatMgr.SendSystemMessage(Instance.Characters, msg);
 				var stats = (WSGStats)returner.Battlegrounds.Stats;
 				stats.FlagReturns++;
 			}
 			else
 			{
-				var msg = "The " + Name + " flag has been returned to base!";
+				var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSReturnFlag, Name);
 				ChatMgr.SendSystemMessage(Instance.Characters, msg);
 			}
 

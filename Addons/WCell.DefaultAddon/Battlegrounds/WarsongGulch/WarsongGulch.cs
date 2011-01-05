@@ -1,4 +1,5 @@
 using System;
+using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.AreaTriggers;
 using WCell.Constants.GameObjects;
@@ -162,7 +163,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			{
 				CallDelayed(MaxDuration * 60, FinishFight);
 			}
-			Characters.SendSystemMessage("Let the battle for Warsong Gulch begin!");
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnStart));
 		}
 
 		protected override void OnPrepareHalftime()
@@ -170,7 +171,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			base.OnPrepareHalftime();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
-			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnPrepareHalfTime, time));
 		}
 
 
@@ -179,13 +180,13 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			base.OnPrepare();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
-			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnPrepare, time));
 		}
 
 		protected override void OnFinish(bool disposing)
 		{
 			base.OnFinish(disposing);
-			Characters.SendSystemMessage("The battle has ended!");
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnFinish));
 		}
 
 		/// <summary>
@@ -198,7 +199,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			chr.Auras.Cancel(SpellId.WarsongFlag_2);
 			chr.Auras.Cancel(SpellId.SilverwingFlag);
 
-			Characters.SendSystemMessage("{0} has left the battle!", chr.Name);
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnLeave, chr.Name));
 
 			base.OnLeave(chr);
 		}
@@ -211,7 +212,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			base.OnEnter(chr);
 
-			Characters.SendSystemMessage("{0} has entered the battle!", chr.Name);
+			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnEnter, chr.Name));
 		}
 
 		protected override BattlegroundStats CreateStats()
