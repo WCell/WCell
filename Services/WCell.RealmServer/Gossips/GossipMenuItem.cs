@@ -197,7 +197,12 @@ namespace WCell.RealmServer.Gossips
 
 		public string DefaultConfirmText
 		{
-			get { return ConfirmText.TranslateDefault(); }
+            get 
+            {
+                if (ConfirmText != null)
+                return ConfirmText.TranslateDefault();
+                return "Confirm";
+            }
 		}
 
 		public override string GetText(GossipConversation convo)
@@ -207,7 +212,10 @@ namespace WCell.RealmServer.Gossips
 
 		public override string GetConfirmText(GossipConversation convo)
 		{
-			return ConfirmText.Translate(convo.User.Locale);
+            if(ConfirmText != null)
+	            return ConfirmText.Translate(convo.User.Locale);
+            else
+                return DefaultConfirmText;
 		}
 	}
 	#endregion
