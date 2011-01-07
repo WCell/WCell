@@ -107,6 +107,7 @@ namespace WCell.Addons.Default.Lang
         ProfTailoring,
         #endregion
 
+        NPCTiare,
 		End
 	}
 }

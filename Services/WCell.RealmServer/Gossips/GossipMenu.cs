@@ -88,6 +88,17 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
+        public GossipMenu(uint bodyTextId, params GossipMenuItemBase[] items)
+            : this(bodyTextId)
+        {
+            m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+            foreach (var item in items)
+            {
+                CheckItem(item);
+                m_gossipItems.Add(item);
+            }
+        }
+
 		public GossipMenu(params GossipMenuItemBase[] items)
 		{
 			m_gossipItems = new List<GossipMenuItemBase>(items.Length);

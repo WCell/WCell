@@ -187,6 +187,7 @@
     <Compile Include="Gossip\Guard Gossip\Horde\ThunderBluff.cs" />
     <Compile Include="Gossip\Guard Gossip\Horde\Undercity.cs" />
     <Compile Include="Gossip\Guard Gossip\Neutral\Shattrath.cs" />
+    <Compile Include="Gossip\World Gossip\BoreanTundraGossip.cs" />
     <Compile Include="Instances\Northrend\AhnKahetTheOldKingdom.cs" />
     <Compile Include="Instances\Northrend\TheRubySanctum.cs" />
     <Compile Include="Instances\Outland\AuchindounAuchenaiCrypts.cs" />

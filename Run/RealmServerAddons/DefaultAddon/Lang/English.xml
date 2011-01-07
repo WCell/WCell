@@ -265,6 +265,9 @@
 	<Item Key="ProfTailoring">
       <Value>Tailoring</Value>
 	</Item>
+  <Item Key="NPCTiare">
+    <Value>Teleport me to Amber Ledge!</Value>
+  </Item>
     
   </Items>
 </Translation>
