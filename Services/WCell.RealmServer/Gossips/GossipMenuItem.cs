@@ -326,6 +326,15 @@ namespace WCell.RealmServer.Gossips
 			Action = new NonNavigatingGossipAction(callback);
 		}
 
+        public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipActionHandler callback, GossipMenu subMenu)
+            : this(texts)
+        {
+            Icon = icon;
+            Action = new NonNavigatingGossipAction(callback);
+            SubMenu = subMenu;
+        }
+
+
 
 		public string DefaultText
 		{
