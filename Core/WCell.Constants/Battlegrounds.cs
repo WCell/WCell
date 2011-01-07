@@ -119,4 +119,11 @@ namespace WCell.Constants
 		ThreeVsThree = 3,
 		FiveVsFive = 5
 	}
+
+    public enum BattlegroundSounds
+    {
+        BgStart = 3439,
+        HordeWins = 8454,
+        AllianceWins = 8455
+    }
 }

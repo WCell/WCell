@@ -56,6 +56,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 	    
 	    private uint _hordeTicks, _allianceTicks;
         #endregion
+
 	    #region Props
 
         public int HordeScore
@@ -138,7 +139,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnStart();
 
-            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnStart));
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnStart));
 
             _allianceDoor.State = GameObjectState.Disabled;
             _hordeDoor.State = GameObjectState.Disabled;
@@ -149,25 +150,23 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnFinish(bool disposing)
         {
             base.OnFinish(disposing);
-            foreach (var character in Characters)
-            {
-                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnFinish));
-            }
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnFinish), 
+                                                                                                        Winner.Side.ToString());
         }
+
         protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            var msg = DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnPrepareHalfTime, PreparationTimeMillis / 2000);
-            Characters.SendSystemMessage(msg);
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime),
+                                                                                                        PreparationTimeMillis / 2000);
         }
-
 
         protected override void OnPrepare()
         {
             base.OnPrepare();
-
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
-            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnPrepare, time));
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare),
+                                                                                                        time);
         }
 
         /// <summary>
@@ -178,7 +177,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnLeave(chr);
 
-            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnLeave, chr.Name));
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnLeave), chr.Name);
         }
 
         /// <summary>
@@ -189,7 +188,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             base.OnEnter(chr);
 
-            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.ABOnEnter, chr.Name));
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnEnter), chr.Name);
         }
 
         protected override void SpawnGOs()

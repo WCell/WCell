@@ -163,7 +163,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			{
 				CallDelayed(MaxDuration * 60, FinishFight);
 			}
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnStart));
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnStart));
 		}
 
 		protected override void OnPrepareHalftime()
@@ -171,7 +171,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			base.OnPrepareHalftime();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnPrepareHalfTime, time));
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepareHalfTime), time);
 		}
 
 
@@ -180,13 +180,14 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			base.OnPrepare();
 
 			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnPrepare, time));
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepare), time);
 		}
 
 		protected override void OnFinish(bool disposing)
 		{
 			base.OnFinish(disposing);
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnFinish));
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnFinish), 
+                                                                                                        Winner.Side.ToString());
 		}
 
 		/// <summary>
@@ -199,7 +200,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			chr.Auras.Cancel(SpellId.WarsongFlag_2);
 			chr.Auras.Cancel(SpellId.SilverwingFlag);
 
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnLeave, chr.Name));
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnLeave), chr.Name);
 
 			base.OnLeave(chr);
 		}
@@ -212,7 +213,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			base.OnEnter(chr);
 
-			Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(AddonMsgKey.WSOnEnter, chr.Name));
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnEnter), chr.Name);
 		}
 
 		protected override BattlegroundStats CreateStats()

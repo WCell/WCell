@@ -168,6 +168,15 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+        public static void SendPlaySoundToRegion(Region region, uint sound)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PLAY_SOUND, 4))
+            {
+                packet.WriteUInt(sound);
+
+                region.SendPacketToRegion(packet);
+            }
+        }
 		public static void SendInitWorldStates(Character rcv, WorldStateCollection states, Zone newZone)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INIT_WORLD_STATES, 300))

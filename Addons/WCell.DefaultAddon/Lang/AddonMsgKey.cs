@@ -9,7 +9,7 @@ namespace WCell.Addons.Default.Lang
 	{
 		Sample,
 		Trade,
-        
+
         #region Arathi Basin
         ABOnStart,
         ABOnFinish,
