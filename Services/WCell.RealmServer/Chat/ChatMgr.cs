@@ -561,7 +561,10 @@ namespace WCell.RealmServer.Chat
             {
                 if (target != null)
                 {
-                    target.SendSystemMessage(texts[(uint)target.Locale], args);
+                    if (texts[(uint)target.Locale] != null)
+                        target.SendSystemMessage(texts[(uint)target.Locale], args);
+                    else
+                        target.SendSystemMessage(texts[(uint)RealmLocalizer.Instance.BaseLocale], args);
                 }
             }
         }
