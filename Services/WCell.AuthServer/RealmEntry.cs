@@ -113,7 +113,7 @@ namespace WCell.AuthServer
 
 		public string GetAddress(string address)
 		{
-			return Address + ":" + Port;
+			return address + ":" + Port;
 		}
 
         public string AddressString

@@ -28,6 +28,7 @@ namespace Cell.Core
 
 			var clientBytes = clientAddr.GetAddressBytes();
 
+			// find an address that matches the most significant n-1 bytes of the address of the connecting client
 			foreach (var addr in CachedHostEntry.AddressList)
 			{
 				var bytes = addr.GetAddressBytes();
