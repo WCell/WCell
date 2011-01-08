@@ -13,10 +13,10 @@ REM # udbdir  - Main UDB directory on your harddisk (note the trailing backslash
 REM # Remember not to include FULL_DB on the end of udbdir, only the main directory should be set here.
 REM #########################################
 
-set user="root"
-set pass="lol"
-set wdb="wcelldb"
-set udbdir="E:\WoWEmu\UDB\"
+set user="changeme"
+set pass="changeme"
+set wdb="wcellrealmserver"
+set udbdir="changeme"
 
 REM ############################################################################
 REM #
