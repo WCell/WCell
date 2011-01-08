@@ -207,11 +207,11 @@ namespace WCell.RealmServer.Guilds
 			_info = "Default info";
 
 			m_ranks = GuildMgr.CreateDefaultRanks(this);
-			m_leader = new GuildMember(leader, this, HighestRank);
+			//m_leader = new GuildMember(leader, this, HighestRank);
 
 			Register();
 
-			AddMember(leader);
+			m_leader = AddMember(leader);
 		    
 			RealmServer.Instance.AddMessage(Create);
 		}
