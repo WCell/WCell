@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Gossips
 			{
 				if (ConfirmText != null)
 					return ConfirmText.TranslateDefault();
-				return null;
+				return "";
 			}
 		}
 
@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Gossips
 		{
 			if (ConfirmText != null)
 				return ConfirmText.Translate(convo.User.Locale);
-			return null;
+			return "";
 		}
 	}
 	#endregion
