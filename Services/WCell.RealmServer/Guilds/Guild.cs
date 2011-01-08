@@ -208,12 +208,12 @@ namespace WCell.RealmServer.Guilds
 
 			m_ranks = GuildMgr.CreateDefaultRanks(this);
 			m_leader = new GuildMember(leader, this, HighestRank);
-			Members.Add(m_leader.Id, m_leader);
-            m_leader.Create();
+
+			Register();
+
+			AddMember(leader);
 		    
 			RealmServer.Instance.AddMessage(Create);
-
-            Register();
 		}
 		#endregion
 
