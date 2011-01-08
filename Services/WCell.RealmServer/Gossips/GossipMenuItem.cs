@@ -197,12 +197,12 @@ namespace WCell.RealmServer.Gossips
 
 		public string DefaultConfirmText
 		{
-            get 
-            {
-                if (ConfirmText != null)
-                return ConfirmText.TranslateDefault();
-                return "Confirm";
-            }
+			get
+			{
+				if (ConfirmText != null)
+					return ConfirmText.TranslateDefault();
+				return null;
+			}
 		}
 
 		public override string GetText(GossipConversation convo)
@@ -212,10 +212,9 @@ namespace WCell.RealmServer.Gossips
 
 		public override string GetConfirmText(GossipConversation convo)
 		{
-            if(ConfirmText != null)
-	            return ConfirmText.Translate(convo.User.Locale);
-            else
-                return DefaultConfirmText;
+			if (ConfirmText != null)
+				return ConfirmText.Translate(convo.User.Locale);
+			return null;
 		}
 	}
 	#endregion
@@ -334,13 +333,13 @@ namespace WCell.RealmServer.Gossips
 			Action = new NonNavigatingGossipAction(callback);
 		}
 
-        public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipActionHandler callback, GossipMenu subMenu)
-            : this(texts)
-        {
-            Icon = icon;
-            Action = new NonNavigatingGossipAction(callback);
-            SubMenu = subMenu;
-        }
+		public MultiStringGossipMenuItem(GossipMenuIcon icon, string[] texts, GossipActionHandler callback, GossipMenu subMenu)
+			: this(texts)
+		{
+			Icon = icon;
+			Action = new NonNavigatingGossipAction(callback);
+			SubMenu = subMenu;
+		}
 
 
 
@@ -515,7 +514,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipActionHandler callback, RealmLangKey msg, params object[] args) :
 			base(msg, args)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -524,7 +524,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey text, GossipActionHandler callback, params GossipMenuItem[] items)
 			: base(text, items)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -533,7 +534,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenu subMenu, RealmLangKey msg, params object[] args)
 			: base(subMenu, msg, args)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -541,7 +543,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipActionHandler callback, GossipMenu subMenu, RealmLangKey msg, params object[] args)
 			: base(subMenu, msg, args)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
@@ -550,7 +553,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(RealmLangKey text, params GossipMenuItem[] items)
 			: base(text, items)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -558,7 +562,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenuIcon icon, RealmLangKey text, params GossipMenuItem[] items)
 			: base(icon, text, items)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 			});
 		}
@@ -566,7 +571,8 @@ namespace WCell.RealmServer.Gossips
 		public QuitGossipMenuItem(GossipMenuIcon icon, GossipActionHandler callback, RealmLangKey msg, params object[] args)
 			: base(icon, msg, args)
 		{
-			Action = new NonNavigatingGossipAction((convo) => {
+			Action = new NonNavigatingGossipAction((convo) =>
+			{
 				convo.Character.GossipConversation.StayOpen = false;
 				callback(convo);
 			});
