@@ -6,7 +6,7 @@ using WCell.Util.Commands;
 
 namespace WCell.AuthServer.Commands
 {
-	public class Realmsommand : AuthServerCommand
+	public class RealmsCommand : AuthServerCommand
 	{
 		protected override void Initialize()
 		{
