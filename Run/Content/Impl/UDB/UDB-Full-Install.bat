@@ -13,10 +13,10 @@ REM # udbdir  - Main UDB directory on your harddisk (note the trailing backslash
 REM # Remember not to include FULL_DB on the end of udbdir, only the main directory should be set here.
 REM #########################################
 
-set user="changeme"
-set pass="changeme"
-set wdb="wcellrealmserver"
-set udbdir="changeme"
+set user="root"
+set pass="lol"
+set wdb="wcelldb"
+set udbdir="E:\WoWEmu\UDB\"
 
 REM ############################################################################
 REM #
@@ -57,10 +57,12 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (393, 394)
+ECHO		 c = Install all Changesets (393, 394, 395, 396)
 ECHO.
 ECHO		 393 = Install Changeset 393
 ECHO		 394 = Install Changeset 394
+ECHO		 395 = Install Changeset 395
+ECHO		 396 = Install Changeset 396
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -77,6 +79,8 @@ if %l%==x goto quit
 if %l%==X goto quit
 if %l%==393 goto changeset393
 if %l%==394 goto changeset394
+if %1%==395 goto changeset395
+if %1%==396 goto changeset396
 goto error
 
 :import
@@ -105,6 +109,12 @@ ECHO [Importing] UDB database changeset 394...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\394_corepatch_mangos_10546_to_10720.sql
 ECHO [Importing] UDB updatepack 394...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\394_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 395...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\395_corepatch_mangos_10721_to_10892.sql
+ECHO [Importing] UDB updatepack 395...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\395_updatepack_mangos.sql
+ECHO [Importing] UDB updatepack 396...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\396_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -133,6 +143,32 @@ ECHO [Importing] UDB database changeset 394...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\394_corepatch_mangos_10546_to_10720.sql
 ECHO [Importing] UDB updatepack 394...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\394_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
+:changeset395
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB database changeset 395...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\395_corepatch_mangos_10721_to_10892.sql
+ECHO [Importing] UDB updatepack 395...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\395_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
+:changeset396
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB updatepack 396...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\396_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE
