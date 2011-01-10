@@ -16,6 +16,7 @@
 
 using System;
 using System.Threading;
+using Cell.Core;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Network;
 using WCell.Constants;
@@ -28,7 +29,7 @@ using System.ServiceModel;
 namespace WCell.AuthServer
 {
     /// <summary>
-    /// Defines one Entry in the Realm-list.
+    /// Defines one Entry in the Realm-list
     /// </summary>
     public class RealmEntry
     {
@@ -96,7 +97,7 @@ namespace WCell.AuthServer
         }
 
         /// <summary>
-        /// Realm address. ("IP:PORT")
+        /// Realm address
         /// </summary>
         public string Address
         {
@@ -110,9 +111,14 @@ namespace WCell.AuthServer
             internal set;
         }
 
+		public string GetAddress(string address)
+		{
+			return address + ":" + Port;
+		}
+
         public string AddressString
         {
-            get { return Address + ":" + Port; }
+            get { return GetAddress(Address); }
         }
 
 		/// <summary>
@@ -316,30 +322,35 @@ namespace WCell.AuthServer
 			var status = Status;
 			var flags = Flags;
 			var name = Name;
+
 			if (!ClientVersion.IsSupported(client.Info.Version))
 			{
+				// if client is not supported, flag realm as offline and append the required client version
 				flags = RealmFlags.Offline;
 				name += " [" + ClientVersion.BasicString + "]";
 			}
             else if (Flags.HasFlag(RealmFlags.Offline) && Status == RealmStatus.Locked)
             {
-            	var acc = client.Account;
-                var role = acc.Role;
-                if (role.IsStaff)
+				// let staff members join anyway
+				if (client.Account.Role.IsStaff)
                 {
                     status = RealmStatus.Open;
                 	flags = RealmFlags.None;
                 }
 			}
 
-            // TODO: Change char-count to amount of Characters of the querying account on this Realm
+
+			var addr = NetworkUtil.GetMatchingLocalIP(client.ClientAddress) ?? (object)Address;
+
 			packet.Write((byte)ServerType);
             packet.Write((byte)status);
             packet.Write((byte)flags);
             packet.WriteCString(name);
-            packet.WriteCString(AddressString);
+
+			packet.WriteCString(GetAddress(addr.ToString()));
+
             packet.Write(Population);
-            packet.Write(Chars);
+			packet.Write(Chars); // TODO: Change to amount of Characters of the querying account on this Realm
             packet.Write((byte)Category);
             packet.Write((byte)0x00); // realm separator?
         }
@@ -348,7 +359,7 @@ namespace WCell.AuthServer
 
 		public override string ToString()
 		{
-			return Name + " @ " + Address;
+			return Name + " @ " + AddressString;
 		}
     }
 }

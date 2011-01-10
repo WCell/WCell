@@ -49,16 +49,18 @@ namespace WCell.RealmServer.GameObjects
 		{
 			var gos = chr.GetObjectsInRadius(MaxSearchRadius, ObjectTypes.GameObject, true, 0);
 
-			var sqDist = float.MaxValue;
+			var distSq = float.MaxValue;
 			GameObject sel = null;
 			foreach (GameObject go in gos)
 			{
 				// TODO: Go by angle instead of distance
 				//var angle = chr.GetAngleTowards(go);
+				var thisDistSq = chr.GetDistanceSq(go);
 				if (sel == null ||
-					(go.IsInFrontOf(chr) && chr.GetDistanceSq(go) < sqDist))
+					(go.IsInFrontOf(chr) && thisDistSq < distSq))
 				{
 					sel = go;
+					distSq = thisDistSq;
 				}
 			}
 

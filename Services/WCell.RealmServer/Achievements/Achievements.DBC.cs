@@ -27,7 +27,7 @@ namespace WCell.RealmServer.Achievement
 		public override void Convert(byte[] rawData)
 		{
 			var achievementEntry = new AchievementEntry();
-			achievementEntry.ID = (AchievementEntryId)GetUInt32(rawData, 0);
+			achievementEntry.ID = (uint)GetUInt32(rawData, 0);
 			achievementEntry.FactionFlag = GetInt32(rawData, 1);
 			achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
 			achievementEntry.Name = new string[16];
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Achievement
 			achievementEntry.Points = GetUInt32(rawData, 39);
 			achievementEntry.Flags = (AchievementFlags)GetUInt32(rawData, 41);
 			achievementEntry.Count = GetUInt32(rawData, 60);
-			achievementEntry.RefAchievement = (AchievementEntryId)GetUInt32(rawData, 61);
+			achievementEntry.RefAchievement = (uint)GetUInt32(rawData, 61);
 
 			AchievementMgr.AchievementEntries[achievementEntry.ID] = achievementEntry;
 		}
@@ -60,8 +60,8 @@ namespace WCell.RealmServer.Achievement
 
 			var entry = creator();
 
-			entry.AchievementCriteriaId = (AchievementCriteriaId)GetUInt32(rawData, 0);
-			entry.AchievementEntryId = (AchievementEntryId)GetUInt32(rawData, 1);
+			entry.AchievementCriteriaId = GetUInt32(rawData, 0);
+			entry.AchievementEntryId = (uint)GetUInt32(rawData, 1);
 
 
 			var achievement = entry.AchievementEntry;
@@ -81,11 +81,13 @@ namespace WCell.RealmServer.Achievement
 			entry.TimeLimit = GetUInt32(rawData, 29);
 
 			// add to critera map
-			var list = AchievementMgr.GetEntriesByCriterion(criteriaType);
+			var list = AchievementMgr.GetCriteriaEntriesByType(criteriaType);
 			if (list != null)
 			{
 				list.Add(entry);
 			}
+
+            AchievementMgr.CriteriaEntriesById[entry.AchievementCriteriaId] = entry;
 		}
 	}
 }

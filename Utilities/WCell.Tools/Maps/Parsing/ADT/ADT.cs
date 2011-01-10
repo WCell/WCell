@@ -78,11 +78,16 @@ namespace WCell.Tools.Maps.Parsing.ADT
         public ADT(string fileName)
         {
             fileName = Path.GetFileNameWithoutExtension(fileName);
-            FileName = fileName;
+            if (fileName != string.Empty)
+            {
+                FileName = fileName;
 
-            string[] fileNameParts = fileName.Split('_');
-            _tileX = Int32.Parse(fileNameParts[2]);
-            _tileY = Int32.Parse(fileNameParts[1]);
+                string[] fileNameParts = fileName.Split('_');
+                _tileX = Int32.Parse(fileNameParts[fileNameParts.Length - 1]);
+                _tileY = Int32.Parse(fileNameParts[fileNameParts.Length - 2]);
+            }
+            else
+                IsWMOOnly = true;
         }
 
         #endregion

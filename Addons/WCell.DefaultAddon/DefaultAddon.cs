@@ -22,12 +22,29 @@ namespace WCell.Addons
 		/// </summary>
 		public const SpellId TeleSpellId = SpellId.UnusedPassengerProxyTest;
 
+		public static string LangDirName = "Lang";
+		public static DefaultAddon Instance
+		{
+			get; private set;
+		}
+
+		public DefaultAddon()
+		{
+			Instance = this;
+		}
+
+		public string LangDir
+		{
+			get { return Context.File.Directory + "/" + LangDirName + "/"; }
+		}
+
+
+		#region WCellAddon Members
 		public override bool UseConfig
 		{
 			get { return true; }
 		}
 
-		#region WCellAddon Members
 		public override string Name
 		{
 			get { return "Default Addon"; }

@@ -3,6 +3,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
@@ -539,11 +540,14 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnStart()
 		{
+            MiscHandler.SendPlaySoundToRegion(this, (uint)BattlegroundSounds.BgStart);
 		}
 
 		protected virtual void OnFinish(bool disposing)
 		{
-		}
+            MiscHandler.SendPlaySoundToRegion(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
+                                                                                           : (uint)BattlegroundSounds.AllianceWins);
+        }
 
 		#endregion
 

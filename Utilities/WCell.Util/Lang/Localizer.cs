@@ -153,7 +153,7 @@ namespace WCell.Util.Lang
 			{
 				translation.Localizer = this;
 				Translations[locale.ToInt32(null)] = translation;
-
+                
 				if (BaseLocale.Equals(locale))
 				{
 					BaseTranslation = translation;

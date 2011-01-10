@@ -62,6 +62,11 @@ namespace WCell.RealmServer.RacesClasses
 
         #endregion
 
+    	public int ActualStartLevel
+    	{
+    		get { return Math.Max(StartLevel, DefaultStartLevel); }
+    	}
+
         public virtual int StartLevel
         {
             get { return 1; }

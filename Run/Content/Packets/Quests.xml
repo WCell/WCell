@@ -576,6 +576,10 @@
 
     <Simple>
       <Name>Has Next?</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Flags</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>

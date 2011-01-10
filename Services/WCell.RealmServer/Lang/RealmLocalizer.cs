@@ -24,9 +24,7 @@ namespace WCell.RealmServer.Lang
 
 				try
 				{
-					instance = new RealmLocalizer(ClientLocale.English,
-												  RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
-
+					instance = new RealmLocalizer(ClientLocale.English, RealmServerConfiguration.DefaultLocale, RealmServerConfiguration.LangDir);
 					instance.LoadTranslations();
 				}
 				catch (Exception e)
@@ -60,10 +58,10 @@ namespace WCell.RealmServer.Lang
 			else
 			{
 				var mins = seconds / 60;
-				time = mins + (mins == 1 ? "minute" : "minutes");
+				time = mins + (mins == 1 ? " minute" : " minutes");
 				if (seconds % 60 != 0)
 				{
-					time += " and " + seconds + (seconds == 1 ? "second" : "seconds");
+					time += " and " + seconds + (seconds == 1 ? " second" : " seconds");
 				}
 			}
 			return time;

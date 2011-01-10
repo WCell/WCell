@@ -1732,6 +1732,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+        /// <summary>
+        /// Play a text and sound identify by the id
+        /// </summary>
+        /// <param name="id">Id of the text in creature_ai_texts</param>
+        public void PlayTextAndSoundById(int id)
+        {
+            var text = NPCAiTextMgr.GetFirstTextById(id);
+            if (text != null)
+            {
+                PlayTextAndSound(text);
+            }
+        }
+
 		public void PlayTextAndSound(NPCAiText text)
 		{
 			PlaySound((uint)text.Sound);

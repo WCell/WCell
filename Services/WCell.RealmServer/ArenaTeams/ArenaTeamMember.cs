@@ -26,7 +26,7 @@ namespace WCell.RealmServer.ArenaTeams
 		}
 
         /// <summary>
-        /// The name of this ArenaTeamMemberr's character
+        /// The name of this ArenaTeamMember's character
         /// </summary>
         public string Name
         {
@@ -76,6 +76,38 @@ namespace WCell.RealmServer.ArenaTeams
                 }
             }
         }
+
+        public uint gamesWeek
+        {
+            get { return (uint)_gamesWeek; }
+            set { _gamesWeek = (int)value; }
+        }
+
+        public uint winsWeek
+        {
+            get { return (uint)_winsWeek; }
+            set { _winsWeek = (int)value; }
+        }
+
+        public uint gamesSeason
+        {
+            get { return (uint)_gamesSeason; }
+            set { _gamesSeason = (int)value; }
+        }
+
+        public uint winsSeason
+        {
+            get { return (uint)_winsSeason; }
+            set { _winsSeason = (int)value; }
+        }
+
+        public uint personalRating
+        {
+            get { return (uint)_personalRating; }
+            set { _personalRating = (int)value; }
+        }
+        
+
         #endregion
 
         #region Methods

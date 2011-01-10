@@ -64,7 +64,7 @@ namespace WCell.Addons.Default.Instances
 				var instance = sneed.Region as Deadmines;
 				if (instance != null)
 				{
-					var door = instance.sneedDoor;
+					GameObject door = instance.sneedDoor;
 					if (door != null && door.IsInWorld)
 					{
 						// Open the door
@@ -88,7 +88,7 @@ namespace WCell.Addons.Default.Instances
 				var instance = gilnid.Region as Deadmines;
 				if (instance != null)
 				{
-					var door = instance.gilnidDoor;
+					GameObject door = instance.gilnidDoor;
 
 					if (door != null && door.IsInWorld)
 					{
@@ -111,13 +111,14 @@ namespace WCell.Addons.Default.Instances
 			{
 				((BaseBrain)smite.Brain).DefaultCombatAction.Strategy = new SmiteAttackAction(smite);
 			};
+            SpellHandler.Apply(spell => spell.CooldownTime = 10000, SpellId.SmiteSlam);
 		}
 
 		[Initialization]
 		[DependentInitialization(typeof(GOMgr))]
 		public static void InitGOs()
 		{
-			var rhahkzorDoorEntry = GOMgr.GetEntry(GOEntryId.FactoryDoor);		// 13965
+			GOEntry rhahkzorDoorEntry = GOMgr.GetEntry(GOEntryId.FactoryDoor);		// 13965
 
 			if (rhahkzorDoorEntry != null)
 			{
@@ -132,7 +133,7 @@ namespace WCell.Addons.Default.Instances
 				};
 			}
 
-			var sneedDoorEntry = GOMgr.GetEntry(17153u);
+			GOEntry sneedDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
 			var sneedDoorCord = new Vector3(-290.294f, -536.96f, 49.4353f);
 			if (sneedDoorEntry != null)
 			{
@@ -147,7 +148,7 @@ namespace WCell.Addons.Default.Instances
 				};
 			}
 
-			var gilnidDoorEntry = GOMgr.GetEntry(17153u);
+            GOEntry gilnidDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
 			var gilnidDoorCord = new Vector3(-168.514f, -579.861f, 19.3159f);
 			if (gilnidDoorEntry != null)
 			{
@@ -167,7 +168,7 @@ namespace WCell.Addons.Default.Instances
 
 			defiasCannonEntry.Used += (cannon, user) =>
 			{
-				var door = cannon.GetNearbyGO(GOEntryId.IronCladDoor);
+				GameObject door = cannon.GetNearbyGO(GOEntryId.IronCladDoor);
 				if (door != null && door.IsInWorld)
 				{
 					// the cannon destroys the door
@@ -200,7 +201,8 @@ namespace WCell.Addons.Default.Instances
 
 		public override void OnEnterCombat()
 		{
-			m_owner.PlayTextAndSoundByEnglishPrefix("Van");	// Van Cleef pay big...
+			//m_owner.PlayTextAndSoundByEnglishPrefix("Van");	// Van Cleef pay big...
+            m_owner.PlayTextAndSoundById(-22);
 			base.OnEnterCombat();
 		}
 
@@ -261,7 +263,7 @@ namespace WCell.Addons.Default.Instances
 
 		void CastDistractingPain(WorldObject owner)
 		{
-			var chr = owner.GetNearbyRandomHostileCharacter();
+			Character chr = owner.GetNearbyRandomHostileCharacter();
 			if (chr != null)
 			{
 				owner.SpellCast.Start(distractingPain, false, chr);
@@ -271,7 +273,7 @@ namespace WCell.Addons.Default.Instances
 
 		void CastTerrify(WorldObject owner)
 		{
-			var chr = m_owner.GetNearbyRandomHostileCharacter();
+			Character chr = m_owner.GetNearbyRandomHostileCharacter();
 			if (chr != null)
 			{
 				m_owner.SpellCast.Start(terrify, false, chr);
@@ -292,7 +294,7 @@ namespace WCell.Addons.Default.Instances
 		[Initialization(InitializationPass.Second)]
 		public static void InitSneed()
 		{
-			disarm = SpellHandler.Get(6713);  //disarm
+			disarm = SpellHandler.Get(SpellId.Disarm_2);  //disarm
 		}
 
 		public SneedAttackAction(NPC sneed)
@@ -351,7 +353,6 @@ namespace WCell.Addons.Default.Instances
 			: base(gilnid)
 		{
 		}
-
 		/*add his quotes somewhere dont know right now when he says it
 		 * "Anyone want to take a break? Well too bad! Get to work you oafs!" 
 		 * "Get those parts moving down to the ship!" 
@@ -366,12 +367,15 @@ namespace WCell.Addons.Default.Instances
 		public static Vector3 ChestLocation = new Vector3(1.100060f, -780.026367f, 9.811194f);
 		private static Spell smiteStomp;
 		private static Spell smiteBuff;
+        private static Spell smiteSlam;
 
 		[Initialization(InitializationPass.Second)]
 		public static void InitSmite()
 		{
 			smiteStomp = SpellHandler.Get(SpellId.SmiteStomp);
 			smiteBuff = SpellHandler.Get(SpellId.SmitesHammer);
+            smiteSlam = SpellHandler.Get(SpellId.SmiteSlam);
+
 		}
 
 		private int phase;
@@ -385,12 +389,11 @@ namespace WCell.Addons.Default.Instances
 		{
 			if (phase < 2)
 			{
-				var hpPct = m_owner.HealthPct;
+				int hpPct = m_owner.HealthPct;
 				if (hpPct <= 33 && phase == 1)
 				{
 					// when below 33% health, do second special action
-					m_owner.PlaySound(5779);
-					m_owner.Yell("D'ah! Now you're making me angry!");
+                    m_owner.PlayTextAndSoundById(-176);
 					m_owner.SpellCast.Trigger(smiteStomp);		// aoe spell finds targets automatically
 					m_owner.Auras.CreateSelf(smiteBuff, true);		// apply buff to self
 					MoveToChest();
@@ -400,8 +403,7 @@ namespace WCell.Addons.Default.Instances
 				else if (hpPct <= 66 && phase == 0)
 				{
 					// when below 66% health, do first special action
-					m_owner.PlaySound(5782);
-					m_owner.Yell("You land lubbers are tougher than I thought! I'll have to improvise!");
+                    m_owner.PlayTextAndSoundById(-175);
 					m_owner.SpellCast.Trigger(smiteStomp);
 					MoveToChest();
 					phase = 1;
@@ -453,6 +455,12 @@ namespace WCell.Addons.Default.Instances
 			: base(smite)
 		{
 		}
+
+        public override void OnEnterCombat()
+        {
+            m_owner.PlayTextAndSoundById(-174); // "We're under attack! Avast ya swabs! Repel the invaders!"
+            base.OnEnterCombat();
+        }
 	}
 	#endregion
 }

@@ -28,6 +28,7 @@ namespace WCell.Tools.Maps.Parsing.WMO.Components
         {
             get
             {
+                if (_filePath == null) return "";
                 if (Path.GetExtension(_filePath).ToLower().Equals(".mdx") ||
                     Path.GetExtension(_filePath).ToLower().Equals(".mdl"))
                 {

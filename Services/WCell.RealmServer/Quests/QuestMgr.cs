@@ -63,6 +63,11 @@ namespace WCell.RealmServer.Quests
         /// </summary>
         public static readonly QuestRewRepInfo[] QuestRewRepInfos = new QuestRewRepInfo[2];
 
+        /// <summary>
+        /// The Honor Reward Level that is used to determine the honor reward upon completion.
+        /// </summary>
+        public static readonly QuestHonorInfo[] QuestHonorInfos = new QuestHonorInfo[2000];
+
 		/// <summary>
 		/// Amount of levels above the Character level at which a player is not allowed to do the Quest
 		/// </summary>
@@ -146,7 +151,7 @@ namespace WCell.RealmServer.Quests
 			{
                 new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTXP));
                 new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTFACTIONREWARD));
-
+                new DBCReader<QuestHonorInfoConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TEAMCONTRIBUTIONPOINTS));
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();

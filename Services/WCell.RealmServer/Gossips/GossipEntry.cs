@@ -226,7 +226,6 @@ namespace WCell.RealmServer.Gossips
 			if (entry != null && entry.DefaultGossip == null)
 			{
 				var menu = new GossipMenu(TextId);
-				GossipMgr.gossipCount++;
 
 				entry.DefaultGossip = menu;
 

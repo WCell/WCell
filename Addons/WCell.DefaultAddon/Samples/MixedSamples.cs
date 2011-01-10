@@ -1,3 +1,4 @@
+using WCell.Addons.Default.Lang;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.NPCs;
 using WCell.Constants.Factions;
@@ -110,8 +111,7 @@ namespace WCell.Addons.Default.Samples
 					convo.Character.SendSystemMessage("A list of all available Gossip Icons");
 				},
 					new GossipMenu(										// nested menu
-						new GossipMenuItem(GossipMenuIcon.Talk, "Talk"),
-						new GossipMenuItem(GossipMenuIcon.Trade, "Trade", convo =>
+						new MultiStringGossipMenuItem(GossipMenuIcon.Trade, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.Trade), convo =>
 						{
 							// Character selected "Trade"
 							convo.Speaker.Say("I am not a vendor!");
@@ -141,7 +141,7 @@ namespace WCell.Addons.Default.Samples
 					convo.Character.TeleportTo(World.EasternKingdoms, new Vector3(0, 0, 1000));
 					convo.StayOpen = false;	// convo is over
 				}),
-				new QuitGossipMenuItem("Done")	// convo is over
+				new QuitGossipMenuItem()	// convo is over
 				)
 			{
 				// Don't close the menu, unless the user selected a final option

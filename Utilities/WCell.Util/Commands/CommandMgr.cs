@@ -480,7 +480,8 @@ namespace WCell.Util.Commands
 		public bool MayDisplay(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool ignoreRestrictions)
 		{
 			return cmd.Enabled &&
-				   (ignoreRestrictions || cmd.RootCmd.MayTrigger(trigger, cmd, true));
+				   (ignoreRestrictions ||
+						(cmd.RootCmd.MayTrigger(trigger, cmd, true) && TriggerValidator(trigger, cmd, true)));
 		}
 
 		public BaseCommand<C> SelectCommand(string cmdString)

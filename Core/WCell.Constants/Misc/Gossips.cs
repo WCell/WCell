@@ -23,6 +23,7 @@ namespace WCell.Constants
 	[Flags]
 	public enum GossipPOIFlags : uint
 	{
-		None = 0
+		None = 0,
+        Six = 6
 	}
 }

@@ -555,6 +555,19 @@ namespace WCell.RealmServer.Chat
 			SendSystemMessage(targets, item.Key, item.Args);
 		}
 
+        public static void SendMultiStringSystemMessage(this IEnumerable<Character> targets, string[] texts, params object[] args)
+        {
+            foreach (var target in targets)
+            {
+                if (target != null)
+                {
+                    if (texts[(uint)target.Locale] != null)
+                        target.SendSystemMessage(texts[(uint)target.Locale], args);
+                    else
+                        target.SendSystemMessage(texts[(uint)RealmLocalizer.Instance.BaseLocale], args);
+                }
+            }
+        }
 		/// <summary>
 		/// Sends a system message.
 		/// </summary>

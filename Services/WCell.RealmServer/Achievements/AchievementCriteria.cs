@@ -28,12 +28,18 @@ namespace WCell.RealmServer.Achievement
 	public abstract class AchievementCriteriaEntry
 	{
 		public AchievementCriteriaType Criteria;
-		public AchievementCriteriaId AchievementCriteriaId;
-		public AchievementEntryId AchievementEntryId;
+		public uint AchievementCriteriaId;
+		public uint AchievementEntryId;
 
 		public uint CompletionFlag;							// 26
 		public AchievementCriteriaGroupFlags GroupFlag;		// 27
-		public uint TimeLimit;								// 29
+		public uint TimeLimit;
+        								// 29
+        
+        public AchievementCriteriaRequirementSet RequirementsSet
+        {
+            get { return AchievementMgr.GetCriteriaRequirementSet(AchievementCriteriaId); }
+        }
 
 		public AchievementEntry AchievementEntry
 		{
@@ -46,7 +52,7 @@ namespace WCell.RealmServer.Achievement
 		}
 
 		public virtual void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
-		{
+		{ 
 		}
 	}
 
@@ -126,11 +132,11 @@ namespace WCell.RealmServer.Achievement
 	public class CompleteAchievementAchievementCriteriaEntry : AchievementCriteriaEntry
 	{
 		// 8
-		public AchievementEntryId AchievementToCompleteId;
+		public uint AchievementToCompleteId;
 
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
-			if(AchievementToCompleteId == (AchievementEntryId)value1)
+			if(AchievementToCompleteId == value1)
 				achievements.SetCriteriaProgress(this, value2);
 		}
 
@@ -393,6 +399,22 @@ namespace WCell.RealmServer.Achievement
 	{
 		// 34
 		public SpellId SpellId;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= 1;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if((SpellId)value1 != SpellId)
+                return;
+
+            if(!achievements.Owner.PlayerSpells.Contains((uint)SpellId))
+                return;
+            
+            achievements.SetCriteriaProgress(this, 1, ProgressType.ProgressHighest);
+        }
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -401,6 +423,21 @@ namespace WCell.RealmServer.Achievement
 		// 36
 		public ItemId ItemId;
 		public uint ItemCount;
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+            return achievementProgressRecord.Counter >= ItemCount;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+            if(ItemId != (ItemId)value1)
+                return;
+            var itemCount = (uint)achievements.Owner.Inventory.GetAmount(ItemId);
+            if(itemCount == 0)
+                return;
+            achievements.SetCriteriaProgress(this, itemCount, ProgressType.ProgressHighest);
+        }
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -487,6 +524,25 @@ namespace WCell.RealmServer.Achievement
         public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
         {
             return achievementProgressRecord.Counter >= 1;
+        }
+    }
+    [StructLayout(LayoutKind.Sequential)]
+    public class IncrementAtValue1AchievementCriteriaEntry : AchievementCriteriaEntry
+    {
+        // 60, 62, 63, 65, 66, 67, 103, 105
+        public uint unused;
+        public uint value; // gold in copper for 60, 62, 63, 65, 66, 67 and damage/heal received for 103, 105
+
+        public override bool IsAchieved(AchievementProgressRecord achievementProgressRecord)
+        {
+ 	        return achievementProgressRecord.Counter >= value;
+        }
+
+        public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
+        {
+ 	        if(value1 == 0)
+                return;
+            achievements.SetCriteriaProgress(this, value1, ProgressType.ProgressAccumulate);
         }
     }
 

@@ -1,14 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Addons.Default.Battlegrounds.AlteracValley;
-using WCell.RealmServer.Entities;
 using WCell.Constants;
-using WCell.RealmServer.Battlegrounds;
 using WCell.Core.Timers;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
-using WCell.Util.Graphics;
 using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
@@ -44,7 +37,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 		private BattlegroundSide _side = BattlegroundSide.End;
 
 		public GameObject FlagStand;
-
+        public GameObject ActualAura;
 
 		/// <summary>
 		/// The character currently capturing the flag.
@@ -79,7 +72,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			Instance.RegisterUpdatableLater(StartScoreTimer);
 			Instance.RegisterUpdatableLater(CaptureTimer);
 
-			// TODO: flagstand?
 			SpawnNeutral();
 		}
 
@@ -109,6 +101,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Challenged = true;
 
 			CaptureTimer.Start(CapturePointConversionDelayMillis, 0);
+            SpawnContested();
+
             var evt = BaseChallenged;
             if (evt != null)
             {
@@ -118,7 +112,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
 		/// <summary>
 		/// Call to interrupt the capturing process
-		/// TODO: Change the flag back to the owner's
 		/// </summary>
 		/// <param name="chr">The interrupting character</param>
 		public void InterruptCapture(Character chr)
@@ -132,6 +125,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			CaptureTimer.Stop();
 			StartScoreTimer.Stop();
 
+            if (BaseOwner == BattlegroundSide.Horde)
+                SpawnHorde();
+            else
+                SpawnAlliance();
+
 			var evt = CaptureInterrupted;
 			if (evt != null)
 			{
@@ -140,7 +138,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 		}
 
 		/// <summary>
-		/// TODO: Spawn the side's flag
 		/// Finalizes a capture (Flag changes colour (de/respawns, casts spells, etc)
 		/// </summary>
 		public void Capture()
@@ -152,11 +149,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			{
 				Instance.HordeBaseCount++;
 				BaseOwner = BattlegroundSide.Horde;
+                SpawnHorde();
 			}
 			else
 			{
 				Instance.AllianceBaseCount++;
 				BaseOwner = BattlegroundSide.Alliance;
+                SpawnAlliance();
 			}
 
 			// It takes a few minutes before a captured flag begins to give score.
@@ -176,6 +175,14 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			{
 				if (go == FlagStand)
 				{
+                    FlagStand.SendDespawn();
+                    ActualAura.SendDespawn();
+
+                    FlagStand.Delete();
+                    ActualAura.Delete();
+
+                    FlagStand = null;
+                    ActualAura = null;
 					if (Challenged)
 					{
 						InterruptCapture(chr);
@@ -188,26 +195,44 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 				return false;
 			};
 		}
+        /// <summary>
+        /// Spawn neutral flag (use only at the beginning)
+        /// </summary>
+		protected virtual void SpawnNeutral()
+        {
+         
+        }
 
-		private void SpawnNeutral()
+        /// <summary>
+        /// Spawn Horde flag (use only when CaptureTimer = 0)
+        /// </summary>
+		protected virtual void SpawnHorde()
 		{
 
 		}
 
-		private void SpawnHorde()
+        /// <summary>
+        /// Spawn Alliance flag (use only when CaptureTimer = 0)
+        /// </summary>
+		protected virtual void SpawnAlliance()
 		{
 
 		}
 
-		private void SpawnAlliance()
-		{
-
-		}
+        /// <summary>
+        /// Spawn contested flag according to the team which attacks the base
+        /// </summary>
+        protected virtual void SpawnContested()
+        {
+        
+        }
 
 		public void Destroy()
 		{
 			Capturer = null;
 			Instance = null;
+            FlagStand = null;
+            ActualAura = null;
 		}
 	}
 }

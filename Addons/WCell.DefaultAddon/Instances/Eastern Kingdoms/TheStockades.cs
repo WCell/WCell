@@ -388,7 +388,7 @@ namespace WCell.Addons.Default.Instances
 		[Initialization(InitializationPass.Second)]
 		static void InitInmate()
 		{
-			convictrend = SpellHandler.Get(SpellId.Intimidation);  // TODO: Find the right spellID for convictrend
+			convictrend = SpellHandler.Get(SpellId.ClassSkillRendRank3);
 		}
 
 		public InmateAttackAction(NPC dextren)
@@ -453,7 +453,7 @@ namespace WCell.Addons.Default.Instances
 		[Initialization(InitializationPass.Second)]
 		static void InitInsurgent()
 		{
-			demoralize = SpellHandler.Get(SpellId.Demoralize);  // TODO: Find the right spellID for insurgent demoralize
+			demoralize = SpellHandler.Get(SpellId.DemoralizingShout);
 		}
 
 		public InsurgentAttackAction(NPC insurgent)
@@ -519,8 +519,8 @@ namespace WCell.Addons.Default.Instances
 		[Initialization(InitializationPass.Second)]
 		static void InitPrison()
 		{
-			prisonKick = SpellHandler.Get(SpellId.Demoralize);  // TODO: Find the right spellID for prison kick 
-			prisonDisarm = SpellHandler.Get(SpellId.Demoralize);  // TODO: Find the right spellID for prison disarm
+			prisonKick = SpellHandler.Get(SpellId.ClassSkillKick);
+			prisonDisarm = SpellHandler.Get(SpellId.Disarm_2);
 		}
 
 		public PrisonerAttackAction(NPC prisoner)

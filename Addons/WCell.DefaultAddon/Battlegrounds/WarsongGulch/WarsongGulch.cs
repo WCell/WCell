@@ -1,4 +1,5 @@
 using System;
+using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.AreaTriggers;
 using WCell.Constants.GameObjects;
@@ -162,15 +163,15 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			{
 				CallDelayed(MaxDuration * 60, FinishFight);
 			}
-			Characters.SendSystemMessage("Let the battle for Warsong Gulch begin!");
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnStart));
 		}
 
 		protected override void OnPrepareHalftime()
 		{
 			base.OnPrepareHalftime();
 
-			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
-			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
+			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 2000);
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepareHalfTime), time);
 		}
 
 
@@ -178,14 +179,15 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			base.OnPrepare();
 
-			var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
-			Characters.SendSystemMessage("The battle for Warsong Gulch begins in {0}.", time);
+			string time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis / 1000);
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnPrepare), time);
 		}
 
 		protected override void OnFinish(bool disposing)
 		{
 			base.OnFinish(disposing);
-			Characters.SendSystemMessage("The battle has ended!");
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnFinish), 
+                                                                                                        Winner.Side.ToString());
 		}
 
 		/// <summary>
@@ -198,7 +200,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			chr.Auras.Cancel(SpellId.WarsongFlag_2);
 			chr.Auras.Cancel(SpellId.SilverwingFlag);
 
-			Characters.SendSystemMessage("{0} has left the battle!", chr.Name);
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnLeave), chr.Name);
 
 			base.OnLeave(chr);
 		}
@@ -211,7 +213,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			base.OnEnter(chr);
 
-			Characters.SendSystemMessage("{0} has entered the battle!", chr.Name);
+			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnEnter), chr.Name);
 		}
 
 		protected override BattlegroundStats CreateStats()
@@ -221,17 +223,17 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		protected override void RewardPlayers()
 		{
-			var allianceTeam = GetTeam(BattlegroundSide.Alliance);
+			BattlegroundTeam allianceTeam = GetTeam(BattlegroundSide.Alliance);
 			if (allianceTeam == Winner)
 			{
-				foreach (var chr in allianceTeam.GetCharacters())
+				foreach (Character chr in allianceTeam.GetCharacters())
 				{
 					chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorWInner);
 				}
 			}
 			else
 			{
-				foreach (var chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
+				foreach (Character chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
 				{
 					chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorLoser);
 				}
@@ -243,7 +245,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			WarsongClan.Dispose();
 			Silverwing.Dispose();
 
-			for (var i = 0; i < Factions.Length; i++)
+			for (Int32 i = 0; i < Factions.Length; i++)
 			{
 				Factions[i] = null;
 			}
@@ -260,12 +262,12 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			base.SpawnGOs();
 
-			var allianceDoorEntry1 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive04);
-			var allianceDoorEntry2 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive02_2);
-			var allianceDoorEntry3 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive01_2);
+			GOEntry allianceDoorEntry1 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive04);
+            GOEntry allianceDoorEntry2 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive02_2);
+            GOEntry allianceDoorEntry3 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive01_2);
 
-			var hordeDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor01);
-			var hordeDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor02);
+            GOEntry hordeDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor01);
+            GOEntry hordeDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor02);
 
 			_allianceDoor1 = allianceDoorEntry1.FirstSpawn.Spawn(this);
 			_allianceDoor2 = allianceDoorEntry2.FirstSpawn.Spawn(this);
@@ -359,12 +361,12 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		public static void FixGOs()
 		{
 			//Getting our entries
-			var allianceDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive04);
-			var allianceDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive02_2);
-			var allianceDoor3 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive01_2);
+			GOEntry allianceDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive04);
+			GOEntry allianceDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive02_2);
+			GOEntry allianceDoor3 = GOMgr.GetEntry(GOEntryId.Doodad_PortcullisActive01_2);
 
-			var hordeDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor01);
-			var hordeDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor02);
+			GOEntry hordeDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor01);
+			GOEntry hordeDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor02);
 
 
 			// Manually fixing each entry's template. (should be replaced by DB values)
@@ -411,8 +413,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			hordeDoor2.FirstSpawn.AutoSpawn = false;
 			hordeDoor2.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
-			var allianceFlag = GOMgr.GetEntry(GOEntryId.SilverwingFlag_2); // The flagstand
-			var hordeFlag = GOMgr.GetEntry(GOEntryId.WarsongFlag_2); // The flagstand.
+			GOEntry allianceFlag = GOMgr.GetEntry(GOEntryId.SilverwingFlag_2); // The flagstand
+			GOEntry hordeFlag = GOMgr.GetEntry(GOEntryId.WarsongFlag_2); // The flagstand.
 
 			allianceFlag.FirstSpawn.MapId = MapId.WarsongGulch;
 			allianceFlag.FirstSpawn.Pos = new Vector3(1540.423f, 1481.325f, 351.8284f);
@@ -428,13 +430,13 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			hordeFlag.FirstSpawn.Rotations = new float[] { 0, 0, 0.008726535f, 0.9999619f };
 			hordeFlag.FirstSpawn.AutoSpawn = false;
 
-			var allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
-			var allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
-			var allianceFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff_2);
+            GOEntry allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
+            GOEntry allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
+            GOEntry allianceFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff_2);
 
-			var hordeSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff);
-			var hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
-			var hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
+            GOEntry hordeSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff);
+            GOEntry hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
+            GOEntry hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
 
 			allianceBerserkerBuff.FirstSpawn.MapId = MapId.WarsongGulch;
 			allianceBerserkerBuff.FirstSpawn.Pos = new Vector3(1320.09375f, 1378.78967285156f, 314.753234863281f);
@@ -483,11 +485,11 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		[Initialization(InitializationPass.Second)]
 		public static void AddFlagEffectHandler()
 		{
-			var hordeFlagSpell = SpellHandler.Get(SpellId.WarsongFlag);
-			var heffect = hordeFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
+			Spell hordeFlagSpell = SpellHandler.Get(SpellId.WarsongFlag);
+			SpellEffect heffect = hordeFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
 
-			var allianceFlagSpell = SpellHandler.Get(SpellId.SilverwingFlag);
-			var aeffect = allianceFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
+			Spell allianceFlagSpell = SpellHandler.Get(SpellId.SilverwingFlag);
+			SpellEffect aeffect = allianceFlagSpell.AddAuraEffect(() => new WarsongFlagsHandler(), ImplicitTargetType.Duel);
 
 			// Replacing the spelleffectHandler
 			SpellHandler.Apply(spell =>
@@ -503,19 +505,19 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		[DependentInitialization(typeof(GOMgr))]
 		public static void RegisterEvents()
 		{
-			var standEntry = ((GOFlagStandEntry)GOMgr.GetEntry(SilverwingFlagStandId));
+			var standEntry = GOMgr.GetEntry(SilverwingFlagStandId) as GOFlagStandEntry;
 			standEntry.Side = BattlegroundSide.Alliance;
-			var droppedEntry = ((GOFlagDropEntry)GOMgr.GetEntry(SilverwingFlagId));
+			var droppedEntry = GOMgr.GetEntry(SilverwingFlagId) as GOFlagDropEntry;
 			droppedEntry.Side = BattlegroundSide.Alliance;
 
-			standEntry = ((GOFlagStandEntry)GOMgr.GetEntry(WarsongClanFlagStandId));
+			standEntry = GOMgr.GetEntry(WarsongClanFlagStandId) as GOFlagStandEntry;
 			standEntry.Side = BattlegroundSide.Horde;
-			droppedEntry = ((GOFlagDropEntry)GOMgr.GetEntry(WarsongFlagId));
+			droppedEntry = GOMgr.GetEntry(WarsongFlagId) as GOFlagDropEntry;
 			droppedEntry.Side = BattlegroundSide.Horde;
 
 			// register AreaTrigger capture events
-			var hordeFlagAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeFlagSpawn);
-			var allianceFlagAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceFlagSpawn);
+			AreaTrigger hordeFlagAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeFlagSpawn);
+			AreaTrigger allianceFlagAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceFlagSpawn);
 
 			hordeFlagAT.Triggered += HordeCaptureTriggered;
 			allianceFlagAT.Triggered += AllianceCaptureTriggered;
@@ -552,7 +554,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		private static bool HandleFlagUsed(GameObject flag, Character user, bool mayReturn)
 		{
-			var team = user.Battlegrounds.Team;
+			BattlegroundTeam team = user.Battlegrounds.Team;
 			var wsg = flag.Region as WarsongGulch;
 			if (wsg != null && team != null)
 			{
@@ -563,7 +565,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 					if (entry.Side != team.Side)
 					{
 						// using opponent's flag
-						var flagFaction = wsg.GetFaction(entry.Side);
+						WSGFaction flagFaction = wsg.GetFaction(entry.Side);
 						if (flagFaction.CanPickupFlag(user))
 						{
 							flagFaction.PickupFlag(user);
@@ -573,7 +575,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 					else if (mayReturn)
 					{
 						// using own flag
-						var userFaction = wsg.GetFaction(team.Side);
+						WSGFaction userFaction = wsg.GetFaction(team.Side);
 						if (userFaction.CanReturnFlag(user))
 						{
 							userFaction.ReturnFlag(user);
@@ -605,7 +607,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		private static void HordeCaptureTriggered(AreaTrigger at, Character chr)
 		{
 			// Check whether the battle has started and the Character is actively participating
-			var team = chr.Battlegrounds.Team;
+			BattlegroundTeam team = chr.Battlegrounds.Team;
 			var wsg = chr.Region as WarsongGulch;
 			if (team != null && wsg != null && wsg.IsActive)
 			{
@@ -626,7 +628,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		private static void AllianceCaptureTriggered(AreaTrigger at, Character chr)
 		{
 			// Check whether the battle has started and the Character is actively participating
-			var team = chr.Battlegrounds.Team;
+			BattlegroundTeam team = chr.Battlegrounds.Team;
 			var wsg = chr.Region as WarsongGulch;
 			if (team != null && wsg != null && wsg.IsActive)
 			{
@@ -645,15 +647,15 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		/// </summary>
 		private void RegisterPowerupEvents()
 		{
-			var allianceBerserker =
+			AreaTrigger allianceBerserker =
 				AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceElexirOfBerserkSpawn);
-			var allianceFood =
+            AreaTrigger allianceFood =
 				AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceElexirOfRegenerationSpawn);
-			var allianceSpeed = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceElexirOfSpeedSpawn);
+            AreaTrigger allianceSpeed = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchAllianceElexirOfSpeedSpawn);
 
-			var hordeBerserker = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfBerserkSpawn);
-			var hordeFood = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfRegenerationSpawn);
-			var hordeSpeed = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfSpeedSpawn);
+            AreaTrigger hordeBerserker = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfBerserkSpawn);
+            AreaTrigger hordeFood = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfRegenerationSpawn);
+            AreaTrigger hordeSpeed = AreaTriggerMgr.GetTrigger(AreaTriggerId.WarsongGulchHordeElexirOfSpeedSpawn);
 
 			allianceBerserker.Triggered += (at, unit) => HandlePowerUp(unit, SpellId.None, _allianceBerserkerBuff, SpawnAllianceBerserkerBuff);
 			allianceFood.Triggered += (at, unit) => HandlePowerUp(unit, SpellId.None, _allianceFoodBuff, SpawnAllianceFoodBuff);
@@ -667,37 +669,37 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		public void SpawnAllianceSpeedBuff()
 		{
-			var allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
+			GOEntry allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
 			_allianceSpeedBuff = allianceSpeedBuff.FirstSpawn.Spawn(this);
 		}
 
 		public void SpawnAllianceFoodBuff()
 		{
-			var allianceFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff_2);
+            GOEntry allianceFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff_2);
 			_allianceFoodBuff = allianceFoodBuff.FirstSpawn.Spawn(this);
 		}
 
 		public void SpawnAllianceBerserkerBuff()
 		{
-			var allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
+            GOEntry allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
 			_allianceBerserkerBuff = allianceBerserkerBuff.FirstSpawn.Spawn(this);
 		}
 
 		public void SpawnHordeSpeedBuff()
 		{
-			var hordeSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff);
+            GOEntry hordeSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff);
 			_hordeSpeedBuff = hordeSpeedBuff.FirstSpawn.Spawn(this);
 		}
 
 		public void SpawnHordeFoodBuff()
 		{
-			var hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
+            GOEntry hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
 			_hordeFoodBuff = hordeFoodBuff.FirstSpawn.Spawn(this);
 		}
 
 		public void SpawnHordeBerserkerBuff()
 		{
-			var hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
+            GOEntry hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
 			_hordeBerserkerBuff = hordeBerserkerBuff.FirstSpawn.Spawn(this);
 		}
 

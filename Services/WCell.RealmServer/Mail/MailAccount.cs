@@ -155,6 +155,13 @@ namespace WCell.RealmServer.Mail
 			uint money,
 			uint cod)
 		{
+			if (subject.Length > MailMgr.MaxMailSubjectLength ||
+				body.Length > MailMgr.MaxMailBodyLength)
+			{
+				// Player cannot send mails this long through the mail dialog
+				return MailError.INTERNAL_ERROR;
+			}
+
 			// Can't send mail to yourself.
 			if (recipient.EntityLowId == m_chr.EntityId.Low)
 			{
@@ -508,7 +515,7 @@ namespace WCell.RealmServer.Mail
 			var mailList = new List<MailMessage>(2);
 			foreach (var letter in AllMail.Values)
 			{
-				if (letter.ReadTime == null && letter.DeliveryTime <= DateTime.Now)
+				if (letter.WasRead || letter.DeliveryTime > DateTime.Now)
 					continue;
 
 				++count;

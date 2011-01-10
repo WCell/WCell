@@ -659,7 +659,7 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
 		/// </summary>
-		public override int FindFreeSlot()
+		public override int FindFreeSlot(int offset, int end)
 		{
 			var slot = BackPack.FindFreeSlot();
 			return slot;
@@ -2185,7 +2185,7 @@ namespace WCell.RealmServer.Items
 		}
 
 		/// <summary>
-		/// Returns the amount of Itesm of the given Set that the owner currently has equipped.
+		/// Returns the amount of Items of the given Set that the owner currently has equipped.
 		/// </summary>
 		/// <param name="set"></param>
 		/// <returns></returns>

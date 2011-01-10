@@ -13,6 +13,7 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Achievement
 {
 	public delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
+    public delegate AchievementCriteriaRequirement AchievementCriteriaRequirementCreator();
 
 	/// <summary>
 	/// Global container for Achievement-related data
@@ -22,19 +23,24 @@ namespace WCell.RealmServer.Achievement
 		private static readonly AchievementCriteriaEntryCreator[] AchievementEntryCreators =
 			new AchievementCriteriaEntryCreator[(int)AchievementCriteriaType.End];
 
-		public static readonly List<AchievementCriteriaEntry>[] EntriesByCriterion = new List<AchievementCriteriaEntry>[(int)AchievementCriteriaType.End];
+        private static readonly AchievementCriteriaRequirementCreator[] AchievementCriteriaRequirementCreators =
+            new AchievementCriteriaRequirementCreator[(int)AchievementCriteriaRequirementType.End];
 
-		public static readonly Dictionary<AchievementEntryId, AchievementEntry> AchievementEntries = new Dictionary<AchievementEntryId, AchievementEntry>();
+		public static readonly List<AchievementCriteriaEntry>[] CriteriaEntriesByType = new List<AchievementCriteriaEntry>[(int)AchievementCriteriaType.End];
+        public static readonly Dictionary<uint, AchievementCriteriaEntry> CriteriaEntriesById = new Dictionary<uint, AchievementCriteriaEntry>();
+		public static readonly Dictionary<uint, AchievementEntry> AchievementEntries = new Dictionary<uint, AchievementEntry>();
 		public static readonly Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry>();
-        public static readonly List<AchievementEntryId> CompletedRealmFirstAchievements = new List<AchievementEntryId>();
+        public static readonly List<uint> CompletedRealmFirstAchievements = new List<uint>();
+        public static readonly Dictionary<uint, AchievementCriteriaRequirementSet> CriteriaRequirements = new Dictionary<uint, AchievementCriteriaRequirementSet>();
 
-
-		[Initialization(InitializationPass.Fifth)]
+		[Initialization(InitializationPass.Fifth, "Initialize Achievements")]
 		public static void InitAchievements()
 		{
 			InitCriteria();
+            InitCriteriaRequirements();
 			LoadDBCs();
             ContentMgr.Load<AchievementReward>();
+            ContentMgr.Load<AchievementCriteriaRequirement>();
 		    LoadRealmFirstAchievements();
 		}
 
@@ -52,10 +58,29 @@ namespace WCell.RealmServer.Achievement
             }
         }
 
-	    public static List<AchievementCriteriaEntry> GetEntriesByCriterion(AchievementCriteriaType criterion)
+	    public static List<AchievementCriteriaEntry> GetCriteriaEntriesByType(AchievementCriteriaType type)
 		{
-			return EntriesByCriterion[(int)criterion];
+			return CriteriaEntriesByType[(int)type];
 		}
+
+        public static AchievementCriteriaEntry GetCriteriaEntryById(uint id)
+        {
+            AchievementCriteriaEntry entry;
+            CriteriaEntriesById.TryGetValue(id, out entry);
+            return entry;
+        }
+
+        /// <summary>
+        /// Returns the criteria requirements set
+        /// </summary>
+        /// <param name="id">the criteria id</param>
+        /// <returns>the criteria requirements set</returns>
+        public static AchievementCriteriaRequirementSet GetCriteriaRequirementSet(uint id)
+        {
+            AchievementCriteriaRequirementSet set;
+            CriteriaRequirements.TryGetValue(id, out set);
+            return set;
+        }
 
 		#region Dynamic Criteria Creation
 		public static AchievementCriteriaEntryCreator GetCriteriaEntryCreator(AchievementCriteriaType criteria)
@@ -71,9 +96,9 @@ namespace WCell.RealmServer.Achievement
 		public static void InitCriteria()
 		{
 			// initialize criteria lists
-			for (var i = 0; i < EntriesByCriterion.Length; i++)
+			for (var i = 0; i < CriteriaEntriesByType.Length; i++)
 			{
-				EntriesByCriterion[i] = new List<AchievementCriteriaEntry>();
+                CriteriaEntriesByType[i] = new List<AchievementCriteriaEntry>();
 			}
 
 			// initialize creator map
@@ -108,9 +133,18 @@ namespace WCell.RealmServer.Achievement
 			SetEntryCreator(AchievementCriteriaType.ReachTeamRating, () => new ReachTeamRatingAchievementCriteriaEntry());                      // 39
             SetEntryCreator(AchievementCriteriaType.LearnSkillLevel, () => new LearnSkillLevelAchievementCriteriaEntry());                      // 40
             SetEntryCreator(AchievementCriteriaType.ExploreArea, () => new ExploreAreaAchievementCriteriaEntry());                              // 43
+            SetEntryCreator(AchievementCriteriaType.MoneyFromVendors, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 59
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForTalents, () => new IncrementAtValue1AchievementCriteriaEntry());                // 60
+            SetEntryCreator(AchievementCriteriaType.MoneyFromQuestReward, () => new IncrementAtValue1AchievementCriteriaEntry());               // 62
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForTravelling, () => new IncrementAtValue1AchievementCriteriaEntry());             // 63
+            SetEntryCreator(AchievementCriteriaType.GoldSpentAtBarber, () => new IncrementAtValue1AchievementCriteriaEntry());                  // 65
+            SetEntryCreator(AchievementCriteriaType.GoldSpentForMail, () => new IncrementAtValue1AchievementCriteriaEntry());                   // 66                                      
+            SetEntryCreator(AchievementCriteriaType.LootMoney, () => new IncrementAtValue1AchievementCriteriaEntry());                          // 67          
 			SetEntryCreator(AchievementCriteriaType.WinDuel, () => new WinDuelLevelAchievementCriteriaEntry());									// 76
 			SetEntryCreator(AchievementCriteriaType.LoseDuel, () => new LoseDuelLevelAchievementCriteriaEntry());								// 77					
-			//TODO: Add more types.
+			SetEntryCreator(AchievementCriteriaType.TotalDamageReceived, () => new IncrementAtValue1AchievementCriteriaEntry());                // 103
+            SetEntryCreator(AchievementCriteriaType.TotalHealingReceived, () => new IncrementAtValue1AchievementCriteriaEntry());               // 105
+            //TODO: Add more types.
 		}
 
 		static void LoadDBCs()
@@ -121,7 +155,43 @@ namespace WCell.RealmServer.Achievement
 		}
 		#endregion
 
-		public static AchievementEntry GetAchievementEntry(AchievementEntryId achievementEntryId)
+        #region Dynamic Criteria Requirement Creation
+        public static AchievementCriteriaRequirementCreator GetCriteriaRequirementCreator(AchievementCriteriaRequirementType type)
+        {
+            return AchievementCriteriaRequirementCreators[(int)type];
+        }
+
+        public static void SetRequirementCreator(AchievementCriteriaRequirementType type, AchievementCriteriaRequirementCreator creator)
+        {
+            AchievementCriteriaRequirementCreators[(int)type] = creator;
+        }
+
+        public static void InitCriteriaRequirements()
+        {
+            // initialize creator map
+            SetRequirementCreator(AchievementCriteriaRequirementType.None, () => new AchievementCriteriaRequirement());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Creature, () => new AchievementCriteriaRequirementCreature());
+            SetRequirementCreator(AchievementCriteriaRequirementType.PlayerClassRace, () => new AchievementCriteriaRequirementPlayerClassRace());
+            SetRequirementCreator(AchievementCriteriaRequirementType.PlayerLessHealth, () => new AchievementCriteriaRequirementPlayerLessHealth());
+            SetRequirementCreator(AchievementCriteriaRequirementType.PlayerDead, () => new AchievementCriteriaRequirementPlayerDead());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Aura1, () => new AchievementCriteriaRequirementAura1());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Area, () => new AchievementCriteriaRequirementArea());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Aura2, () => new AchievementCriteriaRequirementAura2());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Value, () => new AchievementCriteriaRequirementValue());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Gender, () => new AchievementCriteriaRequirementGender());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Disabled, () => new AchievementCriteriaRequirementDisabled());
+            SetRequirementCreator(AchievementCriteriaRequirementType.MapDifficulty, () => new AchievementCriteriaRequirementMapDifficulty());
+            SetRequirementCreator(AchievementCriteriaRequirementType.MapPlayerCount, () => new AchievementCriteriaRequirementMapPlayerCount());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Team, () => new AchievementCriteriaRequirementTeam());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Drunk, () => new AchievementCriteriaRequirementDrunk());
+            SetRequirementCreator(AchievementCriteriaRequirementType.Holiday, () => new AchievementCriteriaRequirementHoliday());
+            SetRequirementCreator(AchievementCriteriaRequirementType.BgLossTeamScore, () => new AchievementCriteriaRequirementBgLossTeamScore());
+            SetRequirementCreator(AchievementCriteriaRequirementType.InstanceScript, () => new AchievementCriteriaRequirementInstanceScript());
+            SetRequirementCreator(AchievementCriteriaRequirementType.EquippedItemLevel, () => new AchievementCriteriaRequirementEquippedItemLevel());
+        }
+        #endregion
+
+		public static AchievementEntry GetAchievementEntry(uint achievementEntryId)
 		{
 			AchievementEntry entry;
 			AchievementEntries.TryGetValue(achievementEntryId, out entry);
@@ -140,7 +210,7 @@ namespace WCell.RealmServer.Achievement
 			return AchievementCategoryEntries[achievementCategoryEntryId];
 		}
 
-        public static bool IsRealmFirst(AchievementEntryId achievementEntryId)
+        public static bool IsRealmFirst(uint achievementEntryId)
         {
             return (!CompletedRealmFirstAchievements.Contains(achievementEntryId));
         }

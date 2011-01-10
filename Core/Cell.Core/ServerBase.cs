@@ -514,8 +514,8 @@ namespace Cell.Core
 			if (!endPoint.Address.Equals(IPAddress.Any) &&
 				!endPoint.Address.Equals(IPAddress.Loopback))
 			{
-				var endpointAddr = endPoint.Address;
 				var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+				var endpointAddr = endPoint.Address;
 
 				if (interfaces.Length > 0)
 				{

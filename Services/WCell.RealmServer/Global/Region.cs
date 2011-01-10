@@ -1683,6 +1683,15 @@ namespace WCell.RealmServer.Global
 				return true;
 			});
 		}
+
+        /// <summary>
+        /// Sends a packet to all characters in the region
+        /// </summary>
+        /// <param name="packet">the packet to send</param>
+        public void SendPacketToRegion(RealmPacketOut packet)
+        {
+            CallOnAllCharacters(chr => chr.Send(packet.GetFinalizedPacket()));
+        }
 		#endregion
 
 		#region Terrain Management

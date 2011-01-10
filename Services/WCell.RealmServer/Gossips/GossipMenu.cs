@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
 {
@@ -86,6 +87,17 @@ namespace WCell.RealmServer.Gossips
 				m_gossipItems.Add(item);
 			}
 		}
+
+        public GossipMenu(uint bodyTextId, params GossipMenuItemBase[] items)
+            : this(bodyTextId)
+        {
+            m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+            foreach (var item in items)
+            {
+                CheckItem(item);
+                m_gossipItems.Add(item);
+            }
+        }
 
 		public GossipMenu(params GossipMenuItemBase[] items)
 		{
@@ -173,14 +185,19 @@ namespace WCell.RealmServer.Gossips
 			return new GossipMenu(m_bodyTextID + 1000);
 		}
 
-		public void AddQuitMenuItem(string text)
+		public void AddQuitMenuItem(RealmLangKey msg = RealmLangKey.Done)
 		{
-			AddItem(new QuitGossipMenuItem(text));
+			AddItem(new QuitGossipMenuItem(msg, new object[0]));
+		}
+
+		public void AddQuitMenuItem(RealmLangKey msg, params object[] args)
+		{
+			AddItem(new QuitGossipMenuItem(msg, args));
 		}
 
 		public void AddQuitMenuItem(string text, GossipActionHandler callback)
 		{
-			var action = new DefaultGossipAction(convo => {
+			var action = new NonNavigatingGossipAction(convo => {
 				callback(convo);
 				convo.Character.GossipConversation.StayOpen = false;
 			});
@@ -194,7 +211,7 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo => {
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
@@ -202,7 +219,7 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text, GossipActionHandler callback)
 		{
-			var action = new NavigationGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo => {
 				callback(convo);
 				convo.Character.GossipConversation.GoBack();
 			});

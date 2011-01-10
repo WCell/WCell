@@ -136,9 +136,10 @@ namespace WCell.Core.Addons
 					var ok = true;
 					foreach (var asm in CoreLibs)
 					{
-						if (asm.FullName.ContainsIgnoreCase(file.Name.Replace(".dll", "")))
+						if (asm.FullName.Equals(file.Name.Replace(".dll", ""), StringComparison.CurrentCultureIgnoreCase))
 						{
-							LogManager.GetCurrentClassLogger().Warn(" \"" + asm.FullName + "\" is a core Assembly - When compiling custom Addons, please make sure to set 'Copy Local' of all core-references to 'False'!");
+							LogManager.GetCurrentClassLogger().Warn("The core Assembly \"" + file.FullName + "\" has been found in the Addon folder where it does not belong." +
+								"- When compiling custom Addons, please make sure to set 'Copy Local' of all core-references to 'False'!");
 							ok = false;
 							break;
 						}

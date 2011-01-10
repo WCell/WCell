@@ -27,6 +27,7 @@ namespace WCell.Util.Lang
 			{
 				var t = Load(file);
 				t.Localizer = localizer;
+                t.Locale = locale;
 				t.SortItems();
 				return t;
 			}

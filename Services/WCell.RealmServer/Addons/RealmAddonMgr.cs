@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Addons
 			}
 			inited = true;
 
-			LoadAddons(AddonDir, IgnoredAddonFiles);
+			LoadAddons(RealmServerConfiguration.BinaryRoot + AddonDir, IgnoredAddonFiles);
 
 			if (Contexts.Count > 0)
 			{

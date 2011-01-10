@@ -142,6 +142,7 @@
     <Compile Include="Achievements\AchievementCriteriaCompletionFlags.cs" />
     <Compile Include="Achievements\AchievementCriteriaGroupFlags.cs" />
     <Compile Include="Achievements\AchievementCriteriaId.cs" />
+    <Compile Include="Achievements\AchievementCriteriaRequirementType.cs" />
     <Compile Include="Achievements\AchievementEntryId.cs" />
     <Compile Include="Achievements\AchievementFactionGroup.cs" />
     <Compile Include="Achievements\AchievementFlags.cs" />

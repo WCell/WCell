@@ -10,13 +10,14 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Mail;
 using WCell.Util.Data;
+using WCell.Core.Database;
 
 namespace WCell.RealmServer.Achievement
 {
     [DataHolder]
     public class AchievementReward : IDataHolder
     {
-        public AchievementEntryId AchievementEntryId;
+        public uint AchievementEntryId;
         public GenderType Gender;
         public TitleId AllianceTitle;
         public TitleId HordeTitle;
@@ -64,18 +65,19 @@ namespace WCell.RealmServer.Achievement
                 character.SetTitle(HordeTitle, false);
             }
 
-            if (Item == 0) return;
-
-            var mailMessage = new MailMessage(DefaultSubject, DefaultBody)
-                                  {
-                                      ReceiverId = character.EntityId.Low,
-                                      DeliveryTime = DateTime.Now,
-                                      SendTime = DateTime.Now,
-                                      ExpireTime = DateTime.Now.AddMonths(1),
-                                      MessageStationary = MailStationary.Normal
-                                  };
-            mailMessage.AddItem(Item);
-            MailMgr.SendMail(mailMessage);
+            if (Item != 0)
+            {
+				var mailMessage = new MailMessage(Subjects.Localize(character.Locale), Bodies.Localize(character.Locale))
+            	                  	{
+            	                  		ReceiverId = character.EntityId.Low,
+            	                  		DeliveryTime = DateTime.Now,
+            	                  		SendTime = DateTime.Now,
+            	                  		ExpireTime = DateTime.Now.AddMonths(1),
+            	                  		MessageStationary = MailStationary.Normal
+            	                  	};
+            	mailMessage.AddItem(Item);
+            	MailMgr.SendMail(mailMessage);
+            }
         }
 
         public void FinalizeDataHolder()

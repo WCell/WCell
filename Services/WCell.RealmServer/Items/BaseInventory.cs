@@ -431,7 +431,7 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Find a free slot within the given range
 		/// </summary>
-		public int FindFreeSlot(int offset, int end)
+		public virtual int FindFreeSlot(int offset, int end)
 		{
 			for (int i = offset; i < end; i++)
 			{

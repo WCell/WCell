@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var achievementId = trigger.Text.NextEnum(AchievementEntryId.None);
+				var achievementId = trigger.Text.NextUInt(0u);
 				var achivementEntry = AchievementMgr.GetAchievementEntry(achievementId);
 				if (achivementEntry != null)
 				{
@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Commands
 				}
 			}
 
-			public static bool AddAchievement(Character character, AchievementEntryId achievementEntryId)
+			public static bool AddAchievement(Character character, uint achievementEntryId)
 			{
 				character.Achievements.EarnAchievement(achievementEntryId);
 				return true;

@@ -63,12 +63,14 @@ namespace WCell.RealmServer.AI.Actions.Movement
 				{
 					log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
 					m_owner.Brain.EnterDefaultState();
+					return;
 				}
 				else
 				{
 					m_target = m_owner.Target;
 				}
 			}
+			Update();
 		}
 
 		public override void Update()
