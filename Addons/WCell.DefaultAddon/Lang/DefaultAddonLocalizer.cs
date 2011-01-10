@@ -21,8 +21,6 @@ namespace WCell.Addons.Default.Lang
 		[Initialization(InitializationPass.First)]
 		public static void InitializeLocalizer()
 		{
-			var k = AddonMsgKey.WSOnStart;
-			Console.WriteLine("Hello + " + k);
 			try
 			{
 				instance = new DefaultAddonLocalizer(ClientLocale.English,RealmServerConfiguration.DefaultLocale, DefaultAddon.Instance.LangDir);

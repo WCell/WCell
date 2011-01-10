@@ -27,14 +27,14 @@ namespace WCell.Core.Initialization
 		{
 			IsRequired = true;
 			Name = "";
-			Pass = InitializationPass.Last;
+			Pass = InitializationPass.Any;
 		}
 
 		public InitializationAttribute(string name)
 		{
 			IsRequired = true;
 			Name = name;
-			Pass = InitializationPass.Last;
+			Pass = InitializationPass.Any;
 		}
 
 		public InitializationAttribute(InitializationPass pass)

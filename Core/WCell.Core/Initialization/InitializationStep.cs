@@ -23,6 +23,7 @@ namespace WCell.Core.Initialization
 {
     public class InitializationStep
     {
+    	public readonly InitializationPass Pass;
         public readonly string InitStepName = "";
         public readonly bool IsRequired;
         public object[] InitContext;
@@ -30,13 +31,14 @@ namespace WCell.Core.Initialization
 
     	internal bool Executed;
 
-		public InitializationStep(string initStepName, bool isRequired, MethodInfo initMethod) : 
-			this(initStepName, isRequired, null, initMethod)
+		public InitializationStep(InitializationPass pass, string initStepName, bool isRequired, MethodInfo initMethod) : 
+			this(pass, initStepName, isRequired, null, initMethod)
         {
         }
 
-		public InitializationStep(string initStepName, bool isRequired, object[] initContext, MethodInfo initMethod)
+		public InitializationStep(InitializationPass pass, string initStepName, bool isRequired, object[] initContext, MethodInfo initMethod)
         {
+			Pass = pass;
             InitStepName = initStepName;
             IsRequired = isRequired;
             InitContext = initContext;
