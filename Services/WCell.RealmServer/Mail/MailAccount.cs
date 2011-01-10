@@ -158,7 +158,7 @@ namespace WCell.RealmServer.Mail
 			if (subject.Length > MailMgr.MaxMailSubjectLength ||
 				body.Length > MailMgr.MaxMailBodyLength)
 			{
-				// TODO: What to send?
+				// Player cannot send mails this long through the mail dialog
 				return MailError.INTERNAL_ERROR;
 			}
 

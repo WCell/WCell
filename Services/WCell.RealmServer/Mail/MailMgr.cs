@@ -25,9 +25,9 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public const int MaxItemsPerMail = 12;
 
-		public const int MaxMailSubjectLength = 256;	// 256 should be enough
+		public const int MaxMailSubjectLength = 128;	// based on ingame limitations
 
-		public const int MaxMailBodyLength = 1024 * 8;	// 8 kb should be enough
+		public const int MaxMailBodyLength = 512;	// based on ingame limitations
 
 		/// <summary>
 		/// Whether or not to delivery mail instantly for any type of mail.

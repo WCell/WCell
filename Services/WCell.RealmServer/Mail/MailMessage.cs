@@ -119,7 +119,7 @@ namespace WCell.RealmServer.Mail
 			set { _senderId = (int)value.Low; }
 		}
 
-		[Property(NotNull = true, Length = MailMgr.MaxMailSubjectLength)]
+		[Property(NotNull = true, Length = 512)]
 		public string Subject
 		{
 			get;
@@ -129,7 +129,7 @@ namespace WCell.RealmServer.Mail
 		/// <summary>
 		/// The body of the message
 		/// </summary>
-		[Property(NotNull = true, Length = MailMgr.MaxMailBodyLength)]
+		[Property(NotNull = true, Length = 1024*8)]
 		public string Body
 		{
 			get;
