@@ -355,13 +355,14 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(qt.MoneyAtMaxLevel);
 				pckt.Write((uint) qt.CastSpell);
 				pckt.Write((uint) qt.RewSpell);
+
 				pckt.Write(qt.RewHonorAddition);
 				pckt.WriteFloat(qt.RewHonorMultiplier);										// since 3.3
+
 				pckt.Write((uint) qt.SrcItemId);
 				pckt.Write((uint) qt.Flags);
 				pckt.Write((uint) qt.RewardTitleId);
 				pckt.Write(qt.PlayersSlain);
-
 				pckt.Write(qt.RewardTalents);// NEW 3.0.2 RewardTalentCount (#21)
 				pckt.Write(0);										// since 3.3: bonus arena points
 				pckt.Write(0);										// since 3.3
@@ -382,17 +383,33 @@ namespace WCell.RealmServer.Handlers
                 }
                 else
                 {
-				    for (i = 0; i < qt.RewardItems.Length; i++)
+                    for (i = 0; i < QuestConstants.MaxRewardItems; i++)
 				    {
-					    pckt.Write((uint) qt.RewardItems[i].ItemId);
-					    pckt.Write(qt.RewardItems[i].Amount);
+                        if (i < qt.RewardItems.Length)
+                        {
+                            pckt.Write((uint) qt.RewardItems[i].ItemId);
+                            pckt.Write(qt.RewardItems[i].Amount);
+                        }
+                        else
+                        {
+                            pckt.WriteUInt(0u);
+                            pckt.WriteUInt(0u);
+                        }
 				    }
 
-				    for (i = 0; i < qt.RewardChoiceItems.Length; i++)
-				    {
-				    	pckt.Write((uint)qt.RewardChoiceItems[i].ItemId);
-				    	pckt.Write(qt.RewardChoiceItems[i].Amount);
-				    }
+                    for (i = 0; i < QuestConstants.MaxRewardChoiceItems; i++)
+                    {
+                        if (i < qt.RewardChoiceItems.Length)
+                        {
+                            pckt.Write((uint)qt.RewardChoiceItems[i].ItemId);
+                            pckt.Write(qt.RewardChoiceItems[i].Amount);
+                        }
+                        else
+                        {
+                            pckt.WriteUInt(0u);
+                            pckt.WriteUInt(0u);
+                        }
+                    }
                 }
 				// #### since 3.3
                 for (i = 0; i < QuestConstants.MaxReputations; i++)
@@ -423,10 +440,18 @@ namespace WCell.RealmServer.Handlers
 					pckt.Write(0);									// since 3.3
 				}
 
-				for (i = 0; i < qt.CollectableItems.Length; i++)
+				for (i = 0; i < QuestConstants.MaxCollectableItems; i++)
 				{
-					pckt.Write((uint) qt.CollectableItems[i].ItemId);
-					pckt.Write(qt.CollectableItems[i].Amount);
+                    if (i < qt.CollectableItems.Length)
+                        {
+                            pckt.Write((uint) qt.CollectableItems[i].ItemId);
+					        pckt.Write(qt.CollectableItems[i].Amount);
+                        }
+                        else
+                        {
+                            pckt.WriteUInt(0u);
+                            pckt.WriteUInt(0u);
+                        }
 				}
 
 				for (i = 0; i < QuestConstants.MaxObjectiveTexts; i++)

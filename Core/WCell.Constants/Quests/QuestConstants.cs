@@ -29,6 +29,7 @@ namespace WCell.Constants.Quests
 		public const int MaxRequirements = 4;
 		public const int MaxEmotes = 4;
 		public const int MaxQuestsPerQuestGiver = 20;
+	    public const int MaxCollectableItems = 6;
 
 		/// <summary>
 		/// Used in certain Packets
