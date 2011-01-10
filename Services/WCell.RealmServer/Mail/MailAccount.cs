@@ -515,7 +515,7 @@ namespace WCell.RealmServer.Mail
 			var mailList = new List<MailMessage>(2);
 			foreach (var letter in AllMail.Values)
 			{
-				if (letter.ReadTime == null && letter.DeliveryTime <= DateTime.Now)
+				if (letter.WasRead || letter.DeliveryTime > DateTime.Now)
 					continue;
 
 				++count;

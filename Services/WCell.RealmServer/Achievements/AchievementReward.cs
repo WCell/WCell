@@ -67,7 +67,7 @@ namespace WCell.RealmServer.Achievement
 
             if (Item != 0)
             {
-            	var mailMessage = new MailMessage(DefaultSubject, DefaultBody)
+				var mailMessage = new MailMessage(Subjects.Localize(character.Locale), Bodies.Localize(character.Locale))
             	                  	{
             	                  		ReceiverId = character.EntityId.Low,
             	                  		DeliveryTime = DateTime.Now,

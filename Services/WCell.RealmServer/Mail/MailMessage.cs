@@ -168,6 +168,11 @@ namespace WCell.RealmServer.Mail
 			get { return (int)(DeliveryTime - DateTime.Now).TotalMilliseconds; }
 		}
 
+		public bool WasRead
+		{
+			get { return ReadTime != null; }
+		}
+
 		[Property]
 		public DateTime? ReadTime
 		{

@@ -453,15 +453,14 @@ namespace WCell.RealmServer.Handlers
 						case MailType.Auction:
 							packet.Write(2u);
 							packet.Write(2u);
-							packet.Write((uint)letter.MessageStationary);
 							break;
 						default:
 							packet.Write(0u);
 							packet.Write(0u);
-							packet.Write((uint)letter.MessageStationary);
 							break;
 					}
-					packet.Write(-9f); // what does this represent ??
+					packet.Write((uint)letter.MessageStationary);
+					packet.Write(0xC6000000u); // what does this represent ??
 				}
 				client.Send(packet);
 			}
