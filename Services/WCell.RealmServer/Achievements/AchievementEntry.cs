@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.World;
+using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Achievement
 {
@@ -41,5 +42,10 @@ namespace WCell.RealmServer.Achievement
             //return (Flags.HasFlag(AchievementFlags.RealmFirstReach) || Flags.HasFlag(AchievementFlags.RealmFirstKill);
 
         }
+
+		public override string ToString()
+		{
+			return Name.LocalizeWithDefaultLocale();
+		}
     }
 }

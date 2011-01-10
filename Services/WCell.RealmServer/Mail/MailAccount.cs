@@ -155,6 +155,13 @@ namespace WCell.RealmServer.Mail
 			uint money,
 			uint cod)
 		{
+			if (subject.Length > MailMgr.MaxMailSubjectLength ||
+				body.Length > MailMgr.MaxMailBodyLength)
+			{
+				// TODO: What to send?
+				return MailError.INTERNAL_ERROR;
+			}
+
 			// Can't send mail to yourself.
 			if (recipient.EntityLowId == m_chr.EntityId.Low)
 			{

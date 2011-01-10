@@ -65,18 +65,19 @@ namespace WCell.RealmServer.Achievement
                 character.SetTitle(HordeTitle, false);
             }
 
-            if (Item == 0) return;
-
-            var mailMessage = new MailMessage(DefaultSubject, DefaultBody)
-                                  {
-                                      ReceiverId = character.EntityId.Low,
-                                      DeliveryTime = DateTime.Now,
-                                      SendTime = DateTime.Now,
-                                      ExpireTime = DateTime.Now.AddMonths(1),
-                                      MessageStationary = MailStationary.Normal
-                                  };
-            mailMessage.AddItem(Item);
-            MailMgr.SendMail(mailMessage);
+            if (Item != 0)
+            {
+            	var mailMessage = new MailMessage(DefaultSubject, DefaultBody)
+            	                  	{
+            	                  		ReceiverId = character.EntityId.Low,
+            	                  		DeliveryTime = DateTime.Now,
+            	                  		SendTime = DateTime.Now,
+            	                  		ExpireTime = DateTime.Now.AddMonths(1),
+            	                  		MessageStationary = MailStationary.Normal
+            	                  	};
+            	mailMessage.AddItem(Item);
+            	MailMgr.SendMail(mailMessage);
+            }
         }
 
         public void FinalizeDataHolder()
