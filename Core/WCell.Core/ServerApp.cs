@@ -496,6 +496,8 @@ namespace WCell.Core
 					Stop();
 					return;
 				}
+
+				s_log.Info("Server started - Max Working Set Size: {0}", Process.GetCurrentProcess().MaxWorkingSet);
 				//GC.Collect(2, GCCollectionMode.Optimized);
 				UpdateTitle();
 			}

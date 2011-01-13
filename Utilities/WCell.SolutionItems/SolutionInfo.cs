@@ -16,6 +16,7 @@
 
 using System.Reflection;
 
+[assembly: AssemblyDescription("WCell")]
 [assembly: AssemblyCompany("WCell Team")]
 [assembly: AssemblyProduct("WCell Server Software Package (http://www.wcell.org/)")]
 [assembly: AssemblyCopyright("Copyright � 2010 WCell Team")]
