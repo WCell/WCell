@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\DefaultAddon\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -45,7 +45,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\DefaultAddon\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -71,7 +71,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\DefaultAddon\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
@@ -97,7 +97,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Itanium' ">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\DefaultAddon\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>Itanium</PlatformTarget>
