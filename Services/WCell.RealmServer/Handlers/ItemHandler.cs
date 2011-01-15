@@ -519,15 +519,23 @@ namespace WCell.RealmServer.Handlers
 					}
 					else
 					{
-						// 6 * 4 = 24
-						packet.Zero(24);
+                        packet.WriteUInt(0u);
+                        packet.WriteUInt(0u);
+                        packet.WriteUInt(0u);
+                        packet.Write(-1);
+                        packet.WriteUInt(0u);
+                        packet.Write(-1);
 					}
 				}
 
 				for (; s < ItemConstants.MaxSpellCount; s++)
 				{
-					// 6 * 4 = 24
-					packet.Zero(24);
+                    packet.WriteUInt(0u);
+                    packet.WriteUInt(0u);
+                    packet.WriteUInt(0u);
+                    packet.Write(-1);
+                    packet.WriteUInt(0u);
+                    packet.Write(-1);
 				}
 
 				packet.Write((uint)item.BondType);
