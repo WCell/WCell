@@ -1140,8 +1140,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public SheathType SheathType
 		{
-			get { return (SheathType)GetByte(UnitFields.BYTES_2, 0); }
-			set { SetByte(UnitFields.BYTES_2, 0, (byte)value); }
+			get { return (SheathType)GetByte(UnitFields.BYTES_2, NPCConstants.SheathTypeIndex); }
+			set { SetByte(UnitFields.BYTES_2, NPCConstants.SheathTypeIndex, (byte)value); }
 		}
 
 		/// <summary>
@@ -1152,8 +1152,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public PvPState PvPState
 		{
-			get { return (PvPState)GetByte(UnitFields.BYTES_2, 1); }
-			set { SetByte(UnitFields.BYTES_2, 1, (byte)value); }
+			get { return (PvPState)GetByte(UnitFields.BYTES_2, NPCConstants.PvpStateIndex); }
+			set { SetByte(UnitFields.BYTES_2, NPCConstants.PvpStateIndex, (byte)value); }
 		}
 
 		/// <summary>

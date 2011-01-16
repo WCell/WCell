@@ -4,6 +4,9 @@ namespace WCell.RealmServer.NPCs
 	/// </summary>
 	public static class NPCConstants
 	{
+		public const int SheathTypeIndex = 0;
+		public const int PvpStateIndex = 1;
+		
 		//public static readonly uint[] DefaultHealth = new uint[] {
 		//    42, 55, 71, 86, 102, 120, 137, 156, 176, 198, 222,
 		//    247, 273, 300, 328, 356, 386, 417, 449, 484, 521,

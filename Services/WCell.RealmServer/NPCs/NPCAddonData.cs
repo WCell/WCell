@@ -25,6 +25,26 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public List<Spell> Auras;
 
+		public uint SheathType
+		{
+			get { return (byte)(Bytes2 >> (NPCConstants.SheathTypeIndex * 8)); }
+			set
+			{
+				const int pos = NPCConstants.SheathTypeIndex * 8;
+				Bytes2 = (Bytes2 & ~(0xFFu << pos)) | (value << pos);
+			}
+		}
+
+		public uint PvPState
+		{
+			get { return (byte)(Bytes2 >> (NPCConstants.PvpStateIndex * 8)); }
+			set
+			{
+				const int pos = NPCConstants.PvpStateIndex * 8;
+				Bytes2 = (Bytes2 & ~(0xFFu << pos)) | (value << pos);
+			}
+		}
+
 		public void AddAura(SpellId spellId)
 		{
 			var spell = SpellHandler.Get(spellId);
