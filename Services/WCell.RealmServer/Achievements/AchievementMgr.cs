@@ -1,16 +1,12 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using WCell.Constants.Achievements;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
-using WCell.RealmServer.Entities;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
 	public delegate AchievementCriteriaEntry AchievementCriteriaEntryCreator();
     public delegate AchievementCriteriaRequirement AchievementCriteriaRequirementCreator();
@@ -31,7 +27,6 @@ namespace WCell.RealmServer.Achievement
 		public static readonly Dictionary<uint, AchievementEntry> AchievementEntries = new Dictionary<uint, AchievementEntry>();
 		public static readonly Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry> AchievementCategoryEntries = new Dictionary<AchievementCategoryEntryId, AchievementCategoryEntry>();
         public static readonly List<uint> CompletedRealmFirstAchievements = new List<uint>();
-        public static readonly Dictionary<uint, AchievementCriteriaRequirementSet> CriteriaRequirements = new Dictionary<uint, AchievementCriteriaRequirementSet>();
 
 		[Initialization(InitializationPass.Fifth, "Initialize Achievements")]
 		public static void InitAchievements()
@@ -68,18 +63,6 @@ namespace WCell.RealmServer.Achievement
             AchievementCriteriaEntry entry;
             CriteriaEntriesById.TryGetValue(id, out entry);
             return entry;
-        }
-
-        /// <summary>
-        /// Returns the criteria requirements set
-        /// </summary>
-        /// <param name="id">the criteria id</param>
-        /// <returns>the criteria requirements set</returns>
-        public static AchievementCriteriaRequirementSet GetCriteriaRequirementSet(uint id)
-        {
-            AchievementCriteriaRequirementSet set;
-            CriteriaRequirements.TryGetValue(id, out set);
-            return set;
         }
 
 		#region Dynamic Criteria Creation

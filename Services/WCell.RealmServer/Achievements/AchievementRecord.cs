@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,7 @@ using WCell.Core.Database;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
 
 	[ActiveRecord(Access = PropertyAccess.Property)]

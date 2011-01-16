@@ -5,7 +5,7 @@ using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Graphics;

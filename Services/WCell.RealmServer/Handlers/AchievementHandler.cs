@@ -9,7 +9,7 @@ using WCell.Constants.Achievements;
 using WCell.Constants.Misc;
 using WCell.Core.Network;
 using WCell.PacketAnalysis;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;

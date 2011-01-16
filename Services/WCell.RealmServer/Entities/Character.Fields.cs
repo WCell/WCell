@@ -61,7 +61,7 @@ using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.Trade;
 using WCell.Util.Graphics;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Titles;
 
 namespace WCell.RealmServer.Entities

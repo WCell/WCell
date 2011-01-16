@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -10,11 +10,12 @@ using WCell.Constants.NPCs;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Global;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
 	/// <summary>
 	/// TODO: Correct the values & move to constants
@@ -33,13 +34,13 @@ namespace WCell.RealmServer.Achievement
 
 		public uint CompletionFlag;							// 26
 		public AchievementCriteriaGroupFlags GroupFlag;		// 27
-		public uint TimeLimit;
-        								// 29
-        
-        public AchievementCriteriaRequirementSet RequirementsSet
-        {
-            get { return AchievementMgr.GetCriteriaRequirementSet(AchievementCriteriaId); }
-        }
+		public uint TimeLimit;								// 29
+
+		public AchievementCriteriaRequirementSet RequirementSet
+		{
+			get;
+			internal set;
+		}
 
 		public AchievementEntry AchievementEntry
 		{

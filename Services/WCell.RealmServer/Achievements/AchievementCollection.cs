@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants.Achievements;
@@ -7,7 +7,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Guilds;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
 	public enum AchievementFactionGroup
 	{

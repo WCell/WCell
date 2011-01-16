@@ -12,7 +12,7 @@ using WCell.RealmServer.Mail;
 using WCell.Util.Data;
 using WCell.Core.Database;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
     [DataHolder]
     public class AchievementReward : IDataHolder

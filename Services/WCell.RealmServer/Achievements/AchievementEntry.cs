@@ -4,7 +4,7 @@ using WCell.Constants.Achievements;
 using WCell.Constants.World;
 using WCell.RealmServer.Lang;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
     public class AchievementEntry
     {

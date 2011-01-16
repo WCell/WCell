@@ -12,7 +12,7 @@ using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Database;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.Talents;
 using WCell.Util.Threading;

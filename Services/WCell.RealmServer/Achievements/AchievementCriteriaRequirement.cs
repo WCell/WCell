@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using WCell.Constants;
 using WCell.Constants.Achievements;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.Util.Data;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
     [DataHolder]
     public class AchievementCriteriaRequirement : IDataHolder
@@ -16,13 +17,13 @@ namespace WCell.RealmServer.Achievement
 
         public void FinalizeDataHolder()
         {
-            var CriteriaRequirementSet = AchievementMgr.GetCriteriaRequirementSet(CriteriaId);
-            if (CriteriaRequirementSet == null)
+            var criteriaEntry = AchievementMgr.GetCriteriaEntryById(CriteriaId);
+			if (criteriaEntry == null)
             {
                 ContentMgr.OnInvalidDBData("{0} had an invalid criteria id.", this);
                 return;
             }
-            CriteriaRequirementSet.Add(this);
+			criteriaEntry.RequirementSet.Add(this);
         }
 
         public virtual bool Meets(Character chr, Unit target = null, uint miscValue = 0u)
@@ -172,18 +173,23 @@ namespace WCell.RealmServer.Achievement
 
     public class AchievementCriteriaRequirementSet
     {
-        public uint CriteriaId;
-        private List<AchievementCriteriaRequirementCreator> requirements = new List<AchievementCriteriaRequirementCreator>();
+        public readonly uint CriteriaId;
+        public readonly List<AchievementCriteriaRequirementCreator> Requirements = new List<AchievementCriteriaRequirementCreator>();
+
+		public AchievementCriteriaRequirementSet(uint id)
+		{
+			CriteriaId = id;
+		}
 
         public void Add(AchievementCriteriaRequirement requirement)
         {
             AchievementCriteriaRequirementCreator creator = AchievementMgr.GetCriteriaRequirementCreator(requirement.Type);
-            requirements.Add(creator);
+            Requirements.Add(creator);
         }
 
         public bool Meets(Character chr, uint miscValue1 = 0u, Unit involved = null)
         {
-            foreach(AchievementCriteriaRequirementCreator requirementCreator in requirements)
+            foreach(AchievementCriteriaRequirementCreator requirementCreator in Requirements)
             {
                 var requirement = requirementCreator();
                 if (!(requirement.Meets(chr, involved, miscValue1)))

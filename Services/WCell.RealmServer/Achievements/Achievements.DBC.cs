@@ -6,9 +6,10 @@ using System.Text;
 using WCell.Constants.Achievements;
 using WCell.Constants.World;
 using WCell.Core.DBC;
+using WCell.RealmServer.Achievements;
 using WCell.Util;
 
-namespace WCell.RealmServer.Achievement
+namespace WCell.RealmServer.Achievements
 {
     public class AchievementCategoryEntryConverter : DBCRecordConverter
     {
@@ -86,6 +87,9 @@ namespace WCell.RealmServer.Achievement
 			{
 				list.Add(entry);
 			}
+
+			// create requirement set
+			entry.RequirementSet = new AchievementCriteriaRequirementSet(entry.AchievementCriteriaId);
 
             AchievementMgr.CriteriaEntriesById[entry.AchievementCriteriaId] = entry;
 		}
