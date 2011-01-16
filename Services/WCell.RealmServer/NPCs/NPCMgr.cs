@@ -392,7 +392,7 @@ namespace WCell.RealmServer.NPCs
 		#endregion
 
 		#region Initializing and Loading
-		[Initialization(InitializationPass.Fourth, "Initialize NPCs")]
+		[Initialization(InitializationPass.Fifth, "Initialize NPCs")]
 		public static void Initialize()
 		{
 			InitDefault();
