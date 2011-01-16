@@ -174,7 +174,7 @@ ECHO        Is the file in ZIP or RAR format? Enter C to return to the menu.
 ECHO.
 ECHO.
 ECHO.
-set /p /CS t=        Enter format:
+set /p t=        Enter format:
 if %t% == ZIP GOTO unzip
 if %t% == RAR GOTO unrar
 if %t% == zip GOTO unzip
