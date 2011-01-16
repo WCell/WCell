@@ -24,6 +24,7 @@ REM #
 REM #    A D V A N C E D   U S E R   C O N F I G U R A T I O N   A R E A
 REM #
 REM ############################################################################
+
 set server=localhost
 set port=3306
 set udb-main=UDB_0.12.1.393_mangos_10545_SD2_1833
