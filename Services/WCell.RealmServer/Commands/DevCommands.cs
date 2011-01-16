@@ -489,6 +489,24 @@ namespace WCell.RealmServer.Commands
 			{
 				var start = DateTime.Now;
 
+                try
+                {
+                    if (ItemMgr.Loaded)
+                    {
+                        trigger.Reply("Item definitions have already been loaded.");
+                    }
+                    else
+                    {
+                        trigger.Reply("Loading Items...");
+                        ItemMgr.LoadAll();
+                        trigger.Reply("Done.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    FailNotify(trigger, ex);
+                }
+
 				try
 				{
 					if (NPCMgr.Loaded)
@@ -524,25 +542,6 @@ namespace WCell.RealmServer.Commands
 				{
 					FailNotify(trigger, ex);
 				}
-
-				try
-				{
-					if (ItemMgr.Loaded)
-					{
-						trigger.Reply("Item definitions have already been loaded.");
-					}
-					else
-					{
-						trigger.Reply("Loading Items...");
-						ItemMgr.LoadAll();
-						trigger.Reply("Done.");
-					}
-				}
-				catch (Exception ex)
-				{
-					FailNotify(trigger, ex);
-				}
-
 
 				try
 				{
