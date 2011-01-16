@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Achievements
 			var entry = creator();
 
 			entry.AchievementCriteriaId = GetUInt32(rawData, 0);
-			entry.AchievementEntryId = (uint)GetUInt32(rawData, 1);
+			entry.AchievementEntryId = GetUInt32(rawData, 1);
 
 
 			var achievement = entry.AchievementEntry;
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Achievements
 			// add criterion to achievement
 			achievement.Criteria.Add(entry);
 
-			CopyTo(rawData, 3, Marshal.SizeOf(typeof(AchievementCriteriaEntry)), entry);
+			CopyTo(rawData, entry, 3);
 
 			entry.CompletionFlag = GetUInt32(rawData, 26);
 			entry.GroupFlag = (AchievementCriteriaGroupFlags) GetUInt32(rawData, 27);

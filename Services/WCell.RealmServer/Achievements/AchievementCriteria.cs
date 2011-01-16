@@ -14,6 +14,7 @@ using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.Constants.Factions;
 using WCell.RealmServer.Global;
+using WCell.Util.Data;
 
 namespace WCell.RealmServer.Achievements
 {
@@ -25,22 +26,33 @@ namespace WCell.RealmServer.Achievements
 		AchievementCriteriaGroupNotInGroup
 	}
 
+	/// <summary>
+	/// Do not change the layout of this class!
+	/// </summary>
 	[StructLayout(LayoutKind.Sequential)]
 	public abstract class AchievementCriteriaEntry
 	{
+		[NotPersistent]
 		public AchievementCriteriaType Criteria;
+		[NotPersistent]
 		public uint AchievementCriteriaId;
+		[NotPersistent]
 		public uint AchievementEntryId;
 
-		public uint CompletionFlag;							// 26
-		public AchievementCriteriaGroupFlags GroupFlag;		// 27
-		public uint TimeLimit;								// 29
-
+		[NotPersistent]
 		public AchievementCriteriaRequirementSet RequirementSet
 		{
 			get;
 			internal set;
 		}
+
+
+		[NotPersistent]
+		public uint CompletionFlag;
+		[NotPersistent]						// 26
+		public AchievementCriteriaGroupFlags GroupFlag;		// 27
+		[NotPersistent]
+		public uint TimeLimit;								// 29
 
 		public AchievementEntry AchievementEntry
 		{
@@ -54,6 +66,11 @@ namespace WCell.RealmServer.Achievements
 
 		public virtual void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{ 
+		}
+
+		public override string ToString()
+		{
+			return Criteria.ToString();
 		}
 	}
 

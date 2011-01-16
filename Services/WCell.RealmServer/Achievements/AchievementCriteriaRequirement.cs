@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.RealmServer.Achievements;
@@ -171,6 +173,8 @@ namespace WCell.RealmServer.Achievements
     }
     #endregion
 
+	[Serializable]
+	[StructLayout(LayoutKind.Sequential)]
     public class AchievementCriteriaRequirementSet
     {
         public readonly uint CriteriaId;
