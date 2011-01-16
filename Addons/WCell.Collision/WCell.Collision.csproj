@@ -60,7 +60,7 @@
     </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -86,7 +86,7 @@
     </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
@@ -112,7 +112,7 @@
     <NoWarn>1591,1587,1570,1573,1572</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Itanium' ">
-    <OutputPath>..\..\Run\Release\RealmServerAddons\</OutputPath>
+    <OutputPath>..\..\Run\RealmServerAddons\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <Optimize>true</Optimize>
