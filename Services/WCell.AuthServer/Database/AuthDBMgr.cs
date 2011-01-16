@@ -18,7 +18,7 @@ using WCell.RealmServer.Database;
 
 namespace WCell.AuthServer.Database
 {
-	public static class AuthDBUtil
+	public static class AuthDBMgr
 	{
 		public static string DefaultCharset = "UTF8";
 
@@ -38,7 +38,7 @@ namespace WCell.AuthServer.Database
 			DatabaseUtil.ConnectionString = AuthServerConfiguration.DBConnectionString;
 			DatabaseUtil.DefaultCharset = DefaultCharset;
 
-			var asm = typeof(AuthDBUtil).Assembly;
+			var asm = typeof(AuthDBMgr).Assembly;
 
 			try
 			{
@@ -55,15 +55,8 @@ namespace WCell.AuthServer.Database
 				DatabaseUtil.InitAR(asm);
 			}
 
-			return true;
-		}
 
-		/// <summary>
-		///
-		/// </summary>
-		[Initialization(InitializationPass.Third, "Create Tables")]
-		public static void InitTables()
-		{
+			// create tables if not already existing
 			var count = 0;
 			try
 			{
@@ -80,6 +73,8 @@ namespace WCell.AuthServer.Database
 			}
 
 			NHIdGenerator.InitializeCreators(OnDBError);
+
+			return true;
 		}
 	}
 }

@@ -161,7 +161,7 @@
     <Compile Include="Commands\IPCCommands.cs" />
     <Compile Include="Firewall\BanEntry.cs" />
     <Compile Include="Commands\MiscCommands.cs" />
-    <Compile Include="Database\AuthDBUtil.cs" />
+    <Compile Include="Database\AuthDBMgr.cs" />
     <Compile Include="Firewall\BanMgr.cs" />
     <Compile Include="Firewall\IPRange.cs" />
     <Compile Include="IPC\IPCServiceAdapter.cs" />

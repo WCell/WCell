@@ -247,17 +247,13 @@ namespace WCell.Core.Database
 				throw new Exception(string.Format("Failed to connect to Database."));
 			}
 
-			var hibCfg = Config;
-			s_dialect = Dialect.GetDialect(hibCfg.Properties) ?? Dialect.GetDialect();
+			s_dialect = Dialect.GetDialect(Config.Properties) ?? Dialect.GetDialect();
 
-			// get all exports *before* the content system or other Addons register their ActiveRecords
-			// so we don't accidently dump/create any outside table schemas
-			ActiveRecordStarter.CreateSchema();
 			return true;
 		}
 
 		/// <summary>
-		/// Creates the Schema of all tables that this has originally initialized with
+		/// (Drops and re-)creates the Schema of all tables that this has originally initialized with.
 		/// </summary>
 		public static void CreateSchema()
 		{
@@ -270,12 +266,6 @@ namespace WCell.Core.Database
 		public static void DropSchema()
 		{
 			ActiveRecordStarter.DropSchema();
-		}
-
-		public static void RecreateSchema()
-		{
-			DropSchema();
-			CreateSchema();
 		}
 
 		#region Quotes

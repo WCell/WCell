@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				trigger.Reply("Recreating Database Schema...");
-				DatabaseUtil.RecreateSchema();
+				DatabaseUtil.CreateSchema();
 				trigger.Reply("Done.");
 			}
 		}

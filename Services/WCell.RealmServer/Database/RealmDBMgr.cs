@@ -64,20 +64,11 @@ namespace WCell.RealmServer.Database
 				}
 			}
 
-			RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmDBMgr));
-			return true;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <remarks>Is called after content-initialization, since that might add further Persistors.</remarks>
-		[Initialization(InitializationPass.Fourth)]
-		public static void InitTables()
-		{
-			/// NHibernate wraps up all added Persistors once the first connection to the DB is established
-			/// which again happens during the first query to the DB - The line to check for any existing Characters.
-			/// After the first query, you cannot register any further types.
+			// Create tables if not already existing:
+			// NHibernate wraps up all added Persistors once the first connection to the DB is established
+			// which again happens during the first query to the DB - The line to check for any existing Characters.
+			
+			// After the first query, you cannot register any further types.
 			var count = 0;
 			try
 			{
@@ -94,6 +85,9 @@ namespace WCell.RealmServer.Database
 			}
 
 			NHIdGenerator.InitializeCreators(OnDBError);
+
+			RealmServer.InitMgr.SignalGlobalMgrReady(typeof(RealmDBMgr));
+			return true;
 		}
 
 		public static void UpdateLater(this ActiveRecordBase record)
