@@ -363,12 +363,16 @@ namespace WCell.RealmServer.Quests
                             chr.QuestLog.TryAddQuest(nq, qHolder);
 					}
 				}
+
 				if(!Template.Repeatable)
 				{
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestCount, 1);
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
-					(uint)Template.ZoneTemplate.Id);
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuest, Entry);
+					if (Template.ZoneTemplate != null)
+					{
+						chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
+																		 (uint)Template.ZoneTemplate.Id);
+					}
 				}
 
 				if(Template.IsDaily)
