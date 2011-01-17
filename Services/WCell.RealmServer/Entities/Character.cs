@@ -1323,7 +1323,7 @@ namespace WCell.RealmServer.Entities
 
 		public override int GetBasePowerRegen()
 		{
-			return PowerFormulas.GetPowerRegen(this);
+			return RegenerationFormulas.GetPowerRegen(this);
 		}
 
 		public void ActivateAllTaxiNodes()

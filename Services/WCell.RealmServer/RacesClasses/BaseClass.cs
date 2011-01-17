@@ -174,9 +174,11 @@ namespace WCell.RealmServer.RacesClasses
         /// <param name="level">the player's level</param>
         /// <param name="spirit">the player's Spirit</param>
         /// <returns>the total health regeneration amount</returns>
-        public virtual int CalculateHealthRegen(int level, int spirit)
+        public int CalculateHealthRegen(Unit unit)
         {
-            return (spirit / 12);
+			// 0.75% of max health since cataclysm
+			// see http://www.wowpedia.org/Health_regeneration
+			return (unit.MaxHealth * 75 + 5000) / 10000;
         }
 
         /// <summary>

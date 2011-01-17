@@ -1420,7 +1420,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsOwnedByPlayer)
 			{
-				return PowerFormulas.GetPowerRegen(this);
+				return RegenerationFormulas.GetPowerRegen(this);
 			}
 			else
 			{

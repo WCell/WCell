@@ -63,10 +63,5 @@ namespace WCell.RealmServer.RacesClasses
         {
             return (agility / ((level * 0.41f) + 1.476f));
         }
-
-        public override float CalculateMagicCritChance(int level, int intellect)
-        {
-            return (intellect / 80f) + /*(Spell Critical Strike Rating/22.08)*/ +3.6f;
-        }
     }
 }
