@@ -792,7 +792,7 @@ namespace WCell.RealmServer.Interaction
 						if (relatedChar != null)
 						{
 							packet.WriteByte((byte)relatedChar.Status);
-							packet.Write((int)relatedChar.Zone.Id);
+							packet.Write(relatedChar.Zone != null ? (int)relatedChar.Zone.Id : 0);
 							packet.Write(relatedChar.Level);
 							packet.Write((int)relatedChar.Class);
 						}

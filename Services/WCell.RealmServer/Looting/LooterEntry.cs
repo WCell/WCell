@@ -55,8 +55,9 @@ namespace WCell.RealmServer.Looting
 						m_owner.UnitFlags &= ~UnitFlags.Looting;
 						if (oldLoot.MustKneelWhileLooting)
 						{
-							//m_owner.StandState = StandState.Stand;
+							m_owner.StandState = StandState.Stand;
 						}
+						
 						//loot.RemoveLooter(this);
 
 						//if (m_loot.UsesRoundRobin && 
@@ -72,8 +73,7 @@ namespace WCell.RealmServer.Looting
 						m_owner.UnitFlags |= UnitFlags.Looting;
 						if (value.MustKneelWhileLooting)
 						{
-							// TODO: Fix this - It causes the client to release the loot
-							//m_owner.StandState = StandState.Kneeling;
+							m_owner.StandState = StandState.Kneeling;
 						}
 					}
 				}
