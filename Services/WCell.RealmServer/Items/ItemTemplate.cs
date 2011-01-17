@@ -55,13 +55,15 @@ namespace WCell.RealmServer.Items
 
 		public ItemSubClass SubClass;
 
+	    public int Unk0;
+
 		public uint DisplayId;
 
 		public ItemQuality Quality;
 
 		public ItemFlags Flags;
 
-		public FactionId Faction;
+		public ItemFlags2 Flags2;
 
 		public uint BuyPrice;
 
@@ -875,9 +877,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "Flags: " + Flags);
 			}
-			if ((int)Faction != 0)
+			if ((int)Flags2 != 0)
 			{
-				writer.WriteLine(indent + "Faction: " + Faction);
+				writer.WriteLine(indent + "Flags2: " + Flags2);
 			}
 			if ((int)BuyPrice != 0)
 			{

@@ -444,7 +444,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.Id);
 				packet.Write((uint)item.Class);
 				packet.Write((uint)item.SubClass);
-				packet.Write(-1); // unknown
+				packet.Write(item.Unk0); // unknown
 
 				packet.WriteCString(item.Names.Localize(locale));
 				packet.Write((byte)0);// name2
@@ -454,7 +454,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.DisplayId);
 				packet.Write((uint)item.Quality);
 				packet.Write((uint)item.Flags);
-                packet.Write((uint)item.Faction);		// new 3.2.0
+                packet.Write((uint)item.Flags2);		// new 3.2.0
 				packet.Write(item.BuyPrice);
 				packet.Write(item.SellPrice);
 				packet.Write((int)item.InventorySlotType);

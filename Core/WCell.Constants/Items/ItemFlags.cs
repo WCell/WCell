@@ -126,4 +126,39 @@ namespace WCell.Constants.Items
 
 		Millable = 0x20000000,
 	}
+
+    [Flags]
+    public enum ItemFlags2 : uint
+    {
+        /// <summary>
+        /// Item can only be equipped by horde
+        /// </summary>
+        HordeOnly = 0x00000001,
+
+        /// <summary>
+        /// Item can only be equipped by alliance
+        /// </summary>
+        AllianceOnly = 0x00000002,
+
+        /// <summary>
+        /// This item must be acquired with an extended cost plus gold
+        /// </summary>
+        ExtendedCostRequiresGold = 0x00000004,
+
+        Unknown4 = 0x00000008,
+        Unknown5 = 0x00000010,
+        Unknown6 = 0x00000020,
+        Unknown7 = 0x00000040,
+        Unknown8 = 0x00000080,
+
+        /// <summary>
+        /// It is not possible to use a need roll for this item
+        /// </summary>
+        NeedRollDisabled = 0x00000100,
+
+        /// <summary>
+        /// Item uses caster specific dbc file for DPS calculations
+        /// </summary>
+        CasterWeapon = 0x00000200
+    }
 }

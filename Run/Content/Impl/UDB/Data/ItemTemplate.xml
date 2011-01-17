@@ -28,8 +28,10 @@
       <!--<Column Name="description_loc8" Table="locales_item" />-->
     </FlatArray>
     <Flat Name="DisplayId" Column="displayid" />
+    <Flat Name="Unk0" Column="unk0" />
     <Flat Name="Quality" Column="Quality" />    
     <Flat Name="Flags" Column="Flags" />
+    <Flat Name="Flags2" Column="Flags2" />
     <!--<Flat Name="Faction" Column="Faction" />-->
     <Flat Name="BuyStackSize" Column="BuyCount" />
     <Flat Name="BuyPrice" Column="BuyPrice" />
@@ -121,7 +123,6 @@
 -->
 
 <!--extra in UDB
-    unk0
     ExtraFlags
     name
     requiredspell
