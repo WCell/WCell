@@ -310,10 +310,10 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="chr">The client.</param>
 		public static void SendUpdateItems(ItemId item, int diff, Character chr)
 		{
-			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTUPDATE_ADD_ITEM))
+			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTUPDATE_ADD_ITEM, 0))
 			{
-				pckt.Write((uint)item);
-				pckt.Write(diff);
+				//pckt.Write((uint)item);
+				//pckt.Write(diff);
 
 				chr.Client.Send(pckt);
 			}
