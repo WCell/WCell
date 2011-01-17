@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Entities
 		#region Damage Mods
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
+        /// Requires a call to <see cref="WCell.RealmServer.Modifiers.UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
 		/// <param name="school"></param>
 		/// <param name="delta"></param>
@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Modifies the damage for the given school by the given delta.
-		/// Requires a call to <see cref="UnitUpdates.UpdateAllDamages"/> afterwards.
+        /// Requires a call to <see cref="WCell.RealmServer.Modifiers.UnitUpdates.UpdateAllDamages"/> afterwards.
 		/// </summary>
 		/// <param name="school"></param>
 		/// <param name="delta"></param>

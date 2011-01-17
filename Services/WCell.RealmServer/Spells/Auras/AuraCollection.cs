@@ -504,7 +504,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Adds a new Aura with the given information to the Owner. 
 		/// Does not initialize the new Aura.
-		/// If you use this method, make sure to call <see cref="Aura.Start"/> on the newly created Aura.
+        /// If you use this method, make sure to call <see cref="WCell.RealmServer.Spells.Auras.Aura.Start()"/> on the newly created Aura.
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>

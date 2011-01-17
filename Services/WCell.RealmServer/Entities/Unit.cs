@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Different from <see cref="Kill"/> which actively kills the Unit.
+        /// Different from <see cref="WCell.RealmServer.Entities.Unit.Kill()"/> which actively kills the Unit.
 		/// Is called when this Unit dies, i.e. Health gets smaller than 1.
 		/// </summary>
 		protected void Die(bool force)
