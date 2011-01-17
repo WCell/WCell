@@ -286,20 +286,17 @@ namespace WCell.RealmServer.Misc
 			else
 			{
 				log.Error("{0} tried to loot invalid object: " + lockable, user);
-				return;
 			}
 		}
 
 		/// <summary>
-		/// Open a GameObject.
+		/// Open a GameObject
 		/// </summary>
 		public static void Open(ILockable lockable, Character chr)
 		{
 			if (lockable is GameObject)
 			{
-				var go = lockable as GameObject;
-				//go.State = GameObjectState.Enabled;
-				go.Use(chr);
+				((GameObject)lockable).Use(chr);
 			}
 		}
 		#endregion

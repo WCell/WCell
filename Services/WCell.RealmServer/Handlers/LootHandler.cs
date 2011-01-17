@@ -63,30 +63,11 @@ namespace WCell.RealmServer.Handlers
 			var objId = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
 			var looter = chr.LooterEntry;
-			var looted = chr.Region.GetObject(objId);
+			var lootable = chr.Region.GetObject(objId);
 
-			if (looted != null)
+			if (lootable != null)
 			{
-				looter.Release();		// make sure that the Character is not still looting something else
-
-				var loot = looted.Loot;
-				if (loot == null)
-				{
-					SendLootFail(chr, looted);
-					// TODO: Kneel and unkneel?
-				}
-				else if (looter.MayLoot(loot))
-				{
-					// we are either already a looter or become a new one
-					chr.CancelAllActions();
-					looter.Loot = loot;
-
-					SendLootResponse(chr, loot);
-				}
-				else
-				{
-					SendLootFail(chr, looted);
-				}
+				looter.TryLoot(lootable);
 			}
 		}
 

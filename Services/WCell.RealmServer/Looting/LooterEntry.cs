@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Looting
 						m_owner.UnitFlags &= ~UnitFlags.Looting;
 						if (oldLoot.MustKneelWhileLooting)
 						{
-							m_owner.StandState = StandState.Stand;
+							//m_owner.StandState = StandState.Stand;
 						}
 						//loot.RemoveLooter(this);
 
@@ -72,10 +72,39 @@ namespace WCell.RealmServer.Looting
 						m_owner.UnitFlags |= UnitFlags.Looting;
 						if (value.MustKneelWhileLooting)
 						{
-							m_owner.StandState = StandState.Kneeling;
+							// TODO: Fix this - It causes the client to release the loot
+							//m_owner.StandState = StandState.Kneeling;
 						}
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Requires loot to already be generated
+		/// </summary>
+		/// <param name="lootable"></param>
+		public void TryLoot(ILootable lootable)
+		{
+			Release(); // make sure that the Character is not still looting something else
+
+			var loot = lootable.Loot;
+			if (loot == null)
+			{
+				LootHandler.SendLootFail(m_owner, lootable);
+				// TODO: Kneel and unkneel?
+			}
+			else if (MayLoot(loot))
+			{
+				// we are either already a looter or become a new one
+				m_owner.CancelAllActions();
+				Loot = loot;
+
+				LootHandler.SendLootResponse(m_owner, loot);
+			}
+			else
+			{
+				LootHandler.SendLootFail(m_owner, lootable);
 			}
 		}
 

@@ -12,8 +12,6 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class ChestHandler : GameObjectHandler
 	{
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
 			if (m_go.Entry.IsConsumable)

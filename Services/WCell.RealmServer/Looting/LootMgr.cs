@@ -426,11 +426,11 @@ namespace WCell.RealmServer.Looting
 		}
 
 		/// <summary>
-		/// Returns whether this lockable could be opened.
+		/// Returns whether this lockable can be opened by the given Character
 		/// </summary>
 		/// <param name="lockable"></param>
 		/// <returns></returns>
-		public static bool TryOpen(this ILockable lockable, Character chr)
+		public static bool CanOpen(this ILockable lockable, Character chr)
 		{
 			var lck = lockable.Lock;
 
@@ -459,7 +459,7 @@ namespace WCell.RealmServer.Looting
 
 		public static bool TryLoot(this ILockable lockable, Character chr)
 		{
-			if (TryOpen(lockable, chr))
+			if (CanOpen(lockable, chr))
 			{
 				// just open it
 				LockEntry.Loot(lockable, chr);

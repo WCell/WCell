@@ -982,7 +982,7 @@ namespace WCell.RealmServer.Spells
 				missedTargets = null;
 			}
 
-			if (m_spell.ShouldShowToClient() && !m_spell.IsPassive)
+			if (!m_spell.IsPassive && !m_spell.Attributes.HasAnyFlag(SpellAttributes.InvisibleAura) && m_spell.ShouldShowToClient())
 			{
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;

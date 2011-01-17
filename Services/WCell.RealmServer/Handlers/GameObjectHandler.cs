@@ -57,7 +57,7 @@ namespace WCell.RealmServer.GameObjects
 			var goId = packet.ReadEntityId();
 
 			var go = client.ActiveCharacter.Region.GetGO(goId.Low);
-			if (go != null)
+			if (go != null && go.Entry.Type != GameObjectType.Chest)	// chests cannot be opened instantly
 			{
 				go.Use(client.ActiveCharacter);
 			}

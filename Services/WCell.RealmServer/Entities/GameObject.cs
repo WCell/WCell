@@ -360,7 +360,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool Use(Character chr)
 		{
-			if ((Lock == null || Lock.IsUnlocked || Lock.Keys.Length > 0) && Handler.TryUse(chr))
+			if ((Lock == null || Lock.IsUnlocked || Lock.Keys.Length > 0) &&
+				Handler.TryUse(chr))
 			{
 				chr.QuestLog.OnUse(this);
 				return true;
