@@ -150,6 +150,7 @@
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="ArenaTeams.cs" />
     <Compile Include="Battlegrounds.cs" />
+    <Compile Include="Battlegrounds\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />
     <Compile Include="Calendars.cs" />
     <Compile Include="Characters.cs" />
@@ -225,8 +226,8 @@
     <Compile Include="Pets\PetMood.cs" />
     <Compile Include="Pets\PetNameInvalidReason.cs" />
     <Compile Include="Pets\TameFailReason.cs" />
-    <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestConstants.cs" />
+    <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestGiverRelationType.cs" />
     <Compile Include="Quests\QuestSort.cs" />
     <Compile Include="Realm\RealmCategory.cs" />

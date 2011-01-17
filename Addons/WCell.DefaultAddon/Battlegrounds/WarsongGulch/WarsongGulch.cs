@@ -223,21 +223,22 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		protected override void RewardPlayers()
 		{
-			BattlegroundTeam allianceTeam = GetTeam(BattlegroundSide.Alliance);
-			if (allianceTeam == Winner)
-			{
-				foreach (Character chr in allianceTeam.GetCharacters())
-				{
-					chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorWInner);
-				}
-			}
-			else
-			{
-				foreach (Character chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
-				{
-					chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorLoser);
-				}
-			}
+            /* Obsolete since patch 3.3.3. See http://www.wowwiki.com/Patch_3.3.3
+             * BattlegroundTeam allianceTeam = GetTeam(BattlegroundSide.Alliance);
+            if (allianceTeam == Winner)
+            {
+                foreach (Character chr in allianceTeam.GetCharacters())
+                {
+                    chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorWInner);
+                }
+            }
+            else
+            {
+                foreach (Character chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
+                {
+                    chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorLoser);
+                }
+            }*/
 		}
 
 		public override void DeleteNow()
