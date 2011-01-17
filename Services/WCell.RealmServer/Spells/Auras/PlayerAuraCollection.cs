@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-            SpellModifiersFlat.Remove(modifier);
+			SpellModifiersFlat.Remove(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
 		}
@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 		}
-
+        
 		/// <summary>
 		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
 		/// </summary>
