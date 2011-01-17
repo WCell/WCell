@@ -17,6 +17,16 @@ namespace WCell.Addons.Default.Lang
         ABOnPrepare,
         ABOnLeave,
         ABOnEnter,
+        ABNearVictory,
+        ABBaseTaken,
+        ABBaseDefended,
+        ABBaseAssaulted,
+        ABBaseClaimed,
+        ABStables,
+        ABBlacksmith,
+        ABLumberMill,
+        ABFarm,
+        ABGoldMine,
         #endregion
 
         #region Warsong Gulch

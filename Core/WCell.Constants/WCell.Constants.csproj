@@ -150,6 +150,7 @@
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="ArenaTeams.cs" />
     <Compile Include="Battlegrounds.cs" />
+    <Compile Include="Battlegrounds\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />
     <Compile Include="Calendars.cs" />
     <Compile Include="Characters.cs" />

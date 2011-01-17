@@ -27,6 +27,36 @@
 	<Item Key="ABOnEnter">
 	  <Value>{0} has entered the battle!</Value>
 	</Item>
+	<Item Key="ABNearVictory">
+	  <Value>The {0} has gathered {1} resources, and is near victory!</Value>
+	</Item>
+	<Item Key="ABBaseTaken">
+	  <Value>The {0} has taken the {1}</Value>
+	</Item>
+	<Item Key="ABBaseDefended">
+	  <Value>{0} has defended the {1}</Value>
+	</Item>
+	<Item Key="ABBaseAssaulted">
+	  <Value>{0} has assaulted the {1}</Value>
+	</Item>
+	<Item Key="ABBaseClaimed">
+	  <Value>{0} claims the {1}! If left unchallenged, the {2} will control it in {3}!</Value>
+	</Item>
+	<Item Key="ABStables">
+	  <Value>Stables</Value>
+	</Item>
+	<Item Key="ABBlacksmith">
+	  <Value>Blacksmith</Value>
+	</Item>
+	<Item Key="ABLumberMill">
+	  <Value>Lumber Mill</Value>
+	</Item>
+	<Item Key="ABFarm">
+	  <Value>Farm</Value>
+	</Item>
+	<Item Key="ABGoldMine">
+	  <Value>Gold Mine</Value>
+	</Item>
 	
 	<!-- Warsong Gulch -->
 	<Item Key="WSOnStart">

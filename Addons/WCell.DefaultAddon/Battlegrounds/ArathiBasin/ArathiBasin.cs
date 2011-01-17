@@ -2,13 +2,18 @@ using System.Linq;
 using WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases;
 using WCell.Addons.Default.Lang;
 using WCell.Constants;
+using WCell.Constants.AreaTriggers;
+using WCell.Constants.Battlegrounds;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
+using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Lang;
 using WCell.Util.Variables;
 
@@ -24,9 +29,17 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             set { Constants.World.WorldStates.GetState(WorldStateId.ABMaxResources).DefaultValue = value; }
 	    }
 
+        [Variable("ABNearVictoryScore")]
+        public static int NearVictoryScoreDefault
+        {
+            get { return Constants.World.WorldStates.GetState(WorldStateId.ABNearVictoryWarning).DefaultValue; }
+            set { Constants.World.WorldStates.GetState(WorldStateId.ABNearVictoryWarning).DefaultValue = value; }
+        }
+
         static ArathiBasin()
         {
-            MaxScoreDefault = 2000;
+            MaxScoreDefault = 1600;
+            NearVictoryScoreDefault = 1400;
         }
 
 		[Variable("ABFlagRespawnTimeMillis")]
@@ -53,8 +66,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         public readonly ArathiBase[] Bases;
         public int MaxScore;
-	    
-	    private uint _hordeTicks, _allianceTicks;
+	    public int NearVictoryScore;
+
+        public int[] scoreTicks, tickLengths;
+	    private uint _allianceLastTick, _hordeLastTick;
+        
+        public bool isInformatedNearVictory;
         #endregion
 
 	    #region Props
@@ -67,7 +84,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                 WorldStates.SetInt32(WorldStateId.ABResourcesHorde, value);
                 if (value >= MaxScore)
                 {
+                    Winner = HordeTeam;
                     FinishFight();
+                }
+                if (value >= NearVictoryScore && !isInformatedNearVictory)
+                {
+                    InformNearVictory(HordeTeam, value);
                 }
             }
         }
@@ -80,7 +102,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                 WorldStates.SetInt32(WorldStateId.ABResourcesAlliance, value);
                 if (value >= MaxScore)
                 {
-                    FinishFight();
+                    Winner = AllianceTeam;
+                    FinishFight(); 
+                }
+                if (value >= NearVictoryScore && !isInformatedNearVictory)
+                {
+                    InformNearVictory(AllianceTeam, value);
                 }
             }
         }
@@ -112,6 +139,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 	    public ArathiBasin()
         {
             Bases = new ArathiBase[(int)ArathiBases.End];
+            scoreTicks = new int[6]{ 0, 10, 10 ,10 ,10, 30};
+            tickLengths = new int[6]{ 0, 12000, 9000, 6000, 3000, 1000};
         }
 
         #region Overrides
@@ -126,7 +155,45 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Bases[(int)ArathiBases.Stables] = new Stables(this);
 
             MaxScore = MaxScoreDefault;
+            NearVictoryScore = NearVictoryScoreDefault;
+            RegisterEvents();
         }
+
+        protected override void RewardPlayers()
+        {
+            /* Obsolete since patch 3.3.3. See http://www.wowwiki.com/Patch_3.3.3
+             * BattlegroundTeam allianceTeam = GetTeam(BattlegroundSide.Alliance);
+            if (allianceTeam == Winner)
+            {
+                foreach (Character chr in allianceTeam.GetCharacters())
+                {
+                    chr.SpellCast.TriggerSelf(SpellId.ArathiBasinMarkOfHonorWinner);
+                }
+            }
+            else
+            {
+                foreach (Character chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
+                {
+                    chr.SpellCast.TriggerSelf(SpellId.ArathiBasinMarkOfHonorLoser);
+                }
+            }*/
+        }
+
+        public override void DeleteNow()
+        {
+            foreach (ArathiBase arathiBase in Bases)
+            {
+                arathiBase.Destroy();
+            }
+
+            for (int i = 0; i < (int)ArathiBases.End; i++)
+            {
+                Bases[i] = null;
+            }
+
+            base.DeleteNow();
+        }
+
         protected override BattlegroundStats CreateStats()
         {
             return new ArathiStats();
@@ -150,8 +217,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnFinish(bool disposing)
         {
             base.OnFinish(disposing);
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnFinish), 
-                                                                                                        Winner.Side.ToString());
+            /*Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnFinish), 
+                                                                                                        Winner.Side.ToString());*/
         }
 
         protected override void OnPrepareHalftime()
@@ -206,52 +273,46 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             foreach(var team in _teams)
             {
-                int scoreTick = 10;
                 int bases = 0;
 
                 if(team.Side == BattlegroundSide.Horde)
                 {
                     bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Horde && node.GivesScore);
-                    _hordeTicks++;
+                    HordeBaseCount = bases;
+                    _hordeLastTick += (uint)BattleUpdateDelayMillis;
                 }
 
                 else
                 {
                     bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore);
-                    _allianceTicks++;
+                    AllianceBaseCount = bases;
+                    _allianceLastTick += (uint)BattleUpdateDelayMillis;
                 }
 
-                if(bases > 4)
-                {
-                    scoreTick = 30;
-                }
 
                 // See http://www.wowwiki.com/Arathi_Basin#Accumulating_Resources
-                var tickLength = (5 - bases) * DefaultScoreTickDelay / 4;
+                int tickLength = tickLengths[bases];
 
-                if(tickLength < 1)
+                if (team.Side == BattlegroundSide.Horde && _hordeLastTick >= tickLength)
                 {
-                    tickLength = 1;
+                        HordeScore += scoreTicks[bases];
+                        _hordeLastTick = 0;
                 }
 
-                if (team.Side == BattlegroundSide.Horde)
+                else if(_allianceLastTick >= tickLength)
                 {
-                    if(_hordeTicks == tickLength)
-                    {
-                        HordeScore += scoreTick;
-                        _hordeTicks = 0;
-                    }
-                }
-
-                else
-                {
-                    if(_allianceTicks == tickLength)
-                    {
-                        AllianceScore += scoreTick;
-                        _allianceTicks = 0;
-                    }
+                        AllianceScore += scoreTicks[bases];
+                        _allianceLastTick = 0;
                 }
             }
+        }
+
+        private void InformNearVictory(BattlegroundTeam team, int score)
+        {
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABNearVictory), 
+                                                                                                            team.Side.ToString(), score);
+            MiscHandler.SendPlaySoundToRegion(this, (uint)ABSounds.NearVictory);
+            isInformatedNearVictory = true;
         }
 
 		#region Spell/GO fixes and event registration
@@ -310,10 +371,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             //5 templates for each base
         }
 
-        [Initialization]
-        [DependentInitialization(typeof(GOMgr))]
-        public static void RegisterEvent()
+        private void RegisterEvents()
         {
+            AreaTrigger blacksmithAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.ArathiBasinBlackSmith);
+            AreaTrigger stablesAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.ArathiBasinStables);
+            AreaTrigger farmAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.ArathiBasinFarm);
+            AreaTrigger lumberMillAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.ArathiBasinLumberMill);
+            AreaTrigger goldMineAT = AreaTriggerMgr.GetTrigger(AreaTriggerId.ArathiBasinGoldMine);
         }
         #endregion
     }

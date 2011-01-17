@@ -12,6 +12,7 @@
               <ArathiBasin>
                 <ABFlagRespawnTimeMillis>20000</ABFlagRespawnTimeMillis>
                 <ABMaxScore>1600</ABMaxScore>
+                <ABNearVictoryScore>1400</ABNearVictoryScore>
                 <ABPowerUpRespawnTime>90000</ABPowerUpRespawnTime>
                 <ABPrepTimeMillis>60000</ABPrepTimeMillis>
                 <ABUpdateDelay>1000</ABUpdateDelay>
