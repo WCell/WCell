@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Handlers
 		#endregion
 
 		/// <summary>
-		/// Split up a stack of items
+		/// Socket an item
 		/// </summary>
 		[ClientPacketHandler(RealmServerOpCode.CMSG_SOCKET_GEMS)]
 		public static void HandleSocketGem(IRealmClient client, RealmPacketIn packet)
@@ -288,25 +288,25 @@ namespace WCell.RealmServer.Handlers
 				item.ApplyGems(gems);
 			}
 		}
-
+		
 		/// <summary>
 		/// Sends the Item's PushResult (required after adding items).
 		/// </summary>
-		public static void SendItemPushResult(Character owner, Item item, bool isNew, byte contSlot, int slot)
+		public static void SendItemPushResult(Character owner, Item item, bool isNew, bool looted, int amount)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ITEM_PUSH_RESULT, 44))
 			{
 				packet.Write(owner.EntityId);
+				packet.Write(looted ? 1 : 0);							// 0 = looted, 1 = bought or traded
 				packet.Write(isNew ? 1 : 0);
-				packet.Write(isNew ? 0 : 1);
 				packet.Write(1);
-				packet.Write((byte)slot);
-				packet.Write((int)contSlot);
+				packet.Write(item.Container.Slot);
+				packet.Write((item.Amount == amount) ? item.Slot : -1);	// item.Amount == amount means that it was not just added to a stack
 				packet.Write(item.Template.Id);
 				packet.Write(item.PropertySeed);
 				packet.Write(item.RandomPropertiesId);
-				packet.Write(item.Amount);
-				packet.Write(item.Amount); //item.SpellCharges?
+				packet.Write(amount);									// amount added
+				packet.Write(item.Amount);								// amount of that type of item in inventory
 
 				owner.Send(packet);
 			}

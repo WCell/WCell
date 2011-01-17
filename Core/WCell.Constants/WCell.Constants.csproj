@@ -225,7 +225,7 @@
     <Compile Include="Pets\PetMood.cs" />
     <Compile Include="Pets\PetNameInvalidReason.cs" />
     <Compile Include="Pets\TameFailReason.cs" />
-    <Compile Include="Quests\Constants.Quests.cs" />
+    <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestConstants.cs" />
     <Compile Include="Quests\QuestGiverRelationType.cs" />
     <Compile Include="Quests\QuestSort.cs" />

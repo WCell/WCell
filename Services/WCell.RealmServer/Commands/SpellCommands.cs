@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Commands
 
 			protected override void Initialize()
 			{
-				Init("Purge");
+				Init("Clear", "Purge");
 				Description = new TranslatableItem(RealmLangKey.CmdSpellPurgeDescription);
 			}
 
@@ -398,6 +398,36 @@ namespace WCell.RealmServer.Commands
 		public override ObjectTypeCustom TargetTypes
 		{
 			get { return ObjectTypeCustom.Unit; }
+		}
+	}
+
+	public class TalentCommand : RealmServerCommand
+	{
+		protected override void Initialize()
+		{
+			Init("Talents");
+		}
+
+		public class TalentsClearCommand : SubCommand
+		{
+			protected override void Initialize()
+			{
+				Init("Reset");
+				EnglishDescription = "Resets all talents for free";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var target = trigger.Args.Target;
+				if (target == null || target.Talents == null)
+				{
+					trigger.Reply(RealmLangKey.NoValidTarget);
+				}
+				else
+				{
+					target.Talents.ResetAllForFree();
+				}
+			}
 		}
 	}
 

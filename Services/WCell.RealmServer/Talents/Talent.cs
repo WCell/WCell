@@ -92,6 +92,7 @@ namespace WCell.RealmServer.Talents
 						// remove from TalentCollection
 						Talents.ById.Remove(Entry.Id);
 					}
+					diff = -diff; // subtract points from tree points
 				}
 				else if (value > m_rank)
 				{

@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Collection of all this Pet's Talents
 		/// </summary>
-		public TalentCollection Talents
+		public override TalentCollection Talents
 		{
 			get { return m_petTalents; }
 		}

@@ -593,10 +593,6 @@ namespace WCell.RealmServer.Items
 		internal void OnAdd(Item item)
 		{
 			item.m_owner = m_owner;
-			if (!item.IsBuyback)
-			{
-				ItemHandler.SendItemPushResult(Owner, item, true, item.Container.Slot, item.Slot);
-			}
 			OnAddDontNotify(item);
 		}
 

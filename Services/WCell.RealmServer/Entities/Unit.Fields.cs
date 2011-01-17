@@ -31,6 +31,7 @@ using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Talents;
 using WCell.Util;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.Items;
@@ -1672,6 +1673,11 @@ namespace WCell.RealmServer.Entities
 			}
 			internal set
 			{ }
+		}
+
+		public virtual TalentCollection Talents
+		{
+			get { return null; }
 		}
 	}
 }

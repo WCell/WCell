@@ -317,11 +317,13 @@ namespace WCell.RealmServer.Talents
 		/// </summary>
 		public void ResetAllForFree()
 		{
-			foreach (var talent in ById.Values)
+			foreach (var talent in ById.Values.ToArray())
 			{
 				talent.Remove();
 			}
 			ById.Clear();
+			FreeTalentPoints = GetFreeTalentPointsForLevel(Owner.Level);
+			LastResetTime = DateTime.Now;
 		}
 
 		/// <summary>
@@ -386,10 +388,8 @@ namespace WCell.RealmServer.Talents
 			if (price > chr.Money || chr.GodMode)
 			{
 				ResetAllForFree();
-				FreeTalentPoints = GetFreeTalentPointsForLevel(Owner.Level);
-				LastResetTime = DateTime.Now;
-				chr.Money -= price;
 
+				chr.Money -= price;
 				CurrentResetTier = tier + 1;
 				return true;
 			}

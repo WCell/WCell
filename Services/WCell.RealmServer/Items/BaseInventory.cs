@@ -410,9 +410,10 @@ namespace WCell.RealmServer.Items
 
 		public virtual SimpleSlotId FindFreeSlot(IMountableItem item, int amount)
 		{
-			return new SimpleSlotId {
-			    Container = this, 
-                Slot = FindFreeSlot()
+			return new SimpleSlotId
+			{
+				Container = this,
+				Slot = FindFreeSlot()
 			};
 		}
 
@@ -535,8 +536,8 @@ namespace WCell.RealmServer.Items
 					for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
 					{
 						var enchant = item.Enchantments[(uint)i];
-						if (enchant != null && 
-							enchant.Entry.GemTemplate != null && 
+						if (enchant != null &&
+							enchant.Entry.GemTemplate != null &&
 							enchant.Entry.GemTemplate.UniqueCount > 0 &&
 							OwnerInventory.GetUniqueCount(enchant.Entry.GemTemplate.ItemId) >= enchant.Entry.GemTemplate.UniqueCount)
 						{
@@ -706,34 +707,34 @@ namespace WCell.RealmServer.Items
 			return err;
 		}
 
-        /// <summary>
-        /// Tries to merge an item with the given template and amount to the stack at the given slot.
-        /// If the given slot is empty it adds the item to the slot.
-        /// Make sure the given targetSlot is valid before calling this method.
-        /// </summary>
-        /// <param name="amount">Set to the number of items actually added.</param>
-        /// <returns>The result (InventoryError.OK in case that it worked)</returns>
-        public InventoryError TryMerge(ItemTemplate template, ref int amount, int slot, bool isNew)
-        {
-            var err = InventoryError.OK;
-            CheckUniqueness(template, ref amount, ref err, isNew);
-            if (err == InventoryError.OK)
-            {
-                var handler = GetHandler(slot);
-                if (handler != null)
-                {
-                    err = InventoryError.OK;
-                    handler.CheckAdd(slot, amount, template, ref err);
-                    if (err != InventoryError.OK)
-                    {
-                        return err;
-                    }
-                }
+		/// <summary>
+		/// Tries to merge an item with the given template and amount to the stack at the given slot.
+		/// If the given slot is empty it adds the item to the slot.
+		/// Make sure the given targetSlot is valid before calling this method.
+		/// </summary>
+		/// <param name="amount">Set to the number of items actually added.</param>
+		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
+		public InventoryError TryMerge(ItemTemplate template, ref int amount, int slot, bool isNew)
+		{
+			var err = InventoryError.OK;
+			CheckUniqueness(template, ref amount, ref err, isNew);
+			if (err == InventoryError.OK)
+			{
+				var handler = GetHandler(slot);
+				if (handler != null)
+				{
+					err = InventoryError.OK;
+					handler.CheckAdd(slot, amount, template, ref err);
+					if (err != InventoryError.OK)
+					{
+						return err;
+					}
+				}
 
-                MergeUnchecked(slot, template, ref amount, isNew);
-            }
-            return err;
-        }
+				MergeUnchecked(slot, template, ref amount, isNew);
+			}
+			return err;
+		}
 
 		/// <summary>
 		/// Tries to add a new item with the given template and amount
@@ -768,6 +769,8 @@ namespace WCell.RealmServer.Items
 					slotId.Container.AddUnchecked(slotId.Slot, template, amount, true);
 				}
 			}
+			// TODO: Send the item update message
+			//OnAdded(template, amount);
 			return err;
 		}
 
@@ -802,8 +805,10 @@ namespace WCell.RealmServer.Items
 			}
 			else
 			{
-				item.Amount = amount - distributedAmount;
+				amount -= distributedAmount;
+				item.Amount = amount;
 			}
+			OnAdded(item, amount);
 			return err;
 		}
 
@@ -831,10 +836,16 @@ namespace WCell.RealmServer.Items
 					slotId.Container.AddUnchecked(slotId.Slot, item.Template, amount, isNew);
 				}
 			}
+			else
+			{
+				amount -= distributedAmount;
+				item.Amount = amount;
+			}
+			OnAdded(item, amount);
 			return err;
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Tries to add the given item to the given slot (make sure the slot is valid and not occupied).
 		/// Fails if not all items of this stack can be added.
 		/// </summary>
@@ -855,7 +866,16 @@ namespace WCell.RealmServer.Items
 					AddUnchecked(slot, item, isNew);
 				}
 			}
+			OnAdded(item, amount);
 			return err;
+		}
+
+		void OnAdded(Item item, int amount)
+		{
+			if (!item.IsBuyback)
+			{
+				//ItemHandler.SendItemPushResult(Owner, item, true, );
+			}
 		}
 		#endregion
 
@@ -925,31 +945,31 @@ namespace WCell.RealmServer.Items
 			return item;
 		}
 
-        /// <summary>
-        /// Adds an amount of Items with ItemTemplate to the Item in the given slot, without further checks.
-        /// If the given slot is empty, it AddsUnchecked.
-        /// </summary>
-        /// <param name="amount">Set to the number of Items actually added.</param>
-        /// <returns>The Item in the slot you merged to.</returns>
-        public Item MergeUnchecked(int slot, ItemTemplate template, ref int amount, bool isNew)
-        {
-            var item = m_Items[slot];
-            if (item == null)
-            {
-                return AddUnchecked(slot, template, amount, isNew);
-            }
+		/// <summary>
+		/// Adds an amount of Items with ItemTemplate to the Item in the given slot, without further checks.
+		/// If the given slot is empty, it AddsUnchecked.
+		/// </summary>
+		/// <param name="amount">Set to the number of Items actually added.</param>
+		/// <returns>The Item in the slot you merged to.</returns>
+		public Item MergeUnchecked(int slot, ItemTemplate template, ref int amount, bool isNew)
+		{
+			var item = m_Items[slot];
+			if (item == null)
+			{
+				return AddUnchecked(slot, template, amount, isNew);
+			}
 
-            var freeSpace = item.Template.MaxAmount - item.Amount;
-            freeSpace = Math.Min(freeSpace, amount);
+			var freeSpace = item.Template.MaxAmount - item.Amount;
+			freeSpace = Math.Min(freeSpace, amount);
 
-            amount = freeSpace;
-            item.Amount += freeSpace;
-            if (isNew)
-            {
-                OwnerInventory.OnAdd(item);
-            }
-            return item;
-        }
+			amount = freeSpace;
+			item.Amount += freeSpace;
+			if (isNew)
+			{
+				OwnerInventory.OnAdd(item);
+			}
+			return item;
+		}
 
 		/// <summary>
 		/// Adds the Item to the given slot without any further checks.
@@ -962,7 +982,7 @@ namespace WCell.RealmServer.Items
 		{
 			this[slot] = item;
 			if (isNew)
-	        {
+			{
 				OwnerInventory.OnAdd(item);
 			}
 			else
@@ -971,7 +991,8 @@ namespace WCell.RealmServer.Items
 				var context = owner.ContextHandler;
 				if (context != null)
 				{
-					context.AddMessage(() => {
+					context.AddMessage(() =>
+					{
 						if (owner.IsInWorld)
 						{
 							owner.AddItemToUpdate(item);
@@ -1040,7 +1061,7 @@ namespace WCell.RealmServer.Items
 			{
 				LogUtil.ErrorException(
 					new Exception(
-						string.Format("Tried to remove Item from invalid Slot {0}/{1} in {2} (belongs to {3})", 
+						string.Format("Tried to remove Item from invalid Slot {0}/{1} in {2} (belongs to {3})",
 						slot, m_Items.Length, this, Owner)));
 				return null;
 			}
@@ -1066,14 +1087,14 @@ namespace WCell.RealmServer.Items
 			}
 
 			var slot = item.Slot;
-            var handler = GetHandler(slot);
+			var handler = GetHandler(slot);
 			if (handler != null)
 			{
 				handler.Removed(slot, item);
 			}
 
-            // slot may have changed in the Removed() handler
-		    slot = item.Slot;
+			// slot may have changed in the Removed() handler
+			slot = item.Slot;
 			m_Items[slot] = null;
 			var cont = Container;
 			if (cont != null)
@@ -1240,7 +1261,8 @@ namespace WCell.RealmServer.Items
 				var amountLeft = amount;
 				var done = false;
 				// add stackable items to existing stacks
-				Iterate((invItem) => {
+				Iterate((invItem) =>
+				{
 					if (invItem.Template == template)
 					{
 						var diff = template.MaxAmount - invItem.Amount;
@@ -1254,8 +1276,8 @@ namespace WCell.RealmServer.Items
 								return false;
 							}
 
-						    // we can put a part of the stack here
-						    amountLeft -= invItem.ModAmount(diff);
+							// we can put a part of the stack here
+							amountLeft -= invItem.ModAmount(diff);
 						}
 					}
 					return true;
@@ -1283,7 +1305,8 @@ namespace WCell.RealmServer.Items
 			if (template.IsStackable)
 			{
 				// try to add stackable items to existing stacks
-				Iterate(invItem => {
+				Iterate(invItem =>
+				{
 					if (invItem.Template == template)
 					{
 						if (invItem.Amount < template.MaxAmount)
