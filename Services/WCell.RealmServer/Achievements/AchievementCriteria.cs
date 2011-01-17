@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -122,7 +122,11 @@ namespace WCell.RealmServer.Achievements
 
 		public override void OnUpdate(AchievementCollection achievements, uint value1, uint value2, ObjectBase involved)
 		{
-			achievements.SetCriteriaProgress(this, value1);
+            if (!AchievementEntry.IsRealmFirstType() || AchievementCollection.ClassSpecificAchievementId[(int)achievements.Owner.Class] == AchievementEntryId
+                || AchievementCollection.RaceSpecificAchievementId[(int)achievements.Owner.Race] == AchievementEntryId)
+            {
+                achievements.SetCriteriaProgress(this, value1);
+            }
 		}
 	}
 

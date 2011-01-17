@@ -10,7 +10,27 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.Achievements
 {
-    [DataHolder]
+    [DataHolder("Type")]
+    [DependingProducer(AchievementCriteriaRequirementType.None, typeof(AchievementCriteriaRequirement))]
+    [DependingProducer(AchievementCriteriaRequirementType.Creature, typeof(AchievementCriteriaRequirementCreature))]
+    [DependingProducer(AchievementCriteriaRequirementType.PlayerClassRace, typeof(AchievementCriteriaRequirementPlayerClassRace))]
+    [DependingProducer(AchievementCriteriaRequirementType.PlayerLessHealth, typeof(AchievementCriteriaRequirementPlayerLessHealth))]
+    [DependingProducer(AchievementCriteriaRequirementType.PlayerDead, typeof(AchievementCriteriaRequirementPlayerDead))]
+    [DependingProducer(AchievementCriteriaRequirementType.Aura1, typeof(AchievementCriteriaRequirementAura1))]
+    [DependingProducer(AchievementCriteriaRequirementType.Area, typeof(AchievementCriteriaRequirementArea))]
+    [DependingProducer(AchievementCriteriaRequirementType.Aura2, typeof(AchievementCriteriaRequirementAura2))]
+    [DependingProducer(AchievementCriteriaRequirementType.Value, typeof(AchievementCriteriaRequirementValue))]
+    [DependingProducer(AchievementCriteriaRequirementType.Level, typeof(AchievementCriteriaRequirementLevel))]
+    [DependingProducer(AchievementCriteriaRequirementType.Gender, typeof(AchievementCriteriaRequirementGender))]
+    [DependingProducer(AchievementCriteriaRequirementType.Disabled, typeof(AchievementCriteriaRequirementDisabled))]
+    [DependingProducer(AchievementCriteriaRequirementType.MapDifficulty, typeof(AchievementCriteriaRequirementMapDifficulty))]
+    [DependingProducer(AchievementCriteriaRequirementType.MapPlayerCount, typeof(AchievementCriteriaRequirementMapPlayerCount))]
+    [DependingProducer(AchievementCriteriaRequirementType.Team, typeof(AchievementCriteriaRequirementTeam))]
+    [DependingProducer(AchievementCriteriaRequirementType.Drunk, typeof(AchievementCriteriaRequirementDrunk))]
+    [DependingProducer(AchievementCriteriaRequirementType.Holiday, typeof(AchievementCriteriaRequirementHoliday))]
+    [DependingProducer(AchievementCriteriaRequirementType.BgLossTeamScore, typeof(AchievementCriteriaRequirementBgLossTeamScore))]
+    [DependingProducer(AchievementCriteriaRequirementType.InstanceScript, typeof(AchievementCriteriaRequirementInstanceScript))]
+    [DependingProducer(AchievementCriteriaRequirementType.EquippedItemLevel, typeof(AchievementCriteriaRequirementEquippedItemLevel))]
     public class AchievementCriteriaRequirement : IDataHolder
     {
         public uint CriteriaId;
@@ -191,7 +211,7 @@ namespace WCell.RealmServer.Achievements
             Requirements.Add(creator);
         }
 
-        public bool Meets(Character chr, uint miscValue1 = 0u, Unit involved = null)
+        public bool Meets(Character chr, Unit involved = null, uint miscValue1 = 0u)
         {
             foreach(AchievementCriteriaRequirementCreator requirementCreator in Requirements)
             {

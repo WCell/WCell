@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants.Achievements;
@@ -25,10 +25,43 @@ namespace WCell.RealmServer.Achievements
 		internal Dictionary<uint, AchievementRecord> m_completedAchievements = new Dictionary<uint, AchievementRecord>();
 		internal Dictionary<uint, AchievementProgressRecord> m_progressRecords = new Dictionary<uint, AchievementProgressRecord>();
 		internal Character m_owner;
+	    public static readonly uint[] ClassSpecificAchievementId = new uint[(int) WCell.Constants.ClassId.End];
+
+        public static readonly uint[] RaceSpecificAchievementId = new uint[(int)WCell.Constants.RaceId.End];
+        
 
 		public AchievementCollection(Character chr)
 		{
 			m_owner = chr;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.PetTalents]= 0;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Warrior]= 459;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Paladin]= 465;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Hunter]= 462;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Rogue]= 458;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Priest]= 464;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.DeathKnight]= 461;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Shaman]= 467;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Mage]= 460;
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Warlock]= 463;
+		    //??	= 10
+            ClassSpecificAchievementId[(int) WCell.Constants.ClassId.Druid]= 466;
+
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.None] = 0;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Human] = 1408;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Orc] = 1410;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Dwarf] = 1407;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.NightElf] = 1409;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Undead] = 1413;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Tauren] = 1411;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Gnome] = 1404;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Troll] = 1412;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Goblin] = 0;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.BloodElf] = 1405;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Draenei] = 1406;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.FelOrc] = 0;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Naga] = 0;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Broken] = 0;
+		    RaceSpecificAchievementId[(int) WCell.Constants.RaceId.Skeleton] = 0;
 		}
 
 		#region Props
@@ -302,6 +335,7 @@ namespace WCell.RealmServer.Achievements
 			// Skip achievements that require to be groupfree and 
 			if (achievementCriteriaEntry.GroupFlag.HasFlag(AchievementCriteriaGroupFlags.AchievementCriteriaGroupNotInGroup) && Owner.IsInGroup)
 				return false;
+
 			return true;
 		}
 
@@ -322,7 +356,8 @@ namespace WCell.RealmServer.Achievements
 				{
 					if (IsAchieveable(entry))
 					{
-						entry.OnUpdate(this, value1, value2, involved);
+                        if(entry.RequirementSet == null || entry.RequirementSet.Meets(Owner, involved))
+						    entry.OnUpdate(this, value1, value2, involved);
 					}
 				}
 			}
