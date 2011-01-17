@@ -225,6 +225,7 @@
     <Compile Include="Handlers\ArenaTeamHandler.cs" />
     <Compile Include="Handlers\TitleHandler.cs" />
     <Compile Include="Items\IItemEquipmentEventHandler.cs" />
+    <Compile Include="Items\ScalingStats.cs" />
     <Compile Include="Lang\RealmLangKey.cs" />
     <Compile Include="Lang\RealmLocalizer.cs" />
     <Compile Include="Lang\TranslatableItem.cs" />

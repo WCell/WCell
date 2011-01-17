@@ -95,6 +95,14 @@ namespace WCell.RealmServer.Items
 
 		public int UniqueCount;
 
+        public uint ScalingStatDistributionId;
+
+	    public uint ScalingStatValueFlags;
+
+	    public uint ItemLimitCategoryId;
+
+	    public uint HolidayId;
+
 		/// <summary>
 		/// The size of a stack of this item.
 		/// </summary>

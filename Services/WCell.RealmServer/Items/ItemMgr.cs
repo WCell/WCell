@@ -53,6 +53,12 @@ namespace WCell.RealmServer.Items
 		[NotVariable]
 		public static MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter> RandomSuffixReader;
 
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter> ScalingStatDistributionReader;
+
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter> ScalingStatValuesReader;
+
 		/// <summary>
 		/// All partial inventory types by InventorySlot
 		/// </summary>
@@ -630,6 +636,12 @@ namespace WCell.RealmServer.Items
 			RandomSuffixReader =
 				new MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter>(RealmServerConfiguration.GetDBCFile(
 																					WCellDef.DBC_ITEMRANDOMSUFFIX));
+
+            ScalingStatDistributionReader = new MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellDef.DBC_SCALINGSTATDISTRIBUTION));
+
+            ScalingStatValuesReader = new MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellDef.DBC_SCALINGSTATVALUES));
 		}
 
 		public static bool Loaded { get; private set; }
@@ -862,7 +874,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomPropertyEntry GetRandomPropertyEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomPropertiesReader == null)
 			{
 				LoadDBCs();
 			}
@@ -873,7 +885,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomSuffixEntry GetRandomSuffixEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomSuffixReader == null)
 			{
 				LoadDBCs();
 			}
@@ -881,6 +893,28 @@ namespace WCell.RealmServer.Items
 			RandomSuffixReader.Entries.TryGetValue((int)id, out entry);
 			return entry;
 		}
+
+        public static ScalingStatDistributionEntry GetScalingStatDistributionEntry(uint id)
+        {
+            if (ScalingStatDistributionReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatDistributionEntry entry;
+            ScalingStatDistributionReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
+
+        public static ScalingStatValues GetScalingStatValue(uint id)
+        {
+            if (ScalingStatValuesReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatValues entry;
+            ScalingStatValuesReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
 
 		#region Apply changes when loading
 		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();

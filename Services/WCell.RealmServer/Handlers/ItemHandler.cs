@@ -480,8 +480,8 @@ namespace WCell.RealmServer.Handlers
 					packet.Write(item.Mods[m].Value);
 				}
 
-				packet.Write(0);// NEW 3.0.2 ScalingStatDistribution.dbc
-				packet.Write(0);// NEW 3.0.2 ScalingStatFlags
+				packet.Write(item.ScalingStatDistributionId);// NEW 3.0.2 ScalingStatDistribution.dbc
+				packet.Write(item.ScalingStatValueFlags);// NEW 3.0.2 ScalingStatFlags
 
 
 				// In 3.1 there are only 2 damages instead of 5
@@ -569,10 +569,10 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.RequiredDisenchantingLevel);
 				packet.Write(item.ArmorModifier);
 
-				packet.Write(0);// Exisiting duration in seconds
-				packet.Write(0);// NEW 3.0.2 ItemLimitCategory.dbc
+				packet.Write(item.Duration);// Exisiting duration in seconds
+				packet.Write(item.ItemLimitCategoryId);// NEW 3.0.2 ItemLimitCategory.dbc
 
-				packet.Write(0); // NEW 3.1.0 Holidays.dbc
+				packet.Write(item.HolidayId); // NEW 3.1.0 Holidays.dbc
 
 				client.Send(packet);
 			}

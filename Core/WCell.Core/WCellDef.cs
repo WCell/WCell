@@ -96,6 +96,10 @@ namespace WCell.Core
 
 		public const string DBC_ITEMRANDOMSUFFIX = "ItemRandomSuffix.dbc";
 
+        public const string DBC_SCALINGSTATDISTRIBUTION = "ScalingStatDistribution.dbc";
+
+        public const string DBC_SCALINGSTATVALUES = "ScalingStatValues.dbc";
+
         public const string DBC_MAPDIFFICULTY = "MapDifficulty.dbc";
 
         public const string DBC_WORLDMAPOVERLAY = "WorldMapOverlay.dbc";
