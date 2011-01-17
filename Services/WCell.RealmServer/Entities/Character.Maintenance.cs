@@ -474,12 +474,6 @@ namespace WCell.RealmServer.Entities
 
 				OnLogin();
 
-#if DEV
-				// do this check in case that we did not load Items yet
-				if (ItemMgr.Loaded)
-#endif
-					InitItems();
-
 				if (m_record.JustCreated)
 				{
 					if (!m_client.Account.Role.IsStaff)
@@ -512,6 +506,14 @@ namespace WCell.RealmServer.Entities
 					LoadEquipmentState();
 				}
 
+				// load items
+#if DEV
+				// do this check in case that we did not load Items yet
+				if (ItemMgr.Loaded)
+#endif
+					InitItems();
+
+				// load ticket information
 				var ticket = TicketMgr.Instance.GetTicket(EntityId.Low);
 				if (ticket != null)
 				{
@@ -519,13 +521,16 @@ namespace WCell.RealmServer.Entities
 					Ticket.OnOwnerLogin(this);
 				}
 
+				// initialize sub systems
 				GroupMgr.Instance.OnCharacterLogin(this);
 				GuildMgr.Instance.OnCharacterLogin(this);
 				RelationMgr.Instance.OnCharacterLogin(this);
 
+				// set login date
 				LastLogin = DateTime.Now;
 				var isNew = m_record.JustCreated;
 
+				// perform some stuff ingame
 				AddMessage(() =>
 				{
 					if (LastLogout == null)
@@ -590,7 +595,7 @@ namespace WCell.RealmServer.Entities
 					}
 				});
 
-				if (m_record.JustCreated)
+				if (isNew)
 				{
 					SaveLater();
 					m_record.JustCreated = false;

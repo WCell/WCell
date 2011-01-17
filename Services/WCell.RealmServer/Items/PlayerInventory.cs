@@ -2453,7 +2453,7 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		#region Load / Save
-		internal void AddDefaultItems()
+		public void AddDefaultItems()
 		{
 			var archetype = m_owner.Archetype;
 			var items = archetype.GetInitialItems(m_owner.Gender);
