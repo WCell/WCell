@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Entities
 			if (record.JustCreated)
 			{
 				ModStatsForLevel(m_record.Level);
-				BasePower = PowerFormulas.GetPowerForLevel(this);
+				BasePower = RegenerationFormulas.GetPowerForLevel(this);
 			}
 			else
 			{

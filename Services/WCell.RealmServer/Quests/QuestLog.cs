@@ -652,7 +652,7 @@ namespace WCell.RealmServer.Quests
 		/// Is called when the owner of this QuestLog receives or looses the given amount of Items
 		/// </summary>
 		/// <param name="item"></param>
-		internal void OnItemAmountChanged(Item item, int diff)
+		internal void OnItemAmountChanged(Item item, int delta)
 		{
 			for (var j = 0; j < m_RequireItemsQuests.Count; j++)
 			{
@@ -663,15 +663,14 @@ namespace WCell.RealmServer.Quests
 					if (requiredItem.ItemId == item.Template.ItemId)
 					{
 						var amount = quest.CollectedItems[i];
-						var newAmount = amount + diff;
+						var newAmount = amount + delta;
 
-						var needsUpdate = amount < requiredItem.Amount ||
-							newAmount < requiredItem.Amount;
+						var needsUpdate = amount < requiredItem.Amount || newAmount < requiredItem.Amount;
 
 						quest.CollectedItems[i] = newAmount;
 						if (needsUpdate)
 						{
-							QuestHandler.SendUpdateItems(item.Template.ItemId, diff, m_Owner);
+							QuestHandler.SendUpdateItems(item.Template.ItemId, delta, m_Owner);
 							quest.UpdateStatus();
 						}
 						break;

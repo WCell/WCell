@@ -34,11 +34,6 @@ namespace WCell.RealmServer.RacesClasses
 			get { return PowerType.Energy; }
 		}
 
-		public override int CalculateHealthRegen(int level, int spirit)
-		{
-			return (int)(spirit * 0.50f) + 2;
-		}
-
 		/// <summary>
 		/// Calculates attack power for the class at a specific level, Strength and Agility.
 		/// </summary>

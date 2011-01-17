@@ -7,12 +7,12 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Formulas
 {
-	public delegate int PowerCalculator(Unit unit);
+	public delegate int RegenCalculator(Unit unit);
 
 	/// <summary>
 	/// Determines the amount of base power per level and regenaration speed of all powers
 	/// </summary>
-	public static class PowerFormulas
+	public static class RegenerationFormulas
 	{
 		#region Config Variables
 		/// <summary>
@@ -32,20 +32,20 @@ namespace WCell.RealmServer.Formulas
 		public static uint PowerRegenInterruptedCooldown = 5000;
 		#endregion
 
-		public static readonly PowerCalculator[] PowerRegenCalculators = new PowerCalculator[(int)PowerType.End];
-		public static readonly PowerCalculator[] BasePowerForLevelCalculators = new PowerCalculator[(int)PowerType.End];
+		public static readonly RegenCalculator[] PowerRegenCalculators = new RegenCalculator[(int)PowerType.End];
+		public static readonly RegenCalculator[] BasePowerForLevelCalculators = new RegenCalculator[(int)PowerType.End];
 
-		public static void SetPowerRegenCalculator(PowerType type, PowerCalculator calc)
+		public static void SetPowerRegenCalculator(PowerType type, RegenCalculator calc)
 		{
 			PowerRegenCalculators[(int)type] = calc;
 		}
 
-		public static void SetBasePowerCalculator(PowerType type, PowerCalculator calc)
+		public static void SetBasePowerCalculator(PowerType type, RegenCalculator calc)
 		{
 			BasePowerForLevelCalculators[(int)type] = calc;
 		}
 
-		static PowerFormulas()
+		static RegenerationFormulas()
 		{
 			// TODO: Focus, Happiness
 			SetPowerRegenCalculator(PowerType.Mana, CalculateManaRegen);
@@ -63,7 +63,7 @@ namespace WCell.RealmServer.Formulas
 			SetBasePowerCalculator(PowerType.Runes, GetRunesForLevel);
 		}
 
-		#region Standard Regen Formulas
+		#region Power Regen Formulas
 		public static int GetPowerRegen(Unit unit)
 		{
 			var calc = PowerRegenCalculators[(int)unit.PowerType];
@@ -81,12 +81,13 @@ namespace WCell.RealmServer.Formulas
 		public static int CalculateManaRegen(Unit unit)
 		{
 			// default mana generation
-			var regen = 0.001f + (float)Math.Sqrt(unit.Intellect) * unit.Spirit * GameTables.BaseRegen[unit.Level];
+			// see: http://www.wowwiki.com/Mana_regeneration
+			var regen = (int)((0.001f + unit.Spirit * (float)Math.Sqrt(unit.Intellect) * GameTables.BaseRegen[unit.Level]) * 0.6f + 0.9f);	// rounded up
 			if (unit.IsManaRegenInterrupted)
 			{
 				regen = (regen * unit.ManaRegenPerTickInterruptedPct + 50) / 100;
 			}
-			return (int)regen * RegenRateFactor;
+			return regen * RegenRateFactor;
 		}
 
 		/// <summary>
@@ -123,11 +124,10 @@ namespace WCell.RealmServer.Formulas
 		}
 		#endregion
 
-
 		#region BasePower per Level Values
 		public static int GetPowerForLevel(Unit unit)
 		{
-			var calc = BasePowerForLevelCalculators[(int) unit.PowerType];
+			var calc = BasePowerForLevelCalculators[(int)unit.PowerType];
 			if (calc == null)
 			{
 				calc = GetPowerForLevelDefault;

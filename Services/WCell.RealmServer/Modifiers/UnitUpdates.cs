@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Modifiers
 			int regen;
 			if (unit is Character)
 			{
-				regen = ((Character)unit).Archetype.Class.CalculateHealthRegen(unit.Level, unit.Spirit);
+				regen = ((Character)unit).Archetype.Class.CalculateHealthRegen(unit);
 			}
 			else
 			{

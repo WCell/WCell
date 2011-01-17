@@ -588,7 +588,7 @@ namespace WCell.RealmServer.Entities
 			get
 			{
 				return PowerType == PowerType.Mana && m_spellCast != null &&
-					((Environment.TickCount - m_spellCast.StartTime) < PowerFormulas.PowerRegenInterruptedCooldown || m_spellCast.IsChanneling);
+					((Environment.TickCount - m_spellCast.StartTime) < RegenerationFormulas.PowerRegenInterruptedCooldown || m_spellCast.IsChanneling);
 			}
 		}
 
@@ -613,7 +613,7 @@ namespace WCell.RealmServer.Entities
 
 		public float PowerRegenPerMillis
 		{
-			get { return m_PowerRegenPerTick / (float)PowerFormulas.RegenTickDelayMillis; }
+			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
 
 		/// <summary>
