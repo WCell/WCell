@@ -479,6 +479,11 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var targetObj = trigger.Args.Target;
+                if (targetObj == null)
+                {
+                    trigger.Reply("Target required.");
+                    return;
+                }
 				if (!(targetObj is NPC))
 				{
 					targetObj = targetObj.Target;
