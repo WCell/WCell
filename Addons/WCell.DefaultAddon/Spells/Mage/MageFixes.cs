@@ -127,7 +127,7 @@ namespace WCell.Addons.Default.Spells.Mage
 					var charSpells = ((Character)target).PlayerSpells;
 					foreach (Spell spell in charSpells)
 					{
-						if (spell.SchoolMask == DamageSchoolMask.Frost && spell.Id != 11958)
+						if (spell.SchoolMask == DamageSchoolMask.Frost && spell.SpellId != SpellId.MageFrostColdSnap)
 						{
 							charSpells.ClearCooldown(spell, false);
 						}
