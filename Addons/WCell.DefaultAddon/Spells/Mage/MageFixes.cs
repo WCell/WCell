@@ -82,6 +82,14 @@ namespace WCell.Addons.Default.Spells.Mage
 				efct.EffectType = SpellEffectType.TriggerSpell;
 				efct.TriggerSpellId = (SpellId)efct.CalcEffectValue();
 			}, SpellLineId.MageConjureManaGem);
+
+			//ColdSnap resets the cooldown of all Frost spells, except his own cooldown
+			SpellLineId.MageFrostColdSnap.Apply(spell =>
+				{
+					spell.Effects[0].SpellEffectHandlerCreator =
+					(cast, effect) => new ColdSnapHandler(cast, effect);
+				});
+
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler
@@ -103,5 +111,30 @@ namespace WCell.Addons.Default.Spells.Mage
 				base.Remove(cancelled);
 			}
 		}
+
+		#region ColdSnap
+		public class ColdSnapHandler : DummyEffectHandler
+		{
+			public ColdSnapHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				if (target is Character)
+				{
+					var charSpells = ((Character)target).PlayerSpells;
+					foreach (Spell spell in charSpells)
+					{
+						if (spell.SchoolMask == DamageSchoolMask.Frost && spell.Id != 11958)
+						{
+							charSpells.ClearCooldown(spell, false);
+						}
+					}
+				}
+			}
+		}
+		#endregion
 	}
 }
