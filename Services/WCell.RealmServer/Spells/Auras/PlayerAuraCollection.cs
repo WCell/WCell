@@ -313,7 +313,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount++;
 			}
-			SpellModifiersFlat.Add(modifier);
+			SpellModifiersPct.Add(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
@@ -335,9 +335,9 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-			SpellModifiersFlat.Add(modifier);
+			SpellModifiersPct.Remove(modifier);
 			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
 
 		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
