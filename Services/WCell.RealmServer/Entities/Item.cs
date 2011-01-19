@@ -1274,6 +1274,7 @@ namespace WCell.RealmServer.Entities
 		protected internal virtual void DoDestroy()
 		{
 			var record = m_record;
+			m_owner.Inventory.OnAmountChanged(this, Amount);
 			if (m_record != null)
 			{
 				RealmServer.Instance.AddMessage(() =>

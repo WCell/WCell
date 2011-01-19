@@ -676,6 +676,11 @@ namespace WCell.RealmServer.Items
 
 				AuctionMgr.Instance.LoadItems();
 
+				if (QuestMgr.Loaded)
+				{
+					EnsureQuestRelations();
+				}
+
 				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
 				Loaded = true;
 			}
@@ -700,10 +705,7 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
-		[Initialization]
-		[DependentInitialization(typeof(QuestMgr))]
-		[DependentInitialization(typeof(ItemMgr))]
-		public static void EnsureQuestRelations()
+		internal static void EnsureQuestRelations()
 		{
 			// Collect quests
 			foreach (var quest in QuestMgr.Templates)
@@ -735,7 +737,6 @@ namespace WCell.RealmServer.Items
 						{
 							ArrayUtil.AddOnlyOne(ref item.CollectQuests, quest);
 						}
-						break;
 					}
 				}
 			}

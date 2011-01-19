@@ -52,9 +52,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The Id of the quest this chest is associated with.
 		/// </summary>
-		public int QuestId
+		public uint QuestId
 		{
-			get { return Fields[8]; }
+			get { return (uint)Fields[8]; }
 		}
 
 		/// <summary>

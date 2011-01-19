@@ -1563,7 +1563,7 @@ namespace WCell.RealmServer.Entities
 		internal void UpdatePower(int delayMillis)
 		{
 			var val = Power;
-			val += (m_PowerRegenPerTick * delayMillis + 500) / RegenerationFormulas.RegenTickDelayMillis;	// rounding
+			val += (m_PowerRegenPerTick * delayMillis) / RegenerationFormulas.RegenTickDelayMillis;	// rounding
 			val = MathUtil.ClampMinMax(val, 0, MaxPower);
 			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
 		}

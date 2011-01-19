@@ -266,6 +266,10 @@ namespace WCell.RealmServer.Spells
 		void SetCaster(ObjectReference caster, Region map, uint phase, Vector3 sourceLoc)
 		{
 			CasterReference = caster;
+			if (caster == null)
+			{
+				throw new ArgumentNullException("caster");
+			}
 			CasterObject = caster.Object;
 			CasterUnit = caster.UnitMaster;
 			Map = map;
@@ -1408,27 +1412,28 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void TriggerAll(WorldObject singleTarget, params Spell[] spells)
 		{
-			var passiveCast = InheritSpellCast();
-
 			if (CasterObject is Character && !CasterObject.IsInWorld)
 			{
 				CasterChar.AddMessage(new Message(() =>
 				{
-					foreach (var spell in spells)
-					{
-						passiveCast.Start(spell, true, singleTarget);
-					}
-					//passiveCast.Dispose();
+					TriggerAllSpells(singleTarget, spells);
 				}));
 			}
 			else
 			{
-				foreach (var spell in spells)
-				{
-					passiveCast.Start(spell, true, singleTarget);
-				}
-				//passiveCast.Dispose();
+				TriggerAllSpells(singleTarget, spells);
 			}
+		}
+
+		private void TriggerAllSpells(WorldObject singleTarget, params Spell[] spells)
+		{
+			var passiveCast = SpellCastPool.Obtain();
+			foreach (var spell in spells)
+			{
+				SetupInheritedCast(passiveCast);
+				passiveCast.Start(spell, true, singleTarget);
+			}
+			//passiveCast.Dispose();
 		}
 
 		/// <summary>
@@ -1518,11 +1523,16 @@ namespace WCell.RealmServer.Spells
 		SpellCast InheritSpellCast()
 		{
 			var cast = SpellCastPool.Obtain();
+			SetupInheritedCast(cast);
+			return cast;
+		}
+
+		void SetupInheritedCast(SpellCast cast)
+		{
 			cast.SetCaster(CasterReference, Map, Phase, SourceLoc);
 			cast.TargetLoc = TargetLoc;
 			cast.Selected = Selected;
 			cast.CasterItem = CasterItem;
-			return cast;
 		}
 
 		/// <summary>

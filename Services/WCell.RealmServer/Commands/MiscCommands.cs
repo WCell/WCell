@@ -207,7 +207,7 @@ namespace WCell.RealmServer.Commands
 
 				if (ReflectUtil.Instance.GetPropValue(trigger.Args.Role, target, ref propName, out val))
 				{
-					trigger.Reply("{0} is: {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
+					trigger.Reply("{0} = {1}", propName, val != null ? Utility.GetStringRepresentation(val) : "<null>");
 				}
 				else
 				{

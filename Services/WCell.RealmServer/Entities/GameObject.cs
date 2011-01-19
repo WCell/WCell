@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants;
@@ -342,11 +343,37 @@ namespace WCell.RealmServer.Entities
 			return m_entry.DefaultName + " (Template: " + m_template + ")";
 		}
 
+		public bool IsCloseEnough(Character chr)
+		{
+			return IsInRadius(chr.Position, 10.0f);
+		}
+
+		public bool CanUseInstantly(Character chr)
+		{
+			if (!IsCloseEnough(chr))
+			{
+				return false;
+			}
+
+			if (Entry.Type == GameObjectType.Chest && !Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+			{
+				// conditional chests are chests that contain quest items
+				// other chests must be opened through a spell
+				return false;
+			}
+			return CanInteractWith(chr);
+		}
+
 		public bool CanInteractWith(Character chr)
 		{
-			// Todo: Other checks?
-			if (IsInRadius(chr.Position, 10.0f))
+			if (IsEnabled)
 			{
+				if (Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+				{
+					// must have the quest
+					return Entry.RequiredQuests.Any(q => chr.QuestLog.HasActiveQuest(q));
+				}
+				// can always interact
 				return true;
 			}
 			return false;

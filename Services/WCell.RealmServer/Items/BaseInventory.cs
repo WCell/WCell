@@ -1122,6 +1122,10 @@ namespace WCell.RealmServer.Items
 			{
 				err = InventoryError.CAN_ONLY_DO_WITH_EMPTY_BAGS;
 			}
+			else if (!item.CanBeTraded)
+			{
+				err = InventoryError.CANT_DO_RIGHT_NOW;
+			}
 			else if (!Destroy(slot))
 			{
 				// Item was not in this Container

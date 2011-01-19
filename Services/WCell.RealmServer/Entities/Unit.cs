@@ -683,8 +683,13 @@ namespace WCell.RealmServer.Entities
 
 
 			// Power is interpolated automagically
-			UpdatePower(dt);
+			if ((powerupdateTicks % 10) == 10)
+			{
+				UpdatePower(dt);
+			}
 		}
+
+		private int powerupdateTicks;
 
 		public virtual int GetBasePowerRegen()
 		{

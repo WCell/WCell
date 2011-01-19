@@ -2499,6 +2499,12 @@ namespace WCell.RealmServer.Global
 						// TODO: Consider reductions if someone else killed the mob
 						var chr = playerLooter;
 						var baseXp = XpCalculator(playerLooter.Level, npc);
+						if (npc.Entry.Rank >= CreatureRank.Elite)
+						{
+							// elites give double xp
+							baseXp *= 2;
+						}
+
 						XpGenerator.CombatXpDistributer(chr, npc, baseXp);
 
 						if (chr.Group != null)

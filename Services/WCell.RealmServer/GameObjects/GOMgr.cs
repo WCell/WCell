@@ -4,6 +4,7 @@ using System.Linq;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Looting;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
@@ -12,7 +13,9 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Handlers;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
@@ -269,6 +272,37 @@ namespace WCell.RealmServer.GameObjects
 
 			return goEntryCreators;
 		})();
+		#endregion
+
+		#region Quest GOs
+		[Initialization]
+		[DependentInitialization(typeof(LootMgr))]
+		[DependentInitialization(typeof(GOMgr))]
+		[DependentInitialization(typeof(ItemMgr))]
+		[DependentInitialization(typeof(QuestMgr))]
+		public static void InitQuestGOs()
+		{
+			// get quest information for this GO
+			foreach (var go in Entries.Values)
+			{
+				if (go.Flags.HasFlag(GameObjectFlags.ConditionalInteraction) && go.Type == GameObjectType.Chest)
+				{
+					// quest container - need to find out what quest it belongs to
+					var loot = go.GetLootEntries();
+					if (loot != null)
+					{
+						foreach (var lootEntry in loot)
+						{
+							var item = lootEntry.ItemTemplate;
+							if (item != null && item.CollectQuests != null)
+							{
+								go.RequiredQuests.AddRange(item.CollectQuests);
+							}
+						}
+					}
+				}
+			}
+		}
 		#endregion
 
 		public static GOSpawn GetClosestTemplate(this ICollection<GOSpawn> templates, IWorldLocation pos)

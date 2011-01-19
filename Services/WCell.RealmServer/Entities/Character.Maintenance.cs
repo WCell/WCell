@@ -159,6 +159,8 @@ namespace WCell.RealmServer.Entities
 
 			CanMelee = true;
 
+			SpeedFactor = DefaultSpeedFactor;
+
 			// basic setup
 			if (record.JustCreated)
 			{

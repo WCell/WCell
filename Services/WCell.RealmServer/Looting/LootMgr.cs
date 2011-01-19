@@ -227,7 +227,7 @@ namespace WCell.RealmServer.Looting
 		{
 			var looters = FindLooters(lootable, initialLooter);
 
-			var items = GenerateItemLoot(lootable.GetLootId(type), type, heroic, looters);
+			var items = CreateItemLoot(lootable.GetLootId(type), type, heroic, looters);
 			var money = lootable.LootMoney;
 			if (items.Length == 0 && money == 0)
 			{
@@ -311,7 +311,7 @@ namespace WCell.RealmServer.Looting
 		/// <summary>
 		/// Returns all Items that can be looted off the given lootable
 		/// </summary>
-		public static LootItem[] GenerateItemLoot(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
+		public static LootItem[] CreateItemLoot(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
 		{
 #if DEBUG
 			if (!ItemMgr.Loaded)
@@ -425,6 +425,12 @@ namespace WCell.RealmServer.Looting
 			looters.Add(initialLooter.LooterEntry);
 		}
 
+		#region Extension methods
+		public static ResolvedLootItemList GetLootEntries(this ILockable lockable, LootEntryType type)
+		{
+			return GetEntries(type, lockable.GetLootId(type));
+		}
+
 		/// <summary>
 		/// Returns whether this lockable can be opened by the given Character
 		/// </summary>
@@ -467,6 +473,7 @@ namespace WCell.RealmServer.Looting
 			}
 			return false;
 		}
+		#endregion
 	}
 
 	/// <summary>
