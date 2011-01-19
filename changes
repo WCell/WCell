@@ -1,5 +1,0 @@
-- fixed item stat bonuses
-- fixed unique/quest item destruction
-- fixed lootable quest GOs and item-/go- quest relations (however need to get in/out of range of GO to make it clickable/unclickable after activating/cancelling)
-- fixed quest chains
-- set SpeedFactor of players to DefaultSpeedFactor on login

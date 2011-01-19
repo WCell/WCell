@@ -1223,7 +1223,7 @@ namespace WCell.RealmServer.Global
 					else
 					{
 						//priority = obj.UpdatePriority;
-						priority = UpdatePriority.Active;
+						priority = UpdatePriority.HighPriority;
 					}
 
 					var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);

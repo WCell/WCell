@@ -1543,29 +1543,27 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				// TODO: fix this thing
 				// power is now calculated and regenerated continuously client-side
 				// so we also need to interpolate power values server-side
-				return GetInt32(UnitFields.POWER1 + (int)PowerType);
+				return (int)(internalPower + 0.5f);
 			}
 			set
 			{
 				value = MathUtil.ClampMinMax(value, 0, MaxPower);
-
-				if (value != Power)
-				{
-					SetInt32(UnitFields.POWER1 + (int)PowerType, value);
-					MiscHandler.SendPowerUpdate(this, PowerType, value);
-				}
+				internalPower = value;
+				
+				SetInt32(UnitFields.POWER1 + (int) PowerType, value);
+				MiscHandler.SendPowerUpdate(this, PowerType, value);
 			}
 		}
 
+
+		private float internalPower;
 		internal void UpdatePower(int delayMillis)
 		{
-			var val = Power;
-			val += (m_PowerRegenPerTick * delayMillis) / RegenerationFormulas.RegenTickDelayMillis;	// rounding
-			val = MathUtil.ClampMinMax(val, 0, MaxPower);
-			SetInt32(UnitFields.POWER1 + (int)PowerType, val);
+			internalPower += (m_PowerRegenPerTick * delayMillis) / (float)RegenerationFormulas.RegenTickDelayMillis;	// rounding
+			internalPower = MathUtil.ClampMinMax(internalPower, 0, MaxPower);
+			//SetInt32(UnitFields.POWER1 + (int)PowerType, (int)(val + 0.5f));
 		}
 
 		/// <summary>
