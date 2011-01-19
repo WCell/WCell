@@ -298,6 +298,15 @@
   <Item Key="NPCTiare">
     <Value>Teleport me to Amber Ledge!</Value>
   </Item>
+  <Item Key="NPCCurgle1">
+    <Value>Please tell me more about the Hippogryphs</Value>
+  </Item>
+  <Item Key="NPCCurgle2">
+    <Value>Please tell me more about the Gordunni Ogres</Value>
+  </Item>
+  <Item Key="NPCTrenton">
+    <Value>Tell me more, Trenton</Value>
+  </Item>
     
   </Items>
 </Translation>

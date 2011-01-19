@@ -87,6 +87,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AuthServer", "AuthServer", 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DefaultAddon", "DefaultAddon", "{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79}"
+	ProjectSection(SolutionItems) = preProject
+		Run\RealmServerAddons\DefaultAddon\Lang\English.xml = Run\RealmServerAddons\DefaultAddon\Lang\English.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -404,9 +407,9 @@ Global
 		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

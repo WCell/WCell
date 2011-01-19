@@ -7,7 +7,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Spells;
 using WCell.Constants.Spells;
 
-namespace WCell.Addons.Default.World_Gossip
+namespace WCell.Addons.Default.Gossip.World_Gossip
 {
     class Tiare : GossipMenu
     {
