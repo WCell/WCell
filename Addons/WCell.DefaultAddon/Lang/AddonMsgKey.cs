@@ -118,6 +118,9 @@ namespace WCell.Addons.Default.Lang
         #endregion
 
         NPCTiare,
+        NPCCurgle1,
+        NPCCurgle2,
+        NPCTrenton,
 		End
 	}
 }
