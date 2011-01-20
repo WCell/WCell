@@ -9,26 +9,18 @@ using WCell.Constants.Spells;
 
 namespace WCell.Addons.Default.Gossip.World_Gossip
 {
-    class CurgleCranklehop : GossipMenu
+    class TanarisGossips : GossipMenu
     {
         [Initialization]
         [DependentInitialization(typeof(NPCMgr))]
-        public static void CreateCurgleCranklehopGossipMenu()
+        public static void CreateTanarisGossipMenus()
         {
-            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.CurgleCranklehop);
-            entry.DefaultGossip = new GossipMenu(1519,
+            var Curgle = NPCMgr.GetEntry(Constants.NPCs.NPCId.CurgleCranklehop);
+            var Trenton = NPCMgr.GetEntry(Constants.NPCs.NPCId.TrentonLighthammer);
+            Curgle.DefaultGossip = new GossipMenu(1519,
                 new MultiStringGossipMenuItem(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.NPCCurgle1), new GossipMenu(1521)),
                 new MultiStringGossipMenuItem(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.NPCCurgle2), new GossipMenu(1646)));
-        }
-    }
-    class TrentonLighthammer : GossipMenu
-    {
-        [Initialization]
-        [DependentInitialization(typeof(NPCMgr))]
-        public static void CreateTrentonLighthammerGossipMenu()
-        {
-            var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.TrentonLighthammer);
-            entry.DefaultGossip = new GossipMenu(1758,
+            Trenton.DefaultGossip = new GossipMenu(1758,
                 new MultiStringGossipMenuItem(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.NPCTrenton), new GossipMenu(1759)));
         }
     }
