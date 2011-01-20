@@ -232,7 +232,10 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		void Initialize()
 		{
-			m_flag = GameObject.Create(GOEntryId.DuelFlag);
+			// place flag in between the two
+			var pos = ((m_challenger.Position + m_rival.Position) / 2);
+
+			m_flag = GameObject.Create(GOEntryId.DuelFlag, new WorldLocationStruct(m_region, pos));
 			m_flag.Phase = m_challenger.Phase;
 			if (m_flag == null)
 			{
@@ -249,14 +252,7 @@ namespace WCell.RealmServer.Misc
 				m_flag.Faction = m_challenger.Faction;
 				m_flag.ScaleX = m_challenger.ScaleX;
 				m_flag.ParentRotation4 = 1;
-
-				m_region.AddMessage(new Message(() =>
-				{
-					if (m_flag == null) return;
-					m_flag.Orientation = m_challenger.Orientation;
-					m_flag.Position = ((m_challenger.Position + m_rival.Position) / 2);
-					m_region.AddObjectNow(m_flag);
-				}));
+				m_flag.Orientation = m_challenger.Orientation;
 
 				m_region.AddMessage(new Message(() => DuelHandler.SendRequest(m_flag, m_challenger, m_rival)));
 				m_challenger.SetEntityId(PlayerFields.DUEL_ARBITER, m_flag.EntityId);

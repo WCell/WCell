@@ -875,7 +875,7 @@
     <Compile Include="Misc\TutorialFlags.cs" />
     <Compile Include="GameObjects\GOEntry.cs" />
     <Compile Include="GameObjects\GOMgr.cs" />
-    <Compile Include="GameObjects\GOSpawn.cs" />
+    <Compile Include="GameObjects\GOSpawnEntry.cs" />
     <Compile Include="Gossips\IGossipAction.cs" />
     <Compile Include="Gossips\GossipConversation.cs" />
     <Compile Include="Gossips\GossipMenu.cs" />
@@ -909,7 +909,7 @@
     <Compile Include="NPCs\NPC.DBC.cs" />
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
-    <Compile Include="NPCs\SpawnEntry.cs" />
+    <Compile Include="NPCs\NPCSpawnEntry.cs" />
     <Compile Include="NPCs\Figurines\SpawnFigurine.cs" />
     <Compile Include="NPCs\SpawnPoint.cs" />
     <Compile Include="NPCs\Trainers\TrainerEntry.cs" />

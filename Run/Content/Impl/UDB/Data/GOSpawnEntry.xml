@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <DataHolder Name="GOSpawn">
+  <DataHolder Name="GOSpawnEntry">
     <DefaultTable>gameobject</DefaultTable>
     <Flat Name="Id" Column="guid" />
     <Flat Name="EntryId" Column="id" />
@@ -15,10 +15,11 @@
     <Flat Name="State" Column="state" />
     <Flat Name="AnimProgress" Column="animprogress" />
     <Flat Name="PhaseMask" Column="phaseMask" />
+    <Flat Name="RespawnTime" Column="spawntimesecs" />
+    
     <Flat Name="EventId" Table="game_event_gameobject" Column="event" />
 <!--extra in UDB
     spawnMask
-    spawntimesecs
 -->
   </DataHolder>
 </DataHolders>

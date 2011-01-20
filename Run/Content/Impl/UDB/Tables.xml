@@ -32,11 +32,11 @@
     <PrimaryColumn Name="entry"/>
   </Table>
 
-  <Table Name="creature" MainDataHolder="SpawnEntry">
+  <Table Name="creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid"/>
   </Table>
 
-  <Table Name="creature_addon" MainDataHolder="SpawnEntry">
+  <Table Name="creature_addon" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -134,7 +134,7 @@
     <PrimaryColumn Name="entry"/>
   </Table>
 
-  <Table Name="game_event_creature" MainDataHolder="SpawnEntry">
+  <Table Name="game_event_creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -143,7 +143,7 @@
     <PrimaryColumn Name="quest"/>
   </Table>
 
-  <Table Name="game_event_gameobject" MainDataHolder="GOSpawn">
+  <Table Name="game_event_gameobject" MainDataHolder="GOSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 

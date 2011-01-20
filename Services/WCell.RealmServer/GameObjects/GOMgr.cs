@@ -48,7 +48,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// All existing GOTemplates by MapId
 		/// </summary>
-		public static List<GOSpawn>[] TemplatesByMap = new List<GOSpawn>[(int)MapId.End];
+		public static List<GOSpawnEntry>[] TemplatesByMap = new List<GOSpawnEntry>[(int)MapId.End];
 
 		public static GOEntry GetEntry(uint id)
 		{
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.GameObjects
 			return entry;
 		}
 
-		public static GOEntry GetEntry(GOEntryId id)
+		public static GOEntry GetEntry(GOEntryId id, bool force = true)
 		{
 			if (!loaded)
 			{
@@ -67,15 +67,15 @@ namespace WCell.RealmServer.GameObjects
 			GOEntry entry;
 			if (!Entries.TryGetValue((uint)id, out entry))
 			{
-				if (ContentMgr.ForceDataPresence)
+				if (force)
 				{
-					throw new ContentException("Tried to get GOEntry but GOs are not loaded: {0}", id);
+					throw new ContentException("Tried to get non-existing GOEntry: {0}", id);
 				}
 			}
 			return entry;
 		}
 
-		public static List<GOSpawn> GetTemplates(MapId map)
+		public static List<GOSpawnEntry> GetTemplates(MapId map)
 		{
 			return TemplatesByMap.Get((uint)map);
 		}
@@ -109,12 +109,12 @@ namespace WCell.RealmServer.GameObjects
 			}
 		}
 
-		public static void AddTemplate(GOSpawn spawn)
+		public static void AddTemplate(GOSpawnEntry spawn)
 		{
 			var list = TemplatesByMap[(int)spawn.MapId];
 			if (list == null)
 			{
-				TemplatesByMap[(int)spawn.MapId] = list = new List<GOSpawn>(100);
+				TemplatesByMap[(int)spawn.MapId] = list = new List<GOSpawnEntry>(100);
 			}
 			list.Add(spawn);
 		}
@@ -124,7 +124,7 @@ namespace WCell.RealmServer.GameObjects
 			if (!Loaded)
 			{
 				ContentMgr.Load<GOEntry>();
-				ContentMgr.Load<GOSpawn>();
+				ContentMgr.Load<GOSpawnEntry>();
 
 				new GOPortalEntry().FinalizeDataHolder();
 
@@ -137,7 +137,7 @@ namespace WCell.RealmServer.GameObjects
 					if (entry.Templates.Count == 0)
 					{
 						// make sure, every Entry has at least one template
-						entry.Templates.Add(new GOSpawn
+						entry.Templates.Add(new GOSpawnEntry
 						{
 							Entry = entry,
 							Rotations = new float[0],
@@ -305,10 +305,10 @@ namespace WCell.RealmServer.GameObjects
 		}
 		#endregion
 
-		public static GOSpawn GetClosestTemplate(this ICollection<GOSpawn> templates, IWorldLocation pos)
+		public static GOSpawnEntry GetClosestTemplate(this ICollection<GOSpawnEntry> templates, IWorldLocation pos)
 		{
 			var closestDistSq = float.MaxValue;
-			GOSpawn closest = null;
+			GOSpawnEntry closest = null;
 			if (pos == null)
 			{
 				return templates.First();

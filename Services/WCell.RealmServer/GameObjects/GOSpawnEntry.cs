@@ -14,10 +14,10 @@ using WCell.Util.Graphics;
 namespace WCell.RealmServer.GameObjects
 {
 	/// <summary>
-	/// Represents a spawn for a GameObject
+	/// Represents a spawn entry for a GameObject
 	/// </summary>
 	[DataHolder]
-	public class GOSpawn : IDataHolder, IWorldLocation
+	public class GOSpawnEntry : IDataHolder, IWorldLocation
 	{
 		public uint Id;
 		public GOEntryId EntryId;
@@ -64,18 +64,35 @@ namespace WCell.RealmServer.GameObjects
 
 		public uint EventId;
 
+		/// <summary>
+		/// Time in seconds until this GO will respawn after it was destroyed.
+		/// Value less or equal 0 means, it will not automatically respawn.
+		/// </summary>
+		public int RespawnTime;
+
+		/// <summary>
+		/// Time in seconds until this GO will despawn.
+		/// Value less or equal 0 means, it will not automatically despawn.
+		/// </summary>
+		public int DespawnTime;
+
+		public bool WillRespawn
+		{
+			get { return RespawnTime > 0; }
+		}
+
 		[NotPersistent]
 		public GOEntry Entry;
 
 		[NotPersistent]
 		public LootItemEntry LootEntry;
 
-		public GOSpawn()
+		public GOSpawnEntry()
 		{
 		}
 
-		public GOSpawn(GOEntry entry, GameObjectState state, 
-			MapId mapId, ref Vector3 pos, float orientation, float scale, float[] rotations)
+		public GOSpawnEntry(GOEntry entry, GameObjectState state,
+			MapId mapId, ref Vector3 pos, float orientation, float scale, float[] rotations, int respawnTimeSecs = 600)
 		{
 			//Id = id;
 			Entry = entry;
@@ -86,6 +103,7 @@ namespace WCell.RealmServer.GameObjects
 			Orientation = orientation;
 			Scale = scale;
 			Rotations = rotations;
+			RespawnTime = respawnTimeSecs;
 		}
 
 		public uint LootMoney
@@ -103,28 +121,17 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var go = GameObject.Create(Entry, this);
-			go.Position = Pos;
-			region.AddObject(go);
+			var go = GameObject.Create(Entry, new WorldLocationStruct(region, Pos), this);
 			return go;
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template at the given location
 		/// </summary>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
 		public GameObject Spawn(IWorldLocation pos)
 		{
-			var go = GameObject.Create(Entry, this);
-			go.Position = pos.Position;
-			pos.Region.AddObject(go);
-			return go;
-		}
-
-		public override string ToString()
-		{
-			return (Entry != null ? Entry.DefaultName : "") + " (EntryId: " + EntryId + " (" + (int)EntryId + ")" //+ ", Id: " + Id
-				+ ")";
+			return GameObject.Create(Entry, pos, this);
 		}
 
 		public uint GetId()
@@ -144,6 +151,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				Scale = 1;
 			}
+
 			if (EntryId == 0)
 			{
 				EntryId = (GOEntryId)EntryIdRaw;
@@ -152,6 +160,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				EntryIdRaw = (uint)EntryId;
 			}
+
 			if (Entry == null)
 			{
 				GOMgr.Entries.TryGetValue((uint)EntryId, out Entry);
@@ -161,9 +170,17 @@ namespace WCell.RealmServer.GameObjects
 					return;
 				}
 			}
+
 			if (Rotations == null)
 			{
 				Rotations = new float[GOConstants.MaxRotations];
+			}
+
+			if (RespawnTime < 0)
+			{
+				// in UDB, a negative DespawnTime implies that the GO will not auto-spawn and despawn after the negative amount of seconds
+				AutoSpawn = false;
+				DespawnTime = -RespawnTime;
 			}
 
 			Entry.Templates.Add(this);
@@ -193,9 +210,9 @@ namespace WCell.RealmServer.GameObjects
 		}
 		#endregion
 
-		public static IEnumerable<GOSpawn> GetAllDataHolders()
+		public static IEnumerable<GOSpawnEntry> GetAllDataHolders()
 		{
-			var list = new List<GOSpawn>(10000);
+			var list = new List<GOSpawnEntry>(10000);
 			foreach (var entry in GOMgr.Entries.Values)
 			{
 				if (entry != null)
@@ -204,6 +221,12 @@ namespace WCell.RealmServer.GameObjects
 				}
 			}
 			return list;
+		}
+
+		public override string ToString()
+		{
+			return (Entry != null ? Entry.DefaultName : "") + " (EntryId: " + EntryId + " (" + (int)EntryId + ")" //+ ", Id: " + Id
+				+ ")";
 		}
 	}
 }

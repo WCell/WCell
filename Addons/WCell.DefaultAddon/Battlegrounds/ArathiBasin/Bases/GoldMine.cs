@@ -19,7 +19,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases
         protected override void SpawnNeutral()
         {
             GOEntry mineBannerEntry = GOMgr.GetEntry(GOEntryId.MineBanner_2);
-            FlagStand = mineBannerEntry.FirstSpawn.Spawn(Instance);
+            FlagStand = mineBannerEntry.FirstSpawnEntry.Spawn(Instance);
 
             GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
             ActualAura = neutralBannerAuraEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);

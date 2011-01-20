@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Entities
 		#region Creation & Init
 		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
 		{
-			SpawnEntry spawnEntry;
+			NPCSpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
 				// Spawn-specific information

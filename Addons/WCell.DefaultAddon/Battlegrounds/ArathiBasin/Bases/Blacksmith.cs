@@ -19,7 +19,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases
         protected override void SpawnNeutral()
         {
             GOEntry blacksmithBannerEntry = GOMgr.GetEntry(GOEntryId.BlacksmithBanner_2);
-            FlagStand = blacksmithBannerEntry.FirstSpawn.Spawn(Instance);
+            FlagStand = blacksmithBannerEntry.FirstSpawnEntry.Spawn(Instance);
 
             GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
             ActualAura = neutralBannerAuraEntry.Templates[(int)ArathiBases.Blacksmith].Spawn(Instance);

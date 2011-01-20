@@ -23,7 +23,7 @@ namespace WCell.RealmServer.NPCs
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public partial class SpawnEntry : INPCDataHolder, IWorldLocation
+	public partial class NPCSpawnEntry : INPCDataHolder, IWorldLocation
 	{
 		private static uint highestSpawnId;
 		public static uint GenerateSpawnId()
@@ -31,7 +31,7 @@ namespace WCell.RealmServer.NPCs
 			return ++highestSpawnId;
 		}
 
-		public SpawnEntry()
+		public NPCSpawnEntry()
 		{
 
 		}
@@ -344,7 +344,7 @@ namespace WCell.RealmServer.NPCs
 				var list = NPCMgr.SpawnEntriesByMap[(uint)RegionId];
 				if (list == null)
 				{
-					list = NPCMgr.SpawnEntriesByMap[(uint)RegionId] = new List<SpawnEntry>(5000);
+					list = NPCMgr.SpawnEntriesByMap[(uint)RegionId] = new List<NPCSpawnEntry>(5000);
 				}
 
 				list.Add(this);
@@ -393,7 +393,7 @@ namespace WCell.RealmServer.NPCs
 			return string.Format(GetType().Name + " #{0} ({1} #{2})", SpawnId, EntryId, (uint)EntryId);
 		}
 
-		public static IEnumerable<SpawnEntry> GetAllDataHolders()
+		public static IEnumerable<NPCSpawnEntry> GetAllDataHolders()
 		{
 			return NPCMgr.SpawnEntries;
 		}

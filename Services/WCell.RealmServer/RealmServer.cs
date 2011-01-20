@@ -23,6 +23,7 @@ using Cell.Core;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;

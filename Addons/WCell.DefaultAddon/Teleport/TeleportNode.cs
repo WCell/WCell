@@ -12,11 +12,13 @@ namespace WCell.Addons.Default.Teleport
 {
 	public class TeleportNode : INamedWorldZoneLocation
 	{
+		public delegate WorldObject TeleporterCreatorFunc(TeleportNode node, Region map, Vector3 pos);
+
 		private string[] m_Names = new string[(int)ClientLocale.End];
 
 		public readonly List<INamedWorldZoneLocation> Destinations = new List<INamedWorldZoneLocation>(5);
 
-		public Func<TeleportNode, WorldObject> ObjectCreator = TeleportNetwork.CreateDefaultPortal;
+		public TeleporterCreatorFunc TeleportCreator = TeleportNetwork.CreateDefaultPortal;
 
 		private Vector3 m_Position;
 
@@ -83,8 +85,7 @@ namespace WCell.Addons.Default.Teleport
 		{
 			if (TeleporterObject == null || !TeleporterObject.IsInWorld)
 			{
-				var go = TeleporterObject = ObjectCreator(this);
-				Region.AddObject(go, ref m_Position);
+				TeleporterObject = TeleportCreator(this, Region, m_Position);
 			}
 		}
 	}

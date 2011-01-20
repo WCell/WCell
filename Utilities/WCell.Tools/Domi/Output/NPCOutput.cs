@@ -90,7 +90,7 @@ namespace WCell.Tools.Domi.Output
 		{
 			using (var writer = new StreamWriter(ToolConfig.OutputDir + "/NPCBytes" + name + ".txt", false))
 			{
-				var set = new Dictionary<uint, SpawnEntry>();
+				var set = new Dictionary<uint, NPCSpawnEntry>();
 				foreach (var spawn in NPCMgr.SpawnEntries)
 				{
 					if (spawn == null)

@@ -59,7 +59,7 @@ namespace WCell.RealmServer.NPCs
 		public uint ArriveDisplayId, LeaveDisplayId;
 
 		[NotPersistent]
-		public SpawnEntry SpawnEntry;
+		public NPCSpawnEntry SpawnEntry;
 
 		[NotPersistent]
 		public LinkedListNode<WaypointEntry> Node;

@@ -8,52 +8,34 @@ namespace WCell.RealmServer.GameObjects
 {
 	public class Portal : GameObject
 	{
-		public static Portal Create(IWorldLocation target)
+		public static Portal Create(IWorldLocation where, IWorldLocation target)
 		{
 			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
 			if (entry == null)
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, entry.FirstSpawn);
+			var portal = (Portal)Create(entry, where, entry.FirstSpawnEntry);
 			portal.Target = target;
 			return portal;
 		}
 
-		public static Portal Create(MapId rgnId, Vector3 pos, MapId targetRgn, Vector3 targetPos)
+		public static Portal Create(MapId mapId, Vector3 pos, MapId targetMap, Vector3 targetPos)
 		{
-			var portal = Create(targetRgn, targetPos);
-			var rgn = World.GetRegion(rgnId);
+			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
+			if (entry == null)
+			{
+				return null;
+			}	
+			var rgn = World.GetRegion(mapId);
 			if (rgn == null)
 			{
-				throw new ArgumentException("Invalid rgnId (not a Continent): " + rgnId);
+				throw new ArgumentException("Invalid MapId (not a Continent): " + mapId);
 			}
-			portal.Position = pos;
+
+			var portal = (Portal)Create(entry, new WorldLocation(mapId, pos), entry.FirstSpawnEntry);
+			portal.Target = new WorldLocation(targetMap, targetPos);
 			rgn.AddObject(portal);
-			return portal;
-		}
-
-		public static Portal Create(MapId targetRgn, Vector3 targetPos)
-		{
-			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
-			if (entry == null)
-			{
-				return null;
-			}
-			var portal = (Portal)Create(entry, entry.FirstSpawn);
-			portal.Target = new WorldLocation(targetRgn, targetPos);
-			return portal;
-		}
-
-		public static Portal Create(Region targetRgn, Vector3 targetPos)
-		{
-			var entry = GOMgr.GetEntry(GOPortalEntry.PortalId);
-			if (entry == null)
-			{
-				return null;
-			}
-			var portal = (Portal)Create(entry, entry.FirstSpawn);
-			portal.Target = new WorldLocation(targetRgn, targetPos);
 			return portal;
 		}
 

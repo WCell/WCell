@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Entities
 			m_passengers = new List<Unit>();
 		}
 
-		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOSpawn templ)
+		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOSpawnEntry templ)
 		{
 			base.Init(entry, templ);
 

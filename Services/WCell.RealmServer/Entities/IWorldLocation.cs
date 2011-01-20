@@ -62,6 +62,45 @@ namespace WCell.RealmServer.Entities
 		public Region Region { get; set; }
 	}
 
+	public struct WorldLocationStruct : IWorldLocation
+	{
+		private Vector3 m_Position;
+		private Region m_Region;
+
+		public WorldLocationStruct(MapId region, Vector3 pos)
+		{
+			m_Position = pos;
+			m_Region = World.GetRegion(region);
+			if (m_Region == null)
+			{
+				throw new Exception("Invalid Region in WorldLocationStruct: " + region);
+			}
+		}
+
+		public WorldLocationStruct(Region region, Vector3 pos)
+		{
+			m_Position = pos;
+			m_Region = region;
+		}
+
+		public Vector3 Position
+		{
+			get { return m_Position; }
+			set { m_Position = value; }
+		}
+
+		public Region Region
+		{
+			get { return m_Region; }
+			set { m_Region = value; }
+		}
+
+		public MapId RegionId
+		{
+			get { return Region.Id; }
+		}
+	}
+
 	public class SimpleWorldLocation : IWorldLocation
 	{
 		public SimpleWorldLocation(MapId region, Vector3 pos)

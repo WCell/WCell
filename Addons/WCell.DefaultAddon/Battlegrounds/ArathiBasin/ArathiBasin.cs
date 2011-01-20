@@ -264,8 +264,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry allianceDoorEntry = GOMgr.GetEntry(GOEntryId.ALLIANCEDOOR);
             GOEntry hordeDoorEntry = GOMgr.GetEntry(GOEntryId.HORDEDOOR);
             
-            _allianceDoor = allianceDoorEntry.FirstSpawn.Spawn(this);
-            _hordeDoor = hordeDoorEntry.FirstSpawn.Spawn(this);
+            _allianceDoor = allianceDoorEntry.FirstSpawnEntry.Spawn(this);
+            _hordeDoor = hordeDoorEntry.FirstSpawnEntry.Spawn(this);
         }
         #endregion
 
@@ -324,13 +324,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry allianceDoorEntry = GOMgr.GetEntry(GOEntryId.ALLIANCEDOOR);
             GOEntry hordeDoorEntry = GOMgr.GetEntry(GOEntryId.HORDEDOOR);
             
-            allianceDoorEntry.FirstSpawn.State = GameObjectState.Enabled;
+            allianceDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             allianceDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            allianceDoorEntry.FirstSpawn.AutoSpawn = false;
+            allianceDoorEntry.FirstSpawnEntry.AutoSpawn = false;
 
-            hordeDoorEntry.FirstSpawn.State = GameObjectState.Enabled;
+            hordeDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             hordeDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            hordeDoorEntry.FirstSpawn.AutoSpawn = false;
+            hordeDoorEntry.FirstSpawnEntry.AutoSpawn = false;
 
             GOEntry bersekerBuffEntry = GOMgr.GetEntry(GOEntryId.BerserkBuff_6);
             GOEntry foodBuffEntry = GOMgr.GetEntry(GOEntryId.FoodBuff_5);
@@ -352,11 +352,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry hordeBannerAuraEntry = GOMgr.GetEntry(GOEntryId.HordeBannerAura);
             GOEntry allianceBannerAuraEntry = GOMgr.GetEntry(GOEntryId.AllianceBannerAura);
 
-            farmBannerEntry.FirstSpawn.AutoSpawn = false;
-            mineBannerEntry.FirstSpawn.AutoSpawn = false;
-            lumbermillBannerEntry.FirstSpawn.AutoSpawn = false;
-            stablesBannerEntry.FirstSpawn.AutoSpawn = false;
-            blacksmithBannerEntry.FirstSpawn.AutoSpawn = false;
+            farmBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            mineBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            lumbermillBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            stablesBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            blacksmithBannerEntry.FirstSpawnEntry.AutoSpawn = false;
 
             allianceAttackFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
             allianceControlledFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);

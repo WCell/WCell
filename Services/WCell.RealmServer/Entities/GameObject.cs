@@ -28,12 +28,14 @@ using WCell.Core.Timers;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;
+using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
 {
@@ -58,7 +60,7 @@ namespace WCell.RealmServer.Entities
 
 		protected GameObjectHandler m_handler;
 		protected bool m_respawns;
-		protected GOSpawn m_template;
+		protected GOSpawnEntry m_template;
 		protected TimerEntry m_decayTimer, m_respawnTimer;
 		protected GameObject m_linkedTrap;
 		protected internal bool m_IsTrap;
@@ -102,7 +104,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
-		public GOSpawn Spawn
+		public GOSpawnEntry SpawnEntry
 		{
 			get { return m_template; }
 		}
@@ -181,37 +183,42 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates the given kind of GameObject with the default Template
 		/// </summary>
-		public static GameObject Create(GOEntryId id)
+		public static GameObject Create(GOEntryId id, IWorldLocation location, GOSpawnEntry spawnEntry = null)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry == null)
 			{
 				return null;
 			}
-			return Create(entry, entry.Templates.Count > 0 ? entry.Templates[0] : null);
+			return Create(entry, location, spawnEntry ?? (entry.Templates.Count > 0 ? entry.Templates[0] : null));
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, GOSpawn templ)
+		public static GameObject Create(GOEntryId id, Region map, GOSpawnEntry templ)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
 			{
-				return Create(entry, templ);
+				return Create(entry, map, templ);
 			}
 			return null;
+		}
+
+		public static GameObject Create(GOEntry entry, Region map, GOSpawnEntry spawnEntry = null)
+		{
+			return Create(entry, new WorldLocation(map, Vector3.Zero), spawnEntry);
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntry entry, GOSpawn templ)
+		public static GameObject Create(GOEntry entry, IWorldLocation where, GOSpawnEntry spawnEntry)
 		{
 			var go = entry.GOCreator();
 			var handlerCreator = entry.HandlerCreator;
-			go.Init(entry, templ); 
+			go.Init(entry, spawnEntry);
 			if (handlerCreator != null)
 			{
 				go.Handler = handlerCreator();
@@ -222,6 +229,8 @@ namespace WCell.RealmServer.Entities
 				go.Delete();
 				return null;
 			}
+			var pos = where.Position;
+			where.Region.AddObject(go, ref pos);
 			return go;
 		}
 
@@ -230,7 +239,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="templ"></param>
-		internal virtual void Init(GOEntry entry, GOSpawn templ)
+		internal virtual void Init(GOEntry entry, GOSpawnEntry templ)
 		{
 			EntityId = EntityId.GetGameObjectId((uint)Interlocked.Increment(ref _lastGOUID), entry.GOId);
 			Type |= ObjectTypes.GameObject;

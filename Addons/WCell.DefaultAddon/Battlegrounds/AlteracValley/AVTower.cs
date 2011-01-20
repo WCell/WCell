@@ -81,7 +81,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
             ChatMgr.SendSystemMessage(Instance.Characters, Name + " has been destroyed by the " + BaseOwner);
 
             // Check this: (the flag/tower should burn and become unusable)
-            FlagStand.FirstSpawn.AnimProgress = 255;
+            FlagStand.FirstSpawnEntry.AnimProgress = 255;
         }
 
         private bool CanBurn(Character chr)

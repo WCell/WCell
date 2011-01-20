@@ -69,11 +69,11 @@ namespace WCell.RealmServer.Commands
 				var target = trigger.Args.Target;
 				var region = target != null ? target.Region : World.Kalimdor;
 
-				var entry = GOMgr.GetEntry(id);
+				var entry = GOMgr.GetEntry(id, false);
 
 				if (mod == "c")
 				{
-					ICollection<GOSpawn> templates;
+					ICollection<GOSpawnEntry> templates;
 					if (entry != null)
 					{
 						templates = entry.Templates;
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 					}
 
 					// spawn closest
-					GOSpawn closest;
+					GOSpawnEntry closest;
 
 					if (entry != null)
 					{
@@ -122,8 +122,7 @@ namespace WCell.RealmServer.Commands
 					if (entry != null)
 					{
 						// spawn a new GO
-						var go = entry.Create(trigger.Args.Target);
-						trigger.Args.Target.PlaceOnTop(go);
+						var go = entry.Spawn(trigger.Args.Target, trigger.Args.Target);
 						trigger.Reply("Successfully spawned new GO: {0}.", go.Name);
 					}
 					else
@@ -478,7 +477,7 @@ namespace WCell.RealmServer.Commands
 		void CreatePortal(WorldObject at, IWorldLocation target)
 		{
 			// create portal
-			var portal = Portal.Create(target);
+			var portal = Portal.Create(at, target);
 			at.PlaceInFront(portal);
 		}
 

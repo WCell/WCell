@@ -1,1 +1,4 @@
-- fixed and tested casting of combat abilities when target runs out of range
+- loaded GO respawn data
+- overhauled the Create/Spawn methods for GOs
+- renamed GOSpawn to GOSpawnEntry
+- renamed SpawnEntry to NPCSpawnEntry

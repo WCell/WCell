@@ -31,7 +31,7 @@ using WCell.Constants;
 namespace WCell.RealmServer.NPCs
 {
 	public delegate void NPCTypeHandler(NPC npc);
-	public delegate void NPCSpawnTypeHandler(SpawnEntry spawnEntry);
+	public delegate void NPCSpawnTypeHandler(NPCSpawnEntry spawnEntry);
 
 	/// <summary>
 	/// Static helper and srcCont class for all NPCs and NPC-related information
@@ -187,13 +187,13 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// All NPCSpawnEntries by their Id
 		/// </summary>
-		public static SpawnEntry[] SpawnEntries = new SpawnEntry[40000];
+		public static NPCSpawnEntry[] SpawnEntries = new NPCSpawnEntry[40000];
 
 		[NotVariable]
 		/// <summary>
 		/// All NPCSpawnEntries by MapId
 		/// </summary>
-		public static List<SpawnEntry>[] SpawnEntriesByMap = new List<SpawnEntry>[600];
+		public static List<NPCSpawnEntry>[] SpawnEntriesByMap = new List<NPCSpawnEntry>[600];
 
 		[NotVariable]
 		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[2000];
@@ -255,7 +255,7 @@ namespace WCell.RealmServer.NPCs
 			return Entries[(uint)id];
 		}
 
-		public static SpawnEntry GetSpawnEntry(uint id)
+		public static NPCSpawnEntry GetSpawnEntry(uint id)
 		{
 			if (id >= SpawnEntries.Length)
 			{
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.NPCs
 			return SpawnEntries[id];
 		}
 
-		public static List<SpawnEntry> GetSpawnEntries(MapId map)
+		public static List<NPCSpawnEntry> GetSpawnEntries(MapId map)
 		{
 			return SpawnEntriesByMap[(int)map];
 		}
@@ -553,7 +553,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				return;
 			}
-			ContentMgr.Load<SpawnEntry>();
+			ContentMgr.Load<NPCSpawnEntry>();
 			SpawnsLoaded = true;
 		}
 
@@ -805,9 +805,9 @@ namespace WCell.RealmServer.NPCs
 			return null;
 		}
 
-		public static SpawnEntry GetClosesSpawnEntry(IWorldLocation pos)
+		public static NPCSpawnEntry GetClosesSpawnEntry(IWorldLocation pos)
 		{
-			SpawnEntry closest = null;
+			NPCSpawnEntry closest = null;
 			var distanceSq = Single.MaxValue;
 			foreach (var spawn in SpawnEntriesByMap[(int)pos.RegionId])
 			{

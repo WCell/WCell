@@ -169,7 +169,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 		}
 
 
-		public void RegisterFlagstand(GOSpawn spawn)
+		public void RegisterFlagstand(GOSpawnEntry spawn)
 		{
 			spawn.Entry.Used += (go, chr) =>
 			{

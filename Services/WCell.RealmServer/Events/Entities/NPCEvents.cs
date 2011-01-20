@@ -28,7 +28,7 @@ namespace WCell.RealmServer.NPCs
     	public event NPCHandler LevelChanged;
     }
 
-	public partial class SpawnEntry
+	public partial class NPCSpawnEntry
 	{
 		/// <summary>
 		/// Called when a new NPC of this Spawn has been added to the world (also called on Teleport to another Region).

@@ -270,12 +270,12 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
             GOEntry hordeDoor1 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor01);
             GOEntry hordeDoor2 = GOMgr.GetEntry(GOEntryId.Doodad_RazorfenDoor02);
 
-			_allianceDoor1 = allianceDoorEntry1.FirstSpawn.Spawn(this);
-			_allianceDoor2 = allianceDoorEntry2.FirstSpawn.Spawn(this);
-			_allianceDoor3 = allianceDoorEntry3.FirstSpawn.Spawn(this);
+			_allianceDoor1 = allianceDoorEntry1.FirstSpawnEntry.Spawn(this);
+			_allianceDoor2 = allianceDoorEntry2.FirstSpawnEntry.Spawn(this);
+			_allianceDoor3 = allianceDoorEntry3.FirstSpawnEntry.Spawn(this);
 
-			_hordeDoor1 = hordeDoor1.FirstSpawn.Spawn(this);
-			_hordeDoor2 = hordeDoor2.FirstSpawn.Spawn(this);
+			_hordeDoor1 = hordeDoor1.FirstSpawnEntry.Spawn(this);
+			_hordeDoor2 = hordeDoor2.FirstSpawnEntry.Spawn(this);
 
 			// adjust anim progress so the door appears upright right off the bat
 			_allianceDoor1.AnimationProgress = 255;
@@ -371,65 +371,65 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 
 			// Manually fixing each entry's template. (should be replaced by DB values)
-			allianceDoor1.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceDoor1.FirstSpawn.Pos = new Vector3(1471.555f, 1458.778f, 362.6332f);
-			allianceDoor1.FirstSpawn.Orientation = 3.115414f;
-			allianceDoor1.FirstSpawn.Scale = 1.5f;
-			allianceDoor1.FirstSpawn.Rotations = new float[] { 3.115414f, 0, 0, 0.9999143f, 0.01308903f };
-			allianceDoor1.FirstSpawn.State = GameObjectState.Enabled; // Spawn the door closed
-			allianceDoor1.FirstSpawn.AutoSpawn = false;
+			allianceDoor1.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceDoor1.FirstSpawnEntry.Pos = new Vector3(1471.555f, 1458.778f, 362.6332f);
+			allianceDoor1.FirstSpawnEntry.Orientation = 3.115414f;
+			allianceDoor1.FirstSpawnEntry.Scale = 1.5f;
+			allianceDoor1.FirstSpawnEntry.Rotations = new float[] { 3.115414f, 0, 0, 0.9999143f, 0.01308903f };
+			allianceDoor1.FirstSpawnEntry.State = GameObjectState.Enabled; // Spawn the door closed
+			allianceDoor1.FirstSpawnEntry.AutoSpawn = false;
 			allianceDoor1.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
-			allianceDoor2.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceDoor2.FirstSpawn.Pos = new Vector3(1492.478f, 1457.912f, 342.9689f);
-			allianceDoor2.FirstSpawn.Orientation = 3.115414f;
-			allianceDoor2.FirstSpawn.Scale = 2.5f;
-			allianceDoor2.FirstSpawn.Rotations = new float[] { 0, 0, 0.9999143f, 0.01308903f };
-			allianceDoor2.FirstSpawn.State = GameObjectState.Enabled; // Spawn the door closed
-			allianceDoor2.FirstSpawn.AutoSpawn = false;
+			allianceDoor2.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceDoor2.FirstSpawnEntry.Pos = new Vector3(1492.478f, 1457.912f, 342.9689f);
+			allianceDoor2.FirstSpawnEntry.Orientation = 3.115414f;
+			allianceDoor2.FirstSpawnEntry.Scale = 2.5f;
+			allianceDoor2.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.9999143f, 0.01308903f };
+			allianceDoor2.FirstSpawnEntry.State = GameObjectState.Enabled; // Spawn the door closed
+			allianceDoor2.FirstSpawnEntry.AutoSpawn = false;
 			allianceDoor2.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
-			allianceDoor3.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceDoor3.FirstSpawn.Pos = new Vector3(1503.335f, 1493.466f, 352.1888f);
-			allianceDoor3.FirstSpawn.Orientation = 3.115414f;
-			allianceDoor3.FirstSpawn.Scale = 2f;
-			allianceDoor3.FirstSpawn.Rotations = new float[] { 0, 0, 0.9999143f, 0.01308903f };
-			allianceDoor3.FirstSpawn.State = GameObjectState.Enabled; // Spawn the door closed
-			allianceDoor3.FirstSpawn.AutoSpawn = false;
+			allianceDoor3.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceDoor3.FirstSpawnEntry.Pos = new Vector3(1503.335f, 1493.466f, 352.1888f);
+			allianceDoor3.FirstSpawnEntry.Orientation = 3.115414f;
+			allianceDoor3.FirstSpawnEntry.Scale = 2f;
+			allianceDoor3.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.9999143f, 0.01308903f };
+			allianceDoor3.FirstSpawnEntry.State = GameObjectState.Enabled; // Spawn the door closed
+			allianceDoor3.FirstSpawnEntry.AutoSpawn = false;
 			allianceDoor3.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
-			hordeDoor1.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeDoor1.FirstSpawn.Pos = new Vector3(949.1663f, 1423.772f, 345.6241f);
-			hordeDoor1.FirstSpawn.Orientation = -0.5756807f;
-			hordeDoor1.FirstSpawn.Rotations = new float[] { -0.01673368f, -0.004956111f, -0.2839723f, 0.9586737f };
-			hordeDoor1.FirstSpawn.State = GameObjectState.Enabled; // Spawn the door closed
-			hordeDoor1.FirstSpawn.AutoSpawn = false;
+			hordeDoor1.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeDoor1.FirstSpawnEntry.Pos = new Vector3(949.1663f, 1423.772f, 345.6241f);
+			hordeDoor1.FirstSpawnEntry.Orientation = -0.5756807f;
+			hordeDoor1.FirstSpawnEntry.Rotations = new float[] { -0.01673368f, -0.004956111f, -0.2839723f, 0.9586737f };
+			hordeDoor1.FirstSpawnEntry.State = GameObjectState.Enabled; // Spawn the door closed
+			hordeDoor1.FirstSpawnEntry.AutoSpawn = false;
 			hordeDoor1.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
-			hordeDoor2.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeDoor2.FirstSpawn.Pos = new Vector3(953.0507f, 1459.842f, 340.6526f);
-			hordeDoor2.FirstSpawn.Orientation = -1.99662f;
-			hordeDoor2.FirstSpawn.Rotations = new float[] { -0.1971825f, 0.1575096f, -0.8239487f, 0.5073641f };
-			hordeDoor2.FirstSpawn.State = GameObjectState.Enabled; // Spawn the door closed
-			hordeDoor2.FirstSpawn.AutoSpawn = false;
+			hordeDoor2.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeDoor2.FirstSpawnEntry.Pos = new Vector3(953.0507f, 1459.842f, 340.6526f);
+			hordeDoor2.FirstSpawnEntry.Orientation = -1.99662f;
+			hordeDoor2.FirstSpawnEntry.Rotations = new float[] { -0.1971825f, 0.1575096f, -0.8239487f, 0.5073641f };
+			hordeDoor2.FirstSpawnEntry.State = GameObjectState.Enabled; // Spawn the door closed
+			hordeDoor2.FirstSpawnEntry.AutoSpawn = false;
 			hordeDoor2.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
 
 			GOEntry allianceFlag = GOMgr.GetEntry(GOEntryId.SilverwingFlag_2); // The flagstand
 			GOEntry hordeFlag = GOMgr.GetEntry(GOEntryId.WarsongFlag_2); // The flagstand.
 
-			allianceFlag.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceFlag.FirstSpawn.Pos = new Vector3(1540.423f, 1481.325f, 351.8284f);
-			allianceFlag.FirstSpawn.Orientation = 3.089233f;
-			allianceFlag.FirstSpawn.Scale = 2f;
-			allianceFlag.FirstSpawn.Rotations = new float[] { 0, 0, 0.9996573f, 0.02617699f };
-			allianceFlag.FirstSpawn.AutoSpawn = false;
+			allianceFlag.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceFlag.FirstSpawnEntry.Pos = new Vector3(1540.423f, 1481.325f, 351.8284f);
+			allianceFlag.FirstSpawnEntry.Orientation = 3.089233f;
+			allianceFlag.FirstSpawnEntry.Scale = 2f;
+			allianceFlag.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.9996573f, 0.02617699f };
+			allianceFlag.FirstSpawnEntry.AutoSpawn = false;
 
-			hordeFlag.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeFlag.FirstSpawn.Pos = new Vector3(916.0226f, 1434.405f, 345.413f);
-			hordeFlag.FirstSpawn.Orientation = 0.01745329f;
-			hordeFlag.FirstSpawn.Scale = 2f;
-			hordeFlag.FirstSpawn.Rotations = new float[] { 0, 0, 0.008726535f, 0.9999619f };
-			hordeFlag.FirstSpawn.AutoSpawn = false;
+			hordeFlag.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeFlag.FirstSpawnEntry.Pos = new Vector3(916.0226f, 1434.405f, 345.413f);
+			hordeFlag.FirstSpawnEntry.Orientation = 0.01745329f;
+			hordeFlag.FirstSpawnEntry.Scale = 2f;
+			hordeFlag.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.008726535f, 0.9999619f };
+			hordeFlag.FirstSpawnEntry.AutoSpawn = false;
 
             GOEntry allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
             GOEntry allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
@@ -439,48 +439,48 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
             GOEntry hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
             GOEntry hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
 
-			allianceBerserkerBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceBerserkerBuff.FirstSpawn.Pos = new Vector3(1320.09375f, 1378.78967285156f, 314.753234863281f);
-			allianceBerserkerBuff.FirstSpawn.Orientation = 1.18682384490967f;
-			allianceBerserkerBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.559192895889282f, 0.829037606716156f };
-			allianceBerserkerBuff.FirstSpawn.Scale = 1f;
-			allianceBerserkerBuff.FirstSpawn.AutoSpawn = false;
+			allianceBerserkerBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceBerserkerBuff.FirstSpawnEntry.Pos = new Vector3(1320.09375f, 1378.78967285156f, 314.753234863281f);
+			allianceBerserkerBuff.FirstSpawnEntry.Orientation = 1.18682384490967f;
+			allianceBerserkerBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.559192895889282f, 0.829037606716156f };
+			allianceBerserkerBuff.FirstSpawnEntry.Scale = 1f;
+			allianceBerserkerBuff.FirstSpawnEntry.AutoSpawn = false;
 
-			allianceFoodBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceFoodBuff.FirstSpawn.Pos = new Vector3(1317.50573730469f, 1550.85070800781f, 313.234375f);
-			allianceFoodBuff.FirstSpawn.Orientation = -0.26179963350296f;
-			allianceFoodBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.130526319146156f, -0.991444826126099f };
-			allianceFoodBuff.FirstSpawn.Scale = 1f;
-			allianceFoodBuff.FirstSpawn.AutoSpawn = false;
+			allianceFoodBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceFoodBuff.FirstSpawnEntry.Pos = new Vector3(1317.50573730469f, 1550.85070800781f, 313.234375f);
+			allianceFoodBuff.FirstSpawnEntry.Orientation = -0.26179963350296f;
+			allianceFoodBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.130526319146156f, -0.991444826126099f };
+			allianceFoodBuff.FirstSpawnEntry.Scale = 1f;
+			allianceFoodBuff.FirstSpawnEntry.AutoSpawn = false;
 
-			allianceSpeedBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			allianceSpeedBuff.FirstSpawn.Pos = new Vector3(1449.9296875f, 1470.70971679688f, 342.634552001953f);
-			allianceSpeedBuff.FirstSpawn.Orientation = -1.64060950279236f;
-			allianceSpeedBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.73135370016098f, -0.681998312473297f };
-			allianceSpeedBuff.FirstSpawn.Scale = 1f;
-			allianceSpeedBuff.FirstSpawn.AutoSpawn = false;
+			allianceSpeedBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			allianceSpeedBuff.FirstSpawnEntry.Pos = new Vector3(1449.9296875f, 1470.70971679688f, 342.634552001953f);
+			allianceSpeedBuff.FirstSpawnEntry.Orientation = -1.64060950279236f;
+			allianceSpeedBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.73135370016098f, -0.681998312473297f };
+			allianceSpeedBuff.FirstSpawnEntry.Scale = 1f;
+			allianceSpeedBuff.FirstSpawnEntry.AutoSpawn = false;
 
 
-			hordeSpeedBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeSpeedBuff.FirstSpawn.Pos = new Vector3(1005.17071533203f, 1447.94567871094f, 335.903228759766f);
-			hordeSpeedBuff.FirstSpawn.Orientation = 1.64060950279236f;
-			hordeSpeedBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.73135370016098f, 0.681998372077942f };
-			hordeSpeedBuff.FirstSpawn.Scale = 1f;
-			hordeSpeedBuff.FirstSpawn.AutoSpawn = false;
+			hordeSpeedBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeSpeedBuff.FirstSpawnEntry.Pos = new Vector3(1005.17071533203f, 1447.94567871094f, 335.903228759766f);
+			hordeSpeedBuff.FirstSpawnEntry.Orientation = 1.64060950279236f;
+			hordeSpeedBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.73135370016098f, 0.681998372077942f };
+			hordeSpeedBuff.FirstSpawnEntry.Scale = 1f;
+			hordeSpeedBuff.FirstSpawnEntry.AutoSpawn = false;
 
-			hordeBerserkerBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeBerserkerBuff.FirstSpawn.Pos = new Vector3(1139.68774414063f, 1560.28771972656f, 306.843170166016f);
-			hordeBerserkerBuff.FirstSpawn.Orientation = -2.4434609413147f;
-			hordeBerserkerBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.939692616462708f, -0.342020124197006f };
-			hordeBerserkerBuff.FirstSpawn.Scale = 1f;
-			hordeBerserkerBuff.FirstSpawn.AutoSpawn = false;
+			hordeBerserkerBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeBerserkerBuff.FirstSpawnEntry.Pos = new Vector3(1139.68774414063f, 1560.28771972656f, 306.843170166016f);
+			hordeBerserkerBuff.FirstSpawnEntry.Orientation = -2.4434609413147f;
+			hordeBerserkerBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.939692616462708f, -0.342020124197006f };
+			hordeBerserkerBuff.FirstSpawnEntry.Scale = 1f;
+			hordeBerserkerBuff.FirstSpawnEntry.AutoSpawn = false;
 
-			hordeFoodBuff.FirstSpawn.MapId = MapId.WarsongGulch;
-			hordeFoodBuff.FirstSpawn.Pos = new Vector3(1110.45129394531f, 1353.65563964844f, 316.518096923828f);
-			hordeFoodBuff.FirstSpawn.Orientation = -0.68067866563797f;
-			hordeFoodBuff.FirstSpawn.Rotations = new float[] { 0, 0, 0.333806991577148f, -0.94264143705368f };
-			hordeFoodBuff.FirstSpawn.Scale = 1f;
-			hordeFoodBuff.FirstSpawn.AutoSpawn = false;
+			hordeFoodBuff.FirstSpawnEntry.MapId = MapId.WarsongGulch;
+			hordeFoodBuff.FirstSpawnEntry.Pos = new Vector3(1110.45129394531f, 1353.65563964844f, 316.518096923828f);
+			hordeFoodBuff.FirstSpawnEntry.Orientation = -0.68067866563797f;
+			hordeFoodBuff.FirstSpawnEntry.Rotations = new float[] { 0, 0, 0.333806991577148f, -0.94264143705368f };
+			hordeFoodBuff.FirstSpawnEntry.Scale = 1f;
+			hordeFoodBuff.FirstSpawnEntry.AutoSpawn = false;
 		}
 
 		[Initialization(InitializationPass.Second)]
@@ -671,37 +671,37 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		public void SpawnAllianceSpeedBuff()
 		{
 			GOEntry allianceSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff_2);
-			_allianceSpeedBuff = allianceSpeedBuff.FirstSpawn.Spawn(this);
+			_allianceSpeedBuff = allianceSpeedBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		public void SpawnAllianceFoodBuff()
 		{
             GOEntry allianceFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff_2);
-			_allianceFoodBuff = allianceFoodBuff.FirstSpawn.Spawn(this);
+			_allianceFoodBuff = allianceFoodBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		public void SpawnAllianceBerserkerBuff()
 		{
             GOEntry allianceBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff_2);
-			_allianceBerserkerBuff = allianceBerserkerBuff.FirstSpawn.Spawn(this);
+			_allianceBerserkerBuff = allianceBerserkerBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		public void SpawnHordeSpeedBuff()
 		{
             GOEntry hordeSpeedBuff = GOMgr.GetEntry(GOEntryId.SpeedBuff);
-			_hordeSpeedBuff = hordeSpeedBuff.FirstSpawn.Spawn(this);
+			_hordeSpeedBuff = hordeSpeedBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		public void SpawnHordeFoodBuff()
 		{
             GOEntry hordeFoodBuff = GOMgr.GetEntry(GOEntryId.FoodBuff);
-			_hordeFoodBuff = hordeFoodBuff.FirstSpawn.Spawn(this);
+			_hordeFoodBuff = hordeFoodBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		public void SpawnHordeBerserkerBuff()
 		{
             GOEntry hordeBerserkerBuff = GOMgr.GetEntry(GOEntryId.BerserkBuff);
-			_hordeBerserkerBuff = hordeBerserkerBuff.FirstSpawn.Spawn(this);
+			_hordeBerserkerBuff = hordeBerserkerBuff.FirstSpawnEntry.Spawn(this);
 		}
 
 		#endregion

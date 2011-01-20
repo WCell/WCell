@@ -231,10 +231,18 @@ namespace WCell.Tools.Domi.Output
 			return false;
 		}
 
-		public static void Write(this GOSpawn templ, TextWriter writer, string indent)
+		public static void Write(this GOSpawnEntry templ, TextWriter writer, string indent)
 		{
 			writer.WriteLine("{0}\tMap: {1}", indent, templ.MapId);
 			writer.WriteLine("{0}\tState: {1}", indent, templ.State);
+			if (templ.RespawnTime != 0)
+			{
+				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnTime);
+			}
+			if (templ.DespawnTime != 0)
+			{
+				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnTime);
+			}
 		}
 	}
 }

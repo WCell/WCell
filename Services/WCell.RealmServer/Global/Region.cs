@@ -805,7 +805,7 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
-		public SpawnPoint AddSpawn(SpawnEntry entry)
+		public SpawnPoint AddSpawn(NPCSpawnEntry entry)
 		{
 			var point = new SpawnPoint(entry, this);
 			AddSpawn(point);
@@ -950,10 +950,13 @@ namespace WCell.RealmServer.Global
 					{
 						var count = ObjectCount;
 						SpawnNPCs();
-						if (count > 0)
-						{
-							s_log.Debug("Added {0} NPC Spawnpoints to Region: {1}", ObjectCount - count, this);
-						}
+						AddMessage(() =>
+						           	{
+						           		if (count > 0)
+						           		{
+						           			s_log.Debug("Added {0} NPC Spawnpoints to Region: {1}", ObjectCount - count, this);
+						           		}
+						           	});
 						m_npcsSpawned = true;
 					}
 				}
@@ -1801,6 +1804,13 @@ namespace WCell.RealmServer.Global
 					{
 						((Character)obj).TeleportToBindLocation();
 					}
+					return;
+				}
+
+				if (obj.IsDeleted)
+				{
+					// object has been deleted before it was added
+					s_log.Warn("Tried to add deleted object \"{0}\" to Region: " + this);
 					return;
 				}
 

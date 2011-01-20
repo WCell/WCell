@@ -963,17 +963,15 @@ namespace WCell.RealmServer.Entities
 									// ability is pending -> Need to cancel
 									m_spellCast.Cancel(SpellFailedReason.OutOfRange);
 								}
-								else
+								
+								// no pending ability
+								if (this is Character)
 								{
-									// no pending ability
-									if (this is Character)
-									{
-										CombatHandler.SendAttackSwingNotInRange(this as Character);
-									}
-									else if (this is NPC)
-									{
-										Brain.OnCombatTargetOutOfRange();
-									}
+									CombatHandler.SendAttackSwingNotInRange(this as Character);
+								}
+								else if (this is NPC)
+								{
+									Brain.OnCombatTargetOutOfRange();
 								}
 							}
 						}

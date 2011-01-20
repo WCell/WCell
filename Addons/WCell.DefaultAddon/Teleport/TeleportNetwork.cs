@@ -99,11 +99,11 @@ namespace WCell.Addons.Default.Teleport
 		/// <summary>
 		/// Creates a normal-looking portal to represent a node in the network
 		/// </summary>
-		public static WorldObject CreateDefaultPortal(TeleportNode node)
+		public static WorldObject CreateDefaultPortal(TeleportNode node, Region map, Vector3 pos)
 		{
 			var teleportMenu = WorldLocationMgr.CreateTeleMenu(node.Destinations);
 			var portalEntry = GOMgr.GetEntry(DefaultPortalGOid);
-			var go = portalEntry.Create();
+			var go = portalEntry.Spawn(map, pos);
 			go.State = GameObjectState.Enabled;
 			go.ScaleX = 1.5f;
 			go.Handler = new GossipGOHandler(teleportMenu);

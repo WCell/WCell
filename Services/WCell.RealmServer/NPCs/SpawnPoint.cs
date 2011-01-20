@@ -26,7 +26,7 @@ namespace WCell.RealmServer.NPCs
 		public static SpellId ConnectingSpell = SpellId.ClassSkillDrainLifeRank1;
 			//SpellId.ClassSkillDrainMana;
 
-		protected SpawnEntry m_spawnEntry;
+		protected NPCSpawnEntry m_spawnEntry;
 		protected bool m_active;
 		protected TimerEntry m_timer;
 		protected int m_nextRespawn;
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.NPCs
 			get { return m_spawnEntry.Position; }
 		}
 
-		public SpawnPoint(SpawnEntry entry, Region region)
+		public SpawnPoint(NPCSpawnEntry entry, Region region)
 		{
 			m_spawns = new List<Unit>();
 			m_timer = new TimerEntry { Action = Spawn };
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
-		public SpawnEntry SpawnEntry
+		public NPCSpawnEntry SpawnEntry
 		{
 			get
 			{
