@@ -33,11 +33,18 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					mechanic = SpellMechanic.Stunned;
 				}
 			}
+
+			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
+
 			m_aura.Auras.Owner.IncMechanicCount(mechanic);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
+			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
+
 			m_aura.Auras.Owner.DecMechanicCount(mechanic);
 		}
 
