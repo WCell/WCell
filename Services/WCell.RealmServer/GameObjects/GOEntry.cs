@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Looting;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.Util;
@@ -201,6 +203,15 @@ namespace WCell.RealmServer.GameObjects
 		{
 			get { return false; }
 		}
+
+		public ResolvedLootItemList GetLootEntries()
+		{
+			if (this is IGOLootableEntry)
+			{
+				return LootMgr.GetEntries(LootEntryType.GameObject, ((IGOLootableEntry)this).LootId);
+			}
+			return null;
+		}
 		#endregion
 
 		#region Quests
@@ -213,6 +224,9 @@ namespace WCell.RealmServer.GameObjects
 			get;
 			set;
 		}
+
+		[NotPersistent]
+		public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
 
 		/// <summary>
 		/// Whether only users of the same Party as the owner
@@ -260,7 +274,7 @@ namespace WCell.RealmServer.GameObjects
 
 			if (HandlerCreator == null)
 			{
-				HandlerCreator = GOMgr.Handlers[(int) Type];
+				HandlerCreator = GOMgr.Handlers[(int)Type];
 			}
 
 			if (GOCreator == null)
@@ -404,7 +418,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return evt(go, user);
 			}
-			return false;
+			return true;
 		}
 
 		internal void NotifyActivated(GameObject go)

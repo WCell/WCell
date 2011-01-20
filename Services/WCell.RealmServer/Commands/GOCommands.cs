@@ -124,7 +124,7 @@ namespace WCell.RealmServer.Commands
 						// spawn a new GO
 						var go = entry.Create(trigger.Args.Target);
 						trigger.Args.Target.PlaceOnTop(go);
-						trigger.Reply("Successfully spawned a new {0}.", go.Name);
+						trigger.Reply("Successfully spawned new GO: {0}.", go.Name);
 					}
 					else
 					{

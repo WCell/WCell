@@ -1223,7 +1223,7 @@ namespace WCell.RealmServer.Global
 					else
 					{
 						//priority = obj.UpdatePriority;
-						priority = UpdatePriority.Active;
+						priority = UpdatePriority.HighPriority;
 					}
 
 					var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
@@ -2499,6 +2499,12 @@ namespace WCell.RealmServer.Global
 						// TODO: Consider reductions if someone else killed the mob
 						var chr = playerLooter;
 						var baseXp = XpCalculator(playerLooter.Level, npc);
+						if (npc.Entry.Rank >= CreatureRank.Elite)
+						{
+							// elites give double xp
+							baseXp *= 2;
+						}
+
 						XpGenerator.CombatXpDistributer(chr, npc, baseXp);
 
 						if (chr.Group != null)

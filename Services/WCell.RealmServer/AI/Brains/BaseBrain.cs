@@ -440,6 +440,7 @@ namespace WCell.RealmServer.AI.Brains
 						return true;
 					}
 				}
+
 				// targets must be hostile, visible, alive, in range etc
 				if (unit.CanGenerateThreat &&
 					m_owner.IsHostileWith(unit) &&

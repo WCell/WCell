@@ -1064,6 +1064,10 @@ namespace WCell.RealmServer.Global
 					{
 						region.XpCalculator = XpGenerator.CalcOutlandXp;
 					}
+					else if (region.Id == MapId.Northrend)
+					{
+						region.XpCalculator = XpGenerator.CalcNorthrendXp;
+					}
 					else
 					{
 						region.XpCalculator = XpGenerator.CalcDefaultXp;

@@ -662,6 +662,12 @@ namespace WCell.RealmServer.Quests
 
 		private QuestInvalidReason CheckActiveQuests(QuestLog log)
 		{
+			if (FollowupQuestId != 0 && !log.FinishedQuests.Contains(FollowupQuestId))
+			{
+				// next quest in chain
+				return QuestInvalidReason.NoRequiredItems;
+			}
+
 			for (int i = 0; i < ReqAllActiveQuests.Count; i++)
 			{
 				var preqId = ReqAllActiveQuests[i];

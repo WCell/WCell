@@ -156,10 +156,15 @@ namespace WCell.RealmServer.Quests
 
 				ContentMgr.Load<QuestTemplate>();
 				CreateGraph();
-				Loaded = true;
 
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();
+
+				if (ItemMgr.Loaded)
+				{
+					ItemMgr.EnsureQuestRelations();
+				}
+				Loaded = true;
 
 				log.Debug("{0} Quests loaded.", _questCount);
 			}
@@ -186,6 +191,10 @@ namespace WCell.RealmServer.Quests
 			{
 				if (quest != null)
 				{
+					if (quest.Id == 4641)
+					{
+						quest.ToString();
+					}
 					if (quest.ExclusiveGroup != 0)
 					{
 						groups.GetOrCreate(quest.ExclusiveGroup).Add(quest.Id);
