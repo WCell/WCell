@@ -72,7 +72,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			}, SpellId.ClassSkillLivingBombRank3);
 
 			// These spells cancel eachother
-			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageMageArmor,SpellLineId.MageMoltenArmor);
+			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageMageArmor, SpellLineId.MageMoltenArmor);
 
 			// Mana gems don't have a limit
 			SpellHandler.Apply(spell =>
@@ -85,10 +85,16 @@ namespace WCell.Addons.Default.Spells.Mage
 
 			//ColdSnap resets the cooldown of all Frost spells, except his own cooldown
 			SpellLineId.MageFrostColdSnap.Apply(spell =>
-				{
-					spell.Effects[0].SpellEffectHandlerCreator =
-					(cast, effect) => new ColdSnapHandler(cast, effect);
-				});
+			{
+				spell.Effects[0].SpellEffectHandlerCreator =
+				(cast, effect) => new ColdSnapHandler(cast, effect);
+			});
+
+			SpellLineId.MageFrostSummonWaterElemental.Apply(spell =>
+			{
+				spell.Effects[0].SpellEffectHandlerCreator =
+				(cast, effect) => new SummonWaterElementalHandler(cast, effect);
+			});
 
 		}
 
@@ -132,6 +138,29 @@ namespace WCell.Addons.Default.Spells.Mage
 							charSpells.ClearCooldown(spell, false);
 						}
 					}
+				}
+			}
+		}
+		#endregion
+
+		#region SummonWaterElemental
+		public class SummonWaterElementalHandler : DummyEffectHandler
+		{
+			public SummonWaterElementalHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override void Apply()
+			{
+				var chr = m_cast.CasterUnit as Character;
+				if (chr != null)
+				{
+					var charSpells = chr.PlayerSpells;
+					if (charSpells.Contains(SpellId.GlyphOfEternalWater))
+						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_7, chr);
+					else
+						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_6, chr);
 				}
 			}
 		}

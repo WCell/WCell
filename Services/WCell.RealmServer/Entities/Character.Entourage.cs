@@ -70,7 +70,10 @@ namespace WCell.RealmServer.Entities
 			{
 				if (value == m_activePet) return;
 
-				m_activePet.Delete();
+				if (m_activePet != null)
+				{
+					m_activePet.Delete();
+				}
 
 				if (IsPetActive = value != null)
 				{
