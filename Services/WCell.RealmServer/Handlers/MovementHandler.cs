@@ -101,7 +101,7 @@ namespace WCell.RealmServer.Handlers
 				var transportTime = packet.ReadUInt32();
 				var transportSeat = packet.ReadByte();
 
-				var transport = chr.Region.GetObject(transportId) as ITransportInfo;
+				var transport = chr.Map.GetObject(transportId) as ITransportInfo;
 				var isVehicle = transport is Vehicle;
 				//if (transport == null || !transport.IsInRadius(chr, 100f))
 				if (transport == null)
@@ -285,16 +285,16 @@ namespace WCell.RealmServer.Handlers
 			client.TickCount = 0;
 
 			var chr = client.ActiveCharacter;
-			if (chr != null && chr.Region != null)
+			if (chr != null && chr.Map != null)
 			{
-				var zone = chr.Region.GetZone(chr.Position.X, chr.Position.Y);
+				var zone = chr.Map.GetZone(chr.Position.X, chr.Position.Y);
 				if (zone != null)
 				{
 					chr.SetZone(zone);
 				}
 				else
 				{
-					chr.SetZone(chr.Region.DefaultZone);
+					chr.SetZone(chr.Map.DefaultZone);
 				}
 
 				// resend some initial packets
@@ -339,7 +339,7 @@ namespace WCell.RealmServer.Handlers
 			var time = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var teleportee = chr.Region.GetObject(teleporteeId) as Character;
+			var teleportee = chr.Map.GetObject(teleporteeId) as Character;
 
 			// TODO: find something to do with this information.
 		}
@@ -778,7 +778,7 @@ namespace WCell.RealmServer.Handlers
 				if (trans != null)
 				{
 					packet.Write((uint)trans.Entry.Id);
-					packet.Write((uint)chr.RegionId);
+					packet.Write((uint)chr.MapId);
 				}
 
 				client.Send(packet);

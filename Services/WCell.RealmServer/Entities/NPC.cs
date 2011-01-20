@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Entities
 			return NPCMgr.GetEntry(id).Create();
 		}
 
-		protected internal SpawnPoint m_spawnPoint;
+		protected internal NPCSpawnPoint m_spawnPoint;
 		protected NPCEntry m_entry;
 		protected TimerEntry m_decayTimer;
 		private string m_name;
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Creation & Init
-		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
+		protected internal virtual void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			NPCSpawnEntry spawnEntry;
 			if (spawnPoint != null)
@@ -389,7 +389,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_region.CanNPCsEvade &&
+				return m_Map.CanNPCsEvade &&
 					m_spawnPoint != null &&
 					(m_master == this || m_master == null);
 			}
@@ -473,7 +473,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_spells; }
 		}
 
-		public override SpawnPoint SpawnPoint
+		public override NPCSpawnPoint SpawnPoint
 		{
 			get { return m_spawnPoint; }
 		}
@@ -527,7 +527,7 @@ namespace WCell.RealmServer.Entities
 		/// Remaining time until the NPC decay (or 0 if already decayed or decaying did not start yet).
 		/// Deactivates the timer if set to a value smaller or equal to 0
 		/// </summary>
-		/// <remarks>Requires region-context</remarks>
+		/// <remarks>Requires map-context</remarks>
 		public int RemainingDecayDelayMillis
 		{
 			get
@@ -768,7 +768,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// hand out experience
-			m_region.OnNPCDied(this);
+			m_Map.OnNPCDied(this);
 
 			var looter = m_FirstAttacker;
 
@@ -776,7 +776,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var playerLooter = looter != null ? looter.PlayerOwner : null;
 				if (playerLooter != null &&
-					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_Map.IsHeroic) != null)
 				{
 					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
 					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
@@ -840,9 +840,9 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Movement / Transport
-		protected internal override void OnEnterRegion()
+		protected internal override void OnEnterMap()
 		{
-			base.OnEnterRegion();
+			base.OnEnterMap();
 
 			if (m_auras.Count == 0)
 			{
@@ -888,7 +888,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_master.IsInWorld)
 				{
-					m_master.OnMinionEnteredRegion(this);
+					m_master.OnMinionEnteredMap(this);
 				}
 				else
 				{
@@ -898,7 +898,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnLeavingRegion()
+		protected internal override void OnLeavingMap()
 		{
 			if (IsAlive)
 			{
@@ -913,7 +913,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_master.IsInWorld)
 				{
-					m_master.OnMinionLeftRegion(this);
+					m_master.OnMinionLeftMap(this);
 				}
 				else
 				{
@@ -1025,7 +1025,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal bool CheckVendorInteraction(Character chr)
 		{
-			if (chr.Region != m_region ||
+			if (chr.Map != m_Map ||
 				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
 				!chr.CanSee(this))
 			{
@@ -1094,10 +1094,10 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Yells to everyone within the region to hear
+		/// Yells to everyone within the map to hear
 		/// </summary>
 		/// <param name="message"></param>
-		public void YellToRegion(string[] messages)
+		public void YellToMap(string[] messages)
 		{
 			Yell(-1, messages);
 		}
@@ -1447,10 +1447,10 @@ namespace WCell.RealmServer.Entities
 
 		public override void Dispose(bool disposing)
 		{
-			if (m_region != null)
+			if (m_Map != null)
 			{
 				m_currentTamer = null;
-				m_region.UnregisterUpdatableLater(m_decayTimer);
+				m_Map.UnregisterUpdatableLater(m_decayTimer);
 				base.Dispose(disposing);
 			}
 		}

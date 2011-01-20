@@ -46,17 +46,17 @@ namespace WCell.RealmServer.NPCs
 			set;
 		}
 
-		private MapId m_RegionId = MapId.End;
+		private MapId m_MapId = MapId.End;
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return m_RegionId; }
-			set { m_RegionId = value; }
+			get { return m_MapId; }
+			set { m_MapId = value; }
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(RegionId); }
+			get { return World.GetMap(MapId); }
 		}
 
 		/// <summary>
@@ -331,27 +331,27 @@ namespace WCell.RealmServer.NPCs
 				AddonData.InitAddonData(this);
 			}
 
-			if (RegionId != MapId.End)
+			if (MapId != MapId.End)
 			{
 				Entry.SpawnEntries.Add(this);
 				ArrayUtil.Set(ref NPCMgr.SpawnEntries, SpawnId, this);
 
-				if ((uint)RegionId >= NPCMgr.SpawnEntriesByMap.Length)
+				if ((uint)MapId >= NPCMgr.SpawnEntriesByMap.Length)
 				{
-					ArrayUtil.EnsureSize(ref NPCMgr.SpawnEntriesByMap, (int)RegionId + 100);
+					ArrayUtil.EnsureSize(ref NPCMgr.SpawnEntriesByMap, (int)MapId + 100);
 				}
 
-				var list = NPCMgr.SpawnEntriesByMap[(uint)RegionId];
+				var list = NPCMgr.SpawnEntriesByMap[(uint)MapId];
 				if (list == null)
 				{
-					list = NPCMgr.SpawnEntriesByMap[(uint)RegionId] = new List<NPCSpawnEntry>(5000);
+					list = NPCMgr.SpawnEntriesByMap[(uint)MapId] = new List<NPCSpawnEntry>(5000);
 				}
 
 				list.Add(this);
 
 				if (RealmServer.Instance.IsRunning && AutoSpawn)
 				{
-					var rgn = World.GetRegion(RegionId);
+					var rgn = World.GetMap(MapId);
 					if (rgn != null && rgn.NPCsSpawned)
 					{
 						rgn.ExecuteInContext(() => rgn.AddSpawn(this));
@@ -379,7 +379,7 @@ namespace WCell.RealmServer.NPCs
 
 		public void AddRandomWPs()
 		{
-			var terrain = TerrainMgr.GetTerrain(RegionId);
+			var terrain = TerrainMgr.GetTerrain(MapId);
 			if (terrain != null)
 			{
 				var gen = new RandomWaypointGenerator();

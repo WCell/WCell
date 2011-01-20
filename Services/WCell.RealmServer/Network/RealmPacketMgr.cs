@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Network
 		    }
 		    else
 		    {
-		        if (chr.Region != null)
+		        if (chr.Map != null)
 		        {
 		            return chr;
 		        }

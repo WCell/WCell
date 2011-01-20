@@ -101,9 +101,9 @@ namespace WCell.RealmServer.RacesClasses
 			}
 
 			StartLocation = new ZoneWorldLocation(StartMapId, StartPosition, StartZoneId);
-			if (StartLocation.Region == null)
+			if (StartLocation.Map == null)
 			{
-				LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this + "\" - StartRegion does not exist: " + StartMapId);
+				LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this + "\" - StartMap does not exist: " + StartMapId);
 				//ArrayUtil.Set(ref RaceClassMgr.BaseRaces, (uint)Id, null);
 			}
 			else

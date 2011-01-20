@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Battlegrounds
 		private BattlegroundInvitation _invitation;
 		private int _relationCount;
 
-		private Region _entryRegion;
+		private Map m_EntryMap;
 		private Vector3 _entryPosition;
 		private float _entryOrientation;
 
@@ -87,12 +87,12 @@ namespace WCell.RealmServer.Battlegrounds
 		}
 
 		/// <summary>
-		/// The region that this character was originally in before going to the battlegrounds.
+		/// The map that this character was originally in before going to the battlegrounds.
 		/// </summary>
-		public Region EntryRegion
+		public Map EntryMap
 		{
-			get { return _entryRegion; }
-			set { _entryRegion = value; }
+			get { return m_EntryMap; }
+			set { m_EntryMap = value; }
 		}
 
 		/// <summary>
@@ -171,24 +171,24 @@ namespace WCell.RealmServer.Battlegrounds
 		/// </summary>
 		public void TeleportBack()
 		{
-			if (_entryRegion == null || _entryRegion.IsDisposed || _entryPosition.X == 0)
+			if (m_EntryMap == null || m_EntryMap.IsDisposed || _entryPosition.X == 0)
 			{
 				_chr.TeleportToBindLocation();
 			}
 			else
 			{
-				_chr.TeleportTo(_entryRegion, ref _entryPosition, _entryOrientation);
+				_chr.TeleportTo(m_EntryMap, ref _entryPosition, _entryOrientation);
 			}
 
-			_entryRegion = null;
+			m_EntryMap = null;
 		}
 
 		/// <summary>
 		/// Sets the entry position of the character.
 		/// </summary>
-		public void SetCharacterEntry(Region region, ref Vector3 pos, float orientation)
+		public void SetCharacterEntry(Map map, ref Vector3 pos, float orientation)
 		{
-			_entryRegion = region;
+			m_EntryMap = map;
 			_entryPosition = pos;
 			_entryOrientation = orientation;
 		}
@@ -336,7 +336,7 @@ namespace WCell.RealmServer.Battlegrounds
 			}
 
 			var bgId = relation.BattlegroundId;
-			var bg = _chr.Region as Battleground;
+			var bg = _chr.Map as Battleground;
 			if (bg != null &&
 				bg.Template.Id == bgId &&
 				!relation.IsEnqueued &&

@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundId Id;
 
 		[NotPersistent]
-		public MapId RegionId;
+		public MapId MapId;
 
 		public int MinPlayersPerTeam, MaxPlayersPerTeam;
 
@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundCreator Creator;
 
 		[NotPersistent]
-		public RegionTemplate RegionTemplate;
+		public MapTemplate MapTemplate;
 
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
@@ -66,13 +66,13 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public void FinalizeDataHolder()
 		{
-			RegionId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
+			MapId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			RegionTemplate = World.GetRegionTemplate(RegionId);
-			if (RegionTemplate == null)
+			MapTemplate = World.GetMapTemplate(MapId);
+			if (MapTemplate == null)
 			{
-				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
-					RegionId, (int)RegionId);
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid MapId: {0} (#{1})",
+					MapId, (int)MapId);
 				return;
 			}
 
@@ -83,15 +83,15 @@ namespace WCell.RealmServer.Battlegrounds
 				return;
 			}
 
-            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId))];
+            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == MapId))];
 
-            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == RegionId)))
+            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == MapId)))
             {
                     Difficulties[entry.bracketId] = entry;
             }
             
-            MinLevel = RegionTemplate.MinLevel = Difficulties.First().minLevel;
-            MaxLevel = RegionTemplate.MaxLevel = Difficulties.Last().maxLevel;
+            MinLevel = MapTemplate.MinLevel = Difficulties.First().minLevel;
+            MaxLevel = MapTemplate.MaxLevel = Difficulties.Last().maxLevel;
 			BattlegroundMgr.Templates[(int)Id] = this;
 
 			CreateQueues();
@@ -221,7 +221,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			return GetType().Name +
 				string.Format(" (Id: {0} (#{1}), Map: {2} (#{3})",
-				Id, (int)Id, RegionId, (int)RegionId);
+				Id, (int)Id, MapId, (int)MapId);
 		}
 
         public void SetStartPos()

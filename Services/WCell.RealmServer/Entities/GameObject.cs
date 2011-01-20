@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Entities
 						// TODO: Deactivate respawning
 						if (!IsInWorld)
 						{
-							m_region.m_gos[EntityId.Low] = null;
+							m_Map.m_gos[EntityId.Low] = null;
 						}
 					}
 				}
@@ -196,7 +196,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, Region map, GOSpawnEntry templ)
+		public static GameObject Create(GOEntryId id, Map map, GOSpawnEntry templ)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Entities
 			return null;
 		}
 
-		public static GameObject Create(GOEntry entry, Region map, GOSpawnEntry spawnEntry = null)
+		public static GameObject Create(GOEntry entry, Map map, GOSpawnEntry spawnEntry = null)
 		{
 			return Create(entry, new WorldLocation(map, Vector3.Zero), spawnEntry);
 		}
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.Entities
 				return null;
 			}
 			var pos = where.Position;
-			where.Region.AddObject(go, ref pos);
+			where.Map.AddObject(go, ref pos);
 			return go;
 		}
 
@@ -297,9 +297,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnEnterRegion()
+		protected internal override void OnEnterMap()
 		{
-			ArrayUtil.Set(ref m_region.m_gos, EntityId.Low, this);
+			ArrayUtil.Set(ref m_Map.m_gos, EntityId.Low, this);
 
 			// add Trap
 			if (m_entry.LinkedTrap != null)
@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Entities
 				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_master);
 				//if (m_entry.LinkedTrap.DisplayId != 0)
 				//{
-				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_region, m_position, m_Owner);
+				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_map, m_position, m_Owner);
 				//}
 				//else
 				//{
@@ -318,7 +318,7 @@ namespace WCell.RealmServer.Entities
 			m_entry.NotifyActivated(this);
 		}
 
-		protected internal override void OnLeavingRegion()
+		protected internal override void OnLeavingMap()
 		{
 			if (m_master is Character)
 			{
@@ -330,7 +330,7 @@ namespace WCell.RealmServer.Entities
 			}
 			m_handler.OnRemove();
 			SendDespawn();
-			base.OnLeavingRegion();
+			base.OnLeavingMap();
 		}
 
 		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags relation)

@@ -63,7 +63,7 @@ namespace WCell.RealmServer.Handlers
 			var objId = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
 			var looter = chr.LooterEntry;
-			var lootable = chr.Region.GetObject(objId);
+			var lootable = chr.Map.GetObject(objId);
 
 			if (lootable != null)
 			{
@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Handlers
 			var rollType = (LootRollType)packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var looted = chr.Region.GetObject(lootedId);
+			var looted = chr.Map.GetObject(lootedId);
 
 			if (looted != null && looted.Loot != null &&
 				looted.Loot.Method == LootMethod.NeedBeforeGreed &&
@@ -133,8 +133,8 @@ namespace WCell.RealmServer.Handlers
 		    var playerId = packet.ReadEntityId();
 
 		    var chr = client.ActiveCharacter;
-		    var looted = chr.Region.GetObject(lootedId);
-		    var player = chr.Region.GetObject(playerId) as Character;
+		    var looted = chr.Map.GetObject(lootedId);
+		    var player = chr.Map.GetObject(playerId) as Character;
 
             if (looted != null && looted.Loot != null && 
                 looted.Loot.Method == LootMethod.MasterLoot &&

@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Entities
 			foreach (var spell in NPCSpells)
 			{
 				var cdTicks = NPCSpells.TicksUntilCooldown(spell);
-				var cdTime = DateTime.Now.AddMilliseconds(cdTicks * Region.UpdateDelay);
+				var cdTime = DateTime.Now.AddMilliseconds(cdTicks * Map.UpdateDelay);
 				var spellRecord = new PetTalentSpellRecord
 									{
 										SpellId = spell.Id,

@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Handlers
             var bmId = packet.ReadEntityId();
 
             var chr = client.ActiveCharacter;
-            var bm = chr.Region.GetObject(bmId) as NPC;
+            var bm = chr.Map.GetObject(bmId) as NPC;
 
             if (bm != null &&
                 bm.NPCFlags.HasFlag(NPCFlags.BattleMaster)
@@ -161,10 +161,10 @@ namespace WCell.RealmServer.Handlers
 					{
 						SendStatusEnqueued(chr, i, relation, relation.Queue.ParentQueue);
 					}
-					else if (chr.Region is Battleground && 
-						relation.BattlegroundId == ((Battleground)chr.Region).Template.Id)
+					else if (chr.Map is Battleground && 
+						relation.BattlegroundId == ((Battleground)chr.Map).Template.Id)
 					{
-						SendStatusActive(chr, (Battleground)chr.Region, i);
+						SendStatusActive(chr, (Battleground)chr.Map, i);
 					}
 				}
             }

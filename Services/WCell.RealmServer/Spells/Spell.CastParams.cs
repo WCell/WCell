@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var range = caster.GetSpellMaxRange(this);
 			return RequiredSpellFocus == SpellFocus.None ||
-				   caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
+				   caster.Map.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
 		}
 
 		/// <summary>
@@ -559,7 +559,7 @@ namespace WCell.RealmServer.Spells
 			{
 				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 			}
-			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
+			//return Math.Max(cd - unit.Map.UpdateDelay, 0);
 			return cd;
 		}
 		#endregion

@@ -263,7 +263,7 @@ namespace WCell.RealmServer.Commands
 				var oldRole = chr.Account.Role;
 
 				// Since setting the role is a task sent to the Auth-Server, this is a blocking call
-				// and thus must not be executed within the Region context (which is the default context for Commands)
+				// and thus must not be executed within the Map context (which is the default context for Commands)
 				RealmServer.Instance.AddMessage(new Message(() =>
 				{
 					if (chr.Account.SetRole(role))

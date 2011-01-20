@@ -67,7 +67,7 @@ namespace WCell.Tools.Spells
 					var listCount = map.Count;
 					var s = 0;
 
-					writer.WriteRegion((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
+					writer.WriteMap((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
 					writer.WriteLine("lines = new SpellLine[]");
 					writer.OpenBracket();
 
@@ -101,7 +101,7 @@ namespace WCell.Tools.Spells
 					}
 					writer.CloseBracket(true);
 					writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
-					writer.WriteEndRegion();
+					writer.WriteEndMap();
 					writer.WriteLine();
 				}
 			}
@@ -150,7 +150,7 @@ namespace WCell.Tools.Spells
 			SpellHandler.Initialize2();
 
 			World.InitializeWorld();
-			World.LoadDefaultRegions();
+			World.LoadDefaultMaps();
 			ArchetypeMgr.EnsureInitialize();		// for default spells
 
 			NPCMgr.LoadNPCDefs();					// for trainers

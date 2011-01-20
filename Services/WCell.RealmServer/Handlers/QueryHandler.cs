@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Handlers
 			var textId = packet.ReadUInt32();
 			var entityId = packet.ReadEntityId();
 
-			//var obj = client.ActiveCharacter.Region.GetObject(entityId) as IGossipEntry;
+			//var obj = client.ActiveCharacter.Map.GetObject(entityId) as IGossipEntry;
 
 			//if (obj != null)
 			//{

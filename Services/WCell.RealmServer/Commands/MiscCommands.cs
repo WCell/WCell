@@ -686,7 +686,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("ListPlayers");
-			EnglishParamInfo = "[-[rfcna] [<Region>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
+			EnglishParamInfo = "[-[rfcna] [<Map>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
 			EnglishDescription = "Lists all currently logged in Players.";
 		}
 
@@ -702,7 +702,7 @@ namespace WCell.RealmServer.Commands
 			//var matches = new List<Character>();
 			var matches = World.GetAllCharacters();
 
-			MapId region;
+			MapId map;
 			FactionId faction;
 			ClassId classId;
 			string namepart;
@@ -710,9 +710,9 @@ namespace WCell.RealmServer.Commands
 
 			if (mod.Contains("r"))
 			{
-				region = trigger.Text.NextEnum(MapId.End);
+				map = trigger.Text.NextEnum(MapId.End);
 
-				var rgn = World.GetRegion(region);
+				var rgn = World.GetMap(map);
 				if (rgn != null)
 				{
 					if (rgn.CharacterCount > 0)
@@ -725,13 +725,13 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						trigger.Reply("There are no characters in region: {0}", rgn.Name);
+						trigger.Reply("There are no characters in map: {0}", rgn.Name);
 						return;
 					}
 				}
 				else
 				{
-					trigger.Reply("Invalid region id.");
+					trigger.Reply("Invalid map id.");
 					return;
 				}
 			}

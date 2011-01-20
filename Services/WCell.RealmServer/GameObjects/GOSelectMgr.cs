@@ -88,7 +88,7 @@ namespace WCell.RealmServer.GameObjects
 					var selection = new GOSelection(value);
 					if (MarkerId != SpellId.None)
 					{
-						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Region, value.Position);
+						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Map, value.Position);
 						selection.Marker = marker;
 					}
 					info.m_goSelection = selection;

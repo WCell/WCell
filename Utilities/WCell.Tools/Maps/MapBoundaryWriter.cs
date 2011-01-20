@@ -9,28 +9,28 @@ using WCell.Util.Toolshed;
 
 namespace WCell.Tools.Maps
 {
-	public static class RegionBoundaryWriter
+	public static class MapBoundaryWriter
 	{
 		private static CodeFileWriter writer;
 
 		[Tool]
-		public static void WriteRegionBoundaries()
+		public static void WriteMapBoundaries()
 		{
-			WriteRegionBoundaries(ToolConfig.WCellConstantsRoot + "World/RegionBoundaries2.cs");
+			WriteMapBoundaries(ToolConfig.WCellConstantsRoot + "World/MapBoundaries2.cs");
 		}
 
-		public static void WriteRegionBoundaries(string outputFileName)
+		public static void WriteMapBoundaries(string outputFileName)
 		{
-			using (writer = new CodeFileWriter(outputFileName, "WCell.Constants.World", "RegionBoundaries", "static class", "",
+			using (writer = new CodeFileWriter(outputFileName, "WCell.Constants.World", "MapBoundaries", "static class", "",
 				"WCell.Util.Graphics"))
 			{
-				writer.WriteMethod("public", "static BoundingBox[]", "GetRegionBoundaries", "", WriteMethod);
+				writer.WriteMethod("public", "static BoundingBox[]", "GetMapBoundaries", "", WriteMethod);
 			}
 		}
 
 		private static void WriteMethod()
 		{
-			var arr = RegionBoundaryUtil.ExportBoundaries();
+			var arr = MapBoundaryUtil.ExportBoundaries();
 			writer.WriteLine("var boxes = new BoundingBox[(int)MapId.End];");
 			for (var i = 0; i < arr.Length; i++)
 			{

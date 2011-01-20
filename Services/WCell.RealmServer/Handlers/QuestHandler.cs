@@ -1076,7 +1076,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId(); // who to send packet to
 			var result = packet.ReadByte(); // status
-			var sharer = client.ActiveCharacter.Region.GetObject(guid) as Character;
+			var sharer = client.ActiveCharacter.Map.GetObject(guid) as Character;
 
 			if (sharer != null && client.ActiveCharacter.Group != null)
 			{

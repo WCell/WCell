@@ -73,7 +73,7 @@ namespace WCell.RealmServer
 
 		public static bool IsValid(this IWorldLocation location)
 		{
-			return location.Position.X != 0 && location.Region != null;
+			return location.Position.X != 0 && location.Map != null;
 		}
 
 		public static void AddChecked(this XElement element, string name, int value)

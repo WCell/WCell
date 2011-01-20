@@ -31,15 +31,15 @@ namespace WCell.Addons.Default.Samples
 
 		public static void CreateTeleportNPC(NPCId id, IWorldLocation loc)
 		{
-			CreateTeleportNPC(id, loc.Position, loc.RegionId);
+			CreateTeleportNPC(id, loc.Position, loc.MapId);
 		}
 
-		public static void CreateTeleportNPC(uint id, Vector3 location, MapId regionId)
+		public static void CreateTeleportNPC(uint id, Vector3 location, MapId mapId)
 		{
-			CreateTeleportNPC((NPCId)id, location, regionId);
+			CreateTeleportNPC((NPCId)id, location, mapId);
 		}
 
-		public static void CreateTeleportNPC(NPCId id, Vector3 location, MapId regionId)
+		public static void CreateTeleportNPC(NPCId id, Vector3 location, MapId mapId)
 		{
 			var spawn = new NPCSpawnEntry
 			{

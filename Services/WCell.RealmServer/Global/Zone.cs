@@ -34,13 +34,13 @@ namespace WCell.RealmServer.Global
 		private ChatChannel m_hordeGeneralChannel, m_hordeLocalDefenseChannel;
 
 		public readonly ZoneTemplate Template;
-		public readonly Region Region;
+		public readonly Map Map;
 		public readonly IList<ChatChannel> AllianceChatChannels = new List<ChatChannel>();
 		public readonly IList<ChatChannel> HordeChatChannels = new List<ChatChannel>();
 
-		public Zone(Region rgn, ZoneTemplate template)
+		public Zone(Map rgn, ZoneTemplate template)
 		{
-			Region = rgn;
+			Map = rgn;
 			Template = template;
 			if (template.WorldStates != null)
 			{
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Global
 
 		public IWorldSpace ParentSpace
 		{
-			get { return ParentZone ?? (IWorldSpace)Region; }
+			get { return ParentZone ?? (IWorldSpace)Map; }
 		}
 
 		public int ExplorationBit
@@ -97,24 +97,24 @@ namespace WCell.RealmServer.Global
 
 		public Zone ParentZone
 		{
-			get { return Region.GetZone(ParentZoneId); }
+			get { return Map.GetZone(ParentZoneId); }
 		}
 
 		/// <summary>
-		/// The ID of this zone's parent region.
+		/// The ID of this zone's parent map.
 		/// </summary>
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return Template.RegionId; }
+			get { return Template.MapId; }
 		}
 
 		/// <summary>
-		/// The <see cref="RegionTemplate">Region</see> to which this Zone belongs.
+		/// The <see cref="MapTemplate">Map</see> to which this Zone belongs.
 		/// </summary>
-		public RegionTemplate RegionTemplate
+		public MapTemplate MapTemplate
 		{
-			get { return Template.RegionTemplate; }
-			set { Template.RegionTemplate = value; }
+			get { return Template.MapTemplate; }
+			set { Template.MapTemplate = value; }
 		}
 
 		/// <summary>
@@ -135,7 +135,7 @@ namespace WCell.RealmServer.Global
 
 		public void CallOnAllCharacters(Action<Character> action)
 		{
-			Region.CallOnAllCharacters(chr =>
+			Map.CallOnAllCharacters(chr =>
 			{
 				if (chr.Zone.Id == Id)
 				{
@@ -155,7 +155,7 @@ namespace WCell.RealmServer.Global
 			}
 
 			// update PvPState
-			var isBg = Region.IsBattleground;
+			var isBg = Map.IsBattleground;
 			if (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
 			{
 				if (isBg || Template.IsHostileTo(chr))

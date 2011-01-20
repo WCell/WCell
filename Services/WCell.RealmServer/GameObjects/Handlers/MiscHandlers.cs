@@ -107,7 +107,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 			if (UserAmount < entry.MaxCount)
 			{
 				UserAmount++;
-				user.Region.MoveObject(user, m_go.Position);
+				user.Map.MoveObject(user, m_go.Position);
 				user.Orientation = m_go.Orientation;
 				user.StandState = entry.SitState;
 				MovementHandler.SendHeartbeat(user, m_go.Position, m_go.Orientation);

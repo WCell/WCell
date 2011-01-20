@@ -316,7 +316,7 @@ namespace WCell.RealmServer.GameObjects
 
 			foreach (var template in templates)
 			{
-				if (template == null || template.RegionId != pos.RegionId)
+				if (template == null || template.MapId != pos.MapId)
 				{
 					continue;
 				}

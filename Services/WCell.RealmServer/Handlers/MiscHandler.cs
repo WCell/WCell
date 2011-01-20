@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: MiscHandlers.cs
  *   copyright		: (C) The WCell Team
@@ -168,20 +168,20 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-        public static void SendPlaySoundToRegion(Region region, uint sound)
+        public static void SendPlaySoundToMap(Map map, uint sound)
         {
             using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PLAY_SOUND, 4))
             {
                 packet.WriteUInt(sound);
 
-                region.SendPacketToRegion(packet);
+                map.SendPacketToMap(packet);
             }
         }
 		public static void SendInitWorldStates(Character rcv, WorldStateCollection states, Zone newZone)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_INIT_WORLD_STATES, 300))
 			{
-				packet.Write((uint)rcv.Region.Id);
+				packet.Write((uint)rcv.Map.Id);
 				packet.Write((uint)newZone.ParentZoneId);
 				packet.Write((uint)newZone.Id);
 

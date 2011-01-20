@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Handlers
 			var petEntityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petEntityId) as NPC;
+			var pet = chr.Map.GetObject(petEntityId) as NPC;
 
 			if (pet != null)
 			{
@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet != null && pet == chr.ActivePet && pet.IsAlive)
 			{
@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Handlers
 							break;
 						default:
 							// spell cast
-							var target = chr.Region.GetObject(packet.ReadEntityId());
+							var target = chr.Map.GetObject(packet.ReadEntityId());
 							pet.CastPetSpell(data.SpellId, target);
 							break;
 					}
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet == null || pet.PermanentPetRecord == null || (pet != chr.ActivePet && !chr.GodMode))
 			{
@@ -127,7 +127,7 @@ namespace WCell.RealmServer.Handlers
 			var entityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(entityId) as NPC;
+			var pet = chr.Map.GetObject(entityId) as NPC;
 
 			if (pet != null)
 			{
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_RENAME for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_RENAME for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -155,7 +155,7 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null && pet.IsAlive && pet.IsInContext)
 			{
@@ -167,7 +167,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_ABANDON for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_ABANDON for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null)
 			{
@@ -190,7 +190,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_SPELL_AUTOCAST for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_SPELL_AUTOCAST for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Handlers
 			var spellId = (SpellId)packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null)
 			{
@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Handlers
 			var petId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petId) as NPC;
+			var pet = chr.Map.GetObject(petId) as NPC;
 
 			if (pet != null && pet.IsAlive)
 			{
@@ -235,7 +235,7 @@ namespace WCell.RealmServer.Handlers
 #if DEBUG
 			else
 			{
-				chr.SendSystemMessage("You sent CMSG_PET_STOP_ATTACK for a pet that does not exist in the same Region.");
+				chr.SendSystemMessage("You sent CMSG_PET_STOP_ATTACK for a pet that does not exist in the same Map.");
 			}
 #endif
 		}
@@ -483,7 +483,7 @@ namespace WCell.RealmServer.Handlers
 			var petNumber = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(npcGuid) as NPC;
+			var stableMaster = chr.Map.GetObject(npcGuid) as NPC;
 
 			PetMgr.DeStablePet(chr, stableMaster, petNumber);
 		}
@@ -493,7 +493,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.StablePet(chr, stableMaster);
 		}
@@ -503,7 +503,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.BuyStableSlot(chr, stableMaster);
 		}
@@ -515,7 +515,7 @@ namespace WCell.RealmServer.Handlers
 			var petNumber = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.SwapStabledPet(chr, stableMaster, petNumber);
 		}
@@ -525,7 +525,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var guid = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var stableMaster = chr.Region.GetObject(guid) as NPC;
+			var stableMaster = chr.Map.GetObject(guid) as NPC;
 
 			PetMgr.ListStabledPets(chr, stableMaster);
 		}
@@ -597,7 +597,7 @@ namespace WCell.RealmServer.Handlers
 			var rank = packet.ReadInt32();						// 0 based rank
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petGuid) as NPC;
+			var pet = chr.Map.GetObject(petGuid) as NPC;
 
 			if (pet != null)
 			{
@@ -613,7 +613,7 @@ namespace WCell.RealmServer.Handlers
 			var petGuid = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var pet = chr.Region.GetObject(petGuid) as NPC;
+			var pet = chr.Map.GetObject(petGuid) as NPC;
 
 			if (pet != null && pet.HasTalents && pet.Master == chr)
 			{

@@ -250,7 +250,7 @@ namespace WCell.Core
 
 
 		/// <summary>
-		/// Registers the given Updatable during the next Region Tick
+		/// Registers the given Updatable during the next Map Tick
 		/// </summary>
 		public void RegisterUpdatableLater(IUpdatable updatable)
 		{
@@ -258,7 +258,7 @@ namespace WCell.Core
 		}
 
 		/// <summary>
-		/// Unregisters the given Updatable during the next Region Update
+		/// Unregisters the given Updatable during the next Map Update
 		/// </summary>
 		public void UnregisterUpdatableLater(IUpdatable updatable)
 		{
@@ -379,9 +379,9 @@ namespace WCell.Core
 
 		#region Waiting
 		/// <summary>
-		/// Ensures execution outside the Region-context.
+		/// Ensures execution outside the Map-context.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">thrown if the calling thread is the region thread</exception>
+		/// <exception cref="InvalidOperationException">thrown if the calling thread is the map thread</exception>
 		public void EnsureNoContext()
 		{
 			if (Thread.CurrentThread.ManagedThreadId == _currentUpdateThreadId)
@@ -391,22 +391,22 @@ namespace WCell.Core
 		}
 
 		/// <summary>
-		/// Adds the given message to the region's message queue and does not return 
+		/// Adds the given message to the map's message queue and does not return 
 		/// until the message is processed.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void AddMessageAndWait(bool allowInstantExecution, Action action)
 		{
 			AddMessageAndWait(allowInstantExecution, new Message(action));
 		}
 
 		/// <summary>
-		/// Adds the given message to the region's message queue and does not return 
+		/// Adds the given message to the map's message queue and does not return 
 		/// until the message is processed.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void AddMessageAndWait(bool allowInstantExecution, IMessage msg)
 		{
 			if (allowInstantExecution && IsInContext)
@@ -441,9 +441,9 @@ namespace WCell.Core
 		}
 
 		/// <summary>
-		/// Waits for one region tick before returning.
+		/// Waits for one map tick before returning.
 		/// </summary>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void WaitOneTick()
 		{
 			AddMessageAndWait(false, new Message(() =>
@@ -454,10 +454,10 @@ namespace WCell.Core
 
 		/// <summary>
 		/// Waits for the given amount of ticks.
-		/// One tick might take 0 until Region.UpdateSpeed milliseconds.
+		/// One tick might take 0 until Map.UpdateSpeed milliseconds.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void WaitTicks(int ticks)
 		{
 			EnsureNoContext();

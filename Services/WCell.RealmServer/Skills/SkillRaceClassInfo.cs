@@ -3,7 +3,7 @@
  *   file		: SkillRaceClassInfo.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (lø, 07 mar 2009) $
+ *   last changed	: $LastChangedDate: 2009-03-07 07:58:12 +0100 (l? 07 mar 2009) $
  *   last author	: $LastChangedBy: ralekdev $
  *   revision		: $Rev: 784 $
  *

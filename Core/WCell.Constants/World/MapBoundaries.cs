@@ -7,9 +7,9 @@ using WCell.Util.Graphics;
 
 namespace WCell.Constants.World
 {
-	public static class RegionBoundaries 
+	public static class MapBoundaries 
 	{
-		public static BoundingBox[] GetRegionBoundaries()
+		public static BoundingBox[] GetMapBoundaries()
 		{
 			var boxes = new BoundingBox[(int)MapId.End];
 			boxes[(int)MapId.EasternKingdoms] = new BoundingBox(new Vector3(-16200f, -6066.667f, -2048f), new Vector3(6600f, 16733.33f, 2048f));

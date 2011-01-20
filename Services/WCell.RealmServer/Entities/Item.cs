@@ -1015,7 +1015,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets equipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnEquip()
 		{
@@ -1118,7 +1118,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets unequipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnUnEquip(InventorySlot slot)
 		{

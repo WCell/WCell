@@ -313,10 +313,10 @@ namespace WCell.Tools.Domi
 
 		public static void WriteMapEnum()
 		{
-			WriteEnum("MapId", " : uint", "World", World.RegionTemplates,
-					  (region) => { return true; },
-					  (region) => { return region.Name.Trim().Length > 0 ? region.Name : "Unnamed"; },
-					  (region) => { return ((uint)region.Id).ToString(); });
+			WriteEnum("MapId", " : uint", "World", World.MapTemplates,
+					  (map) => { return true; },
+					  (map) => { return map.Name.Trim().Length > 0 ? map.Name : "Unnamed"; },
+					  (map) => { return ((uint)map.Id).ToString(); });
 		}
 
 		public static void WriteTalentEnums()

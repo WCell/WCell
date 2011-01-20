@@ -253,7 +253,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Returns the first visible (not passive) Aura with the given Type (if any).
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public Aura this[AuraType type]
@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns the first Aura that matches the given Predicate.
 		/// Only looks in active Auras.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public Aura FindFirst(Predicate<Aura> condition)
 		{
 			//foreach (Aura aura in m_nonPassiveAuras)
@@ -1079,7 +1079,7 @@ namespace WCell.RealmServer.Spells.Auras
 					continue;
 				}
 
-				var caster = record.GetCasterInfo(m_owner.Region);
+				var caster = record.GetCasterInfo(m_owner.Map);
 				var handlers = record.Spell.CreateAuraEffectHandlers(caster, m_owner, record.IsBeneficial);
 
 				if (handlers == null)				// couldn't create handlers

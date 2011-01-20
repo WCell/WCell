@@ -144,7 +144,7 @@ namespace WCell.Addons.Default.Instances
 			svalaEntry.UnitFlags = UnitFlags.SelectableNotAttackable;
 			svalaEntry.Activated += svala =>
 			{
-				var instance = svala.Region as UtgardePinnacle;
+				var instance = svala.Map as UtgardePinnacle;
 				if (instance != null)
 				{
 					instance.PrepareEncounter(svala);
@@ -163,7 +163,7 @@ namespace WCell.Addons.Default.Instances
 
 		static void OnObservanceHallTriggered(AreaTrigger at, Character chr)
 		{
-			var instance = chr.Region as UtgardePinnacle;
+			var instance = chr.Map as UtgardePinnacle;
 
 			if (instance != null && !instance.m_EncounterStarted)
 			{

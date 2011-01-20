@@ -255,7 +255,7 @@ namespace WCell.RealmServer.Commands
 							else
 							{
 								trigger.Reply("Template is located in {0} ({1}) and not accessible.",
-									template.RegionId, template.Position);
+									template.MapId, template.Position);
 							}
 						}
 					}

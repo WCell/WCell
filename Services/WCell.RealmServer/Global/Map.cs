@@ -1,6 +1,6 @@
 /*************************************************************************
  *
- *   file		: Region.cs
+ *   file		: Map.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
  *   last changed	: $LastChangedDate: 2008-06-30 01:30:45 +0800 (Mon, 30 Jun 2008) $
@@ -64,15 +64,15 @@ namespace WCell.RealmServer.Global
 	/// Z-Axis: Down -> Up
 	/// Orientation: North = 0, 2*Pi, counter-clockwise
 	/// </summary>
-	public partial class Region : IGenericChatTarget, IRegionId, IContextHandler, IWorldSpace
+	public partial class Map : IGenericChatTarget, IMapId, IContextHandler, IWorldSpace
 	{
 		#region Global Variables
 
 		/// <summary>
-		/// Whether to spawn NPCs and GOs immediately, whenever a new Region gets activated the first time.
-		/// For developing you might want to toggle this off and use the "Region Spawn" command ingame to spawn the region, if necessary.
+		/// Whether to spawn NPCs and GOs immediately, whenever a new Map gets activated the first time.
+		/// For developing you might want to toggle this off and use the "Map Spawn" command ingame to spawn the map, if necessary.
 		/// </summary>
-		[Variable("AutoSpawnRegions")]
+		[Variable("AutoSpawnMaps")]
 		public static bool AutoSpawn = true;
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace WCell.RealmServer.Global
 		}
 		#endregion
 
-		static Region()
+		static Map()
 		{
 			SetUpdatePriorityTicks();
 		}
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		#region Fields
-		internal protected RegionTemplate m_RegionTemplate;
+		internal protected MapTemplate m_MapTemplate;
 		protected Dictionary<EntityId, WorldObject> m_objects;
 		protected ZoneSpacePartitionNode m_root;
 		protected ZoneTileSet m_zoneTileSet;
@@ -191,8 +191,8 @@ namespace WCell.RealmServer.Global
 		protected int m_currentThreadId;
 
 		bool m_npcsSpawned, m_gosSpawned, m_isUpdating;
-		internal protected GameObject[] m_gos = new GameObject[0];
-		internal protected SpawnPoint[] m_spawnPoints = new SpawnPoint[0];
+		internal protected GameObject[] m_gos = new GameObject[10];
+		internal protected NPCSpawnPoint[] m_spawnPoints = new NPCSpawnPoint[10];
 		private int m_spawnPointCount;
 
 		protected bool m_CanFly;
@@ -204,12 +204,12 @@ namespace WCell.RealmServer.Global
 		public readonly List<Zone> MainZones = new List<Zone>(5);
 
 		/// <summary>
-		/// All the Zone-instances within this region.
+		/// All the Zone-instances within this map.
 		/// </summary>
 		public readonly IDictionary<ZoneId, Zone> Zones = new Dictionary<ZoneId, Zone>();
 
 		/// <summary>
-		/// The first TaxiPath-node of this Region (or null).
+		/// The first TaxiPath-node of this Map (or null).
 		/// This is used to send individual Taxi Maps to Players.
 		/// </summary>
 		public PathNode FirstTaxiNode;
@@ -222,7 +222,7 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Creation
-		protected Region()
+		protected Map()
 		{
 			m_objects = new Dictionary<EntityId, WorldObject>();
 
@@ -234,51 +234,51 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Creates a region from the given region info.
+		/// Creates a map from the given map info.
 		/// </summary>
-		/// <param name="rgnTemplate">the info for this region to use</param>
-		public Region(RegionTemplate rgnTemplate) :
+		/// <param name="rgnTemplate">the info for this map to use</param>
+		public Map(MapTemplate rgnTemplate) :
 			this()
 		{
-			m_RegionTemplate = rgnTemplate;
+			m_MapTemplate = rgnTemplate;
 			m_CanFly = rgnTemplate.Id == MapId.Outland || rgnTemplate.Id == MapId.Northrend;
 		}
 
-		protected internal void InitRegion(RegionTemplate template)
+		protected internal void InitMap(MapTemplate template)
 		{
-			m_RegionTemplate = template;
-			InitRegion();
+			m_MapTemplate = template;
+			InitMap();
 		}
 
 		/// <summary>
-		/// Method is called after Creation of Region
+		/// Method is called after Creation of Map
 		/// </summary>
-		protected internal virtual void InitRegion()
+		protected internal virtual void InitMap()
 		{
-			// Set our region's bounds and Terrain
-			m_Terrain = TerrainMgr.GetTerrain(m_RegionTemplate.Id);
-			m_zoneTileSet = m_RegionTemplate.ZoneTileSet;
-			m_root = new ZoneSpacePartitionNode(m_RegionTemplate.Bounds);
+			// Set our map's bounds and Terrain
+			m_Terrain = TerrainMgr.GetTerrain(m_MapTemplate.Id);
+			m_zoneTileSet = m_MapTemplate.ZoneTileSet;
+			m_root = new ZoneSpacePartitionNode(m_MapTemplate.Bounds);
 			//m_root = new ZoneSpacePartitionNode(new BoundingBox(
 			//                                        new Vector3(-(TerrainConstants.MapLength / 2), -(TerrainConstants.MapLength / 2), -MAP_HEIGHT),
 			//                                        new Vector3((TerrainConstants.MapLength / 2), (TerrainConstants.MapLength / 2), MAP_HEIGHT)
 			//                                    ));
 			PartitionSpace();
 
-			var states = Constants.World.WorldStates.GetStates(m_RegionTemplate.Id) ?? WorldState.EmptyArray;
+			var states = Constants.World.WorldStates.GetStates(m_MapTemplate.Id) ?? WorldState.EmptyArray;
 			WorldStates = new WorldStateCollection(this, states);
 
 			CreateZones();
-			World.AddRegion(this);
+			World.AddMap(this);
 
-			m_RegionTemplate.NotifyCreated(this);
+			m_MapTemplate.NotifyCreated(this);
 		}
 
 		private void CreateZones()
 		{
-			for (var i = 0; i < m_RegionTemplate.ZoneInfos.Count; i++)
+			for (var i = 0; i < m_MapTemplate.ZoneInfos.Count; i++)
 			{
-				var templ = m_RegionTemplate.ZoneInfos[i];
+				var templ = m_MapTemplate.ZoneInfos[i];
 				var zone = templ.Creator(this, templ);
 				if (zone.ParentZone == null)
 				{
@@ -293,7 +293,7 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Properties
-		public MapId RegionId
+		public MapId MapId
 		{
 			get { return Id; }
 		}
@@ -306,9 +306,9 @@ namespace WCell.RealmServer.Global
 			get { return 0; }
 		}
 
-		public RegionTemplate RegionTemplate
+		public MapTemplate MapTemplate
 		{
-			get { return m_RegionTemplate; }
+			get { return m_MapTemplate; }
 		}
 
 		public ITerrain Terrain
@@ -327,7 +327,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The first MainZone (for reference and Regions that only contain one Zone)
+		/// The first MainZone (for reference and Maps that only contain one Zone)
 		/// </summary>
 		public Zone DefaultZone
 		{
@@ -335,7 +335,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The bounds of this region.
+		/// The bounds of this map.
 		/// </summary>
 		public BoundingBox Bounds
 		{
@@ -348,19 +348,19 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The display name of this region.
+		/// The display name of this map.
 		/// </summary>
 		public string Name
 		{
-			get { return m_RegionTemplate.Name; }
+			get { return m_MapTemplate.Name; }
 		}
 
 		/// <summary>
-		/// The map ID of this region.
+		/// The map ID of this map.
 		/// </summary>
 		public MapId Id
 		{
-			get { return m_RegionTemplate.Id; }
+			get { return m_MapTemplate.Id; }
 		}
 
 		/// <summary>
@@ -368,15 +368,15 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public ClientId RequiredClient
 		{
-			get { return m_RegionTemplate.RequiredClientId; }
+			get { return m_MapTemplate.RequiredClientId; }
 		}
 
 		/// <summary>
-		/// Whether or not the region is instanced
+		/// Whether or not the map is instanced
 		/// </summary>
 		public bool IsInstance
 		{
-			get { return this is InstancedRegion; }
+			get { return this is InstancedMap; }
 		}
 
 		public bool IsArena
@@ -390,11 +390,11 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The type of the region (normal, battlegrounds, instance, etc)
+		/// The type of the map (normal, battlegrounds, instance, etc)
 		/// </summary>
 		public MapType Type
 		{
-			get { return m_RegionTemplate.Type; }
+			get { return m_MapTemplate.Type; }
 		}
 
 		public bool IsHeroic
@@ -424,31 +424,31 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The minimum level a player has to be to enter the region (instance)
+		/// The minimum level a player has to be to enter the map (instance)
 		/// </summary>
 		public virtual int MinLevel
 		{
-			get { return m_RegionTemplate.MinLevel; }
+			get { return m_MapTemplate.MinLevel; }
 		}
 
 		/// <summary>
-		/// The maximum level a player can be to enter the region (instance)
+		/// The maximum level a player can be to enter the map (instance)
 		/// </summary>
 		public virtual int MaxLevel
 		{
-			get { return m_RegionTemplate.MaxLevel; }
+			get { return m_MapTemplate.MaxLevel; }
 		}
 
 		/// <summary>
-		/// Maximum number of players allowed in the region (instance)
+		/// Maximum number of players allowed in the map (instance)
 		/// </summary>
 		public int MaxPlayerCount
 		{
-			get { return m_RegionTemplate.MaxPlayerCount; }
+			get { return m_MapTemplate.MaxPlayerCount; }
 		}
 
 		/// <summary>
-		/// Whether or not the region is currently processing object updates
+		/// Whether or not the map is currently processing object updates
 		/// </summary>
 		public bool IsRunning
 		{
@@ -470,7 +470,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Indicates whether the current Thread is the Region's update-thread.
+		/// Indicates whether the current Thread is the Map's update-thread.
 		/// </summary>
 		public bool IsInContext
 		{
@@ -488,7 +488,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The amount of all Players in this Region (excludes Staff members)
+		/// The amount of all Players in this Map (excludes Staff members)
 		/// </summary>
 		public int PlayerCount
 		{
@@ -496,7 +496,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The amount of all Characters in this Region (includes Staff members)
+		/// The amount of all Characters in this Map (includes Staff members)
 		/// </summary>
 		public int CharacterCount
 		{
@@ -504,7 +504,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The number of Alliance Players currently in the region (not counting Staff)
+		/// The number of Alliance Players currently in the map (not counting Staff)
 		/// </summary>
 		public int AllianceCount
 		{
@@ -512,7 +512,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// The number of Alliance Players currently in the region (not counting Staff)
+		/// The number of Alliance Players currently in the map (not counting Staff)
 		/// </summary>
 		public int HordeCount
 		{
@@ -525,7 +525,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Amount of passed ticks in this Region
+		/// Amount of passed ticks in this Map
 		/// </summary>
 		public int TickCount
 		{
@@ -554,7 +554,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Called whenever an object is removed from the region to determine whether it may stop now.
+		/// Called whenever an object is removed from the map to determine whether it may stop now.
 		/// </summary>
 		public virtual bool ShouldStop
 		{
@@ -583,7 +583,7 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// Time in milliseconds between the beginning of 
-		/// one Region-Update and the next.
+		/// one Map-Update and the next.
 		/// </summary>
 		public int UpdateDelay
 		{
@@ -597,7 +597,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Total amount of objects within this Region
+		/// Total amount of objects within this Map
 		/// </summary>
 		public int ObjectCount
 		{
@@ -605,7 +605,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Whether NPCs in this Region will try to evade after Combat
+		/// Whether NPCs in this Map will try to evade after Combat
 		/// </summary>
 		public bool CanNPCsEvade
 		{
@@ -659,13 +659,13 @@ namespace WCell.RealmServer.Global
 
 		#region Start / Stop
 		/// <summary>
-		/// Starts the Region's update-, message- and timer- loop
+		/// Starts the Map's update-, message- and timer- loop
 		/// </summary>
 		public void Start()
 		{
 			if (!m_running)
 			{
-				// lock and check again, so Region won't be started twice or start while stoping
+				// lock and check again, so Map won't be started twice or start while stoping
 				lock (m_objects)
 				{
 					if (m_running)
@@ -679,42 +679,42 @@ namespace WCell.RealmServer.Global
 							// must ensure that IsRunning does not change during World Pause
 							// in order to prevent dead-locks, we cannot allow to wait for the World to unpause
 							// at this point
-							throw new InvalidOperationException("Tried to start Region while World is paused.");
+							throw new InvalidOperationException("Tried to start Map while World is paused.");
 						}
 
 						m_running = true;
 					}
 
-					s_log.Debug(Resources.RegionStarted, m_RegionTemplate.Id);
+					s_log.Debug(Resources.MapStarted, m_MapTemplate.Id);
 
 					// start updating
-					Task.Factory.StartNewDelayed(m_updateDelay, RegionUpdateCallback, this);
+					Task.Factory.StartNewDelayed(m_updateDelay, MapUpdateCallback, this);
 
 					if (AutoSpawn)
 					{
-						SpawnRegionLater();
+						SpawnMapLater();
 					}
 
 					m_lastUpdateTime = DateTime.Now;
 
-					m_RegionTemplate.NotifyStarted(this);
+					m_MapTemplate.NotifyStarted(this);
 				}
 			}
 		}
 
 		/// <summary>
-		/// Stops region updating and stops the update delta measuring
+		/// Stops map updating and stops the update delta measuring
 		/// </summary>
 		public void Stop()
 		{
 			if (m_running)
 			{
-				if (!m_RegionTemplate.NotifyStopping(this))
+				if (!m_MapTemplate.NotifyStopping(this))
 				{
 					return;
 				}
 
-				// lock and check again, so region won't be stopped twice or stopped while starting
+				// lock and check again, so map won't be stopped twice or stopped while starting
 				lock (m_objects)
 				{
 					if (!m_running)
@@ -723,9 +723,9 @@ namespace WCell.RealmServer.Global
 					}
 					m_running = false;
 
-					s_log.Debug(Resources.RegionStopped, m_RegionTemplate.Id);
+					s_log.Debug(Resources.MapStopped, m_MapTemplate.Id);
 
-					m_RegionTemplate.NotifyStopped(this);
+					m_MapTemplate.NotifyStopped(this);
 				}
 			}
 		}
@@ -743,41 +743,41 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Ensures execution within the region.
+		/// Ensures execution within the map.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">thrown if the calling thread isn't the region thread</exception>
+		/// <exception cref="InvalidOperationException">thrown if the calling thread isn't the map thread</exception>
 		public void EnsureContext()
 		{
 			if (Thread.CurrentThread.ManagedThreadId != m_currentThreadId && IsRunning)
 			{
 				Stop();
-				throw new InvalidOperationException(string.Format(Resources.RegionContextNeeded, this));
+				throw new InvalidOperationException(string.Format(Resources.MapContextNeeded, this));
 			}
 		}
 
 		/// <summary>
-		/// Ensures execution outside the Region-context.
+		/// Ensures execution outside the Map-context.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">thrown if the calling thread is the region thread</exception>
+		/// <exception cref="InvalidOperationException">thrown if the calling thread is the map thread</exception>
 		public void EnsureNoContext()
 		{
 			if (Thread.CurrentThread.ManagedThreadId == m_currentThreadId)
 			{
 				Stop();
-				throw new InvalidOperationException(string.Format(Resources.RegionContextProhibited, this));
+				throw new InvalidOperationException(string.Format(Resources.MapContextProhibited, this));
 			}
 		}
 
 		/// <summary>
-		/// Ensures that Region is not updating.
+		/// Ensures that Map is not updating.
 		/// </summary>
-		/// <exception cref="InvalidOperationException">thrown if the Region is currently updating</exception>
+		/// <exception cref="InvalidOperationException">thrown if the Map is currently updating</exception>
 		public void EnsureNotUpdating()
 		{
 			if (m_isUpdating)
 			{
 				Stop();
-				throw new InvalidOperationException(string.Format(Resources.RegionUpdating, this));
+				throw new InvalidOperationException(string.Format(Resources.MapUpdating, this));
 			}
 		}
 		#endregion
@@ -785,7 +785,7 @@ namespace WCell.RealmServer.Global
 		#region Spawning
 
 		/// <summary>
-		/// Whether this Region's NPCs and GOs have been fully spawned
+		/// Whether this Map's NPCs and GOs have been fully spawned
 		/// </summary>
 		public bool IsSpawned
 		{
@@ -805,28 +805,28 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
-		public SpawnPoint AddSpawn(NPCSpawnEntry entry)
+		public NPCSpawnPoint AddSpawn(NPCSpawnEntry entry)
 		{
-			var point = new SpawnPoint(entry, this);
+			var point = new NPCSpawnPoint(entry, this);
 			AddSpawn(point);
 			point.Active = true;
 			return point;
 		}
 
-		void AddSpawn(SpawnPoint point)
+		void AddSpawn(NPCSpawnPoint point)
 		{
 			ArrayUtil.Set(ref m_spawnPoints, point.Id, point);
 			m_spawnPointCount++;
 		}
 
-		internal void RemoveSpawn(SpawnPoint spawn)
+		internal void RemoveSpawn(NPCSpawnPoint spawn)
 		{
 			m_spawnPoints[spawn.Id] = null;
 			m_spawnPointCount--;
 		}
 
 		/// <summary>
-		/// Adds a message to the Region to clear it
+		/// Adds a message to the Map to clear it
 		/// </summary>
 		public void ClearLater()
 		{
@@ -834,16 +834,16 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Removes all Objects, NPCs and Spawns from this Region.
+		/// Removes all Objects, NPCs and Spawns from this Map.
 		/// </summary>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public virtual void RemoveAll()
 		{
 			RemoveObjects();
 		}
 
 		/// <summary>
-		/// Removes all Objects and NPCs from the Region
+		/// Removes all Objects and NPCs from the Map
 		/// </summary>
 		public void RemoveObjects()
 		{
@@ -894,7 +894,7 @@ namespace WCell.RealmServer.Global
 		{
 			RemoveAll();
 
-			SpawnRegion();
+			SpawnMap();
 
 			for (var i = 0; i < m_spawnPoints.Length; i++)
 			{
@@ -907,25 +907,25 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// If not added already, this method adds all default GameObjects and NPC spawnpoints to this region.
+		/// If not added already, this method adds all default GameObjects and NPC spawnpoints to this map.
 		/// </summary>
-		public void SpawnRegionLater()
+		public void SpawnMapLater()
 		{
-			AddMessage(SpawnRegion);
+			AddMessage(SpawnMap);
 		}
 
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <see cref="SpawnRegionLater"/>
-		/// <remarks>Requires region context</remarks>
-		public virtual void SpawnRegion()
+		/// <see cref="SpawnMapLater"/>
+		/// <remarks>Requires map context</remarks>
+		public virtual void SpawnMap()
 		{
 			EnsureContext();
 
 			if (!IsSpawned)
 			{
-				if (!m_RegionTemplate.NotifySpawning(this))
+				if (!m_MapTemplate.NotifySpawning(this))
 				{
 					return;
 				}
@@ -938,7 +938,7 @@ namespace WCell.RealmServer.Global
 						SpawnGOs();
 						if (count > 0)
 						{
-							s_log.Debug("Added {0} Objects to Region: {1}", ObjectCount - count, this);
+							s_log.Debug("Added {0} Objects to Map: {1}", ObjectCount - count, this);
 						}
 						m_gosSpawned = true;
 					}
@@ -954,7 +954,7 @@ namespace WCell.RealmServer.Global
 						           	{
 						           		if (count > 0)
 						           		{
-						           			s_log.Debug("Added {0} NPC Spawnpoints to Region: {1}", ObjectCount - count, this);
+						           			s_log.Debug("Added {0} NPC Spawnpoints to Map: {1}", ObjectCount - count, this);
 						           		}
 						           	});
 						m_npcsSpawned = true;
@@ -963,7 +963,7 @@ namespace WCell.RealmServer.Global
 
 				if (IsSpawned)
 				{
-					m_RegionTemplate.NotifySpawned(this);
+					m_MapTemplate.NotifySpawned(this);
 				}
 			}
 		}
@@ -1000,12 +1000,12 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
-		public void ForeachSpawnPoint(Action<SpawnPoint> func)
+		public void ForeachSpawnPoint(Action<NPCSpawnPoint> func)
 		{
 			ForeachSpawnPoint(Vector3.Zero, 0, func);
 		}
 
-		public void ForeachSpawnPoint(Vector3 pos, float radius, Action<SpawnPoint> func)
+		public void ForeachSpawnPoint(Vector3 pos, float radius, Action<NPCSpawnPoint> func)
 		{
 			var radiusSq = radius * radius;
 			foreach (var spawn in m_spawnPoints)
@@ -1040,7 +1040,7 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// Adds a new Updatable right away.
-		/// Requires Region context.
+		/// Requires Map context.
 		/// <see cref="RegisterUpdatableLater"/>
 		/// </summary>
 		/// <param name="updatable"></param>
@@ -1052,7 +1052,7 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// Unregisters an Updatable right away.
-		/// In region context.
+		/// In map context.
 		/// <see cref="UnregisterUpdatableLater"/>
 		/// </summary>
 		public void UnregisterUpdatable(IUpdatable updatable)
@@ -1062,7 +1062,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Registers the given Updatable during the next Region Tick
+		/// Registers the given Updatable during the next Map Tick
 		/// </summary>
 		public void RegisterUpdatableLater(IUpdatable updatable)
 		{
@@ -1070,7 +1070,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Unregisters the given Updatable during the next Region Update
+		/// Unregisters the given Updatable during the next Map Update
 		/// </summary>
 		public void UnregisterUpdatableLater(IUpdatable updatable)
 		{
@@ -1078,9 +1078,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Executes the given action after the given delay within this Region's context.
+		/// Executes the given action after the given delay within this Map's context.
 		/// </summary>
-		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Region's context.</remarks>
+		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Map's context.</remarks>
 		public TimerEntry CallDelayed(int millis, Action action)
 		{
 			var timer = new TimerEntry();
@@ -1095,9 +1095,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Executes the given action after the given delay within this Region's context.
+		/// Executes the given action after the given delay within this Map's context.
 		/// </summary>
-		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Region's context.</remarks>
+		/// <remarks>Make sure that once the timeout is hit, the given action is executed in the correct Map's context.</remarks>
 		public TimerEntry CallPeriodically(int seconds, Action action)
 		{
 			var timer = new TimerEntry
@@ -1110,8 +1110,8 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds a message to the message queue for this region.
-		/// TODO: Consider extra-message for Character that checks whether Char is still in Region?
+		/// Adds a message to the message queue for this map.
+		/// TODO: Consider extra-message for Character that checks whether Char is still in Map?
 		/// </summary>
 		/// <param name="action">the action to be enqueued</param>
 		public void AddMessage(Action action)
@@ -1120,25 +1120,25 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds a message to the message queue for this region.
+		/// Adds a message to the message queue for this map.
 		/// </summary>
 		/// <param name="msg">the message</param>
 		public void AddMessage(IMessage msg)
 		{
-			// make sure, Region is running
+			// make sure, Map is running
 			Start();
 			m_messageQueue.Enqueue(msg);
 		}
 
 		/// <summary>
-		/// Callback for executing updates of the region, which includes updates for all inhabiting objects.
+		/// Callback for executing updates of the map, which includes updates for all inhabiting objects.
 		/// </summary>
-		/// <param name="state">the <see cref="Region" /> to update</param>
-		private void RegionUpdateCallback(object state)
+		/// <param name="state">the <see cref="Map" /> to update</param>
+		private void MapUpdateCallback(object state)
 		{
-			// we need some locking here because else RegionUpdateCallback could be called twice
+			// we need some locking here because else MapUpdateCallback could be called twice
 			if (Interlocked.CompareExchange(ref m_currentThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
-			//lock (m_regionTime)
+			//lock (m_mapTime)
 			{
 				// get the time at the start of our callback
 				var updateStart = DateTime.Now;
@@ -1184,8 +1184,8 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				// check to see if it's time to run a region update yet again
-				//if (m_lastRegionUpdate + DefaultUpdateDelay <= now)
+				// check to see if it's time to run a map update yet again
+				//if (m_lastMapUpdate + DefaultUpdateDelay <= now)
 
 				m_isUpdating = true;
 
@@ -1204,7 +1204,7 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				// update all Objects in the Region
+				// update all Objects in the Map
 				// copy objects, so object-internal message processing won't interfere with updating
 				foreach (var obj in m_objects.Values)
 				{
@@ -1277,9 +1277,9 @@ namespace WCell.RealmServer.Global
 					UpdateCharacters();
 				}
 
-				UpdateRegion();	// region specific stuff
+				UpdateMap();	// map specific stuff
 
-				// we updated the region, so set our last update time to now
+				// we updated the map, so set our last update time to now
 				m_lastUpdateTime = updateStart;
 				m_tickCount++;
 				m_isUpdating = false;
@@ -1302,13 +1302,13 @@ namespace WCell.RealmServer.Global
 						callbackTimeout = 0;
 					}
 
-					Task.Factory.StartNewDelayed(callbackTimeout, RegionUpdateCallback, this);
+					Task.Factory.StartNewDelayed(callbackTimeout, MapUpdateCallback, this);
 				}
 				else
 				{
 					if (IsDisposed)
 					{
-						// the Region was marked as disposed and can now be trashed
+						// the Map was marked as disposed and can now be trashed
 						Dispose();
 					}
 				}
@@ -1316,9 +1316,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Can be overridden to add any kind of to be executed every Region-tick
+		/// Can be overridden to add any kind of to be executed every Map-tick
 		/// </summary>
-		protected virtual void UpdateRegion()
+		protected virtual void UpdateMap()
 		{
 		}
 
@@ -1404,7 +1404,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		internal void PartitionSpace()
 		{
-			// Start partitioning the region space
+			// Start partitioning the map space
 			m_root.PartitionSpace(null, ZoneSpacePartitionNode.DefaultPartitionThreshold, 0);
 		}
 
@@ -1427,7 +1427,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		/// <param name="point">the point to check for containment</param>
 		/// <returns>true if the location is within the bounds, false otherwise</returns>
-		public bool IsPointInRegion(ref Vector3 point)
+		public bool IsPointInMap(ref Vector3 point)
 		{
 			if (m_root != null)
 			{
@@ -1454,9 +1454,9 @@ namespace WCell.RealmServer.Global
 
 		public Zone GetZone(float x, float y)
 		{
-			if (m_RegionTemplate.ZoneTileSet != null)
+			if (m_MapTemplate.ZoneTileSet != null)
 			{
-				var zoneId = m_RegionTemplate.ZoneTileSet.GetZoneId(x, y);
+				var zoneId = m_MapTemplate.ZoneTileSet.GetZoneId(x, y);
 				return GetZone(zoneId);
 			}
 			//return DefaultZone;
@@ -1468,7 +1468,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="radius">the area to check in</param>
 		/// <param name="filter">the entities to return</param>
@@ -1495,7 +1495,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="radius">the area to check in</param>
 		/// <param name="limit">Max amount of objects to search for</param>
@@ -1519,7 +1519,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="radius">the area to check in</param>
 		/// <param name="filter">the entities to return</param>
@@ -1543,7 +1543,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all objects in a radius around the origin, regarding the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="radius">the area to check in</param>
 		/// <param name="filter">a delegate to filter search results</param>
@@ -1566,7 +1566,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="box">the BoundingBox object that matches the area we want to search in</param>
 		/// <param name="filter">the entities to return</param>
@@ -1589,7 +1589,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="box">the BoundingBox object that matches the area we want to search in</param>
 		/// <param name="limit">Max amount of objects to search for</param>
@@ -1611,7 +1611,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all entities in a radius from the origin, according to the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="box">the BoundingBox object that matches the area we want to search in</param>
 		/// <param name="filter">the entities to return</param>
@@ -1634,7 +1634,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets all objects in a radius around the origin, regarding the search filter.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="origin">the point to search from</param>
 		/// <param name="box">the BoundingBox object that matches the area we want to search in</param>
 		/// <param name="filter">a delegate to filter search results</param>
@@ -1688,10 +1688,10 @@ namespace WCell.RealmServer.Global
 		}
 
         /// <summary>
-        /// Sends a packet to all characters in the region
+        /// Sends a packet to all characters in the map
         /// </summary>
         /// <param name="packet">the packet to send</param>
-        public void SendPacketToRegion(RealmPacketOut packet)
+        public void SendPacketToMap(RealmPacketOut packet)
         {
             CallOnAllCharacters(chr => chr.Send(packet.GetFinalizedPacket()));
         }
@@ -1727,7 +1727,7 @@ namespace WCell.RealmServer.Global
 		{
 			if (m_isUpdating || !IsInContext)
 			{
-				// Cannot add during Region Update
+				// Cannot add during Map Update
 				AddObjectLater(obj);
 			}
 			else
@@ -1740,7 +1740,7 @@ namespace WCell.RealmServer.Global
 		{
 			if (m_isUpdating || !IsInContext)
 			{
-				// Cannot add during Region Update
+				// Cannot add during Map Update
 				TransferObjectLater(obj, pos);
 			}
 			else
@@ -1753,7 +1753,7 @@ namespace WCell.RealmServer.Global
 		{
 			if (m_isUpdating || !IsInContext)
 			{
-				// Cannot add during Region Update
+				// Cannot add during Map Update
 				TransferObjectLater(obj, pos);
 			}
 			else
@@ -1763,9 +1763,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds the given Object to this Region.
+		/// Adds the given Object to this Map.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public void AddObjectNow(WorldObject obj, Vector3 pos)
 		{
 			obj.Position = pos;
@@ -1773,9 +1773,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds the given Object to this Region.
+		/// Adds the given Object to this Map.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public void AddObjectNow(WorldObject obj, ref Vector3 pos)
 		{
 			obj.Position = pos;
@@ -1783,9 +1783,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds the given Object to this Region.
+		/// Adds the given Object to this Map.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public void AddObjectNow(WorldObject obj)
 		{
 			try
@@ -1810,14 +1810,14 @@ namespace WCell.RealmServer.Global
 				if (obj.IsDeleted)
 				{
 					// object has been deleted before it was added
-					s_log.Warn("Tried to add deleted object \"{0}\" to Region: " + this);
+					s_log.Warn("Tried to add deleted object \"{0}\" to Map: " + this);
 					return;
 				}
 
 				// Add them to the quad-tree
 				if (!m_root.AddObject(obj))
 				{
-					s_log.Error("Could not add Object to Region {0} at {1} (Region Bounds: {2})", this, obj.Position, Bounds);
+					s_log.Error("Could not add Object to Map {0} at {1} (Map Bounds: {2})", this, obj.Position, Bounds);
 					if (!(obj is Character))
 					{
 						obj.Delete();
@@ -1829,7 +1829,7 @@ namespace WCell.RealmServer.Global
 					return;
 				}
 
-				obj.Region = this;
+				obj.Map = this;
 
 				m_objects.Add(obj.EntityId, obj);
 
@@ -1876,17 +1876,17 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				obj.OnEnterRegion();
+				obj.OnEnterMap();
 				obj.RequestUpdate();
 
 				if (obj is Character)
 				{
-					m_RegionTemplate.NotifyPlayerEntered(this, (Character)obj);
+					m_MapTemplate.NotifyPlayerEntered(this, (Character)obj);
 				}
 			}
 			catch (Exception ex)
 			{
-				LogUtil.ErrorException(ex, "Unable to add Object \"{0}\" to Region: {1}", obj, this);
+				LogUtil.ErrorException(ex, "Unable to add Object \"{0}\" to Map: {1}", obj, this);
 				obj.DeleteNow();
 			}
 		}
@@ -1905,7 +1905,7 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// Gets a WorldObject by its ID.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="id">the ID of the WorldObject</param>
 		/// <returns>The corresponding <see cref="WorldObject" /> if found; null otherwise</returns>
@@ -1929,14 +1929,14 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Called when a Character object is added to the Region
+		/// Called when a Character object is added to the Map
 		/// </summary>
 		protected virtual void OnEnter(Character chr)
 		{
 		}
 
 		/// <summary>
-		/// Called when a Character object is removed from the Region
+		/// Called when a Character object is removed from the Map
 		/// </summary>
 		protected virtual void OnLeave(Character chr)
 		{
@@ -1951,7 +1951,7 @@ namespace WCell.RealmServer.Global
 		{
 			if (m_isUpdating || !IsInContext)
 			{
-				// Cannot remove during Region Update
+				// Cannot remove during Map Update
 				RemoveObjectLater(obj);
 			}
 			else
@@ -1961,9 +1961,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Removes an entity from this Region, instantly.
-		/// Also make sure that the given Object is actually within this Region.
-		/// Requires region context.
+		/// Removes an entity from this Map, instantly.
+		/// Also make sure that the given Object is actually within this Map.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="obj">the entity to remove</param>
 		/// <returns>true if the entity was removed; false otherwise</returns>
@@ -1996,10 +1996,10 @@ namespace WCell.RealmServer.Global
 				//    chr.Zone = null;
 				//}
 
-				m_RegionTemplate.NotifyPlayerLeft(this, (Character)obj);
+				m_MapTemplate.NotifyPlayerLeft(this, (Character)obj);
 			}
 
-			obj.OnLeavingRegion();				// call before actually removing
+			obj.OnLeavingMap();				// call before actually removing
 
 			// Remove object from the quadtree
 			if (obj.Node != null && obj.Node.RemoveObject(obj))
@@ -2023,10 +2023,10 @@ namespace WCell.RealmServer.Global
 
 
 		/// <summary>
-		/// Returns all objects within the Region.
+		/// Returns all objects within the Map.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
-		/// <returns>an array of all objects in the region</returns>
+		/// <remarks>Requires map context.</remarks>
+		/// <returns>an array of all objects in the map</returns>
 		public WorldObject[] CopyObjects()
 		{
 			EnsureContext();
@@ -2037,7 +2037,7 @@ namespace WCell.RealmServer.Global
 		{
 			return chr.Level >= MinLevel &&
 				(MaxLevel == 0 || chr.Level <= MaxLevel) &&
-				(m_RegionTemplate.MayEnter(chr) &&
+				(m_MapTemplate.MayEnter(chr) &&
 				(MaxPlayerCount == 0 || PlayerCount < MaxPlayerCount));
 		}
 
@@ -2049,7 +2049,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Returns the specified GameObject that is closest to the given point.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <returns>the closest GameObject to the given point, or null if none found.</returns>
 		public GameObject GetNearestGameObject(ref Vector3 pos, GOEntryId goId)
 		{
@@ -2080,7 +2080,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Returns the specified NPC that is closest to the given point.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <returns>the closest NPC to the given point, or null if none found.</returns>
 		public NPC GetNearestNPC(ref Vector3 pos, NPCId id)
 		{
@@ -2111,7 +2111,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Returns the spirit healer that is closest to the given point.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <returns>the closest spirit healer, or null if none found.</returns>
 		public virtual NPC GetNearestSpiritHealer(ref Vector3 pos)
 		{
@@ -2141,7 +2141,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Returns all GOs of this Region
+		/// Returns all GOs of this Map
 		/// </summary>
 		/// <returns></returns>
 		public GameObject[] GetAllGOs()
@@ -2168,7 +2168,7 @@ namespace WCell.RealmServer.Global
 
 		#region Move Objects
 		/// <summary>
-		/// Enqueues an object to be moved into this Region during the next Region-update
+		/// Enqueues an object to be moved into this Map during the next Map-update
 		/// </summary>
 		/// <param name="obj">the entity to add</param>
 		/// <returns>true if the entity was added, false otherwise</returns>
@@ -2184,16 +2184,13 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Enqueues an object to be removed from its old region (if already added to one) and 
-		/// moved into this one during the next Region-updates of the regions involved. 
+		/// Enqueues an object to be removed from its old map (if already added to one) and 
+		/// moved into this one during the next Map-updates of the maps involved. 
 		/// </summary>
 		/// <param name="obj">the object to add</param>
 		/// <returns>true if the entity was added, false otherwise</returns>
 		internal bool TransferObjectLater(WorldObject obj, Vector3 newPos)
 		{
-			// We can't add anything we already have
-			var context = obj.ContextHandler;
-
 			if (obj.IsTeleporting)
 			{
 				// this might take a while
@@ -2202,20 +2199,20 @@ namespace WCell.RealmServer.Global
 				return true;
 			}
 
-			if (obj.Region == this)
+			if (obj.Map == this)
 			{
 				MoveObject(obj, ref newPos);
 			}
 			else
 			{
 				obj.IsTeleporting = true;
-				var oldRegion = obj.Region;
-				if (oldRegion != null)
+				var oldMap = obj.Map;
+				if (oldMap != null)
 				{
 					var moveTask = new Message(() =>
 					{
-						oldRegion.RemoveObjectNow(obj);
-						obj.Region = this;
+						oldMap.RemoveObjectNow(obj);
+						obj.Map = this;
 
 						var addTask = new Message(() =>
 						{
@@ -2227,7 +2224,7 @@ namespace WCell.RealmServer.Global
 						AddMessage(addTask);
 					});
 
-					oldRegion.AddMessage(moveTask);
+					oldMap.AddMessage(moveTask);
 				}
 				else
 				{
@@ -2239,7 +2236,7 @@ namespace WCell.RealmServer.Global
 					});
 
 					AddMessage(addTask);
-					obj.Region = this;
+					obj.Map = this;
 				}
 			}
 
@@ -2259,7 +2256,7 @@ namespace WCell.RealmServer.Global
 		/// <returns>true if the entity was moved, false otherwise</returns>
 		public bool MoveObject(WorldObject obj, ref Vector3 newPos)
 		{
-			// Check for a partitioned region, and check the placement bounds
+			// Check for a partitioned map, and check the placement bounds
 			if (m_root == null || !m_root.Bounds.Contains(ref newPos))
 				return false;
 
@@ -2314,9 +2311,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Enumerates all objects within the region.
+		/// Enumerates all objects within the map.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public IEnumerator<WorldObject> GetEnumerator()
 		{
 			EnsureContext();
@@ -2325,22 +2322,22 @@ namespace WCell.RealmServer.Global
 
 		#region Waiting
 		/// <summary>
-		/// Adds the given message to the region's message queue and does not return 
+		/// Adds the given message to the map's message queue and does not return 
 		/// until the message is processed.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void AddMessageAndWait(Action action)
 		{
 			AddMessageAndWait(new Message(action));
 		}
 
 		/// <summary>
-		/// Adds the given message to the region's message queue and does not return 
+		/// Adds the given message to the map's message queue and does not return 
 		/// until the message is processed.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void AddMessageAndWait(IMessage msg)
 		{
 			EnsureNoContext();
@@ -2371,9 +2368,9 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Waits for one region tick before returning.
+		/// Waits for one map tick before returning.
 		/// </summary>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void WaitOneTick()
 		{
 			EnsureNoContext();
@@ -2386,10 +2383,10 @@ namespace WCell.RealmServer.Global
 
 		/// <summary>
 		/// Waits for the given amount of ticks.
-		/// One tick might take 0 until Region.UpdateSpeed milliseconds.
+		/// One tick might take 0 until Map.UpdateSpeed milliseconds.
 		/// </summary>
-		/// <remarks>Make sure that the region is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the region context.</remarks>
+		/// <remarks>Make sure that the map is running before calling this method.</remarks>
+		/// <remarks>Must not be called from the map context.</remarks>
 		public void WaitTicks(int ticks)
 		{
 			EnsureNoContext();
@@ -2416,8 +2413,8 @@ namespace WCell.RealmServer.Global
 		private bool m_IsDisposed;
 
 		/// <summary>
-		/// Indicates whether this Region is disposed. 
-		/// Disposed Regions may not be used any longer.
+		/// Indicates whether this Map is disposed. 
+		/// Disposed Maps may not be used any longer.
 		/// </summary>
 		public bool IsDisposed
 		{
@@ -2444,7 +2441,7 @@ namespace WCell.RealmServer.Global
 
 		public void SendMessage(string message)
 		{
-			AddMessage(new Message1<Region>(
+			AddMessage(new Message1<Map>(
 							this, rgn => ChatMgr.SendSystemMessage(rgn.m_characters, message)
 						));
 
@@ -2471,7 +2468,7 @@ namespace WCell.RealmServer.Global
 			if (action.Victim is Character)
 			{
 				var chr = action.Victim as Character;
-				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)RegionId, 1);
+				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
 
 				if(action.Attacker is Character)
 				{

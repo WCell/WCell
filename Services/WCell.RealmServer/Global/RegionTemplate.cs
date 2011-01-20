@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
         public int ResetTime;
 		/// <summary>
-		/// Might be 0 (have to use RegionInfo.MaxPlayerCount)
+		/// Might be 0 (have to use MapInfo.MaxPlayerCount)
 		/// </summary>
     	public int MaxPlayerCount;
     }
@@ -41,7 +41,7 @@ namespace WCell.RealmServer.Global
 	/// The template of a Zone
 	/// </summary>
 	[DataHolder]
-	public partial class RegionTemplate : IDataHolder, IComparable
+	public partial class MapTemplate : IDataHolder, IComparable
 	{
 		public MapId Id;
 		public string Name;
@@ -53,13 +53,13 @@ namespace WCell.RealmServer.Global
 		public int MaxLevel;
 
         /// <summary>
-        /// Maximum amount of players allowed in the region.
+        /// Maximum amount of players allowed in the map.
         /// See Difficulties for more information.
         /// </summary>
         [NotPersistent]
 		public int MaxPlayerCount;
 		public Vector3 RepopPosition;
-		public MapId RepopRegionId;
+		public MapId RepopMapId;
 		public uint AreaTableId;
 		public string HordeText;
 		public string AllianceText;
@@ -70,19 +70,19 @@ namespace WCell.RealmServer.Global
 		public int DefaultResetTime;
 
 		/// <summary>
-		/// The default BattlegroundTemplate, associated with this RegionInfo
+		/// The default BattlegroundTemplate, associated with this MapInfo
 		/// </summary>
 		[NotPersistent]
 		public BattlegroundTemplate BGTemplate;
 
 		/// <summary>
-		/// The default InstanceTemplate, associated with this RegionInfo
+		/// The default InstanceTemplate, associated with this MapInfo
 		/// </summary>
 		[NotPersistent]
 		public InstanceTemplate InstanceTemplate;
 
 		/// <summary>
-		/// The BoundingBox around the entire Region
+		/// The BoundingBox around the entire Map
 		/// </summary>
 		[NotPersistent]
 		public BoundingBox Bounds;
@@ -111,7 +111,7 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// All zone ids within the Region
+		/// All zone ids within the Map
 		/// </summary>
 		public bool IsInstance
 		{
@@ -123,13 +123,13 @@ namespace WCell.RealmServer.Global
 			get { return Type == MapType.Battleground || Type == MapType.Arena; }
 		}
 
-		public Region RepopRegion
+		public Map RepopMap
 		{
 			get
 			{
-				if (RepopRegionId != MapId.End)
+				if (RepopMapId != MapId.End)
 				{
-					return World.GetRegion(RepopRegionId);
+					return World.GetMap(RepopMapId);
 				}
 				return null;
 			}
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Global
 		#region Zones
 		[NotPersistent]
 		/// <summary>
-		/// All the ZoneInfos within this region.
+		/// All the ZoneInfos within this map.
 		/// </summary>
 		public readonly IList<ZoneTemplate> ZoneInfos = new List<ZoneTemplate>();
 
@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Global
 
 			if (RepopPosition == default(Vector3))
 			{
-				RepopRegionId = MapId.End;
+				RepopMapId = MapId.End;
 			}
 
 			if (IsInstance)
@@ -223,82 +223,82 @@ namespace WCell.RealmServer.Global
 				InstanceMgr.InstanceInfos.Add(this);
 			}
 
-			//ArrayUtil.Set(ref World.s_regionInfos, (uint)Id, this);
+			//ArrayUtil.Set(ref World.s_mapInfos, (uint)Id, this);
 		}
 
 		#region Events
 
-		internal void NotifyCreated(Region region)
+		internal void NotifyCreated(Map map)
 		{
 			var evt = Created;
 			if (evt != null)
 			{
-				evt(region);
+				evt(map);
 			}
 		}
 
-		public void NotifyStarted(Region region)
+		public void NotifyStarted(Map map)
 		{
 			var evt = Started;
 			if (evt != null)
 			{
-				evt(region);
+				evt(map);
 			}
 		}
 
-		public bool NotifySpawning(Region region)
+		public bool NotifySpawning(Map map)
 		{
 			var evt = Spawning;
 			if (evt != null)
 			{
-				return evt(region);
+				return evt(map);
 			}
 			return true;
 		}
 
-		public void NotifySpawned(Region region)
+		public void NotifySpawned(Map map)
 		{
 			var evt = Spawned;
 			if (evt != null)
 			{
-				evt(region);
+				evt(map);
 			}
 		}
 
-		public bool NotifyStopping(Region region)
+		public bool NotifyStopping(Map map)
 		{
 			var evt = Stopping;
 			if (evt != null)
 			{
-				return evt(region);
+				return evt(map);
 			}
 			return true;
 		}
 
-		public void NotifyStopped(Region region)
+		public void NotifyStopped(Map map)
 		{
 			var evt = Started;
 			if (evt != null)
 			{
-				evt(region);
+				evt(map);
 			}
 		}
 
-		public void NotifyPlayerEntered(Region region, Character chr)
+		public void NotifyPlayerEntered(Map map, Character chr)
 		{
 			var evt = PlayerEntered;
 			if (evt != null)
 			{
-				evt(region, chr);
+				evt(map, chr);
 			}
 		}
 
-		public void NotifyPlayerLeft(Region region, Character chr)
+		public void NotifyPlayerLeft(Map map, Character chr)
 		{
 			var evt = PlayerLeft;
 			if (evt != null)
 			{
-				evt(region, chr);
+				evt(map, chr);
 			}
 		}
 
@@ -319,7 +319,7 @@ namespace WCell.RealmServer.Global
 			{
 				evt(action);
 			}
-			action.Victim.Region.OnPlayerDeath(action);
+			action.Victim.Map.OnPlayerDeath(action);
 		}
 
 		public void NotifyPlayerResurrected(Character chr)
@@ -333,14 +333,14 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Misc
-		//public static IEnumerable<RegionInfo> GetAllDataHolders()
+		//public static IEnumerable<MapInfo> GetAllDataHolders()
 		//{
-		//    return World.RegionInfos;
+		//    return World.MapInfos;
 		//}
 
 		public int CompareTo(object obj)
 		{
-			var info = obj as RegionTemplate;
+			var info = obj as MapTemplate;
 			if (info != null)
 			{
 				return Id.CompareTo(info.Id);
@@ -367,12 +367,12 @@ namespace WCell.RealmServer.Global
 //namespace WCell.RealmServer.Global
 //{
 //    /// <summary>
-//    /// Holds information about a region, an area of the world that requires a teleport to get to.
+//    /// Holds information about a map, an area of the world that requires a teleport to get to.
 //    /// </summary>
-//    public class RegionInfo
+//    public class MapInfo
 //    {
 //        /// <summary>
-//        /// The name of the region.
+//        /// The name of the map.
 //        /// </summary>
 //        public string Name
 //        {
@@ -381,7 +381,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The map type of the region.
+//        /// The map type of the map.
 //        /// </summary>
 //        public MapType MapType
 //        {
@@ -390,7 +390,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The ID of the region.
+//        /// The ID of the map.
 //        /// </summary>
 //        public MapId Id
 //        {
@@ -399,7 +399,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// Whether or not this region is Burning Crusade only.
+//        /// Whether or not this map is Burning Crusade only.
 //        /// </summary>
 //        public bool IsBurningCrusadeOnly
 //        {
@@ -408,7 +408,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The minimum level to enter the region.
+//        /// The minimum level to enter the map.
 //        /// </summary>
 //        public uint MinimumLevel
 //        {
@@ -417,7 +417,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The maximum level to enter the region.
+//        /// The maximum level to enter the map.
 //        /// </summary>
 //        public uint MaximumLevel
 //        {
@@ -426,7 +426,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The maximum amount of players that can enter the region.
+//        /// The maximum amount of players that can enter the map.
 //        /// </summary>
 //        public uint MaximumPlayers
 //        {
@@ -435,7 +435,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The raid reset timer for this region, in second.
+//        /// The raid reset timer for this map, in second.
 //        /// </summary>
 //        public uint RaidResetTimer
 //        {
@@ -444,7 +444,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// The heroic raid reset timer for this region, in second.
+//        /// The heroic raid reset timer for this map, in second.
 //        /// </summary>
 //        public uint HeroicResetTimer
 //        {
@@ -453,7 +453,7 @@ namespace WCell.RealmServer.Global
 //        }
 
 //        /// <summary>
-//        /// Whether or not this region can be set to Heroic mode.
+//        /// Whether or not this map can be set to Heroic mode.
 //        /// </summary>
 //        public bool IsHeroicCapable
 //        {
@@ -462,7 +462,7 @@ namespace WCell.RealmServer.Global
 
 
 //        /// <summary>
-//        /// The description of the heroic mode for this region.
+//        /// The description of the heroic mode for this map.
 //        /// </summary>
 //        public string HeroicDescription
 //        {

@@ -121,9 +121,9 @@ namespace WCell.RealmServer.GameObjects
 			Templates.Add(spawn);
 		}
 
-		public GOSpawnEntry AddTemplate(MapId region, Vector3 pos)
+		public GOSpawnEntry AddTemplate(MapId map, Vector3 pos)
 		{
-			return AddTemplate(region, pos, true);
+			return AddTemplate(map, pos, true);
 		}
 
 		/// <summary>
@@ -131,10 +131,10 @@ namespace WCell.RealmServer.GameObjects
 		/// </summary>
 		/// <param name="map"></param>
 		/// <param name="pos"></param>
-		/// <param name="autoSpawn">Whether to always spawn this Template when the Region starts</param>
-		public GOSpawnEntry AddTemplate(MapId region, Vector3 pos, bool autoSpawn)
+		/// <param name="autoSpawn">Whether to always spawn this Template when the Map starts</param>
+		public GOSpawnEntry AddTemplate(MapId map, Vector3 pos, bool autoSpawn)
 		{
-			var go = new GOSpawnEntry { MapId = region, Pos = pos, AutoSpawn = autoSpawn };
+			var go = new GOSpawnEntry { MapId = map, Pos = pos, AutoSpawn = autoSpawn };
 			Templates.Add(go);
 			return go;
 		}
@@ -310,7 +310,7 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
@@ -320,21 +320,21 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
 		public GameObject Spawn(MapId map, Vector3 pos, Unit owner)
 		{
-			return Spawn(World.GetRegion(map), pos, owner);
+			return Spawn(World.GetMap(map), pos, owner);
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region map, Vector3 pos, Unit owner = null)
+		public GameObject Spawn(Map map, Vector3 pos, Unit owner = null)
 		{
 			if (map == null) throw new ArgumentNullException("map");
 
@@ -361,7 +361,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOSpawnEntry GetClosestTemplate(Region rgn, Vector3 pos)
+		public GOSpawnEntry GetClosestTemplate(Map rgn, Vector3 pos)
 		{
 			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
 		}

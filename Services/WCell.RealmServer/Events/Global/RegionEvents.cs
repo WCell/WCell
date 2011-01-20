@@ -7,54 +7,54 @@ using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Global
 {
-	public partial class Region
+	public partial class Map
 	{
 	}
 
-	public partial class RegionTemplate
+	public partial class MapTemplate
 	{
 		/// <summary>
-		/// Called when a new Region of this RegionInfo has been created.
+		/// Called when a new Map of this MapInfo has been created.
 		/// </summary>
-		public event Action<Region> Created;
+		public event Action<Map> Created;
 
 		/// <summary>
-		/// Called after some Region has started
+		/// Called after some Map has started
 		/// </summary>
-		public event Action<Region> Started;
+		public event Action<Map> Started;
 
 		/// <summary>
-		/// Called when this Region is about to add default spawn points.
+		/// Called when this Map is about to add default spawn points.
 		/// The returned value determines whether spawning should commence or be skipped.
 		/// </summary>
-		public event Func<Region, bool> Spawning;
+		public event Func<Map, bool> Spawning;
 
 		/// <summary>
-		/// Called when this Region added all default spawns and objects.
+		/// Called when this Map added all default spawns and objects.
 		/// </summary>
-		public event Action<Region> Spawned;
+		public event Action<Map> Spawned;
 
 		/// <summary>
-		/// Called when this Region is about to stop.
-		/// The returned value determines whether the Region should stop.
+		/// Called when this Map is about to stop.
+		/// The returned value determines whether the Map should stop.
 		/// </summary>
-		public event Func<Region, bool> Stopping;
+		public event Func<Map, bool> Stopping;
 
 		///// <summary>
-		///// Called when this Region has stopped
+		///// Called when this Map has stopped
 		///// </summary>
-		//public event Action<Region> Stopped;
+		//public event Action<Map> Stopped;
 
 		#region Characters
 		/// <summary>
-		/// Called when the given Character enters this Region.
+		/// Called when the given Character enters this Map.
 		/// </summary>
-		public event Action<Region, Character> PlayerEntered;
+		public event Action<Map, Character> PlayerEntered;
 
 		/// <summary>
-		/// Called when the given Character left this Region (Character might already be logging off).
+		/// Called when the given Character left this Map (Character might already be logging off).
 		/// </summary>
-		public event Action<Region, Character> PlayerLeft;
+		public event Action<Map, Character> PlayerLeft;
 		/// <summary>
 		/// Is called before a Character dies.
 		/// If false is returned, the Character won't die.

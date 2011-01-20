@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Tests.Groups
 		[TestMethod]
 		public void TestGroupCreation()
 		{
-			//Setup.AllianceCharacterPool.EnsureSameRegion = true;
+			//Setup.AllianceCharacterPool.EnsureSameMap = true;
 			DebugUtil.Dumps = true;
 			var pool = Setup.AllianceCharacterPool;
 
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Tests.Groups
 			leader.FakeClient.PurgeSMSGs();
 
 			nextMember.Character.Logout(false, 0);
-			nextMember.Region.WaitOneTick();
+			nextMember.Map.WaitOneTick();
 			Assert.IsNull(nextMember.Character);
 			Assert.IsNull(client.ActiveCharacter);
 
@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Tests.Groups
 			var leaderChr = leader.Character;
 			Assert.IsNotNull(leaderChr, "Group was not created properly");
 
-			leaderChr.Region.WaitOneTick();
+			leaderChr.Map.WaitOneTick();
 			foreach (TestCharacter chr in group.GetCharacters())
 			{
 				// purge all pending packets - we don't care for them
@@ -172,7 +172,7 @@ namespace WCell.RealmServer.Tests.Groups
 
 			var text = "Hello test";
 			leaderChr.SayGroup(text);
-			leaderChr.Region.WaitOneTick();
+			leaderChr.Map.WaitOneTick();
 
 			foreach (TestCharacter chr in group.GetCharacters())
 			{

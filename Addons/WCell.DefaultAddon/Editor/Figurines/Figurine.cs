@@ -66,7 +66,7 @@ namespace WCell.RealmServer.NPCs.Figurines
 			get { return WaypointEntry.EmptyList; }
 		}
 
-		public override SpawnPoint SpawnPoint
+		public override NPCSpawnPoint SpawnPoint
 		{
 			get { return null; }
 		}
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.NPCs.Figurines
 
 		public override void Dispose(bool disposing)
 		{
-			m_region = null;
+			m_Map = null;
 		}
 	}
 }

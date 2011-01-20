@@ -3,11 +3,11 @@ using WCell.RealmServer.Entities;
 
 namespace WCell.RealmServer.Global
 {
-	public partial class Region
+	public partial class Map
 	{
-		public static IMessage GetInitializeCharacterTask(Character chr, Region rgn)
+		public static IMessage GetInitializeCharacterTask(Character chr, Map rgn)
 		{
-			var initTask = new Message2<Character, Region>();
+			var initTask = new Message2<Character, Map>();
 
 			initTask.Parameter1 = chr;
 			initTask.Parameter2 = rgn;
@@ -15,17 +15,17 @@ namespace WCell.RealmServer.Global
 			initTask.Callback = ((initChr, initRgn) =>
 			{
 				initRgn.AddObjectNow(chr);
-				//Region.s_log.Debug("Owner added to the region");
+				//Map.s_log.Debug("Owner added to the map");
 
-				//Region.s_log.Debug("Owner initialized");
+				//Map.s_log.Debug("Owner initialized");
 			});
 
 			return initTask;
 		}
 
-		public static IMessage GetRemoveObjectTask(WorldObject obj, Region rgn)
+		public static IMessage GetRemoveObjectTask(WorldObject obj, Map rgn)
 		{
-		    var moveTask = new Message2<WorldObject, Region>();
+		    var moveTask = new Message2<WorldObject, Map>();
 
 			moveTask.Parameter1 = obj;
 			moveTask.Parameter2 = rgn;

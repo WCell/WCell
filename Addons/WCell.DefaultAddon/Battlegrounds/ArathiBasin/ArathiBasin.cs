@@ -145,9 +145,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         #region Overrides
 
-        protected override void InitRegion()
+        protected override void InitMap()
         {
-            base.InitRegion();
+            base.InitMap();
             Bases[(int)ArathiBases.Blacksmith] = new Blacksmith(this);
             Bases[(int)ArathiBases.Farm] = new Farm(this);
             Bases[(int)ArathiBases.GoldMine] = new GoldMine(this);
@@ -311,7 +311,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABNearVictory), 
                                                                                                             team.Side.ToString(), score);
-            MiscHandler.SendPlaySoundToRegion(this, (uint)ABSounds.NearVictory);
+            MiscHandler.SendPlaySoundToMap(this, (uint)ABSounds.NearVictory);
             isInformatedNearVictory = true;
         }
 

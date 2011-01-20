@@ -29,7 +29,7 @@ namespace WCell.RealmServer.Entities
 	/// </summary>
 	public class ObjectReference : IEntity
 	{
-		public static ObjectReference GetOrCreate(Region rgn, EntityId id)
+		public static ObjectReference GetOrCreate(Map rgn, EntityId id)
 		{
 			var caster = rgn.GetObject(id);
 			if (caster != null)

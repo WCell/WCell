@@ -196,7 +196,7 @@ namespace WCell.RealmServer.Formulas
 		/// <summary>
 		/// Distributes the given amount of XP over the group of the given Character (or adds it only to the Char, if not in Group).
 		/// </summary>
-		/// <remarks>Requires Region-Context.</remarks>
+		/// <remarks>Requires Map-Context.</remarks>
 		/// <param name="chr"></param>
 		public static void DistributeCombatXp(Character chr, INamed killed, int xp)
 		{

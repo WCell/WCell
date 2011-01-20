@@ -27,7 +27,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}	
-			var rgn = World.GetRegion(mapId);
+			var rgn = World.GetMap(mapId);
 			if (rgn == null)
 			{
 				throw new ArgumentException("Invalid MapId (not a Continent): " + mapId);

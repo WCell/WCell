@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		private void SetThreshold()
 		{
-			m_CreationPlayerThreshold = (Template.RegionTemplate.MaxPlayerCount * defaultBGCreationPlayerThresholdPct) / 100;
+			m_CreationPlayerThreshold = (Template.MapTemplate.MaxPlayerCount * defaultBGCreationPlayerThresholdPct) / 100;
 		}
 
 		public int CreationPlayerThreshold
@@ -171,7 +171,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			Instances.Add(bg);
 			bg.ParentQueue = this;
-			bg.InitRegion(m_Template.RegionTemplate);
+			bg.InitMap(m_Template.MapTemplate);
 		}
 
 		/// <summary>

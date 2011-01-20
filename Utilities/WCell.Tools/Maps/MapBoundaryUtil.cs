@@ -6,7 +6,7 @@ using WCell.Constants;
 
 namespace WCell.Tools.Maps
 {
-	public static class RegionBoundaryUtil
+	public static class MapBoundaryUtil
 	{
 		public static readonly BoundingBox[] Boundaries = new BoundingBox[(int)MapId.End];
 
@@ -37,7 +37,7 @@ namespace WCell.Tools.Maps
 					var newdiff = maxDim - diff;
 					if ((min.X - newdiff) < -maxDim)
 					{
-						throw new Exception("Can't square region: " + wdt.Name);
+						throw new Exception("Can't square map: " + wdt.Name);
 					}
 					min.X = min.X - newdiff;
 				}
@@ -47,7 +47,7 @@ namespace WCell.Tools.Maps
 					var newdiff = maxDim - diff;
 					if ((min.Y - newdiff) < -maxDim)
 					{
-						throw new Exception("Can't square region: " + wdt.Name);
+						throw new Exception("Can't square map: " + wdt.Name);
 					}
 					min.Y = min.Y - newdiff;
 				}
@@ -79,7 +79,7 @@ namespace WCell.Tools.Maps
 					var newdiff = TerrainConstants.TilesPerMapSide - diff;
 					if ((minX - newdiff) < 0)
 					{
-						throw new Exception("Can't square this region.");
+						throw new Exception("Can't square this map.");
 					}
 					minX = minX - newdiff;
 				}
@@ -89,7 +89,7 @@ namespace WCell.Tools.Maps
 					var newdiff = TerrainConstants.TilesPerMapSide - diff;
 					if ((minY - newdiff) < 0)
 					{
-						throw new Exception("Can't square this region.");
+						throw new Exception("Can't square this map.");
 					}
 					minY = minY - newdiff;
 				}
@@ -120,7 +120,7 @@ namespace WCell.Tools.Maps
 				max.Y = temp;
 			}
 
-			// TODO: Region bounds that in the file are a little off
+			// TODO: Map bounds that in the file are a little off
 			min.X -= 200.0f;
 			min.Y -= 200.0f;
 		    max.X += 200.0f;

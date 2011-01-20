@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Entities
 		{
 		}
 
-		public DynamicObject(Unit creator, SpellId spellId, float radius, Region region, Vector3 pos)
+		public DynamicObject(Unit creator, SpellId spellId, float radius, Map map, Vector3 pos)
 		{
 			if (creator == null)
 				throw new ArgumentNullException("creator", "creator must not be null");
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Entities
 			ScaleX = 1;
 
 			m_position = pos;
-			region.AddObjectLater(this);
+			map.AddObjectLater(this);
 		}
 
 		public override int CasterLevel

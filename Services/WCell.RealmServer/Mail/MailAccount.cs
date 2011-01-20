@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Mail
 			if (firstCheckSinceLogin)
 			{
 				// enqueue Task to load from DB
-				// then enqueue another task to do the actual sending from the Region thread
+				// then enqueue another task to do the actual sending from the Map thread
 				RealmServer.Instance.AddMessage(new Message(() =>
 				{
 					Load();

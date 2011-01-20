@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <DataHolder Name="RegionTemplate"> <!--this one is scattered to graveyards and instance templates, some info is completely missing tho-->
+  <DataHolder Name="MapTemplate"> <!--this one is scattered to graveyards and instance templates, some info is completely missing tho-->
     <DefaultTable>instance_template</DefaultTable>
     <Flat Name="Id" Column="map" />
     <Flat Name="Name" Column="" />

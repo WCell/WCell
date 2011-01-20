@@ -452,10 +452,10 @@ namespace WCell.RealmServer.Spells
 		{
 		}
 
-		public SpellTargetLocation(MapId region, Vector3 pos)
+		public SpellTargetLocation(MapId map, Vector3 pos)
 		{
 			Position = pos;
-			RegionId = region;
+			MapId = map;
 		}
 		public Vector3 Position
 		{
@@ -464,7 +464,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		[Persistent]
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
@@ -491,9 +491,9 @@ namespace WCell.RealmServer.Spells
 			set { m_Position.Z = value; }
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(RegionId); }
+			get { return World.GetMap(MapId); }
 		}
 	}
 }

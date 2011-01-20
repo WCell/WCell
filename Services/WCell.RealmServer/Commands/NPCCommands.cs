@@ -178,7 +178,7 @@ namespace WCell.RealmServer.Commands
 						}
 						else
 						{
-							trigger.Args.Target.Region.AddSpawn(spawnEntry);
+							trigger.Args.Target.Map.AddSpawn(spawnEntry);
 
 							if (trigger.Args.Target != null)
 							{
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						trigger.Reply("Spawn is located in {0} ({1}) and not accessible in this Context.",
-									  spawn.RegionId, spawn.Position);
+									  spawn.MapId, spawn.Position);
 					}
 				}
 				else
@@ -281,7 +281,7 @@ namespace WCell.RealmServer.Commands
 						else
 						{
 							trigger.Reply("Spawn is located in {0} ({1}) and not accessible in this Context.",
-										  spawn.RegionId, spawn.Position);
+										  spawn.MapId, spawn.Position);
 						}
 					}
 				}
@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Commands
 					name = trigger.Text.NextWord();
 				}
 
-				Region rgn;
+				Map rgn;
 				if (mod.Contains("d"))
 				{
 					var destName = trigger.Text.NextWord();
@@ -322,7 +322,7 @@ namespace WCell.RealmServer.Commands
 						MapId mapId;
 						if (EnumUtil.TryParse(destName, out mapId))
 						{
-							rgn = World.GetRegion(mapId);
+							rgn = World.GetMap(mapId);
 						}
 						else
 						{
@@ -337,7 +337,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						rgn = dest.Region;
+						rgn = dest.Map;
 					}
 					phase = uint.MaxValue;
 				}
@@ -349,7 +349,7 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Must have target or specify destination (using the -d switch).");
 						return;
 					}
-					rgn = target.Region;
+					rgn = target.Map;
 					phase = target.Phase;
 				}
 
@@ -412,10 +412,10 @@ namespace WCell.RealmServer.Commands
 		{
 			var radius = trigger.Text.NextFloat(50);
 			var target = trigger.Args.Target;
-			var region = target.Region;
-			var objCount = region.ObjectCount;
-			region.RespawnInRadius(target.Position, radius);
-			trigger.Reply("Done. Spawned {0} objects.", region.ObjectCount - objCount);
+			var map = target.Map;
+			var objCount = map.ObjectCount;
+			map.RespawnInRadius(target.Position, radius);
+			trigger.Reply("Done. Spawned {0} objects.", map.ObjectCount - objCount);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -462,91 +462,91 @@ namespace WCell.RealmServer.Commands
 	#endregion
 
 	#region Spawn
-	public class SpawnCommand : RealmServerCommand
-	{
-		protected override void Initialize()
-		{
-			Init("Spawn");
-		}
+	//public class SpawnCommand : RealmServerCommand
+	//{
+	//    protected override void Initialize()
+	//    {
+	//        Init("Spawn");
+	//    }
 
-		public class SpawnShowCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Show", "Display");
-			}
+	//    public class SpawnShowCommand : SubCommand
+	//    {
+	//        protected override void Initialize()
+	//        {
+	//            Init("Show", "Display");
+	//        }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var targetObj = trigger.Args.Target;
-                if (targetObj == null)
-                {
-                    trigger.Reply("Target required.");
-                    return;
-                }
-				if (!(targetObj is NPC))
-				{
-					targetObj = targetObj.Target;
-				}
+	//        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+	//        {
+	//            var targetObj = trigger.Args.Target;
+	//            if (targetObj == null)
+	//            {
+	//                trigger.Reply("Target required.");
+	//                return;
+	//            }
+	//            if (!(targetObj is NPC))
+	//            {
+	//                targetObj = targetObj.Target;
+	//            }
 
-				var target = targetObj as NPC;
-				if (target == null)
-				{
-					trigger.Reply("Invalid Target.");
-					return;
-				}
+	//            var target = targetObj as NPC;
+	//            if (target == null)
+	//            {
+	//                trigger.Reply("Invalid Target.");
+	//                return;
+	//            }
 
-				var spawnPoint = target.SpawnPoint;
-				if (spawnPoint == null)
-				{
-					trigger.Reply("Target has no SpawnPoint.");
-					return;
-				}
+	//            var spawnPoint = target.SpawnPoint;
+	//            if (spawnPoint == null)
+	//            {
+	//                trigger.Reply("Target has no SpawnPoint.");
+	//                return;
+	//            }
 
-				spawnPoint.ToggleVisiblity();
-			}
-		}
+	//            spawnPoint.ToggleVisiblity();
+	//        }
+	//    }
 
-		public class SpawnMenuCommand : SubCommand
-		{
-			protected override void Initialize()
-			{
-				Init("Menu");
-			}
+	//    public class SpawnMenuCommand : SubCommand
+	//    {
+	//        protected override void Initialize()
+	//        {
+	//            Init("Menu");
+	//        }
 
-			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
-			{
-				var chr = trigger.Args.Character;
-				if (chr == null)
-				{
-					trigger.Reply("Character required.");
-					return;
-				}
+	//        public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+	//        {
+	//            var chr = trigger.Args.Character;
+	//            if (chr == null)
+	//            {
+	//                trigger.Reply("Character required.");
+	//                return;
+	//            }
 
-				var targetObj = trigger.Args.Target;
-				if (!(targetObj is NPC))
-				{
-					targetObj = targetObj.Target;
-				}
+	//            var targetObj = trigger.Args.Target;
+	//            if (!(targetObj is NPC))
+	//            {
+	//                targetObj = targetObj.Target;
+	//            }
 
-				var target = targetObj as NPC;
-				if (target == null)
-				{
-					trigger.Reply("Invalid Target.");
-					return;
-				}
+	//            var target = targetObj as NPC;
+	//            if (target == null)
+	//            {
+	//                trigger.Reply("Invalid Target.");
+	//                return;
+	//            }
 
-				var spawnPoint = target.SpawnPoint;
-				if (spawnPoint == null)
-				{
-					trigger.Reply("Target has no SpawnPoint.");
-					return;
-				}
+	//            var spawnPoint = target.SpawnPoint;
+	//            if (spawnPoint == null)
+	//            {
+	//                trigger.Reply("Target has no SpawnPoint.");
+	//                return;
+	//            }
 
-				chr.StartGossip(spawnPoint.GossipMenu);
-			}
-		}
-	}
+	//            chr.StartGossip(spawnPoint.GossipMenu);
+	//        }
+	//    }
+	//}
 	#endregion
 
 	#region Control

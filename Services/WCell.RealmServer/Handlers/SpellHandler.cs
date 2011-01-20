@@ -776,7 +776,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var chr = client.ActiveCharacter;
 			var guid = packet.ReadEntityId();
-			var mob = chr.Region.GetObject(guid) as NPC;
+			var mob = chr.Map.GetObject(guid) as NPC;
 			SpellTriggerInfo spellInfo;
 
 			if (mob != null && (spellInfo = mob.Entry.SpellTriggerInfo) != null)

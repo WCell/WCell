@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: UpdatePacket.cs
  *   copyright		: (C) The WCell Team
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.UpdateFields
 				if (length > 0x7FFF)
 				{
 					log.Warn("Sent UpdatePacket with Length {0} to {1} in {2}", length, client,
-						client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Region);
+						client.ActiveCharacter.Zone as IWorldSpace ?? client.ActiveCharacter.Map);
 				}
 
 				var maxOutputLength = length + FullUpdatePacketHeaderSize;

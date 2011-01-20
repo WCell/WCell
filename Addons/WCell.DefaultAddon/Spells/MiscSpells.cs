@@ -181,12 +181,12 @@ namespace WCell.Addons.Default.Spells
                 if (caster == null) return;
 
                 if (_artisanRidingSpell != SpellId.None &&
-                    caster.Spells.Contains(SpellId.SecondarySkillArtisanRidingArtisan) && caster.Region.CanFly)
+                    caster.Spells.Contains(SpellId.SecondarySkillArtisanRidingArtisan) && caster.Map.CanFly)
                 {
                     m_cast.Trigger(_artisanRidingSpell, caster);
                 }
                 else if (_expertRidingSpell != SpellId.None &&
-                         caster.Spells.Contains(SpellId.SecondarySkillExpertRidingExpert) && caster.Region.CanFly)
+                         caster.Spells.Contains(SpellId.SecondarySkillExpertRidingExpert) && caster.Map.CanFly)
                 {
                     m_cast.Trigger(_expertRidingSpell, caster);
                 }

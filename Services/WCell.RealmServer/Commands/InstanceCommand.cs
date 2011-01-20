@@ -18,7 +18,7 @@ namespace WCell.RealmServer.Commands
 			EnglishDescription = "Provides some Commands to manage and use Instances.";
 		}
 
-		public static InstancedRegion GetInstance(CmdTrigger<RealmServerCmdArgs> trigger)
+		public static InstancedMap GetInstance(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			if (!trigger.Text.HasNext)
 			{
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var list = new List<InstancedRegion>(50);
+				var list = new List<InstancedMap>(50);
 				if (trigger.Text.HasNext)
 				{
 					var mapId = trigger.Text.NextEnum(MapId.End);
@@ -136,15 +136,15 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 
-				var regionTemplate = World.GetRegionTemplate(mapid);
+				var mapTemplate = World.GetMapTemplate(mapid);
 
-				if (regionTemplate != null && regionTemplate.IsInstance)
+				if (mapTemplate != null && mapTemplate.IsInstance)
 				{
 					uint diffIndex;
 					if (mod.Contains("d"))
 					{
 						diffIndex = trigger.Text.NextUInt();
-						var diff = regionTemplate.GetDifficulty(diffIndex);
+						var diff = mapTemplate.GetDifficulty(diffIndex);
 						if (diff == null)
 						{
 							trigger.Reply("Invalid Difficulty: {0}");
@@ -152,9 +152,9 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						diffIndex = chr.GetInstanceDifficulty(regionTemplate.IsRaid);
+						diffIndex = chr.GetInstanceDifficulty(mapTemplate.IsRaid);
 					}
-					var instance = InstanceMgr.CreateInstance(chr, regionTemplate.InstanceTemplate, diffIndex);
+					var instance = InstanceMgr.CreateInstance(chr, mapTemplate.InstanceTemplate, diffIndex);
 					if (instance != null)
 					{
 						trigger.Reply("Instance created: " + instance);
@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						trigger.Reply("Unable to create Instance of: " + regionTemplate);
+						trigger.Reply("Unable to create Instance of: " + mapTemplate);
 					}
 				}
 				else
@@ -216,13 +216,13 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				InstancedRegion instance;
+				InstancedMap instance;
 				if (!trigger.Text.HasNext && trigger.Args.Character != null)
 				{
-					instance = trigger.Args.Character.Region as InstancedRegion;
+					instance = trigger.Args.Character.Map as InstancedMap;
 					if (instance == null)
 					{
-						trigger.Reply("Current Region is not an Instance.");
+						trigger.Reply("Current Map is not an Instance.");
 						return;
 					}
 				}

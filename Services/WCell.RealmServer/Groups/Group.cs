@@ -661,15 +661,15 @@ namespace WCell.RealmServer.Groups
 				member.Character = null;
 
 				// Teleport out of group-owned instances within 1 minute
-				if (chr.Region is BaseInstance)
+				if (chr.Map is BaseInstance)
 				{
-					var instance = (BaseInstance)chr.Region;
-					chr.Region.CallDelayed(GroupInstanceKickDelayMillis, () =>
+					var instance = (BaseInstance)chr.Map;
+					chr.Map.CallDelayed(GroupInstanceKickDelayMillis, () =>
 					{
-						if (chr.IsInWorld && chr.Region == instance && !instance.CanEnter(chr))
+						if (chr.IsInWorld && chr.Map == instance && !instance.CanEnter(chr))
 						{
 							// chr is still inside and not allowed
-							//chr.Region.TeleportOutside(chr);
+							//chr.Map.TeleportOutside(chr);
 							chr.TeleportToNearestGraveyard();
 						}
 					});
@@ -1558,10 +1558,10 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// Gets the Instance of the given Region of either the Leader or any member
+		/// Gets the Instance of the given Map of either the Leader or any member
 		/// if anyone is already in it.
 		/// </summary>
-		public BaseInstance GetActiveInstance(RegionTemplate region)
+		public BaseInstance GetActiveInstance(MapTemplate map)
 		{
 			// Need to be careful, since we are quite probably not in the corresponding Character's context:
 			var leader = m_leader;
@@ -1573,7 +1573,7 @@ namespace WCell.RealmServer.Groups
 					var instances = leaderChr.Instances;
 					if (instances != null)
 					{
-						var instance = instances.GetActiveInstance(region);
+						var instance = instances.GetActiveInstance(map);
 						if (instance != null)
 						{
 							return instance;
@@ -1585,7 +1585,7 @@ namespace WCell.RealmServer.Groups
 			// check all other members
 			foreach (var chr in GetCharacters())
 			{
-				var instance = chr.GetActiveInstance(region);
+				var instance = chr.GetActiveInstance(map);
 				if (instance != null)
 				{
 					return instance;
@@ -1619,7 +1619,7 @@ namespace WCell.RealmServer.Groups
 
 			ForeachCharacter((chr) =>
 			{
-				if (chr.Region == victim.Region && chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), killer))
+				if (chr.Map == victim.Map && chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), killer))
 				{
 					chr.QuestLog.OnNPCInteraction(victim);
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KillCreature, victim.EntryId, 1);

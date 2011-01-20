@@ -364,7 +364,7 @@ namespace WCell.RealmServer.Handlers
 			var backgroundColor = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorEntityId) as NPC;
+			var vendor = chr.Map.GetObject(vendorEntityId) as NPC;
 			var tabard = new GuildTabard()
 			{
 				BackgroundColor = (int)backgroundColor,
@@ -406,7 +406,7 @@ namespace WCell.RealmServer.Handlers
 			var unkown = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -426,7 +426,7 @@ namespace WCell.RealmServer.Handlers
 			var unknown = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -441,7 +441,7 @@ namespace WCell.RealmServer.Handlers
 			var deposit = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -456,7 +456,7 @@ namespace WCell.RealmServer.Handlers
 			var withdrawl = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -523,7 +523,7 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 			if (chr.Guild == null) return;
 
 			if (isBankToBank)
@@ -565,7 +565,7 @@ namespace WCell.RealmServer.Handlers
 			var newTabId = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{
@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Handlers
 			if (newIcon.Length == 0) return;
 
 			var chr = client.ActiveCharacter;
-			var bank = chr.Region.GetObject(bankEntityId) as GameObject;
+			var bank = chr.Map.GetObject(bankEntityId) as GameObject;
 
 			if (chr.Guild != null && chr.GuildMember != null)
 			{

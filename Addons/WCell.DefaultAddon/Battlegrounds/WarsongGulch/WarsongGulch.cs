@@ -128,9 +128,9 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		#region Overrides
 
-		protected override void InitRegion()
+		protected override void InitMap()
 		{
-			base.InitRegion();
+			base.InitMap();
 
 			Factions[(int)BattlegroundSide.Alliance] = new Silverwing(this);
 			Factions[(int)BattlegroundSide.Horde] = new WarsongClan(this);
@@ -556,7 +556,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		private static bool HandleFlagUsed(GameObject flag, Character user, bool mayReturn)
 		{
 			BattlegroundTeam team = user.Battlegrounds.Team;
-			var wsg = flag.Region as WarsongGulch;
+			var wsg = flag.Map as WarsongGulch;
 			if (wsg != null && team != null)
 			{
 				var entry = flag.Entry as GOFlagEntry;
@@ -609,7 +609,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			// Check whether the battle has started and the Character is actively participating
 			BattlegroundTeam team = chr.Battlegrounds.Team;
-			var wsg = chr.Region as WarsongGulch;
+			var wsg = chr.Map as WarsongGulch;
 			if (team != null && wsg != null && wsg.IsActive)
 			{
 				if (team.Side == BattlegroundSide.Horde)
@@ -630,7 +630,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			// Check whether the battle has started and the Character is actively participating
 			BattlegroundTeam team = chr.Battlegrounds.Team;
-			var wsg = chr.Region as WarsongGulch;
+			var wsg = chr.Map as WarsongGulch;
 			if (team != null && wsg != null && wsg.IsActive)
 			{
 				if (team.Side == BattlegroundSide.Alliance)

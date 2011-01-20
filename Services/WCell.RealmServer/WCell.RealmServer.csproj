@@ -334,7 +334,7 @@
     <Compile Include="Entities\ObjectBase.cs" />
     <Compile Include="RacesClasses\BaseRace.cs" />
     <Compile Include="RealmServerConfiguration.cs" />
-    <Compile Include="Global\Region.cs" />
+    <Compile Include="Global\Map.cs" />
     <Compile Include="Global\Zone.cs" />
     <Compile Include="Global\ZoneSpacePartitionNode.cs" />
     <Compile Include="Network\RealmPacketMgr.cs" />
@@ -523,7 +523,7 @@
     <Compile Include="GameObjects\GOEntries\GOCustomEntry.cs" />
     <Compile Include="GameObjects\GOEntries\GOFlagEntry.cs" />
     <Compile Include="GameObjects\GOEntries\IGOLootableEntry.cs" />
-    <Compile Include="Global\InstancedRegion.cs" />
+    <Compile Include="Global\InstancedMap.cs" />
     <Compile Include="Global\IRegionId.cs" />
     <Compile Include="Global\ZoneTemplate.cs" />
     <Compile Include="Gossips\GossipMenuItem.cs" />
@@ -552,10 +552,7 @@
     <Compile Include="NPCs\CreatureFamily.cs" />
     <Compile Include="Trade\Trade.cs" />
     <Compile Include="Network\CompressedPacket.cs" />
-    <Compile Include="NPCs\Figurines\Figurine.cs" />
-    <Compile Include="NPCs\Figurines\WaypointFigurine.cs" />
     <Compile Include="NPCs\Pets\SummonedPetRecord.cs" />
-    <Compile Include="NPCs\SpawnGossips.cs" />
     <Compile Include="NPCs\SpellTriggerInfo.cs" />
     <Compile Include="NPCs\VehicleEntry.cs" />
     <Compile Include="NPCs\Vehicles\Vehicle.cs" />
@@ -592,7 +589,7 @@
     <Compile Include="Commands\QuestCommands.cs" />
     <Compile Include="Commands\RealmServerCmdArgs.cs" />
     <Compile Include="Commands\RealmServerCommand.cs" />
-    <Compile Include="Commands\RegionCommands.cs" />
+    <Compile Include="Commands\MapCommands.cs" />
     <Compile Include="Commands\TicketCommands.cs" />
     <Compile Include="Commands\Triggers.cs" />
     <Compile Include="Commands\WorldCommand.cs" />
@@ -607,7 +604,7 @@
     <Compile Include="Database\ReputationRecord.cs" />
     <Compile Include="Database\SkillRecord.cs" />
     <Compile Include="Database\SpellRecord.cs" />
-    <Compile Include="Debugging\RegionExtensions.cs" />
+    <Compile Include="Debugging\MapExtensions.cs" />
     <Compile Include="Misc\Duel.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\IWorldLocation.cs" />
@@ -910,8 +907,7 @@
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
     <Compile Include="NPCs\NPCSpawnEntry.cs" />
-    <Compile Include="NPCs\Figurines\SpawnFigurine.cs" />
-    <Compile Include="NPCs\SpawnPoint.cs" />
+    <Compile Include="NPCs\NPCSpawnPoint.cs" />
     <Compile Include="NPCs\Trainers\TrainerEntry.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellEntry.cs" />
     <Compile Include="NPCs\Vendors\VendorItemEntry.cs" />

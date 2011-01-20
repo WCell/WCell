@@ -14,12 +14,12 @@ namespace WCell.RealmServer.AI.Actions.Combat
 	public class AIAttackAction : AITargetMoveAction
 	{
 		/// <summary>
-		/// Every x Region-Ticks shuffle Spells
+		/// Every x Map-Ticks shuffle Spells
 		/// </summary>
 		public static int SpellShuffleTicks = 50;
 
 		/// <summary>
-		/// Every x Region-Ticks try to cast a random active spell
+		/// Every x Map-Ticks try to cast a random active spell
 		/// </summary>
 		public static int SpellCastTicks = 1;
 

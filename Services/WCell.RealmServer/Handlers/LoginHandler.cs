@@ -220,7 +220,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					else
 					{
-						chr.Region.AddMessage(new Message(() =>
+						chr.Map.AddMessage(new Message(() =>
 						{
 							if (!chr.IsInContext)
 							{

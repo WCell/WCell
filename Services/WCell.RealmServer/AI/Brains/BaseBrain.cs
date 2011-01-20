@@ -227,7 +227,7 @@ namespace WCell.RealmServer.AI.Brains
 		#endregion
 
 		/// <summary>
-		/// Updates the AIAction by calling Perform. Called every tick by the Region
+		/// Updates the AIAction by calling Perform. Called every tick by the Map
 		/// </summary>
 		/// <param name="dt">not used</param>
 		public virtual void Update(int dt)
@@ -365,7 +365,7 @@ namespace WCell.RealmServer.AI.Brains
 				return false;
 			}
 
-			if (!m_owner.IsAreaActive && !m_owner.Region.ScanInactiveAreas)
+			if (!m_owner.IsAreaActive && !m_owner.Map.ScanInactiveAreas)
 			{
 				// don't scan inactive Nodes
 				return false;

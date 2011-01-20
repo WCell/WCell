@@ -491,12 +491,12 @@ namespace WCell.Tools.Code
 			WriteLine("/// </summary>");
 		}
 
-		public void WriteRegion(string regionName)
+		public void WriteMap(string mapName)
 		{
-			WriteLine("#region " + regionName);
+			WriteLine("#region " + mapName);
 		}
 
-		public void WriteEndRegion()
+		public void WriteEndMap()
 		{
 			WriteLine("#endregion");
 		}

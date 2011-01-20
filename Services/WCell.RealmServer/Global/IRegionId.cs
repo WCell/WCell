@@ -6,9 +6,9 @@ using WCell.Constants.World;
 
 namespace WCell.RealmServer.Global
 {
-	public interface IRegionId
+	public interface IMapId
 	{
-		MapId RegionId { get; }
+		MapId MapId { get; }
 
 		uint InstanceId { get; }
 	}

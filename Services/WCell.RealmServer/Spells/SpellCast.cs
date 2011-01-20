@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Spells
 			return cast;
 		}
 
-		public static SpellCast ObtainPooledCast(ObjectReference caster, Region map, uint phase, ref Vector3 sourceLoc)
+		public static SpellCast ObtainPooledCast(ObjectReference caster, Map map, uint phase, ref Vector3 sourceLoc)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, map, phase, sourceLoc);
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The map where the SpellCast happens
 		/// </summary>
-		public Region Map
+		public Map Map
 		{
 			get;
 			internal set;
@@ -162,14 +162,14 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public Vector3 TargetLoc;
 
-		public Region TargetMap
+		public Map TargetMap
 		{
 			get
 			{
-				Region rgn;
+				Map rgn;
 				if (m_spell.TargetLocation != null)
 				{
-					rgn = m_spell.TargetLocation.Region ?? Map;
+					rgn = m_spell.TargetLocation.Map ?? Map;
 				}
 				else
 				{
@@ -263,7 +263,7 @@ namespace WCell.RealmServer.Spells
 			m_castTimer = new TimerEntry(Perform);
 		}
 
-		void SetCaster(ObjectReference caster, Region map, uint phase, Vector3 sourceLoc)
+		void SetCaster(ObjectReference caster, Map map, uint phase, Vector3 sourceLoc)
 		{
 			CasterReference = caster;
 			if (caster == null)
@@ -282,7 +282,7 @@ namespace WCell.RealmServer.Spells
 			CasterReference = caster.SharedReference;
 			CasterObject = caster;
 			CasterUnit = caster.UnitMaster;
-			Map = caster.Region;
+			Map = caster.Map;
 			Phase = caster.Phase;
 		}
 
@@ -603,7 +603,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			Map = CasterObject.Region;
+			Map = CasterObject.Map;
 			Phase = CasterObject.Phase;
 
 			m_casting = true;
@@ -711,7 +711,7 @@ namespace WCell.RealmServer.Spells
 						var chr = CasterObject as Character;
 						var sqDistance = CasterObject.GetDistanceSq(ref TargetLoc);
 						if (!Utility.IsInRange(sqDistance, chr.GetSpellMaxRange(spell, selected)) ||
-							(selected != null && selected.Region != CasterObject.Region))
+							(selected != null && selected.Map != CasterObject.Map))
 						{
 							Cancel(SpellFailedReason.OutOfRange);
 							return SpellFailedReason.OutOfRange;
@@ -1551,7 +1551,7 @@ namespace WCell.RealmServer.Spells
 			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null, SpellEffect triggerEffect = null)
 		{
 			var cast = SpellCastPool.Obtain();
-			cast.SetCaster(caster, target.Region, target.Phase, triggerOwner.Position);
+			cast.SetCaster(caster, target.Map, target.Phase, triggerOwner.Position);
 			cast.Selected = target;
 			if (usedChannel != null && usedChannel.Cast.CasterUnit == triggerOwner)
 			{

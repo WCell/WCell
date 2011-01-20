@@ -1,4 +1,4 @@
-- loaded GO respawn data
-- overhauled the Create/Spawn methods for GOs
-- renamed GOSpawn to GOSpawnEntry
-- renamed SpawnEntry to NPCSpawnEntry
+- WARNING: need to drop DB! (or rename all *region* columns manually)
+- renamed Region to Map - basically I did a Find&Replace for *Region* -> *Map* and *region* -> *map*
+- renamed SpawnPoint to NPCSpawnPoint
+- moved the experimental Spawn-editing code to the DefaultAddon, commented most of it out and removed it's traces from core classes

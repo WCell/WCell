@@ -567,7 +567,7 @@ namespace WCell.RealmServer.NPCs
 				RespawnSecondsMin = minRespawnSeconds,
 				RespawnSecondsMax = maxRespawnSeconds,
 				AutoSpawn = autoSpawn,
-				RegionId = map
+				MapId = map
 			};
 
 			entry.FinalizeDataHolder();
@@ -925,14 +925,14 @@ namespace WCell.RealmServer.NPCs
 			return npc;
 		}
 
-		public NPC Create(SpawnPoint spawn)
+		public NPC Create(NPCSpawnPoint spawn)
 		{
-			var npc = NPCCreator(GetEntry(spawn.Region.DifficultyIndex));
+			var npc = NPCCreator(GetEntry(spawn.Map.DifficultyIndex));
 			npc.SetupNPC(this, spawn);
 			return npc;
 		}
 
-		public NPC SpawnAt(Region rgn, Vector3 pos)
+		public NPC SpawnAt(Map rgn, Vector3 pos)
 		{
 			var npc = Create(rgn.DifficultyIndex);
 			rgn.AddObject(npc, pos);
@@ -941,16 +941,16 @@ namespace WCell.RealmServer.NPCs
 
 		public NPC SpawnAt(IWorldZoneLocation loc)
 		{
-			var npc = Create(loc.Region.DifficultyIndex);
+			var npc = Create(loc.Map.DifficultyIndex);
 			npc.Zone = loc.GetZone();
-			loc.Region.AddObject(npc, loc.Position);
+			loc.Map.AddObject(npc, loc.Position);
 			return npc;
 		}
 
 		public NPC SpawnAt(IWorldLocation loc)
 		{
-			var npc = Create(loc.Region.DifficultyIndex);
-			loc.Region.AddObject(npc, loc.Position);
+			var npc = Create(loc.Map.DifficultyIndex);
+			loc.Map.AddObject(npc, loc.Position);
 			return npc;
 		}
 

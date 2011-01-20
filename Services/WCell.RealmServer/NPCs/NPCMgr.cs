@@ -766,7 +766,7 @@ namespace WCell.RealmServer.NPCs
 			var point = new NamedWorldZoneLocation
 			{
 				Position = npc.Position,
-				RegionId = npc.Region.Id
+				MapId = npc.Map.Id
 			};
 
 			if (npc.Zone != null)
@@ -795,12 +795,12 @@ namespace WCell.RealmServer.NPCs
 		#region Utilities
 		#endregion
 
-		public static SpawnPoint SpawnClosestSpawnEntry(IWorldLocation pos)
+		public static NPCSpawnPoint SpawnClosestSpawnEntry(IWorldLocation pos)
 		{
 			var entry = GetClosesSpawnEntry(pos);
 			if (entry != null)
 			{
-				return pos.Region.AddSpawn(entry);
+				return pos.Map.AddSpawn(entry);
 			}
 			return null;
 		}
@@ -809,7 +809,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			NPCSpawnEntry closest = null;
 			var distanceSq = Single.MaxValue;
-			foreach (var spawn in SpawnEntriesByMap[(int)pos.RegionId])
+			foreach (var spawn in SpawnEntriesByMap[(int)pos.MapId])
 			{
 				if (spawn != null)
 				{

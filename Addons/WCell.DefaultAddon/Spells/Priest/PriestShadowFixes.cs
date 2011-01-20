@@ -86,7 +86,7 @@ namespace WCell.Addons.Default.Spells.Priest
                     var group = chr.Group;
                     if (group != null)
                     {
-                        // heal all group members in same context (ie same Region in current implementation)
+                        // heal all group members in same context (ie same Map in current implementation)
                         group.CallOnAllInSameContext(chr.ContextHandler, (member) =>
                         {
                             member.Heal(healPartyAmount, owner, SpellEffect);

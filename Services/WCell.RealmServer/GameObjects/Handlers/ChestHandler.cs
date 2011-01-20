@@ -25,7 +25,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 			}
 			else
 			{
-				LootMgr.CreateAndSendObjectLoot(m_go, user, LootEntryType.GameObject, user.Region.IsHeroic);
+				LootMgr.CreateAndSendObjectLoot(m_go, user, LootEntryType.GameObject, user.Map.IsHeroic);
 			}
 			return true;
 		}

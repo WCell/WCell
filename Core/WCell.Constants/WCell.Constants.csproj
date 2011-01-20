@@ -266,7 +266,7 @@
     <Compile Include="Updates\UpdatePriority.cs" />
     <Compile Include="WCellInfo.cs" />
     <Compile Include="World\MapId.cs" />
-    <Compile Include="World\RegionBoundaries.cs" />
+    <Compile Include="World\MapBoundaries.cs" />
     <Compile Include="World\ZoneBoundaries.cs" />
     <Compile Include="World\WorldState.cs" />
     <Compile Include="World\WorldStateId.cs" />

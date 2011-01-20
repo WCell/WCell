@@ -13,12 +13,12 @@ using System.Threading;
 namespace WCell.RealmServer.Tests.Global
 {
 	/// <summary>
-	/// Summary description for RegionTest
+	/// Summary description for MapTest
 	/// </summary>
 	[TestClass]
-	public class RegionTest
+	public class MapTest
 	{
-		public RegionTest()
+		public MapTest()
 		{
 			//
 			// TODO: Add constructor logic here
@@ -73,22 +73,22 @@ namespace WCell.RealmServer.Tests.Global
 		//    NPCMgr.ForceInitialize();
 		//    GOMgr.LoadAll();
 
-		//    var region = WorldMgr.Kalimdor;
+		//    var map = WorldMgr.Kalimdor;
 
 		//    // we need a player to start the update loop
-		//    Setup.AllianceCharacterPool.First.TeleportTo(region, true);
+		//    Setup.AllianceCharacterPool.First.TeleportTo(map, true);
 
-		//    region.SpawnRegionLater();
+		//    map.SpawnMapLater();
 
 		//    var startTime = DateTime.Now;
-		//    region.WaitOneTick();	// spawns default objects
-		//    Debug.Assert(region.ObjectCount > 0, "No objects were spawned");
+		//    map.WaitOneTick();	// spawns default objects
+		//    Debug.Assert(map.ObjectCount > 0, "No objects were spawned");
 
-		//    region.WaitOneTick();	// does initial update to default objects
+		//    map.WaitOneTick();	// does initial update to default objects
 
 		//    Thread.Sleep(100000);
 
-		//    Assert.AreEqual(0, region.PendingUpdateCount);
+		//    Assert.AreEqual(0, map.PendingUpdateCount);
 		//    Setup.WriteLine("Spawned all of Kalimdor in: " + (DateTime.Now - startTime));
 		//}
 	}

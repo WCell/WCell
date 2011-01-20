@@ -80,14 +80,14 @@ namespace WCell.RealmServer.Entities
 		/// All objects that are currently visible by this Character.
 		/// Don't manipulate this collection.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		internal HashSet<WorldObject> KnownObjects = WorldObjectSetPool.Obtain();
 
 		/// <summary>
 		/// All objects that are currently in BroadcastRadius of this Character.
 		/// Don't manipulate this collection.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public readonly ICollection<WorldObject> NearbyObjects = new List<WorldObject>();
 
 		protected TimerEntry m_logoutTimer;
@@ -1305,7 +1305,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value != null)
 					{
-						if (m_region != null && value.ParentZoneId == 0)
+						if (m_Map != null && value.ParentZoneId == 0)
 						{
 							value.EnterZone(this, m_zone);
 						}

@@ -205,7 +205,7 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Tele", "Teleport");
-			EnglishParamInfo = "[-l[r <region>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
+			EnglishParamInfo = "[-l[r <map>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
 			EnglishDescription = "Teleports to the given location. " +
 				"-l lists all named locations that contain the given term. " +
 				"-c teleports to the given coordinates. " +
@@ -225,11 +225,11 @@ namespace WCell.RealmServer.Commands
 			var mod = trigger.Text.NextModifiers();
 			if (mod.Contains("l"))
 			{
-				var region = MapId.End;
+				var map = MapId.End;
 				if (mod.Contains("r"))
 				{
-					// also filter by region
-					region = trigger.Text.NextEnum(region);
+					// also filter by map
+					map = trigger.Text.NextEnum(map);
 				}
 
 				var searchTerm = trigger.Text.NextWord();
@@ -238,10 +238,10 @@ namespace WCell.RealmServer.Commands
 				{
 					if (location.Names.Localize(trigger.Args.User.Locale).IndexOf(searchTerm, StringComparison.InvariantCultureIgnoreCase) > -1)
 					{
-						if (region == MapId.End || region == location.RegionId)
+						if (map == MapId.End || map == location.MapId)
 						{
 							i++;
-							trigger.Reply("{0}. {1} ({2})", i, location.DefaultName, location.RegionId);
+							trigger.Reply("{0}. {1} ({2})", i, location.DefaultName, location.MapId);
 						}
 					}
 				}
@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Commands
 			else if (mod == "c")
 			{
 				float? o = null;
-				Region region = null;
+				Map map = null;
 
 				var x = trigger.Text.NextFloat(-50001);
 				var y = trigger.Text.NextFloat(-50001);
@@ -263,8 +263,8 @@ namespace WCell.RealmServer.Commands
 				if (trigger.Text.HasNext)
 				{
 					var mapId = trigger.Text.NextEnum(MapId.End);
-					region = World.GetRegion(mapId);
-					if (region == null)
+					map = World.GetMap(mapId);
+					if (map == null)
 					{
 						trigger.Reply("Invalid map: " + mapId);
 						return;
@@ -276,13 +276,13 @@ namespace WCell.RealmServer.Commands
 					trigger.Reply("Invalid position. Usage: " + EnglishParamInfo);
 					return;
 				}
-				if (region == null)
+				if (map == null)
 				{
-					region = trigger.Args.Character.Region;
+					map = trigger.Args.Character.Map;
 				}
 
 				var pos = new Vector3(x, y, z);
-				trigger.Args.Target.TeleportTo(region, ref pos, o);
+				trigger.Args.Target.TeleportTo(map, ref pos, o);
 			}
 			else
 			{
@@ -323,8 +323,8 @@ namespace WCell.RealmServer.Commands
 				// var loc = WorldLocationMgr.GetFirstMatch(targetName);
 				//if (loc != null)
 				//{
-				//    var region = World.GetRegion(loc.RegionId);
-				//    trigger.Args.Target.TeleportTo(region, loc.Position);
+				//    var map = World.GetMap(loc.MapId);
+				//    trigger.Args.Target.TeleportTo(map, loc.Position);
 				//}
 				//else
 				//{
@@ -414,7 +414,7 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					chr.TeleportTo(trigger.Args.Target.Region, trigger.Args.Target.Position);
+					chr.TeleportTo(trigger.Args.Target.Map, trigger.Args.Target.Position);
 					chr.Orientation = trigger.Args.Target.Orientation;
 				}
 			}
@@ -484,7 +484,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						chr.TeleportTo(trigger.Args.Target.Region, trigger.Args.Target.Position);
+						chr.TeleportTo(trigger.Args.Target.Map, trigger.Args.Target.Position);
 					}
 				}
 			}

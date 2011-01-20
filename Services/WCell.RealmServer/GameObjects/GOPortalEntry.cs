@@ -31,7 +31,7 @@ namespace WCell.RealmServer.GameObjects
 			GOCreator = () => new Portal();
 
 			//AreaEffectHandler = Teleport;
-			//UpdateTicks = UpdateDelayMillis / Region.DefaultUpdateDelay;
+			//UpdateTicks = UpdateDelayMillis / Map.DefaultUpdateDelay;
 		}
 
 		private static void Teleport(GameObject go, Character chr)

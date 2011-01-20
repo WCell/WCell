@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (lockable is Item)
 			{
-				LootMgr.CreateAndSendObjectLoot(lockable, user, LootEntryType.Item, user.Region.IsHeroic);
+				LootMgr.CreateAndSendObjectLoot(lockable, user, LootEntryType.Item, user.Map.IsHeroic);
 			}
 			else if (lockable is GameObject)
 			{

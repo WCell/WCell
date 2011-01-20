@@ -29,15 +29,15 @@ namespace WCell.RealmServer.NPCs.Figurines
 		//[NotVariable]
 		//public static bool AddDecoMarker = true;
 
-		private readonly SpawnPoint m_SpawnPoint;
+		private readonly NPCSpawnPoint m_SpawnPoint;
 
-		public SpawnFigurine(SpawnPoint spawnPoint)
+		public SpawnFigurine(NPCSpawnPoint spawnPoint)
 			: base(spawnPoint.SpawnEntry.Entry)
 		{
 			m_SpawnPoint = spawnPoint;
 			m_position = spawnPoint.SpawnEntry.Position;
 
-			GossipMenu = m_SpawnPoint.GossipMenu;
+			//GossipMenu = m_SpawnPoint.GossipMenu;
 			NPCFlags = NPCFlags.Gossip;
 		}
 

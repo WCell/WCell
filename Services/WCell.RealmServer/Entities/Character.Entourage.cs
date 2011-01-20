@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Entities
 				else
 				{
 					// Pet disappears
-					m_activePet.RemoveFromRegion();
+					m_activePet.RemoveFromMap();
 				}
 				m_record.IsPetActive = value;
 			}
@@ -255,7 +255,7 @@ namespace WCell.RealmServer.Entities
 			InitializeMinion(pet);
 			if (IsPetActive)
 			{
-				m_region.AddObject(pet);
+				m_Map.AddObject(pet);
 			}
 			return pet;
 		}
@@ -649,9 +649,9 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Minion Events
-		protected internal override void OnMinionEnteredRegion(NPC minion)
+		protected internal override void OnMinionEnteredMap(NPC minion)
 		{
-			base.OnMinionEnteredRegion(minion);
+			base.OnMinionEnteredMap(minion);
 			if (minion.Entry.Type == CreatureType.Totem)
 			{
 				if (m_totems == null)
@@ -676,9 +676,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnMinionLeftRegion(NPC minion)
+		protected internal override void OnMinionLeftMap(NPC minion)
 		{
-			base.OnMinionLeftRegion(minion);
+			base.OnMinionLeftMap(minion);
 			if (minion == m_activePet)
 			{
 				if (m_activePet.PetRecord != null)

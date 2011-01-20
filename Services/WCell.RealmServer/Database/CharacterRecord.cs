@@ -32,7 +32,7 @@ using WCell.RealmServer.Guilds;
 namespace WCell.RealmServer.Database
 {
 	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IRegionId, IActivePetSettings
+	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IMapId, IActivePetSettings
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
@@ -171,16 +171,16 @@ namespace WCell.RealmServer.Database
 		private int _watchedFaction;
 		[Field("ClassId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int m_Class;
-		[Field("Region", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_Region;
-		[Field("CorpseRegion", Access = PropertyAccess.FieldCamelcase)]
-		private int m_CorpseRegion;
+		[Field("Map", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_Map;
+		[Field("CorpseMap", Access = PropertyAccess.FieldCamelcase)]
+		private int m_CorpseMap;
 		[Field("Zone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_zoneId;
 		[Field("BindZone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_BindZone;
-		[Field("BindRegion", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_BindRegion;
+		[Field("BindMap", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_BindMap;
 
 		private DateTime? m_lastLogin;
 
@@ -464,10 +464,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return (MapId)m_Region; }
-			set { m_Region = (int)value; }
+			get { return (MapId)m_Map; }
+			set { m_Map = (int)value; }
 		}
 
 		public uint InstanceId
@@ -500,10 +500,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId CorpseRegion
+		public MapId CorpseMap
 		{
-			get { return (MapId)m_CorpseRegion; }
-			set { m_CorpseRegion = (int)value; }
+			get { return (MapId)m_CorpseMap; }
+			set { m_CorpseMap = (int)value; }
 		}
 
 		/// <summary>
@@ -560,10 +560,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId BindRegion
+		public MapId BindMap
 		{
-			get { return (MapId)m_BindRegion; }
-			set { m_BindRegion = (int)value; }
+			get { return (MapId)m_BindMap; }
+			set { m_BindMap = (int)value; }
 		}
 
 		public ZoneId BindZone
@@ -1140,7 +1140,7 @@ namespace WCell.RealmServer.Database
 			PositionY = archetype.StartPosition.Y;
 			PositionZ = archetype.StartPosition.Z;
 			Orientation = archetype.StartOrientation;
-			RegionId = archetype.StartMapId;
+			MapId = archetype.StartMapId;
 			Zone = archetype.StartZoneId;
 			TotalPlayTime = 0;
 			LevelPlayTime = 0;

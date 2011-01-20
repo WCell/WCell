@@ -385,7 +385,7 @@ namespace WCell.RealmServer.Spells
 			if (spell.RequiredSpellFocus != 0)
 			{
 				var range = Owner.GetSpellMaxRange(spell);
-				var go = chr.Region.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
+				var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
 					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)

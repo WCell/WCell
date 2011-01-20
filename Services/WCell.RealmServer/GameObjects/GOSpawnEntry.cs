@@ -27,7 +27,7 @@ namespace WCell.RealmServer.GameObjects
 		public GameObjectState State;
 
         /// <summary>
-        /// Whether this template will be added to its Region automatically (see <see cref="Global.Region.SpawnRegion"/>)
+        /// Whether this template will be added to its Map automatically (see <see cref="Map.SpawnMap"/>)
         /// </summary>
 	    public bool AutoSpawn = true;
 
@@ -112,16 +112,16 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region region)
+		public GameObject Spawn(Map map)
 		{
 			if (Entry == null)
 			{
 				return null;
 			}
-			var go = GameObject.Create(Entry, new WorldLocationStruct(region, Pos), this);
+			var go = GameObject.Create(Entry, new WorldLocationStruct(map, Pos), this);
 			return go;
 		}
 
@@ -193,20 +193,12 @@ namespace WCell.RealmServer.GameObjects
 			get { return Pos; }
 		}
 
-        /// <summary>
-        /// Set this to fix incorrect map ids.
-        /// </summary>
-		public MapId RegionId
-		{
-			get { return MapId; }
-		}
-
 		/// <summary>
 		/// Is null if Template is not spawned in a continent
 		/// </summary>
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(MapId); }
+			get { return World.GetMap(MapId); }
 		}
 		#endregion
 

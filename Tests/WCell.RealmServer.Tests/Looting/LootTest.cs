@@ -117,12 +117,12 @@ namespace WCell.RealmServer.Tests.Looting
 				((TestCharacter)member.Character).EnsureXDistance(npc, 0.5f, true);
 			}
 
-			leader.Region.AddMessageAndWait(() => {
+			leader.Map.AddMessageAndWait(() => {
 				var looters = LootMgr.FindLooters(npc, leader);
 				Assert.AreEqual(group.Count, looters.Count);
 
 				// initialize the Loot
-				loot.Initialize(leader, looters, npc.RegionId);
+				loot.Initialize(leader, looters, npc.MapId);
 			});
 			
 			Assert.IsNotNull(lootItem.RollProgress);

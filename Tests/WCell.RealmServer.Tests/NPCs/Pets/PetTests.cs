@@ -135,7 +135,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
         [TestMethod]
         public void TestMakePet()
         {
-            Master.Region.AddMessageAndWait(new Message(() => Master.MakePet(Cat, 0)));
+            Master.Map.AddMessageAndWait(new Message(() => Master.MakePet(Cat, 0)));
             Assert.IsTrue(Master.ActivePet == Cat);
         }
 
@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
             TestStablePet();
 
             // Makes the Bear the active pet
-            Master.Region.AddMessageAndWait(new Message(() => Master.MakePet(Bear)));
+            Master.Map.AddMessageAndWait(new Message(() => Master.MakePet(Bear)));
             Assert.IsTrue(Master.ActivePet == Bear);
 
             SendSwapStabledPetsPacket();
@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
             TestStablePet();
 
             // Makes the Bear the active pet
-            Master.Region.AddMessageAndWait(new Message(() => Master.MakePet(Bear, 0)));
+            Master.Map.AddMessageAndWait(new Message(() => Master.MakePet(Bear, 0)));
             Assert.IsTrue(Master.ActivePet == Bear);
 
             // Puts the Bear in the stable
@@ -365,7 +365,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
 
             var spell = SpellHandler.Get(SpellId.ClassSkillFeedPet);
             var preHappiness = Cat.Power;
-            Master.Region.AddMessageAndWait(new Message(() => {
+            Master.Map.AddMessageAndWait(new Message(() => {
                 var cast = Master.SpellCast;
                 cast.UsedItem = meat;
                 var err = cast.Start(spell, false);
@@ -392,7 +392,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
             
             var spell = SpellHandler.Get(SpellId.ClassSkillFeedPet);
             
-            Master.Region.AddMessageAndWait(new Message(() => {
+            Master.Map.AddMessageAndWait(new Message(() => {
                 var cast = Master.SpellCast;
                 var err = cast.Start(spell, false);
                 

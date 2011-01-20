@@ -245,7 +245,7 @@ namespace WCell.RealmServer.Commands
 			}
 
 			var height = obj.TerrainHeight;
-			trigger.Reply("Region: " + obj.Region + ", Zone: " + zoneStr);
+			trigger.Reply("Map: " + obj.Map + ", Zone: " + zoneStr);
 			trigger.Reply("Position X: " + obj.Position.X + ", Y: " + obj.Position.Y + ", Z: " + obj.Position.Z + ", O: " + obj.Orientation +
 				"(" + Math.Abs(obj.Position.Z - height) + " yds from Ground)");
 		}

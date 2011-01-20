@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -341,13 +341,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Is called whenever this Character was added to a new region
+		/// Is called whenever this Character was added to a new map
 		/// </summary>
-		internal protected override void OnEnterRegion()
+		internal protected override void OnEnterMap()
 		{
-			base.OnEnterRegion();
+			base.OnEnterMap();
 
-			// when removed from region, make sure the Character forgets everything and gets everything re-sent
+			// when removed from map, make sure the Character forgets everything and gets everything re-sent
 			ClearSelfKnowledge();
 
 			m_lastMoveTime = Environment.TickCount;
@@ -369,11 +369,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnLeavingRegion()
+		protected internal override void OnLeavingMap()
 		{
 			if (m_activePet != null && m_activePet.IsInWorld)
 			{
-				m_activePet.Region.RemoveObject(m_activePet);
+				m_activePet.Map.RemoveObject(m_activePet);
 			}
 
 			if (m_minions != null)
@@ -384,7 +384,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			base.OnLeavingRegion();
+			base.OnLeavingMap();
 		}
 
 		private StandState m_standState;
@@ -505,7 +505,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return (m_region.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
+				return (m_Map.CanFly && (m_zone == null || m_zone.Flags.HasFlag(ZoneFlags.CanFly))) || Role.IsStaff;
 			}
 		}
 
@@ -516,7 +516,7 @@ namespace WCell.RealmServer.Entities
 			if (m_activePet != null)
 			{
 				// remove active pet
-				m_activePet.RemoveFromRegion();
+				m_activePet.RemoveFromMap();
 			}
 
 			base.Mount(displayId);

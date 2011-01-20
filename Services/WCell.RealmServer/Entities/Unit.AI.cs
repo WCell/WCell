@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Entities
 
 		public abstract LinkedList<WaypointEntry> Waypoints { get; }
 
-		public abstract SpawnPoint SpawnPoint { get; }
+		public abstract NPCSpawnPoint SpawnPoint { get; }
 
 		public bool CanBeAggroedBy(Unit target)
 		{

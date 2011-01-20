@@ -272,7 +272,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (value == null)
 				{
-					throw new NullReferenceException(string.Format("Faction cannot be set to null (Unit: {0}, Region: {1})", this, m_region));
+					throw new NullReferenceException(string.Format("Faction cannot be set to null (Unit: {0}, Map: {1})", this, m_Map));
 				}
 
 				var affinityChanged = m_faction != null;
