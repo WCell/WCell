@@ -161,11 +161,11 @@ namespace WCell.RealmServer.Commands
 			var chr = trigger.Args.Target as Character;
 			var banner = trigger.Args.User;
 
-			if (chr != null && chr == banner)
+			if (chr != null && ReferenceEquals(chr, banner))
 			{
 				chr = chr.Target as Character;
 			}
-			if (chr == null || chr == banner)
+			if (chr == null || ReferenceEquals(chr, banner))
 			{
 				trigger.Reply("Invalid Target.");
 				return;
@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Commands
 				until = null;
 			}
 
-			var timeStr = until != null ? "until " + until : "(indefinitely)";
+			var timeStr = until != null ? ("until " + until) : "(indefinitely)";
 			trigger.Reply("Banning Account {0} ({1}) {2}...", chr.Account.Name, chr.Name,
 				timeStr);
 
