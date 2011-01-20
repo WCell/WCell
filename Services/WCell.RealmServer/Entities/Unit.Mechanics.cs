@@ -412,6 +412,9 @@ namespace WCell.RealmServer.Entities
 					case SpellMechanic.Frozen:
 						AuraState |= AuraStateMask.Frozen;
 						break;
+					case SpellMechanic.Bleeding:
+						AuraState |= AuraStateMask.Bleeding;
+						break;
 					case SpellMechanic.Mounted:
 						UnitFlags |= UnitFlags.Mounted;
 						SpeedFactor += MountSpeedMod;
@@ -495,6 +498,9 @@ namespace WCell.RealmServer.Entities
 					{
 						case SpellMechanic.Frozen:
 							AuraState ^= AuraStateMask.Frozen;
+							break;
+						case SpellMechanic.Bleeding:
+							AuraState |= AuraStateMask.Bleeding;
 							break;
 						case SpellMechanic.Mounted:
 							UnitFlags &= ~UnitFlags.Mounted;

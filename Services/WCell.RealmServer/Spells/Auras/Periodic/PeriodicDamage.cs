@@ -35,7 +35,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				{
 					var bonus = m_aura.Auras.GetBleedBonusPercent();
 					value += ((value * bonus) + 50) / 100;
-					m_aura.Owner.AuraState |= AuraStateMask.Bleeding;
+					m_aura.Owner.IncMechanicCount(SpellMechanic.Bleeding);
 				}
 
 				holder.DealSpellDamage(m_aura.CasterUnit, m_spellEffect, value);
@@ -43,23 +43,8 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 		}
 		protected override void Remove(bool cancelled)
 		{
-			var auras = m_aura.Owner.Auras;
-			var reset = false;
-			foreach (var aura in auras)
-			{
-				if (!aura.IsBeneficial && aura.Spell.Mechanic == SpellMechanic.Bleeding)
-				{
-					if (aura != m_aura)
-					{
-						reset = false;	//this is another bleed aura, so we don't need to reset the aurastate
-						break;			//no need to iterate further
-					}
-					else
-						reset = true;
-				}
-			}
-			if (reset)
-				m_aura.Owner.AuraState ^= AuraStateMask.Bleeding;
+			if (m_aura.Spell.Mechanic == SpellMechanic.Bleeding)
+				m_aura.Owner.DecMechanicCount(SpellMechanic.Bleeding);
 		}
 	}
 
