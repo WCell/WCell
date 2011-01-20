@@ -995,7 +995,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1011,7 +1011,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1050,7 +1050,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ( object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1081,7 +1081,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInSameDivision(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ( object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
