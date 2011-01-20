@@ -656,7 +656,7 @@ namespace WCell.RealmServer.Commands
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var target = trigger.Args.Target;
-			if (target == trigger.Args.User)
+			if (target == (Unit)trigger.Args.User)
 			{
 				target = target.Target;
 				if (target == null)

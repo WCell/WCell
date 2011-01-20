@@ -161,11 +161,11 @@ namespace WCell.RealmServer.Commands
 			var chr = trigger.Args.Target as Character;
 			var banner = trigger.Args.User;
 
-			if (chr != null && chr == banner)
+			if (chr != null && chr == (Character)banner)
 			{
 				chr = chr.Target as Character;
 			}
-			if (chr == null || chr == banner)
+			if (chr == null || chr == (Character)banner)
 			{
 				trigger.Reply("Invalid Target.");
 				return;
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Commands
 				if (chr.Role <= trigger.Args.Role)
 				{
 					if ((!playersOnly || chr.Role.Status == RoleStatus.Player) &&
-						(inclSelf || chr != trigger.Args.User))
+						(inclSelf || chr != (Character)trigger.Args.User))
 					{
 						chrTrigger.Args.Target = chr;
 						RealmCommandHandler.Instance.Execute(chrTrigger, cmd, true);

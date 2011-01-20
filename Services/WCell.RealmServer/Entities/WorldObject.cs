@@ -1440,7 +1440,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsFriendlyWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ((WorldObject)opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
 			}
@@ -1467,7 +1467,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ((WorldObject)opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1493,7 +1493,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool MayAttack(IFactionMember opponent)
 		{
-			if (!opponent.IsInWorld || opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (!opponent.IsInWorld || (WorldObject)opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1527,9 +1527,9 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ((WorldObject)opponent == this ||
 				(opponent is Unit && ((Unit)opponent).Master == this) ||
-				Master == opponent)
+				Master == (Unit)opponent)
 			{
 				return true;
 			}
