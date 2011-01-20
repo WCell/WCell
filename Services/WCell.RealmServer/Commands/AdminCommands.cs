@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Commands
 				if (chr.Role <= trigger.Args.Role)
 				{
 					if ((!playersOnly || chr.Role.Status == RoleStatus.Player) &&
-						(inclSelf || chr != trigger.Args.User))
+						(inclSelf || !object.ReferenceEquals(chr, trigger.Args.User)))
 					{
 						chrTrigger.Args.Target = chr;
 						RealmCommandHandler.Instance.Execute(chrTrigger, cmd, true);

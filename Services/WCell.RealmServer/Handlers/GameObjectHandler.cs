@@ -58,7 +58,7 @@ namespace WCell.RealmServer.GameObjects
 
 			var go = client.ActiveCharacter.Region.GetGO(goId.Low);
 			var chr = client.ActiveCharacter;
-			if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || chr.LooterEntry.Loot.Lootable != go))
+			if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || !object.ReferenceEquals(chr.LooterEntry.Loot.Lootable, go) ))
 			{
 				go.Use(client.ActiveCharacter);
 			}
