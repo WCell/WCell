@@ -500,7 +500,7 @@ namespace WCell.RealmServer.Entities
 							AuraState ^= AuraStateMask.Frozen;
 							break;
 						case SpellMechanic.Bleeding:
-							AuraState |= AuraStateMask.Bleeding;
+							AuraState ^= AuraStateMask.Bleeding;
 							break;
 						case SpellMechanic.Mounted:
 							UnitFlags &= ~UnitFlags.Mounted;
