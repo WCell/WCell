@@ -337,6 +337,12 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FlightFormPassivePassive));
 			});
 
+			//Wrong Facing Requirement
+			SpellLineId.DruidPounce.Apply(spell =>
+				{
+					spell.AttributesExB = SpellAttributesExB.None;
+				});
+
 			FixBloodFrenzy();
 		}
 
