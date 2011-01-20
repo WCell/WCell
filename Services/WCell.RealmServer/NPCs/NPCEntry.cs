@@ -918,14 +918,16 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public NPCCreator NPCCreator;
 
-		public NPC Create(uint difficulty = 0u)
+		public NPC Create(uint difficulty = 0)
 		{
-			return NPCCreator(GetEntry(difficulty));
+			var npc = NPCCreator(GetEntry(difficulty));
+			npc.SetupNPC(this, null);
+			return npc;
 		}
 
 		public NPC Create(SpawnPoint spawn)
 		{
-			var npc = Create(spawn.Region.DifficultyIndex);
+			var npc = NPCCreator(GetEntry(spawn.Region.DifficultyIndex));
 			npc.SetupNPC(this, spawn);
 			return npc;
 		}
@@ -933,6 +935,7 @@ namespace WCell.RealmServer.NPCs
 		public NPC SpawnAt(Region rgn, Vector3 pos)
 		{
 			var npc = Create(rgn.DifficultyIndex);
+			npc.SetupNPC(this, null);
 			rgn.AddObject(npc, pos);
 			return npc;
 		}
