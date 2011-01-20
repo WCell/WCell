@@ -1120,7 +1120,7 @@ namespace WCell.Constants.Spells
 		RejuvenationOrRegrowth = 0x4000,
 		DeadlyPoison = 0x8000,
 		Enraged = 0x10000,
-		WeakenedSoul = 0x20000,
+		Bleeding = 0x20000,
 		Hypothermia = 0x40000,
 		AuraState0x0080000 = 0x0080000,
 		AuraState0x0100000 = 0x0100000,
@@ -1174,7 +1174,7 @@ namespace WCell.Constants.Spells
 		/// </summary>
 		Enraged = 17,
 
-		//WeakenedSoul = 18,
+		//Bleeding = 18,
 		///// <summary>
 		///// Results into: Hypothermia (Dummy Aura) - ARGHS
 		///// Only in: ClassSkill Ice Block (Id: 45438)

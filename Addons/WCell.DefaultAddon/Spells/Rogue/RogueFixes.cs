@@ -5,6 +5,8 @@ using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.Spells.Rogue
 {
@@ -34,6 +36,32 @@ namespace WCell.Addons.Default.Spells.Rogue
 			// all finishing moves: RogueKidneyShot, RogueRupture, RogueEviscerate, RogueExposeArmor, RogueDeadlyThrow, RogueEnvenom (003A00000000000900000000)
 			SpellLineId.RogueAssassinationRuthlessness.Apply(
 				spell => spell.Effects[0].AffectMask = new uint[] { 0x003A0000, 0x00000009, 0x00000000 });
+
+			SpellLineId.RogueAssassinationHungerForBlood.Apply(spell =>
+				{
+					spell.Effects[0].SpellEffectHandlerCreator =
+					(cast, effect) => new HungerForBloodHandler(cast, effect);
+				});
+
 		}
+
+		#region HungerForBlood
+		public class HungerForBloodHandler : DummyEffectHandler
+		{
+			public HungerForBloodHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			public override void Apply()
+			{
+				var chr = m_cast.CasterUnit as Character;
+				if (chr != null)
+				{
+						chr.SpellCast.Trigger(SpellId.HungerForBlood_3, chr);
+				}
+			}
+		}
+		#endregion
 	}
 }
