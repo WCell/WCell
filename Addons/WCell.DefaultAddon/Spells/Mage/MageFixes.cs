@@ -9,7 +9,9 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Mage
@@ -96,6 +98,13 @@ namespace WCell.Addons.Default.Spells.Mage
 				(cast, effect) => new SummonWaterElementalHandler(cast, effect);
 			});
 
+			SpellLineId.MageFrostShatter.Apply(spell =>
+				{
+					var effect = spell.GetEffect(AuraType.OverrideClassScripts);
+					effect.AuraEffectHandlerCreator = () => new MageFrostShatterHandler();
+					
+				});
+
 		}
 
 		public class TriggerSpellAfterAuraRemovedHandler : AuraEffectHandler
@@ -161,6 +170,30 @@ namespace WCell.Addons.Default.Spells.Mage
 						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_7, chr);
 					else
 						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_6, chr);
+				}
+			}
+		}
+		#endregion
+
+		#region MageFrostShatter
+		public class MageFrostShatterHandler : AttackEventEffectHandler
+		{
+			public override void OnAttack(DamageAction action)
+			{
+				if (action.SpellEffect != null && action.Victim.AuraState == AuraStateMask.Frozen)
+				{
+					switch (m_aura.Spell.SpellId)
+					{
+						case SpellId.MageFrostShatterRank1:
+							action.AddBonusCritChance(17);
+							break;
+						case SpellId.MageFrostShatterRank2:
+							action.AddBonusCritChance(34);
+							break;
+						case SpellId.MageFrostShatterRank3:
+							action.AddBonusCritChance(50);
+							break;
+					}
 				}
 			}
 		}
