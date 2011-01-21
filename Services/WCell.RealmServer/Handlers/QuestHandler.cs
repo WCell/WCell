@@ -491,14 +491,7 @@ namespace WCell.RealmServer.Handlers
 			var locale = chr.Locale;
 			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTGIVER_QUEST_DETAILS))
 			{
-				if (questGiver != null)
-				{
-					pckt.Write(questGiver.EntityId);
-				}
-				else
-				{
-					pckt.Write(EntityId.Zero);
-				}
+				pckt.Write(questGiver != null ? questGiver.EntityId : EntityId.Zero);
 
 				pckt.Write(EntityId.Zero);		// unknown, wotlk, quest sharing?
 
@@ -509,7 +502,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.WriteCString(qt.Instructions.Localize(locale));
 
 
-				pckt.Write((byte)(acceptable ? 1 : 0));
+				pckt.Write((byte)(acceptable ? 1 : 0));			// doesn't work
 			    pckt.WriteUInt((uint) qt.Flags);
 				pckt.WriteUInt(qt.SuggestedPlayers);
 				pckt.Write((byte) 0); // probably some pvp flag
