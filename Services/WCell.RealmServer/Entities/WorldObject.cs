@@ -717,7 +717,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			Character chr = null;
-			var r = 1 + Utility.Random(0, AreaCharCount);
+			var r = Utility.Random(0, AreaCharCount);
 			var i = 0;
 			var radiusSq = radius*radius;
 			IterateEnvironment(BroadcastRange, obj =>
