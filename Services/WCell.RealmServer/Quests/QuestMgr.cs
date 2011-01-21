@@ -155,7 +155,7 @@ namespace WCell.RealmServer.Quests
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();
-				CreateGraph();
+				CreateQuestRelationGraph();
 
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();
@@ -184,7 +184,10 @@ namespace WCell.RealmServer.Quests
 			}
 		}
 
-		private static void CreateGraph()
+		/// <summary>
+		/// Creates the graph of all quests and their relations
+		/// </summary>
+		private static void CreateQuestRelationGraph()
 		{
 			var groups = new Dictionary<int, List<uint>>();
 			foreach (var quest in Templates)
@@ -233,6 +236,15 @@ namespace WCell.RealmServer.Quests
 						else
 						{
 							quest.ReqAllActiveQuests.Add((uint)-quest.PreviousQuestId);
+						}
+					}
+					if (quest.FollowupQuestId != 0)
+					{
+						// follow up quest requires this one to be finished before it can be taken
+						var followupQuest = GetTemplate(quest.FollowupQuestId);
+						if (followupQuest != null && !followupQuest.ReqAllFinishedQuests.Contains(quest.Id))
+						{
+							followupQuest.ReqAllFinishedQuests.Add(quest.Id);
 						}
 					}
 				}
@@ -376,9 +388,12 @@ namespace WCell.RealmServer.Quests
 				if (list.Count == 1 && !chr.QuestLog.HasActiveQuest(list[0].Id))
 				{
 					// start a single quest if there is only one and the user did not start it yet
-					QuestHandler.SendDetails(qHolder, list[0], chr, true);
-                    if (list[0].Flags.HasFlag(QuestFlags.AutoAccept))
-                        chr.QuestLog.TryAddQuest(list[0], qHolder);
+					var autoAccept = list[0].Flags.HasFlag(QuestFlags.AutoAccept);
+					QuestHandler.SendDetails(qHolder, list[0], chr, !autoAccept);
+					if (autoAccept)
+                    {
+                    	chr.QuestLog.TryAddQuest(list[0], qHolder);
+                    }
 				}
 				else
 				{

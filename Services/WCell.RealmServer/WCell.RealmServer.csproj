@@ -453,7 +453,7 @@
     <Compile Include="Events\Chat.cs" />
     <Compile Include="Events\Entities\GOEvents.cs" />
     <Compile Include="Events\Entities\NPCEvents.cs" />
-    <Compile Include="Events\Global\RegionEvents.cs" />
+    <Compile Include="Events\Global\MapEvents.cs" />
     <Compile Include="Events\Global\ZoneEvents.cs" />
     <Compile Include="Events\QuestEvents.cs" />
     <Compile Include="Events\RealmServerEvents.cs" />
@@ -524,7 +524,7 @@
     <Compile Include="GameObjects\GOEntries\GOFlagEntry.cs" />
     <Compile Include="GameObjects\GOEntries\IGOLootableEntry.cs" />
     <Compile Include="Global\InstancedMap.cs" />
-    <Compile Include="Global\IRegionId.cs" />
+    <Compile Include="Global\IMapId.cs" />
     <Compile Include="Global\ZoneTemplate.cs" />
     <Compile Include="Gossips\GossipMenuItem.cs" />
     <Compile Include="Handlers\AccountDataHandler.cs" />
@@ -660,7 +660,7 @@
     <Compile Include="GameObjects\Handlers\MailBoxHandler.cs" />
     <Compile Include="GameObjects\Handlers\MiscHandlers.cs" />
     <Compile Include="GameObjects\Handlers\TrapHandler.cs" />
-    <Compile Include="Global\RegionTemplate.cs" />
+    <Compile Include="Global\MapTemplate.cs" />
     <Compile Include="Gossips\GossipEntry.cs" />
     <Compile Include="Guilds\Guild.cs" />
     <Compile Include="Guilds\GuildEventLog.cs" />
@@ -1326,7 +1326,7 @@
     <Compile Include="Handlers\VoiceChatHandler.cs" />
     <Compile Include="Transports\TransportMovement.cs" />
     <Compile Include="UpdateFields\SerializedFields.cs" />
-    <Compile Include="Global\Region.Tasks.cs" />
+    <Compile Include="Global\Map.Tasks.cs" />
     <Compile Include="Global\WorldZoneLocation.cs" />
     <Compile Include="Global\WorldLocationMgr.cs" />
     <Compile Include="Waypoints\RandomWaypointGenerator.cs" />

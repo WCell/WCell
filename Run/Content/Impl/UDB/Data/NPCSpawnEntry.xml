@@ -5,7 +5,7 @@
 
     <Flat Name="SpawnId" Column="guid" />
     <Flat Name="EntryId" Column="id" />
-    <Flat Name="RegionId" Column="map" />
+    <Flat Name="MapId" Column="map" />
     <Nested Name="Position">
       <Flat Name="X" Column="position_x" />
       <Flat Name="Y" Column="position_y" />

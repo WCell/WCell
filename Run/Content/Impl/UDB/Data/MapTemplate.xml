@@ -4,12 +4,12 @@
     <DefaultTable>instance_template</DefaultTable>
     <Flat Name="Id" Column="map" />
     <Flat Name="Name" Column="" />
-    <Flat Name="ParentMapid" Column="parent" />
+    <Flat Name="ParentMapId" Column="parent" />
     <Flat Name="MinLevel" Column="levelMin" />
     <Flat Name="MaxLevel" Column="levelMax" />
     <Flat Name="MaxPlayerCount" Column="maxPlayers" />
     <!--maxPlayersHeroic-->
-    <Flat Name="RepopRegionId" Column="" />
+    <Flat Name="RepopMapId" Column="" />
     <Flat Name="AreaTableId" Column="" />
     <Flat Name="HeroicLevelDiff" Column="" /><!--in triggers-->
     <Flat Name="RequiredQuestId" Column="" />    <!--in triggers-->

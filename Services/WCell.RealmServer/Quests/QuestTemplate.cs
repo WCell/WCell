@@ -618,16 +618,15 @@ namespace WCell.RealmServer.Quests
 				!chr.Skills.CheckSkill(RequiredSkill, (int)RequiredSkillValue))
 			{
 				return QuestInvalidReason.NoRequirements;
-
 			}
 
-			var err = CheckActiveQuests(chr.QuestLog);
+			var err = CheckRequiredActiveQuests(chr.QuestLog);
 			if (err != QuestInvalidReason.Ok)
 			{
 				return err;
 			}
 
-			err = CheckFinishedQuests(chr.QuestLog);
+			err = CheckRequiredFinishedQuests(chr.QuestLog);
 			if (err != QuestInvalidReason.Ok)
 			{
 				return err;
@@ -660,16 +659,14 @@ namespace WCell.RealmServer.Quests
 			return QuestInvalidReason.Ok;
 		}
 
-		private QuestInvalidReason CheckActiveQuests(QuestLog log)
+		/// <summary>
+		/// Check quest-relation requirements of active quests
+		/// </summary>
+		private QuestInvalidReason CheckRequiredActiveQuests(QuestLog log)
 		{
-			if (FollowupQuestId != 0 && !log.FinishedQuests.Contains(FollowupQuestId))
-			{
-				// next quest in chain
-				return QuestInvalidReason.NoRequiredItems;
-			}
-
 			for (int i = 0; i < ReqAllActiveQuests.Count; i++)
 			{
+				// all of these quests must be active
 				var preqId = ReqAllActiveQuests[i];
 				if (!log.HasActiveQuest(preqId))
 				{
@@ -682,6 +679,7 @@ namespace WCell.RealmServer.Quests
 				var found = false;
 				for (int i = 0; i < ReqAnyActiveQuests.Count; i++)
 				{
+					// any of these quests must be active
 					var preqId = ReqAnyActiveQuests[i];
 					if (log.HasActiveQuest(preqId))
 					{
@@ -697,7 +695,10 @@ namespace WCell.RealmServer.Quests
 			return QuestInvalidReason.Ok;
 		}
 
-		private QuestInvalidReason CheckFinishedQuests(QuestLog log)
+		/// <summary>
+		/// Check quest-relation requirements of quests that need to be finished for this one to start
+		/// </summary>
+		private QuestInvalidReason CheckRequiredFinishedQuests(QuestLog log)
 		{
 			for (int i = 0; i < ReqAllFinishedQuests.Count; i++)
 			{

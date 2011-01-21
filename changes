@@ -1,4 +1,3 @@
-- WARNING: need to drop DB! (or rename all *region* columns manually)
-- renamed Region to Map - basically I did a Find&Replace for *Region* -> *Map* and *region* -> *map*
-- renamed SpawnPoint to NPCSpawnPoint
-- moved the experimental Spawn-editing code to the DefaultAddon, commented most of it out and removed it's traces from core classes
+- fixed some issues caused by the Region -> Map renaming
+- fixed another quest-relation graph bug
+- auto-accepted quests are automatically added to the player's quest log but the details dialog still show an "Accept" button -> Need to fix SMSG_QUESTGIVER_QUEST_DETAILS
