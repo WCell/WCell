@@ -1,5 +1,2 @@
-- added Unit.AddProcHandler(ProcHandlerTemplate)
-- example to trigger a spell every second time a negative action is performed on myNPC:
-static readonly ProcHandlerTemplate spellTrigger = new TriggerSpellProcHandlerTemplate(ProcTriggerFlags.AnyHit, SpellHandler.GetSpell(SpellId.MySpell), 50);
-// ...
- myNPC.AddProcHandler(spellTrigger);
+- new spells to be tested: MageFrostFrostChanneling
+- added new file for Mage frost fixes
