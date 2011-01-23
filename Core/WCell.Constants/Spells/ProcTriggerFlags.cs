@@ -116,7 +116,15 @@ namespace WCell.Constants.Spells
 		SpellHitCritical = 0x40000,
 		ProcFlag0x80000 = 0x80000,
 
-		AnyDamage = 0x100000,
+		/// <summary>
+		/// We are hit by anything hostile
+		/// </summary>
+		AnyHit = SpellHit | MeleeHit | RangedHit,
+
+		/// <summary>
+		/// Unused
+		/// </summary>
+		_AnyDamage = 0x100000,
 
 		/// <summary>
 		/// Someone stepped in our trap

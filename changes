@@ -1,2 +1,5 @@
-- overhauled NPC spawn system
-- added loading of spawn pools and implemented them for NPCs (GOs will follow soon)
+- added Unit.AddProcHandler(ProcHandlerTemplate)
+- example to trigger a spell every second time a negative action is performed on myNPC:
+static readonly ProcHandlerTemplate spellTrigger = new TriggerSpellProcHandlerTemplate(ProcTriggerFlags.AnyHit, SpellHandler.GetSpell(SpellId.MySpell), 50);
+// ...
+ myNPC.AddProcHandler(spellTrigger);

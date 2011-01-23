@@ -163,7 +163,7 @@ namespace WCell.Addons.Default.Spells.Druid
 
 				// only proc the trigger spell on dodge
 				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
-				spell.AddProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
 					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeValidator,
 					SpellHandler.Get(triggerSpellEffect.TriggerSpellId)

@@ -1567,6 +1567,11 @@ namespace WCell.RealmServer.Entities
 			get { return m_procHandlers; }
 		}
 
+		public void AddProcHandler(ProcHandlerTemplate templ)
+		{
+			AddProcHandler(new ProcHandler(this, this, templ));
+		}
+
 		public void AddProcHandler(IProcHandler handler)
 		{
 			if (m_procHandlers == null)
