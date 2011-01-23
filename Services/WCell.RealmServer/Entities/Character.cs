@@ -43,6 +43,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;

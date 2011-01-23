@@ -13,12 +13,14 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Auctioneer;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.RealmServer.Quests;
@@ -183,6 +185,11 @@ namespace WCell.RealmServer.NPCs
 		[NotVariable]
 		public static Dictionary<int, BarberShopStyleEntry> BarberShopStyles = new Dictionary<int, BarberShopStyleEntry>();
 
+		/// <summary>
+		/// All templates for spawn pools
+		/// </summary>
+		public static readonly Dictionary<uint, NPCSpawnPoolTemplate> SpawnPoolTemplates = new Dictionary<uint, NPCSpawnPoolTemplate>();
+
 		[NotVariable]
 		/// <summary>
 		/// All NPCSpawnEntries by their Id
@@ -191,15 +198,18 @@ namespace WCell.RealmServer.NPCs
 
 		[NotVariable]
 		/// <summary>
-		/// All NPCSpawnEntries by MapId
+		/// All instances of NPCSpawnPoolTemplate by MapId
 		/// </summary>
-		public static List<NPCSpawnEntry>[] SpawnEntriesByMap = new List<NPCSpawnEntry>[600];
+		public static List<NPCSpawnPoolTemplate>[] SpawnPoolsByMap = new List<NPCSpawnPoolTemplate>[(int)MapId.End];
 
+		/// <summary>
+		/// Entries of equipment to be added to NPCs
+		/// </summary>
 		[NotVariable]
 		public static NPCEquipmentEntry[] EquipmentEntries = new NPCEquipmentEntry[2000];
 
 		[NotVariable]
-		public static Dictionary<int, CreatureFamily> CreatureFamilies = new Dictionary<int, CreatureFamily>(1);
+		public static Dictionary<int, CreatureFamily> CreatureFamilies = new Dictionary<int, CreatureFamily>();
 
 		/// <summary>
 		/// All existing Mounts by their corresponding EntryId
@@ -212,7 +222,7 @@ namespace WCell.RealmServer.NPCs
 		[NotVariable]
 		internal static Spell[][] PetSpells;
 
-		#region Get*
+		#region GetEntry
 		public static NPCEntry GetEntry(uint id, uint difficultyIndex)
 		{
 			var entry = GetEntry(id);
@@ -254,7 +264,9 @@ namespace WCell.RealmServer.NPCs
 			}
 			return Entries[(uint)id];
 		}
+		#endregion
 
+		#region GetSpawnEntry & GetSpawnPools
 		public static NPCSpawnEntry GetSpawnEntry(uint id)
 		{
 			if (id >= SpawnEntries.Length)
@@ -264,11 +276,23 @@ namespace WCell.RealmServer.NPCs
 			return SpawnEntries[id];
 		}
 
-		public static List<NPCSpawnEntry> GetSpawnEntries(MapId map)
+		public static List<NPCSpawnPoolTemplate> GetSpawnPoolTemplatesByMap(MapId map)
 		{
-			return SpawnEntriesByMap[(int)map];
+			return SpawnPoolsByMap[(int)map];
 		}
 
+		internal static List<NPCSpawnPoolTemplate> GetOrCreateSpawnPoolTemplatesByMap(MapId map)
+		{
+			var list = SpawnPoolsByMap[(int)map];
+			if (list == null)
+			{
+				SpawnPoolsByMap[(int)map] = list = new List<NPCSpawnPoolTemplate>();
+			}
+			return list;
+		}
+		#endregion
+
+		#region Other Get* methods
 		public static NPCEquipmentEntry GetEquipment(uint equipId)
 		{
 			return EquipmentEntries.Get(equipId);
@@ -504,6 +528,7 @@ namespace WCell.RealmServer.NPCs
 			FactionMgr.Initialize();
 
 			ContentMgr.Load<NPCEquipmentEntry>();
+			ContentMgr.Load<NPCSpawnPoolTemplate>();
 			ContentMgr.Load<NPCEntry>();
 
 			EntriesLoaded = true;
@@ -545,6 +570,28 @@ namespace WCell.RealmServer.NPCs
 		{
 			OnlyLoadSpawns();
 			LoadWaypoints();
+
+			if (!RealmServer.Instance.IsRunning) return;
+
+			for (MapId mapId = 0; mapId < MapId.End; mapId++)
+			{
+				var map = World.GetMap(mapId);
+				if (map != null && map.NPCsSpawned)
+				{
+					var pools = GetSpawnPoolTemplatesByMap(mapId);
+					if (pools != null)
+					{
+						foreach (var pool in pools)
+						{
+							if (pool.AutoSpawns)
+							{
+								var p = pool;			// wrap closure
+								map.ExecuteInContext(() => map.AddNPCSpawnPool(p));
+							}
+						}
+					}
+				}
+			}
 		}
 
 		public static void OnlyLoadSpawns()
@@ -553,6 +600,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				return;
 			}
+			ContentMgr.Load<NPCSpawnPoolTemplate>();
 			ContentMgr.Load<NPCSpawnEntry>();
 			SpawnsLoaded = true;
 		}
@@ -729,7 +777,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadItemExtendedCostEntries()
 		{
 			var reader = new MappedDBCReader<ItemExtendedCostEntry, DBCItemExtendedCostConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMEXTENDEDCOST));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMEXTENDEDCOST));
 
 			ItemExtendedCostEntries = reader.Entries;
 			ItemExtendedCostEntries.Add(0, ItemExtendedCostEntry.NullEntry);
@@ -738,7 +786,7 @@ namespace WCell.RealmServer.NPCs
 
 		internal static List<VendorItemEntry> GetOrCreateVendorList(NPCId npcId)
 		{
-			return GetOrCreateVendorList((uint) npcId);
+			return GetOrCreateVendorList((uint)npcId);
 		}
 
 		internal static List<VendorItemEntry> GetOrCreateVendorList(uint npcId)
@@ -795,12 +843,19 @@ namespace WCell.RealmServer.NPCs
 		#region Utilities
 		#endregion
 
+		/// <summary>
+		/// Spawns the pool to which the NPCSpawnEntry belongs which is closest to the given location
+		/// </summary>
 		public static NPCSpawnPoint SpawnClosestSpawnEntry(IWorldLocation pos)
 		{
 			var entry = GetClosesSpawnEntry(pos);
 			if (entry != null)
 			{
-				return pos.Map.AddSpawn(entry);
+				var pool = pos.Map.AddNPCSpawnPool(entry.PoolTemplate);
+				if (pool != null)
+				{
+					return pool.GetSpawnPoint(entry);
+				}
 			}
 			return null;
 		}
@@ -809,15 +864,15 @@ namespace WCell.RealmServer.NPCs
 		{
 			NPCSpawnEntry closest = null;
 			var distanceSq = Single.MaxValue;
-			foreach (var spawn in SpawnEntriesByMap[(int)pos.MapId])
+			foreach (var pool in SpawnPoolsByMap[(int)pos.MapId])
 			{
-				if (spawn != null)
+				foreach (var entry in pool.Entries)
 				{
-					var distSq = pos.Position.DistanceSquared(spawn.Position);
+					var distSq = pos.Position.DistanceSquared(entry.Position);
 					if (distSq < distanceSq)
 					{
 						distanceSq = distSq;
-						closest = spawn;
+						closest = entry;
 					}
 				}
 			}

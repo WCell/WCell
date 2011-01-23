@@ -231,6 +231,8 @@
     <Compile Include="Lang\TranslatableItem.cs" />
     <Compile Include="Misc\ActionBar.cs" />
     <Compile Include="Misc\BugReport.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPool.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPoolTemplate.cs" />
     <Compile Include="Quests\QuestHonor.cs" />
     <Compile Include="Spells\AISpellCastSettings.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
@@ -906,8 +908,8 @@
     <Compile Include="NPCs\NPC.DBC.cs" />
     <Compile Include="NPCs\NPCMgr.cs" />
     <Compile Include="NPCs\NPCEntry.cs" />
-    <Compile Include="NPCs\NPCSpawnEntry.cs" />
-    <Compile Include="NPCs\NPCSpawnPoint.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnEntry.cs" />
+    <Compile Include="NPCs\Spawns\NPCSpawnPoint.cs" />
     <Compile Include="NPCs\Trainers\TrainerEntry.cs" />
     <Compile Include="NPCs\Trainers\TrainerSpellEntry.cs" />
     <Compile Include="NPCs\Vendors\VendorItemEntry.cs" />

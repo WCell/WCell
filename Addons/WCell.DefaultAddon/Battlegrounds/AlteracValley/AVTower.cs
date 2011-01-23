@@ -4,6 +4,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
 
+
 namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 {
     public abstract class AlteracTower : AVItem

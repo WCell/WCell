@@ -29,6 +29,7 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Mail;
 using WCell.RealmServer.Guilds;
 
+
 namespace WCell.RealmServer.Database
 {
 	[ActiveRecord(Access = PropertyAccess.Property)]

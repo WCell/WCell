@@ -15,7 +15,7 @@
     <Flat Name="State" Column="state" />
     <Flat Name="AnimProgress" Column="animprogress" />
     <Flat Name="PhaseMask" Column="phaseMask" />
-    <Flat Name="RespawnTime" Column="spawntimesecs" />
+    <Flat Name="RespawnSeconds" Column="spawntimesecs" />
     
     <Flat Name="EventId" Table="game_event_gameobject" Column="event" />
 <!--extra in UDB

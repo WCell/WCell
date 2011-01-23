@@ -11,25 +11,27 @@ namespace WCell.RealmServer.AI.Groups
 	/// <summary>
 	/// 
 	/// </summary>
-	public abstract class AIGroup
+	public class AIGroup : List<NPC>
 	{
-		private Unit m_Leader;
-		private List<NPC> m_Mobs;
+		private NPC m_Leader;
 
-		public AIGroup(Unit leader, List<NPC> mobs)
+		public AIGroup(NPC leader = null)
 		{
 			m_Leader = leader;
-			m_Mobs = mobs;
+			if (leader != null && !Contains(leader))
+			{
+				Add(leader);
+			}
 		}
 
-		public Unit Leader
+		public AIGroup(IEnumerable<NPC> mobs)
+			: base(mobs)
+		{
+		}
+
+		public NPC Leader
 		{
 			get { return m_Leader; }
-		}
-
-		public List<NPC> Mobs
-		{
-			get { return m_Mobs; }
 		}
 
 		public virtual BrainState DefaultState
@@ -44,13 +46,13 @@ namespace WCell.RealmServer.AI.Groups
 
 		public void AddMob(NPC npc)
 		{
-			m_Mobs.Add(npc);
+			Add(npc);
 			npc.Group = this;
 		}
 
 		public void RemoveMob(NPC npc)
 		{
-			if (m_Mobs.Remove(npc))
+			if (Remove(npc))
 			{
 				npc.Group = null;
 			}
@@ -58,9 +60,8 @@ namespace WCell.RealmServer.AI.Groups
 
 		public void Aggro(Unit unit)
 		{
-			for (var i = 0; i < m_Mobs.Count; i++)
+			foreach (var mob in this)
 			{
-				var mob = m_Mobs[i];
 				mob.ThreatCollection.AddNewIfNotExisted(unit);
 			}
 		}

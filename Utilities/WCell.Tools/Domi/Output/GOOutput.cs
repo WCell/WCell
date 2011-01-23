@@ -235,13 +235,13 @@ namespace WCell.Tools.Domi.Output
 		{
 			writer.WriteLine("{0}\tMap: {1}", indent, templ.MapId);
 			writer.WriteLine("{0}\tState: {1}", indent, templ.State);
-			if (templ.RespawnTime != 0)
+			if (templ.RespawnSeconds != 0)
 			{
-				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnTime);
+				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnSeconds);
 			}
 			if (templ.DespawnTime != 0)
 			{
-				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnTime);
+				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnSeconds);
 			}
 		}
 	}

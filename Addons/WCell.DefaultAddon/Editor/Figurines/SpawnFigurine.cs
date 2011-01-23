@@ -6,6 +6,7 @@ using WCell.Constants.Updates;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util.Variables;
 using System.Collections.Generic;

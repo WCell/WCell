@@ -1,9 +1,10 @@
-﻿using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs;
 using WCell.Addons.Default.Lang;
 using WCell.Core.Initialization;
 using WCell.Constants;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Handlers;
+
 
 namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
 {

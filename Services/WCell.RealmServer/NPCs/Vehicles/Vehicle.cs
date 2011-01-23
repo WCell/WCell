@@ -7,6 +7,7 @@ using WCell.Core.Network;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.NPCs.Spawns;
 
 
 namespace WCell.RealmServer.NPCs.Vehicles

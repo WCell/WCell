@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
 using WCell.Util.Collections;
 using NLog;
@@ -54,6 +55,7 @@ using WCell.Constants.NPCs;
 using WCell.RealmServer.AI;
 using WCell.Core.TerrainAnalysis;
 using WCell.Constants.Achievements;
+
 
 namespace WCell.RealmServer.Global
 {
@@ -190,10 +192,18 @@ namespace WCell.RealmServer.Global
 		protected List<IUpdatable> m_updatables = new List<IUpdatable>();
 		protected int m_currentThreadId;
 
+		#region Spawns
 		bool m_npcsSpawned, m_gosSpawned, m_isUpdating;
-		internal protected GameObject[] m_gos = new GameObject[10];
-		internal protected NPCSpawnPoint[] m_spawnPoints = new NPCSpawnPoint[10];
-		private int m_spawnPointCount;
+		int m_lastNPCPoolId;
+		internal protected Dictionary<uint, GameObject> m_goSpawnPoints = new Dictionary<uint, GameObject>();
+		internal protected Dictionary<uint, NPCSpawnPool> m_npcSpawnPools = new Dictionary<uint, NPCSpawnPool>();
+
+		internal uint GenerateNewNPCPoolId()
+		{
+			return (uint)Interlocked.Increment(ref m_lastNPCPoolId);
+		}
+		#endregion
+
 
 		protected bool m_CanFly;
 
@@ -519,9 +529,9 @@ namespace WCell.RealmServer.Global
 			get { return m_hordeCount; }
 		}
 
-		public int SpawnPointCount
+		public int NPCSpawnPoolCount
 		{
-			get { return m_spawnPointCount; }
+			get { return m_npcSpawnPools.Count; }
 		}
 
 		/// <summary>
@@ -805,24 +815,23 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
-		public NPCSpawnPoint AddSpawn(NPCSpawnEntry entry)
+		public NPCSpawnPool AddNPCSpawnPool(NPCSpawnPoolTemplate templ)
 		{
-			var point = new NPCSpawnPoint(entry, this);
-			AddSpawn(point);
-			point.Active = true;
-			return point;
+			var pool = new NPCSpawnPool(this, templ);
+			AddNPCSpawnPool(pool);
+			return pool;
 		}
 
-		void AddSpawn(NPCSpawnPoint point)
+		public void AddNPCSpawnPool(NPCSpawnPool pool)
 		{
-			ArrayUtil.Set(ref m_spawnPoints, point.Id, point);
-			m_spawnPointCount++;
+			m_npcSpawnPools.Add(pool.Template.PoolId, pool);
+			pool.IsActive = true;
 		}
 
-		internal void RemoveSpawn(NPCSpawnPoint spawn)
+		internal void RemoveNPCSpawnPool(NPCSpawnPool pool)
 		{
-			m_spawnPoints[spawn.Id] = null;
-			m_spawnPointCount--;
+			m_npcSpawnPools.Remove(pool.Template.PoolId);
+			pool.IsActive = false;
 		}
 
 		/// <summary>
@@ -847,9 +856,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public void RemoveObjects()
 		{
-			EnsureContext();
-
-			if (!IsUpdating)
+			if (IsInContext && !IsUpdating)
 			{
 				RemoveObjectsNow();
 			}
@@ -861,14 +868,9 @@ namespace WCell.RealmServer.Global
 
 		private void RemoveObjectsNow()
 		{
-			m_spawnPointCount = 0;
-			for (var i = 0; i < m_spawnPoints.Length; i++)
+			foreach (var pool in m_npcSpawnPools.Values.ToArray())
 			{
-				var spawnPoint = m_spawnPoints[i];
-				if (spawnPoint != null)
-				{
-					spawnPoint.RemoveSpawnNow();
-				}
+				pool.RemovePoolNow();
 			}
 
 			var objs = CopyObjects();
@@ -884,7 +886,6 @@ namespace WCell.RealmServer.Global
 
 			m_gosSpawned = false;
 			m_npcsSpawned = false;
-			m_gos = new GameObject[100];
 		}
 
 		/// <summary>
@@ -893,16 +894,11 @@ namespace WCell.RealmServer.Global
 		public virtual void Reset()
 		{
 			RemoveAll();
-
 			SpawnMap();
 
-			for (var i = 0; i < m_spawnPoints.Length; i++)
+			foreach (var pool in m_npcSpawnPools.Values)
 			{
-				var spawnPoint = m_spawnPoints[i];
-				if (spawnPoint != null)
-				{
-					spawnPoint.RespawnFull();
-				}
+				pool.RespawnFull();
 			}
 		}
 
@@ -973,7 +969,6 @@ namespace WCell.RealmServer.Global
 			var gos = GOMgr.TemplatesByMap[(int)Id];
 			if (gos != null)
 			{
-				m_gos = new GameObject[gos.Count + 1];
 				for (var i = 0; i < gos.Count; i++)
 				{
 					var template = gos[i];
@@ -987,39 +982,39 @@ namespace WCell.RealmServer.Global
 
 		protected virtual void SpawnNPCs()
 		{
-			var entries = NPCMgr.SpawnEntriesByMap[(int)Id];
-			if (entries != null)
+			var poolTemplates = NPCMgr.GetSpawnPoolTemplatesByMap(Id);
+			if (poolTemplates != null)
 			{
-				foreach (var entry in entries)
+				foreach (var templ in poolTemplates)
 				{
-					if (entry != null && entry.AutoSpawn && IsEventActive(entry.EventId))
+					if (templ.AutoSpawns && IsEventActive(templ.Entries[0].EventId))
 					{
-						AddSpawn(entry);
+						AddNPCSpawnPool(templ);
 					}
 				}
 			}
 		}
 
-		public void ForeachSpawnPoint(Action<NPCSpawnPoint> func)
+		public void ForeachSpawnPool(Action<NPCSpawnPool> func)
 		{
-			ForeachSpawnPoint(Vector3.Zero, 0, func);
+			ForeachSpawnPool(Vector3.Zero, 0, func);
 		}
 
-		public void ForeachSpawnPoint(Vector3 pos, float radius, Action<NPCSpawnPoint> func)
+		public void ForeachSpawnPool(Vector3 pos, float radius, Action<NPCSpawnPool> func)
 		{
 			var radiusSq = radius * radius;
-			foreach (var spawn in m_spawnPoints)
+			foreach (var pool in m_npcSpawnPools.Values)
 			{
-				if (spawn != null && (radius <= 0 || spawn.GetDistSq(pos) < radiusSq))
+				if (pool.Template.Entries.Any(spawn => radius <= 0 || spawn.GetDistSq(pos) < radiusSq))
 				{
-					func(spawn);
+					func(pool);
 				}
 			}
 		}
 
 		public void RespawnInRadius(Vector3 pos, float radius)
 		{
-			ForeachSpawnPoint(pos, radius, spawn => spawn.RespawnFull());
+			ForeachSpawnPool(pos, radius, pool => pool.RespawnFull());
 		}
 
 		public void SpawnZone(ZoneId id)
@@ -1856,12 +1851,6 @@ namespace WCell.RealmServer.Global
 
 					}
 				}
-				else if (obj is GameObject)
-				{
-					var go = obj as GameObject;
-
-					ArrayUtil.Set(ref m_gos, go.EntityId.Low, go);
-				}
 
 				// TODO: For now enforce the MainZone and send the states of the default zone to force an update
 				if (MainZoneCount == 1)
@@ -2007,7 +1996,7 @@ namespace WCell.RealmServer.Global
 				m_objects.Remove(obj.EntityId);
 				if (obj is GameObject)
 				{
-					m_gos[obj.EntityId.Low] = null;
+					m_goSpawnPoints[obj.EntityId.Low] = null;
 				}
 
 				if (obj is Character)
@@ -2058,9 +2047,9 @@ namespace WCell.RealmServer.Global
 			GameObject closest = null;
 			float distanceSq = int.MaxValue, currentDistanceSq;
 
-			foreach (var go in m_gos)
+			foreach (var go in m_goSpawnPoints.Values)
 			{
-				if (go == null || go.Entry.GOId != goId)
+				if (go.Entry.GOId != goId)
 				{
 					continue;
 				}
@@ -2137,16 +2126,9 @@ namespace WCell.RealmServer.Global
 		#region GOs
 		public GameObject GetGO(uint lowId)
 		{
-			return m_gos.Get(lowId);
-		}
-
-		/// <summary>
-		/// Returns all GOs of this Map
-		/// </summary>
-		/// <returns></returns>
-		public GameObject[] GetAllGOs()
-		{
-			return m_gos;
+			GameObject go;
+			m_goSpawnPoints.TryGetValue(lowId, out go);
+			return go;
 		}
 
 		/// <summary>
@@ -2433,7 +2415,7 @@ namespace WCell.RealmServer.Global
 			m_objects = null;
 			m_characters = null;
 			m_spiritHealers = null;
-			m_gos = null;
+			m_goSpawnPoints = null;
 			m_updatables = null;
 		}
 

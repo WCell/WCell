@@ -13,6 +13,7 @@ using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.RealmServer.Misc;
 
+
 namespace WCell.RealmServer.Handlers
 {
 	public static class QueryHandler

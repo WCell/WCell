@@ -1,23 +1,16 @@
 using System;
 using System.Collections.Generic;
-using WCell.Constants.Factions;
-using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
-using WCell.Constants.Spells;
 using WCell.Constants.World;
-using WCell.RealmServer.AI;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Factions;
-using WCell.RealmServer.Spells;
 using WCell.RealmServer.Waypoints;
 using WCell.Util;
 using WCell.Util.Data;
-using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
-namespace WCell.RealmServer.NPCs
+namespace WCell.RealmServer.NPCs.Spawns
 {
 	/// <summary>
 	/// Spawn-information for NPCs
@@ -73,11 +66,6 @@ namespace WCell.RealmServer.NPCs
 		public float Orientation;
 		public AIMovementType MoveType;
 
-		/// <summary>
-		/// The amount of units to be spawned max
-		/// </summary>
-		public int MaxAmount;
-
 		public int RespawnSeconds;
 
 		/// <summary>
@@ -98,14 +86,30 @@ namespace WCell.RealmServer.NPCs
 
 		public uint EventId;
 
-		public bool AutoSpawn = true;
+		/// <summary>
+		/// Whether this Entry spawns automatically (or is spawned by certain events)
+		/// </summary>
+		public bool AutoSpawns = true;
 
-		// addon data
 		public NPCAddonData AddonData
 		{
 			get;
 			set;
 		}
+
+
+		public uint PoolId;
+		public float PoolRespawnProbability;
+
+		private NPCSpawnPoolTemplate m_PoolTemplate;
+
+		[NotPersistent]
+		public NPCSpawnPoolTemplate PoolTemplate
+		{
+			get { return m_PoolTemplate; }
+			private set { m_PoolTemplate = value; }
+		}
+
 
 		[NotPersistent]
 		public NPCEquipmentEntry Equipment;
@@ -262,7 +266,20 @@ namespace WCell.RealmServer.NPCs
 		//    return (int)Utility.Random(CriticalDelayMin, CriticalDelayMax);
 		//}
 
+		/// <summary>
+		/// Finalize this NPCSpawnEntry
+		/// </summary>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
 		public void FinalizeDataHolder()
+		{
+			FinalizeDataHolder(true);
+		}
+
+		/// <summary>
+		/// Finalize this NPCSpawnEntry
+		/// </summary>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
+		public void FinalizeDataHolder(bool addToPool)
 		{
 			if (Entry == null)
 			{
@@ -274,31 +291,15 @@ namespace WCell.RealmServer.NPCs
 				}
 			}
 
-			var entry = Entry;
-
-			foreach (var handler in entry.SpawnTypeHandlers)
-			{
-				if (handler != null)
-				{
-					handler(this);
-				}
-			}
-
-			if (MaxAmount == 0)
-			{
-				MaxAmount = 1;
-			}
-
-			var def = RespawnSeconds != 0 ? RespawnSeconds : NPCMgr.DefaultMinRespawnDelay;
-
+			var respawn = RespawnSeconds != 0 ? RespawnSeconds : NPCMgr.DefaultMinRespawnDelay;
+			AutoSpawns = RespawnSeconds > 0;
 			if (RespawnSecondsMin == 0)
 			{
-				RespawnSecondsMin = def;
+				RespawnSecondsMin = respawn;
 			}
-
 			if (RespawnSecondsMax == 0)
 			{
-				RespawnSecondsMax = Math.Max(def, RespawnSecondsMin);
+				RespawnSecondsMax = Math.Max(respawn, RespawnSecondsMin);
 			}
 
 			if (PhaseMask == 0)
@@ -331,32 +332,44 @@ namespace WCell.RealmServer.NPCs
 				AddonData.InitAddonData(this);
 			}
 
+
 			if (MapId != MapId.End)
 			{
+				// valid map
+				// add to NPCEntry
 				Entry.SpawnEntries.Add(this);
+
+				// add to list of NPCSpawnEntries
 				ArrayUtil.Set(ref NPCMgr.SpawnEntries, SpawnId, this);
 
-				if ((uint)MapId >= NPCMgr.SpawnEntriesByMap.Length)
+				if (addToPool)
 				{
-					ArrayUtil.EnsureSize(ref NPCMgr.SpawnEntriesByMap, (int)MapId + 100);
+					// add to pool
+					AddToPoolTemplate();
 				}
+			}
 
-				var list = NPCMgr.SpawnEntriesByMap[(uint)MapId];
-				if (list == null)
+			// finished initializing, now call the hooks
+			foreach (var handler in Entry.SpawnTypeHandlers)
+			{
+				if (handler != null)
 				{
-					list = NPCMgr.SpawnEntriesByMap[(uint)MapId] = new List<NPCSpawnEntry>(5000);
+					handler(this);
 				}
+			}
+		}
 
-				list.Add(this);
-
-				if (RealmServer.Instance.IsRunning && AutoSpawn)
-				{
-					var rgn = World.GetMap(MapId);
-					if (rgn != null && rgn.NPCsSpawned)
-					{
-						rgn.ExecuteInContext(() => rgn.AddSpawn(this));
-					}
-				}
+		private void AddToPoolTemplate()
+		{
+			if (PoolId != 0 && NPCMgr.SpawnPoolTemplates.TryGetValue(PoolId, out m_PoolTemplate))
+			{
+				// pool already exists
+				m_PoolTemplate.AddEntry(this);
+			}
+			else
+			{
+				// create and register new pool
+				m_PoolTemplate = new NPCSpawnPoolTemplate(this);
 			}
 		}
 

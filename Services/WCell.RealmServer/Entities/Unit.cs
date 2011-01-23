@@ -45,6 +45,7 @@ using WCell.Util.Graphics;
 using WCell.Util.NLog;
 using WCell.Constants.Chat;
 
+
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>

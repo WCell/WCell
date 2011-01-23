@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using WCell.Constants;
 using WCell.Constants.Pets;
+
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util;
 using WCell.Util.Toolshed;
 using WCell.RealmServer.Spells;

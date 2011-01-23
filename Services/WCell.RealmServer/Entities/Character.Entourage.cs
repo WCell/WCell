@@ -15,6 +15,7 @@ using WCell.Constants.Pets;
 using WCell.Util.Graphics;
 using Castle.ActiveRecord;
 
+
 namespace WCell.RealmServer.Entities
 {
 	public partial class Character

@@ -1,6 +1,5 @@
 using System;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -27,7 +26,10 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
     	public event NPCHandler LevelChanged;
     }
+}
 
+namespace WCell.RealmServer.NPCs.Spawns
+{
 	public partial class NPCSpawnEntry
 	{
 		/// <summary>

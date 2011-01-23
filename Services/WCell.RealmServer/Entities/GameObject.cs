@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Entities
 						// TODO: Deactivate respawning
 						if (!IsInWorld)
 						{
-							m_Map.m_gos[EntityId.Low] = null;
+							m_Map.m_goSpawnPoints[EntityId.Low] = null;
 						}
 					}
 				}
@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void OnEnterMap()
 		{
-			ArrayUtil.Set(ref m_Map.m_gos, EntityId.Low, this);
+			m_Map.m_goSpawnPoints.Add(EntityId.Low, this);
 
 			// add Trap
 			if (m_entry.LinkedTrap != null)

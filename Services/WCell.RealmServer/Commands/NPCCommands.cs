@@ -149,10 +149,11 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Cannot use the -c switch without active Target.");
 						return;
 					}
-					var spawnPoint = NPCMgr.SpawnClosestSpawnEntry(trigger.Args.Target);
-					if (spawnPoint != null)
+
+					var point = NPCMgr.SpawnClosestSpawnEntry(trigger.Args.Target);
+					if (point != null)
 					{
-						trigger.Args.Target.TeleportTo(spawnPoint);
+						trigger.Args.Target.TeleportTo(point);
 					}
 					else
 					{
@@ -178,7 +179,7 @@ namespace WCell.RealmServer.Commands
 						}
 						else
 						{
-							trigger.Args.Target.Map.AddSpawn(spawnEntry);
+							trigger.Args.Target.Map.AddNPCSpawnPool(spawnEntry.PoolTemplate);
 
 							if (trigger.Args.Target != null)
 							{

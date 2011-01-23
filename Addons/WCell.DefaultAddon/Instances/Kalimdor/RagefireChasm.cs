@@ -14,6 +14,7 @@ using WCell.RealmServer.AI.Actions.Combat;
 using System.Collections.Generic;
 using System;
 
+
 namespace WCell.Addons.Default.Instances
 {
 	public class RagefireChasm : DungeonInstance

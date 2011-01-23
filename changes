@@ -1,3 +1,2 @@
-- fixed some issues caused by the Region -> Map renaming
-- fixed another quest-relation graph bug
-- auto-accepted quests are automatically added to the player's quest log but the details dialog still show an "Accept" button -> Need to fix SMSG_QUESTGIVER_QUEST_DETAILS
+- overhauled NPC spawn system
+- added loading of spawn pools and implemented them for NPCs (GOs will follow soon)

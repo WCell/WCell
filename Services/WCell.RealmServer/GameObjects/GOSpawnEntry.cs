@@ -68,7 +68,7 @@ namespace WCell.RealmServer.GameObjects
 		/// Time in seconds until this GO will respawn after it was destroyed.
 		/// Value less or equal 0 means, it will not automatically respawn.
 		/// </summary>
-		public int RespawnTime;
+		public int RespawnSeconds;
 
 		/// <summary>
 		/// Time in seconds until this GO will despawn.
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.GameObjects
 
 		public bool WillRespawn
 		{
-			get { return RespawnTime > 0; }
+			get { return RespawnSeconds > 0; }
 		}
 
 		[NotPersistent]
@@ -103,7 +103,7 @@ namespace WCell.RealmServer.GameObjects
 			Orientation = orientation;
 			Scale = scale;
 			Rotations = rotations;
-			RespawnTime = respawnTimeSecs;
+			RespawnSeconds = respawnTimeSecs;
 		}
 
 		public uint LootMoney
@@ -176,11 +176,11 @@ namespace WCell.RealmServer.GameObjects
 				Rotations = new float[GOConstants.MaxRotations];
 			}
 
-			if (RespawnTime < 0)
+			if (RespawnSeconds < 0)
 			{
 				// in UDB, a negative DespawnTime implies that the GO will not auto-spawn and despawn after the negative amount of seconds
 				AutoSpawn = false;
-				DespawnTime = -RespawnTime;
+				DespawnTime = -RespawnSeconds;
 			}
 
 			Entry.Templates.Add(this);

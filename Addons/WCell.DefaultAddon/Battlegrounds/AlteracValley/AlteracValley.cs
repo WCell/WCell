@@ -16,6 +16,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
 
+
 namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 {
 	public class AlteracValley : Battleground

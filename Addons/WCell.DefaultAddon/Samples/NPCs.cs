@@ -5,9 +5,11 @@ using System.Text;
 using WCell.Constants.NPCs;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
+
 using WCell.RealmServer.Global;
 using WCell.RealmServer.NPCs;
 using WCell.Constants.World;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Samples

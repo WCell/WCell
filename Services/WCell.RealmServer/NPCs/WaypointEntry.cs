@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using WCell.Constants.Misc;
 using WCell.RealmServer.Content;
 using WCell.Core.Paths;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Data;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Entities;

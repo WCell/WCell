@@ -20,6 +20,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
+
 namespace WCell.Addons.Default.Instances
 {
     public class ShadowfangKeep : RaidInstance

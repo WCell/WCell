@@ -43,6 +43,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Global;
 using WCell.Constants.Updates;
 
+
 namespace WCell.RealmServer.Quests
 {
 	/// <summary>

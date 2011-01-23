@@ -12,6 +12,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Gossips;
 
+
 namespace WCell.Addons.Default.Samples
 {
 	/// <summary>

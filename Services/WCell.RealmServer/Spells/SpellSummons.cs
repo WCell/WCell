@@ -10,6 +10,7 @@ using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.Graphics;
 
+
 namespace WCell.RealmServer.Spells
 {
 	#region SpellSummonHandlers

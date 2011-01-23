@@ -5,6 +5,7 @@ using System.Text;
 using WCell.Constants;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs.Figurines

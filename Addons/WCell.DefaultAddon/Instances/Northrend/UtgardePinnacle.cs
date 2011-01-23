@@ -14,6 +14,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.AI;
 using WCell.Util.Graphics;
 
+
 ///
 /// Date of creation: 9/1/2009
 ///

@@ -31,9 +31,18 @@
   <Table Name="battlemaster_entry">
     <PrimaryColumn Name="entry"/>
   </Table>
+  
+<!-- NPC Spawns -->
+  <Table Name="pool_template" MainDataHolder="NPCSpawnPoolTemplate">
+    <PrimaryColumn Name="entry"/>
+  </Table>
 
   <Table Name="creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid"/>
+  </Table>
+
+  <Table Name="pool_creature" MainDataHolder="NPCSpawnEntry">
+    <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
   <Table Name="creature_addon" MainDataHolder="NPCSpawnEntry">
@@ -330,9 +339,6 @@
   <Table Name="pool_pool">
     <PrimaryColumn Name="pool_id" />
     <PrimaryColumn Name="mother_pool" />
-  </Table>
-  <Table Name="pool_template">
-    <PrimaryColumn Name="entry" />
   </Table>
   <Table Name="prospecting_loot_template">
     <PrimaryColumn Name="entry" />
