@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
+using WCell.RealmServer.Spells.Auras.Handlers;
 using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
 
@@ -46,6 +48,25 @@ namespace WCell.Addons.Default.Spells.Mage
 
 				powerCostEffect.CopyAffectMaskTo(threatEffect.AffectMask);	// mods threat of frost spells
 				powerCostEffect.ClearAffectMask();							// reduces mana cost of all spells
+			});
+
+			// Blizzard adds a chill effect if caster has Improved Blizzard
+			SpellLineId.MageBlizzard.Apply(spell =>
+			{
+				var triggerEffect = spell.GetEffect(AuraType.PeriodicTriggerSpell);
+				var triggerSpell = triggerEffect.GetTriggerSpell();
+				if (triggerSpell == null)
+				{
+					LogManager.GetCurrentClassLogger().Warn("Blizzard spell has no Trigger effect: " + spell);
+					return;
+				}
+
+				// Blizzard triggers a damage spell on all targets periodically
+				// That effect should also trigger the chill effect, if caster has Improved Blizzard
+				var dmgEffect = triggerSpell.GetEffect(SpellEffectType.SchoolDamage);
+				var chillEffect = triggerSpell.AddEffect(SpellEffectType.Dummy, dmgEffect.ImplicitTargetA);
+				chillEffect.ImplicitTargetB = dmgEffect.ImplicitTargetB;
+				chillEffect.SpellEffectHandlerCreator = (cast, effect) => new ImprovedBlizzardHandler(cast, effect);
 			});
 		}
 
@@ -115,6 +136,35 @@ namespace WCell.Addons.Default.Spells.Mage
 						case SpellId.MageFrostShatterRank3:
 							action.AddBonusCritChance(50);
 							break;
+					}
+				}
+			}
+		}
+		#endregion
+
+		#region Blizzard
+		public class ImprovedBlizzardHandler : SpellEffectHandler
+		{
+			public ImprovedBlizzardHandler(SpellCast cast, SpellEffect effect) : base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var caster = m_cast.CasterUnit;
+				if (caster != null)
+				{
+					var improvedBlizzard = caster.Auras[SpellLineId.MageFrostImprovedBlizzard];
+					if (improvedBlizzard != null)
+					{
+						// Caster has Improved Blizzard
+						var rank = improvedBlizzard.Spell.Rank;
+						var chilledLine = SpellLineId.MageChilled.GetLine();
+						var chilledSpell = chilledLine.GetRank(rank);
+						if (chilledSpell != null)
+						{
+							m_cast.Trigger(chilledSpell, Effect, target);
+						}
 					}
 				}
 			}

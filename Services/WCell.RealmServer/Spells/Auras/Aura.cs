@@ -281,6 +281,30 @@ namespace WCell.RealmServer.Spells.Auras
 				return null;
 			}
 		}
+		/// <summary>
+		/// The SpellCast that caused this Aura (if still present)
+		/// </summary>
+		public SpellCast SpellCast
+		{
+			get
+			{
+				var channel = Controller as SpellChannel;
+				if (channel != null)
+				{
+					return channel.Cast;
+				}
+				else
+				{
+					var caster = CasterUnit;
+					if (caster != null)
+					{
+						return caster.SpellCast;
+					}
+				}
+
+				return null;
+			}
+		}
 
 		public Unit Owner
 		{

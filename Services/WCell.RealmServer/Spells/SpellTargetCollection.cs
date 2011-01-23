@@ -414,7 +414,6 @@ namespace WCell.RealmServer.Spells
 	AttributesExB: Flag0x4
 			 */
 
-			// TODO: Can be beneficial and harmful at the same time
 			targetHandlers[(int)ImplicitTargetType.Duel] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.CanHarmOrHeal);

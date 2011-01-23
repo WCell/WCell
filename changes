@@ -1,2 +1,4 @@
 - new spells to be tested: MageFrostFrostChanneling
-- added new file for Mage frost fixes
+- implemented and tested: MageImprovedBlizzard
+- fixed a problem with PeriodicTriggerSpellHandler
+- fixed timing of controlled/channeled Auras & AreaAuras

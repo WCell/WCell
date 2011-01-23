@@ -1359,7 +1359,7 @@ namespace WCell.RealmServer.Entities
 
 			//var intVal = GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index);
 			var byteVal = m_record.ExploredZones[index];
-			var bit = (zone.ExplorationBit - 1) % 8;
+			var bit = (zone.ExplorationBit - 1) % 8;		// the bit within it's byte
 			if ((byteVal & (1 << bit)) == 0)
 			{
 				if (gainXp)

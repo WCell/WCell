@@ -433,6 +433,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region OnCasted
 		public override void OnCasted(SpellCast cast)
 		{
+			// remove one of the stack of all stacking SpellModifiers (flat & percent)
 			var spell = cast.Spell;
 			if (ModifierWithChargesCount > 0)
 			{

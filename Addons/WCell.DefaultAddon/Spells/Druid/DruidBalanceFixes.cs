@@ -255,7 +255,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// Wrath
 				// "increasing your critical strike chance with Starfire by $48518s1%"
 				spellId = SpellId.EclipseLunar;
-				CurrentlyActiveAura = Owner.Auras.CreateAura(m_aura.CasterReference, spellId, true);
+				CurrentlyActiveAura = Owner.Auras.CreateAndStartAura(m_aura.CasterReference, spellId, true);
 				if (CurrentlyActiveAura != null)
 				{
 					// "$s1 sec cooldown"
@@ -267,7 +267,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				// SF
 				// "chance of increasing damage done by Wrath by $48517s1%"
 				spellId = SpellId.EclipseSolar;
-				CurrentlyActiveAura = Owner.Auras.CreateAura(m_aura.CasterReference, spellId, true);
+				CurrentlyActiveAura = Owner.Auras.CreateAndStartAura(m_aura.CasterReference, spellId, true);
 				if (CurrentlyActiveAura != null)
 				{
 					// "$s1 sec cooldown"

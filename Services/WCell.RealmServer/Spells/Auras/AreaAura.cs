@@ -398,9 +398,10 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			// try to stack/apply aura
-			var aura = target.Auras.CreateAura(m_CasterReference, m_spell, false);
+			var aura = target.Auras.CreateAura(m_CasterReference, m_spell);
 			if (aura != null)
 			{
+				aura.Start(m_controller, false);
 				m_targets.Add(target, aura);
 			}
 		}

@@ -63,8 +63,10 @@ namespace WCell.Core
 			s_log.Debug(Resources.ServerStarting);
 
 			AppUtil.AddApplicationExitHandler(_OnShutdown);
+#if !DEBUG
 			AppDomain.CurrentDomain.UnhandledException +=
 				(sender, args) => LogUtil.FatalException(args.ExceptionObject as Exception, Resources.FatalUnhandledException);
+#endif
 
 			LogUtil.SystemInfoLogger = LogSystemInfo;
 
