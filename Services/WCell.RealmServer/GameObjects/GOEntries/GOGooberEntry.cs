@@ -65,9 +65,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 	    /// <summary>
 	    /// The Id of a PageText object associated with this goober.
 	    /// </summary>
-	    public int PageId
+	    public uint PageId
 	    {
-            get { return Fields[7]; }
+            get { return (uint)Fields[7]; }
 	    }
 
 	    /// <summary>

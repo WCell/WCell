@@ -322,10 +322,15 @@ namespace WCell.RealmServer.Handlers
 		{
 			var pageId = packet.ReadUInt32();
 
+			SendPageText(client.ActiveCharacter, pageId);
+		}
+
+		public static void SendPageText(Character chr, uint pageId)
+		{
 			var entry = PageTextEntry.GetEntry(pageId);
 			if (entry != null)
 			{
-				SendPageText(client.ActiveCharacter, entry);
+				SendPageText(chr, entry);
 			}
 			else
 			{
@@ -333,7 +338,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					outPack.Write("-page is missing-");
 					outPack.Write(0);
-					client.Send(outPack);
+					chr.Send(outPack);
 				}
 			}
 		}

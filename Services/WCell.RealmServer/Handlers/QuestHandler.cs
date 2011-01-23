@@ -951,12 +951,12 @@ namespace WCell.RealmServer.Handlers
 				//var qs = qt.GetStartStatus(qHolder.QuestHolderInfo, client.ActiveCharacter);
 				if (!chr.QuestLog.HasActiveQuest(questid))
 				{
-					var autoAccept = qt.Flags.HasFlag(QuestFlags.AutoAccept);
-					SendDetails(qHolder, qt, chr, !autoAccept);
-					if (autoAccept)
-					{
-						chr.QuestLog.TryAddQuest(qt, qHolder);
-					}
+					//var autoAccept = qt.Flags.HasFlag(QuestFlags.AutoAccept);
+					SendDetails(qHolder, qt, chr, true);
+					//if (autoAccept)
+					//{
+					//    chr.QuestLog.TryAddQuest(qt, qHolder);
+					//}
 				}
 				else
 				{

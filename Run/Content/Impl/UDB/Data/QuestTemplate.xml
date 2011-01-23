@@ -40,10 +40,10 @@
       <Flat Name="Amount" Pattern="ReqItemCount{#}" Offset="1" />
     </NestedArray>
     <NestedArray Name="ObjectInteractions">
-      <Flat Name="TemplateId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
+      <Flat Name="RawId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqCreatureOrGOCount{#}" Offset="1" />
+      <Flat Name="RequiredSpellId" Pattern="ReqSpellCast{#}" Offset="1" />
     </NestedArray>
-    <FlatArray Name="SpellCastObjectives" Pattern="ReqSpellCast{#}" Offset="1" />
     <NestedArray Name="RewardChoiceItems">
       <Flat Name="ItemId" Pattern="RewChoiceItemId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="RewChoiceItemCount{#}" Offset="1" />

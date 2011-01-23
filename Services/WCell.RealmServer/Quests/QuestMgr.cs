@@ -173,15 +173,16 @@ namespace WCell.RealmServer.Quests
 
 		private static void AddSpellCastObjectives()
 		{
-			foreach (var spell in SpellHandler.QuestCompletors)
-			{
-				var questId = (uint)spell.GetEffect(SpellEffectType.QuestComplete).MiscValue;
-				var quest = GetTemplate(questId);
-				if (quest != null)
-				{
-					quest.AddSpellCastObjective(spell.SpellId);
-				}
-			}
+			// Consider this info
+			//foreach (var spell in SpellHandler.QuestCompletors)
+			//{
+			//    var questId = (uint)spell.GetEffect(SpellEffectType.QuestComplete).MiscValue;
+			//    var quest = GetTemplate(questId);
+			//    if (quest != null)
+			//    {
+					
+			//    }
+			//}
 		}
 
 		/// <summary>
@@ -388,12 +389,12 @@ namespace WCell.RealmServer.Quests
 				if (list.Count == 1 && !chr.QuestLog.HasActiveQuest(list[0].Id))
 				{
 					// start a single quest if there is only one and the user did not start it yet
-					var autoAccept = list[0].Flags.HasFlag(QuestFlags.AutoAccept);
-					QuestHandler.SendDetails(qHolder, list[0], chr, !autoAccept);
-					if (autoAccept)
-                    {
-                    	chr.QuestLog.TryAddQuest(list[0], qHolder);
-                    }
+					//var autoAccept = list[0].Flags.HasFlag(QuestFlags.AutoAccept);
+					QuestHandler.SendDetails(qHolder, list[0], chr, true);
+					//if (autoAccept)
+					//{
+					//    chr.QuestLog.TryAddQuest(list[0], qHolder);
+					//}
 				}
 				else
 				{

@@ -824,14 +824,19 @@ namespace WCell.RealmServer.Global
 
 		public void AddNPCSpawnPool(NPCSpawnPool pool)
 		{
-			m_npcSpawnPools.Add(pool.Template.PoolId, pool);
+			if (!m_npcSpawnPools.ContainsKey(pool.Template.PoolId))
+			{
+				m_npcSpawnPools.Add(pool.Template.PoolId, pool);
+			}
 			pool.IsActive = true;
 		}
 
 		internal void RemoveNPCSpawnPool(NPCSpawnPool pool)
 		{
-			m_npcSpawnPools.Remove(pool.Template.PoolId);
-			pool.IsActive = false;
+			if (m_npcSpawnPools.Remove(pool.Template.PoolId))
+			{
+				pool.IsActive = false;
+			}
 		}
 
 		/// <summary>

@@ -149,11 +149,13 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class GooberHandler : GameObjectHandler
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
-			var entry = m_go.Entry as GOGooberEntry;
+			var entry = (GOGooberEntry)m_go.Entry;
+			if (entry.PageId != 0)
+			{
+				QueryHandler.SendPageText(user, entry.PageId);
+			}
 			return true;
 		}
 	}

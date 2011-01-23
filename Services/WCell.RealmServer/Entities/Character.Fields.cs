@@ -103,7 +103,7 @@ namespace WCell.RealmServer.Entities
 		protected GroupUpdateFlags m_groupUpdateFlags = GroupUpdateFlags.None;
 
 		protected GuildMember m_guildMember;
-        protected ArenaTeamMember[] m_arenaTeamMember = new ArenaTeamMember[3];
+		protected ArenaTeamMember[] m_arenaTeamMember = new ArenaTeamMember[3];
 
 		/// <summary>
 		/// All skills of this Character
@@ -115,7 +115,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected TalentCollection m_talents;
 
-	    protected AchievementCollection m_achievements;
+		protected AchievementCollection m_achievements;
 
 		protected PlayerInventory m_inventory;
 
@@ -570,9 +570,9 @@ namespace WCell.RealmServer.Entities
 			set { SetInt32(PlayerFields.WATCHED_FACTION_INDEX, value); }
 		}
 
-        public TitleBitId ChosenTitle
+		public TitleBitId ChosenTitle
 		{
-            get { return (TitleBitId)GetUInt32(PlayerFields.CHOSEN_TITLE); }
+			get { return (TitleBitId)GetUInt32(PlayerFields.CHOSEN_TITLE); }
 			set { SetUInt32(PlayerFields.CHOSEN_TITLE, (uint)value); }
 		}
 
@@ -654,10 +654,10 @@ namespace WCell.RealmServer.Entities
 			internal set { SetUInt32(PlayerFields.GUILDRANK, value); }
 		}
 
-        public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
-        {
-            SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
-        }
+		public void SetArenaTeamInfoField(ArenaTeamSlot slot, ArenaTeamInfoType type, uint value)
+		{
+			SetUInt32((int)PlayerFields.ARENA_TEAM_INFO_1_1 + ((int)slot * (int)ArenaTeamInfoType.ARENA_TEAM_END) + (int)type, value);
+		}
 
 		/// <summary>
 		/// The 3 classmasks of spells to not use require reagents for
@@ -683,11 +683,11 @@ namespace WCell.RealmServer.Entities
 			get { return FactionMgr.Get(Race); }
 		}
 
-        public int ReputationGainModifierPercent { get; set; }
+		public int ReputationGainModifierPercent { get; set; }
 
-        public int KillExperienceGainModifierPercent { get; set; }
+		public int KillExperienceGainModifierPercent { get; set; }
 
-        public int QuestExperienceGainModifierPercent { get; set; }
+		public int QuestExperienceGainModifierPercent { get; set; }
 
 		#region CombatRatings
 
@@ -834,12 +834,14 @@ namespace WCell.RealmServer.Entities
 
 		public float RangedHitChance
 		{
-			get; set;
+			get;
+			set;
 		}
 
 		public override uint Defense
 		{
-			get; internal set;
+			get;
+			internal set;
 		}
 		#endregion
 
@@ -1166,7 +1168,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindSpellToActionButton(uint btnIndex, SpellId spell, bool update = true)
 		{
-			BindActionButton(btnIndex, (uint) spell, 0);
+			BindActionButton(btnIndex, (uint)spell, 0);
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
@@ -1351,17 +1353,28 @@ namespace WCell.RealmServer.Entities
 
 		public void SetZoneExplored(ZoneTemplate zone, bool gainXp)
 		{
-			var index = zone.ExplorationBit >> 5;
-			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize * 4)
+			// index of the field that contains the bit
+			var fieldNo = zone.ExplorationBit >> 5;
+			if (fieldNo >= UpdateFieldMgr.ExplorationZoneFieldSize)
 			{
 				return;
 			}
 
-			//var intVal = GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index);
-			var byteVal = m_record.ExploredZones[index];
-			var bit = (zone.ExplorationBit - 1) % 8;		// the bit within it's byte
-			if ((byteVal & (1 << bit)) == 0)
+			// index of the byte that contains the bit
+			var byteNo = zone.ExplorationBit >> 3;
+
+			// the position of the bit within it's byte
+			var bit = (zone.ExplorationBit) % 8;
+
+			// the mask inside the byte
+			var bitMask = 1 << bit;
+
+			// the value of the byte
+			var byteVal = m_record.ExploredZones[byteNo];
+
+			if ((byteVal & bitMask) == 0)
 			{
+				// not explored yet
 				if (gainXp)
 				{
 					var xp = XpGenerator.GetExplorationXp(zone, this);
@@ -1369,29 +1382,34 @@ namespace WCell.RealmServer.Entities
 					{
 						if (Level >= RealmServerConfiguration.MaxCharacterLevel)
 						{
+							// already at level cap
 							CharacterHandler.SendExplorationExperience(this, zone.Id, 0);
 						}
 						else
 						{
-							GainXp(xp, false);
+							// gain XP
+							GainXp(xp);
 							CharacterHandler.SendExplorationExperience(this, zone.Id, xp);
 						}
 					}
 				}
 
-				var value = (byte)(byteVal | (1 << bit));
-				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + (zone.ExplorationBit >> 5), index % 4, value);
-				m_record.ExploredZones[index] = value;
+				// set the bit
+				var newValue = (byte)(byteVal | bitMask);
+				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + fieldNo, byteNo % 4, newValue);
+				m_record.ExploredZones[byteNo] = newValue;
 
-                foreach (var worldMapOverlay in zone.WorldMapOverlays)
-			    {
-                    Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);   
-			    }
-			}
+				// check possible achievements
+				foreach (var worldMapOverlay in zone.WorldMapOverlays)
+				{
+					Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.ExploreArea, (uint)worldMapOverlay);
+				}
 
-			foreach (var child in zone.ChildZones)
-			{
-				SetZoneExplored(child, gainXp);
+				// explore parent
+				if (zone.ParentZone != null)
+				{
+					SetZoneExplored(zone.ParentZone, gainXp);
+				}
 			}
 		}
 
@@ -1495,13 +1513,13 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-        /// <summary>
-        /// The ArenaTeamMember object of this Character (if it he/she is in an arena team)
-        /// </summary>
-        public ArenaTeamMember[] ArenaTeamMember
-        {
-            get { return m_arenaTeamMember; }
-        }
+		/// <summary>
+		/// The ArenaTeamMember object of this Character (if it he/she is in an arena team)
+		/// </summary>
+		public ArenaTeamMember[] ArenaTeamMember
+		{
+			get { return m_arenaTeamMember; }
+		}
 
 		/// <summary>
 		/// Characters get disposed after Logout sequence completed and
@@ -1896,13 +1914,13 @@ namespace WCell.RealmServer.Entities
 			get { return m_talents; }
 		}
 
-        /// <summary>
-        /// Collection of all this Character's Achievements
-        /// </summary>
-	    public AchievementCollection Achievements
-	    {
-            get { return m_achievements; }
-	    }
+		/// <summary>
+		/// Collection of all this Character's Achievements
+		/// </summary>
+		public AchievementCollection Achievements
+		{
+			get { return m_achievements; }
+		}
 
 		/// <summary>
 		/// All spells known to this chr
@@ -2036,63 +2054,63 @@ namespace WCell.RealmServer.Entities
 			get { return RelationMgr.Instance.HasPassiveRelations(EntityId.Low, CharacterRelationType.GuildInvite); }
 		}
 
-        public bool HasTitle(TitleId titleId)
-        {
-            var titleEntry = TitleMgr.GetTitleEntry(titleId);
-            if(titleEntry == null)
-            {
-                // TO-DO: report about an error
-                return false;
-            }
-            var bitIndex = titleEntry.BitIndex;
+		public bool HasTitle(TitleId titleId)
+		{
+			var titleEntry = TitleMgr.GetTitleEntry(titleId);
+			if (titleEntry == null)
+			{
+				// TO-DO: report about an error
+				return false;
+			}
+			var bitIndex = titleEntry.BitIndex;
 
-            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
-            uint flag = (uint)(1 << (int)bitIndex % 32);
+			var fieldIndexOffset = (int)bitIndex / 32 + (int)PlayerFields._FIELD_KNOWN_TITLES;
+			uint flag = (uint)(1 << (int)bitIndex % 32);
 
-            return ((CharTitlesMask) GetUInt32(fieldIndexOffset)).HasFlag((CharTitlesMask) flag);
-        }
+			return ((CharTitlesMask)GetUInt32(fieldIndexOffset)).HasFlag((CharTitlesMask)flag);
+		}
 
-        public bool HasTitle(TitleBitId titleBitId)
-        {
-            CharacterTitleEntry titleEntry = TitleMgr.GetTitleEntry(titleBitId);
-            if (titleEntry == null)
-                return false;
-            return HasTitle(titleEntry.TitleId);
-        }
+		public bool HasTitle(TitleBitId titleBitId)
+		{
+			CharacterTitleEntry titleEntry = TitleMgr.GetTitleEntry(titleBitId);
+			if (titleEntry == null)
+				return false;
+			return HasTitle(titleEntry.TitleId);
+		}
 
-        public void SetTitle(TitleId titleId, bool lost)
-        {
-            var titleEntry = TitleMgr.GetTitleEntry(titleId);
-            if (titleEntry == null)
-            {
-                log.Warn(string.Format("TitleId: {0} could not be found.", (uint) titleId));
-                return;
-            }
-            var bitIndex = titleEntry.BitIndex;
+		public void SetTitle(TitleId titleId, bool lost)
+		{
+			var titleEntry = TitleMgr.GetTitleEntry(titleId);
+			if (titleEntry == null)
+			{
+				log.Warn(string.Format("TitleId: {0} could not be found.", (uint)titleId));
+				return;
+			}
+			var bitIndex = titleEntry.BitIndex;
 
-            var fieldIndexOffset = (int) bitIndex/32 + (int) PlayerFields._FIELD_KNOWN_TITLES;
-            var flag = (uint)(1 << (int)bitIndex % 32);
+			var fieldIndexOffset = (int)bitIndex / 32 + (int)PlayerFields._FIELD_KNOWN_TITLES;
+			var flag = (uint)(1 << (int)bitIndex % 32);
 
-            if(lost)
-            {
-                if (!HasTitle(titleId))
-                    return;
+			if (lost)
+			{
+				if (!HasTitle(titleId))
+					return;
 
-                var value = GetUInt32(fieldIndexOffset) & ~flag;
-                SetUInt32(fieldIndexOffset, value);
-            }
-            else
-            {
-                if (HasTitle(titleId))
-                    return;
+				var value = GetUInt32(fieldIndexOffset) & ~flag;
+				SetUInt32(fieldIndexOffset, value);
+			}
+			else
+			{
+				if (HasTitle(titleId))
+					return;
 
-                var value = GetUInt32(fieldIndexOffset) | flag;
-                SetUInt32(fieldIndexOffset, value);
-            }
+				var value = GetUInt32(fieldIndexOffset) | flag;
+				SetUInt32(fieldIndexOffset, value);
+			}
 
-            TitleHandler.SendTitleEarned(this, titleEntry, lost);
+			TitleHandler.SendTitleEarned(this, titleEntry, lost);
 
-        }
+		}
 
 		#endregion
 	}
