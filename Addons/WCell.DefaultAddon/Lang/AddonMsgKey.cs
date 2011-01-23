@@ -88,6 +88,7 @@ namespace WCell.Addons.Default.Lang
         GuardAGem,
         GuardSGem,
         GuardGem,
+        GuardFerry,
 
         #endregion
 

@@ -194,6 +194,7 @@
     <Compile Include="Editor\Figurines\WaypointFigurine.cs" />
     <Compile Include="Editor\MapEditor.cs" />
     <Compile Include="Editor\SpawnGossips.cs" />
+    <Compile Include="Gossip\Guard Gossip\Alliance\AllianceTowns.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Darnassus.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Exodar.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Ironforge.cs" />

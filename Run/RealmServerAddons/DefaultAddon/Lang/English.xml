@@ -130,6 +130,9 @@
 	<Item Key="GuardGryphon">
       <Value>Gryphon Master</Value>
 	</Item>
+  <Item Key="GuardFerry">
+    <Value>Rut'Theran Ferry</Value>
+  </Item>
 	<Item Key="GuardHarbor">
       <Value>Stormwind Harbor</Value>
 	</Item>
