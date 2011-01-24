@@ -565,8 +565,8 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write((byte)0); // probably some pvp flag
 				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
-					pckt.WriteUInt(0u);		// choice items
-					pckt.WriteUInt(0u);		// non-choosable items
+					pckt.WriteUInt(0u);		// choice items length
+					pckt.WriteUInt(0u);		// reward items length
 					pckt.WriteUInt(0u);		// money
 					pckt.WriteUInt(0u);		// xp
 				}
