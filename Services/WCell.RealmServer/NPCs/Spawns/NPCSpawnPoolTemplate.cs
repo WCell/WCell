@@ -5,32 +5,16 @@ using System.Text;
 using System.Threading;
 using NLog;
 using WCell.Constants.World;
+using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spawns;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {
 	[DataHolder]
-	public class NPCSpawnPoolTemplate : IDataHolder
+	public class NPCSpawnPoolTemplate : SpawnPoolTemplate<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, IDataHolder
 	{
 		private static int highestId;
-
-		public uint PoolId;
-
-		public int MaxSpawnAmount;
-
-		public int RealMaxSpawnAmount
-		{
-			get { return Math.Min(MaxSpawnAmount, Entries.Count); }
-		}
-
-		[NotPersistent]
-		public bool AutoSpawns = false;
-
-		[NotPersistent]
-		public MapId MapId = MapId.End;
-
-		[NotPersistent]
-		public List<NPCSpawnEntry> Entries = new List<NPCSpawnEntry>(5);
 
 		public NPCSpawnPoolTemplate()
 		{
@@ -59,25 +43,9 @@ namespace WCell.RealmServer.NPCs.Spawns
 			AddEntry(entry);
 		}
 
-		internal void AddEntry(NPCSpawnEntry entry)
+		public override List<NPCSpawnPoolTemplate> PoolTemplatesOnSameMap
 		{
-			if (MapId == MapId.End)
-			{
-				// set map and add to map's set of SpawnPools
-				MapId = entry.MapId;
-				NPCMgr.GetOrCreateSpawnPoolTemplatesByMap(MapId).Add(this);
-			}
-			else if (entry.MapId != MapId)
-			{
-				// make sure, Map is the same
-				LogManager.GetCurrentClassLogger().Warn("Tried to add NPCSpawnEntry \"{0}\" with map = \"{1}\" to a pool that contains Entries of Map \"{2}\"",
-					entry, entry.MapId, MapId);
-				return;
-			}
-
-			// add entry
-			Entries.Add(entry);
-			AutoSpawns = AutoSpawns || entry.AutoSpawns;
+			get { return NPCMgr.GetOrCreateSpawnPoolTemplatesByMap(MapId); }
 		}
 
 		public void FinalizeDataHolder()

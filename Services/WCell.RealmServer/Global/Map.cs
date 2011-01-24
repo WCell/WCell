@@ -22,6 +22,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
+using WCell.RealmServer.Spawns;
 using WCell.Util.Collections;
 using NLog;
 using WCell.Constants;
@@ -91,11 +92,14 @@ namespace WCell.RealmServer.Global
 		public static bool UpdateInactiveAreasDefault = false;
 
 		/// <summary>
-		/// Whether to have NPCs scan inactive nodes for enemies
+		/// Whether to have NPCs in inactive areas scan for enemies
 		/// </summary>
 		[Variable("ScanInactiveAreas")]
 		public static bool ScanInactiveAreasDefault = false;
 
+		/// <summary>
+		/// Whether NPCs can evade and run back to their spawn point when pulled too far away
+		/// </summary>
 		[Variable("NPCsCanEvade")]
 		public static bool CanNPCsEvadeDefault = true;
 
@@ -831,11 +835,31 @@ namespace WCell.RealmServer.Global
 			pool.IsActive = true;
 		}
 
-		internal void RemoveNPCSpawnPool(NPCSpawnPool pool)
+		/// <summary>
+		/// Called by SpawnPool.
+		/// Use SpawnPool.Remove* methods to remove pools.
+		/// </summary>
+		internal void RemoveSpawnPool<T, E, O, POINT, POOL>(POOL pool)
+			where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
+			where E : SpawnEntry<T, E, O, POINT, POOL>
+			where O : WorldObject
+			where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
+			where POOL : SpawnPool<T, E, O, POINT, POOL>
 		{
-			if (m_npcSpawnPools.Remove(pool.Template.PoolId))
+			if (typeof(O) == typeof(NPC))
 			{
-				pool.IsActive = false;
+				if (m_npcSpawnPools.Remove(pool.Template.PoolId))
+				{
+					pool.IsActive = false;
+				}
+			}
+			else if (typeof(O) == typeof(GameObject))
+			{
+				// TODO: GO spawns
+			}
+			else
+			{
+				throw new ArgumentException("Invalid Pool type: " + pool);
 			}
 		}
 
@@ -952,12 +976,12 @@ namespace WCell.RealmServer.Global
 						var count = ObjectCount;
 						SpawnNPCs();
 						AddMessage(() =>
-						           	{
-						           		if (count > 0)
-						           		{
-						           			s_log.Debug("Added {0} NPC Spawnpoints to Map: {1}", ObjectCount - count, this);
-						           		}
-						           	});
+									{
+										if (count > 0)
+										{
+											s_log.Debug("Added {0} NPC Spawnpoints to Map: {1}", ObjectCount - count, this);
+										}
+									});
 						m_npcsSpawned = true;
 					}
 				}
@@ -1687,14 +1711,14 @@ namespace WCell.RealmServer.Global
 			});
 		}
 
-        /// <summary>
-        /// Sends a packet to all characters in the map
-        /// </summary>
-        /// <param name="packet">the packet to send</param>
-        public void SendPacketToMap(RealmPacketOut packet)
-        {
-            CallOnAllCharacters(chr => chr.Send(packet.GetFinalizedPacket()));
-        }
+		/// <summary>
+		/// Sends a packet to all characters in the map
+		/// </summary>
+		/// <param name="packet">the packet to send</param>
+		public void SendPacketToMap(RealmPacketOut packet)
+		{
+			CallOnAllCharacters(chr => chr.Send(packet.GetFinalizedPacket()));
+		}
 		#endregion
 
 		#region Terrain Management
@@ -2457,7 +2481,7 @@ namespace WCell.RealmServer.Global
 				var chr = action.Victim as Character;
 				chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathAtMap, (uint)MapId, 1);
 
-				if(action.Attacker is Character)
+				if (action.Attacker is Character)
 				{
 					var killer = action.Attacker as Character;
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KilledByPlayer, (uint)killer.FactionGroup, 1);

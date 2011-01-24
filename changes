@@ -1,4 +1,1 @@
-- fixed Quests that require GO activation
-- added a check so that spawn pools cannot be added tiwce to the Map
-- added sending of page text packet for goobers that have an associated PageId
-- fixed exploration - it finally works, also thanks to Pepsi!
+- added loading of explored zones information

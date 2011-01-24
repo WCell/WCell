@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Quests
 								{
 									if (chr.IsInWorld)
 									{
-										chr.InitQuests();
+										chr.LoadQuests();
 									}
 								});
 			}

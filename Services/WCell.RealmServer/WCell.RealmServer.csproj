@@ -234,6 +234,10 @@
     <Compile Include="NPCs\Spawns\NPCSpawnPool.cs" />
     <Compile Include="NPCs\Spawns\NPCSpawnPoolTemplate.cs" />
     <Compile Include="Quests\QuestHonor.cs" />
+    <Compile Include="Spawns\SpawnEntry.cs" />
+    <Compile Include="Spawns\SpawnPoint.cs" />
+    <Compile Include="Spawns\SpawnPoolTemplate.cs" />
+    <Compile Include="Spawns\SpawnPool.cs" />
     <Compile Include="Spells\AISpellCastSettings.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
