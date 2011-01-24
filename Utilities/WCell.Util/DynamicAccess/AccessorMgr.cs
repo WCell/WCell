@@ -248,7 +248,8 @@ namespace WCell.Util.DynamicAccess
 
 		private static string NextTypeName(string s)
 		{
-			return "Dynamic" + s.Replace('.','_') + nextTypeId++;
+			s = s.Replace('.', '_').Replace(" ", "_").Replace(',', '_').Replace("`", "_").Replace("[", "_").Replace("]", "_").Replace("=", "_");
+			return "Dynamic" + s + nextTypeId++;
 		}
 
 
@@ -516,7 +517,7 @@ namespace WCell.Util.DynamicAccess
 			var accessor = module.Assembly.CreateInstance(typeName) as IGetterSetter;
 			if (accessor == null)
 			{
-				throw new Exception("Unable to create property accessor.");
+				throw new Exception("Unable to create property accessor for \"" + prop + "\" of type: " + prop.DeclaringType.FullName);
 			}
 			return accessor;
 		}

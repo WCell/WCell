@@ -12,13 +12,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 	/// <summary>
 	/// Represents a SpawnPoint that continuesly spawns NPCs.
 	/// </summary>
-	public class NPCSpawnPoint : SpawnPoint<NPCSpawnPoint, NPCSpawnEntry, NPC, NPCSpawnPool, NPCSpawnPoolTemplate>, IWorldLocation
+	public class NPCSpawnPoint : SpawnPoint<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, IWorldLocation
 	{
-		internal NPCSpawnPoint(NPCSpawnPool pool, NPCSpawnEntry entry)
-		{
-			m_timer = new TimerEntry(SpawnNow);
-			Pool = pool;
-			m_spawnEntry = entry;
-		}
 	}
 }

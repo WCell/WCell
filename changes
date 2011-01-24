@@ -1,0 +1,3 @@
+- fixed spawn system & commit errors (accidentally commited too much last time)
+- Spawn system is now generic and can be easily used to implement GO spawning
+- encapsulated List closure of AIGroup

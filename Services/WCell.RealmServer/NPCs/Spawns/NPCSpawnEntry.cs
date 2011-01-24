@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
@@ -17,7 +18,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnEntry>, INPCDataHolder, IWorldLocation
+	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, INPCDataHolder, IWorldLocation
 	{
 		private static uint highestSpawnId;
 		public static uint GenerateSpawnId()
@@ -57,6 +58,11 @@ namespace WCell.RealmServer.NPCs.Spawns
 		[NotPersistent]
 		public NPCEquipmentEntry Equipment;
 
+		public override NPC SpawnObject(NPCSpawnPoint point)
+		{
+			return Entry.Create(point);
+		}
+
 		private void AddToPoolTemplate()
 		{
 			if (PoolId != 0 && NPCMgr.SpawnPoolTemplates.TryGetValue(PoolId, out m_PoolTemplate))
@@ -71,6 +77,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 			}
 		}
 
+		#region FinalizeDataHolder
 		/// <summary>
 		/// Finalize this NPCSpawnEntry
 		/// </summary>
@@ -163,6 +170,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 				}
 			}
 		}
+		#endregion
 
 		#region Events
 		internal void NotifySpawned(NPC npc)
