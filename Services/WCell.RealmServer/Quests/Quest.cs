@@ -68,9 +68,9 @@ namespace WCell.RealmServer.Quests
 			{
 				KilledNPCs = new uint[template.NPCInteractions.Length];
 			}
-			if (template.SpellCastObjectives != null)
+			if (template.SpellInteractions != null)
 			{
-				CastedSpells = new int[template.SpellCastObjectives.Length];
+				CastedSpells = new int[template.SpellInteractions.Length];
 			}
 			if (template.AreaTriggerObjectives.Length > 0)
 			{
@@ -94,12 +94,12 @@ namespace WCell.RealmServer.Quests
 			{
 				if (UsedGOs == null)
 				{
-					UsedGOs = new uint[template.NPCInteractions.Length];
+					UsedGOs = new uint[template.GOInteractions.Length];
 				}
 
-				for (var i = 0; i < Template.NPCInteractions.Length; i++)
+				for (var i = 0; i < Template.GOInteractions.Length; i++)
 				{
-					var interaction = Template.NPCInteractions[i];
+					var interaction = Template.GOInteractions[i];
 					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)UsedGOs[i]);
 				}
 			}
@@ -290,14 +290,15 @@ namespace WCell.RealmServer.Quests
 
 		public void SignalSpellCasted(SpellId casted)
 		{
+			// TODO: GO & NPC spell casting objectives
 			if (CastedSpells == null)
 			{
 				return;
 			}
 
-			for (var i = 0; i < Template.SpellCastObjectives.Length; i++)
+			for (var i = 0; i < Template.SpellInteractions.Length; i++)
 			{
-				var spell = Template.SpellCastObjectives[i];
+				var spell = Template.SpellInteractions[i];
 				if (spell == casted)
 				{
 					CastedSpells[i]++;

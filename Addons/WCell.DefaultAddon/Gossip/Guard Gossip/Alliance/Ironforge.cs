@@ -73,7 +73,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Alliance
                             convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, -4597.91f, -1091.93f, 7, 7, "Traveling Fisherman"), new GossipMenu(2800)),
                         new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ProfHerbalism), 
                             convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, -4881.9f, -1151.92f, 7, 7, "Ironforge Physician"), new GossipMenu(2801)),
-                            new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ProfInscription),
+                        new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ProfInscription),
                             convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, -4801.72f, -1189.41f, 7, 7, "Ironforge Inscription"), new GossipMenu(13884)),
                         new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ProfLeatherworking), 
                             convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, -4745f, -1027.57f, 7, 7, "Finespindle's Leather Goods"), new GossipMenu(2802)),

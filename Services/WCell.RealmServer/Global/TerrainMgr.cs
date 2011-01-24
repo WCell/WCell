@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Global
 			    Provider = new DefaultTerrainProvider();
 			}
 
-			foreach (var rgn in World.RegionTemplates)
+			foreach (var rgn in World.MapTemplates)
 			{
 				if (rgn != null)
 				{

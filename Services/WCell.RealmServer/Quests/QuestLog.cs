@@ -518,7 +518,7 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Gets the QuestGiver with the given guid from the current Region (in case of a <see cref="WorldObject"/>) or 
+		/// Gets the QuestGiver with the given guid from the current Map (in case of a <see cref="WorldObject"/>) or 
 		/// Inventory (in case of an <see cref="Item">Item</see>)
 		/// </summary>
 		/// <param name="guid"></param>
@@ -528,7 +528,7 @@ namespace WCell.RealmServer.Quests
 			IQuestHolder holder;
 			if (guid.ObjectType != ObjectTypeId.Item)
 			{
-				holder = m_Owner.Region.GetObject(guid) as IQuestHolder;
+				holder = m_Owner.Map.GetObject(guid) as IQuestHolder;
 			}
 			else
 			{

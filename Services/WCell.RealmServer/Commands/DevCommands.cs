@@ -339,9 +339,9 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Loading GOs...");
 						GOMgr.LoadAll();
 
-						if (Region.AutoSpawn)
+						if (Map.AutoSpawn)
 						{
-							RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 						}
 						trigger.Reply("Done.");
 					});
@@ -393,9 +393,9 @@ namespace WCell.RealmServer.Commands
 							}
 						}
 
-						if (Region.AutoSpawn)
+						if (Map.AutoSpawn)
 						{
-							RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 						}
 
 						trigger.Reply("Done.");
@@ -470,7 +470,7 @@ namespace WCell.RealmServer.Commands
 				Init("All");
 				EnglishParamInfo = "[-w]";
 				EnglishDescription = "Loads all static content definitions from DB. "
-						+ "The -w switch will ensure that execution (of the current Region) won't continue until Loading finished.";
+						+ "The -w switch will ensure that execution (of the current Map) won't continue until Loading finished.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -582,9 +582,9 @@ namespace WCell.RealmServer.Commands
 				trigger.Reply("All done - Loading took: " + (DateTime.Now - start));
 				GC.Collect(2, GCCollectionMode.Optimized);
 
-				if (Region.AutoSpawn)
+				if (Map.AutoSpawn)
 				{
-					RegionCommand.SpawnRegionCommand.SpawnAllRegions(trigger);
+					MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 				}
 			}
 		}
@@ -605,7 +605,7 @@ namespace WCell.RealmServer.Commands
 			var chr = (Character)trigger.Args.Target;
 			var pos = chr.Position;
 
-			MovementHandler.SendNewWorld(chr.Client, chr.RegionId, ref pos, chr.Orientation);
+			MovementHandler.SendNewWorld(chr.Client, chr.MapId, ref pos, chr.Orientation);
 			chr.ClearSelfKnowledge();
 		}
 
@@ -653,7 +653,7 @@ namespace WCell.RealmServer.Commands
 					var value = trigger.Text.NextInt();
 					//states.Add(new WorldState(key, value));
 				}
-				MiscHandler.SendInitWorldStates(chr, chr.Region.Id, chr.ZoneId, (uint)area, states.ToArray());
+				MiscHandler.SendInitWorldStates(chr, chr.Map.Id, chr.ZoneId, (uint)area, states.ToArray());
 			}
 		}
 

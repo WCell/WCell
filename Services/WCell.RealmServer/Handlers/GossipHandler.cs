@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Handlers
 			var targetEntityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var target = chr.Region.GetObject(targetEntityId) as Unit;
+			var target = chr.Map.GetObject(targetEntityId) as Unit;
 
 			if (target == null)
 				return;
@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			var chr = client.ActiveCharacter;
-			var worldObject = chr.Region.GetObject(targetEntityId);
+			var worldObject = chr.Map.GetObject(targetEntityId);
 
 			if (worldObject == null)
 				return;

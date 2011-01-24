@@ -208,10 +208,10 @@ namespace WCell.RealmServer.Taxi
 
 				path.PathLength = totalLength;
 				path.PathTime = (uint)((totalLength * 1000) / AirSpeed);
-				var region = path.From.Region;
-				if (region != null && region.FirstTaxiNode == null)
+				var map = path.From.Map;
+				if (map != null && map.FirstTaxiNode == null)
 				{
-					region.FirstTaxiNode = path.From;
+					map.FirstTaxiNode = path.From;
 				}
 			}
 		}
@@ -355,7 +355,7 @@ namespace WCell.RealmServer.Taxi
 			}
 
 			// Cheat check -- can't fly from a node across the continent
-			if (sourceNode.MapId != curChar.Region.Id)
+			if (sourceNode.MapId != curChar.Map.Id)
 			{
 				TaxiHandler.SendActivateTaxiReply(client, TaxiActivateResponse.NoPathNearby);
 				return false;
@@ -496,7 +496,7 @@ namespace WCell.RealmServer.Taxi
 			{
 				if (IsNormalSpeed)
 				{
-					unit.Region.MoveObject(unit, latestVertex.Pos);
+					unit.Map.MoveObject(unit, latestVertex.Pos);
 				}
 				else
 				{
@@ -619,7 +619,7 @@ namespace WCell.RealmServer.Taxi
 
 			var pos = prevPathNode.Pos +
 					  (((nextPathNode.Pos - prevPathNode.Pos) * timeDelta) / nextPathNode.TimeFromPrevious);
-			unit.Region.MoveObject(unit, ref pos);
+			unit.Map.MoveObject(unit, ref pos);
 		}
 	}
 }

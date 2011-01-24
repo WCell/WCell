@@ -401,7 +401,7 @@ namespace WCell.RealmServer.Commands
 				Battleground bg;
 				if (trigger.Text.NextModifiers() == "i" ||
 					chr == null ||
-					(bg = chr.Region as Battleground) == null)
+					(bg = chr.Map as Battleground) == null)
 				{
 					var bgId = trigger.Text.NextEnum(BattlegroundId.End);
 					if (bgId == BattlegroundId.End)

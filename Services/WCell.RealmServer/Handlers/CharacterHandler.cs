@@ -315,7 +315,7 @@ namespace WCell.RealmServer.Handlers
 						packet.Write(record.FacialHair); // 17 + namelength
 						packet.Write((byte)record.Level); // 18 + namelength
 						packet.Write((int)record.Zone); // 22 + namelength
-						packet.Write((int)record.RegionId); // 26 + namelength
+						packet.Write((int)record.MapId); // 26 + namelength
 
 						packet.Write(record.PositionX); // 30 + namelength
 						packet.Write(record.PositionY); // 34 + namelength
@@ -425,8 +425,8 @@ namespace WCell.RealmServer.Handlers
 
 				LogUtil.ErrorException(e,
 									   "Could not create Char-Enum " +
-									   "for Character \"{0}\" (Race: {1}, Class: {2}, Level: {3}, Region: {4}{5}).",
-									   curRecord, curRecord.Race, curRecord.Class, curRecord.Level, curRecord.RegionId,
+									   "for Character \"{0}\" (Race: {1}, Class: {2}, Level: {3}, Map: {4}{5}).",
+									   curRecord, curRecord.Race, curRecord.Class, curRecord.Level, curRecord.MapId,
 									   curRecord.New ? ", [New]" : "");
 			}
 		}
@@ -585,7 +585,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
-				var targetUnit = client.ActiveCharacter.Region.GetObject(target) as Unit;
+				var targetUnit = client.ActiveCharacter.Map.GetObject(target) as Unit;
 				if (targetUnit != null &&
 					(client.ActiveCharacter.CanSee(targetUnit) ||
 					(targetUnit is Character && client.ActiveCharacter.Group == ((Character)targetUnit).Group)))
@@ -654,7 +654,7 @@ namespace WCell.RealmServer.Handlers
 		//<- SMSG_PRE_RESURRECT (Packed GUID)
 		//- Ghost Aura
 		//<- SMSG_INIT_WORLD_STATES
-		//<- MSG_CORPSE_QUERY (only region set)
+		//<- MSG_CORPSE_QUERY (only map set)
 		//- teleport to SH
 		//...
 		//-> MSG_CORPSE_QUERY
@@ -727,7 +727,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var shId = packet.ReadEntityId();
-			var healer = chr.Region.GetObject(shId) as NPC;
+			var healer = chr.Map.GetObject(shId) as NPC;
 
 			if (healer != null && healer.IsSpiritHealer && chr.IsCorpseReclaimable && healer.CheckVendorInteraction(chr))
 			{
@@ -739,7 +739,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_DEATH_RELEASE_LOC, 16))
 			{
-				packet.Write((uint)healer.Region.Id);
+				packet.Write((uint)healer.Map.Id);
 				packet.Write(healer.Position);
 
 				client.Send(packet);
@@ -763,9 +763,9 @@ namespace WCell.RealmServer.Handlers
 				// TODO: instance id
 
 				packet.Write((byte)1);
-				packet.Write((uint)obj.Region.Id);
+				packet.Write((uint)obj.Map.Id);
 				packet.Write(obj.Position);
-				packet.Write((uint)obj.Region.Id);
+				packet.Write((uint)obj.Map.Id);
 
 				client.Send(packet);
 			}
@@ -855,7 +855,7 @@ namespace WCell.RealmServer.Handlers
 								Parameter4 = guid
 							};
 
-						// only enqueue to IO Queue if we are in a region context?
+						// only enqueue to IO Queue if we are in a map context?
 						client.Server.AddMessage(charRenameTask);
 					}
 				}
@@ -1027,17 +1027,17 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var newZoneId = (ZoneId)packet.ReadUInt32();
 			var oldZone = chr.Zone;
-			var newZone = chr.Region.GetZone(chr.Position.X, chr.Position.Y);
+			var newZone = chr.Map.GetZone(chr.Position.X, chr.Position.Y);
 
 			if (newZone == null)
 			{
-				if (chr.Region.MainZoneCount == 1)
+				if (chr.Map.MainZoneCount == 1)
 				{
-					newZone = chr.Region.DefaultZone;
+					newZone = chr.Map.DefaultZone;
 				}
 				else
 				{
-					newZone = chr.Region.GetZone(newZoneId);
+					newZone = chr.Map.GetZone(newZoneId);
 				}
 			}
 			if (newZone != null)
@@ -1186,7 +1186,7 @@ namespace WCell.RealmServer.Handlers
 
 					if (accept)
 					{
-						chr.TeleportTo(request.TargetRegion, request.TargetPos);
+						chr.TeleportTo(request.TargetMap, request.TargetPos);
 						chr.Zone = request.TargetZone;
 					}
 				}
@@ -1343,7 +1343,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleSetActiveMover(IRealmClient client, RealmPacketIn packet)
 		{
 			// TODO: Verify
-			//client.ActiveMover = client.ActiveCharacter.Region.GetObject(packet.ReadEntityId());
+			//client.ActiveMover = client.ActiveCharacter.Map.GetObject(packet.ReadEntityId());
 
 			SendTickQuery(client);
 		}
@@ -1356,7 +1356,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_LOGIN_VERIFY_WORLD, 20))
 			{
-				packet.Write((int)chr.Region.Id);
+				packet.Write((int)chr.Map.Id);
 				packet.Write(chr.Position);
 				packet.WriteFloat(chr.Orientation);
 
@@ -1406,7 +1406,7 @@ namespace WCell.RealmServer.Handlers
 
 			if (client.ActiveCharacter.IsAlive)
 			{
-				var chr = client.ActiveCharacter.Region.GetObject(targetId) as Character;
+				var chr = client.ActiveCharacter.Map.GetObject(targetId) as Character;
 				if (chr != null && client.ActiveCharacter.KnowsOf(chr))
 				{
 					client.ActiveCharacter.Target = chr;
@@ -1432,7 +1432,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(location.Position.X);
 				packet.Write(location.Position.Y);
 				packet.Write(location.Position.Z);
-				packet.Write((uint)location.RegionId);
+				packet.Write((uint)location.MapId);
 				packet.Write((uint)location.ZoneId);
 
 				chr.Client.Send(packet);

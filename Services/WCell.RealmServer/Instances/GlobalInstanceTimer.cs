@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Instances
 				timers[(int)timer.MapId] = timer;
 			}
 
-			var rgns = World.RegionTemplates;
+			var rgns = World.MapTemplates;
 			for (var i = 0; i < rgns.Length; i++)
 			{
 				var rgn = rgns[i];

@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Instances
 			{
 				foreach (var binding in bindings)
 				{
-					if (binding.RegionId == map)
+					if (binding.MapId == map)
 					{
 						return binding;
 					}
@@ -162,11 +162,11 @@ namespace WCell.RealmServer.Instances
 
 		/// <summary>
 		/// Checks the list of stored Raid and Heroic instances and the list of recently run Normal 
-		/// instances for a reference to the given region.
+		/// instances for a reference to the given map.
 		/// </summary>
-		/// <param name="template">The RegionInfo of the Instance in question.</param>
+		/// <param name="template">The MapInfo of the Instance in question.</param>
 		/// <returns>The Instance if found, else null.</returns>
-		public BaseInstance GetActiveInstance(RegionTemplate template)
+		public BaseInstance GetActiveInstance(MapTemplate template)
 		{
 			var chr = Character;
 			if (chr == null)
@@ -243,7 +243,7 @@ namespace WCell.RealmServer.Instances
 			{
 				foreach (var binding in bindings)
 				{
-					listener.SendMessage("Raid {0} #{1}, Until: {1}", binding.RegionId, binding.InstanceId, binding.NextResetTime);
+					listener.SendMessage("Raid {0} #{1}, Until: {1}", binding.MapId, binding.InstanceId, binding.NextResetTime);
 				}
 			}
 		}

@@ -16,6 +16,7 @@
 
 using System;
 using WCell.Constants;
+using WCell.Constants.GameObjects;
 using WCell.Constants.Updates;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
@@ -95,6 +96,7 @@ namespace WCell.RealmServer.UpdateFields
 
 		private static void InitHandlers()
 		{
+			DynamicGOHandlers[(int)GameObjectFields.FLAGS] = WriteGOFlags;
 			DynamicGOHandlers[(int)GameObjectFields.DYNAMIC] = WriteGODynamic;
 			DynamicCorpseHandlers[(int)CorpseFields.DYNAMIC_FLAGS] = WriteCorpseDynFlags;
 			DynamicUnitHandlers[(int)UnitFields.NPC_FLAGS] = WriteNPCFlags;
@@ -114,6 +116,27 @@ namespace WCell.RealmServer.UpdateFields
 				}
 			}
 			packet.Write((uint)flags);
+		}
+
+		private static void WriteGOFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
+		{
+			var go = (GameObject)obj;
+			if (go.Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+			{
+				if (go.CanInteractWith(receiver))
+				{
+					// remove conditional flag, if receiver may use the GO
+					packet.Write((uint) (go.Flags ^ GameObjectFlags.ConditionalInteraction));
+				}
+				else
+				{
+					packet.Write((uint)go.Flags);
+				}
+			}
+			else
+			{
+				packet.Write((uint)go.Flags);	
+			}
 		}
 
 		private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)

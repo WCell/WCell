@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Entities
 			if (findPath)
 			{
 				m_currentQuery = new PathQuery(m_owner.Position, ref destination, m_owner.ContextHandler, OnPathQueryReply);
-				m_owner.Region.QueryDirectPath(m_currentQuery);
+				m_owner.Map.QueryDirectPath(m_currentQuery);
 			}
 			else if (m_owner.CanMove)
 			{
@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Entities
 			if (currentTime >= m_desiredEndMovingTime || delta >= 1f)
 			{
 				// move target directly to the destination
-				m_owner.Region.MoveObject(m_owner, ref m_destination);
+				m_owner.Map.MoveObject(m_owner, ref m_destination);
 				m_moving = false;
 				return true;
 			}
@@ -309,7 +309,7 @@ namespace WCell.RealmServer.Entities
 			var newPosition = currentPos + (m_destination - currentPos)*delta;
 
 			m_lastMoveTime = currentTime;
-			m_owner.Region.MoveObject(m_owner, ref newPosition);
+			m_owner.Map.MoveObject(m_owner, ref newPosition);
 			return false;
 		}
 	}

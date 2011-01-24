@@ -57,7 +57,7 @@ namespace WCell.Constants.World
 			get { return MapId == MapId.End; }
 		}
 
-		public bool IsRegional
+		public bool IsMapal
 		{
 			get { return ZoneId == ZoneId.None; }
 		}

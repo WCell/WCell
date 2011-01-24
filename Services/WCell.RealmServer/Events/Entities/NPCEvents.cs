@@ -1,6 +1,5 @@
 using System;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -27,11 +26,14 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
     	public event NPCHandler LevelChanged;
     }
+}
 
-	public partial class SpawnEntry
+namespace WCell.RealmServer.NPCs.Spawns
+{
+	public partial class NPCSpawnEntry
 	{
 		/// <summary>
-		/// Called when a new NPC of this Spawn has been added to the world (also called on Teleport to another Region).
+		/// Called when a new NPC of this Spawn has been added to the world (also called on Teleport to another Map).
 		/// </summary>
 		public event Action<NPC> Spawned;
 	}

@@ -12,17 +12,17 @@ using WCell.RealmServer.Entities;
 namespace WCell.RealmServer.Global
 {
 
-	public delegate Zone ZoneCreator(Region region, ZoneTemplate template);
+	public delegate Zone ZoneCreator(Map map, ZoneTemplate template);
 
     /// <summary>
-    /// Holds information about a zone, an area within a region.
+    /// Holds information about a zone, an area within a map.
     /// </summary>
     public partial class ZoneTemplate
     {
         internal ZoneTemplate m_ParentZone;
 		internal ZoneId m_parentZoneId;
-		internal RegionTemplate m_RegionTemplate;
-		internal MapId m_RegionId;
+		internal MapTemplate m_MapTemplate;
+		internal MapId m_MapId;
 		public readonly List<ZoneTemplate> ChildZones = new List<ZoneTemplate>(1);
         public readonly List<WorldMapOverlayId> WorldMapOverlays = new List<WorldMapOverlayId>();
 
@@ -38,23 +38,23 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public IWorldLocation Site;
 
-        public MapId RegionId
+        public MapId MapId
         {
-            get { return m_RegionId; }
+            get { return m_MapId; }
     		set
     		{
-    		    m_RegionId = value;
-				m_RegionTemplate = World.GetRegionTemplate(value);
+    		    m_MapId = value;
+				m_MapTemplate = World.GetMapTemplate(value);
     		}
         }
 
-        public RegionTemplate RegionTemplate
+        public MapTemplate MapTemplate
     	{
-    		get { return m_RegionTemplate; }
+    		get { return m_MapTemplate; }
     		set
     		{
-				m_RegionTemplate = value;
-				m_RegionId = value != null ? value.Id : MapId.End;
+				m_MapTemplate = value;
+				m_MapId = value != null ? value.Id : MapId.End;
     		}
     	}
 
@@ -202,9 +202,9 @@ namespace WCell.RealmServer.Global
 			WorldStates = Constants.World.WorldStates.GetStates(Id);
     	}
 
-		public Zone DefaultCreator(Region region, ZoneTemplate templ)
+		public Zone DefaultCreator(Map map, ZoneTemplate templ)
 		{
-			return new Zone(region, templ);
+			return new Zone(map, templ);
 		}
     }
 
@@ -217,7 +217,7 @@ namespace WCell.RealmServer.Global
 			id = GetInt32(rawData, 0);
             var area = new ZoneTemplate {
 				Id = (ZoneId)GetUInt32(rawData, 0),
-				m_RegionId = (MapId)GetUInt32(rawData, 1),
+				m_MapId = (MapId)GetUInt32(rawData, 1),
 				m_parentZoneId = (ZoneId)GetUInt32(rawData, 2),
 				ExplorationBit = GetInt32(rawData, 3),
 				Flags = (ZoneFlags)GetUInt32(rawData, 4),

@@ -4546,7 +4546,7 @@ namespace WCell.Constants.Updates
 				},
 				// GameObjectFields.FLAGS
 				new UpdateField {
-					Flags = UpdateFieldFlags.Public,
+					Flags = UpdateFieldFlags.Dynamic,
 					Group = ObjectTypeId.GameObject,
 					Name = "FLAGS",
 					Offset = 9,

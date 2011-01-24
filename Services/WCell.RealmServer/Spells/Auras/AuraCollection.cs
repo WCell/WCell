@@ -253,7 +253,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Returns the first visible (not passive) Aura with the given Type (if any).
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public Aura this[AuraType type]
@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Returns the first Aura that matches the given Predicate.
 		/// Only looks in active Auras.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public Aura FindFirst(Predicate<Aura> condition)
 		{
 			//foreach (Aura aura in m_nonPassiveAuras)
@@ -413,7 +413,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <returns>null if Spell is not an Aura</returns>
 		public Aura CreateSelf(SpellId id, bool noTimeout = false)
 		{
-			return CreateAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
+			return CreateAndStartAura(m_owner.SharedReference, SpellHandler.Get(id), noTimeout);
 		}
 
 		/// <summary>
@@ -423,17 +423,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <returns>null if Spell is not an Aura</returns>
 		public Aura CreateSelf(Spell spell, bool noTimeout = false)
 		{
-			return CreateAura(m_owner.SharedReference, spell, noTimeout);
-		}
-
-		/// <summary>
-		/// Applies the given spell as a buff or debuff.
-		/// Also initializes the new Aura.
-		/// </summary>
-		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateAura(ObjectReference caster, SpellId spell, bool noTimeout, Item usedItem = null)
-		{
-			return CreateAura(caster, SpellHandler.Get(spell), noTimeout, usedItem);
+			return CreateAndStartAura(m_owner.SharedReference, spell, noTimeout);
 		}
 
 		/// <summary>
@@ -441,7 +431,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Also initializes the new Aura.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
-		public Aura CreateAura(ObjectReference caster, Spell spell, bool noTimeout, Item usedItem = null)
+		public Aura CreateAura(ObjectReference caster, Spell spell, Item usedItem = null)
 		{
 			try
 			{
@@ -476,9 +466,40 @@ namespace WCell.RealmServer.Spells.Auras
 					if (aura != null)
 					{
 						OnCreated(aura);
-						aura.Start(null, noTimeout);
 					}
 					return aura;
+				}
+			}
+			catch (Exception ex)
+			{
+				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Also initializes the new Aura.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura</returns>
+		public Aura CreateAndStartAura(ObjectReference caster, SpellId spell, bool noTimeout, Item usedItem = null)
+		{
+			return CreateAndStartAura(caster, SpellHandler.Get(spell), noTimeout, usedItem);
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Also initializes the new Aura.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
+		public Aura CreateAndStartAura(ObjectReference caster, Spell spell, bool noTimeout, Item usedItem = null)
+		{
+			try
+			{
+				var aura = CreateAura(caster, spell, usedItem);
+				if (aura != null)
+				{
+					aura.Start(null, noTimeout);
 				}
 			}
 			catch (Exception ex)
@@ -1079,7 +1100,7 @@ namespace WCell.RealmServer.Spells.Auras
 					continue;
 				}
 
-				var caster = record.GetCasterInfo(m_owner.Region);
+				var caster = record.GetCasterInfo(m_owner.Map);
 				var handlers = record.Spell.CreateAuraEffectHandlers(caster, m_owner, record.IsBeneficial);
 
 				if (handlers == null)				// couldn't create handlers

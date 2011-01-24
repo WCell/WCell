@@ -130,6 +130,9 @@
 	<Item Key="GuardGryphon">
       <Value>Gryphon Master</Value>
 	</Item>
+  <Item Key="GuardFerry">
+    <Value>Rut'Theran Ferry</Value>
+  </Item>
 	<Item Key="GuardHarbor">
       <Value>Stormwind Harbor</Value>
 	</Item>
@@ -297,6 +300,15 @@
 	</Item>
   <Item Key="NPCTiare">
     <Value>Teleport me to Amber Ledge!</Value>
+  </Item>
+  <Item Key="NPCCurgle1">
+    <Value>Please tell me more about the Hippogryphs</Value>
+  </Item>
+  <Item Key="NPCCurgle2">
+    <Value>Please tell me more about the Gordunni Ogres</Value>
+  </Item>
+  <Item Key="NPCTrenton">
+    <Value>Tell me more, Trenton</Value>
   </Item>
     
   </Items>

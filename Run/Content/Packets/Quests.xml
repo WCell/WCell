@@ -345,7 +345,12 @@
 
     <Simple>
       <Name>Acceptable</Name>
+      <Type>Byte</Type>
+    </Simple>
+    <Simple>
+      <Name>Quest Flags</Name>
       <Type>UInt</Type>
+      <SegmentType>WCell.Constants.Quests.QuestFlags</SegmentType>
     </Simple>
     <Simple>
       <Name>Suggested players</Name>
@@ -353,10 +358,6 @@
     </Simple>
     <Simple>
       <Name>Quest Flags PVP</Name>
-      <Type>Byte</Type>
-    </Simple>
-    <Simple>
-      <Name>Unknown Byte</Name>
       <Type>Byte</Type>
     </Simple>
 
@@ -395,11 +396,19 @@
     </List>
 
     <Simple>
-      <Name>Reward Money</Name>
+      <Name>Reward/Required Money (Negative means you have to pay to do the quest)</Name>
+      <Type>Int</Type>
+    </Simple>
+    <Simple>
+      <Name>Reward XP</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>
       <Name>Bonus Honor</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bonus Honor Multiplier</Name>
       <Type>UInt</Type>
     </Simple>
     <Simple>
@@ -418,7 +427,36 @@
       <Name>Reward Talent Points</Name>
       <Type>UInt</Type>
     </Simple>
-
+    <Simple>
+      <Name>Bonus Arena Points</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <Simple>
+      <Name>Bonus Arena Points Multiplier</Name>
+      <Type>UInt</Type>
+    </Simple>
+    <StaticList Length="5">
+        <Name>Reward Reputation Factions</Name>
+        <Simple>
+           <Name>Reward Reputation Faction</Name>
+           <Type>UInt</Type>
+           <SegmentType>WCell.Constants.Factions.FactionId</SegmentType>
+        </Simple>
+    </StaticList>
+    <StaticList Length="5">
+        <Name>Reward Reputation Value Ids</Name>
+        <Simple>
+	   <Type>Int</Type>
+           <Name>Reward Reputation Value Id</Name>
+        </Simple>
+    </StaticList>
+    <StaticList Length="5">
+        <Name>Reward Reputation Values</Name>
+        <Simple>
+	   <Type>Int</Type>
+           <Name>Reward Reputation Value</Name>
+        </Simple>
+    </StaticList>
     <List>
       <Name>Emote Count</Name>
       <Type>UInt</Type>

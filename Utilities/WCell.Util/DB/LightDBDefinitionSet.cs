@@ -156,6 +156,7 @@ namespace WCell.Util.DB
 
 			foreach (var tableDef in cfg.Tables)
 			{
+				if (tableDef.Name == null) throw new ArgumentNullException("tableDef.Name", "Did you mis-type the Name attribute of the table with MainDataHolder = " + tableDef.MainDataHolder + " ?");
 				if (TableDefinitionMap.ContainsKey(tableDef.Name))
 				{
 					throw new DataHolderException("Duplicate Table definition \"{0}\" in File {1}", tableDef.Name, file);
@@ -307,8 +308,8 @@ namespace WCell.Util.DB
 							if (reader == null)
 							{
 								throw new DataHolderException("Invalid Type \"" + primaryCol.TypeName
-															  + "\" for PrimaryColumn \"" + primaryCol.Name + "\" in definition for Table: " +
-															  table);
+															  + "\" for PrimaryColumn \"" + primaryCol.Name + "\" in definition for Table: " + table + " - " +
+															  "You must explicitely define the TypeName attribute inside the PrimaryColumn node, if it is only an additional table for a DataHolder!");
 							}
 							var col = new SimpleDataColumn(primaryCol.Name, reader, 0) { IsPrimaryKey = true };
 							col.FieldList.Add(proxyField);

@@ -88,6 +88,7 @@ namespace WCell.Addons.Default.Lang
         GuardAGem,
         GuardSGem,
         GuardGem,
+        GuardFerry,
 
         #endregion
 
@@ -118,6 +119,9 @@ namespace WCell.Addons.Default.Lang
         #endregion
 
         NPCTiare,
+        NPCCurgle1,
+        NPCCurgle2,
+        NPCTrenton,
 		End
 	}
 }

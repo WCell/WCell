@@ -41,7 +41,7 @@ namespace WCell.Tools.Domi.Output
 
 		private static void WriteTiers()
 		{
-			using (var writer = new IndentTextWriter(TierFile))
+			//using (var writer = new IndentTextWriter(TierFile))
 			{
 				
 			}

@@ -156,9 +156,9 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Some default region
+		/// Some default map
 		/// </summary>
-		public static Region Kalimdor
+		public static Map Kalimdor
 		{
 			get
 			{
@@ -168,9 +168,9 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Some default region
+		/// Some default map
 		/// </summary>
-		public static Region EasternKingdoms
+		public static Map EasternKingdoms
 		{
 			get
 			{
@@ -357,12 +357,12 @@ namespace WCell.RealmServer.Tests
 		}
 
 		/// <summary>
-		/// Adds the given object to the default region at a default location
+		/// Adds the given object to the default map at a default location
 		/// </summary>
-		public static void AddToDefaultRegion(WorldObject obj)
+		public static void AddToDefaultMap(WorldObject obj)
 		{
-			var region = Kalimdor;
-			region.AddMessageAndWait(new Message(() => {
+			var map = Kalimdor;
+			map.AddMessageAndWait(new Message(() => {
 				Kalimdor.AddObjectNow(obj, ref m_defaultPos);
 				if (obj is Character)
 				{
@@ -370,7 +370,7 @@ namespace WCell.RealmServer.Tests
 				}
 			}));
 
-			Assert.AreEqual(obj.Region, Kalimdor);
+			Assert.AreEqual(obj.Map, Kalimdor);
 			//Assert.IsTrue(obj.IsInWorld);
 		}
 
@@ -381,7 +381,7 @@ namespace WCell.RealmServer.Tests
 		{
 			if (!obj.IsInWorld)
 			{
-				AddToDefaultRegion(obj);
+				AddToDefaultMap(obj);
 			}
 		}
 

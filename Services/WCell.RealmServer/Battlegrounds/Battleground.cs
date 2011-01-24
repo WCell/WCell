@@ -12,7 +12,7 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Battlegrounds
 {
-	public abstract class Battleground : InstancedRegion, IBattlegroundRange
+	public abstract class Battleground : InstancedMap, IBattlegroundRange
 	{
 		/// <summary>
 		/// Whether to add to a Team even if it already has more players
@@ -123,7 +123,7 @@ namespace WCell.RealmServer.Battlegrounds
 			protected set
 			{
 				_winner = value;
-				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)RegionId ,1));
+				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)MapId ,1));
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace WCell.RealmServer.Battlegrounds
 		}
 
 		/// <summary>
-		/// Whether to start the Shutdown timer when <see cref="Region.PlayerCount"/> drops below the minimum
+		/// Whether to start the Shutdown timer when <see cref="Map.PlayerCount"/> drops below the minimum
 		/// </summary>
 		public bool CanShutdown { get; set; }
 
@@ -445,7 +445,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// and adds them to the Battleground.
 		/// </summary>
 		/// <param name="amount"></param>
-		/// <remarks>Region-Context required. Cannot be used once the Battleground is over.</remarks>
+		/// <remarks>Map-Context required. Cannot be used once the Battleground is over.</remarks>
 		/// <returns>The amount of remaining players</returns>
 		public int ProcessPendingPlayers(BattlegroundSide side, int amount)
 		{
@@ -540,12 +540,12 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnStart()
 		{
-            MiscHandler.SendPlaySoundToRegion(this, (uint)BattlegroundSounds.BgStart);
+            MiscHandler.SendPlaySoundToMap(this, (uint)BattlegroundSounds.BgStart);
 		}
 
 		protected virtual void OnFinish(bool disposing)
 		{
-            MiscHandler.SendPlaySoundToRegion(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
+            MiscHandler.SendPlaySoundToMap(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
                                                                                            : (uint)BattlegroundSounds.AllianceWins);
         }
 
@@ -558,9 +558,9 @@ namespace WCell.RealmServer.Battlegrounds
 		#region Overrides
 		public virtual bool HasQueue { get { return true; } }
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
+			base.InitMap();
 			BattlegroundMgr.GetInstances(Template.Id).Add(InstanceId, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
@@ -672,7 +672,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.RegionTemplate.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (Template.MapTemplate.MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}

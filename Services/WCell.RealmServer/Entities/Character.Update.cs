@@ -31,7 +31,7 @@ namespace WCell.RealmServer.Entities
 
 	/// <summary>
 	/// TODO: Move Update and BroadcastValueUpdate for Character together, since else we sometimes 
-	/// have to fetch everything in our environment twice in a single region update
+	/// have to fetch everything in our environment twice in a single map update
 	/// </summary>
 	public partial class Character
 	{
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Entities
 		private HashSet<Character> m_observers = new HashSet<Character>();
 
 		/// <summary>
-		/// Messages to be processed by the region after updating of the environment (sending of Update deltas etc).
+		/// Messages to be processed by the map after updating of the environment (sending of Update deltas etc).
 		/// </summary>
 		private readonly LockfreeQueue<Action> m_environmentQueue = new LockfreeQueue<Action>();
 
@@ -73,8 +73,8 @@ namespace WCell.RealmServer.Entities
 
 		#region Messages
 		/// <summary>
-		/// Will be executed by the current region we are currently in or enqueued and executed,
-		/// once we re-enter a region
+		/// Will be executed by the current map we are currently in or enqueued and executed,
+		/// once we re-enter a map
 		/// </summary>
 		public void AddPostUpdateMessage(Action action)
 		{
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Entities
 		/// Don't manipulate this collection - Use <see cref="AddObserver"/> instead.
 		/// Might be null.
 		/// </summary>
-		/// <remarks>Requires region context.</remarks>
+		/// <remarks>Requires map context.</remarks>
 		public HashSet<Character> Observers
 		{
 			get { return m_observers; }
@@ -127,9 +127,9 @@ namespace WCell.RealmServer.Entities
 		#region World Knowledge
 		/// <summary>
 		/// Clears known objects and leads to resending of the creation packet
-		/// during the next Region-Update.
+		/// during the next Map-Update.
 		/// This is only needed for teleporting or body-transfer.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void ClearSelfKnowledge()
 		{

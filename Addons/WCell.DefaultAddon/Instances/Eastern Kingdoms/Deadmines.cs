@@ -15,6 +15,7 @@ using WCell.RealmServer.AI.Actions.Combat;
 using System;
 using WCell.Util.Graphics;
 
+
 namespace WCell.Addons.Default.Instances
 {
 	public class Deadmines : RaidInstance
@@ -61,7 +62,7 @@ namespace WCell.Addons.Default.Instances
 			};
 			sneedEntry.Died += sneed =>
 			{
-				var instance = sneed.Region as Deadmines;
+				var instance = sneed.Map as Deadmines;
 				if (instance != null)
 				{
 					GameObject door = instance.sneedDoor;
@@ -85,7 +86,7 @@ namespace WCell.Addons.Default.Instances
 
 			gilnidEntry.Died += gilnid =>
 			{
-				var instance = gilnid.Region as Deadmines;
+				var instance = gilnid.Map as Deadmines;
 				if (instance != null)
 				{
 					GameObject door = instance.gilnidDoor;
@@ -124,7 +125,7 @@ namespace WCell.Addons.Default.Instances
 			{
 				rhahkzorDoorEntry.Activated += go =>
 				{
-					var instance = go.Region as Deadmines;
+					var instance = go.Map as Deadmines;
 					if (instance != null && instance.rhahkzorDoor == null)
 					{
 						// set the instance's Door object after the Door spawned
@@ -139,11 +140,11 @@ namespace WCell.Addons.Default.Instances
 			{
 				sneedDoorEntry.Activated += go =>
 				{
-					var instance = go.Region as Deadmines;
+					var instance = go.Map as Deadmines;
 					if (instance != null)
 					{
 						// set the instance's Door object after the Door spawned
-						instance.sneedDoor = go.Region.GetNearestGameObject(ref sneedDoorCord, (GOEntryId)sneedDoorEntry.Id);
+						instance.sneedDoor = go.Map.GetNearestGameObject(ref sneedDoorCord, (GOEntryId)sneedDoorEntry.Id);
 					}
 				};
 			}
@@ -154,11 +155,11 @@ namespace WCell.Addons.Default.Instances
 			{
 				gilnidDoorEntry.Activated += go =>
 				{
-					var instance = go.Region as Deadmines;
+					var instance = go.Map as Deadmines;
 					if (instance != null)
 					{
 						// set the instance's Door object after the Door spawned
-						instance.gilnidDoor = go.Region.GetNearestGameObject(ref gilnidDoorCord, (GOEntryId)gilnidEntry.Id);
+						instance.gilnidDoor = go.Map.GetNearestGameObject(ref gilnidDoorCord, (GOEntryId)gilnidEntry.Id);
 					}
 				};
 			}
@@ -208,7 +209,7 @@ namespace WCell.Addons.Default.Instances
 
 		public override void OnDeath()
 		{
-			var instance = m_owner.Region as Deadmines;
+			var instance = m_owner.Map as Deadmines;
 
 			if (instance != null)
 			{

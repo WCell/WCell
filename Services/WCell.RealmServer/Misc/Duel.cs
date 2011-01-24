@@ -19,7 +19,7 @@ namespace WCell.RealmServer.Misc
 {
 	/// <summary>
 	/// Represents the progress of a duel between 2 Characters.
-	/// Most methods require the context of the Flag's region
+	/// Most methods require the context of the Flag's map
 	/// </summary>
 	public class Duel : IDisposable, IUpdatable
 	{
@@ -98,7 +98,7 @@ namespace WCell.RealmServer.Misc
 				// can't duel with someone who is already dueling
 				return SpellFailedReason.TargetDueling;
 			}
-			if (challenger.Region is Battleground)
+			if (challenger.Map is Battleground)
 			{
 				// can't duel in Battlegrounds
 				return SpellFailedReason.NotHere;
@@ -131,7 +131,7 @@ namespace WCell.RealmServer.Misc
 		private bool m_challengerInRange;
 		private bool m_rivalInRange;
 		private GameObject m_flag;
-		private Region m_region;
+		private Map m_Map;
 
 		/// <summary>
 		/// Creates a new duel between the 2 parties.
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Misc
 		{
 			m_challenger = challenger;
 			m_rival = rival;
-			m_region = challenger.Region;
+			m_Map = challenger.Map;
 			m_startDelay = startDelay;
 			m_cancelDelay = cancelDelay;
 
@@ -232,7 +232,10 @@ namespace WCell.RealmServer.Misc
 		/// </summary>
 		void Initialize()
 		{
-			m_flag = GameObject.Create(GOEntryId.DuelFlag);
+			// place flag in between the two
+			var pos = ((m_challenger.Position + m_rival.Position) / 2);
+
+			m_flag = GameObject.Create(GOEntryId.DuelFlag, new WorldLocationStruct(m_Map, pos));
 			m_flag.Phase = m_challenger.Phase;
 			if (m_flag == null)
 			{
@@ -249,16 +252,9 @@ namespace WCell.RealmServer.Misc
 				m_flag.Faction = m_challenger.Faction;
 				m_flag.ScaleX = m_challenger.ScaleX;
 				m_flag.ParentRotation4 = 1;
+				m_flag.Orientation = m_challenger.Orientation;
 
-				m_region.AddMessage(new Message(() =>
-				{
-					if (m_flag == null) return;
-					m_flag.Orientation = m_challenger.Orientation;
-					m_flag.Position = ((m_challenger.Position + m_rival.Position) / 2);
-					m_region.AddObjectNow(m_flag);
-				}));
-
-				m_region.AddMessage(new Message(() => DuelHandler.SendRequest(m_flag, m_challenger, m_rival)));
+				m_Map.AddMessage(new Message(() => DuelHandler.SendRequest(m_flag, m_challenger, m_rival)));
 				m_challenger.SetEntityId(PlayerFields.DUEL_ARBITER, m_flag.EntityId);
 				m_rival.SetEntityId(PlayerFields.DUEL_ARBITER, m_flag.EntityId);
 			}
@@ -276,14 +272,14 @@ namespace WCell.RealmServer.Misc
 			DuelHandler.SendCountdown(m_challenger, delay);
 			DuelHandler.SendCountdown(m_rival, delay);
 
-			m_region.RegisterUpdatableLater(this);
+			m_Map.RegisterUpdatableLater(this);
 			m_accepted = true;
 		}
 
 		/// <summary>
 		/// Starts the Duel (automatically called after countdown)
 		/// </summary>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Start()
 		{
 			m_active = true;
@@ -301,7 +297,7 @@ namespace WCell.RealmServer.Misc
 		/// Ends the duel with the given win-condition and the given loser
 		/// </summary>
 		/// <param name="loser">The opponent that lost the match or null if its a draw</param>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Finish(DuelWin win, Character loser)
 		{
 			if (IsActive)
@@ -449,10 +445,10 @@ namespace WCell.RealmServer.Misc
 			DuelHandler.SendComplete(m_challenger, m_rival, m_active);
 
 			m_active = false;
-			var region = m_region;
-			region.ExecuteInContext(() =>
+			var map = m_Map;
+			map.ExecuteInContext(() =>
 			{
-				region.UnregisterUpdatable(this);
+				map.UnregisterUpdatable(this);
 
 				if (m_challenger != null)
 				{
@@ -482,7 +478,7 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// Disposes the duel (called automatically when duel ends)
 		/// </summary>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		public void Dispose()
 		{
 			if (m_flag != null)

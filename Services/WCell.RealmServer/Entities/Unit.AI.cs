@@ -7,6 +7,7 @@ using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util;
 using WCell.RealmServer.AI.Actions;
 using WCell.Constants.Spells;
@@ -28,7 +29,7 @@ namespace WCell.RealmServer.Entities
 
 		public abstract LinkedList<WaypointEntry> Waypoints { get; }
 
-		public abstract SpawnPoint SpawnPoint { get; }
+		public abstract NPCSpawnPoint SpawnPoint { get; }
 
 		public bool CanBeAggroedBy(Unit target)
 		{

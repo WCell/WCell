@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Entities
 			m_passengers = new List<Unit>();
 		}
 
-		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOSpawn templ)
+		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOSpawnEntry templ)
 		{
 			base.Init(entry, templ);
 
@@ -235,7 +235,7 @@ namespace WCell.RealmServer.Entities
 		{
 			base.Update(dt);
 
-			// no transports moving across regions
+			// no transports moving across maps
 			//if (m_transportPathVertices == null || m_transportPathVertices.Count <= 1 || m_mapIds.Length > 1)
 			//    return;
 
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var newMapId = m_CurrentPathVertex.Value.MapId;
 
-			if (newMapId != Region.Id || m_CurrentPathVertex.Value.Teleport)
+			if (newMapId != Map.Id || m_CurrentPathVertex.Value.Teleport)
 			{
 				//foreach (Unit unit in Passengers)
 				//{

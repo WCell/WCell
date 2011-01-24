@@ -31,12 +31,21 @@
   <Table Name="battlemaster_entry">
     <PrimaryColumn Name="entry"/>
   </Table>
+  
+<!-- NPC Spawns -->
+  <Table Name="pool_template" MainDataHolder="NPCSpawnPoolTemplate">
+    <PrimaryColumn Name="entry"/>
+  </Table>
 
-  <Table Name="creature" MainDataHolder="SpawnEntry">
+  <Table Name="creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid"/>
   </Table>
 
-  <Table Name="creature_addon" MainDataHolder="SpawnEntry">
+  <Table Name="pool_creature" MainDataHolder="NPCSpawnEntry">
+    <PrimaryColumn Name="guid" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="creature_addon" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -134,7 +143,7 @@
     <PrimaryColumn Name="entry"/>
   </Table>
 
-  <Table Name="game_event_creature" MainDataHolder="SpawnEntry">
+  <Table Name="game_event_creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -143,7 +152,7 @@
     <PrimaryColumn Name="quest"/>
   </Table>
 
-  <Table Name="game_event_gameobject" MainDataHolder="GOSpawn">
+  <Table Name="game_event_gameobject" MainDataHolder="GOSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -331,9 +340,6 @@
     <PrimaryColumn Name="pool_id" />
     <PrimaryColumn Name="mother_pool" />
   </Table>
-  <Table Name="pool_template">
-    <PrimaryColumn Name="entry" />
-  </Table>
   <Table Name="prospecting_loot_template">
     <PrimaryColumn Name="entry" />
     <PrimaryColumn Name="item" />
@@ -345,6 +351,14 @@
   </Table>
   <Table Name="quest_template">
     <PrimaryColumn Name="entry" />
+  </Table>
+  <Table Name="quest_poi" MainDataHolder="QuestPOI">
+    <PrimaryColumn Name="questId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
+  </Table>
+  <Table Name="quest_poi_points" MainDataHolder="QuestPOIPoints">
+    <PrimaryColumn Name="questId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
   </Table>
   <Table Name="reference_loot_template">
     <PrimaryColumn Name="entry" />

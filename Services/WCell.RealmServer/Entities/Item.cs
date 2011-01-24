@@ -1015,7 +1015,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets equipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnEquip()
 		{
@@ -1118,7 +1118,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets unequipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnUnEquip(InventorySlot slot)
 		{
@@ -1274,6 +1274,7 @@ namespace WCell.RealmServer.Entities
 		protected internal virtual void DoDestroy()
 		{
 			var record = m_record;
+			m_owner.Inventory.OnAmountChanged(this, -Amount);
 			if (m_record != null)
 			{
 				RealmServer.Instance.AddMessage(() =>

@@ -376,11 +376,11 @@ namespace WCell.RealmServer.Res {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to An entity attempted to move to an invalid/non-existent region! Target region: {0} Entity: {1}.
+        ///   Looks up a localized string similar to An entity attempted to move to an invalid/non-existent map! Target map: {0} Entity: {1}.
         /// </summary>
-        internal static string InvalidRegionMove {
+        internal static string InvalidMapMove {
             get {
-                return ResourceManager.GetString("InvalidRegionMove", resourceCulture);
+                return ResourceManager.GetString("InvalidMapMove", resourceCulture);
             }
         }
         
@@ -484,7 +484,7 @@ namespace WCell.RealmServer.Res {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} regions loaded in {1}ms.
+        ///   Looks up a localized string similar to {0} maps loaded in {1}ms.
         /// </summary>
         internal static string MapsLoaded {
             get {
@@ -538,7 +538,7 @@ namespace WCell.RealmServer.Res {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Partitioned and started {0} regions in {1}ms.
+        ///   Looks up a localized string similar to Partitioned and started {0} maps in {1}ms.
         /// </summary>
         internal static string PartitionStartComplete {
             get {
@@ -547,47 +547,47 @@ namespace WCell.RealmServer.Res {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region context required. Add a message to the region to ensure the action is performed within the Region&apos;s context: {0}.
+        ///   Looks up a localized string similar to Map context required. Add a message to the map to ensure the action is performed within the Map&apos;s context: {0}.
         /// </summary>
-        internal static string RegionContextNeeded {
+        internal static string MapContextNeeded {
             get {
-                return ResourceManager.GetString("RegionContextNeeded", resourceCulture);
+                return ResourceManager.GetString("MapContextNeeded", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region context prohibited. Make sure to NOT call this method from within the region context due to deadlock risks or blocking code: {0}.
+        ///   Looks up a localized string similar to Map context prohibited. Make sure to NOT call this method from within the map context due to deadlock risks or blocking code: {0}.
         /// </summary>
-        internal static string RegionContextProhibited {
+        internal static string MapContextProhibited {
             get {
-                return ResourceManager.GetString("RegionContextProhibited", resourceCulture);
+                return ResourceManager.GetString("MapContextProhibited", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region {0} now running!.
+        ///   Looks up a localized string similar to Map {0} now running!.
         /// </summary>
-        internal static string RegionStarted {
+        internal static string MapStarted {
             get {
-                return ResourceManager.GetString("RegionStarted", resourceCulture);
+                return ResourceManager.GetString("MapStarted", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region {0} stopped!.
+        ///   Looks up a localized string similar to Map {0} stopped!.
         /// </summary>
-        internal static string RegionStopped {
+        internal static string MapStopped {
             get {
-                return ResourceManager.GetString("RegionStopped", resourceCulture);
+                return ResourceManager.GetString("MapStopped", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Region is calling method while updating. Make sure to NOT call this and similar methods while a Region is updating: {0}.
+        ///   Looks up a localized string similar to Map is calling method while updating. Make sure to NOT call this and similar methods while a Map is updating: {0}.
         /// </summary>
-        internal static string RegionUpdating {
+        internal static string MapUpdating {
             get {
-                return ResourceManager.GetString("RegionUpdating", resourceCulture);
+                return ResourceManager.GetString("MapUpdating", resourceCulture);
             }
         }
         

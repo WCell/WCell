@@ -130,6 +130,10 @@ namespace WCell.RealmServer.Quests
 		{
 			return id < Templates.Length ? Templates[id] : null;
 		}
+
+
+        public static Dictionary<uint, List<QuestPOI>> POIs = new Dictionary<uint, List<QuestPOI>>();
+
 		#endregion
 
 		#region Quest initialization and loading
@@ -155,11 +159,19 @@ namespace WCell.RealmServer.Quests
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();
-				CreateGraph();
+                ContentMgr.Load<QuestPOI>();
+                ContentMgr.Load<QuestPOIPoints>();
+				CreateQuestRelationGraph();
 				Loaded = true;
 
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();
+
+				if (ItemMgr.Loaded)
+				{
+					ItemMgr.EnsureQuestRelations();
+				}
+				Loaded = true;
 
 				log.Debug("{0} Quests loaded.", _questCount);
 			}
@@ -168,24 +180,32 @@ namespace WCell.RealmServer.Quests
 
 		private static void AddSpellCastObjectives()
 		{
-			foreach (var spell in SpellHandler.QuestCompletors)
-			{
-				var questId = (uint)spell.GetEffect(SpellEffectType.QuestComplete).MiscValue;
-				var quest = GetTemplate(questId);
-				if (quest != null)
-				{
-					quest.AddSpellCastObjective(spell.SpellId);
-				}
-			}
+			// Consider this info
+			//foreach (var spell in SpellHandler.QuestCompletors)
+			//{
+			//    var questId = (uint)spell.GetEffect(SpellEffectType.QuestComplete).MiscValue;
+			//    var quest = GetTemplate(questId);
+			//    if (quest != null)
+			//    {
+					
+			//    }
+			//}
 		}
 
-		private static void CreateGraph()
+		/// <summary>
+		/// Creates the graph of all quests and their relations
+		/// </summary>
+		private static void CreateQuestRelationGraph()
 		{
 			var groups = new Dictionary<int, List<uint>>();
 			foreach (var quest in Templates)
 			{
 				if (quest != null)
 				{
+					if (quest.Id == 4641)
+					{
+						quest.ToString();
+					}
 					if (quest.ExclusiveGroup != 0)
 					{
 						groups.GetOrCreate(quest.ExclusiveGroup).Add(quest.Id);
@@ -224,6 +244,15 @@ namespace WCell.RealmServer.Quests
 						else
 						{
 							quest.ReqAllActiveQuests.Add((uint)-quest.PreviousQuestId);
+						}
+					}
+					if (quest.FollowupQuestId != 0)
+					{
+						// follow up quest requires this one to be finished before it can be taken
+						var followupQuest = GetTemplate(quest.FollowupQuestId);
+						if (followupQuest != null && !followupQuest.ReqAllFinishedQuests.Contains(quest.Id))
+						{
+							followupQuest.ReqAllFinishedQuests.Add(quest.Id);
 						}
 					}
 				}
@@ -278,7 +307,7 @@ namespace WCell.RealmServer.Quests
 								{
 									if (chr.IsInWorld)
 									{
-										chr.InitQuests();
+										chr.LoadQuests();
 									}
 								});
 			}
@@ -367,9 +396,12 @@ namespace WCell.RealmServer.Quests
 				if (list.Count == 1 && !chr.QuestLog.HasActiveQuest(list[0].Id))
 				{
 					// start a single quest if there is only one and the user did not start it yet
-					QuestHandler.SendDetails(qHolder, list[0], chr, true);
-                    if (list[0].Flags.HasFlag(QuestFlags.AutoAccept))
-                        chr.QuestLog.TryAddQuest(list[0], qHolder);
+					var autoAccept = list[0].Flags.HasFlag(QuestFlags.AutoAccept);
+					QuestHandler.SendDetails(qHolder, list[0], chr, !autoAccept);
+					if (autoAccept)
+					{
+					    chr.QuestLog.TryAddQuest(list[0], qHolder);
+					}
 				}
 				else
 				{

@@ -14,6 +14,7 @@ using WCell.RealmServer.AI.Actions.Combat;
 using System;
 using WCell.Util.Graphics;
 
+
 namespace WCell.Addons.Default.Instances
 {
 	public class BlackfathomDeeps : RaidInstance

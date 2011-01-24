@@ -208,6 +208,9 @@ namespace WCell.RealmServer.Entities
 			return m_DamageAction;
 		}
 
+		/// <summary>
+		/// Whether this unit has an ability pending for the given weapon (Heroic Strike for melee, Poison Dart for throwing, Stun Shot for ranged weapons etc)
+		/// </summary>
 		public bool UsesPendingAbility(IWeapon weapon)
 		{
 			return m_spellCast != null && m_spellCast.IsPending && m_spellCast.GetWeapon() == weapon;
@@ -927,11 +930,12 @@ namespace WCell.RealmServer.Entities
 					var distanceSq = GetDistanceSq(target);
 					if (strikeReady)
 					{
-						var weapon = isRanged ? m_RangedWeapon : m_mainWeapon;
-						if (weapon != null)
+						var mainWeapon = isRanged ? m_RangedWeapon : m_mainWeapon;
+						if (mainWeapon != null)
 						{
-							if (IsInAttackRangeSq(weapon, target, distanceSq))
+							if (IsInAttackRangeSq(mainWeapon, target, distanceSq))
 							{
+								// close enough
 								if (m_AutorepeatSpell != null)
 								{
 									// Auto-shot (only when not running)
@@ -946,7 +950,7 @@ namespace WCell.RealmServer.Entities
 								}
 								else
 								{
-									Strike(weapon);
+									Strike(mainWeapon);
 									m_lastStrike = now;
 									mainHandDelay += MainHandAttackTime;
 								}
@@ -954,6 +958,13 @@ namespace WCell.RealmServer.Entities
 							else
 							{
 								// too far away
+								if (UsesPendingAbility(mainWeapon))
+								{
+									// ability is pending -> Need to cancel
+									m_spellCast.Cancel(SpellFailedReason.OutOfRange);
+								}
+								
+								// no pending ability
 								if (this is Character)
 								{
 									CombatHandler.SendAttackSwingNotInRange(this as Character);
@@ -970,9 +981,19 @@ namespace WCell.RealmServer.Entities
 					{
 						if (IsInAttackRangeSq(m_offhandWeapon, target, distanceSq))
 						{
+							// in range for a strike
 							Strike(m_offhandWeapon);
 							m_lastOffhandStrike = now;
 							offhandDelay += OffHandAttackTime;
+						}
+						else
+						{
+							// too far away
+							if (UsesPendingAbility(m_offhandWeapon))
+							{
+								// ability is pending -> Need to cancel
+								m_spellCast.Cancel(SpellFailedReason.OutOfRange);
+							}
 						}
 					}
 				}

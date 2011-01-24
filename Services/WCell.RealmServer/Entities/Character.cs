@@ -43,6 +43,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
@@ -116,7 +117,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_region != null && m_region.IsInstance;
+				return m_Map != null && m_Map.IsInstance;
 			}
 		}
 
@@ -157,7 +158,7 @@ namespace WCell.RealmServer.Entities
 				var group = Group;
 				if (group != null)
 				{
-					return group.GetActiveInstance(m_region.RegionTemplate) != null;
+					return group.GetActiveInstance(m_Map.MapTemplate) != null;
 				}
 				return false;
 			}
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Entities
 				Health = 1;
 			}
 
-			if (!m_region.RegionTemplate.NotifyPlayerBeforeDeath(this))
+			if (!m_Map.MapTemplate.NotifyPlayerBeforeDeath(this))
 			{
 				return false;
 			}
@@ -295,9 +296,9 @@ namespace WCell.RealmServer.Entities
 
 			CharacterHandler.SendCorpseReclaimDelay(m_client, Corpse.MinReclaimDelay);
 
-			if (m_region != null)
+			if (m_Map != null)
 			{
-				m_region.RegionTemplate.NotifyPlayerResurrected(this);
+				m_Map.MapTemplate.NotifyPlayerResurrected(this);
 			}
 		}
 
@@ -336,7 +337,7 @@ namespace WCell.RealmServer.Entities
 			CorpseReleaseFlags |= CorpseReleaseFlags.ShowCorpseAutoReleaseTimer;
 			IncMechanicCount(SpellMechanic.Rooted);
 
-			var healer = m_region.GetNearestSpiritHealer(ref m_position);
+			var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 			if (healer != null)
 			{
 				CharacterHandler.SendHealerPosition(m_client, healer);
@@ -418,7 +419,7 @@ namespace WCell.RealmServer.Entities
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
 			}
 
-			m_region.RegionTemplate.NotifyPlayerDied(action);
+			m_Map.MapTemplate.NotifyPlayerDied(action);
 		}
 
 		/// <summary>
@@ -479,13 +480,13 @@ namespace WCell.RealmServer.Entities
 			m_record.CorpseY = m_corpse.Position.Y;
 			m_record.CorpseZ = m_corpse.Position.Z;
 			m_record.CorpseO = m_corpse.Orientation;
-			m_record.CorpseRegion = m_region.Id;		// we are spawning the corpse in the same region
+			m_record.CorpseMap = m_Map.Id;		// we are spawning the corpse in the same map
 			m_corpseReleaseTimer.Stop();
 
 			// we need health to walk again
 			SetUInt32(UnitFields.HEALTH, 1);
 
-			m_region.OnSpawnedCorpse(this);
+			m_Map.OnSpawnedCorpse(this);
 		}
 
 		/// <summary>
@@ -496,7 +497,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public Corpse SpawnCorpse(bool bones, bool lootable)
 		{
-			return SpawnCorpse(bones, lootable, m_region, m_position, m_orientation);
+			return SpawnCorpse(bones, lootable, m_Map, m_position, m_orientation);
 		}
 
 		/// <summary>
@@ -505,7 +506,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="bones"></param>
 		/// <param name="lootable"></param>
 		/// <returns></returns>
-		public Corpse SpawnCorpse(bool bones, bool lootable, Region region, Vector3 pos, float o)
+		public Corpse SpawnCorpse(bool bones, bool lootable, Map map, Vector3 pos, float o)
 		{
 			var corpse = new Corpse(this, pos, o, DisplayId, Facial, Skin,
 				HairStyle, HairColor, FacialHair, GuildId, Gender, Race,
@@ -521,7 +522,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			corpse.Position = pos;
-			region.AddObjectLater(corpse);
+			map.AddObjectLater(corpse);
 			return corpse;
 		}
 
@@ -540,11 +541,11 @@ namespace WCell.RealmServer.Entities
 		/// 
 		/// TODO: Graveyards
 		/// </summary>
-		public void TeleportToNearestGraveyard(bool allowSameRegion)
+		public void TeleportToNearestGraveyard(bool allowSameMap)
 		{
-			if (allowSameRegion)
+			if (allowSameMap)
 			{
-				var healer = m_region.GetNearestSpiritHealer(ref m_position);
+				var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 				if (healer != null)
 				{
 					TeleportTo(healer);
@@ -552,9 +553,9 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			if (m_region.RegionTemplate.RepopRegion != null)
+			if (m_Map.MapTemplate.RepopMap != null)
 			{
-				TeleportTo(m_region.RegionTemplate.RepopRegion, m_region.RegionTemplate.RepopPosition);
+				TeleportTo(m_Map.MapTemplate.RepopMap, m_Map.MapTemplate.RepopPosition);
 			}
 			else
 			{
@@ -995,7 +996,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1011,7 +1012,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1050,7 +1051,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ( object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1081,7 +1082,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInSameDivision(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ( object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1261,7 +1262,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		public void StartSummon(ISummoner summoner)
 		{
@@ -1269,7 +1270,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		/// <param name="summoner"></param>
 		/// <param name="timeoutSeconds"></param>
@@ -1280,11 +1281,11 @@ namespace WCell.RealmServer.Entities
 				ExpiryTime = DateTime.Now.AddSeconds(timeoutSeconds),
 				TargetPos = summoner.Position,
 				TargetZone = summoner.Zone,
-				TargetRegion = summoner.Region
+				TargetMap = summoner.Map
 			};
 
-			// make sure the Region was set or else the summoner was disposed before the Request completed
-			if (m_summonRequest.TargetRegion != null)
+			// make sure the Map was set or else the summoner was disposed before the Request completed
+			if (m_summonRequest.TargetMap != null)
 			{
 				var client = m_client;
 				if (client != null)
@@ -1296,7 +1297,7 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				//log.Warn("Tried to teleport {0} to a Summoner without a Region: {1}", this, summoner);
+				//log.Warn("Tried to teleport {0} to a Summoner without a Map: {1}", this, summoner);
 			}
 		}
 
@@ -1344,7 +1345,7 @@ namespace WCell.RealmServer.Entities
 			base.SetZone(newZone);
 			if (newZone != null)
 			{
-				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
+				m_Map.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
 				{
 					if (IsInWorld && Zone == newZone)
 					{
@@ -1446,15 +1447,15 @@ namespace WCell.RealmServer.Entities
 			callback(Instances);
 		}
 
-		public BaseInstance GetActiveInstance(RegionTemplate regionTemplate)
+		public BaseInstance GetActiveInstance(MapTemplate mapTemplate)
 		{
-			var region = m_region;
-			if (region != null && region.Id == region.Id)
+			var map = m_Map;
+			if (map != null && map.Id == map.Id)
 			{
-				return region as BaseInstance;
+				return map as BaseInstance;
 			}
 			var instances = m_InstanceCollection;
-			return instances != null ? instances.GetActiveInstance(regionTemplate) : null;
+			return instances != null ? instances.GetActiveInstance(mapTemplate) : null;
 		}
 		#endregion
 
@@ -1735,7 +1736,7 @@ namespace WCell.RealmServer.Entities
 			get { return null; }
 		}
 
-		public override SpawnPoint SpawnPoint
+		public override NPCSpawnPoint SpawnPoint
 		{
 			get { return null; }
 		}

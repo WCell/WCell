@@ -274,30 +274,30 @@ namespace WCell.RealmServer.Misc
 	/// <summary>
 	/// Triggers a spell on proc
 	/// </summary>
-	public class TriggerSpellProcHandler : ProcHandlerTemplate
+	public class TriggerSpellProcHandlerTemplate : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
 
-		public TriggerSpellProcHandler(ProcValidator validator, Spell spell)
+		public TriggerSpellProcHandlerTemplate(ProcValidator validator, Spell spell)
 		{
 			Validator = validator;
 			ProcAction = ProcSpell;
 			Spell = spell;
 		}
 
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
+		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
 			this(validator, spell)
 		{
 			ProcTriggerFlags = triggerFlags;
 		}
 
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
+		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
 			: this(triggerFlags, validator, spell)
 		{
 			ProcChance = procChance;
 		}
 
-		public TriggerSpellProcHandler(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
+		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
 			: this(triggerFlags, validator, spell, procChance)
 		{
 			StackCount = stackCount;

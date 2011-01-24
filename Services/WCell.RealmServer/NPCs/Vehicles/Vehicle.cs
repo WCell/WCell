@@ -7,6 +7,7 @@ using WCell.Core.Network;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.RealmServer.NPCs.Spawns;
 
 
 namespace WCell.RealmServer.NPCs.Vehicles
@@ -25,7 +26,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 			get { return HighId.Vehicle; }
 		}
 
-		protected internal override void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
+		protected internal override void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
 			base.SetupNPC(entry, spawnPoint);
 

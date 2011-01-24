@@ -239,7 +239,7 @@
     <Compile Include="Maps\Parsing\WMO\WMOGroupParser.cs" />
     <Compile Include="Maps\Parsing\WMO\WMORoot.cs" />
     <Compile Include="Maps\Parsing\WMO\WMORootParser.cs" />
-    <Compile Include="Maps\RegionBoundaryUtil.cs" />
+    <Compile Include="Maps\MapBoundaryUtil.cs" />
     <Compile Include="Domi\WCellEnumWriter.cs" />
     <Compile Include="Domi\Output\ClassesRaces.cs" />
     <Compile Include="Domi\Output\GOOutput.cs" />
@@ -247,7 +247,7 @@
     <Compile Include="Domi\Output\MiscOutput.cs" />
     <Compile Include="Domi\Output\NPCOutput.cs" />
     <Compile Include="Domi\Output\TalentOutput.cs" />
-    <Compile Include="Maps\RegionBoundaryWriter.cs" />
+    <Compile Include="Maps\MapBoundaryWriter.cs" />
     <Compile Include="Maps\Structures\Signatures.cs" />
     <Compile Include="Maps\ObjectFileReader.cs" />
     <Compile Include="Maps\ZoneTileSetReader.cs" />

@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Handlers
 
 			var mailboxId = packet.ReadEntityId();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -75,7 +75,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var mailboxId = packet.ReadEntityId();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.Handlers
 			var mailId = packet.ReadUInt32();
 			var itemId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -121,7 +121,7 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -136,7 +136,7 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}
@@ -166,7 +166,7 @@ namespace WCell.RealmServer.Handlers
 			var mailboxId = packet.ReadEntityId();
 			var mailId = packet.ReadUInt32();
 
-			if (!CheckMailBox(chr, chr.Region.GetObject(mailboxId) as GameObject))
+			if (!CheckMailBox(chr, chr.Map.GetObject(mailboxId) as GameObject))
 			{
 				return;
 			}

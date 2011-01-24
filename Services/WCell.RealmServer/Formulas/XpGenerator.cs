@@ -69,6 +69,11 @@ namespace WCell.RealmServer.Formulas
 		public static int DefaultXpBaseValueOutland = 235;
 
 		/// <summary>
+		/// The default base value for Xp-calculations from NPCs in Northrend.
+		/// </summary>
+		public static int DefaultXpBaseValueNorthrend = 580;
+
+		/// <summary>
 		/// The factor to be applied to Xp that is gained when exploring a new Zone
 		/// </summary>
 		public static int ExplorationXpFactor = 1;
@@ -101,16 +106,6 @@ namespace WCell.RealmServer.Formulas
 		/// </summary>
 		//public static readonly BaseExperienceCalculator DefaultCalculator = ;
 
-		public static int CalcDefaultBaseXp(int targetLevel, int receiverLvl)
-		{
-			return CalcXp(targetLevel, receiverLvl, DefaultXpLevelFactor, DefaultXpBaseValueAzeroth);
-		}
-
-		public static int CalcOutlandBaseXp(int targetLevel, int receiverLvl)
-		{
-			return CalcXp(targetLevel, receiverLvl, DefaultXpLevelFactor, DefaultXpBaseValueOutland);
-		}
-
 		public static int CalcDefaultXp(int targetLevel, NPC npc)
 		{
 			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueAzeroth);
@@ -121,6 +116,11 @@ namespace WCell.RealmServer.Formulas
 		{
 			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueOutland);
 			// TODO: Extra calcs
+		}
+
+		public static int CalcNorthrendXp(int targetLevel, NPC npc)
+		{
+			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueNorthrend);
 		}
 
 		public static int CalcXp(int targetLvl, int receiverLvl, int factor, int baseValue)
@@ -196,7 +196,7 @@ namespace WCell.RealmServer.Formulas
 		/// <summary>
 		/// Distributes the given amount of XP over the group of the given Character (or adds it only to the Char, if not in Group).
 		/// </summary>
-		/// <remarks>Requires Region-Context.</remarks>
+		/// <remarks>Requires Map-Context.</remarks>
 		/// <param name="chr"></param>
 		public static void DistributeCombatXp(Character chr, INamed killed, int xp)
 		{

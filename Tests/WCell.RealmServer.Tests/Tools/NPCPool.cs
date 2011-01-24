@@ -11,6 +11,7 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.RealmServer.Spells;
 
+
 namespace WCell.RealmServer.Tests.Tools
 {
 	public class NPCPool

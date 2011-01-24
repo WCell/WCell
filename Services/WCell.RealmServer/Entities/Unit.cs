@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Unit.cs
  *   copyright		: (C) The WCell Team
@@ -44,6 +44,7 @@ using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
 using WCell.Util.NLog;
 using WCell.Constants.Chat;
+
 
 namespace WCell.RealmServer.Entities
 {
@@ -459,7 +460,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		//public virtual Corpse SpawnCorpse(bool bones, bool lootable)
 		//{
-		//    return new Corpse(CasterInfo, m_region, m_position, m_orientation, DisplayId, 0, 0, 0, 0, 0, 0, Gender, Race,
+		//    return new Corpse(CasterInfo, m_map, m_position, m_orientation, DisplayId, 0, 0, 0, 0, 0, 0, Gender, Race,
 		//        bones ? CorpseFlags.Bones : CorpseFlags.None,
 		//        lootable ? CorpseDynamicFlags.PlayerLootable : CorpseDynamicFlags.None);
 		//}
@@ -887,7 +888,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="value">The amount of points healed</param>
 		protected virtual void OnHeal(Unit healer, SpellEffect effect, int value)
 		{
-			// TODO: Remove method and instead trigger region-wide event (a lot more efficient than this)
+			// TODO: Remove method and instead trigger map-wide event (a lot more efficient than this)
 			IterateEnvironment(40.0f, obj =>
 			{
 				if (obj is Unit && ((Unit)obj).m_brain != null)
@@ -988,7 +989,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Movement Handling
-		internal protected override void OnEnterRegion()
+		internal protected override void OnEnterMap()
 		{
 			m_lastMoveTime = Environment.TickCount;
 
@@ -1227,7 +1228,7 @@ namespace WCell.RealmServer.Entities
 					LogUtil.ErrorException(new InvalidOperationException("Character was already disposed when pinning down: " + this), true);
 					return;
 				}
-				m_region.EnsureContext();
+				m_Map.EnsureContext();
 
 				if (m_IsPinnedDown != value)
 				{
@@ -1498,7 +1499,7 @@ namespace WCell.RealmServer.Entities
 			//return SpawnMinion(entry, summonSpell, ref position, durationMillis != 0 ? DateTime.Now.AddMilliseconds(durationMillis) : (DateTime?)null);
 			var minion = CreateMinion(entry, durationMillis);
 			minion.Position = position;
-			m_region.AddObjectLater(minion);
+			m_Map.AddObjectLater(minion);
 			return minion;
 		}
 
@@ -1546,11 +1547,11 @@ namespace WCell.RealmServer.Entities
 		{
 		}
 
-		internal protected virtual void OnMinionEnteredRegion(NPC minion)
+		internal protected virtual void OnMinionEnteredMap(NPC minion)
 		{
 		}
 
-		internal protected virtual void OnMinionLeftRegion(NPC minion)
+		internal protected virtual void OnMinionLeftMap(NPC minion)
 		{
 		}
 		#endregion
@@ -1564,6 +1565,11 @@ namespace WCell.RealmServer.Entities
 		public List<IProcHandler> ProcHandlers
 		{
 			get { return m_procHandlers; }
+		}
+
+		public void AddProcHandler(ProcHandlerTemplate templ)
+		{
+			AddProcHandler(new ProcHandler(this, this, templ));
 		}
 
 		public void AddProcHandler(IProcHandler handler)

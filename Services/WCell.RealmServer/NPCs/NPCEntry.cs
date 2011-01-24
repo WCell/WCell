@@ -14,6 +14,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Vendors;
@@ -216,14 +217,6 @@ namespace WCell.RealmServer.NPCs
 		public InhabitType InhabitType = InhabitType.Anywhere;
 
 		public bool Regenerates;
-
-		public int RespawnMod;
-
-		public int ArmorMod;
-
-		public int HealthMod;
-
-		public UpdateFlags ExtraA9Flags;
 
 		public ClassId ClassId;
 
@@ -535,39 +528,28 @@ namespace WCell.RealmServer.NPCs
 
 		#region Spawns
 		[NotPersistent]
-		public List<SpawnEntry> SpawnEntries = new List<SpawnEntry>(3);
+		public List<NPCSpawnEntry> SpawnEntries = new List<NPCSpawnEntry>(3);
 
-		public SpawnEntry AddSpawnEntry(MapId map, Vector3 location, int respawnSeconds)
+		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int respawnSeconds)
 		{
 			return AddSpawnEntry(map, location, respawnSeconds, respawnSeconds);
 		}
 
-		public SpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds)
+		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds)
 		{
 			return AddSpawnEntry(map, location, minRespawnSeconds, maxRespawnSeconds, true);
 		}
 
-		public SpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
+		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
 		{
-			return AddSpawnEntry(map, location, 1, minRespawnSeconds, maxRespawnSeconds, autoSpawn);
-		}
-
-		public SpawnEntry AddSpawnEntry(MapId map, Vector3 location, int amount, int minRespawnSeconds, int maxRespawnSeconds)
-		{
-			return AddSpawnEntry(map, location, amount, minRespawnSeconds, maxRespawnSeconds, true);
-		}
-
-		public SpawnEntry AddSpawnEntry(MapId map, Vector3 location, int amount, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
-		{
-			var entry = new SpawnEntry
+			var entry = new NPCSpawnEntry
 			{
 				EntryId = NPCId,
 				Entry = this,
-				MaxAmount = amount,
 				RespawnSecondsMin = minRespawnSeconds,
 				RespawnSecondsMax = maxRespawnSeconds,
-				AutoSpawn = autoSpawn,
-				RegionId = map
+				AutoSpawns = autoSpawn,
+				MapId = map
 			};
 
 			entry.FinalizeDataHolder();
@@ -577,32 +559,31 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// Creates but doesn't add the SpawnEntry
 		/// </summary>
-		public SpawnEntry CreateSpawnEntry(Vector3 location, int amount, int respawnSeconds)
+		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int respawnSeconds)
 		{
-			return CreateSpawnEntry(location, amount, respawnSeconds, respawnSeconds);
+			return CreateSpawnEntry(location, respawnSeconds, respawnSeconds);
 		}
 
 		/// <summary>
 		/// Creates but doesn't add the SpawnEntry
 		/// </summary>
-		public SpawnEntry CreateSpawnEntry(Vector3 location, int amount, int minRespawnSeconds, int maxRespawnSeconds)
+		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int minRespawnSeconds, int maxRespawnSeconds)
 		{
-			return CreateSpawnEntry(location, amount, minRespawnSeconds, maxRespawnSeconds, true);
+			return CreateSpawnEntry(location, minRespawnSeconds, maxRespawnSeconds, true);
 		}
 
 		/// <summary>
 		/// Creates but doesn't add the SpawnEntry
 		/// </summary>
-		public SpawnEntry CreateSpawnEntry(Vector3 location, int amount, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
+		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
 		{
-			var entry = new SpawnEntry
+			var entry = new NPCSpawnEntry
 			{
 				EntryId = NPCId,
 				Entry = this,
-				MaxAmount = amount,
 				RespawnSecondsMin = minRespawnSeconds,
 				RespawnSecondsMax = maxRespawnSeconds,
-				AutoSpawn = autoSpawn
+				AutoSpawns = autoSpawn
 			};
 
 			entry.FinalizeDataHolder();
@@ -610,7 +591,7 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		[NotPersistent]
-		public SpawnEntry FirstSpawnEntry
+		public NPCSpawnEntry FirstSpawnEntry
 		{
 			get { return SpawnEntries.Count > 0 ? SpawnEntries[0] : null; }
 		}
@@ -920,17 +901,19 @@ namespace WCell.RealmServer.NPCs
 
 		public NPC Create(uint difficulty = 0u)
 		{
-			return NPCCreator(GetEntry(difficulty));
+			var npc = NPCCreator(GetEntry(difficulty));
+			npc.SetupNPC(this, null);
+			return npc;
 		}
 
-		public NPC Create(SpawnPoint spawn)
+		public NPC Create(NPCSpawnPoint spawn)
 		{
-			var npc = Create(spawn.Region.DifficultyIndex);
+			var npc = NPCCreator(GetEntry(spawn.Map.DifficultyIndex));
 			npc.SetupNPC(this, spawn);
 			return npc;
 		}
 
-		public NPC SpawnAt(Region rgn, Vector3 pos)
+		public NPC SpawnAt(Map rgn, Vector3 pos)
 		{
 			var npc = Create(rgn.DifficultyIndex);
 			rgn.AddObject(npc, pos);
@@ -939,18 +922,16 @@ namespace WCell.RealmServer.NPCs
 
 		public NPC SpawnAt(IWorldZoneLocation loc)
 		{
-			var npc = Create(loc.Region.DifficultyIndex);
-			npc.SetupNPC(this, null);
+			var npc = Create(loc.Map.DifficultyIndex);
 			npc.Zone = loc.GetZone();
-			loc.Region.AddObject(npc, loc.Position);
+			loc.Map.AddObject(npc, loc.Position);
 			return npc;
 		}
 
 		public NPC SpawnAt(IWorldLocation loc)
 		{
-			var npc = Create(loc.Region.DifficultyIndex);
-			npc.SetupNPC(this, null);
-			loc.Region.AddObject(npc, loc.Position);
+			var npc = Create(loc.Map.DifficultyIndex);
+			loc.Map.AddObject(npc, loc.Position);
 			return npc;
 		}
 
@@ -1116,7 +1097,6 @@ namespace WCell.RealmServer.NPCs
 			{
 				writer.WriteLine("Equipment: {0}", Equipment.ItemIds.Where(id => id != 0).ToString(", "));
 			}
-			writer.WriteLineNotDefault(ExtraA9Flags, "ExtraA9Flags: " + ExtraA9Flags);
 			//if (inclFaction)	
 			//{
 			//    writer.WriteLineNotDefault(DefaultFactionId, "Faction: " + DefaultFactionId);

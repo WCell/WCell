@@ -1,4 +1,5 @@
 using NLog;
+using WCell.Constants.GameObjects;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 
@@ -52,9 +53,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		/// <summary>
 		/// The Id of the quest this chest is associated with.
 		/// </summary>
-		public int QuestId
+		public uint QuestId
 		{
-			get { return Fields[8]; }
+			get { return (uint)Fields[8]; }
 		}
 
 		/// <summary>
@@ -106,7 +107,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		{
 			Lock = LockEntry.Entries.Get((uint)Fields[0]);
 
-			IsConsumable = Fields[3] > 0;
+			IsConsumable = Fields[3] > 0 || Flags.HasFlag(GameObjectFlags.ConditionalInteraction);
 
 			LinkedTrapId = (uint)Fields[7];
 

@@ -67,20 +67,20 @@ namespace WCell.RealmServer.Commands
 				var id = trigger.Text.NextEnum(GOEntryId.End);
 
 				var target = trigger.Args.Target;
-				var region = target != null ? target.Region : World.Kalimdor;
+				var map = target != null ? target.Map : World.Kalimdor;
 
-				var entry = GOMgr.GetEntry(id);
+				var entry = GOMgr.GetEntry(id, false);
 
 				if (mod == "c")
 				{
-					ICollection<GOSpawn> templates;
+					ICollection<GOSpawnEntry> templates;
 					if (entry != null)
 					{
 						templates = entry.Templates;
 					}
 					else
 					{
-						templates = GOMgr.GetTemplates(region.Id);
+						templates = GOMgr.GetTemplates(map.Id);
 					}
 
 					if (templates == null || templates.Count == 0)
@@ -90,7 +90,7 @@ namespace WCell.RealmServer.Commands
 					}
 
 					// spawn closest
-					GOSpawn closest;
+					GOSpawnEntry closest;
 
 					if (entry != null)
 					{
@@ -109,7 +109,7 @@ namespace WCell.RealmServer.Commands
 					}
 					else
 					{
-						closest.Spawn(region);
+						closest.Spawn(map);
 						trigger.Reply("Spawned: " + closest.Entry);
 						if (target != null)
 						{
@@ -122,9 +122,8 @@ namespace WCell.RealmServer.Commands
 					if (entry != null)
 					{
 						// spawn a new GO
-						var go = entry.Create(trigger.Args.Target);
-						trigger.Args.Target.PlaceOnTop(go);
-						trigger.Reply("Successfully spawned a new {0}.", go.Name);
+						var go = entry.Spawn(trigger.Args.Target, trigger.Args.Target);
+						trigger.Reply("Successfully spawned new GO: {0}.", go.Name);
 					}
 					else
 					{
@@ -396,11 +395,11 @@ namespace WCell.RealmServer.Commands
 				var gos = caster.GetObjectsInRadius(50f, ObjectTypes.GameObject, false, 0);
 				foreach (GameObject go in gos)
 				{
-					var region = go.Region;
+					var map = go.Map;
 					var pos = go.Position;
 					pos.Z += 7 * go.ScaleX;						// make it appear above the object
 
-					var dO = new DynamicObject(caster, SpellId.ABOUTTOSPAWN, 5, region, pos);
+					var dO = new DynamicObject(caster, SpellId.ABOUTTOSPAWN, 5, map, pos);
 					highlighters.Add(dO, go);
 				}
 				trigger.Reply("Highlighting {0} GameObjects", highlighters.Count);
@@ -478,7 +477,7 @@ namespace WCell.RealmServer.Commands
 		void CreatePortal(WorldObject at, IWorldLocation target)
 		{
 			// create portal
-			var portal = Portal.Create(target);
+			var portal = Portal.Create(at, target);
 			at.PlaceInFront(portal);
 		}
 

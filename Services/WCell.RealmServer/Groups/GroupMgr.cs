@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Groups
 			var group = member.Group;
 
 			member.Position = member.Character.Position;
-			member.Region = member.Character.Region;
+			member.Map = member.Character.Map;
 			member.Character.GroupUpdateFlags |= GroupUpdateFlags.Status;
 			member.Character = null;
 

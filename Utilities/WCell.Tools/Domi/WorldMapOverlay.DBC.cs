@@ -27,7 +27,7 @@ namespace WCell.Tools.Domi
 	//    public static readonly DBCReader<WorldMapOverlay, WorldMapOverlayConverter> WorldMapReader;
 
 	//    public uint Id;
-	//    public Region Region;
+	//    public Map Map;
 	//    public string Name;
 
 	//    /// <summary>

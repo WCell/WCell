@@ -199,7 +199,7 @@ namespace WCell.RealmServer.Spells
 			if (millis <= 0) return;
 			m_readySpells.Remove(spell);
 
-			var ticks = millis / Owner.Region.UpdateDelay;
+			var ticks = millis / Owner.Map.UpdateDelay;
 			var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
 			Owner.CallPeriodically(action);
 			if (m_cooldowns == null)
@@ -258,7 +258,7 @@ namespace WCell.RealmServer.Spells
 				var cd = m_cooldowns[i];
 				if (cd.Spell.Id != spell.Id) continue;
 
-				return ((Owner.Region.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
+				return ((Owner.Map.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
 			}
 			return 0;
 		}

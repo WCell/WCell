@@ -77,16 +77,16 @@ namespace WCell.RealmServer.Entities
 		protected List<IUpdateObjectAction> m_updateActions;
 
 
-		internal protected virtual void OnEnterRegion()
+		internal protected virtual void OnEnterMap()
 		{
 		}
 
-		internal protected virtual void OnLeavingRegion()
+		internal protected virtual void OnLeavingMap()
 		{
 		}
 
 		/// <summary>
-		/// The queue of messages. Messages are executed on every region tick.
+		/// The queue of messages. Messages are executed on every map tick.
 		/// </summary>
 		public LockfreeQueue<IMessage> MessageQueue
 		{
@@ -106,7 +106,7 @@ namespace WCell.RealmServer.Entities
 
 		public OneShotUpdateObjectAction CallDelayed(int millis, Action<WorldObject> callback)
 		{
-			var ticks = millis / m_region.UpdateDelay;
+			var ticks = millis / m_Map.UpdateDelay;
 			var action = new OneShotUpdateObjectAction(ticks, callback);
 			CallPeriodically(action);
 			return action;
@@ -125,14 +125,14 @@ namespace WCell.RealmServer.Entities
 		/// <param name="callback"></param>
 		public IUpdateObjectAction CallPeriodically(int millis, Action<WorldObject> callback)
 		{
-			var ticks = millis / m_region.UpdateDelay;
+			var ticks = millis / m_Map.UpdateDelay;
 			var action = new SimpleObjectUpdateAction(ticks, callback);
 			CallPeriodically(action);
 			return action;
 		}
 
 		/// <summary>
-		/// Adds a new Action to the list of Actions to be executed every ticks Region-Ticks.
+		/// Adds a new Action to the list of Actions to be executed every ticks Map-Ticks.
 		/// </summary>
 		/// <param name="callback"></param>
 		public IUpdateObjectAction CallPeriodicallyTicks(int ticks, Action<WorldObject> callback)
@@ -143,7 +143,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Adds a new Action to the list of Actions to be executed every action.Ticks Region-Ticks.
+		/// Adds a new Action to the list of Actions to be executed every action.Ticks Map-Ticks.
 		/// </summary>
 		public void CallPeriodically(IUpdateObjectAction action)
 		{
@@ -244,7 +244,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public IContextHandler ContextHandler
 		{
-			get { return m_region; }
+			get { return m_Map; }
 		}
 
 		/// <summary>

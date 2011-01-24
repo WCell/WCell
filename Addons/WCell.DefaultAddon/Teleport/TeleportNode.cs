@@ -12,19 +12,21 @@ namespace WCell.Addons.Default.Teleport
 {
 	public class TeleportNode : INamedWorldZoneLocation
 	{
+		public delegate WorldObject TeleporterCreatorFunc(TeleportNode node, Map map, Vector3 pos);
+
 		private string[] m_Names = new string[(int)ClientLocale.End];
 
 		public readonly List<INamedWorldZoneLocation> Destinations = new List<INamedWorldZoneLocation>(5);
 
-		public Func<TeleportNode, WorldObject> ObjectCreator = TeleportNetwork.CreateDefaultPortal;
+		public TeleporterCreatorFunc TeleportCreator = TeleportNetwork.CreateDefaultPortal;
 
 		private Vector3 m_Position;
 
 		public TeleportNode(string defaultName, MapId id, Vector3 pos)
 		{
 			DefaultName = defaultName;
-			Region = World.GetRegion(id);
-			if (Region == null)
+			Map = World.GetMap(id);
+			if (Map == null)
 			{
 				throw new ArgumentException("Map is not a continent: " + id);
 			}
@@ -33,10 +35,10 @@ namespace WCell.Addons.Default.Teleport
 
 		public WorldObject TeleporterObject;
 
-		public TeleportNode(string defaultName, Region rgn, Vector3 pos)
+		public TeleportNode(string defaultName, Map rgn, Vector3 pos)
 		{
 			DefaultName = defaultName;
-			Region = rgn;
+			Map = rgn;
 			Position = pos;
 		}
 
@@ -52,12 +54,12 @@ namespace WCell.Addons.Default.Teleport
 			set { Names[(int)RealmServerConfiguration.DefaultLocale] = value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return Region.Id; }
+			get { return Map.Id; }
 		}
 
-		public Region Region
+		public Map Map
 		{
 			get;
 			set;
@@ -83,8 +85,7 @@ namespace WCell.Addons.Default.Teleport
 		{
 			if (TeleporterObject == null || !TeleporterObject.IsInWorld)
 			{
-				var go = TeleporterObject = ObjectCreator(this);
-				Region.AddObject(go, ref m_Position);
+				TeleporterObject = TeleportCreator(this, Map, m_Position);
 			}
 		}
 	}

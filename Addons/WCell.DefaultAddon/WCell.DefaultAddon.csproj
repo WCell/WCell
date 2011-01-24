@@ -188,6 +188,12 @@
     <Compile Include="Battlegrounds\WarsongGulch\WSGStats.cs" />
     <Compile Include="Commands\AddonDevCommands.cs" />
     <Compile Include="Commands\TeleSpellCommand.cs" />
+    <Compile Include="Editor\Figurines\Figurine.cs" />
+    <Compile Include="Editor\Figurines\SpawnFigurine.cs" />
+    <Compile Include="Editor\Figurines\WaypointFigurine.cs" />
+    <Compile Include="Editor\MapEditor.cs" />
+    <Compile Include="Editor\SpawnGossips.cs" />
+    <Compile Include="Gossip\Guard Gossip\Alliance\AllianceTowns.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Darnassus.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Exodar.cs" />
     <Compile Include="Gossip\Guard Gossip\Alliance\Ironforge.cs" />
@@ -198,6 +204,7 @@
     <Compile Include="Gossip\Guard Gossip\Horde\Undercity.cs" />
     <Compile Include="Gossip\Guard Gossip\Neutral\Shattrath.cs" />
     <Compile Include="Gossip\World Gossip\BoreanTundraGossip.cs" />
+    <Compile Include="Gossip\World Gossip\TanarisGossip.cs" />
     <Compile Include="Instances\Northrend\AhnKahetTheOldKingdom.cs" />
     <Compile Include="Instances\Northrend\TheRubySanctum.cs" />
     <Compile Include="Instances\Outland\AuchindounAuchenaiCrypts.cs" />
@@ -296,6 +303,7 @@
     <Compile Include="Spells\Hunter\HunterSurvivalFixes.cs" />
     <Compile Include="Spells\Mage\MageArcaneFixes.cs" />
     <Compile Include="Spells\Mage\MageFireFixes.cs" />
+    <Compile Include="Spells\Mage\MageFrostFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinHolyFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinProtectionFixes.cs" />
     <Compile Include="Spells\Paladin\PaladinRetributionFixes.cs" />

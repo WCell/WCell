@@ -13,6 +13,7 @@ using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.RealmServer.Misc;
 
+
 namespace WCell.RealmServer.Handlers
 {
 	public static class QueryHandler
@@ -200,7 +201,7 @@ namespace WCell.RealmServer.Handlers
 			var textId = packet.ReadUInt32();
 			var entityId = packet.ReadEntityId();
 
-			//var obj = client.ActiveCharacter.Region.GetObject(entityId) as IGossipEntry;
+			//var obj = client.ActiveCharacter.Map.GetObject(entityId) as IGossipEntry;
 
 			//if (obj != null)
 			//{
@@ -321,10 +322,15 @@ namespace WCell.RealmServer.Handlers
 		{
 			var pageId = packet.ReadUInt32();
 
+			SendPageText(client.ActiveCharacter, pageId);
+		}
+
+		public static void SendPageText(Character chr, uint pageId)
+		{
 			var entry = PageTextEntry.GetEntry(pageId);
 			if (entry != null)
 			{
-				SendPageText(client.ActiveCharacter, entry);
+				SendPageText(chr, entry);
 			}
 			else
 			{
@@ -332,7 +338,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					outPack.Write("-page is missing-");
 					outPack.Write(0);
-					client.Send(outPack);
+					chr.Send(outPack);
 				}
 			}
 		}

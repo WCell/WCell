@@ -76,12 +76,12 @@ namespace WCell.RealmServer.Global
 		private static int m_pauseThreadId;
 		private static bool m_saving;
 
-		internal static RegionTemplate[] s_RegionTemplates = new RegionTemplate[(int)MapId.End];
-		internal static Region[] s_Regions = new Region[(int)MapId.End];
+		internal static MapTemplate[] s_MapTemplates = new MapTemplate[(int)MapId.End];
+		internal static Map[] s_Maps = new Map[(int)MapId.End];
 		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
         internal static WorldMapOverlayEntry[] s_WorldMapOverlayEntries = new WorldMapOverlayEntry[(int)WorldMapOverlayId.End];
 
-		internal static InstancedRegion[][] s_instances = new InstancedRegion[(int)MapId.End][];
+		internal static InstancedMap[][] s_instances = new InstancedMap[(int)MapId.End][];
 
 		private static int s_totalPlayerCount, s_hordePlayerCount, s_allyPlayerCount, s_staffMemberCount;
 
@@ -90,11 +90,11 @@ namespace WCell.RealmServer.Global
 		#region Properties
 
 		/// <summary>
-		/// Gets the collection of regions.
+		/// Gets the collection of maps.
 		/// </summary>
-		public static RegionTemplate[] RegionTemplates
+		public static MapTemplate[] MapTemplates
 		{
-			get { return s_RegionTemplates; }
+			get { return s_MapTemplates; }
 		}
 
 		/// <summary>
@@ -181,8 +181,8 @@ namespace WCell.RealmServer.Global
 
 		[NotVariable]
 		/// <summary>
-		/// Pauses/unpauses all Regions.
-		/// Setting Paused to true blocks until all regions have been paused.
+		/// Pauses/unpauses all Maps.
+		/// Setting Paused to true blocks until all maps have been paused.
 		/// Setting Paused to false blocks during world-safe.
 		/// 
 		/// TODO: Freeze all players before pausing to make sure, movement is not out of sync
@@ -197,7 +197,7 @@ namespace WCell.RealmServer.Global
 				if (m_paused != value)
 				{
 					// lock the pausing, so you cannot start resuming before everything has been paused
-					// also ensures that Regions don't start while other are still being paused
+					// also ensures that Maps don't start while other are still being paused
 					lock (PauseLock)
 					{
 						if (m_paused != value) // check again to make sure that we are not pausing/unpausing twice
@@ -220,11 +220,11 @@ namespace WCell.RealmServer.Global
 							{
 								// pause
 								m_pauseThreadId = Thread.CurrentThread.ManagedThreadId;
-								var activeRegions = s_Regions.Where((region) => region != null && region.IsRunning);
-								var pauseCount = activeRegions.Count();
-								foreach (var region in activeRegions)
+								var activeMaps = s_Maps.Where((map) => map != null && map.IsRunning);
+								var pauseCount = activeMaps.Count();
+								foreach (var map in activeMaps)
 								{
-									if (region.IsInContext)
+									if (map.IsInContext)
 									{
 										if (!m_saving && !RealmServer.IsShuttingDown)
 										{
@@ -233,15 +233,15 @@ namespace WCell.RealmServer.Global
 												// unpause all
 												Monitor.PulseAll(PauseObject);
 											}
-											throw new InvalidOperationException("Cannot pause World from within a Region's context - Use the Pause() method instead.");
+											throw new InvalidOperationException("Cannot pause World from within a Map's context - Use the Pause() method instead.");
 										}
 										pauseCount--;
 									}
 									else
 									{
-										if (region.IsRunning)
+										if (map.IsRunning)
 										{
-											region.AddMessage(new Message(() =>
+											map.AddMessage(new Message(() =>
 											{
 												pauseCount--;
 												lock (PauseObject)
@@ -277,7 +277,7 @@ namespace WCell.RealmServer.Global
 		[Initialization(InitializationPass.Third, "Initializing World")]
 		public static void InitializeWorld()
 		{
-			if (s_RegionTemplates[(uint)MapId.Kalimdor] == null)
+			if (s_MapTemplates[(uint)MapId.Kalimdor] == null)
 			{
 				LoadMapData();
 				LoadZoneInfos();
@@ -375,15 +375,15 @@ namespace WCell.RealmServer.Global
 			new DBCReader<MapConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
             new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPDIFFICULTY));
 
-			// add existing RegionTemplate objects to mapper
-			var mapper = ContentMgr.GetMapper<RegionTemplate>();
-			mapper.AddObjectsUInt(s_RegionTemplates);
+			// add existing MapTemplate objects to mapper
+			var mapper = ContentMgr.GetMapper<MapTemplate>();
+			mapper.AddObjectsUInt(s_MapTemplates);
 
 			// Add additional data from DB
-			ContentMgr.Load<RegionTemplate>();
+			ContentMgr.Load<MapTemplate>();
 
 			// when only updating, it won't call FinalizeAfterLoad automatically:
-			foreach (var rgn in s_RegionTemplates)
+			foreach (var rgn in s_MapTemplates)
 			{
 				if (rgn != null)
 				{
@@ -396,21 +396,21 @@ namespace WCell.RealmServer.Global
 
 		private static void SetupBoundaries()
 		{
-			var regionBounds = RegionBoundaries.GetRegionBoundaries();
+			var mapBounds = MapBoundaries.GetMapBoundaries();
 			var zoneTileSets = ZoneBoundaries.GetZoneTileSets();
 
-			for (var i = 0; i < s_RegionTemplates.Length; i++)
+			for (var i = 0; i < s_MapTemplates.Length; i++)
 			{
-				var regionInfo = s_RegionTemplates[i];
-				if (regionInfo != null)
+				var mapInfo = s_MapTemplates[i];
+				if (mapInfo != null)
 				{
-					if (regionBounds != null && regionBounds.Length > i)
+					if (mapBounds != null && mapBounds.Length > i)
 					{
-						regionInfo.Bounds = regionBounds[i];
+						mapInfo.Bounds = mapBounds[i];
 					}
 					if (zoneTileSets != null && zoneTileSets.Length > i)
 					{
-						regionInfo.ZoneTileSet = zoneTileSets[i];
+						mapInfo.ZoneTileSet = zoneTileSets[i];
 					}
 				}
 			}
@@ -425,11 +425,11 @@ namespace WCell.RealmServer.Global
 			{
 				ArrayUtil.Set(ref s_ZoneTemplates, (uint)zone.Id, zone);
 
-				var region = s_RegionTemplates.Get((uint)zone.RegionId);
-				if (region != null)
+				var map = s_MapTemplates.Get((uint)zone.MapId);
+				if (map != null)
 				{
-					zone.RegionTemplate = region;
-					region.ZoneInfos.Add(zone);
+					zone.MapTemplate = map;
+					map.ZoneInfos.Add(zone);
 				}
 			}
 
@@ -842,37 +842,37 @@ namespace WCell.RealmServer.Global
 
 		#endregion
 
-		#region Region-Management
-		public static Region Kalimdor
+		#region Map-Management
+		public static Map Kalimdor
 		{
-			get { return s_Regions[(int)MapId.Kalimdor]; }
+			get { return s_Maps[(int)MapId.Kalimdor]; }
 		}
 
-		public static Region EasternKingdoms
+		public static Map EasternKingdoms
 		{
-			get { return s_Regions[(int)MapId.EasternKingdoms]; }
+			get { return s_Maps[(int)MapId.EasternKingdoms]; }
 		}
 
-		public static Region Outland
+		public static Map Outland
 		{
-			get { return s_Regions[(int)MapId.Outland]; }
+			get { return s_Maps[(int)MapId.Outland]; }
 		}
 
-		public static Region Northrend
+		public static Map Northrend
 		{
-			get { return s_Regions[(int)MapId.Northrend]; }
+			get { return s_Maps[(int)MapId.Northrend]; }
 		}
 
 		/// <summary>
-		/// Gets all default (non-instanced) Regions
+		/// Gets all default (non-instanced) Maps
 		/// </summary>
-		/// <returns>a collection of all current regions</returns>
-		public static Region[] Regions
+		/// <returns>a collection of all current maps</returns>
+		public static Map[] Maps
 		{
-			get { return s_Regions; }
+			get { return s_Maps; }
 		}
 
-		public static int RegionCount
+		public static int MapCount
 		{
 			get;
 			private set;
@@ -882,11 +882,11 @@ namespace WCell.RealmServer.Global
 		/// All Continents and Instances, including Battlegrounds
 		/// </summary>
 		/// <returns></returns>
-		public static IEnumerable<Region> GetAllRegions()
+		public static IEnumerable<Map> GetAllMaps()
 		{
-			for (var i = 0; i < s_Regions.Length; i++)
+			for (var i = 0; i < s_Maps.Length; i++)
 			{
-				var rgn = s_Regions[i];
+				var rgn = s_Maps[i];
 				if (rgn != null)
 				{
 					yield return rgn;
@@ -911,37 +911,37 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Adds a region, associated with its unique Id (and InstanceId).
+		/// Adds a map, associated with its unique Id (and InstanceId).
 		/// </summary>
-		/// <param name="region">the region to add</param>
-		internal static void AddRegion(Region region)
+		/// <param name="map">the map to add</param>
+		internal static void AddMap(Map map)
 		{
-			RegionCount++;
+			MapCount++;
 
-			if (!region.IsInstance)
+			if (!map.IsInstance)
 			{
-				ArrayUtil.Set(ref s_Regions, (uint)region.Id, region);
+				ArrayUtil.Set(ref s_Maps, (uint)map.Id, map);
 			}
 			else
 			{
-				var instances = GetInstances(region.Id);
-				if (region.InstanceId >= instances.Length)
+				var instances = GetInstances(map.Id);
+				if (map.InstanceId >= instances.Length)
 				{
-					Array.Resize(ref instances, (int)(region.InstanceId * ArrayUtil.LoadConstant));
-					s_instances[(uint)region.Id] = instances;
+					Array.Resize(ref instances, (int)(map.InstanceId * ArrayUtil.LoadConstant));
+					s_instances[(uint)map.Id] = instances;
 				}
-				instances[region.InstanceId] = (InstancedRegion)region;
+				instances[map.InstanceId] = (InstancedMap)map;
 			}
 		}
 
-		internal static void RemoveInstance(InstancedRegion region)
+		internal static void RemoveInstance(InstancedMap map)
 		{
-			var instances = GetInstances(region.Id);
-			RegionCount--;
-			ArrayUtil.Set(ref instances, region.InstanceId, null);
+			var instances = GetInstances(map.Id);
+			MapCount--;
+			ArrayUtil.Set(ref instances, map.InstanceId, null);
 		}
 
-		public static InstancedRegion[][] GetAllInstances()
+		public static InstancedMap[][] GetAllInstances()
 		{
 			return s_instances.ToArray();
 		}
@@ -949,15 +949,15 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// 
 		/// </summary>
-		/// <param name="region"></param>
+		/// <param name="map"></param>
 		/// <returns></returns>
 		/// <remarks>Never returns null</remarks>
-		public static InstancedRegion[] GetInstances(MapId region)
+		public static InstancedMap[] GetInstances(MapId map)
 		{
-			var instances = s_instances.Get((uint)region);
+			var instances = s_instances.Get((uint)map);
 			if (instances == null)
 			{
-				s_instances[(uint)region] = instances = new InstancedRegion[10];
+				s_instances[(uint)map] = instances = new InstancedMap[10];
 			}
 			return instances;
 		}
@@ -965,8 +965,8 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets an instance
 		/// </summary>
-		/// <returns>the <see cref="Region" /> object; null if the ID is not valid</returns>s
-		public static InstancedRegion GetInstance(MapId mapId, uint instanceId)
+		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>s
+		public static InstancedMap GetInstance(MapId mapId, uint instanceId)
 		{
 			var instances = GetInstances(mapId);
 			if (instances != null)
@@ -979,10 +979,10 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Gets an instance
 		/// </summary>
-		/// <returns>the <see cref="Region" /> object; null if the ID is not valid</returns>s
-		public static InstancedRegion GetInstance(IRegionId mapId)
+		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>s
+		public static InstancedMap GetInstance(IMapId mapId)
 		{
-			var instances = GetInstances(mapId.RegionId);
+			var instances = GetInstances(mapId.MapId);
 			if (instances != null)
 			{
 				return instances.Get(mapId.InstanceId);
@@ -991,39 +991,39 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Gets a normal Region by its Id
+		/// Gets a normal Map by its Id
 		/// </summary>
-		/// <returns>the <see cref="Region" /> object; null if the ID is not valid</returns>
-		public static Region GetRegion(MapId mapId)
+		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>
+		public static Map GetMap(MapId mapId)
 		{
-			return s_Regions.Get((uint)mapId);
+			return s_Maps.Get((uint)mapId);
 		}
 
 		/// <summary>
-		/// Gets a normal Region by its Id
+		/// Gets a normal Map by its Id
 		/// </summary>
-		/// <returns>the <see cref="Region" /> object; null if the ID is not valid</returns>
-		public static Region GetRegion(IRegionId mapId)
+		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>
+		public static Map GetMap(IMapId mapId)
 		{
 			if (mapId.InstanceId > 0)
 			{
 				return GetInstance(mapId);
 			}
-			return s_Regions.Get((uint)mapId.RegionId);
+			return s_Maps.Get((uint)mapId.MapId);
 		}
 
 		/// <summary>
-		/// Gets region info by ID.
+		/// Gets map info by ID.
 		/// </summary>
-		/// <param name="regionID">the ID to the region to get</param>
-		/// <returns>the <see cref="RegionTemplate" /> object for the given region ID</returns>
-		public static RegionTemplate GetRegionTemplate(MapId regionID)
+		/// <param name="mapID">the ID to the map to get</param>
+		/// <returns>the <see cref="MapTemplate" /> object for the given map ID</returns>
+		public static MapTemplate GetMapTemplate(MapId mapID)
 		{
 			if (s_ZoneTemplates == null)
 			{
 				LoadMapData();
 			}
-			return s_RegionTemplates.Get((uint)regionID);
+			return s_MapTemplates.Get((uint)mapID);
 		}
 
 		/// <summary>
@@ -1052,24 +1052,28 @@ namespace WCell.RealmServer.Global
 		}
 
 		[Initialization(InitializationPass.Fifth, "Initializing World")]
-		public static void LoadDefaultRegions()
+		public static void LoadDefaultMaps()
 		{
-			foreach (var rgnInfo in s_RegionTemplates)
+			foreach (var rgnInfo in s_MapTemplates)
 			{
 				if (rgnInfo != null && rgnInfo.Type == MapType.Normal)
 				{
-					var region = new Region(rgnInfo);
+					var map = new Map(rgnInfo);
 
-					if (region.Id == MapId.Outland)
+					if (map.Id == MapId.Outland)
 					{
-						region.XpCalculator = XpGenerator.CalcOutlandXp;
+						map.XpCalculator = XpGenerator.CalcOutlandXp;
+					}
+					else if (map.Id == MapId.Northrend)
+					{
+						map.XpCalculator = XpGenerator.CalcNorthrendXp;
 					}
 					else
 					{
-						region.XpCalculator = XpGenerator.CalcDefaultXp;
+						map.XpCalculator = XpGenerator.CalcDefaultXp;
 					}
 
-					region.InitRegion();
+					map.InitMap();
 				}
 			}
 		}
@@ -1083,16 +1087,16 @@ namespace WCell.RealmServer.Global
 		/// <param name="doneCallback">Called after the action was called on everyone.</param>
 		public static void CallOnAllChars(Action<Character> action, Action doneCallback)
 		{
-			var regions = GetAllRegions();
-			var rgnCount = regions.Count();
+			var maps = GetAllMaps();
+			var rgnCount = maps.Count();
 			var i = 0;
-			foreach (var rgn in regions)
+			foreach (var rgn in maps)
 			{
 				if (rgn.CharacterCount > 0)
 				{
-					rgn.AddMessage(new Message1<Region>(rgn, (region) =>
+					rgn.AddMessage(new Message1<Map>(rgn, (map) =>
 					{
-						foreach (var chr in region.Characters)
+						foreach (var chr in map.Characters)
 						{
 							action(chr);
 						}
@@ -1115,14 +1119,14 @@ namespace WCell.RealmServer.Global
 		/// <param name="doneCallback">Called after the action was called on everyone.</param>
 		public static void CallOnAllChars(Action<Character> action)
 		{
-			var regions = GetAllRegions();
-			foreach (var rgn in regions)
+			var maps = GetAllMaps();
+			foreach (var rgn in maps)
 			{
 				if (rgn.CharacterCount > 0)
 				{
-					rgn.AddMessage(new Message1<Region>(rgn, (region) =>
+					rgn.AddMessage(new Message1<Map>(rgn, (map) =>
 					{
-						foreach (var chr in region.Characters)
+						foreach (var chr in map.Characters)
 						{
 							action(chr);
 						}
@@ -1132,16 +1136,16 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Calls the given Action on all currently existing Regions within each Region's context
+		/// Calls the given Action on all currently existing Maps within each Map's context
 		/// </summary>
 		/// <param name="action"></param>
-		/// <param name="doneCallback">Called after the action was called on all Regions.</param>
-		public static void CallOnAllRegions(Action<Region> action, Action doneCallback)
+		/// <param name="doneCallback">Called after the action was called on all Maps.</param>
+		public static void CallOnAllMaps(Action<Map> action, Action doneCallback)
 		{
-			var regions = GetAllRegions();
-			var rgnCount = regions.Count();
+			var maps = GetAllMaps();
+			var rgnCount = maps.Count();
 			var i = 0;
-			foreach (var rgn in regions)
+			foreach (var rgn in maps)
 			{
 				rgn.AddMessage(() =>
 				{
@@ -1158,13 +1162,13 @@ namespace WCell.RealmServer.Global
 		}
 
 		/// <summary>
-		/// Calls the given Action on all currently existing Regions within each Region's context
+		/// Calls the given Action on all currently existing Maps within each Map's context
 		/// </summary>
 		/// <param name="action"></param>
-		public static void CallOnAllRegions(Action<Region> action)
+		public static void CallOnAllMaps(Action<Map> action)
 		{
-			var regions = GetAllRegions();
-			foreach (var rgn in regions)
+			var maps = GetAllMaps();
+			foreach (var rgn in maps)
 			{
 				rgn.AddMessage(() =>
 				{

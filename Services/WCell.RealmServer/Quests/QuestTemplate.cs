@@ -43,6 +43,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Global;
 using WCell.Constants.Updates;
 
+
 namespace WCell.RealmServer.Quests
 {
 	/// <summary>
@@ -264,17 +265,17 @@ namespace WCell.RealmServer.Quests
 			get { return EndTexts.LocalizeWithDefaultLocale(); }
 		}
 
-        ///<summary>
-        /// Text which is displayed in quest objectives window once all objectives are completed 
-        /// </summary>
-        [Persistent((int)ClientLocale.End)]
-        public string[] CompletedTexts;
+		///<summary>
+		/// Text which is displayed in quest objectives window once all objectives are completed 
+		/// </summary>
+		[Persistent((int)ClientLocale.End)]
+		public string[] CompletedTexts;
 
-        [NotPersistent]
-        public string DefaultCompletedText
-        {
-            get { return CompletedTexts.LocalizeWithDefaultLocale(); }
-        }
+		[NotPersistent]
+		public string DefaultCompletedText
+		{
+			get { return CompletedTexts.LocalizeWithDefaultLocale(); }
+		}
 
 		/// <summary>
 		/// Array of interactions containing ID, index and quantity.
@@ -292,6 +293,9 @@ namespace WCell.RealmServer.Quests
 
 		[NotPersistent]
 		public QuestInteractionTemplate[] NPCInteractions;
+
+		[NotPersistent]
+		public SpellId[] SpellInteractions;
 
 		public bool HasNPCInteractionEvent
 		{
@@ -403,15 +407,15 @@ namespace WCell.RealmServer.Quests
 		/// Tradeskill level which is required to accept this quest.
 		/// </summary>
 		public uint RequiredSkillValue;
-		
+
 		// Represents the Quest graph
 		public int PreviousQuestId, NextQuestId, ExclusiveGroup;
 		public uint FollowupQuestId;
 
-        /// <summary>
-        /// Represents the Reward XP column id.
-        /// </summary>
-	    public int RewXPId;
+		/// <summary>
+		/// Represents the Reward XP column id.
+		/// </summary>
+		public int RewXPId;
 
 		/// <summary>
 		/// Quests that may must all be active in order to get this Quest
@@ -453,15 +457,9 @@ namespace WCell.RealmServer.Quests
 		public uint[] AreaTriggerObjectives = new uint[0];
 
 		/// <summary>
-		/// Spell which are needed to be cast as a requirement.
+		/// Number of players to kill
 		/// </summary>
-		[Persistent(QuestConstants.MaxObjectInteractions)]
-		public SpellId[] SpellCastObjectives = new SpellId[4];
-
-        /// <summary>
-        /// Number of players to kill
-        /// </summary>
-        public uint PlayersSlain;
+		public uint PlayersSlain;
 		#endregion
 
 		#region QuestRewards
@@ -471,12 +469,12 @@ namespace WCell.RealmServer.Quests
 		[Persistent(QuestConstants.MaxReputations)]
 		public ReputationReward[] RewardReputations = new ReputationReward[5];
 
-        public uint RewHonorAddition;
+		public uint RewHonorAddition;
 
-        /// <summary>
-        /// Multiplier of reward honor
-        /// </summary>
-        public float RewHonorMultiplier;
+		/// <summary>
+		/// Multiplier of reward honor
+		/// </summary>
+		public float RewHonorMultiplier;
 		#endregion
 
 		#region QuestEmotes
@@ -519,7 +517,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		/// <param name="goId"></param>
 		/// <param name="amount"></param>
-		public void AddGOInteraction(GOEntryId goId, int amount)
+		public void AddGOInteraction(GOEntryId goId, int amount, SpellId requiredSpell = SpellId.None)
 		{
 			int goIndex;
 			if (GOInteractions == null)
@@ -540,6 +538,7 @@ namespace WCell.RealmServer.Quests
 				Index = index,
 				Amount = amount,
 				TemplateId = (uint)goId,
+				RequiredSpellId = requiredSpell,
 				Type = ObjectTypeId.GameObject
 			};
 			ArrayUtil.Set(ref ObjectInteractions, index, templ);
@@ -557,21 +556,12 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Used by SpellEffectType.QuestComplete
-		/// </summary>
-		/// <param name="id"></param>
-		internal void AddSpellCastObjective(SpellId id)
-		{
-			ArrayUtil.AddOnlyOne(ref SpellCastObjectives, id);
-		}
-
-		/// <summary>
 		/// To finish this Quest the Character has to interact with the given
 		/// kind of NPC the given amount of times.
 		/// </summary>
 		/// <param name="npcid"></param>
 		/// <param name="amount"></param>
-		public void AddNPCInteraction(NPCId npcid, int amount)
+		public void AddNPCInteraction(NPCId npcid, int amount, SpellId requiredSpell = SpellId.None)
 		{
 			int npcIndex;
 			if (NPCInteractions == null)
@@ -592,6 +582,7 @@ namespace WCell.RealmServer.Quests
 				Index = index,
 				Amount = amount,
 				TemplateId = (uint)npcid,
+				RequiredSpellId = SpellId.None,
 				Type = ObjectTypeId.Unit
 			};
 			ArrayUtil.Set(ref ObjectInteractions, index, templ);
@@ -618,16 +609,15 @@ namespace WCell.RealmServer.Quests
 				!chr.Skills.CheckSkill(RequiredSkill, (int)RequiredSkillValue))
 			{
 				return QuestInvalidReason.NoRequirements;
-
 			}
 
-			var err = CheckActiveQuests(chr.QuestLog);
+			var err = CheckRequiredActiveQuests(chr.QuestLog);
 			if (err != QuestInvalidReason.Ok)
 			{
 				return err;
 			}
 
-			err = CheckFinishedQuests(chr.QuestLog);
+			err = CheckRequiredFinishedQuests(chr.QuestLog);
 			if (err != QuestInvalidReason.Ok)
 			{
 				return err;
@@ -660,10 +650,14 @@ namespace WCell.RealmServer.Quests
 			return QuestInvalidReason.Ok;
 		}
 
-		private QuestInvalidReason CheckActiveQuests(QuestLog log)
+		/// <summary>
+		/// Check quest-relation requirements of active quests
+		/// </summary>
+		private QuestInvalidReason CheckRequiredActiveQuests(QuestLog log)
 		{
 			for (int i = 0; i < ReqAllActiveQuests.Count; i++)
 			{
+				// all of these quests must be active
 				var preqId = ReqAllActiveQuests[i];
 				if (!log.HasActiveQuest(preqId))
 				{
@@ -676,6 +670,7 @@ namespace WCell.RealmServer.Quests
 				var found = false;
 				for (int i = 0; i < ReqAnyActiveQuests.Count; i++)
 				{
+					// any of these quests must be active
 					var preqId = ReqAnyActiveQuests[i];
 					if (log.HasActiveQuest(preqId))
 					{
@@ -691,7 +686,10 @@ namespace WCell.RealmServer.Quests
 			return QuestInvalidReason.Ok;
 		}
 
-		private QuestInvalidReason CheckFinishedQuests(QuestLog log)
+		/// <summary>
+		/// Check quest-relation requirements of quests that need to be finished for this one to start
+		/// </summary>
+		private QuestInvalidReason CheckRequiredFinishedQuests(QuestLog log)
 		{
 			for (int i = 0; i < ReqAllFinishedQuests.Count; i++)
 			{
@@ -1036,45 +1034,45 @@ namespace WCell.RealmServer.Quests
 			{
 				if (RewardReputations[i].Faction != 0)
 				{
-				    var value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
+					var value = CalcRewRep(RewardReputations[i].ValueId, RewardReputations[i].Value);
 					receiver.Reputations.GainReputation(RewardReputations[i].Faction, value);
 				}
 			}
-            if (RewardTitleId != TitleId.None)
-            {
-                receiver.SetTitle(RewardTitleId, false);
-            }
-		    return true;
+			if (RewardTitleId != TitleId.None)
+			{
+				receiver.SetTitle(RewardTitleId, false);
+			}
+			return true;
 		}
 
-        public int CalcRewRep(int valueId, int value)
-        {
-            if (value != 0)
-                return value*100;
+		public int CalcRewRep(int valueId, int value)
+		{
+			if (value != 0)
+				return value * 100;
 
-            var index = (valueId > 0) ? 0 : 1; 
-            return QuestMgr.QuestRewRepInfos[index].RewRep[valueId-1];
-        }
+			var index = (valueId > 0) ? 0 : 1;
+			return QuestMgr.QuestRewRepInfos[index].RewRep[valueId - 1];
+		}
 
-        public int CalcRewardHonor(Character character)
-        {
-            int fullhonor = 0;
-            if(RewHonorAddition > 0 || RewHonorMultiplier > 0.0f)
-            {
-                var info = QuestMgr.QuestHonorInfos.Get(Level);      
-                if(info != null)
-                {
-                    fullhonor = (int)(info.RewHonor * RewHonorMultiplier * 0.1000000014901161);
-                    fullhonor += (int)RewHonorAddition;                   
-                }          
-            }
-            return fullhonor;
-        }
+		public int CalcRewardHonor(Character character)
+		{
+			int fullhonor = 0;
+			if (RewHonorAddition > 0 || RewHonorMultiplier > 0.0f)
+			{
+				var info = QuestMgr.QuestHonorInfos.Get(Level);
+				if (info != null)
+				{
+					fullhonor = (int)(info.RewHonor * RewHonorMultiplier * 0.1000000014901161);
+					fullhonor += (int)RewHonorAddition;
+				}
+			}
+			return fullhonor;
+		}
 
-        public int CalcRewardXp(Character character)
-        {
-            var info = QuestMgr.QuestXpInfos.Get(Level);
-        	int fullxp;
+		public int CalcRewardXp(Character character)
+		{
+			var info = QuestMgr.QuestXpInfos.Get(Level);
+			int fullxp;
 			if (info != null)
 			{
 				fullxp = info.RewXP.Get((uint)RewXPId - 1u);
@@ -1082,34 +1080,34 @@ namespace WCell.RealmServer.Quests
 			else
 			{
 				// TODO: What to do with quests with funky levels
-				fullxp = (int) (MinLevel*100);
+				fullxp = (int)(MinLevel * 100);
 			}
-            fullxp = (fullxp*character.QuestExperienceGainModifierPercent/100);
+			fullxp = (fullxp * character.QuestExperienceGainModifierPercent / 100);
 
-            int playerLevel = character.Level;
-            
-            if (playerLevel <= Level + 5)
-            {
-            	return fullxp;
-            }
-            if (playerLevel == Level + 6)
-            {
-            	return (fullxp*8)/10;
-            }
-            if (playerLevel == Level + 7)
-            {
-            	return (fullxp*6)/10;
-            }
-            if (playerLevel == Level + 8)
-            {
-            	return (fullxp *4)/10;		// 0.4f
-            }
-            if (playerLevel == Level + 9)
-            {
-                return fullxp / 5;
-            }
-            return fullxp / 10;
-        }
+			int playerLevel = character.Level;
+
+			if (playerLevel <= Level + 5)
+			{
+				return fullxp;
+			}
+			if (playerLevel == Level + 6)
+			{
+				return (fullxp * 8) / 10;
+			}
+			if (playerLevel == Level + 7)
+			{
+				return (fullxp * 6) / 10;
+			}
+			if (playerLevel == Level + 8)
+			{
+				return (fullxp * 4) / 10;		// 0.4f
+			}
+			if (playerLevel == Level + 9)
+			{
+				return fullxp / 5;
+			}
+			return fullxp / 10;
+		}
 
 		#endregion
 
@@ -1134,10 +1132,7 @@ namespace WCell.RealmServer.Quests
 				writer.WriteLine("Collectables: " + CollectableItems.ToString(", "));
 			}
 
-			writer.WriteLineNotDefault(SpellCastObjectives.Length,
-				"Req Spells: " + SpellCastObjectives.TransformArray(id => (SpellId) id + " (" + id + ")").ToString(", "));
-
-			writer.WriteLineNotDefault(AreaTriggerObjectives.Length, 
+			writer.WriteLineNotDefault(AreaTriggerObjectives.Length,
 				"Req AreaTriggers: " + AreaTriggerObjectives.TransformArray(id => AreaTriggerMgr.GetTrigger(id)).ToString(", "));
 
 			if (Instructions != null)
@@ -1239,25 +1234,36 @@ namespace WCell.RealmServer.Quests
 			List<QuestInteractionTemplate> npcInteractions = null;
 			for (uint i = 0; i < ObjectInteractions.Length; i++)
 			{
-				if (ObjectInteractions[i].TemplateId == 0 || ObjectInteractions[i].Amount == 0)
+				var interaction = ObjectInteractions[i];
+				if (interaction.TemplateId == 0 || interaction.Amount == 0)
 				{
-					// AllInteractions[i] = default(QuestInteractionTemplate);
+					if (interaction.RequiredSpellId != 0)
+					{
+						// SpellCast objective
+						if (SpellInteractions == null)
+						{
+							SpellInteractions = new[] { interaction.RequiredSpellId };
+						}
+						else
+						{
+							ArrayUtil.AddOnlyOne(ref SpellInteractions, interaction.RequiredSpellId);
+						}
+					}
 				}
 				else
 				{
-					if ((ObjectInteractions[i].TemplateId & QuestConstants.GOIndicator) != 0)
+					if (interaction.Type == ObjectTypeId.GameObject)
 					{
-						ObjectInteractions[i].TemplateId &= ~QuestConstants.GOIndicator;
-						ObjectInteractions[i].Type = ObjectTypeId.GameObject;
-						(goInteractions = goInteractions.NotNull()).Add(ObjectInteractions[i]);
+						// GO objective
+						(goInteractions = goInteractions.NotNull()).Add(interaction);
 					}
 					else
 					{
-						ObjectInteractions[i].Type = ObjectTypeId.Unit;
-						(npcInteractions = npcInteractions.NotNull()).Add(ObjectInteractions[i]);
+						// NPC interactive
+						(npcInteractions = npcInteractions.NotNull()).Add(interaction);
 					}
-					ObjectInteractions[i].Index = i;
 				}
+				interaction.Index = i;
 			}
 
 			//if (AreaTriggerObjectiveIds == null)
@@ -1309,11 +1315,6 @@ namespace WCell.RealmServer.Quests
 				NPCInteractions = npcInteractions.ToArray();
 			}
 
-			if (SpellCastObjectives != null)
-			{
-				ArrayUtil.PruneVals(ref SpellCastObjectives);
-			}
-
 			ArrayUtil.PruneVals(ref AreaTriggerObjectives);
 			ArrayUtil.PruneVals(ref RewardChoiceItems);
 			ArrayUtil.PruneVals(ref RewardItems);
@@ -1329,25 +1330,29 @@ namespace WCell.RealmServer.Quests
 	/// </summary>
 	public class QuestInteractionTemplate
 	{
+		[NotPersistent]
 		public uint TemplateId;
-		public int Amount;
 
 		/// <summary>
 		/// Either <see cref="ObjectTypeId.Unit"/> or <see cref="ObjectTypeId.GameObject"/>
 		/// </summary>
 		[NotPersistent]
-		public ObjectTypeId Type;
+		public ObjectTypeId Type = ObjectTypeId.None;
+
+		public int Amount;
+
+		/// <summary>
+		/// Spell to be casted.
+		/// If not set, the objective is to kill or use the target.
+		/// </summary>
+		public SpellId RequiredSpellId;
 
 		[NotPersistent]
 		public uint Index;
 
-		public override string ToString()
-		{
-			return (Amount != 1 ? Amount + "x " : "") + Type + " " + Type.ToString(TemplateId);
-		}
-
 		/// <summary>
-		/// The RawId is used in certain Packets
+		/// The RawId is used in certain Packets.
+		/// It encodes TemplateId and Type
 		/// </summary>
 		public uint RawId
 		{
@@ -1355,10 +1360,78 @@ namespace WCell.RealmServer.Quests
 			{
 				return Type == ObjectTypeId.GameObject ?
 					//(uint)-(int)(TemplateId | QuestConstants.GOIndicator) : TemplateId;
-					uint.MaxValue-(TemplateId) : TemplateId;
+					(uint.MaxValue - TemplateId + 1) : TemplateId;
+			}
+			set
+			{
+				if (value > QuestConstants.GOIndicator)
+				{
+					// GO
+					TemplateId = uint.MaxValue - value + 1;
+					Type = ObjectTypeId.GameObject;
+				}
+				else
+				{
+					// NPC
+					TemplateId = value;
+					Type = ObjectTypeId.Unit;
+				}
 			}
 		}
+
+		public override string ToString()
+		{
+			return (Amount != 1 ? Amount + "x " : "") + Type + " " + Type.ToString(TemplateId) + (RequiredSpellId != 0 ? (" - Spell: " + RequiredSpellId) : "");
+		}
 	}
+
+    [DataHolder]
+	public class QuestPOI : IDataHolder
+    {
+        public uint QuestId;
+        public uint PoiId;
+        public int ObjectiveIndex;
+        public MapId MapID;
+        public ZoneId ZoneId;
+        public uint FloorId;
+        public uint Unk3;
+        public uint Unk4;
+
+        [NotPersistent]
+        public List<QuestPOIPoints> Points = new List<QuestPOIPoints>();
+        
+        public void  FinalizeDataHolder()
+        {
+            if(QuestMgr.POIs.ContainsKey(QuestId))
+                QuestMgr.POIs[QuestId].Add(this);
+            else
+            {
+                var list = new List<QuestPOI> {this};
+                QuestMgr.POIs.Add(QuestId, list);
+            }
+        }
+    }
+
+    [DataHolder]
+    public class QuestPOIPoints : IDataHolder
+    {
+        public uint QuestId;
+        public uint PoiId;
+        public float X;
+        public float Y;
+
+        public void FinalizeDataHolder()
+        {
+            List<QuestPOI> list;
+            if (QuestMgr.POIs.TryGetValue(QuestId, out list))
+            {
+                foreach (var questpoi in list.Where(questpoi => questpoi.PoiId == PoiId))
+                {
+                    questpoi.Points.Add(this);
+                }
+            }
+        }
+    }
 
 	public struct EmoteTemplate
 	{
@@ -1372,6 +1445,6 @@ namespace WCell.RealmServer.Quests
 		//public FactionReputationIndex Faction;
 		public FactionId Faction;
 		public int ValueId;
-	    public int Value;
+		public int Value;
 	}
 }

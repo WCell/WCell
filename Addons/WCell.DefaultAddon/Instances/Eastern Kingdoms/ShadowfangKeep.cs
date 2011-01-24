@@ -20,6 +20,7 @@ using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
 using WCell.Util.Graphics;
 
+
 namespace WCell.Addons.Default.Instances
 {
     public class ShadowfangKeep : RaidInstance
@@ -98,7 +99,7 @@ namespace WCell.Addons.Default.Instances
             {
                 rethilgoreDoorEntry.Activated += go =>
                 {
-                    var instance = go.Region as ShadowfangKeep;
+                    var instance = go.Map as ShadowfangKeep;
                     if (instance != null && instance.rethilgoreDoor == null)
                     {
                         // set the instance's Door object after the Door spawned
@@ -113,7 +114,7 @@ namespace WCell.Addons.Default.Instances
             {
                 fenrusDoorEntry.Activated += go =>
                 {
-                    var instance = go.Region as ShadowfangKeep;
+                    var instance = go.Map as ShadowfangKeep;
                     if (instance != null && instance.fenrusDoor == null)
                     {
                         // set the instance's Door object after the Door spawned
@@ -161,7 +162,7 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnDeath()
         {
-            var instance = m_owner.Region as ShadowfangKeep;
+            var instance = m_owner.Map as ShadowfangKeep;
 
             if (instance != null)
             {
@@ -190,7 +191,7 @@ namespace WCell.Addons.Default.Instances
 
         public override void OnDeath()
         {
-            var instance = m_owner.Region as ShadowfangKeep;
+            var instance = m_owner.Map as ShadowfangKeep;
 
             if (instance != null)
             {

@@ -313,7 +313,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount++;
 			}
-			SpellModifiersFlat.Add(modifier);
+			SpellModifiersPct.Add(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
@@ -335,9 +335,9 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-			SpellModifiersFlat.Add(modifier);
+			SpellModifiersPct.Remove(modifier);
 			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
 		}
 
 		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
@@ -346,7 +346,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-            SpellModifiersFlat.Remove(modifier);
+			SpellModifiersFlat.Remove(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
 		}
@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 		}
-
+        
 		/// <summary>
 		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
 		/// </summary>
@@ -433,6 +433,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region OnCasted
 		public override void OnCasted(SpellCast cast)
 		{
+			// remove one of the stack of all stacking SpellModifiers (flat & percent)
 			var spell = cast.Spell;
 			if (ModifierWithChargesCount > 0)
 			{

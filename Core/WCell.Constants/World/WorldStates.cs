@@ -14,7 +14,7 @@ namespace WCell.Constants.World
 
 		public static WorldState[] GlobalStates = new WorldState[1];
 
-		public static readonly WorldState[][] RegionStates = new WorldState[(int)MapId.End][];
+		public static readonly WorldState[][] MapStates = new WorldState[(int)MapId.End][];
 
 		public static readonly WorldState[][] ZoneStates = new WorldState[(int)ZoneId.End][];
 
@@ -45,7 +45,7 @@ namespace WCell.Constants.World
 							arr = new WorldState[1];
 						}
 						ArrayUtil.AddOnlyOne(ref arr, state);
-						RegionStates[(int)state.MapId] = arr;
+						MapStates[(int)state.MapId] = arr;
 					}
 					else
 					{
@@ -62,9 +62,9 @@ namespace WCell.Constants.World
 			AllStates[(int)state.Key] = state;
 		}
 
-		public static WorldState[] GetStates(MapId region)
+		public static WorldState[] GetStates(MapId map)
 		{
-			return RegionStates.Get((uint)region) ?? new WorldState[0];
+			return MapStates.Get((uint)map) ?? new WorldState[0];
 		}
 
 		public static WorldState[] GetStates(ZoneId zone)

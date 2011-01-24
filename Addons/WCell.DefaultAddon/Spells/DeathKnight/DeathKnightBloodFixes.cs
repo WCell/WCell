@@ -201,7 +201,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				spell.ClearEffects();												// remove all effects
 
 				// create custom handler
-				var handler = new TriggerSpellProcHandler(
+				var handler = new TriggerSpellProcHandlerTemplate(
 					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					(target, action) =>
 					{

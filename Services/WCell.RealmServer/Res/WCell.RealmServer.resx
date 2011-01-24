@@ -150,8 +150,8 @@
   <data name="HandlingPacket" xml:space="preserve">
     <value>Handling packet '{0}' with size of {1} bytes.</value>
   </data>
-  <data name="InvalidRegionMove" xml:space="preserve">
-    <value>An entity attempted to move to an invalid/non-existent region! Target region: {0} Entity: {1}</value>
+  <data name="InvalidMapMove" xml:space="preserve">
+    <value>An entity attempted to move to an invalid/non-existent map! Target map: {0} Entity: {1}</value>
   </data>
   <data name="IPCProxyCouldntReconnect" xml:space="preserve">
     <value>IPC device failed to reconnect to the AuthServer. Is the AuthServer running?</value>
@@ -187,7 +187,7 @@
     <value>Halting Mail System...</value>
   </data>
   <data name="MapsLoaded" xml:space="preserve">
-    <value>{0} regions loaded in {1}ms</value>
+    <value>{0} maps loaded in {1}ms</value>
   </data>
   <data name="PacketHandleException" xml:space="preserve">
     <value>An exception occured while trying to handle packet! Packet ID: '{0}'</value>
@@ -199,7 +199,7 @@
     <value>Packet reports a length bigger than the amount of data available! Packet ID: {0}, reported length: {1}, available length: {2}</value>
   </data>
   <data name="PartitionStartComplete" xml:space="preserve">
-    <value>Partitioned and started {0} regions in {1}ms</value>
+    <value>Partitioned and started {0} maps in {1}ms</value>
   </data>
   <data name="RegisteredHandler" xml:space="preserve">
     <value>Registered handler for {0}() for '{1}'</value>
@@ -309,11 +309,11 @@
   <data name="ErroneousPacketReceived" xml:space="preserve">
     <value>Packet received/parsed with erroneous length! Packet ID: {0:X4} Length given: {1}</value>
   </data>
-  <data name="RegionStarted" xml:space="preserve">
-    <value>Region {0} now running!</value>
+  <data name="MapStarted" xml:space="preserve">
+    <value>Map {0} now running!</value>
   </data>
-  <data name="RegionStopped" xml:space="preserve">
-    <value>Region {0} stopped!</value>
+  <data name="MapStopped" xml:space="preserve">
+    <value>Map {0} stopped!</value>
   </data>
   <data name="SendingPacket" xml:space="preserve">
     <value>Sending packet '{0}' with a length of {1}</value>
@@ -348,13 +348,13 @@
   <data name="RegisterNotRunning" xml:space="preserve">
     <value>Trying to register RealmServer while RealmServer is not running.</value>
   </data>
-  <data name="RegionContextNeeded" xml:space="preserve">
-    <value>Region context required. Add a message to the region to ensure the action is performed within the Region's context: {0}</value>
+  <data name="MapContextNeeded" xml:space="preserve">
+    <value>Map context required. Add a message to the map to ensure the action is performed within the Map's context: {0}</value>
   </data>
-  <data name="RegionContextProhibited" xml:space="preserve">
-    <value>Region context prohibited. Make sure to NOT call this method from within the region context due to deadlock risks or blocking code: {0}</value>
+  <data name="MapContextProhibited" xml:space="preserve">
+    <value>Map context prohibited. Make sure to NOT call this method from within the map context due to deadlock risks or blocking code: {0}</value>
   </data>
-  <data name="RegionUpdating" xml:space="preserve">
-    <value>Region is calling method while updating. Make sure to NOT call this and similar methods while a Region is updating: {0}</value>
+  <data name="MapUpdating" xml:space="preserve">
+    <value>Map is calling method while updating. Make sure to NOT call this and similar methods while a Map is updating: {0}</value>
   </data>
 </root>

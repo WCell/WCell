@@ -93,6 +93,16 @@ namespace WCell.RealmServer.Spells
 			count++;
 		}
 
+		public Spell GetRank(int rank)
+		{
+			var spell = m_firstSpell;
+			while (spell.Rank != rank)
+			{
+				spell = spell.NextRank;
+			}
+			return spell;
+		}
+
 		public IEnumerator<Spell> GetEnumerator()
 		{
 			return Spells.GetEnumerator();

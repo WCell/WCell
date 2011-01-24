@@ -180,7 +180,7 @@ namespace WCell.RealmServer.ArenaTeams
                 case (uint)ArenaTeamTypes.ARENA_TEAM_5v5:
                     return ArenaTeamSlot.FIVE_VS_FIVE;
                 default:
-                    throw new Exception("Invalid Type of arena team !");
+                    throw new Exception("Invalid Type of arena team: " + type);
             }
         }
 

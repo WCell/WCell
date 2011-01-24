@@ -20,7 +20,7 @@ namespace WCell.RealmServer.Instances
 	/// TODO:
 	/// - SMSG_INSTANCE_RESET_FAILURE: The party leader has attempted to reset the instance you are in. Please zone out to allow the instance to reset.
 	/// </summary>
-	public abstract class BaseInstance : InstancedRegion
+	public abstract class BaseInstance : InstancedMap
 	{
 		protected IInstanceHolderSet m_owner;
 		protected DateTime m_expiryTime;
@@ -30,9 +30,9 @@ namespace WCell.RealmServer.Instances
 		{
 		}
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
+			base.InitMap();
 
 			var secs = m_difficulty.ResetTime;
 			if (secs > 0)

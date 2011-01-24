@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Handlers
 			if (chr.CanDoPhysicalActivity)
 			{
 				var targetId = packet.ReadEntityId();
-				var target = chr.Region.GetObject(targetId) as Unit;
+				var target = chr.Map.GetObject(targetId) as Unit;
 
 				if (target != null && 
 					chr.CanHarm(target) &&

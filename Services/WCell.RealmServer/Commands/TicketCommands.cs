@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Commands
 				if (owner == null)
 				{
 					trigger.Reply("The owner of this Ticket is offline.");
-					trigger.Args.Target.TeleportTo(ticket.Region, ticket.Position);
+					trigger.Args.Target.TeleportTo(ticket.Map, ticket.Position);
 				}
 				else
 				{

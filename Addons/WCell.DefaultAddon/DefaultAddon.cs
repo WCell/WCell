@@ -87,7 +87,7 @@ namespace WCell.Addons
 				if (caster is Unit)
 				{
 					var unitCaster = caster as Unit;
-					unitCaster.TeleportTo(unitCaster.Region, ref targetPos);
+					unitCaster.TeleportTo(unitCaster.Map, ref targetPos);
 				}
 			};
 

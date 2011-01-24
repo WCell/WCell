@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants;
@@ -27,12 +28,14 @@ using WCell.Core.Timers;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.UpdateFields;
 using WCell.Util;
+using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Entities
 {
@@ -57,7 +60,7 @@ namespace WCell.RealmServer.Entities
 
 		protected GameObjectHandler m_handler;
 		protected bool m_respawns;
-		protected GOSpawn m_template;
+		protected GOSpawnEntry m_template;
 		protected TimerEntry m_decayTimer, m_respawnTimer;
 		protected GameObject m_linkedTrap;
 		protected internal bool m_IsTrap;
@@ -101,7 +104,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
-		public GOSpawn Spawn
+		public GOSpawnEntry SpawnEntry
 		{
 			get { return m_template; }
 		}
@@ -130,7 +133,7 @@ namespace WCell.RealmServer.Entities
 						// TODO: Deactivate respawning
 						if (!IsInWorld)
 						{
-							m_region.m_gos[EntityId.Low] = null;
+							m_Map.m_goSpawnPoints[EntityId.Low] = null;
 						}
 					}
 				}
@@ -180,37 +183,42 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates the given kind of GameObject with the default Template
 		/// </summary>
-		public static GameObject Create(GOEntryId id)
+		public static GameObject Create(GOEntryId id, IWorldLocation location, GOSpawnEntry spawnEntry = null)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry == null)
 			{
 				return null;
 			}
-			return Create(entry, entry.Templates.Count > 0 ? entry.Templates[0] : null);
+			return Create(entry, location, spawnEntry ?? (entry.Templates.Count > 0 ? entry.Templates[0] : null));
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, GOSpawn templ)
+		public static GameObject Create(GOEntryId id, Map map, GOSpawnEntry templ)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
 			{
-				return Create(entry, templ);
+				return Create(entry, map, templ);
 			}
 			return null;
+		}
+
+		public static GameObject Create(GOEntry entry, Map map, GOSpawnEntry spawnEntry = null)
+		{
+			return Create(entry, new WorldLocation(map, Vector3.Zero), spawnEntry);
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntry entry, GOSpawn templ)
+		public static GameObject Create(GOEntry entry, IWorldLocation where, GOSpawnEntry spawnEntry)
 		{
 			var go = entry.GOCreator();
 			var handlerCreator = entry.HandlerCreator;
-			go.Init(entry, templ); 
+			go.Init(entry, spawnEntry);
 			if (handlerCreator != null)
 			{
 				go.Handler = handlerCreator();
@@ -221,6 +229,8 @@ namespace WCell.RealmServer.Entities
 				go.Delete();
 				return null;
 			}
+			var pos = where.Position;
+			where.Map.AddObject(go, ref pos);
 			return go;
 		}
 
@@ -229,7 +239,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="templ"></param>
-		internal virtual void Init(GOEntry entry, GOSpawn templ)
+		internal virtual void Init(GOEntry entry, GOSpawnEntry templ)
 		{
 			EntityId = EntityId.GetGameObjectId((uint)Interlocked.Increment(ref _lastGOUID), entry.GOId);
 			Type |= ObjectTypes.GameObject;
@@ -287,9 +297,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		protected internal override void OnEnterRegion()
+		protected internal override void OnEnterMap()
 		{
-			ArrayUtil.Set(ref m_region.m_gos, EntityId.Low, this);
+			m_Map.m_goSpawnPoints.Add(EntityId.Low, this);
 
 			// add Trap
 			if (m_entry.LinkedTrap != null)
@@ -297,7 +307,7 @@ namespace WCell.RealmServer.Entities
 				m_linkedTrap = m_entry.LinkedTrap.Spawn(this, m_master);
 				//if (m_entry.LinkedTrap.DisplayId != 0)
 				//{
-				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_region, m_position, m_Owner);
+				//    m_linkedTrap = m_entry.LinkedTrap.Spawn(m_map, m_position, m_Owner);
 				//}
 				//else
 				//{
@@ -308,7 +318,7 @@ namespace WCell.RealmServer.Entities
 			m_entry.NotifyActivated(this);
 		}
 
-		protected internal override void OnLeavingRegion()
+		protected internal override void OnLeavingMap()
 		{
 			if (m_master is Character)
 			{
@@ -320,7 +330,7 @@ namespace WCell.RealmServer.Entities
 			}
 			m_handler.OnRemove();
 			SendDespawn();
-			base.OnLeavingRegion();
+			base.OnLeavingMap();
 		}
 
 		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags relation)
@@ -342,11 +352,37 @@ namespace WCell.RealmServer.Entities
 			return m_entry.DefaultName + " (Template: " + m_template + ")";
 		}
 
+		public bool IsCloseEnough(Character chr)
+		{
+			return IsInRadius(chr.Position, 10.0f);
+		}
+
+		public bool CanUseInstantly(Character chr)
+		{
+			if (!IsCloseEnough(chr))
+			{
+				return false;
+			}
+
+			if (Entry.Type == GameObjectType.Chest && !Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+			{
+				// conditional chests are chests that contain quest items
+				// other chests must be opened through a spell
+				return false;
+			}
+			return CanInteractWith(chr);
+		}
+
 		public bool CanInteractWith(Character chr)
 		{
-			// Todo: Other checks?
-			if (IsInRadius(chr.Position, 10.0f))
+			if (IsEnabled)
 			{
+				if (Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+				{
+					// must have the quest
+					return Entry.RequiredQuests.Any(q => chr.QuestLog.HasActiveQuest(q));
+				}
+				// can always interact
 				return true;
 			}
 			return false;

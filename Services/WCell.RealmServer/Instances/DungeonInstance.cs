@@ -21,9 +21,9 @@ namespace WCell.RealmServer.Instances
 		{
 		}
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
+			base.InitMap();
 
 			m_lastReset = DateTime.Now;
 			m_timeoutTimer = new TimerEntry(OnTimeout);
