@@ -253,7 +253,7 @@ namespace WCell.RealmServer.Entities
 
 					if (QuestMgr.Loaded)
 					{
-						InitQuests();
+						LoadQuests();
 					}
 
 					if (m_record.FinishedQuests != null)
@@ -267,12 +267,7 @@ namespace WCell.RealmServer.Entities
 					throw new Exception(string.Format("Failed to load Character \"{0}\" for Client: {1}", this, Client), e);
 				}
 
-				if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize*4)
-				{
-					var zones = m_record.ExploredZones;
-					Array.Resize(ref zones, (int) UpdateFieldMgr.ExplorationZoneFieldSize*4);
-					m_record.ExploredZones = zones;
-				}
+				SetExploredZones();
 
 				// calculate amount of spent talent points per tree
 				m_talents.CalcSpentTalentPoints();
@@ -324,7 +319,30 @@ namespace WCell.RealmServer.Entities
 			ResetUpdateInfo();
 		}
 
-		internal void InitQuests()
+		/// <summary>
+		/// Ensure correct size of array of explored zones and  copy explored zones to UpdateValues array
+		/// </summary>
+		private unsafe void SetExploredZones()
+		{
+			if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize * 4)
+			{
+				var zones = m_record.ExploredZones;
+				Array.Resize(ref zones, UpdateFieldMgr.ExplorationZoneFieldSize * 4);
+				m_record.ExploredZones = zones;
+			}
+
+			fixed (byte* ptr = m_record.ExploredZones)
+			{
+				int index = 0;
+				for (var field = PlayerFields.EXPLORED_ZONES_1; field < PlayerFields.EXPLORED_ZONES_1 + UpdateFieldMgr.ExplorationZoneFieldSize; field++)
+				{
+					SetUInt32(field, *(uint*)(&ptr[index]));
+					index += 4;
+				}
+			}
+		}
+
+		internal void LoadQuests()
 		{
 			m_questLog.Load();
 		}
