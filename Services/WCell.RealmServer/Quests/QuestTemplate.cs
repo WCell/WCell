@@ -1385,6 +1385,54 @@ namespace WCell.RealmServer.Quests
 		}
 	}
 
+    [DataHolder]
+	public class QuestPOI : IDataHolder
+    {
+        public uint QuestId;
+        public uint PoiId;
+        public int ObjectiveIndex;
+        public MapId MapID;
+        public ZoneId ZoneId;
+        public uint FloorId;
+        public uint Unk3;
+        public uint Unk4;
+
+        [NotPersistent]
+        public List<QuestPOIPoints> Points = new List<QuestPOIPoints>();
+        
+        public void  FinalizeDataHolder()
+        {
+            if(QuestMgr.POIs.ContainsKey(QuestId))
+                QuestMgr.POIs[QuestId].Add(this);
+            else
+            {
+                var list = new List<QuestPOI> {this};
+                QuestMgr.POIs.Add(QuestId, list);
+            }
+        }
+    }
+
+    [DataHolder]
+    public class QuestPOIPoints : IDataHolder
+    {
+        public uint QuestId;
+        public uint PoiId;
+        public float X;
+        public float Y;
+
+        public void FinalizeDataHolder()
+        {
+            List<QuestPOI> list;
+            if (QuestMgr.POIs.TryGetValue(QuestId, out list))
+            {
+                foreach (var questpoi in list.Where(questpoi => questpoi.PoiId == PoiId))
+                {
+                    questpoi.Points.Add(this);
+                }
+            }
+        }
+    }
+
 	public struct EmoteTemplate
 	{
 		public uint Count;

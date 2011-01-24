@@ -130,6 +130,10 @@ namespace WCell.RealmServer.Quests
 		{
 			return id < Templates.Length ? Templates[id] : null;
 		}
+
+
+        public static Dictionary<uint, List<QuestPOI>> POIs = new Dictionary<uint, List<QuestPOI>>();
+
 		#endregion
 
 		#region Quest initialization and loading
@@ -155,7 +159,10 @@ namespace WCell.RealmServer.Quests
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();
+                ContentMgr.Load<QuestPOI>();
+                ContentMgr.Load<QuestPOIPoints>();
 				CreateQuestRelationGraph();
+				Loaded = true;
 
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();

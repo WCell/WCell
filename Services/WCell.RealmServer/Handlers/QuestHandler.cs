@@ -73,6 +73,64 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+        /// <summary>
+		/// Handles the quest position of interest query.
+		/// </summary>
+		/// <param name="client">The client.</param>
+		/// <param name="packet">The packet.</param>
+		[ClientPacketHandler(RealmServerOpCode.CMSG_QUEST_POI_QUERY)]
+        public static void HandleQuestPOIQuery(IRealmClient client, RealmPacketIn packet)
+        {
+            uint count = packet.ReadUInt32();
+            var questIds = new List<uint>();
+            for(var i = 0; i < count; i++)
+                questIds.Add(packet.ReadUInt32());
+            SendQuestPOIResponse(client, count, questIds);
+        }
+
+        public static void SendQuestPOIResponse(IRealmClient client, uint count, IEnumerable<uint> questIds)
+        {
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_QUEST_POI_QUERY_RESPONSE))
+            {
+                packet.Write(count);
+                foreach (var questId in questIds)
+                {
+                    List<QuestPOI> poiList;
+                    QuestMgr.POIs.TryGetValue(questId, out poiList);
+                    if (poiList != null)
+                    {
+                        packet.Write(questId);                  // quest ID
+                        packet.Write((uint)poiList.Count);      // POI count
+
+                        foreach (var poi in poiList)
+                        {
+                            packet.Write(poi.PoiId);            // POI index
+                            packet.Write(poi.ObjectiveIndex);   // objective index
+                            packet.Write((uint) poi.MapID);     // mapid
+                            packet.Write((uint) poi.ZoneId);    // world map area id
+                            packet.Write(poi.FloorId);          // floor id
+                            packet.Write(poi.Unk3);             // unknown
+                            packet.Write(poi.Unk4);             // unknown
+                            packet.Write((uint)poi.Points.Count); // POI points count
+
+                            foreach (var questPOIPoints in poi.Points)
+                            {
+                                packet.Write(questPOIPoints.X); // POI point x
+                                packet.Write(questPOIPoints.Y); // POI point y
+                            }
+                        }
+                    }
+                    else
+                    {
+                        packet.Write(questId); // quest ID
+                        packet.Write(0u); // POI count
+                    }
+                }
+
+                client.Send(packet);
+            }
+        }
+
 		/// <summary>
 		/// Handles the quest giver cancel.
 		/// </summary>
