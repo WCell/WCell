@@ -1333,13 +1333,22 @@ namespace WCell.RealmServer.Entities
 
 		public bool IsZoneExplored(int explorationBit)
 		{
+            // index of the byte within m_record.ExploredZones[index] that contains the bit
 			var index = explorationBit >> 3;
-			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize)
+
+            // Field size must be multiplied by 4
+            // ExploredZones contains 512 values
+            // ExplorationZoneFieldSize is 128
+			if (index >= UpdateFieldMgr.ExplorationZoneFieldSize * 4)
 			{
+                // Value is out of range, get out of here!
 				return false;
 			}
-			//return (GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index) & (1 << ((int)explorationBit % 32))) != 0;
+
+		    //var bitMask = (1 << (explorationBit%8));
+
 			return (m_record.ExploredZones[index] & (1 << (explorationBit % 8))) != 0;
+            //return (GetUInt32((int)PlayerFields.EXPLORED_ZONES_1 + (int)index) & (1 << ((int)explorationBit % 32))) != 0;
 		}
 
 		public void SetZoneExplored(ZoneId id, bool explored)
@@ -1394,10 +1403,12 @@ namespace WCell.RealmServer.Entities
 					}
 				}
 
-				// set the bit
-				var newValue = (byte)(byteVal | bitMask);
-				SetByte((int)PlayerFields.EXPLORED_ZONES_1 + fieldNo, byteNo % 4, newValue);
-				m_record.ExploredZones[byteNo] = newValue;
+                // set the bit client side
+                var newValue = (byte)(byteVal | bitMask);
+                SetByte((int)PlayerFields.EXPLORED_ZONES_1 + fieldNo, byteNo % 4, newValue);
+
+                // cache the new value for easy access
+                m_record.ExploredZones[byteNo] = newValue;
 
 				// check possible achievements
 				foreach (var worldMapOverlay in zone.WorldMapOverlays)
