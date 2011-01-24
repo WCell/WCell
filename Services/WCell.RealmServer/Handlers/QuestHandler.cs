@@ -487,13 +487,12 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="acceptable">if set to <c>true</c> [acceptable].</param>
 		public static void SendDetails(IEntity questGiver, QuestTemplate qt, Character chr, bool acceptable)
 		{
-
 			var locale = chr.Locale;
 			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTGIVER_QUEST_DETAILS))
 			{
 				pckt.Write(questGiver != null ? questGiver.EntityId : EntityId.Zero);
 
-				pckt.Write(EntityId.Zero);		// unknown, wotlk, quest sharing?
+				pckt.Write(EntityId.Zero);						// unknown, wotlk, quest sharing?
 
 				pckt.Write(qt.Id);
 
@@ -508,10 +507,10 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write((byte)0); // probably some pvp flag
 				if (qt.Flags.HasFlag(QuestFlags.HiddenRewards))
 				{
-					pckt.WriteUInt(0u);
-					pckt.WriteUInt(0u);
-					pckt.WriteUInt(0u);
-					pckt.WriteUInt(0u);
+					pckt.WriteUInt(0u);		// choice items
+					pckt.WriteUInt(0u);		// non-choosable items
+					pckt.WriteUInt(0u);		// money
+					pckt.WriteUInt(0u);		// xp
 				}
 				else
 				{
@@ -547,18 +546,19 @@ namespace WCell.RealmServer.Handlers
 							pckt.Write(0);
 						}
 					}
+
+					if (chr.Level >= RealmServerConfiguration.MaxCharacterLevel)
+					{
+						pckt.Write(qt.MoneyAtMaxLevel);
+					}
+					else
+					{
+						pckt.Write(qt.RewMoney);
+					}
+
+					pckt.Write(qt.CalcRewardXp(chr));						// since 3.3
 				}
 
-				if (chr.Level >= RealmServerConfiguration.MaxCharacterLevel)
-				{
-					pckt.Write(qt.MoneyAtMaxLevel);
-				}
-				else
-				{
-					pckt.Write(qt.RewMoney);
-				}
-
-				pckt.Write(qt.CalcRewardXp(chr));						// since 3.3
 				pckt.Write(qt.RewHonorAddition);
 				pckt.Write(qt.RewHonorMultiplier);						// since 3.3
 				pckt.Write((uint)qt.RewSpell);
@@ -570,11 +570,17 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(0);						// bonus arena points
 				pckt.Write(0);
 				for (uint i = 0; i < QuestConstants.MaxReputations; ++i)
-					pckt.Write((uint)qt.RewardReputations[i].Faction);
+				{
+					pckt.Write((uint) qt.RewardReputations[i].Faction);
+				}
 				for (uint i = 0; i < QuestConstants.MaxReputations; ++i)
+				{
 					pckt.Write(qt.RewardReputations[i].ValueId);
+				}
 				for (uint i = 0; i < QuestConstants.MaxReputations; ++i)
+				{
 					pckt.Write(qt.RewardReputations[i].Value);
+				}
 
 				pckt.Write(QuestConstants.MaxEmotes);
 				for (var i = 0; i < QuestConstants.MaxEmotes; i++)

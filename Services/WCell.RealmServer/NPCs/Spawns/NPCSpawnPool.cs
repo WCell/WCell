@@ -1,16 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.AI.Groups;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Spawns;
 using WCell.Util;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {
-	public class NPCSpawnPool
+	public class NPCSpawnPool : SpawnPool<NPCSpawnPool, NPCSpawnPoolTemplate, NPCSpawnPoint, NPCSpawnEntry, NPC>
 	{
 		protected internal AIGroup m_spawnlings;
-		protected internal List<NPCSpawnPoint> m_spawnPoints = new List<NPCSpawnPoint>(5);
-		protected bool m_active;
 
 		public NPCSpawnPool(Map map, NPCSpawnPoolTemplate templ)
 		{
@@ -25,29 +25,16 @@ namespace WCell.RealmServer.NPCs.Spawns
 			}
 		}
 
-		public Map Map
-		{
-			get; 
-			private set;
-		}
-
-		public NPCSpawnPoolTemplate Template
-		{
-			get;
-			private set;
-		}
-
-		public List<NPCSpawnPoint> SpawnPoints
-		{
-			get { return m_spawnPoints; }
-		}
-
 		/// <summary>
 		/// Whether all SpawnPoints of this pool are spawned
 		/// </summary>
 		public bool IsFullySpawned
 		{
-			get { return m_spawnPoints.Count >= Template.RealMaxSpawnAmount; }
+			get
+			{
+				var count = m_spawnPoints.Count(spawn => !spawn.IsActive);
+				return count >= Template.RealMaxSpawnAmount;
+			}
 		}
 
 		/// <summary>
@@ -137,7 +124,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 				return null;
 			}
 
-			var avgProb = 100f/totalCount;
+			var avgProb = 100f / totalCount;
 			totalProb += zeroCount * avgProb;					// count avgProb for every entry that has no explicit probability
 			var rand = Utility.RandomFloat() * totalProb;		// rand is in [0, totalProb)
 			var accumulatedProb = 0f;
@@ -153,7 +140,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 						prob = avgProb;
 					}
 					accumulatedProb += prob;
-					
+
 					if (rand <= accumulatedProb)
 					{
 						return spawn;
@@ -167,7 +154,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		#region Spawning
 		/// <summary>
-		/// Spawns NPCs until MaxAmount NPCs are spawned.
+		/// Spawns NPCs until MaxAmount of NPCs are spawned.
 		/// </summary>
 		public void SpawnFull()
 		{
@@ -190,9 +177,10 @@ namespace WCell.RealmServer.NPCs.Spawns
 		/// </summary>
 		public bool SpawnOneNow()
 		{
-			if (!IsFullySpawned)
+			var point = GetRandomInactiveSpawnPoint();
+			if (point != null)
 			{
-				GetRandomInactiveSpawnPoint().SpawnNow();
+				point.SpawnNow();
 				return true;
 			}
 			return false;
@@ -200,14 +188,11 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		public bool SpawnOneLater()
 		{
-			if (!IsFullySpawned)
+			var point = GetRandomInactiveSpawnPoint();
+			if (point != null)
 			{
-				var point = GetRandomInactiveSpawnPoint();
-				if (point != null)
-				{
-					point.SpawnLater();
-					return true;
-				}
+				point.SpawnLater();
+				return true;
 			}
 			return false;
 		}

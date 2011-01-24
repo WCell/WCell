@@ -4,6 +4,7 @@ using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Waypoints;
 using WCell.Util;
 using WCell.Util.Data;
@@ -16,7 +17,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public partial class NPCSpawnEntry : INPCDataHolder, IWorldLocation
+	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnEntry>, INPCDataHolder, IWorldLocation
 	{
 		private static uint highestSpawnId;
 		public static uint GenerateSpawnId()
@@ -29,7 +30,6 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		}
 
-		public uint SpawnId;
 		public NPCId EntryId;
 
 		[NotPersistent]
@@ -39,44 +39,8 @@ namespace WCell.RealmServer.NPCs.Spawns
 			set;
 		}
 
-		private MapId m_MapId = MapId.End;
-
-		public MapId MapId
-		{
-			get { return m_MapId; }
-			set { m_MapId = value; }
-		}
-
-		public Map Map
-		{
-			get { return World.GetMap(MapId); }
-		}
-
-		/// <summary>
-		/// The position of this SpawnEntry
-		/// </summary>
-		public Vector3 Position
-		{
-			get;
-			set;
-		}
-
-		public uint PhaseMask = 1;
-
 		public float Orientation;
 		public AIMovementType MoveType;
-
-		public int RespawnSeconds;
-
-		/// <summary>
-		/// Min Delay in milliseconds until the unit should be respawned
-		/// </summary>
-		public int RespawnSecondsMin;
-
-		/// <summary>
-		/// Max Delay in milliseconds until the unit should be respawned
-		/// </summary>
-		public int RespawnSecondsMax;
 
 		public bool IsDead;
 
@@ -84,187 +48,28 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		public uint EquipmentId;
 
-		public uint EventId;
-
-		/// <summary>
-		/// Whether this Entry spawns automatically (or is spawned by certain events)
-		/// </summary>
-		public bool AutoSpawns = true;
-
 		public NPCAddonData AddonData
 		{
 			get;
 			set;
 		}
 
-
-		public uint PoolId;
-		public float PoolRespawnProbability;
-
-		private NPCSpawnPoolTemplate m_PoolTemplate;
-
-		[NotPersistent]
-		public NPCSpawnPoolTemplate PoolTemplate
-		{
-			get { return m_PoolTemplate; }
-			private set { m_PoolTemplate = value; }
-		}
-
-
 		[NotPersistent]
 		public NPCEquipmentEntry Equipment;
 
-		/// <summary>
-		/// If the number of spawned creatures drops below this limit, the critical respawn-delay is used
-		/// </summary>
-		//public uint CriticalAmount;
-
-		/// <summary>
-		/// Min Delay when amount of spawned NPCs drops below CriticalAmount
-		/// </summary>
-		//public uint CriticalDelayMin;
-
-		/// <summary>
-		/// Max Delay when amount of spawned NPCs drops below CriticalAmount
-		/// </summary>
-		//public uint CriticalDelayMax;;
-
-		[NotPersistent]
-		public readonly LinkedList<WaypointEntry> Waypoints = new LinkedList<WaypointEntry>();
-
-		private bool m_HasDefaultWaypoints;
-
-		/// <summary>
-		/// Whether this SpawnEntry has fixed Waypoints from DB
-		/// </summary>
-		[NotPersistent]
-		public bool HasDefaultWaypoints
+		private void AddToPoolTemplate()
 		{
-			get { return m_HasDefaultWaypoints; }
-			set
+			if (PoolId != 0 && NPCMgr.SpawnPoolTemplates.TryGetValue(PoolId, out m_PoolTemplate))
 			{
-				m_HasDefaultWaypoints = value;
-				Entry.MovesRandomly = false;
-			}
-		}
-
-		public int GetRandomRespawnMillis()
-		{
-			return 1000 * Utility.Random(RespawnSecondsMin, RespawnSecondsMax);
-		}
-
-		#region WPs
-		public int WPCount
-		{
-			get { return Waypoints.Count; }
-		}
-
-		public WaypointEntry CreateWP(Vector3 pos, float orientation)
-		{
-			var last = Waypoints.Last;
-			WaypointEntry entry;
-			if (last != null)
-			{
-				entry = new WaypointEntry
-				{
-					Id = last.Value.Id + 1,
-					SpawnEntry = this,
-				};
+				// pool already exists
+				m_PoolTemplate.AddEntry(this);
 			}
 			else
 			{
-				entry = new WaypointEntry
-				{
-					Id = 1,
-					SpawnEntry = this,
-				};
-			}
-
-			entry.Position = pos;
-			entry.Orientation = orientation;
-			return entry;
-		}
-
-		/// <summary>
-		/// Adds the given positions as WPs
-		/// </summary>
-		/// <param name="wps"></param>
-		public void AddWPs(Vector3[] wps)
-		{
-			if (wps.Length < 1)
-			{
-				throw new ArgumentException("wps are empty.");
-			}
-			var len = wps.Length;
-			Vector3 first;
-			if (Waypoints.Count > 0)
-			{
-				// adding to already existing WPs: Make sure that the orientation is correct
-				first = Waypoints.First.Value.Position;
-				var last = Waypoints.Last.Value;
-				last.Orientation = last.Position.GetAngleTowards(wps[0]);
-			}
-			else
-			{
-				first = wps[0];
-			}
-
-			for (var i = 0; i < len; i++)
-			{
-				var pos = wps[i];
-				WaypointEntry wp;
-				if (i < len - 1)
-				{
-					wp = CreateWP(pos, pos.GetAngleTowards(wps[i + 1]));
-				}
-				else if (i > 0)
-				{
-					wp = CreateWP(pos, pos.GetAngleTowards(first));
-				}
-				else
-				{
-					wp = CreateWP(pos, Utility.Random(0f, 2 * MathUtil.PI));
-				}
-				Waypoints.AddLast(wp);
+				// create and register new pool
+				m_PoolTemplate = new NPCSpawnPoolTemplate(this);
 			}
 		}
-
-		public LinkedListNode<WaypointEntry> AddWP(Vector3 pos, float orientation)
-		{
-			var newWp = CreateWP(pos, orientation);
-			return Waypoints.AddLast(newWp);
-		}
-
-		public LinkedListNode<WaypointEntry> InsertWPAfter(WaypointEntry entry, Vector3 pos, float orientation)
-		{
-			var newWp = CreateWP(pos, orientation);
-			return Waypoints.AddAfter(entry.Node, newWp);
-		}
-
-		public LinkedListNode<WaypointEntry> InsertWPBefore(WaypointEntry entry, Vector3 pos, float orientation)
-		{
-			var newWp = CreateWP(pos, orientation);
-			return Waypoints.AddBefore(entry.Node, newWp);
-		}
-		#endregion
-
-		/// <summary>
-		/// Increases the Id of all Waypoints, starting from the given node
-		/// </summary>
-		/// <param name="node">May be null</param>
-		public void IncreaseWPIds(LinkedListNode<WaypointEntry> node)
-		{
-			while (node != null)
-			{
-				node.Value.Id++;
-				node = node.Next;
-			}
-		}
-
-		//public int GetRandomCriticalDelay()
-		//{
-		//    return (int)Utility.Random(CriticalDelayMin, CriticalDelayMax);
-		//}
 
 		/// <summary>
 		/// Finalize this NPCSpawnEntry
@@ -359,20 +164,6 @@ namespace WCell.RealmServer.NPCs.Spawns
 			}
 		}
 
-		private void AddToPoolTemplate()
-		{
-			if (PoolId != 0 && NPCMgr.SpawnPoolTemplates.TryGetValue(PoolId, out m_PoolTemplate))
-			{
-				// pool already exists
-				m_PoolTemplate.AddEntry(this);
-			}
-			else
-			{
-				// create and register new pool
-				m_PoolTemplate = new NPCSpawnPoolTemplate(this);
-			}
-		}
-
 		#region Events
 		internal void NotifySpawned(NPC npc)
 		{
@@ -384,22 +175,151 @@ namespace WCell.RealmServer.NPCs.Spawns
 		}
 		#endregion
 
-		public void GenerateRandomWPs()
+		#region Waypoints
+		[NotPersistent]
+		public readonly LinkedList<WaypointEntry> Waypoints = new LinkedList<WaypointEntry>();
+
+		private bool m_HasDefaultWaypoints;
+
+		/// <summary>
+		/// Whether this SpawnEntry has fixed Waypoints from DB
+		/// </summary>
+		[NotPersistent]
+		public bool HasDefaultWaypoints
 		{
-			Waypoints.Clear();
-			AddRandomWPs();
+			get { return m_HasDefaultWaypoints; }
+			set
+			{
+				m_HasDefaultWaypoints = value;
+				Entry.MovesRandomly = false;
+			}
 		}
 
-		public void AddRandomWPs()
+		public void RecreateRandomWaypoints()
+		{
+			Waypoints.Clear();
+			CreateRandomWaypoints();
+		}
+
+		public void CreateRandomWaypoints()
 		{
 			var terrain = TerrainMgr.GetTerrain(MapId);
 			if (terrain != null)
 			{
 				var gen = new RandomWaypointGenerator();
 				var wps = gen.GenerateWaypoints(terrain, Position);
-				AddWPs(wps);
+				AddWaypoints(wps);
 			}
 		}
+		public int WaypointCount
+		{
+			get { return Waypoints.Count; }
+		}
+
+		/// <summary>
+		/// Creates a Waypoint but does not add it
+		/// </summary>
+		public WaypointEntry CreateWaypoint(Vector3 pos, float orientation)
+		{
+			var last = Waypoints.Last;
+			WaypointEntry entry;
+			if (last != null)
+			{
+				entry = new WaypointEntry
+				{
+					Id = last.Value.Id + 1,
+					SpawnEntry = this,
+				};
+			}
+			else
+			{
+				entry = new WaypointEntry
+				{
+					Id = 1,
+					SpawnEntry = this,
+				};
+			}
+
+			entry.Position = pos;
+			entry.Orientation = orientation;
+			return entry;
+		}
+
+		/// <summary>
+		/// Adds the given positions as WPs
+		/// </summary>
+		/// <param name="wps"></param>
+		public void AddWaypoints(Vector3[] wps)
+		{
+			if (wps.Length < 1)
+			{
+				throw new ArgumentException("wps are empty.");
+			}
+			var len = wps.Length;
+			Vector3 first;
+			if (Waypoints.Count > 0)
+			{
+				// adding to already existing WPs: Make sure that the orientation is correct
+				first = Waypoints.First.Value.Position;
+				var last = Waypoints.Last.Value;
+				last.Orientation = last.Position.GetAngleTowards(wps[0]);
+			}
+			else
+			{
+				first = wps[0];
+			}
+
+			for (var i = 0; i < len; i++)
+			{
+				var pos = wps[i];
+				WaypointEntry wp;
+				if (i < len - 1)
+				{
+					wp = CreateWaypoint(pos, pos.GetAngleTowards(wps[i + 1]));
+				}
+				else if (i > 0)
+				{
+					wp = CreateWaypoint(pos, pos.GetAngleTowards(first));
+				}
+				else
+				{
+					wp = CreateWaypoint(pos, Utility.Random(0f, 2 * MathUtil.PI));
+				}
+				Waypoints.AddLast(wp);
+			}
+		}
+
+		public LinkedListNode<WaypointEntry> AddWaypoint(Vector3 pos, float orientation)
+		{
+			var newWp = CreateWaypoint(pos, orientation);
+			return Waypoints.AddLast(newWp);
+		}
+
+		public LinkedListNode<WaypointEntry> InsertWaypointAfter(WaypointEntry entry, Vector3 pos, float orientation)
+		{
+			var newWp = CreateWaypoint(pos, orientation);
+			return Waypoints.AddAfter(entry.Node, newWp);
+		}
+
+		public LinkedListNode<WaypointEntry> InsertWaypointBefore(WaypointEntry entry, Vector3 pos, float orientation)
+		{
+			var newWp = CreateWaypoint(pos, orientation);
+			return Waypoints.AddBefore(entry.Node, newWp);
+		}
+
+		/// <summary>
+		/// Increases the Id of all Waypoints, starting from the given node
+		/// </summary>
+		/// <param name="node">May be null</param>
+		public void IncreaseWPIds(LinkedListNode<WaypointEntry> node)
+		{
+			while (node != null)
+			{
+				node.Value.Id++;
+				node = node.Next;
+			}
+		}
+		#endregion
 
 		public override string ToString()
 		{

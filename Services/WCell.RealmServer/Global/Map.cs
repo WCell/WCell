@@ -91,11 +91,14 @@ namespace WCell.RealmServer.Global
 		public static bool UpdateInactiveAreasDefault = false;
 
 		/// <summary>
-		/// Whether to have NPCs scan inactive nodes for enemies
+		/// Whether to have NPCs in inactive areas scan for enemies
 		/// </summary>
 		[Variable("ScanInactiveAreas")]
 		public static bool ScanInactiveAreasDefault = false;
 
+		/// <summary>
+		/// Whether NPCs can evade and run back to their spawn point when pulled too far away
+		/// </summary>
 		[Variable("NPCsCanEvade")]
 		public static bool CanNPCsEvadeDefault = true;
 

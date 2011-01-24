@@ -5,32 +5,15 @@ using System.Text;
 using System.Threading;
 using NLog;
 using WCell.Constants.World;
+using WCell.RealmServer.Spawns;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {
 	[DataHolder]
-	public class NPCSpawnPoolTemplate : IDataHolder
+	public class NPCSpawnPoolTemplate : SpawnPoolTemplate<NPCSpawnEntry>, IDataHolder
 	{
 		private static int highestId;
-
-		public uint PoolId;
-
-		public int MaxSpawnAmount;
-
-		public int RealMaxSpawnAmount
-		{
-			get { return Math.Min(MaxSpawnAmount, Entries.Count); }
-		}
-
-		[NotPersistent]
-		public bool AutoSpawns = false;
-
-		[NotPersistent]
-		public MapId MapId = MapId.End;
-
-		[NotPersistent]
-		public List<NPCSpawnEntry> Entries = new List<NPCSpawnEntry>(5);
 
 		public NPCSpawnPoolTemplate()
 		{
