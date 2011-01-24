@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Battlegrounds
 	public delegate Battleground BattlegroundCreator();
 
 	/* TODO
-	 * Remove Areans from current battlegrounds and implement a seperate queue for them
+	 * Remove Arenas from current battlegrounds and implement a seperate queue for them
 	 * 
 	 */
 

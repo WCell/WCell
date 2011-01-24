@@ -1,21 +1,26 @@
 using WCell.Constants;
+using WCell.Constants.Battlegrounds;
+using WCell.Constants.Chat;
+using WCell.Constants.Misc;
+using WCell.Constants.World;
 using WCell.Core.Timers;
+using WCell.Addons.Default.Lang;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.Handlers;
+using WCell.RealmServer.Lang;
 using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 {
 	public abstract class ArathiBase
 	{
-		// TODO: Spawn a flag from one template from each GOEntry
-		// TODO: Check GO Use registering
-
 		/// <summary>
 		/// Time to convert a cap point in millis
 		/// </summary>
 		[Variable("ABCapturePointConversionDelayMillis")]
-		public static int CapturePointConversionDelayMillis = 20000;
+		public static int CapturePointConversionDelayMillis = 60000;
 
 		/// <summary>
 		/// Time until score starts rolling in, after capturing
@@ -35,26 +40,42 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
 		#region Fields
 		private BattlegroundSide _side = BattlegroundSide.End;
+        private BaseState _state = BaseState.Neutral;
 
 		public GameObject FlagStand;
         public GameObject ActualAura;
+
+        protected GOSpawnEntry neutralBannerSpawn;
+        protected GOSpawnEntry neutralAuraSpawn;
+
+        protected GOSpawnEntry allianceBannerSpawn;
+        protected GOSpawnEntry allianceAuraSpawn;
+
+        protected GOSpawnEntry hordeBannerSpawn;
+        protected GOSpawnEntry hordeAuraSpawn;
+
+        protected GOSpawnEntry allianceAttackBannerSpawn;
+        protected GOSpawnEntry hordeAttackBannerSpawn;
+
+        protected WorldStateId showIconNeutral;
+        protected WorldStateId showIconAllianceControlled;
+        protected WorldStateId showIconAllianceContested;
+        protected WorldStateId showIconHordeControlled;
+        protected WorldStateId showIconHordeContested;
 
 		/// <summary>
 		/// The character currently capturing the flag.
 		/// </summary>
 		public Character Capturer;
-		public uint Score;
 		public ArathiBasin Instance;
 
-		//Whether or not the flag is being captured.
-		public bool Challenged;
 		public bool GivesScore;
 
 		public TimerEntry StartScoreTimer;
 		public TimerEntry CaptureTimer;
 		#endregion
 
-		protected ArathiBase(ArathiBasin instance, GOEntry flagstand)
+		protected ArathiBase(ArathiBasin instance)
 		{
 			Instance = instance;
 
@@ -72,6 +93,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			Instance.RegisterUpdatableLater(StartScoreTimer);
 			Instance.RegisterUpdatableLater(CaptureTimer);
 
+            Names = new string[(int)ClientLocale.End];
+            AddSpawns();
 			SpawnNeutral();
 		}
 
@@ -79,6 +102,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 		{
 			get;
 		}
+
+        public virtual string[] Names
+        {
+            get;
+            protected set;
+        }
 
 		/// <summary>
 		/// The side currently in control of this base.
@@ -90,18 +119,61 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			set { _side = value; }
 		}
 
+        /// <summary>
+        /// The state currently of this base
+        /// </summary>
+        public BaseState State
+        {
+            get { return _state; }
+            set { _state = value; }
+        }
+
 		/// <summary>
-		/// TODO: Spawn the neutral flag
 		/// Begins the capturing process. A base will turn if not taken back
 		/// </summary>
 		/// <param name="chr"></param>
 		public void BeginCapture(Character chr)
         {
             Capturer = chr;
-            Challenged = true;
 
 			CaptureTimer.Start(CapturePointConversionDelayMillis, 0);
             SpawnContested();
+            
+            ABSounds sound;
+            if (_side == BattlegroundSide.End)
+            {
+                sound = ABSounds.NodeContested;
+                Instance.WorldStates.SetInt32(showIconNeutral, 0);
+            }
+            else if (_side == BattlegroundSide.Alliance)
+            {
+                sound = ABSounds.NodeAssaultedHorde;
+            }
+            else
+            {
+                sound = ABSounds.NodeAssaultedAlliance;
+            }
+
+            if (chr.Battlegrounds.Team.Side == BattlegroundSide.Alliance)
+            {
+                State = BaseState.ContestedAlliance;
+                Instance.WorldStates.SetInt32(showIconAllianceContested, 1);
+                Instance.WorldStates.SetInt32(showIconHordeControlled, 0);
+            }
+            else
+            {
+                State = BaseState.ContestedHorde;
+                Instance.WorldStates.SetInt32(showIconHordeContested, 1);
+                Instance.WorldStates.SetInt32(showIconAllianceControlled, 0);
+            }
+
+            var time = RealmLocalizer.FormatTimeSecondsMinutes(CapturePointConversionDelayMillis / 1000);
+            foreach (Character character in Instance.Characters)
+            {
+                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(character.Locale, AddonMsgKey.ABBaseClaimed, chr.Name, Names[(int)character.Locale], chr.Battlegrounds.Team.Side, time));
+            }
+
+            MiscHandler.SendPlaySoundToMap(Instance, (uint)sound);
 
             var evt = BaseChallenged;
             if (evt != null)
@@ -117,18 +189,31 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 		public void InterruptCapture(Character chr)
 		{
 			Capturer = null;
-			Challenged = false;
 
 			var stats = (ArathiStats)chr.Battlegrounds.Stats;
 			stats.BasesDefended++;
 
 			CaptureTimer.Stop();
-			StartScoreTimer.Stop();
 
             if (BaseOwner == BattlegroundSide.Horde)
+            {
                 SpawnHorde();
+                State = BaseState.CapturedHorde;
+                Instance.WorldStates.SetInt32(showIconHordeControlled, 1);
+                Instance.WorldStates.SetInt32(showIconAllianceContested, 0);
+            }
             else
+            {
                 SpawnAlliance();
+                State = BaseState.CapturedAlliance;
+                Instance.WorldStates.SetInt32(showIconAllianceControlled, 1);
+                Instance.WorldStates.SetInt32(showIconHordeContested, 0);
+            }
+
+            foreach (Character character in Instance.Characters)
+            {
+                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(character.Locale, AddonMsgKey.ABBaseDefended, chr.Name, Names[(int)character.Locale]));
+            }
 
 			var evt = CaptureInterrupted;
 			if (evt != null)
@@ -137,6 +222,34 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			}
 		}
 
+        /// <summary>
+        /// Call to interrupt the capturing process and begin a new capturing process
+        /// </summary>
+        public void ChangeCapture(Character chr)
+        {
+            Capturer = chr;
+            CaptureTimer.Stop();
+            StartScoreTimer.Stop();
+
+            CaptureTimer.Start(CapturePointConversionDelayMillis, 0);
+            if (chr.Battlegrounds.Team.Side == BattlegroundSide.Alliance)
+            {
+                State = BaseState.ContestedAlliance;
+                Instance.WorldStates.SetInt32(showIconAllianceContested, 1);
+                Instance.WorldStates.SetInt32(showIconHordeContested, 0);
+            }
+            else
+            {
+                State = BaseState.ContestedHorde;
+                Instance.WorldStates.SetInt32(showIconHordeContested, 1);
+                Instance.WorldStates.SetInt32(showIconAllianceContested, 0);
+            }
+            foreach (Character character in Instance.Characters)
+            {
+                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(character.Locale, AddonMsgKey.ABBaseAssaulted, chr.Name, Names[(int)character.Locale]));
+            }
+            SpawnContested();
+        }
 		/// <summary>
 		/// Finalizes a capture (Flag changes colour (de/respawns, casts spells, etc)
 		/// </summary>
@@ -145,22 +258,38 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			var stats = (ArathiStats)Capturer.Battlegrounds.Stats;
 			stats.BasesAssaulted++;
 
+            FlagStand.Delete();
+            ActualAura.Delete();
+
+            ABSounds sound;
 			if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Horde)
 			{
-				Instance.HordeBaseCount++;
 				BaseOwner = BattlegroundSide.Horde;
+                State = BaseState.CapturedHorde;
                 SpawnHorde();
+                sound = ABSounds.NodeCapturedHorde;
+                Instance.WorldStates.SetInt32(showIconHordeControlled, 1);
+                Instance.WorldStates.SetInt32(showIconHordeContested, 0);
 			}
 			else
 			{
-				Instance.AllianceBaseCount++;
 				BaseOwner = BattlegroundSide.Alliance;
+                State = BaseState.CapturedAlliance;
                 SpawnAlliance();
+                sound = ABSounds.NodeCapturedAlliance;
+                Instance.WorldStates.SetInt32(showIconAllianceControlled, 1);
+                Instance.WorldStates.SetInt32(showIconAllianceContested, 0);
 			}
 
 			// It takes a few minutes before a captured flag begins to give score.
 			StartScoreTimer.Start(ScoreDelayMillis, 0);
 
+            foreach (Character character in Instance.Characters)
+            {
+                character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(character.Locale, AddonMsgKey.ABBaseTaken, BaseOwner, Names[(int)character.Locale]));
+            }
+
+            MiscHandler.SendPlaySoundToMap(Instance, (uint)sound);
 			var evt = BaseCaptured;
 			if (evt != null)
 			{
@@ -168,71 +297,76 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 			}
 		}
 
+		public void PlayerClickedOnFlagstand(GameObject go, Character chr)
+        {
+                FlagStand.Delete();
+                ActualAura.Delete();
 
-		public void RegisterFlagstand(GOSpawn spawn)
-		{
-			spawn.Entry.Used += (go, chr) =>
-			{
-				if (go == FlagStand)
-				{
-                    FlagStand.SendDespawn();
-                    ActualAura.SendDespawn();
-
-                    FlagStand.Delete();
-                    ActualAura.Delete();
-
-                    FlagStand = null;
-                    ActualAura = null;
-					if (Challenged)
-					{
-						InterruptCapture(chr);
-						return true;
-					}
-
-					BeginCapture(chr);
-					return true;
-				}
-				return false;
-			};
+                if (_state == BaseState.Neutral || _state == BaseState.CapturedAlliance || _state == BaseState.CapturedHorde)
+                {
+                    BeginCapture(chr);
+                }
+                else
+                {
+                    if (_side == BattlegroundSide.End)
+                        ChangeCapture(chr);
+                    else
+                        InterruptCapture(chr);
+                }
 		}
+
+        protected virtual void AddSpawns()
+        {
+        }
+
         /// <summary>
         /// Spawn neutral flag (use only at the beginning)
         /// </summary>
-		protected virtual void SpawnNeutral()
+		protected void SpawnNeutral()
         {
-         
+            FlagStand = neutralBannerSpawn.Spawn(Instance);
+            ActualAura = neutralAuraSpawn.Spawn(Instance);
         }
 
         /// <summary>
         /// Spawn Horde flag (use only when CaptureTimer = 0)
         /// </summary>
-		protected virtual void SpawnHorde()
+		protected void SpawnHorde()
 		{
-
+            FlagStand = hordeBannerSpawn.Spawn(Instance);
+            ActualAura = hordeAuraSpawn.Spawn(Instance);
 		}
 
         /// <summary>
         /// Spawn Alliance flag (use only when CaptureTimer = 0)
         /// </summary>
-		protected virtual void SpawnAlliance()
+		protected void SpawnAlliance()
 		{
-
+            FlagStand = allianceBannerSpawn.Spawn(Instance);
+            ActualAura = allianceAuraSpawn.Spawn(Instance);
 		}
 
         /// <summary>
         /// Spawn contested flag according to the team which attacks the base
         /// </summary>
-        protected virtual void SpawnContested()
+        protected void SpawnContested()
         {
-        
+            if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Alliance)
+                FlagStand = allianceAttackBannerSpawn.Spawn(Instance);
+            else
+                FlagStand = hordeAttackBannerSpawn.Spawn(Instance);
+
+            ActualAura = neutralAuraSpawn.Spawn(Instance);
         }
 
 		public void Destroy()
 		{
 			Capturer = null;
 			Instance = null;
-            FlagStand = null;
-            ActualAura = null;
+            FlagStand.Delete();
+            FlagStand.Dispose();
+            ActualAura.Delete();
+            ActualAura.Dispose();
 		}
 	}
 }

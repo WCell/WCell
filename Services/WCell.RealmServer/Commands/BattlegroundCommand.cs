@@ -159,7 +159,10 @@ namespace WCell.RealmServer.Commands
 
 				if (bg != null)
 				{
-					bg.StartPreparation();
+                    if (bg.Status < BattlegroundStatus.Preparing)
+                        bg.StartPreparation();
+                    else
+                        trigger.Reply("The battleground is already in progress !");
 				}
 			}
 		}

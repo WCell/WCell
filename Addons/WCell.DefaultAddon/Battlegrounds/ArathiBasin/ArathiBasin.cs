@@ -4,10 +4,13 @@ using WCell.Addons.Default.Lang;
 using WCell.Constants;
 using WCell.Constants.AreaTriggers;
 using WCell.Constants.Battlegrounds;
+using WCell.Constants.Factions;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
+using WCell.Core.Timers;
 using WCell.RealmServer.AreaTriggers;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Chat;
@@ -42,9 +45,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             NearVictoryScoreDefault = 1400;
         }
 
-		[Variable("ABFlagRespawnTimeMillis")]
-        public static int FlagRespawnTimeMillis = 20 * 1000;
-
         [Variable("ABPrepTimeMillis")]
         public static int ABPreparationTimeMillis = 60 * 1000;
 
@@ -54,24 +54,33 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [Variable("ABPowerUpRespawnTime")]
         public static int PowerUpRespawnTimeMillis = 90 * 1000;
 
+        [Variable("ABReputationScoreTicks")]
+        public static int ReputationScoreTicks = 200;
+
+        [Variable("ABHonorScoreTicks")]
+        public static int HonorScoreTicks = 330;
+
+        [Variable("ABReputationScore")]
+        public static int ReputationScore = 10;
+
         public float DefaultScoreTickDelay = 12;
         #endregion
 
         #region Fields
-        /*public static GOEntry FlagStandHorde;
-        public static GOEntry FlagStandAlliance;*/
-
         private GameObject _allianceDoor;
         private GameObject _hordeDoor;
 
-        public readonly ArathiBase[] Bases;
+        public ArathiBase[] Bases;
         public int MaxScore;
 	    public int NearVictoryScore;
 
         public int[] scoreTicks, tickLengths;
-	    private uint _allianceLastTick, _hordeLastTick;
-        
+	    private uint _allianceScoreLastTick, _hordeScoreLastTick;
+        private uint _allianceHonorLastTick, _hordeHonorLastTick;
+        private uint _allianceReputationLastTick, _hordeReputationlastTick;
+
         public bool isInformatedNearVictory;
+        public TimerEntry timerUpdate;
         #endregion
 
 	    #region Props
@@ -145,9 +154,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         #region Overrides
 
-        protected override void InitRegion()
+        protected override void InitMap()
         {
-            base.InitRegion();
+            base.InitMap();
             Bases[(int)ArathiBases.Blacksmith] = new Blacksmith(this);
             Bases[(int)ArathiBases.Farm] = new Farm(this);
             Bases[(int)ArathiBases.GoldMine] = new GoldMine(this);
@@ -205,13 +214,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnStart()
         {
             base.OnStart();
-
             Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnStart));
-
             _allianceDoor.State = GameObjectState.Disabled;
             _hordeDoor.State = GameObjectState.Disabled;
 
-            CallPeriodically(BattleUpdateDelayMillis, Update);
+            timerUpdate = CallPeriodically(BattleUpdateDelayMillis, Update);
         }
 
         protected override void OnFinish(bool disposing)
@@ -224,16 +231,14 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime),
-                                                                                                        PreparationTimeMillis / 2000);
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime), PreparationTimeMillis / 2000);
         }
 
         protected override void OnPrepare()
         {
             base.OnPrepare();
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare),
-                                                                                                        time);
+            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare), time);
         }
 
         /// <summary>
@@ -243,7 +248,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnLeave(Character chr)
         {
             base.OnLeave(chr);
-
             Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnLeave), chr.Name);
         }
 
@@ -254,7 +258,6 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnEnter(Character chr)
         {
             base.OnEnter(chr);
-
             Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnEnter), chr.Name);
         }
 
@@ -264,8 +267,19 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry allianceDoorEntry = GOMgr.GetEntry(GOEntryId.ALLIANCEDOOR);
             GOEntry hordeDoorEntry = GOMgr.GetEntry(GOEntryId.HORDEDOOR);
             
-            _allianceDoor = allianceDoorEntry.FirstSpawn.Spawn(this);
-            _hordeDoor = hordeDoorEntry.FirstSpawn.Spawn(this);
+            _allianceDoor = allianceDoorEntry.FirstSpawnEntry.Spawn(this);
+            _hordeDoor = hordeDoorEntry.FirstSpawnEntry.Spawn(this);
+        }
+
+        public override void OnPlayerClickedOnflag(GameObject go, Character chr)
+        {
+            Bases.First(arathiBase => arathiBase.FlagStand == go).PlayerClickedOnFlagstand(go, chr);
+        }
+
+        public override void FinishFight()
+        {
+            timerUpdate.Stop();
+            base.FinishFight();
         }
         #endregion
 
@@ -278,31 +292,58 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                 if(team.Side == BattlegroundSide.Horde)
                 {
                     bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Horde && node.GivesScore);
-                    HordeBaseCount = bases;
-                    _hordeLastTick += (uint)BattleUpdateDelayMillis;
+                    HordeBaseCount = Bases.Count(node => node.BaseOwner == BattlegroundSide.Horde);
+                    _hordeScoreLastTick += (uint)BattleUpdateDelayMillis;
+                    _hordeHonorLastTick += (uint)scoreTicks[bases];
+                    _hordeReputationlastTick += (uint)scoreTicks[bases];
                 }
 
                 else
                 {
                     bases = Bases.Count(node => node.BaseOwner == BattlegroundSide.Alliance && node.GivesScore);
-                    AllianceBaseCount = bases;
-                    _allianceLastTick += (uint)BattleUpdateDelayMillis;
+                    AllianceBaseCount = Bases.Count(node => node.BaseOwner == BattlegroundSide.Alliance);
+                    _allianceScoreLastTick += (uint)BattleUpdateDelayMillis;
+                    _allianceHonorLastTick += (uint)scoreTicks[bases];
+                    _allianceReputationLastTick += (uint)scoreTicks[bases];
+
                 }
 
 
                 // See http://www.wowwiki.com/Arathi_Basin#Accumulating_Resources
                 int tickLength = tickLengths[bases];
-
-                if (team.Side == BattlegroundSide.Horde && _hordeLastTick >= tickLength)
+                
+                if (team.Side == BattlegroundSide.Horde && _hordeScoreLastTick >= tickLength)
                 {
-                        HordeScore += scoreTicks[bases];
-                        _hordeLastTick = 0;
+                     HordeScore += scoreTicks[bases];
+                     _hordeScoreLastTick = 0;
+
+                    if (_hordeReputationlastTick >= ReputationScoreTicks)
+                    {
+                        CallOnAllCharacters(chr => chr.Reputations.GainReputation(FactionId.TheDefilers, ReputationScore));
+                        _hordeReputationlastTick = 0;
+                    }
+
+                    if (_hordeHonorLastTick >= HonorScoreTicks)
+                    {
+                        // TODO : Honor Formula
+                        _hordeHonorLastTick = 0;
+                    }
                 }
-
-                else if(_allianceLastTick >= tickLength)
+                else if (_allianceScoreLastTick >= tickLength)
                 {
-                        AllianceScore += scoreTicks[bases];
-                        _allianceLastTick = 0;
+                    AllianceScore += scoreTicks[bases];
+                    _allianceScoreLastTick = 0;
+
+                    if (_allianceHonorLastTick >= ReputationScoreTicks)
+                    {
+                        CallOnAllCharacters(chr => chr.Reputations.GainReputation(FactionId.TheLeagueOfArathor, ReputationScore));
+                        _allianceHonorLastTick = 0;
+                    }
+                    if (_allianceReputationLastTick >= HonorScoreTicks)
+                    {
+                        // TODO : Honor Formula
+                        _allianceReputationLastTick = 0;
+                    }
                 }
             }
         }
@@ -311,7 +352,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         {
             Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABNearVictory), 
                                                                                                             team.Side.ToString(), score);
-            MiscHandler.SendPlaySoundToRegion(this, (uint)ABSounds.NearVictory);
+            MiscHandler.SendPlaySoundToMap(this, (uint)ABSounds.NearVictory);
             isInformatedNearVictory = true;
         }
 
@@ -324,13 +365,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry allianceDoorEntry = GOMgr.GetEntry(GOEntryId.ALLIANCEDOOR);
             GOEntry hordeDoorEntry = GOMgr.GetEntry(GOEntryId.HORDEDOOR);
             
-            allianceDoorEntry.FirstSpawn.State = GameObjectState.Enabled;
+            allianceDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             allianceDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            allianceDoorEntry.FirstSpawn.AutoSpawn = false;
+            allianceDoorEntry.FirstSpawnEntry.AutoSpawn = false;
 
-            hordeDoorEntry.FirstSpawn.State = GameObjectState.Enabled;
+            hordeDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             hordeDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            hordeDoorEntry.FirstSpawn.AutoSpawn = false;
+            hordeDoorEntry.FirstSpawnEntry.AutoSpawn = false;
 
             GOEntry bersekerBuffEntry = GOMgr.GetEntry(GOEntryId.BerserkBuff_6);
             GOEntry foodBuffEntry = GOMgr.GetEntry(GOEntryId.FoodBuff_5);
@@ -352,23 +393,21 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry hordeBannerAuraEntry = GOMgr.GetEntry(GOEntryId.HordeBannerAura);
             GOEntry allianceBannerAuraEntry = GOMgr.GetEntry(GOEntryId.AllianceBannerAura);
 
-            farmBannerEntry.FirstSpawn.AutoSpawn = false;
-            mineBannerEntry.FirstSpawn.AutoSpawn = false;
-            lumbermillBannerEntry.FirstSpawn.AutoSpawn = false;
-            stablesBannerEntry.FirstSpawn.AutoSpawn = false;
-            blacksmithBannerEntry.FirstSpawn.AutoSpawn = false;
+            farmBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            mineBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            lumbermillBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            stablesBannerEntry.FirstSpawnEntry.AutoSpawn = false;
+            blacksmithBannerEntry.FirstSpawnEntry.AutoSpawn = false;
 
             allianceAttackFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
             allianceControlledFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
+
             hordeAttackFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
             hordeControlledFlagEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
 
             neutralBannerAuraEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
             hordeBannerAuraEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
             allianceBannerAuraEntry.Templates.ForEach(spawn => spawn.AutoSpawn = false);
-            //Fix the neutral/horde/alliance flags
-            //3 entries for each colour
-            //5 templates for each base
         }
 
         private void RegisterEvents()

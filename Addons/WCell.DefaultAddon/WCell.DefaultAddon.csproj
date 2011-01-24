@@ -164,7 +164,6 @@
     <Compile Include="Battlegrounds\AlteracValley\AVBases.cs" />
     <Compile Include="Battlegrounds\AlteracValley\AVFaction.cs" />
     <Compile Include="Battlegrounds\ArathiBasin\ArathiBase.cs" />
-    <Compile Include="Battlegrounds\ArathiBasin\ArathiBases.cs" />
     <Compile Include="Battlegrounds\ArathiBasin\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\ArathiBasin\ArathiStats.cs" />
     <Compile Include="Battlegrounds\ArathiBasin\Bases\Blacksmith.cs" />

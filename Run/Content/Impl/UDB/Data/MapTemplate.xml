@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="MapTemplate"> <!--this one is scattered to graveyards and instance templates, some info is completely missing tho-->
+    <DefaultTable>instance_template</DefaultTable>
+    <Flat Name="Id" Column="map" />
+    <Flat Name="Name" Column="" />
+    <Flat Name="ParentMapId" Column="parent" />
+    <Flat Name="MinLevel" Column="levelMin" />
+    <Flat Name="MaxLevel" Column="levelMax" />
+    <Flat Name="MaxPlayerCount" Column="maxPlayers" />
+    <!--maxPlayersHeroic-->
+    <Flat Name="RepopMapId" Column="" />
+    <Flat Name="AreaTableId" Column="" />
+    <Flat Name="HeroicLevelDiff" Column="" /><!--in triggers-->
+    <Flat Name="RequiredQuestId" Column="" />    <!--in triggers-->
+    <Flat Name="RequiredItemId" Column="" />    <!--in triggers-->
+    <Flat Name="RequiredClientId" Column="" />   <!--in triggers-->
+    <FlatArray Name="RequiredKeys" Pattern="" Offset="1" />    <!--in triggers-->
+    <Flat Name="InstanceResetDelay" Column="reset_delay" />
+    <Flat Name="HeroicResetDelay" Column="" /> <!--heroic reset delay-->
+  </DataHolder>
+</DataHolders>

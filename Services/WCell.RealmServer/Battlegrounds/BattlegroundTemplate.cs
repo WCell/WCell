@@ -100,7 +100,7 @@ namespace WCell.RealmServer.Battlegrounds
 
         public int GetBracketIdForLevel(int level)
         {
-            var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+            var diff = Difficulties.First(entry => (level >= entry.minLevel && level <= entry.maxLevel));
 			if (diff != null)
 			{
 				return diff.bracketId;

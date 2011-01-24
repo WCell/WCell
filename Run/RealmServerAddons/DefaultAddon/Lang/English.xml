@@ -43,19 +43,19 @@
 	  <Value>{0} claims the {1}! If left unchallenged, the {2} will control it in {3}!</Value>
 	</Item>
 	<Item Key="ABStables">
-	  <Value>Stables</Value>
+	  <Value>stables</Value>
 	</Item>
 	<Item Key="ABBlacksmith">
-	  <Value>Blacksmith</Value>
+	  <Value>blacksmith</Value>
 	</Item>
 	<Item Key="ABLumberMill">
-	  <Value>Lumber Mill</Value>
+	  <Value>lumber mill</Value>
 	</Item>
 	<Item Key="ABFarm">
-	  <Value>Farm</Value>
+	  <Value>farm</Value>
 	</Item>
 	<Item Key="ABGoldMine">
-	  <Value>Gold Mine</Value>
+	  <Value>gold mine</Value>
 	</Item>
 	
 	<!-- Warsong Gulch -->

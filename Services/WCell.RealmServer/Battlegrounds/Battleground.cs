@@ -549,6 +549,10 @@ namespace WCell.RealmServer.Battlegrounds
                                                                                            : (uint)BattlegroundSounds.AllianceWins);
         }
 
+        public virtual void OnPlayerClickedOnflag(GameObject go, Character chr)
+        {
+        }
+
 		#endregion
 
 		#region Overrides

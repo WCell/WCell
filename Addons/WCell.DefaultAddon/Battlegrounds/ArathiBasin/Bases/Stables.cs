@@ -1,5 +1,8 @@
 using WCell.Constants;
+using WCell.Constants.Battlegrounds;
 using WCell.Constants.GameObjects;
+using WCell.Constants.World;
+using WCell.Addons.Default.Lang;
 using WCell.RealmServer.GameObjects;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
@@ -7,58 +10,35 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
     class Stables : ArathiBase
     {
         public Stables(ArathiBasin instance)
-            : base(instance, null)
+            : base(instance)
         {
+            showIconNeutral = WorldStateId.ABShowStableIcon;
+            showIconAllianceContested = WorldStateId.ABShowStableIconAllianceContested;
+            showIconAllianceControlled = WorldStateId.ABShowStableIconAlliance;
+            showIconHordeContested = WorldStateId.ABShowStableIconHordeContested;
+            showIconHordeControlled = WorldStateId.ABShowStableIconHorde;
+
+            Names = DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABStables);
+        }
+
+        protected override void AddSpawns()
+        {
+            neutralBannerSpawn = GOMgr.GetEntry(GOEntryId.StableBanner_2).FirstSpawnEntry;
+            neutralAuraSpawn = GOMgr.GetEntry(GOEntryId.NeutralBannerAura).Templates[(int)ArathiBases.Stables];
+
+            allianceBannerSpawn = GOMgr.GetEntry(GOEntryId.AllianceBanner_10).Templates[(int)ArathiBases.Stables];
+            allianceAuraSpawn = GOMgr.GetEntry(GOEntryId.AllianceBannerAura).Templates[(int)ArathiBases.Stables];
+
+            hordeBannerSpawn = GOMgr.GetEntry(GOEntryId.HordeBanner_10).Templates[(int)ArathiBases.Stables];
+            hordeAuraSpawn = GOMgr.GetEntry(GOEntryId.HordeBannerAura).Templates[(int)ArathiBases.Stables];
+
+            allianceAttackBannerSpawn = GOMgr.GetEntry(GOEntryId.ContestedBanner_26).Templates[(int)ArathiBases.Stables];
+            hordeAttackBannerSpawn = GOMgr.GetEntry(GOEntryId.ContestedBanner_25).Templates[(int)ArathiBases.Stables];
         }
 
         public override string BaseName
         {
             get { return "Stables"; }
-        }
-
-        protected override void SpawnNeutral()
-        {
-            GOEntry stablesBannerEntry = GOMgr.GetEntry(GOEntryId.StableBanner_2);
-            FlagStand = stablesBannerEntry.FirstSpawn.Spawn(Instance);
-
-            GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
-            ActualAura = neutralBannerAuraEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-        }
-
-        protected override void SpawnAlliance()
-        {
-            GOEntry allianceControlledFlagEntry = GOMgr.GetEntry(GOEntryId.AllianceBanner_10);
-            FlagStand = allianceControlledFlagEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-
-            GOEntry allianceBannerAuraEntry = GOMgr.GetEntry(GOEntryId.AllianceBannerAura);
-            ActualAura = allianceBannerAuraEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-        }
-
-        protected override void SpawnHorde()
-        {
-            GOEntry hordeControlledFlagEntry = GOMgr.GetEntry(GOEntryId.HordeBanner_10);
-            FlagStand = hordeControlledFlagEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-
-            GOEntry hordeBannerAuraEntry = GOMgr.GetEntry(GOEntryId.HordeBannerAura);
-            ActualAura = hordeBannerAuraEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-        }
-
-        protected override void SpawnContested()
-        {
-            if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Horde)
-            {
-                GOEntry hordeAttackFlagEntry = GOMgr.GetEntry(GOEntryId.ContestedBanner_25);
-                FlagStand = hordeAttackFlagEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-            }
-            else
-            {
-                GOEntry allianceAttackFlagEntry = GOMgr.GetEntry(GOEntryId.ContestedBanner_26);
-                FlagStand = allianceAttackFlagEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
-            }
-
-            // don't know if we have to spawn neutral aura...
-            GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
-            neutralBannerAuraEntry.Templates[(int)ArathiBases.Stables].Spawn(Instance);
         }
     }
 }

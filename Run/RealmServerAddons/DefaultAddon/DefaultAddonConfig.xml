@@ -6,15 +6,17 @@
           <Battlegrounds>
             <ArathiBasin>
               <ArathiBase>
-                <ABCapturePointConversionDelayMillis>20000</ABCapturePointConversionDelayMillis>
+                <ABCapturePointConversionDelayMillis>60000</ABCapturePointConversionDelayMillis>
                 <ABScoreDelayMillis>120000</ABScoreDelayMillis>
               </ArathiBase>
               <ArathiBasin>
-                <ABFlagRespawnTimeMillis>20000</ABFlagRespawnTimeMillis>
+                <ABHonorScoreTicks>330</ABHonorScoreTicks>
                 <ABMaxScore>1600</ABMaxScore>
                 <ABNearVictoryScore>1400</ABNearVictoryScore>
                 <ABPowerUpRespawnTime>90000</ABPowerUpRespawnTime>
                 <ABPrepTimeMillis>60000</ABPrepTimeMillis>
+                <ABReputationScore>10</ABReputationScore>
+                <ABReputationScoreTicks>200</ABReputationScoreTicks>
                 <ABUpdateDelay>1000</ABUpdateDelay>
               </ArathiBasin>
             </ArathiBasin>

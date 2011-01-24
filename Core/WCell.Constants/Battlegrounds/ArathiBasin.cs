@@ -5,6 +5,16 @@ using System.Text;
 
 namespace WCell.Constants.Battlegrounds
 {
+    public enum ArathiBases
+    {
+        Farm = 0,
+        Blacksmith = 1,
+        Stables = 2,
+        Lumbermill = 3,
+        GoldMine = 4,
+        End = 5
+    }
+
     public enum ABSounds
     {
         NodeContested = 8192,
@@ -15,7 +25,7 @@ namespace WCell.Constants.Battlegrounds
         NearVictory = 8456
     }
 
-    public enum BaseStates
+    public enum BaseState
     {
         Neutral = 0,
         CapturedAlliance = 1,
