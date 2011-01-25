@@ -91,6 +91,60 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DefaultAddon", "DefaultAddo
 		Run\RealmServerAddons\DefaultAddon\Lang\English.xml = Run\RealmServerAddons\DefaultAddon\Lang\English.xml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47E-499D-B4EB-72A2D43EF5B7}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\UDB\Data\AchievementCriteriaRequirement.xml = Run\Content\Impl\UDB\Data\AchievementCriteriaRequirement.xml
+		Run\Content\Impl\UDB\Data\AchievementReward.xml = Run\Content\Impl\UDB\Data\AchievementReward.xml
+		Run\Content\Impl\UDB\Data\Archetype.xml = Run\Content\Impl\UDB\Data\Archetype.xml
+		Run\Content\Impl\UDB\Data\ATTemplate.xml = Run\Content\Impl\UDB\Data\ATTemplate.xml
+		Run\Content\Impl\UDB\Data\BattlegroundTemplate.xml = Run\Content\Impl\UDB\Data\BattlegroundTemplate.xml
+		Run\Content\Impl\UDB\Data\BattlemasterRelation.xml = Run\Content\Impl\UDB\Data\BattlemasterRelation.xml
+		Run\Content\Impl\UDB\Data\ClassLevelSetting.xml = Run\Content\Impl\UDB\Data\ClassLevelSetting.xml
+		Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml = Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GOEntry.xml = Run\Content\Impl\UDB\Data\GOEntry.xml
+		Run\Content\Impl\UDB\Data\GOLootItemEntry.xml = Run\Content\Impl\UDB\Data\GOLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml
+		Run\Content\Impl\UDB\Data\GOSpawnEntry.xml = Run\Content\Impl\UDB\Data\GOSpawnEntry.xml
+		Run\Content\Impl\UDB\Data\GOSpawnPoolTemplate.xml = Run\Content\Impl\UDB\Data\GOSpawnPoolTemplate.xml
+		Run\Content\Impl\UDB\Data\GossipEntry.xml = Run\Content\Impl\UDB\Data\GossipEntry.xml
+		Run\Content\Impl\UDB\Data\ItemLootItemEntry.xml = Run\Content\Impl\UDB\Data\ItemLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\ItemRandomEnchantEntry.xml = Run\Content\Impl\UDB\Data\ItemRandomEnchantEntry.xml
+		Run\Content\Impl\UDB\Data\ItemTemplate.xml = Run\Content\Impl\UDB\Data\ItemTemplate.xml
+		Run\Content\Impl\UDB\Data\LevelStatInfo.xml = Run\Content\Impl\UDB\Data\LevelStatInfo.xml
+		Run\Content\Impl\UDB\Data\LevelXp.xml = Run\Content\Impl\UDB\Data\LevelXp.xml
+		Run\Content\Impl\UDB\Data\LootEntries.xml = Run\Content\Impl\UDB\Data\LootEntries.xml
+		Run\Content\Impl\UDB\Data\MapTemplate.xml = Run\Content\Impl\UDB\Data\MapTemplate.xml
+		Run\Content\Impl\UDB\Data\NpcAiText.xml = Run\Content\Impl\UDB\Data\NpcAiText.xml
+		Run\Content\Impl\UDB\Data\NPCEntry.xml = Run\Content\Impl\UDB\Data\NPCEntry.xml
+		Run\Content\Impl\UDB\Data\NPCEquipmentEntry.xml = Run\Content\Impl\UDB\Data\NPCEquipmentEntry.xml
+		Run\Content\Impl\UDB\Data\NPCLootItemEntry.xml = Run\Content\Impl\UDB\Data\NPCLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\NPCQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\NPCQuestGiverRelation.xml
+		Run\Content\Impl\UDB\Data\NPCSpawnEntry.xml = Run\Content\Impl\UDB\Data\NPCSpawnEntry.xml
+		Run\Content\Impl\UDB\Data\PageTextEntry.xml = Run\Content\Impl\UDB\Data\PageTextEntry.xml
+		Run\Content\Impl\UDB\Data\Pets.xml = Run\Content\Impl\UDB\Data\Pets.xml
+		Run\Content\Impl\UDB\Data\PlayerActionButtonEntry.xml = Run\Content\Impl\UDB\Data\PlayerActionButtonEntry.xml
+		Run\Content\Impl\UDB\Data\PlayerItemEntry.xml = Run\Content\Impl\UDB\Data\PlayerItemEntry.xml
+		Run\Content\Impl\UDB\Data\PlayerSpellEntry.xml = Run\Content\Impl\UDB\Data\PlayerSpellEntry.xml
+		Run\Content\Impl\UDB\Data\QuestPOI.xml = Run\Content\Impl\UDB\Data\QuestPOI.xml
+		Run\Content\Impl\UDB\Data\QuestTemplate.xml = Run\Content\Impl\UDB\Data\QuestTemplate.xml
+		Run\Content\Impl\UDB\Data\SpawnPoolTemplateEntry.xml = Run\Content\Impl\UDB\Data\SpawnPoolTemplateEntry.xml
+		Run\Content\Impl\UDB\Data\Spell.xml = Run\Content\Impl\UDB\Data\Spell.xml
+		Run\Content\Impl\UDB\Data\SpellEffect.xml = Run\Content\Impl\UDB\Data\SpellEffect.xml
+		Run\Content\Impl\UDB\Data\SpellLearnRelation.xml = Run\Content\Impl\UDB\Data\SpellLearnRelation.xml
+		Run\Content\Impl\UDB\Data\TrainerEntry.xml = Run\Content\Impl\UDB\Data\TrainerEntry.xml
+		Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml = Run\Content\Impl\UDB\Data\TrainerSpellEntry.xml
+		Run\Content\Impl\UDB\Data\TransportEntry.xml = Run\Content\Impl\UDB\Data\TransportEntry.xml
+		Run\Content\Impl\UDB\Data\UnitModelInfo.xml = Run\Content\Impl\UDB\Data\UnitModelInfo.xml
+		Run\Content\Impl\UDB\Data\VendorItemEntry.xml = Run\Content\Impl\UDB\Data\VendorItemEntry.xml
+		Run\Content\Impl\UDB\Data\WaypointEntry.xml = Run\Content\Impl\UDB\Data\WaypointEntry.xml
+		Run\Content\Impl\UDB\Data\WorldZoneLocation.xml = Run\Content\Impl\UDB\Data\WorldZoneLocation.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{352C7D18-D5CA-41EA-815F-65DECA33D17E}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Impl\UDB\Tables.xml = Run\Content\Impl\UDB\Tables.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -405,11 +459,13 @@ Global
 		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
+		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		UnLocked = True
-		Locked = False
 		ISWCFSolution = True
+		Locked = False
+		UnLocked = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

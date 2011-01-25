@@ -4,6 +4,7 @@ using WCell.Constants.Looting;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
@@ -109,39 +110,16 @@ namespace WCell.RealmServer.GameObjects
 		/// All Templates that use this GOEntry
 		/// </summary>
 		[NotPersistent]
-		public readonly List<GOSpawnEntry> Templates = new List<GOSpawnEntry>();
+		public readonly List<GOSpawnEntry> SpawnEntries = new List<GOSpawnEntry>();
 
 		public GOSpawnEntry FirstSpawnEntry
 		{
-			get { return Templates.Count > 0 ? Templates[0] : null; }
-		}
-
-		public void AddTemplate(GOSpawnEntry spawn)
-		{
-			Templates.Add(spawn);
-		}
-
-		public GOSpawnEntry AddTemplate(MapId map, Vector3 pos)
-		{
-			return AddTemplate(map, pos, true);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="map"></param>
-		/// <param name="pos"></param>
-		/// <param name="autoSpawn">Whether to always spawn this Template when the Map starts</param>
-		public GOSpawnEntry AddTemplate(MapId map, Vector3 pos, bool autoSpawn)
-		{
-			var go = new GOSpawnEntry { MapId = map, Pos = pos, AutoSpawn = autoSpawn };
-			Templates.Add(go);
-			return go;
+			get { return SpawnEntries.Count > 0 ? SpawnEntries[0] : null; }
 		}
 
 		public IWorldLocation[] GetInWorldTemplates()
 		{
-			return Templates.ToArray();
+			return SpawnEntries.ToArray();
 		}
 
 		#region Custom Fields
@@ -347,7 +325,7 @@ namespace WCell.RealmServer.GameObjects
 		/// </summary>
 		public GOSpawnEntry GetClosestTemplate(IWorldLocation pos)
 		{
-			return Templates.GetClosestTemplate(pos);
+			return SpawnEntries.GetClosestEntry(pos);
 		}
 
 		/// <summary>
@@ -355,7 +333,7 @@ namespace WCell.RealmServer.GameObjects
 		/// </summary>
 		public GOSpawnEntry GetClosestTemplate(MapId rgn, Vector3 pos)
 		{
-			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
+			return SpawnEntries.GetClosestEntry(new WorldLocationStruct(rgn, pos));
 		}
 
 		/// <summary>
@@ -363,7 +341,7 @@ namespace WCell.RealmServer.GameObjects
 		/// </summary>
 		public GOSpawnEntry GetClosestTemplate(Map rgn, Vector3 pos)
 		{
-			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
+			return SpawnEntries.GetClosestEntry(new WorldLocationStruct(rgn, pos));
 		}
 
 		#region Events

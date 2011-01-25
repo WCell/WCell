@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Network;
 
@@ -56,7 +57,7 @@ namespace WCell.RealmServer.GameObjects
 		{
 			var goId = packet.ReadEntityId();
 
-			var go = client.ActiveCharacter.Map.GetGO(goId.Low);
+			var go = client.ActiveCharacter.Map.GetObject(goId) as GameObject;
 			var chr = client.ActiveCharacter;
 			if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || !object.ReferenceEquals(chr.LooterEntry.Loot.Lootable, go) ))
 			{

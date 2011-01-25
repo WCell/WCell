@@ -34,6 +34,7 @@ using WCell.Util.Graphics;
 using WCell.Constants.World;
 using WCell.Constants.Updates;
 using WCell.Util.NLog;
+using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs
 {
@@ -45,6 +46,48 @@ namespace WCell.RealmServer.NPCs
 	[DataHolder]
 	public partial class NPCEntry : IQuestHolderEntry, INPCDataHolder
 	{
+		#region Global Variables
+		// <summary>
+		// This is added to the CombatReach of all Units
+		// </summary>
+		//public static float BaseAttackReach = 1f;
+
+		/// <summary>
+		/// Default base-range in which a mob will aggro (in yards).
+		/// Also see <see cref="AggroRangePerLevel"/>
+		/// </summary>
+		public static float AggroBaseRangeDefault = 20;
+
+		/// <summary>
+		/// Amount of yards to add to the <see cref="AggroBaseRangeDefault"/> per level difference.
+		/// </summary>
+		public static float AggroRangePerLevel = 1;
+
+		/// <summary>
+		/// Mobs with a distance >= this will not start aggressive actions
+		/// </summary>
+		public static float AggroMaxRangeDefault = 45;
+
+		private static float aggroMinRangeDefault = 5;
+
+		/// <summary>
+		/// Mobs within this range will *definitely* aggro
+		/// </summary>
+		public static float AggroMinRangeDefault
+		{
+			get { return aggroMinRangeDefault; }
+			set
+			{
+				aggroMinRangeDefault = value;
+				AggroMinRangeSq = value * value;
+			}
+		}
+
+		[NotVariable]
+		public static float AggroMinRangeSq = aggroMinRangeDefault * aggroMinRangeDefault;
+
+		#endregion
+
 		public uint Id
 		{
 			get;
@@ -61,7 +104,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			if (difficultyIndex != 0)
 			{
-				var id = DifficultyOverrideEntryIds.Get(difficultyIndex-1);
+				var id = DifficultyOverrideEntryIds.Get(difficultyIndex - 1);
 				if (id != 0)
 				{
 					var entry = NPCMgr.GetEntry(id);
@@ -530,66 +573,6 @@ namespace WCell.RealmServer.NPCs
 		[NotPersistent]
 		public List<NPCSpawnEntry> SpawnEntries = new List<NPCSpawnEntry>(3);
 
-		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int respawnSeconds)
-		{
-			return AddSpawnEntry(map, location, respawnSeconds, respawnSeconds);
-		}
-
-		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds)
-		{
-			return AddSpawnEntry(map, location, minRespawnSeconds, maxRespawnSeconds, true);
-		}
-
-		public NPCSpawnEntry AddSpawnEntry(MapId map, Vector3 location, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
-		{
-			var entry = new NPCSpawnEntry
-			{
-				EntryId = NPCId,
-				Entry = this,
-				RespawnSecondsMin = minRespawnSeconds,
-				RespawnSecondsMax = maxRespawnSeconds,
-				AutoSpawns = autoSpawn,
-				MapId = map
-			};
-
-			entry.FinalizeDataHolder();
-			return entry;
-		}
-
-		/// <summary>
-		/// Creates but doesn't add the SpawnEntry
-		/// </summary>
-		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int respawnSeconds)
-		{
-			return CreateSpawnEntry(location, respawnSeconds, respawnSeconds);
-		}
-
-		/// <summary>
-		/// Creates but doesn't add the SpawnEntry
-		/// </summary>
-		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int minRespawnSeconds, int maxRespawnSeconds)
-		{
-			return CreateSpawnEntry(location, minRespawnSeconds, maxRespawnSeconds, true);
-		}
-
-		/// <summary>
-		/// Creates but doesn't add the SpawnEntry
-		/// </summary>
-		public NPCSpawnEntry CreateSpawnEntry(Vector3 location, int minRespawnSeconds, int maxRespawnSeconds, bool autoSpawn)
-		{
-			var entry = new NPCSpawnEntry
-			{
-				EntryId = NPCId,
-				Entry = this,
-				RespawnSecondsMin = minRespawnSeconds,
-				RespawnSecondsMax = maxRespawnSeconds,
-				AutoSpawns = autoSpawn
-			};
-
-			entry.FinalizeDataHolder();
-			return entry;
-		}
-
 		[NotPersistent]
 		public NPCSpawnEntry FirstSpawnEntry
 		{
@@ -664,6 +647,21 @@ namespace WCell.RealmServer.NPCs
 			return ModelInfos[Utility.Random(0, ModelInfos.Length - 1)];
 		}
 
+		public bool IsVendor
+		{
+			get { return VendorItems != null; }
+		}
+
+		public bool IsTamable
+		{
+			get { return EntryFlags.HasFlag(NPCEntryFlags.Tamable); }
+		}
+
+		public bool IsExoticPet
+		{
+			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
+		}
+
 		/// <summary>
 		/// The default delay before removing the NPC after it died when not looted.
 		/// </summary>
@@ -683,6 +681,15 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
+		#region Custom Fields
+		public float AggroBaseRange
+		{
+			get;
+			set;
+		}
+		#endregion
+
+		#region FinalizeDataHolder
 		/// <summary>
 		/// Is called to initialize the object; usually after a set of other operations have been performed or if
 		/// the right time has come and other required steps have been performed.
@@ -742,6 +749,8 @@ namespace WCell.RealmServer.NPCs
 					RangedAttackTime = AttackTime;
 				}
 			}
+
+			AggroBaseRange = AggroBaseRangeDefault;
 
 			MovesRandomly = NPCFlags == NPCFlags.None;
 
@@ -876,21 +885,7 @@ namespace WCell.RealmServer.NPCs
 				NPCCreator = DefaultCreator;
 			}
 		}
-
-		public bool IsVendor
-		{
-			get { return VendorItems != null; }
-		}
-
-		public bool IsTamable
-		{
-			get { return EntryFlags.HasFlag(NPCEntryFlags.Tamable); }
-		}
-
-		public bool IsExoticPet
-		{
-			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
-		}
+		#endregion
 
 		#region Creators
 		[NotPersistent]

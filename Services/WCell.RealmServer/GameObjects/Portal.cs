@@ -15,7 +15,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var portal = (Portal)Create(entry, where, entry.FirstSpawnEntry);
+			var portal = (Portal)Create(entry, where);
 			portal.Target = target;
 			return portal;
 		}
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.GameObjects
 				throw new ArgumentException("Invalid MapId (not a Continent): " + mapId);
 			}
 
-			var portal = (Portal)Create(entry, new WorldLocation(mapId, pos), entry.FirstSpawnEntry);
+			var portal = (Portal)Create(entry, new WorldLocationStruct(mapId, pos));
 			portal.Target = new WorldLocation(targetMap, targetPos);
 			rgn.AddObject(portal);
 			return portal;

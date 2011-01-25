@@ -11,27 +11,17 @@ using WCell.Util.Data;
 
 namespace WCell.RealmServer.NPCs.Spawns
 {
-	[DataHolder]
-	public class NPCSpawnPoolTemplate : SpawnPoolTemplate<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, IDataHolder
+	public class NPCSpawnPoolTemplate : SpawnPoolTemplate<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>
 	{
-		private static int highestId;
-
-		public NPCSpawnPoolTemplate()
+		public NPCSpawnPoolTemplate() : this(0, 0)
 		{
 		}
 
 		/// <summary>
 		/// Constructor for custom pools
 		/// </summary>
-		public NPCSpawnPoolTemplate(int maxSpawnAmount)
+		public NPCSpawnPoolTemplate(int maxSpawnAmount) : this(0, maxSpawnAmount)
 		{
-			if (maxSpawnAmount == 0)
-			{
-				maxSpawnAmount = int.MaxValue;
-			}
-			PoolId = (uint)Interlocked.Increment(ref highestId);
-			MaxSpawnAmount = maxSpawnAmount;
-			FinalizeDataHolder();
 		}
 
 		/// <summary>
@@ -43,19 +33,19 @@ namespace WCell.RealmServer.NPCs.Spawns
 			AddEntry(entry);
 		}
 
+		internal NPCSpawnPoolTemplate(uint id, int maxSpawnAmount)
+			: base(id, maxSpawnAmount)
+		{
+		}
+
+		internal NPCSpawnPoolTemplate(SpawnPoolTemplateEntry entry)
+			: base(entry)
+		{
+		}
+
 		public override List<NPCSpawnPoolTemplate> PoolTemplatesOnSameMap
 		{
 			get { return NPCMgr.GetOrCreateSpawnPoolTemplatesByMap(MapId); }
-		}
-
-		public void FinalizeDataHolder()
-		{
-			highestId = (int)Math.Max(highestId, PoolId);
-			NPCMgr.SpawnPoolTemplates.Add(PoolId, this);
-			if (MaxSpawnAmount == 0)
-			{
-				MaxSpawnAmount = int.MaxValue;
-			}
 		}
 	}
 }

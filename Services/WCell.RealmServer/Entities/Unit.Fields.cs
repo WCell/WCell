@@ -1372,7 +1372,8 @@ namespace WCell.RealmServer.Entities
 						SetUInt32(UnitFields.HEALTH, (uint)value);
 						UpdateHealthAuraState();
 
-						//MiscHandlers.SendHealthUpdate(this, value);
+						MiscHandler.SendHealthUpdate(this, value);
+
 						if (oldHealth == 0)
 						{
 							// Unit didn't repop yet -> Also make sure he/she is unrooted

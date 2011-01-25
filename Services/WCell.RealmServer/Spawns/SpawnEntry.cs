@@ -1,4 +1,5 @@
-﻿using WCell.Constants.World;
+﻿using System;
+using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
@@ -14,6 +15,12 @@ namespace WCell.RealmServer.Spawns
 		where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
 		where POOL : SpawnPool<T, E, O, POINT, POOL>
 	{
+		private static uint highestSpawnId;
+		public static uint GenerateSpawnId()
+		{
+			return ++highestSpawnId;
+		}
+
 		public uint SpawnId;
 		public uint PoolId;
 		public float PoolRespawnProbability;
@@ -47,6 +54,12 @@ namespace WCell.RealmServer.Spawns
 			set;
 		}
 
+		public float Orientation
+		{
+			get;
+			set;
+		}
+
 		public uint PhaseMask
 		{
 			get;
@@ -54,6 +67,12 @@ namespace WCell.RealmServer.Spawns
 		}
 
 		public int RespawnSeconds
+		{
+			get;
+			set;
+		}
+
+		public int DespawnSeconds
 		{
 			get;
 			set;
@@ -100,5 +119,41 @@ namespace WCell.RealmServer.Spawns
 		}
 
 		public abstract O SpawnObject(POINT point);
+
+		public virtual void FinalizeDataHolder(bool addToPool)
+		{
+			// overly complicated and annoying correction of respawn time
+			// considering two cases: Code-generated SpawnEntries and those read from DB
+			// If read from UDB, RespawnSeconds < 0 means that its not auto-spawning
+			// and despawning after -RespawnSeconds
+			if (RespawnSecondsMin == 0)
+			{
+				RespawnSecondsMin = RespawnSeconds;
+			}
+			if (RespawnSecondsMax == 0)
+			{
+				RespawnSecondsMax = Math.Max(RespawnSeconds, RespawnSecondsMin);
+			}
+			AutoSpawns = RespawnSecondsMax > 0;
+			if (!AutoSpawns)
+			{
+				DespawnSeconds = -RespawnSeconds;
+				RespawnSecondsMin = RespawnSecondsMax = 0;
+			}
+
+			if (PhaseMask == 0)
+			{
+				PhaseMask = 1;
+			}
+
+			if (SpawnId > highestSpawnId)
+			{
+				highestSpawnId = SpawnId;
+			}
+			else if (SpawnId == 0)
+			{
+				SpawnId = GenerateSpawnId();
+			}
+		}
 	}
 }

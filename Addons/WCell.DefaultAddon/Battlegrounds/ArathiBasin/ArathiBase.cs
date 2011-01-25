@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin

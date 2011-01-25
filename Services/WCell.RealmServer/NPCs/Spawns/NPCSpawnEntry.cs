@@ -20,12 +20,6 @@ namespace WCell.RealmServer.NPCs.Spawns
 	[DataHolder]
 	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, INPCDataHolder, IWorldLocation
 	{
-		private static uint highestSpawnId;
-		public static uint GenerateSpawnId()
-		{
-			return ++highestSpawnId;
-		}
-
 		public NPCSpawnEntry()
 		{
 
@@ -40,7 +34,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 			set;
 		}
 
-		public float Orientation;
+		#region Spawn data for NPCs
 		public AIMovementType MoveType;
 
 		public bool IsDead;
@@ -57,24 +51,13 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		[NotPersistent]
 		public NPCEquipmentEntry Equipment;
+		#endregion
 
 		public override NPC SpawnObject(NPCSpawnPoint point)
 		{
-			return Entry.Create(point);
-		}
-
-		private void AddToPoolTemplate()
-		{
-			if (PoolId != 0 && NPCMgr.SpawnPoolTemplates.TryGetValue(PoolId, out m_PoolTemplate))
-			{
-				// pool already exists
-				m_PoolTemplate.AddEntry(this);
-			}
-			else
-			{
-				// create and register new pool
-				m_PoolTemplate = new NPCSpawnPoolTemplate(this);
-			}
+			var spawnling = Entry.Create(point);
+			Map.AddObjectNow(spawnling, Position);
+			return spawnling;
 		}
 
 		#region FinalizeDataHolder
@@ -87,12 +70,19 @@ namespace WCell.RealmServer.NPCs.Spawns
 			FinalizeDataHolder(true);
 		}
 
+		private void AddToPoolTemplate()
+		{
+			m_PoolTemplate = NPCMgr.GetOrCreateSpawnPoolTemplate(PoolId);
+			m_PoolTemplate.AddEntry(this);
+		}
+
 		/// <summary>
 		/// Finalize this NPCSpawnEntry
 		/// </summary>
 		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
-		public void FinalizeDataHolder(bool addToPool)
-		{
+		public override void FinalizeDataHolder(bool addToPool)
+		{	
+			// set Entry
 			if (Entry == null)
 			{
 				Entry = NPCMgr.GetEntry(EntryId);
@@ -103,40 +93,16 @@ namespace WCell.RealmServer.NPCs.Spawns
 				}
 			}
 
-			var respawn = RespawnSeconds != 0 ? RespawnSeconds : NPCMgr.DefaultMinRespawnDelay;
-			AutoSpawns = RespawnSeconds > 0;
-			if (RespawnSecondsMin == 0)
-			{
-				RespawnSecondsMin = respawn;
-			}
-			if (RespawnSecondsMax == 0)
-			{
-				RespawnSecondsMax = Math.Max(respawn, RespawnSecondsMin);
-			}
-
-			if (PhaseMask == 0)
-			{
-				PhaseMask = 1;
-			}
-
+			// fix data inconsistencies & load addon data
 			if (EquipmentId != 0)
 			{
 				Equipment = NPCMgr.GetEquipment(EquipmentId);
 			}
 
 			// seems to be a DB issue where the id was inserted as a float
-			if (DisplayIdOverride == 16777215)
+			if (DisplayIdOverride == 0xFFFFFF)
 			{
 				DisplayIdOverride = 0;
-			}
-
-			if (SpawnId > highestSpawnId)
-			{
-				highestSpawnId = SpawnId;
-			}
-			else if (SpawnId == 0)
-			{
-				SpawnId = GenerateSpawnId();
 			}
 
 			if (AddonData != null)
@@ -144,6 +110,8 @@ namespace WCell.RealmServer.NPCs.Spawns
 				AddonData.InitAddonData(this);
 			}
 
+			// do the default thing
+			base.FinalizeDataHolder(addToPool);
 
 			if (MapId != MapId.End)
 			{

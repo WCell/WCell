@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System;
+using System.Linq;
 using WCell.Constants.Spells;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
@@ -291,6 +292,7 @@ namespace WCell.RealmServer.Commands
 
 				if (trigger.Args.Character != null)
 				{
+					// TODO: Use localization
 					var locs = WorldLocationMgr.GetMatches(targetName);
 
 					if (locs.Count == 0)
@@ -298,13 +300,24 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("No matches found for: " + targetName);
 						return;
 					}
-					else if (locs.Count == 1)
-					{
-						target.TeleportTo(locs[0]);
-					}
 					else
 					{
-						trigger.Args.Character.StartGossip(WorldLocationMgr.CreateTeleMenu(locs));
+						if (locs.Count == 1)
+						{
+							target.TeleportTo(locs[0]);
+						}
+						else
+						{
+							var perfectMatch = locs.FirstOrDefault(loc => loc.DefaultName.Equals(targetName, StringComparison.InvariantCultureIgnoreCase));
+							if (perfectMatch != null)
+							{
+								target.TeleportTo(perfectMatch);
+							}
+							else
+							{
+								trigger.Args.Character.StartGossip(WorldLocationMgr.CreateTeleMenu(locs));
+							}
+						}
 					}
 				}
 				else

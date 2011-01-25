@@ -5,7 +5,9 @@ using WCell.Constants.Pathing;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core.Network;
+using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Misc;
 using WCell.Core.Paths;
 using WCell.RealmServer.Paths;
@@ -51,9 +53,9 @@ namespace WCell.RealmServer.Entities
 			m_passengers = new List<Unit>();
 		}
 
-		internal override void Init(GameObjects.GOEntry entry, GameObjects.GOSpawnEntry templ)
+		internal override void Init(GOEntry entry, GOSpawnEntry spawnEntry, GOSpawnPoint spawnPoint)
 		{
-			base.Init(entry, templ);
+			base.Init(entry, spawnEntry, spawnPoint);
 
 			m_goTransportEntry = Entry as GOMOTransportEntry;
 			TransportMgr.TransportEntries.TryGetValue(m_entry.GOId, out m_transportEntry);

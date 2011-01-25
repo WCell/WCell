@@ -666,6 +666,13 @@ namespace WCell.RealmServer.Spells
 			SetAffectMask(exclusiveTriggers);
 			AuraEffectHandlerCreator = creator;
 		}
+
+		public bool CanProcBeTriggeredBy(Spell spell)
+		{
+			return spell == null ||
+					!HasAffectingSpells ||
+					MatchesSpell(spell);
+		}
 		#endregion
 
 		#region Dump

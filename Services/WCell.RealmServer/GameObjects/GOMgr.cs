@@ -13,11 +13,13 @@ using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Handlers;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Quests;
+using WCell.RealmServer.Spawns;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Variables;
@@ -41,14 +43,18 @@ namespace WCell.RealmServer.GameObjects
 		/// <summary>
 		/// All existing GOEntries by Entry-Id
 		/// </summary>
-		public static readonly Dictionary<uint, GOEntry> Entries =
-		new Dictionary<uint, GOEntry>(10000);
+		public static readonly Dictionary<uint, GOEntry> Entries = new Dictionary<uint, GOEntry>(10000);
+
+		/// <summary>
+		/// All templates for spawn pools
+		/// </summary>
+		public static readonly Dictionary<uint, GOSpawnPoolTemplate> SpawnPoolTemplates = new Dictionary<uint, GOSpawnPoolTemplate>();
 
 		[NotVariable]
 		/// <summary>
 		/// All existing GOTemplates by MapId
 		/// </summary>
-		public static List<GOSpawnEntry>[] TemplatesByMap = new List<GOSpawnEntry>[(int)MapId.End];
+		public static List<GOSpawnPoolTemplate>[] SpawnPoolTemplatesByMap = new List<GOSpawnPoolTemplate>[(int)MapId.End];
 
 		public static GOEntry GetEntry(uint id)
 		{
@@ -59,7 +65,7 @@ namespace WCell.RealmServer.GameObjects
 
 		public static GOEntry GetEntry(GOEntryId id, bool force = true)
 		{
-			if (!loaded)
+			if (!loaded && force)
 			{
 				log.Warn("Tried to get GOEntry but GOs are not loaded: {0}", id);
 				return null;
@@ -75,9 +81,49 @@ namespace WCell.RealmServer.GameObjects
 			return entry;
 		}
 
-		public static List<GOSpawnEntry> GetTemplates(MapId map)
+
+		internal static GOSpawnPoolTemplate GetOrCreateSpawnPoolTemplate(uint poolId)
 		{
-			return TemplatesByMap.Get((uint)map);
+			GOSpawnPoolTemplate templ;
+			if (poolId == 0)
+			{
+				// does not belong to any Pool
+				templ = new GOSpawnPoolTemplate();
+				SpawnPoolTemplates.Add(templ.PoolId, templ);
+			}
+			else if (!SpawnPoolTemplates.TryGetValue(poolId, out templ))
+			{
+				// pool does not exist yet
+				var entry = SpawnMgr.GetSpawnPoolTemplateEntry(poolId);
+
+				if (entry != null)
+				{
+					// default pool
+					templ = new GOSpawnPoolTemplate(entry);
+				}
+				else
+				{
+					// pool does not exist
+					templ = new GOSpawnPoolTemplate();
+				}
+				SpawnPoolTemplates.Add(templ.PoolId, templ);
+			}
+			return templ;
+		}
+
+		public static List<GOSpawnPoolTemplate> GetSpawnPoolTemplatesByMap(MapId map)
+		{
+			return SpawnPoolTemplatesByMap.Get((uint)map);
+		}
+
+		public static List<GOSpawnPoolTemplate> GetOrCreateSpawnPoolTemplatesByMap(MapId map)
+		{
+			var list = SpawnPoolTemplatesByMap.Get((uint) map);
+			if (list == null)
+			{
+				SpawnPoolTemplatesByMap[(uint) map] = list = new List<GOSpawnPoolTemplate>();
+			}
+			return list;
 		}
 
 		#region Init / Load
@@ -109,16 +155,6 @@ namespace WCell.RealmServer.GameObjects
 			}
 		}
 
-		public static void AddTemplate(GOSpawnEntry spawn)
-		{
-			var list = TemplatesByMap[(int)spawn.MapId];
-			if (list == null)
-			{
-				TemplatesByMap[(int)spawn.MapId] = list = new List<GOSpawnEntry>(100);
-			}
-			list.Add(spawn);
-		}
-
 		public static void LoadAll()
 		{
 			if (!Loaded)
@@ -134,10 +170,10 @@ namespace WCell.RealmServer.GameObjects
 					{
 						entry.LinkedTrap = GetEntry(entry.LinkedTrapId) as GOTrapEntry;
 					}
-					if (entry.Templates.Count == 0)
+					if (entry.SpawnEntries.Count == 0)
 					{
 						// make sure, every Entry has at least one template
-						entry.Templates.Add(new GOSpawnEntry
+						entry.SpawnEntries.Add(new GOSpawnEntry
 						{
 							Entry = entry,
 							Rotations = new float[0],
@@ -305,15 +341,40 @@ namespace WCell.RealmServer.GameObjects
 		}
 		#endregion
 
-		public static GOSpawnEntry GetClosestTemplate(this ICollection<GOSpawnEntry> templates, IWorldLocation pos)
+		public static GOSpawnEntry GetClosestEntry(this ICollection<GOSpawnEntry> entries, IWorldLocation pos)
 		{
-			var closestDistSq = float.MaxValue;
-			GOSpawnEntry closest = null;
 			if (pos == null)
 			{
-				return templates.First();
+				return entries.First();
 			}
 
+			var closestDistSq = float.MaxValue;
+			GOSpawnEntry closest = null;
+			foreach (var entry in entries)
+			{
+				if (entry.MapId != pos.MapId)
+				{
+					continue;
+				}
+				var distSq = pos.Position.DistanceSquared(entry.Position);
+				if (distSq < closestDistSq)
+				{
+					closestDistSq = distSq;
+					closest = entry;
+				}
+			}
+			return closest;
+		}
+
+		public static GOSpawnEntry GetClosestEntry(this ICollection<GOSpawnPoolTemplate> templates, IWorldLocation pos)
+		{
+			if (pos == null)
+			{
+				return templates.First().Entries.FirstOrDefault();
+			}
+
+			var closestDistSq = float.MaxValue;
+			GOSpawnEntry closest = null;
 			foreach (var template in templates)
 			{
 				if (template == null || template.MapId != pos.MapId)
@@ -321,11 +382,14 @@ namespace WCell.RealmServer.GameObjects
 					continue;
 				}
 
-				var distSq = pos.Position.DistanceSquared(template.Pos);
-				if (distSq < closestDistSq)
+				foreach (var entry in template.Entries)
 				{
-					closestDistSq = distSq;
-					closest = template;
+					var distSq = pos.Position.DistanceSquared(entry.Position);
+					if (distSq < closestDistSq)
+					{
+						closestDistSq = distSq;
+						closest = entry;
+					}
 				}
 			}
 			return closest;

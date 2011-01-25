@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using NLog;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.Util.Data;
+using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
@@ -14,6 +16,8 @@ namespace WCell.RealmServer.Spawns
 		where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
 		where POOL : SpawnPool<T, E, O, POINT, POOL>
 	{
+		private static int highestId = 1000000;
+
 		public uint PoolId;
 
 		public int MaxSpawnAmount;
@@ -32,6 +36,29 @@ namespace WCell.RealmServer.Spawns
 		[NotPersistent]
 		public List<E> Entries = new List<E>(5);
 
+		/// <summary>
+		/// It would not make sense to create a pool that contains entries of different events
+		/// </summary>
+		public uint EventId
+		{
+			get
+			{
+				// can assume that at least one Entry is present, else the pool would not be created
+				return Entries[0].EventId;
+			}
+		}
+
+		protected SpawnPoolTemplate(uint id, int maxSpawnAmount)
+		{
+			PoolId = id != 0 ? id : (uint)Interlocked.Increment(ref highestId);
+			MaxSpawnAmount = maxSpawnAmount != 0 ? maxSpawnAmount : int.MaxValue;
+		}
+
+		protected SpawnPoolTemplate(SpawnPoolTemplateEntry entry)
+			: this(entry.PoolId, entry.MaxSpawnAmount)
+		{
+		}
+
 		public abstract List<T> PoolTemplatesOnSameMap { get; }
 
 		internal void AddEntry(E entry)
@@ -40,12 +67,15 @@ namespace WCell.RealmServer.Spawns
 			{
 				// set map and add to map's set of SpawnPools
 				MapId = entry.MapId;
-				PoolTemplatesOnSameMap.Add((T)this);
+				if (entry.MapId != MapId.End)
+				{
+					PoolTemplatesOnSameMap.Add((T)this);
+				}
 			}
 			else if (entry.MapId != MapId)
 			{
 				// make sure, Map is the same
-				LogManager.GetCurrentClassLogger().Warn("Tried to add NPCSpawnEntry \"{0}\" with map = \"{1}\" to a pool that contains Entries of Map \"{2}\"",
+				LogManager.GetCurrentClassLogger().Warn("Tried to add \"{0}\" with map = \"{1}\" to a pool that contains Entries of Map \"{2}\"",
 					entry, entry.MapId, MapId);
 				return;
 			}

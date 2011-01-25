@@ -321,11 +321,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return Health > 0;
-			}
-			internal set
-			{
-				MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+				return IsInWorld && Health > 0;
 			}
 		}
 
@@ -379,9 +375,12 @@ namespace WCell.RealmServer.Entities
 				return;
 			}
 
+			// set health to 0
 			SetUInt32(UnitFields.HEALTH, 0);
 
-			IsAlive = false;
+			// mark this Unit to resend DynamicFlags
+			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
+
 			Dismount();
 
 			var cast = m_spellCast;
@@ -450,7 +449,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal protected virtual void OnResurrect()
 		{
-			IsAlive = true;
+			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 
 		/// <summary>

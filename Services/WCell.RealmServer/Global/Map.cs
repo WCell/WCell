@@ -20,6 +20,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Res;
 using WCell.RealmServer.Spawns;
@@ -76,7 +77,7 @@ namespace WCell.RealmServer.Global
 		/// For developing you might want to toggle this off and use the "Map Spawn" command ingame to spawn the map, if necessary.
 		/// </summary>
 		[Variable("AutoSpawnMaps")]
-		public static bool AutoSpawn = true;
+		public static bool AutoSpawnMaps = true;
 
 		/// <summary>
 		/// Default update delay in milliseconds
@@ -199,7 +200,7 @@ namespace WCell.RealmServer.Global
 		#region Spawns
 		bool m_npcsSpawned, m_gosSpawned, m_isUpdating;
 		int m_lastNPCPoolId;
-		internal protected Dictionary<uint, GameObject> m_goSpawnPoints = new Dictionary<uint, GameObject>();
+		internal protected Dictionary<uint, GOSpawnPool> m_goSpawnPools = new Dictionary<uint, GOSpawnPool>();
 		internal protected Dictionary<uint, NPCSpawnPool> m_npcSpawnPools = new Dictionary<uint, NPCSpawnPool>();
 
 		internal uint GenerateNewNPCPoolId()
@@ -704,7 +705,7 @@ namespace WCell.RealmServer.Global
 					// start updating
 					Task.Factory.StartNewDelayed(m_updateDelay, MapUpdateCallback, this);
 
-					if (AutoSpawn)
+					if (AutoSpawnMaps)
 					{
 						SpawnMapLater();
 					}
@@ -831,6 +832,22 @@ namespace WCell.RealmServer.Global
 			if (!m_npcSpawnPools.ContainsKey(pool.Template.PoolId))
 			{
 				m_npcSpawnPools.Add(pool.Template.PoolId, pool);
+			}
+			pool.IsActive = true;
+		}
+
+		public GOSpawnPool AddGOSpawnPool(GOSpawnPoolTemplate templ)
+		{
+			var pool = new GOSpawnPool(this, templ);
+			AddGOSpawnPool(pool);
+			return pool;
+		}
+
+		public void AddGOSpawnPool(GOSpawnPool pool)
+		{
+			if (!m_goSpawnPools.ContainsKey(pool.Template.PoolId))
+			{
+				m_goSpawnPools.Add(pool.Template.PoolId, pool);
 			}
 			pool.IsActive = true;
 		}
@@ -976,12 +993,12 @@ namespace WCell.RealmServer.Global
 						var count = ObjectCount;
 						SpawnNPCs();
 						AddMessage(() =>
-									{
-										if (count > 0)
-										{
-											s_log.Debug("Added {0} NPC Spawnpoints to Map: {1}", ObjectCount - count, this);
-										}
-									});
+						{
+							if (count > 0)
+							{
+								s_log.Debug("Added {0} NPC Spawnpoints to Map: {1}", ObjectCount - count, this);
+							}
+						});
 						m_npcsSpawned = true;
 					}
 				}
@@ -995,15 +1012,14 @@ namespace WCell.RealmServer.Global
 
 		protected virtual void SpawnGOs()
 		{
-			var gos = GOMgr.TemplatesByMap[(int)Id];
-			if (gos != null)
+			var templates = GOMgr.GetSpawnPoolTemplatesByMap(MapId);
+			if (templates != null)
 			{
-				for (var i = 0; i < gos.Count; i++)
+				foreach (var templ in templates)
 				{
-					var template = gos[i];
-					if (template.Entry != null && template.AutoSpawn && IsEventActive(template.EventId))
+					if (templ.AutoSpawns && IsEventActive(templ.EventId))
 					{
-						template.Spawn(this);
+						AddGOSpawnPool(templ);
 					}
 				}
 			}
@@ -1681,6 +1697,7 @@ namespace WCell.RealmServer.Global
 		#region IterateObjects
 		/// <summary>
 		/// Iterates over all objects in the given radius around the given origin.
+		/// If the predicate returns false, iteration is cancelled and false is returned.
 		/// </summary>
 		/// <param name="origin"></param>
 		/// <param name="radius"></param>
@@ -2023,10 +2040,6 @@ namespace WCell.RealmServer.Global
 			if (obj.Node != null && obj.Node.RemoveObject(obj))
 			{
 				m_objects.Remove(obj.EntityId);
-				if (obj is GameObject)
-				{
-					m_goSpawnPoints[obj.EntityId.Low] = null;
-				}
 
 				if (obj is Character)
 				{
@@ -2069,28 +2082,28 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		/// <remarks>Requires map context.</remarks>
 		/// <returns>the closest GameObject to the given point, or null if none found.</returns>
-		public GameObject GetNearestGameObject(ref Vector3 pos, GOEntryId goId)
+		public GameObject GetNearestGameObject(Vector3 pos, GOEntryId goId, uint phase = WorldObject.DefaultPhase)
 		{
 			EnsureContext();
 
 			GameObject closest = null;
-			float distanceSq = int.MaxValue, currentDistanceSq;
+			float distanceSq = int.MaxValue;
 
-			foreach (var go in m_goSpawnPoints.Values)
+			IterateObjects(ref pos, WorldObject.BroadcastRange, phase, obj =>
 			{
-				if (go.Entry.GOId != goId)
+				if (obj is GameObject && ((GameObject)obj).Entry.GOId == goId)
 				{
-					continue;
-				}
+					var currentDistanceSq = obj.GetDistanceSq(ref pos);
 
-				currentDistanceSq = go.GetDistanceSq(ref pos);
-
-				if (currentDistanceSq < distanceSq)
-				{
-					distanceSq = currentDistanceSq;
-					closest = go;
+					if (currentDistanceSq < distanceSq)
+					{
+						distanceSq = currentDistanceSq;
+						closest = (GameObject)obj;
+					}
 				}
-			}
+				return true;
+
+			});
 
 			return closest;
 		}
@@ -2153,13 +2166,6 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region GOs
-		public GameObject GetGO(uint lowId)
-		{
-			GameObject go;
-			m_goSpawnPoints.TryGetValue(lowId, out go);
-			return go;
-		}
-
 		/// <summary>
 		/// Gets the first GO with the given SpellFocus within the given radius around the given position.
 		/// </summary>
@@ -2444,7 +2450,6 @@ namespace WCell.RealmServer.Global
 			m_objects = null;
 			m_characters = null;
 			m_spiritHealers = null;
-			m_goSpawnPoints = null;
 			m_updatables = null;
 		}
 

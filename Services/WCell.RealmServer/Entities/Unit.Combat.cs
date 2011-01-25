@@ -8,6 +8,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
@@ -20,47 +21,6 @@ namespace WCell.RealmServer.Entities
 	public partial class Unit
 	{
 		#region Global Variables
-		// <summary>
-		// This is added to the CombatReach of all Units
-		// </summary>
-		//public static float BaseAttackReach = 1f;
-
-		/// <summary>
-		/// Default base-range in which a mob will aggro (in yards).
-		/// Also see <see cref="AggroRangePerLevel"/>
-		/// </summary>
-		public static float AggroBaseRangeDefault = 20;
-
-		/// <summary>
-		/// Amount of yards to add to the <see cref="AggroBaseRangeDefault"/> per level difference.
-		/// </summary>
-		public static float AggroRangePerLevel = 1;
-
-		/// <summary>
-		/// Mobs with a distance >= this will not start aggressive actions
-		/// </summary>
-		public static float AggroMaxRangeDefault = 45;
-
-		private static float aggroMinRangeDefault = 5;
-
-		/// <summary>
-		/// Mobs within this range will *definitely* aggro
-		/// </summary>
-		public static float AggroMinRangeDefault
-		{
-			get { return aggroMinRangeDefault; }
-			set
-			{
-				aggroMinRangeDefault = value;
-				AggroMinRangeSq = value * value;
-			}
-		}
-
-		public static float AggroRangeNPCs = 10f;
-
-		[NotVariable]
-		public static float AggroMinRangeSq = aggroMinRangeDefault * aggroMinRangeDefault;
-
 		/// <summary>
 		/// Used to determine melee distance
 		/// </summary>
@@ -1394,15 +1354,14 @@ namespace WCell.RealmServer.Entities
 					 (range.MinDist < 1 || distSq >= range.MinDist * range.MinDist));
 		}
 
-		public float AggroBaseRange
+		public virtual float AggroBaseRange
 		{
-			get { return AggroBaseRangeDefault /*+ CombatReach*/ + BoundingRadius; }
+			get { return NPCEntry.AggroBaseRangeDefault /*+ CombatReach*/ + BoundingRadius; }
 		}
 
-		public float GetAggroRange(Unit victim)
+		public virtual float GetAggroRange(Unit victim)
 		{
-
-			return Math.Max(AggroBaseRange + ((Level - victim.Level) * AggroRangePerLevel), AggroMinRangeDefault);
+			return Math.Max(AggroBaseRange + ((Level - victim.Level) * NPCEntry.AggroRangePerLevel), NPCEntry.AggroMinRangeDefault);
 		}
 
 		public float GetAggroRangeSq(Unit victim)

@@ -741,7 +741,7 @@ namespace WCell.RealmServer.Entities
 		public override NPC SpawnMinion(NPCEntry entry, ref Vector3 position, int durationMillis)
 		{
 			var minion = base.SpawnMinion(entry, ref position, durationMillis);
-			minion.Group = Group;
+			Group.Add(minion);
 			return minion;
 		}
 
@@ -1020,6 +1020,14 @@ namespace WCell.RealmServer.Entities
 		protected override void OnLeaveCombat()
 		{
 			base.OnLeaveCombat();
+		}
+
+		public override float AggroBaseRange
+		{
+			get
+			{
+				return m_entry.AggroBaseRange;
+			}
 		}
 		#endregion
 

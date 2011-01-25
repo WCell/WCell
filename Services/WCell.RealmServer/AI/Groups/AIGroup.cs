@@ -51,20 +51,6 @@ namespace WCell.RealmServer.AI.Groups
 			get { return UpdatePriority.Background; }
 		}
 
-		public void AddMob(NPC npc)
-		{
-			Add(npc);
-			npc.Group = this;
-		}
-
-		public void RemoveMob(NPC npc)
-		{
-			if (Remove(npc))
-			{
-				npc.Group = null;
-			}
-		}
-
 		public void Aggro(Unit unit)
 		{
 			foreach (var mob in this)
@@ -89,9 +75,11 @@ namespace WCell.RealmServer.AI.Groups
 
 		#region Implementation of ICollection<NPC>
 
-		public void Add(NPC item)
+
+		public void Add(NPC npc)
 		{
-			groupList.Add(item);
+			groupList.Add(npc);
+			npc.Group = this;
 		}
 
 		public void Clear()
@@ -106,12 +94,17 @@ namespace WCell.RealmServer.AI.Groups
 
 		void ICollection<NPC>.CopyTo(NPC[] array, int arrayIndex)
 		{
-			throw new NotImplementedException();
+			groupList.CopyTo(array, arrayIndex);
 		}
 
-		public bool Remove(NPC item)
+		public bool Remove(NPC npc)
 		{
-			return groupList.Remove(item);
+			if (groupList.Remove(npc))
+			{
+				npc.Group = null;
+				return true;
+			}
+			return false;
 		}
 
 		public int Count

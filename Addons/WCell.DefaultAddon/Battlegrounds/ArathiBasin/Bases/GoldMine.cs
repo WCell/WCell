@@ -22,25 +22,25 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases
             FlagStand = mineBannerEntry.FirstSpawnEntry.Spawn(Instance);
 
             GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
-            ActualAura = neutralBannerAuraEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            ActualAura = neutralBannerAuraEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
         }
 
         protected override void SpawnAlliance()
         {
             GOEntry allianceControlledFlagEntry = GOMgr.GetEntry(GOEntryId.AllianceBanner_10);
-            FlagStand = allianceControlledFlagEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            FlagStand = allianceControlledFlagEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
 
             GOEntry allianceBannerAuraEntry = GOMgr.GetEntry(GOEntryId.AllianceBannerAura);
-            ActualAura = allianceBannerAuraEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            ActualAura = allianceBannerAuraEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
         }
 
         protected override void SpawnHorde()
         {
             GOEntry hordeControlledFlagEntry = GOMgr.GetEntry(GOEntryId.HordeBanner_10);
-            FlagStand = hordeControlledFlagEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            FlagStand = hordeControlledFlagEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
 
             GOEntry hordeBannerAuraEntry = GOMgr.GetEntry(GOEntryId.HordeBannerAura);
-            ActualAura = hordeBannerAuraEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            ActualAura = hordeBannerAuraEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
         }
 
         protected override void SpawnContested()
@@ -48,17 +48,17 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases
             if (Capturer.Battlegrounds.Team.Side == BattlegroundSide.Horde)
             {
                 GOEntry hordeAttackFlagEntry = GOMgr.GetEntry(GOEntryId.ContestedBanner_25);
-                FlagStand = hordeAttackFlagEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+                FlagStand = hordeAttackFlagEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
             }
             else
             {
                 GOEntry allianceAttackFlagEntry = GOMgr.GetEntry(GOEntryId.ContestedBanner_26);
-                FlagStand = allianceAttackFlagEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+                FlagStand = allianceAttackFlagEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
             }
 
             // don't know if we have to spawn neutral aura...
             GOEntry neutralBannerAuraEntry = GOMgr.GetEntry(GOEntryId.NeutralBannerAura);
-            neutralBannerAuraEntry.Templates[(int)ArathiBases.GoldMine].Spawn(Instance);
+            neutralBannerAuraEntry.SpawnEntries[(int)ArathiBases.GoldMine].Spawn(Instance);
         }
     }
 }
