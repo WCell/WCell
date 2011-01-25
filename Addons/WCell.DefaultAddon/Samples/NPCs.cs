@@ -43,10 +43,7 @@ namespace WCell.Addons.Default.Samples
 
 		public static void CreateTeleportNPC(NPCId id, Vector3 location, MapId mapId)
 		{
-			var spawn = new NPCSpawnEntry
-			{
-				EntryId = id
-			};
+			var spawn = new NPCSpawnEntry(id, mapId, location);
 			spawn.FinalizeDataHolder();
 
 			spawn.Spawned += npc =>

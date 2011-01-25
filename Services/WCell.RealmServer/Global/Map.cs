@@ -820,14 +820,19 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
-		public NPCSpawnPool AddNPCSpawnPool(NPCSpawnPoolTemplate templ)
+		public void AddNPCSpawnPoolLater(NPCSpawnPoolTemplate templ)
+		{
+			AddMessage(() => AddNPCSpawnPoolNow(templ));
+		}
+
+		public NPCSpawnPool AddNPCSpawnPoolNow(NPCSpawnPoolTemplate templ)
 		{
 			var pool = new NPCSpawnPool(this, templ);
-			AddNPCSpawnPool(pool);
+			AddNPCSpawnPoolNow(pool);
 			return pool;
 		}
 
-		public void AddNPCSpawnPool(NPCSpawnPool pool)
+		public void AddNPCSpawnPoolNow(NPCSpawnPool pool)
 		{
 			if (!m_npcSpawnPools.ContainsKey(pool.Template.PoolId))
 			{
@@ -1038,7 +1043,7 @@ namespace WCell.RealmServer.Global
 				{
 					if (templ.AutoSpawns && IsEventActive(templ.Entries[0].EventId))
 					{
-						AddNPCSpawnPool(templ);
+						AddNPCSpawnPoolNow(templ);
 					}
 				}
 			}

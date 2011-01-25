@@ -243,7 +243,7 @@ namespace WCell.RealmServer.Spawns
 			for (var i = 0; i < arr.Length; i++)
 			{
 				var spawn = arr[i];
-				spawn.Delete();
+				spawn.DeleteNow();
 			}
 		}
 
