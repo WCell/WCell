@@ -1,2 +1,2 @@
-- added Packet definitions and other xml files into the Content/ solution folder
-- added definition of SMSG_HEALTH_UPDATE
+- added aggro on debuff
+- added support for quests with spellcast objectives (fixes Thirst Unending for belfs amongst others)

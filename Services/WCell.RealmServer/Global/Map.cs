@@ -1041,7 +1041,7 @@ namespace WCell.RealmServer.Global
 			{
 				foreach (var templ in poolTemplates)
 				{
-					if (templ.AutoSpawns && IsEventActive(templ.Entries[0].EventId))
+					if (templ.AutoSpawns && IsEventActive(templ.EventId))
 					{
 						AddNPCSpawnPoolNow(templ);
 					}

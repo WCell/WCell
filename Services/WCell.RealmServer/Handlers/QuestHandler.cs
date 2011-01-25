@@ -357,7 +357,7 @@ namespace WCell.RealmServer.Handlers
 				pckt.Write(interaction.RawId);								// ID of interaction
 				pckt.Write(currentCount);									// current count
 				pckt.Write(interaction.Amount);								// total count
-				pckt.Write(obj.EntityId);									// guid of object
+				pckt.Write(obj != null ? obj.EntityId : EntityId.Zero);		// guid of object
 				chr.Client.Send(pckt);
 			}
 		}
@@ -492,8 +492,8 @@ namespace WCell.RealmServer.Handlers
 
 				for (i = 0; i < QuestConstants.MaxObjectInteractions; i++)
 				{
-					pckt.Write(qt.ObjectInteractions[i].RawId);		// Mob or GO entry ID [i]
-					pckt.Write(qt.ObjectInteractions[i].Amount);	// amount [i],
+					pckt.Write(qt.ObjectOrSpellInteractions[i].RawId);		// Mob or GO entry ID [i]
+					pckt.Write(qt.ObjectOrSpellInteractions[i].Amount);	// amount [i],
 					pckt.Write(0);
 					pckt.Write(0);									// since 3.3
 				}
