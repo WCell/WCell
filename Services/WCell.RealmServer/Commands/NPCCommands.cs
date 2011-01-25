@@ -14,13 +14,16 @@
  *
  *************************************************************************/
 
+using System.Linq;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Instances;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Commands;
 using WCell.Util;
 using WCell.RealmServer.AI;
@@ -134,26 +137,27 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("AddSpawn", "Spawn");
-				EnglishParamInfo = "[-c]|[<spawnid> [<amount>]]";
+				EnglishParamInfo = "[-c]|[<NPCId or spawnid> [<amount>]]";
 				EnglishDescription = "Creates the NPC-spawnpoint with the given id. -c switch simply creates the spawnpoint that is closest to you";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
+				var target = trigger.Args.Target;
 
 				if (mod == "c")
 				{
-					if (trigger.Args.Target == null)
+					if (target == null)
 					{
 						trigger.Reply("Cannot use the -c switch without active Target.");
 						return;
 					}
 
-					var point = NPCMgr.SpawnClosestSpawnEntry(trigger.Args.Target);
+					var point = NPCMgr.SpawnClosestSpawnEntry(target);
 					if (point != null)
 					{
-						trigger.Args.Target.TeleportTo(point);
+						target.TeleportTo(point);
 					}
 					else
 					{
@@ -162,8 +166,37 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					var deputyWilemId = 168224u;
-					var spawnId = trigger.Text.NextUInt(deputyWilemId);
+					var word = trigger.Text.NextWord();
+					NPCId npcId;
+					NPCSpawnEntry spawnEntry;
+					if (!EnumUtil.TryParse(word, out npcId))
+					{
+						uint spawnId;
+						uint.TryParse(word, out spawnId);
+						spawnEntry = NPCMgr.GetSpawnEntry(spawnId);
+						if (spawnEntry == null)
+						{
+							trigger.Reply("Invalid SpawnId: " + spawnId);
+							return;
+						}
+					}
+					else
+					{
+						var entry = NPCMgr.GetEntry(npcId);
+						if (entry == null)
+						{
+							trigger.Reply("Entry not found: " + npcId);
+							return;
+						}
+						if (entry.SpawnEntries.Count == 0)
+						{
+							trigger.Reply("Entry has no SpawnEntries: " + entry);
+							return;
+						}
+
+						spawnEntry = target == null ? entry.SpawnEntries.GetClosestSpawnEntry(target) : entry.SpawnEntries.First();
+					}
+
 					var amount = trigger.Text.NextUInt(1);
 
 					if (amount < 1)
@@ -171,23 +204,58 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Invalid amount: " + amount);
 					}
 					else
-					{
-						var spawnEntry = NPCMgr.GetSpawnEntry(spawnId);
-						if (spawnEntry == null)
+					{	
+						var map = spawnEntry.Map;
+						if (map == null)
 						{
-							trigger.Reply("Invalid SpawnId: " + spawnId);
-						}
-						else
-						{
-							trigger.Args.Target.Map.AddNPCSpawnPool(spawnEntry.PoolTemplate);
-
-							if (trigger.Args.Target != null)
+							if (target == null)
 							{
-								trigger.Args.Target.TeleportTo(spawnEntry);
+								trigger.Reply("Cannot create instance NPC if no target is given.");
+								return;
 							}
+							else
+							{
+								// no map but a target object
+								if (spawnEntry.MapId == target.MapId)
+								{
+									map = target.Map;
+								}
+								else
+								{
+									// must create Map
+									if (World.IsInstance(spawnEntry.MapId))
+									{
+										if (!(target is Character))
+										{
+											trigger.Reply("Cannot create instance for non-Character target.");
+											return;
+										}
 
-							trigger.Reply("Created {0}.", spawnEntry);
+										// create instance
+										map = InstanceMgr.CreateInstance((Character)target, spawnEntry.MapId);
+										if (map == null)
+										{
+											trigger.Reply("Failed to create instance: " + spawnEntry.MapId);
+											return;
+										}
+									}
+									else
+									{
+										trigger.Reply("Cannot spawn NPC for map: " + spawnEntry.MapId);
+										return;
+									}
+								}
+							}
 						}
+
+						// create 
+						map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+						if (target != null)
+						{
+							target.TeleportTo(map, spawnEntry.Position);
+						}
+
+						trigger.Reply("Created spawn: {0}", spawnEntry);
 					}
 				}
 			}

@@ -1026,6 +1026,12 @@ namespace WCell.RealmServer.Global
 			return s_MapTemplates.Get((uint)mapID);
 		}
 
+		public static bool IsInstance(MapId mapId)
+		{
+			var templ = GetMapTemplate(mapId);
+			return templ != null && templ.IsInstance;
+		}
+
 		/// <summary>
 		/// Gets zone template by ID.
 		/// </summary>

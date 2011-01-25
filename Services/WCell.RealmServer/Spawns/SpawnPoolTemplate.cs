@@ -61,7 +61,7 @@ namespace WCell.RealmServer.Spawns
 
 		public abstract List<T> PoolTemplatesOnSameMap { get; }
 
-		internal void AddEntry(E entry)
+		public void AddEntry(E entry)
 		{
 			if (MapId == MapId.End)
 			{

@@ -25,6 +25,13 @@ namespace WCell.RealmServer.NPCs.Spawns
 
 		}
 
+		public NPCSpawnEntry(NPCId entryId, MapId map, Vector3 pos)
+		{
+			EntryId = entryId;
+			MapId = map;
+			Position = pos;
+		}
+
 		public NPCId EntryId;
 
 		[NotPersistent]
@@ -56,7 +63,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 		public override NPC SpawnObject(NPCSpawnPoint point)
 		{
 			var spawnling = Entry.Create(point);
-			Map.AddObjectNow(spawnling, Position);
+			point.Map.AddObjectNow(spawnling, Position);
 			return spawnling;
 		}
 

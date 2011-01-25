@@ -1,6 +1,3 @@
-- fixed world location loading and thus the tele command
-- fixed login when one logged out from an instance that got deleted
-- fixed: Delete SpecProfiles from table when deleting Character
-- fixed #map clear (i.e. Map.Clear())
-- removed the -l switch from the tele command
-- first version of Zerant's UtgardeKeep
+- updated UtgardeKeep with some code that makes use of the new NPCSpawnPools
+- #npc spawn <name> works now (and teleports you to the spawned NPC) -> will also create an instance if it is an instance NPC
+- fixed another bug with #map clear

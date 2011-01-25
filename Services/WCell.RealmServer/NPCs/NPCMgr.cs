@@ -617,7 +617,7 @@ namespace WCell.RealmServer.NPCs
 							if (pool.AutoSpawns)
 							{
 								var p = pool;			// wrap closure
-								map.ExecuteInContext(() => map.AddNPCSpawnPool(p));
+								map.ExecuteInContext(() => map.AddNPCSpawnPoolNow(p));
 							}
 						}
 					}
@@ -878,10 +878,10 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public static NPCSpawnPoint SpawnClosestSpawnEntry(IWorldLocation pos)
 		{
-			var entry = GetClosesSpawnEntry(pos);
+			var entry = GetClosestSpawnEntry(pos);
 			if (entry != null)
 			{
-				var pool = pos.Map.AddNPCSpawnPool(entry.PoolTemplate);
+				var pool = pos.Map.AddNPCSpawnPoolNow(entry.PoolTemplate);
 				if (pool != null)
 				{
 					return pool.GetSpawnPoint(entry);
@@ -890,7 +890,7 @@ namespace WCell.RealmServer.NPCs
 			return null;
 		}
 
-		public static NPCSpawnEntry GetClosesSpawnEntry(IWorldLocation pos)
+		public static NPCSpawnEntry GetClosestSpawnEntry(IWorldLocation pos)
 		{
 			NPCSpawnEntry closest = null;
 			var distanceSq = Single.MaxValue;
@@ -904,6 +904,22 @@ namespace WCell.RealmServer.NPCs
 						distanceSq = distSq;
 						closest = entry;
 					}
+				}
+			}
+			return closest;
+		}
+
+		public static NPCSpawnEntry GetClosestSpawnEntry(this IEnumerable<NPCSpawnEntry> entries, IWorldLocation pos)
+		{
+			NPCSpawnEntry closest = null;
+			var distanceSq = Single.MaxValue;
+			foreach (var entry in entries)
+			{
+				var distSq = pos.Position.DistanceSquared(entry.Position);
+				if (distSq < distanceSq)
+				{
+					distanceSq = distSq;
+					closest = entry;
 				}
 			}
 			return closest;
