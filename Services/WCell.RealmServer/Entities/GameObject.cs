@@ -18,7 +18,6 @@ using System;
 using System.Linq;
 using System.Threading;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Looting;
 using WCell.Constants.Updates;
@@ -28,6 +27,7 @@ using WCell.Core.Timers;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
@@ -57,11 +57,11 @@ namespace WCell.RealmServer.Entities
 
 		protected GOEntry m_entry;
 		protected Faction m_faction;
+		protected GOSpawnPoint m_spawnPoint;
 
 		protected GameObjectHandler m_handler;
 		protected bool m_respawns;
-		protected GOSpawnEntry m_template;
-		protected TimerEntry m_decayTimer, m_respawnTimer;
+		protected TimerEntry m_decayTimer;
 		protected GameObject m_linkedTrap;
 		protected internal bool m_IsTrap;
 
@@ -104,9 +104,9 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
-		public GOSpawnEntry SpawnEntry
+		public GOSpawnPoint SpawnPoint
 		{
-			get { return m_template; }
+			get { return m_spawnPoint; }
 		}
 
 		/// <summary>
@@ -115,29 +115,6 @@ namespace WCell.RealmServer.Entities
 		public override bool IsTrap
 		{
 			get { return m_IsTrap; }
-		}
-
-		/// <summary>
-		/// Whether this GO respawns after removal
-		/// </summary>
-		public bool Respawns
-		{
-			get { return m_respawns; }
-			set
-			{
-				if (value != m_respawns)
-				{
-					m_respawns = value;
-					if (!value)
-					{
-						// TODO: Deactivate respawning
-						if (!IsInWorld)
-						{
-							m_Map.m_goSpawnPoints[EntityId.Low] = null;
-						}
-					}
-				}
-			}
 		}
 
 		public override ObjectTypeId ObjectTypeId
@@ -183,42 +160,42 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Creates the given kind of GameObject with the default Template
 		/// </summary>
-		public static GameObject Create(GOEntryId id, IWorldLocation location, GOSpawnEntry spawnEntry = null)
+		public static GameObject Create(GOEntryId id, IWorldLocation location, GOSpawnEntry spawnEntry = null, GOSpawnPoint spawnPoint = null)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry == null)
 			{
 				return null;
 			}
-			return Create(entry, location, spawnEntry ?? (entry.Templates.Count > 0 ? entry.Templates[0] : null));
+			return Create(entry, location, spawnEntry, spawnPoint);
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntryId id, Map map, GOSpawnEntry templ)
+		public static GameObject Create(GOEntryId id, Map map, GOSpawnEntry spawnEntry = null, GOSpawnPoint spawnPoint = null)
 		{
 			var entry = GOMgr.GetEntry(id);
 			if (entry != null)
 			{
-				return Create(entry, map, templ);
+				return Create(entry, map, spawnEntry, spawnPoint);
 			}
 			return null;
 		}
 
-		public static GameObject Create(GOEntry entry, Map map, GOSpawnEntry spawnEntry = null)
+		public static GameObject Create(GOEntry entry, Map map, GOSpawnEntry spawnEntry = null, GOSpawnPoint spawnPoint = null)
 		{
-			return Create(entry, new WorldLocation(map, Vector3.Zero), spawnEntry);
+			return Create(entry, new WorldLocation(map, Vector3.Zero), spawnEntry, spawnPoint);
 		}
 
 		/// <summary>
 		/// Creates a new GameObject with the given parameters
 		/// </summary>
-		public static GameObject Create(GOEntry entry, IWorldLocation where, GOSpawnEntry spawnEntry)
+		public static GameObject Create(GOEntry entry, IWorldLocation where, GOSpawnEntry spawnEntry = null, GOSpawnPoint spawnPoint = null)
 		{
 			var go = entry.GOCreator();
 			var handlerCreator = entry.HandlerCreator;
-			go.Init(entry, spawnEntry);
+			go.Init(entry, spawnEntry, spawnPoint);
 			if (handlerCreator != null)
 			{
 				go.Handler = handlerCreator();
@@ -239,13 +216,13 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="entry"></param>
 		/// <param name="templ"></param>
-		internal virtual void Init(GOEntry entry, GOSpawnEntry templ)
+		internal virtual void Init(GOEntry entry, GOSpawnEntry spawnEntry, GOSpawnPoint spawnPoint)
 		{
 			EntityId = EntityId.GetGameObjectId((uint)Interlocked.Increment(ref _lastGOUID), entry.GOId);
 			Type |= ObjectTypes.GameObject;
 			//DynamicFlagsLow = GameObjectDynamicFlagsLow.Activated;
 			m_entry = entry;
-			m_template = templ;
+			m_spawnPoint = spawnPoint;
 
 			DisplayId = entry.DisplayId;
 			EntryId = entry.Id;
@@ -254,17 +231,18 @@ namespace WCell.RealmServer.Entities
 			m_faction = m_entry.Faction ?? Faction.NullFaction;
 			ScaleX = m_entry.DefaultScale;
 
-			if (templ != null)
+			spawnEntry = spawnEntry ?? entry.FirstSpawnEntry;
+			if (spawnEntry != null)
 			{
-				Phase = templ.PhaseMask;
-				State = templ.State;
-				if (templ.Scale != 1)
+				Phase = spawnEntry.PhaseMask;
+				State = spawnEntry.State;
+				if (spawnEntry.Scale != 1)
 				{
-					ScaleX = templ.Scale;
+					ScaleX = spawnEntry.Scale;
 				}
-				Orientation = templ.Orientation;
-				AnimationProgress = templ.AnimProgress;
-				SetRotationFields(templ.Rotations);
+				Orientation = spawnEntry.Orientation;
+				AnimationProgress = spawnEntry.AnimProgress;
+				SetRotationFields(spawnEntry.Rotations);
 			}
 
 			m_entry.InitGO(this);
@@ -299,8 +277,6 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void OnEnterMap()
 		{
-			m_Map.m_goSpawnPoints.Add(EntityId.Low, this);
-
 			// add Trap
 			if (m_entry.LinkedTrap != null)
 			{
@@ -349,7 +325,7 @@ namespace WCell.RealmServer.Entities
 
 		public override string ToString()
 		{
-			return m_entry.DefaultName + " (Template: " + m_template + ")";
+			return m_entry.DefaultName + " (SpawnPoint: " + m_spawnPoint + ")";
 		}
 
 		public bool IsCloseEnough(Character chr)
@@ -424,21 +400,15 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
 			if (m_linkedTrap != null)
 			{
 				m_linkedTrap.DeleteNow();
 			}
-
-			if (Respawns)
-			{
-				// TODO: Finish respawning
-				OnDeleted();
-				m_respawnTimer = new TimerEntry();
-			}
-			else
-			{
-				base.DeleteNow();
-			}
+			base.DeleteNow();
 		}
 
 		void StopDecayTimer()

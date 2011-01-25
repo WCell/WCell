@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Handlers
 				// TODO: Check in Char Enum?
 				SendCharacterLoginFail(client, LoginErrorCode.AUTH_BILLING_EXPIRED);
 			}
-			else
+			else if (client.ActiveCharacter == null)
 			{
 				Character chr = null;
 				try

@@ -10,6 +10,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.Util.Variables;
 
 namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
@@ -244,10 +245,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                 Instance.WorldStates.SetInt32(showIconHordeContested, 1);
                 Instance.WorldStates.SetInt32(showIconAllianceContested, 0);
             }
+
             foreach (Character character in Instance.Characters)
             {
                 character.SendSystemMessage(DefaultAddonLocalizer.Instance.Translate(character.Locale, AddonMsgKey.ABBaseAssaulted, chr.Name, Names[(int)character.Locale]));
             }
+
             SpawnContested();
         }
 		/// <summary>

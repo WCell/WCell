@@ -5,7 +5,7 @@
     <Flat Name="Id" Column="guid" />
     <Flat Name="EntryId" Column="id" />
     <Flat Name="MapId" Column="map" />
-    <Nested Name="Pos">
+    <Nested Name="Position">
       <Flat Name="X" Column="position_x" />
       <Flat Name="Y" Column="position_y" />
       <Flat Name="Z" Column="position_z" />

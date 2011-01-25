@@ -317,6 +317,11 @@ namespace WCell.RealmServer.Spells
 
 		public bool HasAffectMask;
 
+		public bool HasAffectingSpells
+		{
+			get { return HasAffectMask || AffectSpellSet != null; }
+		}
+
 		public bool IsModifierEffect;
 
 		/// <summary>

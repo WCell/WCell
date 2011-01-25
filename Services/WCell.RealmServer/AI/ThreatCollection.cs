@@ -10,6 +10,7 @@ namespace WCell.RealmServer.AI
 {
 	/// <summary>
 	/// Collection representing threat values of an NPC against its foes
+	/// TODO: Implement as priority list (B-Tree or Fibonacci Heap)
 	/// </summary>
 	public class ThreatCollection : IEnumerable<AggressorPair>
 	{

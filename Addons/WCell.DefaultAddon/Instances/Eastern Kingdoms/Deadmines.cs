@@ -144,7 +144,7 @@ namespace WCell.Addons.Default.Instances
 					if (instance != null)
 					{
 						// set the instance's Door object after the Door spawned
-						instance.sneedDoor = go.Map.GetNearestGameObject(ref sneedDoorCord, (GOEntryId)sneedDoorEntry.Id);
+						instance.sneedDoor = go.Map.GetNearestGameObject(sneedDoorCord, (GOEntryId)sneedDoorEntry.Id);
 					}
 				};
 			}
@@ -159,7 +159,7 @@ namespace WCell.Addons.Default.Instances
 					if (instance != null)
 					{
 						// set the instance's Door object after the Door spawned
-						instance.gilnidDoor = go.Map.GetNearestGameObject(ref gilnidDoorCord, (GOEntryId)gilnidEntry.Id);
+						instance.gilnidDoor = go.Map.GetNearestGameObject(gilnidDoorCord, (GOEntryId)gilnidEntry.Id);
 					}
 				};
 			}

@@ -5,6 +5,7 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.Skills;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.GameObjects;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Toolshed;
@@ -206,12 +207,12 @@ namespace WCell.Tools.Domi.Output
 			    writer.WriteLine(indent + "\t{0}: {1}", prop.Name, prop.GetValue(entry, args));
 			}
 
-		    if (entry.Templates.Count > 0)
+		    if (entry.SpawnEntries.Count > 0)
 			{
 				writer.WriteLine(indent + "\tTemplates:");
-				for (var i = 0; i < entry.Templates.Count; i++)
+				for (var i = 0; i < entry.SpawnEntries.Count; i++)
 				{
-					var template = entry.Templates[i];
+					var template = entry.SpawnEntries[i];
 					writer.WriteLine("\tTemplate #" + (i + 1) + ":");
 					template.Write(writer, indent + "\t");
 					writer.WriteLine();
@@ -239,9 +240,9 @@ namespace WCell.Tools.Domi.Output
 			{
 				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnSeconds);
 			}
-			if (templ.DespawnTime != 0)
+			if (templ.DespawnSeconds != 0)
 			{
-				writer.WriteLine("{0}\tRespawn: {1}", indent, templ.RespawnSeconds);
+				writer.WriteLine("{0}\tDespawn: {1}", indent, templ.DespawnSeconds);
 			}
 		}
 	}

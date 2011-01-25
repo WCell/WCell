@@ -1,24 +1,28 @@
 using System;
+using System.Collections.Generic;
 using NLog;
 using WCell.Constants.GameObjects;
+using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Global;
 using WCell.RealmServer.Looting;
+using WCell.RealmServer.Spawns;
+using WCell.RealmServer.Waypoints;
 using WCell.Util;
 using WCell.Util.Data;
-using System.Collections.Generic;
+using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
-namespace WCell.RealmServer.GameObjects
+namespace WCell.RealmServer.GameObjects.Spawns
 {
 	/// <summary>
-	/// Represents a spawn entry for a GameObject
+	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public class GOSpawnEntry : IDataHolder, IWorldLocation
+	public class GOSpawnEntry : SpawnEntry<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>, IDataHolder, IWorldLocation
 	{
+		#region GO-Specific Data
 		public uint Id;
 		public GOEntryId EntryId;
 
@@ -26,60 +30,13 @@ namespace WCell.RealmServer.GameObjects
 		public uint EntryIdRaw;
 		public GameObjectState State;
 
-        /// <summary>
-        /// Whether this template will be added to its Map automatically (see <see cref="Map.SpawnMap"/>)
-        /// </summary>
-	    public bool AutoSpawn = true;
-
-		private MapId m_MapId = MapId.End;
-		public MapId MapId
-		{
-			get { return m_MapId; }
-			set
-			{
-				if (m_MapId != MapId.End)
-				{
-					GOMgr.GetTemplates(m_MapId).Remove(this);
-				}
-
-				m_MapId = value;
-
-				if (value != MapId.End)
-				{
-					GOMgr.AddTemplate(this);
-				}
-			}
-		}
-
-		public Vector3 Pos;
-		public float Orientation;
 		public float Scale = 1;
 
 		[Persistent(GOConstants.MaxRotations)]
 		public float[] Rotations;
 
 		public byte AnimProgress;
-
-		public uint PhaseMask = 1;
-
-		public uint EventId;
-
-		/// <summary>
-		/// Time in seconds until this GO will respawn after it was destroyed.
-		/// Value less or equal 0 means, it will not automatically respawn.
-		/// </summary>
-		public int RespawnSeconds;
-
-		/// <summary>
-		/// Time in seconds until this GO will despawn.
-		/// Value less or equal 0 means, it will not automatically despawn.
-		/// </summary>
-		public int DespawnTime;
-
-		public bool WillRespawn
-		{
-			get { return RespawnSeconds > 0; }
-		}
+		#endregion
 
 		[NotPersistent]
 		public GOEntry Entry;
@@ -99,7 +56,7 @@ namespace WCell.RealmServer.GameObjects
 			EntryId = entry.GOId;
 			State = state;
 			MapId = mapId;
-			Pos = pos;
+			Position = pos;
 			Orientation = orientation;
 			Scale = scale;
 			Rotations = rotations;
@@ -121,7 +78,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return null;
 			}
-			var go = GameObject.Create(Entry, new WorldLocationStruct(map, Pos), this);
+			var go = GameObject.Create(Entry, new WorldLocationStruct(map, Position), this);
 			return go;
 		}
 
@@ -134,6 +91,12 @@ namespace WCell.RealmServer.GameObjects
 			return GameObject.Create(Entry, pos, this);
 		}
 
+		public override GameObject SpawnObject(GOSpawnPoint point)
+		{
+			return GameObject.Create(Entry, point, this, point);
+		}
+
+
 		public uint GetId()
 		{
 			return Id;
@@ -145,8 +108,40 @@ namespace WCell.RealmServer.GameObjects
 			set;
 		}
 
+		#region FinalizeDataHolder
+		/// <summary>
+		/// Finalize this NPCSpawnEntry
+		/// </summary>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
 		public void FinalizeDataHolder()
 		{
+			FinalizeDataHolder(true);
+		}
+
+		private void AddToPoolTemplate()
+		{
+			m_PoolTemplate = GOMgr.GetOrCreateSpawnPoolTemplate(PoolId);
+			m_PoolTemplate.AddEntry(this);
+		}
+
+		/// <summary>
+		/// Finalize this NPCSpawnEntry
+		/// </summary>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
+		public override void FinalizeDataHolder(bool addToPool)
+		{
+			// get Entry
+			if (Entry == null)
+			{
+				Entry = GOMgr.GetEntry(EntryId, false);
+				if (Entry == null)
+				{
+					ContentMgr.OnInvalidDBData("{0} had an invalid EntryId.", this);
+					return;
+				}
+			}
+
+			// fix data inconsistencies
 			if (Scale == 0)
 			{
 				Scale = 1;
@@ -161,47 +156,39 @@ namespace WCell.RealmServer.GameObjects
 				EntryIdRaw = (uint)EntryId;
 			}
 
-			if (Entry == null)
-			{
-				GOMgr.Entries.TryGetValue((uint)EntryId, out Entry);
-				if (Entry == null)
-				{
-					ContentMgr.OnInvalidDBData("GOTemplate ({0}) had an invalid EntryId.", this);
-					return;
-				}
-			}
-
 			if (Rotations == null)
 			{
 				Rotations = new float[GOConstants.MaxRotations];
 			}
 
-			if (RespawnSeconds < 0)
-			{
-				// in UDB, a negative DespawnTime implies that the GO will not auto-spawn and despawn after the negative amount of seconds
-				AutoSpawn = false;
-				DespawnTime = -RespawnSeconds;
-			}
-
-			Entry.Templates.Add(this);
 			//GOMgr.Templates.Add(Id, this);
-		}
 
-		#region IWorldLocation
-		public Vector3 Position
-		{
-			get { return Pos; }
-		}
+			// do the default thing
+			base.FinalizeDataHolder(addToPool);
 
-		/// <summary>
-		/// Is null if Template is not spawned in a continent
-		/// </summary>
-		public Map Map
-		{
-			get { return World.GetMap(MapId); }
+			if (MapId != MapId.End)
+			{
+				// valid map
+				Entry.SpawnEntries.Add(this);
+
+				if (addToPool)
+				{
+					// add to pool
+					AddToPoolTemplate();
+				}
+			}
 		}
 		#endregion
 
+		public override string ToString()
+		{
+			return (Entry != null ? Entry.DefaultName : "") + " (EntryId: " + EntryId + " (" + (int)EntryId + ")" //+ ", Id: " + Id
+				+ ")";
+		}
+
+		/// <summary>
+		/// Do not remove: Used internally for caching
+		/// </summary>
 		public static IEnumerable<GOSpawnEntry> GetAllDataHolders()
 		{
 			var list = new List<GOSpawnEntry>(10000);
@@ -209,16 +196,10 @@ namespace WCell.RealmServer.GameObjects
 			{
 				if (entry != null)
 				{
-					list.AddRange(entry.Templates);
+					list.AddRange(entry.SpawnEntries);
 				}
 			}
 			return list;
-		}
-
-		public override string ToString()
-		{
-			return (Entry != null ? Entry.DefaultName : "") + " (EntryId: " + EntryId + " (" + (int)EntryId + ")" //+ ", Id: " + Id
-				+ ")";
 		}
 	}
 }

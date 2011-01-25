@@ -1,1 +1,6 @@
-- added loading of explored zones information
+- fixed world location loading and thus the tele command
+- fixed login when one logged out from an instance that got deleted
+- fixed: Delete SpecProfiles from table when deleting Character
+- fixed #map clear (i.e. Map.Clear())
+- removed the -l switch from the tele command
+- first version of Zerant's UtgardeKeep

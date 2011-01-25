@@ -4,7 +4,7 @@
     <DefaultTable>game_tele</DefaultTable>
     <Flat Name="Id" Column="id" />
     <Flat Name="DefaultName" Column="name" />
-    <Flat Name="RegionId" Column="map" />
+    <Flat Name="MapId" Column="map" />
     <!--orientation-->
     <Nested Name="Position">
       <Flat Name="X" Column="position_x" />

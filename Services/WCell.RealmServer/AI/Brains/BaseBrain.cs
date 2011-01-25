@@ -5,6 +5,7 @@ using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.AI.Actions.States;
@@ -391,22 +392,22 @@ namespace WCell.RealmServer.AI.Brains
 
 		public void OnGroupChange(AIGroup newGroup)
 		{
-			if (newGroup != null)
-			{
-				// now in new/different group
-				DefaultState = newGroup.DefaultState;
-				EnterDefaultState();
-			}
-			else
-			{
-				// left Group
-				DefaultState = DefaultBrainState;
-				if (m_currentAction.IsGroupAction)
-				{
-					m_currentAction.Stop();
-					EnterDefaultState();
-				}
-			}
+			//if (newGroup != null)
+			//{
+			//    // now in new/different group
+			//    DefaultState = newGroup.DefaultState;
+			//    EnterDefaultState();
+			//}
+			//else
+			//{
+			//    // left Group
+			//    DefaultState = DefaultBrainState;
+			//    if (m_currentAction != null && m_currentAction.IsGroupAction)
+			//    {
+			//        m_currentAction.Stop();
+			//        EnterDefaultState();
+			//    }
+			//}
 		}
 
 		/// <summary>
@@ -422,7 +423,7 @@ namespace WCell.RealmServer.AI.Brains
 			var owner = (NPC)m_owner;
 
 			// look around for possible enemies to attack (inverted predicate)
-			return !owner.IterateEnvironment(Unit.AggroMaxRangeDefault, obj =>
+			return !owner.IterateEnvironment(NPCEntry.AggroMaxRangeDefault, obj =>
 			{
 				if (!(obj is Unit))
 				{

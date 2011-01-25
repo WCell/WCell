@@ -339,7 +339,7 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Loading GOs...");
 						GOMgr.LoadAll();
 
-						if (Map.AutoSpawn)
+						if (Map.AutoSpawnMaps)
 						{
 							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 						}
@@ -393,7 +393,7 @@ namespace WCell.RealmServer.Commands
 							}
 						}
 
-						if (Map.AutoSpawn)
+						if (Map.AutoSpawnMaps)
 						{
 							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 						}
@@ -582,7 +582,7 @@ namespace WCell.RealmServer.Commands
 				trigger.Reply("All done - Loading took: " + (DateTime.Now - start));
 				GC.Collect(2, GCCollectionMode.Optimized);
 
-				if (Map.AutoSpawn)
+				if (Map.AutoSpawnMaps)
 				{
 					MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
 				}

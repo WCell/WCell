@@ -33,7 +33,7 @@
   </Table>
   
 <!-- NPC Spawns -->
-  <Table Name="pool_template" MainDataHolder="NPCSpawnPoolTemplate">
+  <Table Name="pool_template" MainDataHolder="SpawnPoolTemplateEntry">
     <PrimaryColumn Name="entry"/>
   </Table>
 

@@ -11,16 +11,9 @@ namespace WCell.RealmServer.NPCs.Spawns
 	public class NPCSpawnPool : SpawnPool<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>
 	{
 		public NPCSpawnPool(Map map, NPCSpawnPoolTemplate templ)
+			: base(map, templ)
 		{
 			AIGroup = new AIGroup();
-			Map = map;
-			Template = templ;
-
-			// add SpawnPoints
-			foreach (var entry in templ.Entries)
-			{
-				AddSpawnPoint(entry);
-			}
 		}
 
 		public AIGroup AIGroup

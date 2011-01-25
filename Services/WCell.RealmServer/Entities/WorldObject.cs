@@ -56,6 +56,11 @@ namespace WCell.RealmServer.Entities
 		public static readonly ObjectPool<HashSet<WorldObject>> WorldObjectSetPool = ObjectPoolMgr.CreatePool(() => new HashSet<WorldObject>());
 		public static readonly ObjectPool<List<WorldObject>> WorldObjectListPool = ObjectPoolMgr.CreatePool(() => new List<WorldObject>());
 
+		/// <summary>
+		/// Default phase for "normal" things to happen
+		/// </summary>
+		public const uint DefaultPhase = 1;
+
 		#region Variables
 		/// <summary>
 		/// Default vision range. Characters will only receive packets of what happens within this range (unit: Yards)

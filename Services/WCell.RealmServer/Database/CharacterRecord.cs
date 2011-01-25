@@ -1106,6 +1106,7 @@ namespace WCell.RealmServer.Database
 				AuraRecord.DeleteAll("OwnerId = " + charId);
 				ItemRecord.DeleteAll("OwnerId = " + charId);
 				SkillRecord.DeleteAll("OwnerId = " + charId);
+				SpecProfile.DeleteAll("CharacterId = " + charId);
 				ReputationRecord.DeleteAll("OwnerId = " + charId);
 				QuestRecord.DeleteAll("OwnerId = " + charId);
 				SummonedPetRecord.DeleteAll("OwnerLowId = " + charId);

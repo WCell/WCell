@@ -88,11 +88,12 @@ namespace WCell.RealmServer.Spawns
 
 		public void SpawnNow(int dtMillis = 0)
 		{
-			m_spawnling = SpawnEntry.SpawnObject((POINT)this);
+			Map.AddMessage(() =>
+			{
+				m_spawnling = SpawnEntry.SpawnObject((POINT)this);
 
-			Pool.SpawnedObjects.Add(m_spawnling);
-			m_spawnling.Position = m_spawnEntry.Position;
-			Map.AddObjectNow(m_spawnling);
+				Pool.SpawnedObjects.Add(m_spawnling);
+			});
 		}
 
 		public void SpawnLater()

@@ -218,6 +218,10 @@
     <Compile Include="Entities\Unit.StatUpdates.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Formulas\RegenerationFormulas.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnEntry.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPoint.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPool.cs" />
+    <Compile Include="GameObjects\Spawns\GOSpawnPoolTemplate.cs" />
     <Compile Include="Global\WorldEvent.cs" />
     <Compile Include="Global\WorldEventMgr.cs" />
     <Compile Include="Global\WorldMapOverlayEntry.cs" />
@@ -235,9 +239,11 @@
     <Compile Include="NPCs\Spawns\NPCSpawnPoolTemplate.cs" />
     <Compile Include="Quests\QuestHonor.cs" />
     <Compile Include="Spawns\SpawnEntry.cs" />
+    <Compile Include="Spawns\SpawnMgr.cs" />
     <Compile Include="Spawns\SpawnPoint.cs" />
     <Compile Include="Spawns\SpawnPoolTemplate.cs" />
     <Compile Include="Spawns\SpawnPool.cs" />
+    <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
     <Compile Include="Spells\AISpellCastSettings.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
@@ -878,7 +884,6 @@
     <Compile Include="Misc\TutorialFlags.cs" />
     <Compile Include="GameObjects\GOEntry.cs" />
     <Compile Include="GameObjects\GOMgr.cs" />
-    <Compile Include="GameObjects\GOSpawnEntry.cs" />
     <Compile Include="Gossips\IGossipAction.cs" />
     <Compile Include="Gossips\GossipConversation.cs" />
     <Compile Include="Gossips\GossipMenu.cs" />

@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System.Collections.Generic;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.Util.Collections;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
@@ -66,46 +67,31 @@ namespace WCell.RealmServer.Commands
 				var mod = trigger.Text.NextModifiers();
 				var id = trigger.Text.NextEnum(GOEntryId.End);
 
+				var entry = GOMgr.GetEntry(id, false);
+
 				var target = trigger.Args.Target;
 				var map = target != null ? target.Map : World.Kalimdor;
 
-				var entry = GOMgr.GetEntry(id, false);
-
 				if (mod == "c")
 				{
-					ICollection<GOSpawnEntry> templates;
-					if (entry != null)
-					{
-						templates = entry.Templates;
-					}
-					else
-					{
-						templates = GOMgr.GetTemplates(map.Id);
-					}
-
-					if (templates == null || templates.Count == 0)
-					{
-						trigger.Reply("No valid templates found ({0})", entry);
-						return;
-					}
-
 					// spawn closest
 					GOSpawnEntry closest;
 
 					if (entry != null)
 					{
 						// Entry specified
-						closest = entry.GetClosestTemplate(target);
+						closest = entry.SpawnEntries.GetClosestEntry(target);
 					}
 					else
 					{
 						// no entry, just spawn any nearby Template
-						closest = templates.GetClosestTemplate(target);
+						var templates = GOMgr.GetSpawnPoolTemplatesByMap(map.Id);
+						closest = templates == null ? null : templates.GetClosestEntry(target);
 					}
 
 					if (closest == null)
 					{
-						trigger.Reply("Could not find any Template nearby.");
+						trigger.Reply("No valid SpawnEntries found (Entry: {0})", entry);
 					}
 					else
 					{
@@ -113,7 +99,7 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Spawned: " + closest.Entry);
 						if (target != null)
 						{
-							target.TeleportTo(closest);
+							target.TeleportTo(map, closest.Position);
 						}
 					}
 				}

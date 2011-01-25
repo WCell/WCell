@@ -18,6 +18,18 @@ namespace WCell.RealmServer.Spawns
 		protected internal List<POINT> m_spawnPoints = new List<POINT>(5);
 		protected bool m_active;
 
+		protected SpawnPool(Map map, T templ)
+		{
+			Map = map;
+			Template = templ;
+
+			// add SpawnPoints
+			foreach (var entry in templ.Entries)
+			{
+				AddSpawnPoint(entry);
+			}
+		}
+
 		public Map Map
 		{
 			get;
@@ -95,8 +107,8 @@ namespace WCell.RealmServer.Spawns
 		internal POINT AddSpawnPoint(E entry)
 		{
 			var point = new POINT();
-			point.InitPoint((POOL)this, entry);
 			m_spawnPoints.Add(point);
+			point.InitPoint((POOL)this, entry);
 			return point;
 		}
 
