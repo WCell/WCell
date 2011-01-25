@@ -364,4 +364,15 @@
       <Type>UInt</Type>
     </Simple>
   </RealmPacket>
+
+  <RealmPacket OpCode="SMSG_HEALTH_UPDATE">
+    <Simple>
+      <Name>Entity</Name>
+      <Type>PackedGuid</Type>
+    </Simple>
+    <Simple>
+      <Name>Health</Name>
+      <Type>Int</Type>
+    </Simple>
+  </RealmPacket>
 </Definitions>
