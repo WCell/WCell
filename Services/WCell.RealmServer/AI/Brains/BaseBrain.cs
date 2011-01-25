@@ -392,22 +392,22 @@ namespace WCell.RealmServer.AI.Brains
 
 		public void OnGroupChange(AIGroup newGroup)
 		{
-			if (newGroup != null)
-			{
-				// now in new/different group
-				DefaultState = newGroup.DefaultState;
-				EnterDefaultState();
-			}
-			else
-			{
-				// left Group
-				DefaultState = DefaultBrainState;
-				if (m_currentAction != null && m_currentAction.IsGroupAction)
-				{
-					m_currentAction.Stop();
-					EnterDefaultState();
-				}
-			}
+			//if (newGroup != null)
+			//{
+			//    // now in new/different group
+			//    DefaultState = newGroup.DefaultState;
+			//    EnterDefaultState();
+			//}
+			//else
+			//{
+			//    // left Group
+			//    DefaultState = DefaultBrainState;
+			//    if (m_currentAction != null && m_currentAction.IsGroupAction)
+			//    {
+			//        m_currentAction.Stop();
+			//        EnterDefaultState();
+			//    }
+			//}
 		}
 
 		/// <summary>

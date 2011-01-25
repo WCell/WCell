@@ -741,6 +741,10 @@ namespace WCell.RealmServer.Entities
 		public override NPC SpawnMinion(NPCEntry entry, ref Vector3 position, int durationMillis)
 		{
 			var minion = base.SpawnMinion(entry, ref position, durationMillis);
+			if (Group == null)
+			{
+				Group = new AIGroup(this);
+			}
 			Group.Add(minion);
 			return minion;
 		}
@@ -771,7 +775,16 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// hand out experience
-			m_Map.OnNPCDied(this);
+			bool heroic;
+			if (m_Map != null)
+			{
+				m_Map.OnNPCDied(this);
+				heroic = m_Map.IsHeroic;
+			}
+			else
+			{
+				heroic = false;
+			}
 
 			var looter = m_FirstAttacker;
 
@@ -779,7 +792,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var playerLooter = looter != null ? looter.PlayerOwner : null;
 				if (playerLooter != null &&
-					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_Map.IsHeroic) != null)
+					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, heroic) != null)
 				{
 					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
 					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;

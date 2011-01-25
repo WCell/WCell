@@ -1,5 +1,6 @@
-- integrated GOs into the new spawn system - GOs respawn now correctly!
-- fixed proc checks for specific sets of proc spells
-- add spawned minions to same AIGroup as boss
-- added all UDB-data defining XML files into the new Content solution folder
-- #tele command will not show a selection anymore if one types the *exact* name of the target location
+- fixed world location loading and thus the tele command
+- fixed login when one logged out from an instance that got deleted
+- fixed: Delete SpecProfiles from table when deleting Character
+- fixed #map clear (i.e. Map.Clear())
+- removed the -l switch from the tele command
+- first version of Zerant's UtgardeKeep

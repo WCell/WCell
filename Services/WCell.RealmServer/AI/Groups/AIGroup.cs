@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.AI.Brains;
@@ -15,14 +13,15 @@ namespace WCell.RealmServer.AI.Groups
 	public class AIGroup : IList<NPC>
 	{
 		private NPC m_Leader;
-		private List<NPC> groupList;
+		private readonly List<NPC> groupList;
 
 		public AIGroup()
 		{
 			groupList = new List<NPC>();
 		}
 
-		public AIGroup(NPC leader) : this()
+		public AIGroup(NPC leader)
+			: this()
 		{
 			m_Leader = leader;
 			if (leader != null && !Contains(leader))
@@ -75,11 +74,32 @@ namespace WCell.RealmServer.AI.Groups
 
 		#region Implementation of ICollection<NPC>
 
-
+		/// <summary>
+		/// Adds the given NPC to this group
+		/// </summary>
 		public void Add(NPC npc)
 		{
 			groupList.Add(npc);
 			npc.Group = this;
+			if (Leader == null)
+			{
+				m_Leader = npc;
+			}
+			else if (npc != Leader)
+			{
+				var mainTarget = Leader.ThreatCollection.CurrentAggressor;
+				if (mainTarget != null)
+				{
+					// double threat of leader's main target for the new NPC
+					npc.ThreatCollection[mainTarget] = 2 * npc.ThreatCollection[mainTarget] + 1;
+
+					// generate threat on all other enemies, too
+					foreach (var hostile in m_Leader.ThreatCollection)
+					{
+						npc.ThreatCollection.AddNewIfNotExisted(hostile.Key);
+					}
+				}
+			}
 		}
 
 		public void Clear()

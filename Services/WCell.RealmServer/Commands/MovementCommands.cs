@@ -206,12 +206,9 @@ namespace WCell.RealmServer.Commands
 		protected override void Initialize()
 		{
 			Init("Tele", "Teleport");
-			EnglishParamInfo = "[-l[r <map>] <searchterm>] | [-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>] | [-a <AreaTrigger Name>]";
-			EnglishDescription = "Teleports to the given location. " +
-				"-l lists all named locations that contain the given term. " +
-				"-c teleports to the given coordinates. " +
-				"-a teleports to the location of the given AreaTrigger (if its a global one). " +
-				"The location menu is only going to show up for male Characters (client-side bug).";
+			EnglishParamInfo = "[-c [<x> <y> <z> [<MapName or Id>]]] | [<LocationName>]";
+			EnglishDescription = "Teleports to the given location or shows a list of all places that match the given name. " +
+				"-c teleports to the given coordinates instead. ";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -224,35 +221,7 @@ namespace WCell.RealmServer.Commands
 
 			var target = trigger.Args.Target;
 			var mod = trigger.Text.NextModifiers();
-			if (mod.Contains("l"))
-			{
-				var map = MapId.End;
-				if (mod.Contains("r"))
-				{
-					// also filter by map
-					map = trigger.Text.NextEnum(map);
-				}
-
-				var searchTerm = trigger.Text.NextWord();
-				var i = 0;
-				foreach (var location in WorldLocationMgr.WorldLocations.Values)
-				{
-					if (location.Names.Localize(trigger.Args.User.Locale).IndexOf(searchTerm, StringComparison.InvariantCultureIgnoreCase) > -1)
-					{
-						if (map == MapId.End || map == location.MapId)
-						{
-							i++;
-							trigger.Reply("{0}. {1} ({2})", i, location.DefaultName, location.MapId);
-						}
-					}
-				}
-
-				if (i == 0)
-				{
-					trigger.Reply("No locations found.");
-				}
-			}
-			else if (mod == "c")
+			if (mod == "c")
 			{
 				float? o = null;
 				Map map = null;
@@ -361,7 +330,7 @@ namespace WCell.RealmServer.Commands
 			Init("GoTo");
 			EnglishParamInfo = "<targetname>";
 			EnglishDescription =
-				"Teleports the Target to Character/Unit/GameObject. [NIY]: If Unit or GO are specified, target will be teleported to the nearest one.";
+				"Teleports the Target to Character/Unit/GameObject. If Unit or GO are specified, target will be teleported to the nearest one [NYI].";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)

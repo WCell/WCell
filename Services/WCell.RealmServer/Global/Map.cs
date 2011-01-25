@@ -918,12 +918,16 @@ namespace WCell.RealmServer.Global
 			{
 				pool.RemovePoolNow();
 			}
+			foreach (var pool in m_goSpawnPools.Values.ToArray())
+			{
+				pool.RemovePoolNow();
+			}
 
 			var objs = CopyObjects();
 			for (var i = 0; i < objs.Length; i++)
 			{
 				var obj = objs[i];
-				if (!(obj is Character) && (!(obj is Unit) || obj.IsOwnedByPlayer))
+				if (!(obj is Character) && !obj.IsOwnedByPlayer)
 				{
 					// only delete things that are not Characters or belong to Characters
 					obj.DeleteNow();
@@ -2253,7 +2257,6 @@ namespace WCell.RealmServer.Global
 					});
 
 					AddMessage(addTask);
-					obj.Map = this;
 				}
 			}
 

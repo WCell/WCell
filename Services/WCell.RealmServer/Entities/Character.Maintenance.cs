@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Entities
 			acc.ActiveCharacter = this;
 
 			Type |= ObjectTypes.Player;
-			ChatChannels = new List<ChatChannel>();
+			ChatChannels = new List<ChatChannel>(5);
 
 			m_logoutTimer = new TimerEntry(0, DefaultLogoutDelayMillis, totalTime => FinishLogout());
 
@@ -419,6 +419,8 @@ namespace WCell.RealmServer.Entities
 
 			InstanceMgr.RetrieveInstances(this);
 
+			AreaCharCount++;		// Characters are always in active regions
+
 			if (!Role.IsStaff)
 			{
 				Stunned++;
@@ -427,8 +429,9 @@ namespace WCell.RealmServer.Entities
 			var isStaff = Role.IsStaff;
 			if (m_Map == null)
 			{
-				TeleportToBindLocation();
 				Load();
+				TeleportToBindLocation();
+				AddMessage(InitializeCharacter);
 			}
 			else
 			{
