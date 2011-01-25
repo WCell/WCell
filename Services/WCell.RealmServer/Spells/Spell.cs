@@ -259,6 +259,11 @@ namespace WCell.RealmServer.Spells
 				// don't use Enum.HasFlag!
 						  ChannelInterruptFlags > 0;
 
+			if (ProcEventHelper.entries.ContainsKey(this.SpellId))
+			{
+				ProcEventHelper.PatchAffectMasks(this, ProcEventHelper.GetProcEffectIndex(this));
+			}
+
 			foreach (var effect in Effects)
 			{
 				effect.Init2();
