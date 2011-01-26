@@ -101,6 +101,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47
 		Run\Content\Impl\UDB\Data\BattlemasterRelation.xml = Run\Content\Impl\UDB\Data\BattlemasterRelation.xml
 		Run\Content\Impl\UDB\Data\ClassLevelSetting.xml = Run\Content\Impl\UDB\Data\ClassLevelSetting.xml
 		Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml = Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GameEvent.xml = Run\Content\Impl\UDB\Data\GameEvent.xml
 		Run\Content\Impl\UDB\Data\GOEntry.xml = Run\Content\Impl\UDB\Data\GOEntry.xml
 		Run\Content\Impl\UDB\Data\GOLootItemEntry.xml = Run\Content\Impl\UDB\Data\GOLootItemEntry.xml
 		Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml

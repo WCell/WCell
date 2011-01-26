@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <DataHolder Name="WorldEvent">
+    <DefaultTable>game_event</DefaultTable>
+    <Flat Name="Id" Column="entry" />
+    <!--Cant load these fields yet until we do something about
+    the DB connection string, since UDB uses Zero TimeStamps which
+    when we try to read the causes an exception since it is lower
+    than DateTime.MinValue-->
+    <Flat Name="From" Column="start_time" />
+    <Flat Name="Until" Column="end_time" />
+    <Flat Name="_Occurence" Column="occurence" />
+    <Flat Name="_Length" Column="length" />
+    <Flat Name="HolidayId" Column="holiday" />
+    <Flat Name="Description" Column="description" />
+  </DataHolder> 
+</DataHolders>
