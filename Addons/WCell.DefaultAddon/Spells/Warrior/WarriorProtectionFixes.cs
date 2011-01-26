@@ -22,9 +22,9 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellLineId.WarriorProtectionShieldSpecialization.Apply(spell =>
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
 					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
 					ProcHandler.DodgeBlockOrParryValidator,
-					SpellHandler.Get(SpellId.EffectShieldSpecializationRank1),
 					spell.ProcChance
 					));
 			});

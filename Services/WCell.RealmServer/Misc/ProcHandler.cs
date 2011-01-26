@@ -272,15 +272,16 @@ namespace WCell.RealmServer.Misc
 	{
 		public Spell Spell { get; set; }
 		
-		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
-			: this(spell, triggerFlags, procAction, null, procChance, stackCount)
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, uint procChance = 100u, int stackCount = 0)
+			: this(spell, triggerFlags, null, procChance, stackCount)
 		{
 		}
 
-		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
-			: base(triggerFlags, procAction, validator, procChance, stackCount)
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+			: base(triggerFlags, null, validator, procChance, stackCount)
 		{
 			Spell = spell;
+			ProcAction = ProcSpell;
 		}
 
 		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
