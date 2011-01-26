@@ -84,7 +84,7 @@ namespace WCell.Addons.Default.Instances
 
 		#region Prince Keleseth
 		/// <summary>
-		/// Returns the index of the given skeleton for the skeleton arrays.
+		/// Returns the index of the given skeleton for the skeleton arrays
 		/// </summary>
 		static int GetSkeletonIndex(NPC skel)
 		{
@@ -105,6 +105,26 @@ namespace WCell.Addons.Default.Instances
 
 			// unrelated Skeleton
 			return -1;
+		}
+
+		/// <summary>
+		/// Returns the skeleton with the given index
+		/// </summary>
+		NPC GetSkeleton(int index)
+		{
+			// first check for dead skeleton
+			var skel = PrinceDeadSkeletons[index];
+			if (skel != null)
+			{
+				return skel;
+			}
+
+			// check in Prince' AIGroup
+			if (PrinceKeleseth == null) return null;
+			var spawn = PrinceSkeletonSpawnEntries[index];
+
+			// return matching Skeleton
+			return PrinceKeleseth.Group.FirstOrDefault(npc => npc.SpawnPoint.SpawnEntry == spawn);
 		}
 
 		/// <summary>
@@ -175,7 +195,7 @@ namespace WCell.Addons.Default.Instances
 
 				((BaseBrain)prince.Brain).DefaultCombatAction.Strategy = new PrinceKelesethAttackAction(prince);
 
-				instance.SpawnPrinceSkeletons(prince);
+				instance.SpawnDeadPrinceSkeletons(prince);
 			};
 
 			// prince deleted
@@ -246,9 +266,9 @@ namespace WCell.Addons.Default.Instances
 		}
 
 		/// <summary>
-		/// Spawn the dead skeletons (if any are missing)
+		/// Spawn the dead skeletons (if any are missing or happen to be alive)
 		/// </summary>
-		void SpawnPrinceSkeletons(NPC prince)
+		void SpawnDeadPrinceSkeletons(NPC prince)
 		{
 			// set this prince to be the one prince of the instance
 			PrinceKeleseth = prince;
@@ -259,14 +279,19 @@ namespace WCell.Addons.Default.Instances
 			// spawn missing skeletons and add them to array of dead skeletons
 			for (var i = 0; i < PrinceSkeletonSpawnEntries.Length; i++)
 			{
-				if (PrinceDeadSkeletons[i] != null) continue;
+				// check if skeleton still exists, else, respawn it
+				var skel = GetSkeleton(i);
+				if (skel == null)
+				{
+					var spawn = PrinceSkeletonSpawnEntries[i];
+					skel = spawn.SpawnObject(this);
+				}
 
-				var spawn = PrinceSkeletonSpawnEntries[i];
-				spawn.SpawnObject(this);
-
-				// remove from Skeleton array
-				--PrinceDeadSkeletonCount;
-				PrinceDeadSkeletons[i] = null;
+				if (skel.IsAlive)
+				{
+					// make sure Skeleton is dead
+					skel.Kill();
+				}
 			}
 		}
 		#endregion
