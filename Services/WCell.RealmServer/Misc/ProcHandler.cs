@@ -205,26 +205,20 @@ namespace WCell.RealmServer.Misc
 		{
 		}
 
-		public ProcHandlerTemplate(ProcValidator validator, ProcCallback procAction)
-			: this(ProcTriggerFlags.All, validator, procAction)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction)
-			: this(triggerFlags, validator, procAction, 100)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction, uint procChance)
-			: this(triggerFlags, validator, procAction, procChance, 0)
-		{
-		}
-
-		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, ProcCallback procAction, uint procChance, int stackCount)
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
 		{
 			ProcTriggerFlags = triggerFlags;
-			Validator = validator;
 			ProcChance = procChance;
+			Validator = null;
+			ProcAction = procAction;
+			m_stackCount = stackCount;
+		}
+
+		public ProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+		{
+			ProcTriggerFlags = triggerFlags;
+			ProcChance = procChance;
+			Validator = validator;
 			ProcAction = procAction;
 			m_stackCount = stackCount;
 		}
@@ -277,30 +271,16 @@ namespace WCell.RealmServer.Misc
 	public class TriggerSpellProcHandlerTemplate : ProcHandlerTemplate
 	{
 		public Spell Spell { get; set; }
-
-		public TriggerSpellProcHandlerTemplate(ProcValidator validator, Spell spell)
+		
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcCallback procAction, uint procChance = 100u, int stackCount = 0)
+			: this(spell, triggerFlags, procAction, null, procChance, stackCount)
 		{
-			Validator = validator;
-			ProcAction = ProcSpell;
+		}
+
+		public TriggerSpellProcHandlerTemplate(Spell spell, ProcTriggerFlags triggerFlags, ProcCallback procAction, ProcValidator validator = null, uint procChance = 100u, int stackCount = 0)
+			: base(triggerFlags, procAction, validator, procChance, stackCount)
+		{
 			Spell = spell;
-		}
-
-		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell) :
-			this(validator, spell)
-		{
-			ProcTriggerFlags = triggerFlags;
-		}
-
-		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance)
-			: this(triggerFlags, validator, spell)
-		{
-			ProcChance = procChance;
-		}
-
-		public TriggerSpellProcHandlerTemplate(ProcTriggerFlags triggerFlags, ProcValidator validator, Spell spell, uint procChance, int stackCount)
-			: this(triggerFlags, validator, spell, procChance)
-		{
-			StackCount = stackCount;
 		}
 
 		public bool ProcSpell(Unit creator, Unit triggerer, IUnitAction action)
