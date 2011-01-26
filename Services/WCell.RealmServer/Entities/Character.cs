@@ -996,7 +996,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1012,15 +1012,14 @@ namespace WCell.RealmServer.Entities
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
 
 			if (opponent is Character)
 			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
+				return CanPvP((Character)opponent);
 			}
 
 			return m_reputations.CanAttack(opponent.Faction);
@@ -1051,7 +1050,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) ||
+			if (object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1082,7 +1081,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInSameDivision(IFactionMember opponent)
 		{
-			if ( object.ReferenceEquals(opponent, this) ||
+			if (object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1386,7 +1385,7 @@ namespace WCell.RealmServer.Entities
 		#region Talent Specs
 		public SpecProfile CurrentSpecProfile
 		{
-			get{return SpecProfiles[m_talents.CurrentSpecIndex];}
+			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
 		}
 
 		/// <summary>

@@ -168,7 +168,7 @@ namespace WCell.RealmServer.Misc
 		/// <param name="active">Whether the triggerer is the attacker/caster (true), or the victim (false)</param>
 		public bool CanBeTriggeredBy(Unit triggerer, IUnitAction action, bool active)
 		{
-			return Template.Validator(triggerer, action);
+			return Template.Validator == null || Template.Validator(triggerer, action);
 		}
 
 		public void TriggerProc(Unit triggerer, IUnitAction action)

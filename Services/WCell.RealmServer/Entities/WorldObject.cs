@@ -1498,7 +1498,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool MayAttack(IFactionMember opponent)
 		{
-			if (!opponent.IsInWorld ||  object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (!opponent.IsInWorld ||  ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
