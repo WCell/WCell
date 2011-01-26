@@ -1372,7 +1372,6 @@ namespace WCell.RealmServer.Entities
 						SetUInt32(UnitFields.HEALTH, (uint)value);
 						UpdateHealthAuraState();
 
-						MiscHandler.SendHealthUpdate(this, value);
 
 						if (oldHealth == 0)
 						{
