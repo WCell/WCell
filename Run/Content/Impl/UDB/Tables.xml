@@ -156,10 +156,17 @@
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_model_equip">
+  <Table Name="game_event_creature_data">
     <PrimaryColumn Name="guid"/>
+	<PrimaryColumn Name="event"/>
   </Table>
-
+  
+  <Table Name="game_event_mail">
+	<PrimaryColumn Name="event"/>
+	<PrimaryColumn Name="raceMask"/>
+	<PrimaryColumn Name="quest"/>
+  </Table>
+  
   <Table Name="game_event_pool">
     <PrimaryColumn Name="pool_entry"/>
   </Table>

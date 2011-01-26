@@ -65,11 +65,12 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (394, 395, 396)
+ECHO		 c = Install all Changesets (394, 395, 396, 397)
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
 ECHO		 396 = Install Changeset 396
+ECHO		 397 = Install Changeset 397
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -85,8 +86,9 @@ if %l%==C GOTO changesets
 if %l%==x GOTO quit
 if %l%==X GOTO quit
 if "%l%"=="394" GOTO changeset394
-if "%1%"=="395" GOTO changeset395
-if "%1%"=="396" GOTO changeset396
+if "%l%"=="395" GOTO changeset395
+if "%l%"=="396" GOTO changeset396
+if "%l%"=="397" GOTO changeset397
 goto error
 
 :import
@@ -117,6 +119,10 @@ ECHO [Importing] UDB updatepack 395...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\395_updatepack_mangos.sql
 ECHO [Importing] UDB updatepack 396...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\396_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 397...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_corepatch_mangos_10905_to_11064.sql
+ECHO [Importing] UDB updatepack 397...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -157,6 +163,20 @@ ECHO.
 ECHO Started...
 ECHO [Importing] UDB updatepack 396...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\396_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
+:changeset397
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB database changeset 397...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_corepatch_mangos_10905_to_11064.sql
+ECHO [Importing] UDB updatepack 397...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE
