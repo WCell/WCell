@@ -1,2 +1,3 @@
-- added aggro on debuff
-- added support for quests with spellcast objectives (fixes Thirst Unending for belfs amongst others)
+- added new property to WorldObject which is the base class for NPCEntry and GOEntry: ObjectTemplate Template
+- fixed skinning (loot should now be available)
+- cleaned up NPCEntry class

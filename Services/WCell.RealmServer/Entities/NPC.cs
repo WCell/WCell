@@ -369,6 +369,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public override ObjectTemplate Template
+		{
+			get { return Entry; }
+		}
+
 		public override string Name
 		{
 			get { return m_name; }
@@ -942,7 +947,7 @@ namespace WCell.RealmServer.Entities
 
 		#region Decay & Dispose
 		/// <summary>
-		/// Marks this NPC lootable (usually when dead)
+		/// Marks this NPC lootable (after NPC died)
 		/// </summary>
 		private void EnterLootableState()
 		{
@@ -952,13 +957,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Marks this NPC lootable (usually when dead)
+		/// Marks this NPC non-lootable (after NPC was looted)
 		/// </summary>
 		private void EnterFinalState()
 		{
 			FirstAttacker = null;
 			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
-			if (m_entry.SkinningLoot != null)
+			if (m_entry.GetSkinningLoot() != null)
 			{
 				UnitFlags |= UnitFlags.Skinnable;
 			}

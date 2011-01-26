@@ -119,11 +119,6 @@ namespace WCell.Util.DB
 				defaultValue = null;
 			}
 
-			if (accessor.DataHolderDefinition.Type.Name.EndsWith("TrainerEntry"))
-			{
-				defs.ToString();
-			}
-
 			foreach (var table in tables)
 			{
 				var dataHolders = defs.m_tableDataHolderMap.GetOrCreate(table);

@@ -9,7 +9,89 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
-	public abstract class SpawnEntry<T, E, O, POINT, POOL>
+	public interface ISpawnEntry
+	{
+		MapId MapId
+		{
+			get;
+			set;
+		}
+
+		Map Map
+		{
+			get;
+		}
+
+		/// <summary>
+		/// The position of this SpawnEntry
+		/// </summary>
+		Vector3 Position
+		{
+			get;
+			set;
+		}
+
+		float Orientation
+		{
+			get;
+			set;
+		}
+
+		uint PhaseMask
+		{
+			get;
+			set;
+		}
+
+		int RespawnSeconds
+		{
+			get;
+			set;
+		}
+
+		int DespawnSeconds
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Min Delay in milliseconds until the unit should be respawned
+		/// </summary>
+		int RespawnSecondsMin
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Max Delay in milliseconds until the unit should be respawned
+		/// </summary>
+		int RespawnSecondsMax
+		{
+			get;
+			set;
+		}
+
+		uint EventId
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Whether this Entry spawns automatically (or is spawned by certain events)
+		/// </summary>
+		bool AutoSpawns
+		{
+			get;
+			set;
+		}
+
+		int GetRandomRespawnMillis();
+	}
+
+	public abstract class SpawnEntry<T, E, O, POINT, POOL> : ISpawnEntry
 		where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
 		where E : SpawnEntry<T, E, O, POINT, POOL>
 		where O : WorldObject
@@ -29,6 +111,8 @@ namespace WCell.RealmServer.Spawns
 		protected T m_PoolTemplate;
 
 		protected MapId m_MapId = MapId.End;
+
+		private bool m_AutoSpawns = true;
 
 		protected SpawnEntry()
 		{
@@ -106,7 +190,11 @@ namespace WCell.RealmServer.Spawns
 		/// <summary>
 		/// Whether this Entry spawns automatically (or is spawned by certain events)
 		/// </summary>
-		public bool AutoSpawns = true;
+		public bool AutoSpawns
+		{
+			get { return m_AutoSpawns; }
+			set { m_AutoSpawns = value; }
+		}
 
 		[NotPersistent]
 		public T PoolTemplate

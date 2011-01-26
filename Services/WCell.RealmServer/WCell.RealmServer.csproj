@@ -213,6 +213,7 @@
     <Compile Include="Database\ArenaTeamStats.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />
     <Compile Include="Entities\Character.StatUpdates.cs" />
+    <Compile Include="Entities\ObjectTemplate.cs" />
     <Compile Include="Entities\NPC.Mechanics.cs" />
     <Compile Include="Entities\NPC.StatUpdates.cs" />
     <Compile Include="Entities\Unit.StatUpdates.cs" />

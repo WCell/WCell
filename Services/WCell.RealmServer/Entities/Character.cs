@@ -1027,11 +1027,8 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanPvP(Character chr)
 		{
-			var state = PvPState;
-			if (chr.PvPState < state)
-			{
-				state = chr.PvPState;
-			}
+			var state = chr.PvPState < PvPState ? chr.PvPState : PvPState;
+
 			if (state == PvPState.FFAPVP)
 			{
 				return true;
@@ -1050,7 +1047,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (object.ReferenceEquals(opponent, this) ||
+			if (ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1081,7 +1078,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInSameDivision(IFactionMember opponent)
 		{
-			if (object.ReferenceEquals(opponent, this) ||
+			if (ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;

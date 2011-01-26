@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
 using NLog;
@@ -114,6 +115,11 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Misc Properties
+		public virtual ObjectTemplate Template
+		{
+			get { return null; }
+		}
+
 		/// <summary>
 		/// Time in seconds since creation
 		/// </summary>
