@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using WCell.Util.Conversion;
 using WCell.Util.Data;
@@ -130,6 +131,8 @@ namespace WCell.Util.DB
 				var mappedFieldMap = mappedFields.GetOrCreate(table.Name);
 
 				SimpleDataColumn dataColumn;
+                var dbAttrs = member.GetCustomAttributes<DBAttribute>();
+                var attr = dbAttrs.Where(attribute => attribute is PersistentAttribute).FirstOrDefault() as PersistentAttribute;
 
 				if (String.IsNullOrEmpty(column))
 				{
@@ -141,7 +144,11 @@ namespace WCell.Util.DB
 					dataColumn = mappedFieldMap.Find((cmpField) => cmpField.ColumnName == column);
 					if (dataColumn == null)
 					{
-						mappedFieldMap.Add(dataColumn = new SimpleDataColumn(column, Converters.GetReader(member.GetActualType())));
+                        var type = member.GetActualType();
+                        if (attr != null)
+                            type = attr.ReadType ?? type;
+                        var reader = Converters.GetReader(type);
+                        mappedFieldMap.Add(dataColumn = new SimpleDataColumn(column, reader));
 					}
 				}
 

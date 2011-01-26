@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Quests
 
 		#region Global Variables
 		/// <summary>
-		/// Amount of levels above the Character level at which a player becomes obsolete to the player
+		/// Amount of levels above the Character level at which a quest becomes obsolete to the player
 		/// </summary>
 		public static int LevelObsoleteOffset = 7;
 
@@ -162,7 +162,6 @@ namespace WCell.RealmServer.Quests
                 ContentMgr.Load<QuestPOI>();
                 ContentMgr.Load<QuestPOIPoints>();
 				CreateQuestRelationGraph();
-				Loaded = true;
 
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();
