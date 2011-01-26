@@ -1,24 +1,20 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Items;
-using WCell.Constants.Misc;
+using WCell.Constants.Looting;
 using WCell.Constants.NPCs;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Factions;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
-using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.RealmServer.NPCs.Vendors;
-using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.Data;
 using WCell.RealmServer.Battlegrounds;
@@ -31,9 +27,6 @@ using WCell.RealmServer.AI;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
-using WCell.Constants.World;
-using WCell.Constants.Updates;
-using WCell.Util.NLog;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.NPCs
@@ -44,7 +37,7 @@ namespace WCell.RealmServer.NPCs
 	/// NPC Entry
 	/// </summary>
 	[DataHolder]
-	public partial class NPCEntry : IQuestHolderEntry, INPCDataHolder
+	public partial class NPCEntry : ObjectTemplate, INPCDataHolder
 	{
 		#region Global Variables
 		// <summary>
@@ -88,10 +81,96 @@ namespace WCell.RealmServer.NPCs
 
 		#endregion
 
-		public uint Id
+		public ClassId ClassId;
+
+		public RaceId RaceId;
+
+		public CreatureType Type;
+
+		public CreatureFamilyId FamilyId;
+
+		[NotPersistent]
+		public CreatureFamily Family;
+
+		public CreatureRank Rank;
+
+		public bool IsLeader;
+
+		/// <summary>
+		/// Whether a new NPC should be completely idle (not react to anything that happens)
+		/// </summary>
+		public bool IsIdle;
+
+		public uint EquipmentId;
+
+		[NotPersistent]
+		public NPCEquipmentEntry Equipment;
+
+		public bool IsBoss;
+
+		public InvisType InvisibilityType;
+
+		public InhabitType InhabitType = InhabitType.Anywhere;
+
+		public bool Regenerates;
+
+		// addon data
+		public NPCAddonData AddonData
 		{
 			get;
 			set;
+		}
+
+		/// <summary>
+		/// Ids of quests that this NPC is responsible for (sent in a packet)
+		/// </summary>
+		[Persistent(4)]
+		public uint[] QuestIds = new uint[4];
+
+		[NotPersistent]
+		public bool GeneratesXp;
+
+		[NotPersistent]
+		/// <summary>
+		/// Should be called when a new NPC is created
+		/// </summary>
+		public NPCTypeHandler[] InstanceTypeHandlers;
+
+		[NotPersistent]
+		/// <summary>
+		/// Should be called when a new NPCSpawnEntry is created
+		/// </summary>
+		public NPCSpawnTypeHandler[] SpawnTypeHandlers;
+
+		public uint NameGossipId;
+
+		[NotPersistent]
+		public GossipMenu DefaultGossip { get; set; }
+
+		public bool IsVendor
+		{
+			get { return VendorItems != null; }
+		}
+
+		[NotPersistent]
+		public float AggroBaseRange
+		{
+			get;
+			set;
+		}
+
+		#region Entry and substitute Entries
+		[NotPersistent]
+		public NPCId NPCId
+		{
+			get;
+			private set;
+		}
+
+		[NotPersistent]
+		public NPCEntry Entry
+		{
+			get { return this; }
 		}
 
 		[Persistent((int)RaidDifficulty.End - 1)]
@@ -116,7 +195,9 @@ namespace WCell.RealmServer.NPCs
 			}
 			return this;
 		}
+		#endregion
 
+		#region Strings
 		[Persistent((int)ClientLocale.End)]
 		public string[] Names = new string[(int)ClientLocale.End];
 
@@ -152,34 +233,22 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		public string InfoString = "";
+		#endregion
 
-		public CreatureType Type;
-
-		public CreatureFamilyId FamilyId;
-
-		public CreatureRank Rank;
-
-		public uint SpellGroupId;
-
-		/// <summary>
-		/// Whether a new NPC should be completely idle (not react to anything that happens)
-		/// </summary>
-		public bool IsIdle;
-
+		#region Display & Model
 		[Persistent(4)]
 		public uint[] DisplayIds = new uint[4];
 
-		public float HpModifier;
+		[NotPersistent]
+		public UnitModelInfo[] ModelInfos;
 
-		public float ManaModifier;
+		public UnitModelInfo GetRandomModel()
+		{
+			return ModelInfos[Utility.Random(0, ModelInfos.Length - 1)];
+		}
+		#endregion
 
-		public bool IsLeader;
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public FactionTemplateId HordeFactionId, AllianceFactionId;
-
+		#region Stats
 		public int MaxLevel;
 
 		public int MinLevel;
@@ -192,15 +261,7 @@ namespace WCell.RealmServer.NPCs
 
 		public int MaxMana;
 
-		public float Scale;
-
-		public NPCEntryFlags EntryFlags;
-
-		public NPCFlags NPCFlags;
-
-		public UnitFlags UnitFlags;
-
-		public UnitDynamicFlags DynamicFlags;
+		public DamageSchool DamageSchool;
 
 		public int AttackTime;
 
@@ -214,8 +275,6 @@ namespace WCell.RealmServer.NPCs
 
 		// public int OffhandAttackPower;
 
-		public DamageSchool DamageSchool;
-
 		public float MinDamage;
 
 		public float MaxDamage;
@@ -228,94 +287,20 @@ namespace WCell.RealmServer.NPCs
 
 		public float OffhandMaxDamage;
 
-		public uint EquipmentId;
-
-		public bool IsBoss;
-
-		public uint MoneyDrop;
-
-		public InvisType InvisibilityType;
-
-		public UnitExtraFlags ExtraFlags;
-
-		public MovementType MovementType;
-
-		/// <summary>
-		/// The factor to be applied to the default speed for this kind of NPC
-		/// </summary>
-		public float SpeedFactor = 1;
-
-		public float WalkSpeed;
-
-		public float RunSpeed;
-
-		public float FlySpeed;
-
-		public uint LootId;
-
-		public uint SkinLootId;
-
-		public uint PickPocketLootId;
-
-		public InhabitType InhabitType = InhabitType.Anywhere;
-
-		public bool Regenerates;
-
-		public ClassId ClassId;
-
-		public RaceId RaceId;
-
-		// addon data
-		public NPCAddonData AddonData
+		public uint GetRandomHealth()
 		{
-			get;
-			set;
+			return Utility.Random(MinHealth, MaxHealth);
 		}
 
-		private GossipMenu m_DefaultGossip;
-
-		[NotPersistent]
-		public NPCEntry Entry
+		public int GetRandomMana()
 		{
-			get { return this; }
+			return Utility.Random(MinMana, MaxMana);
 		}
 
-		[NotPersistent]
-		public bool GeneratesXp;
-
-		[NotPersistent]
-		public NPCEquipmentEntry Equipment;
-
-		[NotPersistent]
-		public UnitModelInfo[] ModelInfos;
-
-		[NotPersistent]
-		public GossipMenu DefaultGossip
+		public int GetRandomLevel()
 		{
-			get { return m_DefaultGossip; }
-			set
-			{
-				m_DefaultGossip = value;
-			}
+			return Utility.Random(MinLevel, MaxLevel);
 		}
-
-		/// <summary>
-		/// Ids of quests that this NPC is responsible for
-		/// </summary>
-		[Persistent(4)]
-		public uint[] QuestIds = new uint[4];
-
-		/// <summary>
-		/// A set of default Spells for this NPC
-		/// </summary>
-		[Persistent(4)]
-		public SpellId[] FixedSpells = new SpellId[4];
-
-		/// <summary>
-		/// Spell to be casted when a Character talks to the NPC
-		/// </summary>
-		[NotPersistent]
-		public Spell InteractionSpell;
 
 		[Persistent(ItemConstants.MaxResCount)]
 		public int[] Resistances = new int[ItemConstants.MaxResCount];
@@ -333,51 +318,40 @@ namespace WCell.RealmServer.NPCs
 			}
 			return Resistances.Get((uint)school);
 		}
+		#endregion
+
+		#region Stat Scaling
+		public bool HasScalableStats
+		{
+			get { return PetLevelStatInfos != null; }
+		}
 
 		[NotPersistent]
+		public PetLevelStatInfo[] PetLevelStatInfos;
+
 		/// <summary>
-		/// Should be called when a new NPC is created
+		/// 
 		/// </summary>
-		public NPCTypeHandler[] InstanceTypeHandlers;
-
-		[NotPersistent]
-		/// <summary>
-		/// Should be called when a new NPCSpawnEntry is created
-		/// </summary>
-		public NPCSpawnTypeHandler[] SpawnTypeHandlers;
-
-		[NotPersistent]
-		public Faction HordeFaction, AllianceFaction;
-
-		public Faction Faction { get { return HordeFaction; } }
-
-		[NotPersistent]
-		public NPCId NPCId
+		public PetLevelStatInfo GetPetLevelStatInfo(int level)
 		{
-			get;
-			private set;
+			if (PetLevelStatInfos == null)
+			{
+				//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+				// info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				return null;
+			}
+			else
+			{
+				var info = PetLevelStatInfos.Get(level);
+				if (info == null)
+				{
+					//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
+					//info = PetMgr.GetDefaultPetLevelStatInfo(level);
+				}
+				return info;
+			}
 		}
-
-		[NotPersistent]
-		/// <summary>
-		/// All bits of <see cref="Flags"/> that are set
-		/// </summary>
-		public uint[] SetFlagIndices;
-
-		public uint GetRandomHealth()
-		{
-			return Utility.Random(MinHealth, MaxHealth);
-		}
-
-		public int GetRandomMana()
-		{
-			return Utility.Random(MinMana, MaxMana);
-		}
-
-		public int GetRandomLevel()
-		{
-			return Utility.Random(MinLevel, MaxLevel);
-		}
+		#endregion
 
 		#region Weapons
 		/// <summary>
@@ -419,74 +393,107 @@ namespace WCell.RealmServer.NPCs
 		}
 		#endregion
 
-		private uint m_VehicleId;
+		#region Flags
+		public NPCEntryFlags EntryFlags;
 
-		public uint VehicleId
+		public NPCFlags NPCFlags;
+
+		public UnitFlags UnitFlags;
+
+		public UnitDynamicFlags DynamicFlags;
+
+		public UnitExtraFlags ExtraFlags;
+
+		[NotPersistent]
+		/// <summary>
+		/// All bits of <see cref="Flags"/> that are set
+		/// </summary>
+		public uint[] SetFlagIndices;
+
+		public bool IsTamable
 		{
-			get { return m_VehicleId; }
-			set
-			{
-				m_VehicleId = value;
-				if (value > 0)
-				{
-					NPCMgr.VehicleEntries.TryGetValue((int)VehicleId, out VehicleEntry);
-
-					if (IsVehicle && (NPCCreator == null || NPCCreator == DefaultCreator))
-					{
-						// set Vehicle creator by default
-						NPCCreator = entry => new Vehicle();
-					}
-				}
-			}
+			get { return EntryFlags.HasFlag(NPCEntryFlags.Tamable); }
 		}
 
-		public float VehicleAimAdjustment;
+		public bool IsExoticPet
+		{
+			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
+		}
+		#endregion
 
-		public float HoverHeight;
+		#region Movement & Speed
+		public MovementType MovementType;
 
 		/// <summary>
-		/// Necessary for caching
+		/// The factor to be applied to the default speed for this kind of NPC
 		/// </summary>
-		public IWorldLocation[] GetInWorldTemplates()
+		public float SpeedFactor = 1;
+
+		public float WalkSpeed;
+
+		public float RunSpeed;
+
+		public float FlySpeed;
+
+		/// <summary>
+		/// Whether the spawns from this entry should roam on randomly generated WPs
+		/// </summary>
+		[NotPersistent]
+		public bool MovesRandomly = true;
+		#endregion
+
+		#region Loot
+		public uint LootId;
+
+		public uint SkinLootId;
+
+		public uint PickPocketLootId;
+
+		public uint MoneyDrop;
+
+		public override ResolvedLootItemList GetLootEntries()
 		{
-			return SpawnEntries.ToArray();
+			return LootMgr.GetEntries(LootEntryType.NPCCorpse, LootId);
 		}
 
-		public bool HasScalableStats
+		public ResolvedLootItemList GetSkinningLoot()
 		{
-			get { return PetLevelStatInfos != null; }
+			return LootMgr.GetEntries(LootEntryType.Skinning, SkinLootId);
 		}
 
-		[NotPersistent]
-		public CreatureFamily Family;
+		public ResolvedLootItemList GetPickPocketLoot()
+		{
+			return LootMgr.GetEntries(LootEntryType.PickPocketing, PickPocketLootId);
+		}
+		#endregion
 
-		[NotPersistent]
-		public PetLevelStatInfo[] PetLevelStatInfos;
-
+		#region Factions
 		/// <summary>
 		/// 
 		/// </summary>
-		public PetLevelStatInfo GetPetLevelStatInfo(int level)
-		{
-			if (PetLevelStatInfos == null)
-			{
-				//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
-				// info = PetMgr.GetDefaultPetLevelStatInfo(level);
-				return null;
-			}
-			else
-			{
-				var info = PetLevelStatInfos.Get(level);
-				if (info == null)
-				{
-					//LogManager.GetCurrentClassLogger().Warn("Tried to get PetLevelStatInfo for NPCEntry {0} (Level {1}), which has no PetLevelStatInfos", this, level);
-					//info = PetMgr.GetDefaultPetLevelStatInfo(level);
-				}
-				return info;
-			}
-		}
+		public FactionTemplateId HordeFactionId, AllianceFactionId;
+
+		[NotPersistent]
+		public Faction HordeFaction, AllianceFaction;
+
+		public Faction Faction { get { return HordeFaction; } }
+		#endregion
 
 		#region Spells
+		public uint SpellGroupId;
+
+		/// <summary>
+		/// A set of default Spells for this NPC
+		/// </summary>
+		[Persistent(4)]
+		public SpellId[] FixedSpells = new SpellId[4];
+
+		/// <summary>
+		/// Spell to be casted when a Character talks to the NPC
+		/// </summary>
+		[NotPersistent]
+		public Spell InteractionSpell;
+
 		/// <summary>
 		/// Usable Spells to be casted by Mobs of this Type
 		/// </summary>
@@ -607,15 +614,27 @@ namespace WCell.RealmServer.NPCs
 		public BattlegroundTemplate BattlegroundTemplate;
 		#endregion
 
-		#region Quests
+		#region Vehicles
+		private uint m_VehicleId;
 
-		[NotPersistent]
-		/// <summary>
-		/// The QuestHolderEntry of this NPCEntry, if this is a QuestGiver
-		/// </summary>
-		public QuestHolderInfo QuestHolderInfo { get; set; }
+		public uint VehicleId
+		{
+			get { return m_VehicleId; }
+			set
+			{
+				m_VehicleId = value;
+				if (value > 0)
+				{
+					NPCMgr.VehicleEntries.TryGetValue((int)VehicleId, out VehicleEntry);
 
-		#endregion
+					if (IsVehicle && (NPCCreator == null || NPCCreator == DefaultCreator))
+					{
+						// set Vehicle creator by default
+						NPCCreator = entry => new Vehicle();
+					}
+				}
+			}
+		}
 
 		[NotPersistent]
 		public VehicleEntry VehicleEntry;
@@ -625,42 +644,17 @@ namespace WCell.RealmServer.NPCs
 			get { return VehicleEntry != null; }
 		}
 
+		public float HoverHeight;
+
+		public float VehicleAimAdjustment;
+		#endregion
+
+		#region Decay
 		/// <summary>
 		/// The default decay delay in seconds.
 		/// </summary>
 		[NotPersistent]
 		public int DefaultDecayDelayMillis;
-
-		[NotPersistent]
-		public ResolvedLootItemList SkinningLoot;
-
-		/// <summary>
-		/// Whether the spawns from this entry should roam on randomly generated WPs
-		/// </summary>
-		[NotPersistent]
-		public bool MovesRandomly = true;
-
-		public uint NameGossipId;
-
-		public UnitModelInfo GetRandomModel()
-		{
-			return ModelInfos[Utility.Random(0, ModelInfos.Length - 1)];
-		}
-
-		public bool IsVendor
-		{
-			get { return VendorItems != null; }
-		}
-
-		public bool IsTamable
-		{
-			get { return EntryFlags.HasFlag(NPCEntryFlags.Tamable); }
-		}
-
-		public bool IsExoticPet
-		{
-			get { return EntryFlags.HasFlag(NPCEntryFlags.ExoticCreature); }
-		}
 
 		/// <summary>
 		/// The default delay before removing the NPC after it died when not looted.
@@ -679,13 +673,6 @@ namespace WCell.RealmServer.NPCs
 				}
 				return NPCMgr.DecayDelayEpicMillis;
 			}
-		}
-
-		#region Custom Fields
-		public float AggroBaseRange
-		{
-			get;
-			set;
 		}
 		#endregion
 
@@ -1105,6 +1092,11 @@ namespace WCell.RealmServer.NPCs
 		}
 
 		#endregion
+
+		public override IWorldLocation[] GetInWorldTemplates()
+		{
+			return SpawnEntries.ToArray();
+		}
 
 		public override string ToString()
 		{

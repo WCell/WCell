@@ -88,7 +88,6 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Properties
-
 		/// <summary>
 		/// Gets the collection of maps.
 		/// </summary>
@@ -1230,6 +1229,15 @@ namespace WCell.RealmServer.Global
 		#endregion
 
 		#region Events
+        /// <summary>
+        /// Checks if the event is currently active
+        /// </summary>
+        /// <param name="eventId">Id of the event to check</param>
+        /// <returns></returns>
+        public bool IsEventActive(uint eventId)
+        {
+            return WorldEventMgr.IsEventActive(eventId);
+        }
 		#endregion
 
 		#region Instance members

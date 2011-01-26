@@ -54,17 +54,17 @@ namespace WCell.Addons.Default.Spells.Warrior
 			SpellHandler.Apply(spell =>
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1),
 					ProcTriggerFlags.SpellHit,
-					ProcHandler.StunValidator,
-					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1)
+					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank1);
 			SpellHandler.Apply(spell =>
 			{
 				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2),
 					ProcTriggerFlags.SpellHit,
-					ProcHandler.StunValidator,
-					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2)
+					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
 

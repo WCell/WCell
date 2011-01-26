@@ -213,6 +213,7 @@
     <Compile Include="Database\ArenaTeamStats.cs" />
     <Compile Include="Entities\Character.Mechanics.cs" />
     <Compile Include="Entities\Character.StatUpdates.cs" />
+    <Compile Include="Entities\ObjectTemplate.cs" />
     <Compile Include="Entities\NPC.Mechanics.cs" />
     <Compile Include="Entities\NPC.StatUpdates.cs" />
     <Compile Include="Entities\Unit.StatUpdates.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
     <Compile Include="Spells\AISpellCastSettings.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
+    <Compile Include="Spells\SpellProcEventEntry.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />

@@ -646,26 +646,7 @@ namespace WCell.RealmServer.NPCs
 		public static void EnsureNPCItemRelations()
 		{
 			LoadVendors();
-			EnsureNPCLootRelations();
 		}
-
-		[Initialization]
-		[DependentInitialization(typeof(LootMgr))]
-		[DependentInitialization(typeof(ItemMgr))]
-		[DependentInitialization(typeof(NPCMgr))]
-		public static void EnsureNPCLootRelations()
-		{
-			var loots = LootMgr.GetEntries(LootEntryType.Skinning);
-			foreach (var entry in GetAllEntries())
-			{
-				if (entry != null && entry.SkinLootId != 0)
-				{
-					//entry.SkinningLoot = loots.Get(entry.Template.SkinLootId);
-					entry.SkinningLoot = loots.Get(entry.SkinLootId);
-				}
-			}
-		}
-
 		#endregion
 
 		public static CreatureFamily GetFamily(CreatureFamilyId id)

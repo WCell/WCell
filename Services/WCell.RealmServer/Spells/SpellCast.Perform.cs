@@ -728,6 +728,9 @@ namespace WCell.RealmServer.Spells
 							chr.Inventory.ConsumeAmmo();
 						}
 					}
+
+					// Check for quest progress
+					chr.QuestLog.OnSpellCast(this);
 				}
 
 				// casting a spell on a combatant also puts the Caster in combat mode

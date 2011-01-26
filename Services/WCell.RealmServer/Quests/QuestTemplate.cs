@@ -281,7 +281,7 @@ namespace WCell.RealmServer.Quests
 		/// Array of interactions containing ID, index and quantity.
 		/// </summary>
 		[Persistent(QuestConstants.MaxObjectInteractions)]
-		public QuestInteractionTemplate[] ObjectInteractions = new QuestInteractionTemplate[QuestConstants.MaxObjectInteractions];
+		public QuestInteractionTemplate[] ObjectOrSpellInteractions = new QuestInteractionTemplate[QuestConstants.MaxObjectInteractions];
 
 		[NotPersistent]
 		public QuestInteractionTemplate[] GOInteractions;
@@ -295,7 +295,19 @@ namespace WCell.RealmServer.Quests
 		public QuestInteractionTemplate[] NPCInteractions;
 
 		[NotPersistent]
-		public SpellId[] SpellInteractions;
+		public QuestInteractionTemplate[] SpellInteractions;
+
+		public bool HasObjectOrSpellInteractions
+		{
+			get; 
+			private set;
+		}
+
+		public bool RequiresSpellCasts
+		{
+			get;
+			private set;
+		}
 
 		public bool HasNPCInteractionEvent
 		{
@@ -531,7 +543,7 @@ namespace WCell.RealmServer.Quests
 				Array.Resize(ref GOInteractions, goIndex + 1);
 			}
 
-			var index = ObjectInteractions.GetFreeIndex();
+			var index = ObjectOrSpellInteractions.GetFreeIndex();
 
 			var templ = new QuestInteractionTemplate
 			{
@@ -539,9 +551,9 @@ namespace WCell.RealmServer.Quests
 				Amount = amount,
 				TemplateId = (uint)goId,
 				RequiredSpellId = requiredSpell,
-				Type = ObjectTypeId.GameObject
+				ObjectType = ObjectTypeId.GameObject
 			};
-			ArrayUtil.Set(ref ObjectInteractions, index, templ);
+			ArrayUtil.Set(ref ObjectOrSpellInteractions, index, templ);
 			GOInteractions[goIndex] = templ;
 		}
 
@@ -575,7 +587,7 @@ namespace WCell.RealmServer.Quests
 				Array.Resize(ref NPCInteractions, npcIndex + 1);
 			}
 
-			var index = ObjectInteractions.GetFreeIndex();
+			var index = ObjectOrSpellInteractions.GetFreeIndex();
 
 			var templ = new QuestInteractionTemplate
 			{
@@ -583,9 +595,9 @@ namespace WCell.RealmServer.Quests
 				Amount = amount,
 				TemplateId = (uint)npcid,
 				RequiredSpellId = SpellId.None,
-				Type = ObjectTypeId.Unit
+				ObjectType = ObjectTypeId.Unit
 			};
-			ArrayUtil.Set(ref ObjectInteractions, index, templ);
+			ArrayUtil.Set(ref ObjectOrSpellInteractions, index, templ);
 			NPCInteractions[npcIndex] = templ;
 		}
 		#endregion
@@ -1124,7 +1136,7 @@ namespace WCell.RealmServer.Quests
 			writer.WriteLineNotDefault(Starters.Count, "Starts at: " + Starters.ToString(", "));
 			writer.WriteLineNotDefault(Finishers.Count, "Ends at: " + Finishers.ToString(", "));
 
-			var interactions = ObjectInteractions.Where(action => action != null && action.TemplateId > 0);
+			var interactions = ObjectOrSpellInteractions.Where(action => action != null && action.TemplateId > 0);
 			writer.WriteLineNotDefault(interactions.Count(), "Interactions: " + interactions.ToString(", "));
 
 			if (CollectableItems != null && CollectableItems.Length > 0)
@@ -1232,27 +1244,28 @@ namespace WCell.RealmServer.Quests
 
 			List<QuestInteractionTemplate> goInteractions = null;
 			List<QuestInteractionTemplate> npcInteractions = null;
-			for (uint i = 0; i < ObjectInteractions.Length; i++)
+			for (uint i = 0; i < ObjectOrSpellInteractions.Length; i++)
 			{
-				var interaction = ObjectInteractions[i];
-				if (interaction.TemplateId == 0 || interaction.Amount == 0)
+				var interaction = ObjectOrSpellInteractions[i];
+				if (interaction == null || !interaction.IsValid) continue;
+				HasObjectOrSpellInteractions = true;
+
+				if (interaction.RequiredSpellId != 0)
 				{
-					if (interaction.RequiredSpellId != 0)
+					// SpellCast objective
+					RequiresSpellCasts = true;
+					if (SpellInteractions == null)
 					{
-						// SpellCast objective
-						if (SpellInteractions == null)
-						{
-							SpellInteractions = new[] { interaction.RequiredSpellId };
-						}
-						else
-						{
-							ArrayUtil.AddOnlyOne(ref SpellInteractions, interaction.RequiredSpellId);
-						}
+						SpellInteractions = new[] { interaction };
+					}
+					else
+					{
+						ArrayUtil.AddOnlyOne(ref SpellInteractions, interaction);
 					}
 				}
 				else
 				{
-					if (interaction.Type == ObjectTypeId.GameObject)
+					if (interaction.ObjectType == ObjectTypeId.GameObject)
 					{
 						// GO objective
 						(goInteractions = goInteractions.NotNull()).Add(interaction);
@@ -1337,7 +1350,7 @@ namespace WCell.RealmServer.Quests
 		/// Either <see cref="ObjectTypeId.Unit"/> or <see cref="ObjectTypeId.GameObject"/>
 		/// </summary>
 		[NotPersistent]
-		public ObjectTypeId Type = ObjectTypeId.None;
+		public ObjectTypeId ObjectType = ObjectTypeId.None;
 
 		public int Amount;
 
@@ -1358,7 +1371,7 @@ namespace WCell.RealmServer.Quests
 		{
 			get
 			{
-				return Type == ObjectTypeId.GameObject ?
+				return ObjectType == ObjectTypeId.GameObject ?
 					//(uint)-(int)(TemplateId | QuestConstants.GOIndicator) : TemplateId;
 					(uint.MaxValue - TemplateId + 1) : TemplateId;
 			}
@@ -1368,70 +1381,75 @@ namespace WCell.RealmServer.Quests
 				{
 					// GO
 					TemplateId = uint.MaxValue - value + 1;
-					Type = ObjectTypeId.GameObject;
+					ObjectType = ObjectTypeId.GameObject;
 				}
-				else
+				else if (value != 0)
 				{
 					// NPC
 					TemplateId = value;
-					Type = ObjectTypeId.Unit;
+					ObjectType = ObjectTypeId.Unit;
 				}
 			}
 		}
 
+		public bool IsValid
+		{
+			get { return TemplateId != 0 || RequiredSpellId != 0; }
+		}
+
 		public override string ToString()
 		{
-			return (Amount != 1 ? Amount + "x " : "") + Type + " " + Type.ToString(TemplateId) + (RequiredSpellId != 0 ? (" - Spell: " + RequiredSpellId) : "");
+			return (Amount != 1 ? Amount + "x " : "") + ObjectType + " " + ObjectType.ToString(TemplateId) + (RequiredSpellId != 0 ? (" - Spell: " + RequiredSpellId) : "");
 		}
 	}
 
-    [DataHolder]
+	[DataHolder]
 	public class QuestPOI : IDataHolder
-    {
-        public uint QuestId;
-        public uint PoiId;
-        public int ObjectiveIndex;
-        public MapId MapID;
-        public ZoneId ZoneId;
-        public uint FloorId;
-        public uint Unk3;
-        public uint Unk4;
+	{
+		public uint QuestId;
+		public uint PoiId;
+		public int ObjectiveIndex;
+		public MapId MapID;
+		public ZoneId ZoneId;
+		public uint FloorId;
+		public uint Unk3;
+		public uint Unk4;
 
-        [NotPersistent]
-        public List<QuestPOIPoints> Points = new List<QuestPOIPoints>();
-        
-        public void  FinalizeDataHolder()
-        {
-            if(QuestMgr.POIs.ContainsKey(QuestId))
-                QuestMgr.POIs[QuestId].Add(this);
-            else
-            {
-                var list = new List<QuestPOI> {this};
-                QuestMgr.POIs.Add(QuestId, list);
-            }
-        }
-    }
+		[NotPersistent]
+		public List<QuestPOIPoints> Points = new List<QuestPOIPoints>();
 
-    [DataHolder]
-    public class QuestPOIPoints : IDataHolder
-    {
-        public uint QuestId;
-        public uint PoiId;
-        public float X;
-        public float Y;
+		public void FinalizeDataHolder()
+		{
+			if (QuestMgr.POIs.ContainsKey(QuestId))
+				QuestMgr.POIs[QuestId].Add(this);
+			else
+			{
+				var list = new List<QuestPOI> { this };
+				QuestMgr.POIs.Add(QuestId, list);
+			}
+		}
+	}
 
-        public void FinalizeDataHolder()
-        {
-            List<QuestPOI> list;
-            if (QuestMgr.POIs.TryGetValue(QuestId, out list))
-            {
-                foreach (var questpoi in list.Where(questpoi => questpoi.PoiId == PoiId))
-                {
-                    questpoi.Points.Add(this);
-                }
-            }
-        }
-    }
+	[DataHolder]
+	public class QuestPOIPoints : IDataHolder
+	{
+		public uint QuestId;
+		public uint PoiId;
+		public float X;
+		public float Y;
+
+		public void FinalizeDataHolder()
+		{
+			List<QuestPOI> list;
+			if (QuestMgr.POIs.TryGetValue(QuestId, out list))
+			{
+				foreach (var questpoi in list.Where(questpoi => questpoi.PoiId == PoiId))
+				{
+					questpoi.Points.Add(this);
+				}
+			}
+		}
+	}
 
 	public struct EmoteTemplate
 	{

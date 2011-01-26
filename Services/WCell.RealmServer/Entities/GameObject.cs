@@ -101,6 +101,11 @@ namespace WCell.RealmServer.Entities
 			get { return m_entry; }
 		}
 
+		public override ObjectTemplate Template
+		{
+			get { return Entry; }
+		}
+
 		/// <summary>
 		/// The Template of this GO (if any was used)
 		/// </summary>
@@ -229,7 +234,7 @@ namespace WCell.RealmServer.Entities
 			GOType = entry.Type;
 			Flags = m_entry.Flags;
 			m_faction = m_entry.Faction ?? Faction.NullFaction;
-			ScaleX = m_entry.DefaultScale;
+			ScaleX = m_entry.Scale;
 
 			spawnEntry = spawnEntry ?? entry.FirstSpawnEntry;
 			if (spawnEntry != null)

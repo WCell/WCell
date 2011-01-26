@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
 using NLog;
@@ -114,6 +115,11 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Misc Properties
+		public virtual ObjectTemplate Template
+		{
+			get { return null; }
+		}
+
 		/// <summary>
 		/// Time in seconds since creation
 		/// </summary>
@@ -1498,7 +1504,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool MayAttack(IFactionMember opponent)
 		{
-			if (!opponent.IsInWorld ||  object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (!opponent.IsInWorld ||  ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}

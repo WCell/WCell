@@ -180,6 +180,10 @@ namespace WCell.RealmServer.Spells
 						{
 							// force combat mode
 							target.IsInCombat = true;
+							if (target is NPC && CasterUnit != null)
+							{
+								((NPC)target).ThreatCollection.AddNewIfNotExisted(CasterUnit);
+							}
 						}
 						// add Aura now
 						auras.Add(newAura);

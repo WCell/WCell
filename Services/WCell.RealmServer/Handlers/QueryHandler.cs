@@ -174,8 +174,8 @@ namespace WCell.RealmServer.Handlers
 					pkt.Write(0);
 				}
 
-				pkt.Write(entry.HpModifier);
-				pkt.Write(entry.ManaModifier);
+				pkt.Write(0);						// hp mod?
+				pkt.Write(0);						// mana mod?
 				pkt.Write(entry.IsLeader);
 
 				for (i = 0; i < 4; i++)

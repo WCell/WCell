@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendPowerUpdate(Unit unit, PowerType type, int value)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_POWER_UPDATE, 13))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_POWER_UPDATE, 17))
 			{
 				unit.EntityId.WritePacked(packet);
 				packet.Write((byte)type);

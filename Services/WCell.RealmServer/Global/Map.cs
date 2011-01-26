@@ -1041,7 +1041,7 @@ namespace WCell.RealmServer.Global
 			{
 				foreach (var templ in poolTemplates)
 				{
-					if (templ.AutoSpawns && IsEventActive(templ.Entries[0].EventId))
+					if (templ.AutoSpawns && IsEventActive(templ.EventId))
 					{
 						AddNPCSpawnPoolNow(templ);
 					}
@@ -2327,12 +2327,14 @@ namespace WCell.RealmServer.Global
 		}
 		#endregion
 
-		/// <summary>
-		/// TODO: Implement event support
-		/// </summary>
+        /// <summary>
+        /// Checks if the event is currently active
+        /// </summary>
+        /// <param name="eventId">Id of the event to check</param>
+        /// <returns></returns>
 		public bool IsEventActive(uint eventId)
 		{
-			return eventId == 0;
+			return WorldEventMgr.IsEventActive(eventId);
 		}
 
 		/// <summary>

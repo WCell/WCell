@@ -101,6 +101,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47
 		Run\Content\Impl\UDB\Data\BattlemasterRelation.xml = Run\Content\Impl\UDB\Data\BattlemasterRelation.xml
 		Run\Content\Impl\UDB\Data\ClassLevelSetting.xml = Run\Content\Impl\UDB\Data\ClassLevelSetting.xml
 		Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml = Run\Content\Impl\UDB\Data\FishingLootItemEntry.xml
+		Run\Content\Impl\UDB\Data\GameEvent.xml = Run\Content\Impl\UDB\Data\GameEvent.xml
 		Run\Content\Impl\UDB\Data\GOEntry.xml = Run\Content\Impl\UDB\Data\GOEntry.xml
 		Run\Content\Impl\UDB\Data\GOLootItemEntry.xml = Run\Content\Impl\UDB\Data\GOLootItemEntry.xml
 		Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml = Run\Content\Impl\UDB\Data\GOQuestGiverRelation.xml
@@ -142,7 +143,43 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UDB", "UDB", "{22AD2989-C47
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{352C7D18-D5CA-41EA-815F-65DECA33D17E}"
 	ProjectSection(SolutionItems) = preProject
+		Run\Content\Battlegrounds.xml = Run\Content\Battlegrounds.xml
+		Run\Content\Instances.xml = Run\Content\Instances.xml
 		Run\Content\Impl\UDB\Tables.xml = Run\Content\Impl\UDB\Tables.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Packets", "Packets", "{D18CDB4B-0134-41C0-AE6F-DEE59586F470}"
+	ProjectSection(SolutionItems) = preProject
+		Run\Content\Packets\Achievements.xml = Run\Content\Packets\Achievements.xml
+		Run\Content\Packets\BattleGrounds.xml = Run\Content\Packets\BattleGrounds.xml
+		Run\Content\Packets\Calendar.xml = Run\Content\Packets\Calendar.xml
+		Run\Content\Packets\Chat.xml = Run\Content\Packets\Chat.xml
+		Run\Content\Packets\Combat.xml = Run\Content\Packets\Combat.xml
+		Run\Content\Packets\Duel.xml = Run\Content\Packets\Duel.xml
+		Run\Content\Packets\Factions.xml = Run\Content\Packets\Factions.xml
+		Run\Content\Packets\GameObjects.xml = Run\Content\Packets\GameObjects.xml
+		Run\Content\Packets\Gossips.xml = Run\Content\Packets\Gossips.xml
+		Run\Content\Packets\Groups.xml = Run\Content\Packets\Groups.xml
+		Run\Content\Packets\Guilds.xml = Run\Content\Packets\Guilds.xml
+		Run\Content\Packets\Items.xml = Run\Content\Packets\Items.xml
+		Run\Content\Packets\Login.xml = Run\Content\Packets\Login.xml
+		Run\Content\Packets\Loot.xml = Run\Content\Packets\Loot.xml
+		Run\Content\Packets\Mail.xml = Run\Content\Packets\Mail.xml
+		Run\Content\Packets\Misc.xml = Run\Content\Packets\Misc.xml
+		Run\Content\Packets\Movement.xml = Run\Content\Packets\Movement.xml
+		Run\Content\Packets\Pets.xml = Run\Content\Packets\Pets.xml
+		Run\Content\Packets\Queries.xml = Run\Content\Packets\Queries.xml
+		Run\Content\Packets\Quests.xml = Run\Content\Packets\Quests.xml
+		Run\Content\Packets\Relations.xml = Run\Content\Packets\Relations.xml
+		Run\Content\Packets\Spells.xml = Run\Content\Packets\Spells.xml
+		Run\Content\Packets\Talents.xml = Run\Content\Packets\Talents.xml
+		Run\Content\Packets\Ticket.xml = Run\Content\Packets\Ticket.xml
+		Run\Content\Packets\Trade.xml = Run\Content\Packets\Trade.xml
+		Run\Content\Packets\Trainers.xml = Run\Content\Packets\Trainers.xml
+		Run\Content\Packets\Vendors.xml = Run\Content\Packets\Vendors.xml
+		Run\Content\Packets\VoiceChat.xml = Run\Content\Packets\VoiceChat.xml
+		Run\Content\Packets\WhoList.xml = Run\Content\Packets\WhoList.xml
+		Run\Content\Packets\World.xml = Run\Content\Packets\World.xml
 	EndProjectSection
 EndProject
 Global
@@ -456,16 +493,17 @@ Global
 		{6C52AEC1-2920-4E34-83A2-93E6E719D1B8} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{38846B91-92C5-4ED0-A77C-5480FA06EDBE} = {A5244776-5B87-4499-A1BA-4CC318FDAAE0}
 		{F753AF28-A251-4C12-9335-07E8236184F2} = {E858B607-246D-4056-A56E-A27312A4FDEE}
-		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
+		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{D18CDB4B-0134-41C0-AE6F-DEE59586F470} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
 		{19AE8D2C-F941-46B9-933F-3A5E5CBA134F} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 		{2029346D-5B87-4B5B-A5BD-4CB64AB0BC79} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
-		{22AD2989-C47E-499D-B4EB-72A2D43EF5B7} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
-		{009B84F0-3E1E-4674-9318-7B6BECF748E1} = {352C7D18-D5CA-41EA-815F-65DECA33D17E}
+		{B6E8E045-B27D-47A8-A2F1-94B7BB351A80} = {009B84F0-3E1E-4674-9318-7B6BECF748E1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		ISWCFSolution = True
-		Locked = False
 		UnLocked = True
+		Locked = False
+		ISWCFSolution = True
 	EndGlobalSection
 	GlobalSection(TextTemplating) = postSolution
 		TextTemplating = 1

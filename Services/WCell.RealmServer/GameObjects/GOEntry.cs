@@ -64,24 +64,12 @@ namespace WCell.RealmServer.GameObjects
 	[DependingProducer(GameObjectType.TrapDoor, typeof(GOTrapDoorEntry))]
 
 	[DependingProducer(GameObjectType.Custom, typeof(GOCustomEntry))]
-	public abstract partial class GOEntry : IQuestHolderEntry, IDataHolder
+	public abstract partial class GOEntry : ObjectTemplate, IDataHolder
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
-		/// <summary>
-		/// Entry Id
-		/// </summary>
-		public uint Id
-		{
-			get;
-			set;
-		}
-
 		public uint DisplayId;
 		public FactionTemplateId FactionId;
 		public GameObjectFlags Flags;
 		public GameObjectType Type;
-		public float DefaultScale = 1;
 
 		[NotPersistent]
 		public GOEntryId GOId;
@@ -117,14 +105,18 @@ namespace WCell.RealmServer.GameObjects
 			get { return SpawnEntries.Count > 0 ? SpawnEntries[0] : null; }
 		}
 
-		public IWorldLocation[] GetInWorldTemplates()
+		public override IWorldLocation[] GetInWorldTemplates()
 		{
 			return SpawnEntries.ToArray();
 		}
 
 		#region Custom Fields
 		[NotPersistent]
-		public Faction Faction;
+		public Faction Faction
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Whether this GO vanishes after using
@@ -182,7 +174,7 @@ namespace WCell.RealmServer.GameObjects
 			get { return false; }
 		}
 
-		public ResolvedLootItemList GetLootEntries()
+		public override ResolvedLootItemList GetLootEntries()
 		{
 			if (this is IGOLootableEntry)
 			{
@@ -193,16 +185,6 @@ namespace WCell.RealmServer.GameObjects
 		#endregion
 
 		#region Quests
-		/// <summary>
-		/// The QuestHolderEntry of this NPCEntry, if this is a QuestGiver
-		/// </summary>
-		[NotPersistent]
-		public QuestHolderInfo QuestHolderInfo
-		{
-			get;
-			set;
-		}
-
 		[NotPersistent]
 		public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
 

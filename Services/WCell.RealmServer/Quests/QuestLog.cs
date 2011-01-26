@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NHibernate.SqlCommand;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
@@ -27,6 +28,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
 using NLog;
+using WCell.RealmServer.Spells;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Quests
@@ -65,6 +67,7 @@ namespace WCell.RealmServer.Quests
 		internal List<Quest> m_RequireGOsQuests = new List<Quest>();
 		internal List<Quest> m_NPCInteractionQuests = new List<Quest>();
 		internal List<Quest> m_RequireItemsQuests = new List<Quest>();
+		internal List<Quest> m_RequireSpellCastsQuests = new List<Quest>();
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="QuestLog"/> class.
@@ -293,6 +296,10 @@ namespace WCell.RealmServer.Quests
 			{
 				m_NPCInteractionQuests.Add(quest);
 			}
+			if (qt.RequiresSpellCasts)
+			{
+				m_RequireSpellCastsQuests.Add(quest);
+			}
 
 			if (quest.CollectedItems != null)
 			{
@@ -360,13 +367,18 @@ namespace WCell.RealmServer.Quests
 				m_timedQuest = null;
 			}
 
-			if (quest.UsedGOs != null)
+			var qt = quest.Template;
+			if (qt.HasGOEvent)
 			{
 				m_RequireGOsQuests.Remove(quest);
 			}
-			if (quest.KilledNPCs != null)
+			if (qt.HasNPCInteractionEvent)
 			{
 				m_NPCInteractionQuests.Remove(quest);
+			}
+			if (qt.RequiresSpellCasts)
+			{
+				m_RequireSpellCastsQuests.Remove(quest);
 			}
 
 			if (quest.CollectedItems != null)
@@ -550,7 +562,7 @@ namespace WCell.RealmServer.Quests
 		/// the required interaction with the given NPC (usually killing)
 		/// </summary>
 		/// <param name="npc"></param>
-		public void OnNPCInteraction(NPC npc)
+		internal void OnNPCInteraction(NPC npc)
 		{
 			foreach (var quest in m_NPCInteractionQuests)
 			{
@@ -561,14 +573,7 @@ namespace WCell.RealmServer.Quests
 						var interaction = quest.Template.NPCInteractions[i];
 						if (interaction.TemplateId == npc.Entry.Id)
 						{
-							if (quest.KilledNPCs[i] < interaction.Amount)
-							{
-								quest.KilledNPCs[i]++;
-								m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)quest.KilledNPCs[i]);
-								QuestHandler.SendUpdateInteractionCount(quest, npc, interaction, quest.KilledNPCs[i], m_Owner);
-								quest.UpdateStatus();
-							}
-							quest.Template.NotifyNPCInteracted(quest, npc);
+							UpdateInteractionCount(quest, interaction, npc);
 						}
 					}
 				}
@@ -612,18 +617,24 @@ namespace WCell.RealmServer.Quests
 						var interaction = quest.Template.GOInteractions[i];
 						if (interaction.TemplateId == go.Entry.Id)
 						{
-							if (quest.UsedGOs[i] < interaction.Amount)
-							{
-								quest.UsedGOs[i]++;
-								m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)quest.UsedGOs[i]);
-								QuestHandler.SendUpdateInteractionCount(quest, go, interaction, quest.UsedGOs[i], m_Owner);
-								quest.UpdateStatus();
-							}
-							quest.Template.NotifyGOUsed(quest, go);
+							UpdateInteractionCount(quest, interaction, go);
 						}
 					}
 				}
 			}
+		}
+
+		void UpdateInteractionCount(Quest quest, QuestInteractionTemplate interaction, WorldObject obj)
+		{
+			var count = quest.Interactions[interaction.Index];
+			if (count < interaction.Amount)
+			{
+				++quest.Interactions[interaction.Index];
+				m_Owner.SetQuestCount(quest.Slot, interaction.Index, (byte)(count+1));
+				QuestHandler.SendUpdateInteractionCount(quest, obj, interaction, count+1, m_Owner);
+				quest.UpdateStatus();
+			}
+			//quest.Template.NotifyGOUsed(quest, go);
 		}
 
 		/// <summary>
@@ -719,6 +730,47 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 			return false;
+		}
+		#endregion
+
+		#region Spell Casts
+		internal void OnSpellCast(SpellCast cast)
+		{
+			if (m_RequireSpellCastsQuests.Count > 0)
+			{
+				foreach (var q in m_RequireSpellCastsQuests)
+				{
+					foreach (var interaction in q.Template.SpellInteractions)
+					{
+						if (interaction.RequiredSpellId == cast.Spell.SpellId)
+						{
+							switch (interaction.ObjectType)
+							{
+								case ObjectTypeId.GameObject:
+									// GO
+									var go = cast.Targets.FirstOrDefault(target => target is GameObject && target.EntryId == interaction.TemplateId);
+									if (go != null)
+									{
+										UpdateInteractionCount(q, interaction, go);
+									}
+									break;
+								case ObjectTypeId.Unit:
+									// NPC
+									var npc = cast.Targets.FirstOrDefault(target => target is NPC && target.EntryId == interaction.TemplateId);
+									if (npc != null)
+									{
+										UpdateInteractionCount(q, interaction, npc);
+									}
+									break;
+								default:
+									// No target requirement
+									UpdateInteractionCount(q, interaction, null);
+									break;
+							}
+						}
+					}
+				}
+			}
 		}
 		#endregion
 

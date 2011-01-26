@@ -95,7 +95,7 @@ namespace WCell.RealmServer.GameObjects
                     i++;
                 }
 
-                packet.Write(entry.DefaultScale); // size
+                packet.Write(entry.Scale); // size
 
                 for (i = 0; i < 4; i++)
                 {

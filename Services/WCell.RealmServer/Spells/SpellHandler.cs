@@ -392,6 +392,7 @@ namespace WCell.RealmServer.Spells
 			var mapper = ContentMgr.GetMapper<Spell>();
 			mapper.AddObjectsUInt(ById);
 			ContentMgr.Load(mapper);
+			ContentMgr.Load<SpellProcEventEntry>();
 		}
 
 		internal static void InitTools()

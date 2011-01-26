@@ -1,3 +1,3 @@
-- updated UtgardeKeep with some code that makes use of the new NPCSpawnPools
-- #npc spawn <name> works now (and teleports you to the spawned NPC) -> will also create an instance if it is an instance NPC
-- fixed another bug with #map clear
+- added new property to WorldObject which is the base class for NPCEntry and GOEntry: ObjectTemplate Template
+- fixed skinning (loot should now be available)
+- cleaned up NPCEntry class
