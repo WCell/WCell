@@ -290,21 +290,25 @@ namespace WCell.Util.Data
 
 				string varName;
 				IGetterSetter accessor;
+			    IFieldReader reader;
 				var attr = dbAttrs.Where(attribute => attribute is PersistentAttribute).FirstOrDefault() as PersistentAttribute;
 				if (attr != null)
 				{
 					// persistent attribute
 					varName = attr.Name ?? member.Name;
 					accessor = attr.Accessor ?? (accessors != null ? accessors[member] : new DefaultVariableAccessor(member));
+                    reader = Converters.GetReader(attr.ReadType ?? memberType);
 				}
 				else
 				{
 					varName = member.Name;
 					//accessor = new DefaultVariableAccessor(member);
 					accessor = (accessors != null ? accessors[member] : new DefaultVariableAccessor(member));
+                    reader = Converters.GetReader(memberType);
 				}
 
-				var reader = Converters.GetReader(memberType);
+
+				
 
 				IDataField field;
 				if (reader == null)

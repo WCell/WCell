@@ -19,11 +19,10 @@ namespace WCell.Util.Data
 		/// </summary>
 		public IGetterSetter Accessor;
 
-		/// <summary>
-		/// Used to convert data before getting/setting.
-		/// [NIY]
-		/// </summary>
-		public IConverter Converter;
+        /// <summary>
+        /// Used to read data from the db as this type
+        /// </summary>
+        public Type ReadType;
 
 		public PersistentAttribute()
 		{
@@ -32,9 +31,9 @@ namespace WCell.Util.Data
 		/// <summary>
 		/// Used to convert the type in the Db to this type
 		/// </summary>
-		public PersistentAttribute(IConverter converter)
+		public PersistentAttribute(Type type)
 		{
-			Converter = converter;
+		    ReadType = type;
 		}
 
 		public PersistentAttribute(string name)
