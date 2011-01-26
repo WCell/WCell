@@ -1,3 +1,1 @@
-- added new property to WorldObject which is the base class for NPCEntry and GOEntry: ObjectTemplate Template
-- fixed skinning (loot should now be available)
-- cleaned up NPCEntry class
+- fixed AIGroup to also unset leader if leader is removed (this fixes weird aggro behavior on respawn)

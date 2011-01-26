@@ -6,6 +6,7 @@ using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
+using WCell.Util;
 
 namespace WCell.RealmServer.NPCs.Vendors
 {
@@ -471,5 +472,10 @@ namespace WCell.RealmServer.NPCs.Vendors
 		//    }
 		//    return listDict;
 		//}
+
+		public override string ToString()
+		{
+			return Utility.GetStringRepresentation(ItemsForSale);
+		}
 	}
 }

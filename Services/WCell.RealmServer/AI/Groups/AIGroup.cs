@@ -121,6 +121,10 @@ namespace WCell.RealmServer.AI.Groups
 		{
 			if (groupList.Remove(npc))
 			{
+				if (npc == m_Leader)
+				{
+					m_Leader = null;
+				}
 				npc.Group = null;
 				return true;
 			}
