@@ -56,8 +56,8 @@ namespace WCell.RealmServer.Spawns
 		{
 			get
 			{
-				var count = m_spawnPoints.Count(spawn => !spawn.IsActive);
-				return count >= Template.RealMaxSpawnAmount;
+				var count = m_spawnPoints.Count(spawn => spawn.IsReadyToSpawn);
+				return count == 0;
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace WCell.RealmServer.Spawns
 							SpawnFull();
 							//Reset(m_spawnEntry.RandomNormalDelay());
 						}
-						else if (SpawnedObjects.Count < Template.RealMaxSpawnAmount)
+						else if (!IsFullySpawned)
 						{
 							// select spawn point and start respawn timer
 							SpawnOneLater();
@@ -138,7 +138,7 @@ namespace WCell.RealmServer.Spawns
 			// count and calculate total probability
 			foreach (var spawn in m_spawnPoints)
 			{
-				if (!spawn.IsActive)
+				if (spawn.IsReadyToSpawn)
 				{
 					var prob = spawn.SpawnEntry.PoolRespawnProbability;
 					totalProb += prob;
@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Spawns
 			// make individual tests
 			foreach (var spawn in m_spawnPoints)
 			{
-				if (!spawn.IsActive)
+				if (spawn.IsReadyToSpawn)
 				{
 					var prob = spawn.SpawnEntry.PoolRespawnProbability;
 					if (prob == 0)

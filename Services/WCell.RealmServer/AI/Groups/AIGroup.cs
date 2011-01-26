@@ -38,6 +38,14 @@ namespace WCell.RealmServer.AI.Groups
 		public NPC Leader
 		{
 			get { return m_Leader; }
+			set
+			{
+				m_Leader = value;
+				if (value != null && !Contains(value))
+				{
+					Add(value);
+				}
+			}
 		}
 
 		public virtual BrainState DefaultState

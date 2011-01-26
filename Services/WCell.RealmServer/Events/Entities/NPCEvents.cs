@@ -13,6 +13,11 @@ namespace WCell.RealmServer.NPCs
 		public event NPCHandler Activated;
 
 		/// <summary>
+		/// Called when NPC is deleted
+		/// </summary>
+    	public event NPCHandler Deleted;
+
+		/// <summary>
 		/// Called when the given NPC is added to the world or when resurrected.
 		/// </summary>
 		public event Action<Character, NPC> Interacting;

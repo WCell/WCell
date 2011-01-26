@@ -849,6 +849,12 @@ namespace WCell.RealmServer.Entities
 			m_brain.OnActivate();
 
 			m_entry.NotifyActivated(this);
+
+			if (m_spawnPoint != null)
+			{
+				// add back to pool's AIGroup
+				m_spawnPoint.Pool.SpawnedObjects.Add(this);
+			}
 		}
 		#endregion
 
@@ -995,6 +1001,15 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
+			// make sure IsDeleted = true
+			m_Deleted = true;
+			m_entry.NotifyDeleted(this);
+
+			if (m_spawnPoint != null && m_spawnPoint.ActiveSpawnling == this)
+			{
+				// remove if NPC was for some reason still considered active in pool
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
 			m_auras.ClearWithoutCleanup();
 			base.DeleteNow();
 		}

@@ -60,6 +60,13 @@ namespace WCell.RealmServer.NPCs.Spawns
 		public NPCEquipmentEntry Equipment;
 		#endregion
 
+		public NPC SpawnObject(Map map)
+		{
+			var spawnling = Entry.Create(map.DifficultyIndex);
+			map.AddObjectNow(spawnling, Position);
+			return spawnling;
+		}
+
 		public override NPC SpawnObject(NPCSpawnPoint point)
 		{
 			var spawnling = Entry.Create(point);

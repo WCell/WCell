@@ -1763,7 +1763,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Deletion & Disposal
-		private bool m_Deleted;
+		protected bool m_Deleted;
 
 		/// <summary>
 		/// Deleted objects must never be used again!

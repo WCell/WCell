@@ -938,6 +938,15 @@ namespace WCell.RealmServer.NPCs
 			}
 		}
 
+		internal void NotifyDeleted(NPC npc)
+		{
+			var evt = Deleted;
+			if (evt != null)
+			{
+				evt(npc);
+			}
+		}
+
 		internal void NotifyInteracting(NPC npc, Character chr)
 		{
 			if (InteractionSpell != null)

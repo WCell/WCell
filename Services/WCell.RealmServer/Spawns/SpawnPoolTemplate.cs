@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants.World;
@@ -24,7 +25,7 @@ namespace WCell.RealmServer.Spawns
 
 		public int RealMaxSpawnAmount
 		{
-			get { return Math.Min(MaxSpawnAmount, Entries.Count); }
+			get { return Math.Min(MaxSpawnAmount, Entries.Count(entry => entry.AutoSpawns)); }
 		}
 
 		/// <summary>

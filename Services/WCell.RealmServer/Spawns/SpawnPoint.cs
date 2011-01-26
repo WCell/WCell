@@ -70,6 +70,14 @@ namespace WCell.RealmServer.Spawns
 		}
 
 		/// <summary>
+		/// Inactive and autospawns
+		/// </summary>
+		public bool IsReadyToSpawn
+		{
+			get { return !IsActive && m_spawnEntry.AutoSpawns; }
+		}
+
+		/// <summary>
 		/// Whether NPC is alread spawned or timer is running
 		/// </summary>
 		public bool IsActive
@@ -93,6 +101,8 @@ namespace WCell.RealmServer.Spawns
 				m_spawnling = SpawnEntry.SpawnObject((POINT)this);
 
 				Pool.SpawnedObjects.Add(m_spawnling);
+
+				Map.UnregisterUpdatable(m_timer);
 			});
 		}
 
@@ -109,7 +119,7 @@ namespace WCell.RealmServer.Spawns
 			if (Pool.IsActive && !m_timer.IsRunning)
 			{
 				m_nextRespawn = Environment.TickCount + delay;
-				m_timer.Start(delay, 0);
+				m_timer.Start(delay);
 				Map.RegisterUpdatableLater(m_timer);
 			}
 		}
@@ -140,10 +150,15 @@ namespace WCell.RealmServer.Spawns
 		/// </summary>
 		protected internal void SignalSpawnlingDied(O obj)
 		{
+			// remove object from set of spawned objects
 			m_spawnling = null;
 			Pool.SpawnedObjects.Remove(obj);
 
-			SpawnLater();
+			if (m_spawnEntry.AutoSpawns)
+			{
+				// select a spawn to respawn
+				Pool.SpawnOneLater();
+			}
 		}
 	}
 }
