@@ -27,8 +27,11 @@ namespace WCell.RealmServer.Spawns
 			get { return Math.Min(MaxSpawnAmount, Entries.Count); }
 		}
 
+		/// <summary>
+		/// Whether any SpawnEntry has AutoSpawns set to true
+		/// </summary>
 		[NotPersistent]
-		public bool AutoSpawns = false;
+		public bool AutoSpawns { get; internal set; }
 
 		[NotPersistent]
 		public MapId MapId = MapId.End;
@@ -50,6 +53,7 @@ namespace WCell.RealmServer.Spawns
 
 		protected SpawnPoolTemplate(uint id, int maxSpawnAmount)
 		{
+			AutoSpawns = false;
 			PoolId = id != 0 ? id : (uint)Interlocked.Increment(ref highestId);
 			MaxSpawnAmount = maxSpawnAmount != 0 ? maxSpawnAmount : int.MaxValue;
 		}

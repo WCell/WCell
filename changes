@@ -1,1 +1,1 @@
-- fixed AIGroup to also unset leader if leader is removed (this fixes weird aggro behavior on respawn)
+- fixed SpawnPool.AutoSpawns simply to reflect whether there it has at least one SpawnEntry that has AutoSpawns = true

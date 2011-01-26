@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using WCell.Constants.World;
 using WCell.RealmServer.Entities;
@@ -193,7 +194,18 @@ namespace WCell.RealmServer.Spawns
 		public bool AutoSpawns
 		{
 			get { return m_AutoSpawns; }
-			set { m_AutoSpawns = value; }
+			set
+			{
+				if (m_AutoSpawns != value)
+				{
+					m_AutoSpawns = value;
+					if (m_PoolTemplate != null)
+					{
+						// update pool template
+						m_PoolTemplate.AutoSpawns = m_PoolTemplate.Entries.Any(entry => entry.AutoSpawns);
+					}
+				}
+			}
 		}
 
 		[NotPersistent]
