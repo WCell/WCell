@@ -367,11 +367,11 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             
             allianceDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             allianceDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            allianceDoorEntry.FirstSpawnEntry.AutoSpawns = false;
+            allianceDoorEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
 
             hordeDoorEntry.FirstSpawnEntry.State = GameObjectState.Enabled;
             hordeDoorEntry.Flags |= GameObjectFlags.DoesNotDespawn | GameObjectFlags.InUse;
-            hordeDoorEntry.FirstSpawnEntry.AutoSpawns = false;
+            hordeDoorEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
 
             GOEntry bersekerBuffEntry = GOMgr.GetEntry(GOEntryId.BerserkBuff_6);
             GOEntry foodBuffEntry = GOMgr.GetEntry(GOEntryId.FoodBuff_5);
@@ -393,20 +393,20 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             GOEntry hordeBannerAuraEntry = GOMgr.GetEntry(GOEntryId.HordeBannerAura);
             GOEntry allianceBannerAuraEntry = GOMgr.GetEntry(GOEntryId.AllianceBannerAura);
 
-            farmBannerEntry.FirstSpawnEntry.AutoSpawns = false;
-            mineBannerEntry.FirstSpawnEntry.AutoSpawns = false;
-            lumbermillBannerEntry.FirstSpawnEntry.AutoSpawns = false;
-            stablesBannerEntry.FirstSpawnEntry.AutoSpawns = false;
-            blacksmithBannerEntry.FirstSpawnEntry.AutoSpawns = false;
+            farmBannerEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
+            mineBannerEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
+            lumbermillBannerEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
+            stablesBannerEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
+            blacksmithBannerEntry.FirstSpawnEntry.PoolTemplate.AutoSpawns = false;
 
-            allianceAttackFlagEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
-            allianceControlledFlagEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
-            hordeAttackFlagEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
-            hordeControlledFlagEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
+            allianceAttackFlagEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
+            allianceControlledFlagEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
+            hordeAttackFlagEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
+            hordeControlledFlagEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
 
-            neutralBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
-            hordeBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
-            allianceBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.AutoSpawns = false);
+            neutralBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
+            hordeBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
+            allianceBannerAuraEntry.SpawnEntries.ForEach(spawn => spawn.PoolTemplate.AutoSpawns = false);
         }
 
         private void RegisterEvents()

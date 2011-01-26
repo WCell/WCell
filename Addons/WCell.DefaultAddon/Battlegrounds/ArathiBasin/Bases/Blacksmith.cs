@@ -35,6 +35,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin.Bases
             allianceAttackBannerSpawn = GOMgr.GetEntry(GOEntryId.ContestedBanner_26).SpawnEntries[(int)ArathiBases.Blacksmith];
             hordeAttackBannerSpawn = GOMgr.GetEntry(GOEntryId.ContestedBanner_25).SpawnEntries[(int)ArathiBases.Blacksmith];
         }
+
         public override string BaseName
         {
             get { return "Blacksmith"; }

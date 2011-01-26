@@ -148,7 +148,6 @@ namespace WCell.RealmServer.Misc
 			InteractionHandlers[(int)LockInteractionType.QuickClose] = Close;
 			InteractionHandlers[(int)LockInteractionType.QuickOpen] = Open;
 			InteractionHandlers[(int)LockInteractionType.PvPClose] = Close;
-			InteractionHandlers[(int)LockInteractionType.PvPOpen] = PvPOpen;
 		}
 
 		private static void LoadLocks()
@@ -260,9 +259,9 @@ namespace WCell.RealmServer.Misc
 			{
 				var go = lockable as GameObject;
 				go.State = GameObjectState.Disabled;
-                if (go.Region is Battleground)
+                if (go.Map is Battleground)
                 {
-                    Battleground bg = go.Region as Battleground;
+                    Battleground bg = go.Map as Battleground;
                     bg.OnPlayerClickedOnflag(go, user);
                 }
             }
@@ -304,26 +303,13 @@ namespace WCell.RealmServer.Misc
 			{
                 var go = lockable as GameObject;
 				go.Use(chr);
-                if (go.Region is Battleground)
+                if (go.Map is Battleground)
                 {
-                    var bg = go.Region as Battleground;
+                    var bg = go.Map as Battleground;
                     bg.OnPlayerClickedOnflag(go, chr);
                 }
 			}
 		}
-
-        public static void PvPOpen(ILockable lockable, Character chr)
-        {
-            if (lockable is GameObject)
-            {
-                var go = lockable as GameObject;
-                if (go.RegionId == MapId.ArathiBasin)
-                {
-                    var bg = go.Region as Battleground;
-                    bg.OnPlayerClickedOnflag(go, chr);
-                }
-            }
-        }
 		#endregion
 	}
 
