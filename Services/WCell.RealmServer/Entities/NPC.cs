@@ -773,12 +773,6 @@ namespace WCell.RealmServer.Entities
 		{
 			m_brain.IsRunning = false;
 
-			// reset spawn timer
-			if (m_spawnPoint != null)
-			{
-				m_spawnPoint.SignalSpawnlingDied(this);
-			}
-
 			// hand out experience
 			bool heroic;
 			if (m_Map != null)
@@ -822,6 +816,12 @@ namespace WCell.RealmServer.Entities
 				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
 			}
 
+			// reset spawn timer
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
+
 			if (m_master != null)
 			{
 				// notify master
@@ -844,17 +844,17 @@ namespace WCell.RealmServer.Entities
 			UnitFlags &= ~UnitFlags.SelectableNotAttackable;
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 
-			m_brain.IsRunning = true;
-			m_brain.EnterDefaultState();
-			m_brain.OnActivate();
-
-			m_entry.NotifyActivated(this);
-
 			if (m_spawnPoint != null)
 			{
 				// add back to pool's AIGroup
 				m_spawnPoint.Pool.SpawnedObjects.Add(this);
 			}
+
+			m_brain.IsRunning = true;
+			m_brain.EnterDefaultState();
+			m_brain.OnActivate();
+
+			m_entry.NotifyActivated(this);
 		}
 		#endregion
 
@@ -870,6 +870,12 @@ namespace WCell.RealmServer.Entities
 		protected internal override void OnEnterMap()
 		{
 			base.OnEnterMap();
+
+			// add to set of spawned objects of SpawnPoint
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingActivated(this);
+			}
 
 			if (m_auras.Count == 0)
 			{
@@ -891,6 +897,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// initialize type-specific things
 			foreach (var handler in m_entry.InstanceTypeHandlers)
 			{
 				if (handler != null)
@@ -899,6 +906,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// trigger events
 			if (m_brain != null)
 			{
 				//spawn.Brain.MovementAI.SetSpawnPoint(pos);

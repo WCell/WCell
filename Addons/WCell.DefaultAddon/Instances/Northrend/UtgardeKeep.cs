@@ -178,7 +178,7 @@ namespace WCell.Addons.Default.Instances
 			{
 				var skelSpawnEntry = new NPCSpawnEntry(PrinceSkeletonEntry.NPCId, MapId.UtgardeKeep, PrinceSkeletonPositions[i])
 				{
-					AutoSpawns = true,						// need to manage spawning ourselves
+					AutoSpawns = false,						// must not respawn automatically when dead
 					IsDead = true,							// spawn dead
 					PoolId = poolTemplate.PoolId			// share Prince' pool
 				};
@@ -191,7 +191,7 @@ namespace WCell.Addons.Default.Instances
 			princeKelesethEntry.Activated += prince =>
 			{
 				var instance = prince.Map as UtgardeKeep;
-				if (instance == null) return;
+				if (instance == null || prince.SpawnPoint == null) return;
 
 				((BaseBrain)prince.Brain).DefaultCombatAction.Strategy = new PrinceKelesethAttackAction(prince);
 
@@ -256,7 +256,10 @@ namespace WCell.Addons.Default.Instances
 		{
 			if (PrinceKeleseth == null) return;
 
-			foreach (var mob in PrinceKeleseth.Group)
+			// iterate over all living skeletons
+			// need ToArray() to create a copy of the collection, because killing the mob will modify it 
+			//			(unless we added a message to Map to kill it in the next tick)
+			foreach (var mob in PrinceKeleseth.Group.ToArray())
 			{
 				if (mob != PrinceKeleseth)
 				{
@@ -283,11 +286,11 @@ namespace WCell.Addons.Default.Instances
 				var skel = GetSkeleton(i);
 				if (skel == null)
 				{
-					var spawn = PrinceSkeletonSpawnEntries[i];
-					skel = spawn.SpawnObject(this);
+					// Skeleton did not exist -> get SpawnPoint and spawn a new one
+					var spawn = prince.SpawnPoint.Pool.SpawnPoints[i + 1];
+					spawn.SpawnNow();
 				}
-
-				if (skel.IsAlive)
+				else if (skel.IsAlive)
 				{
 					// make sure Skeleton is dead
 					skel.Kill();
@@ -349,6 +352,11 @@ namespace WCell.Addons.Default.Instances
 			{
 			}
 
+			/// <summary>
+			/// The instance in which this prince was spawned.
+			/// It is always set because this AIAction is only created for the prince if spawned in an instance
+			/// </summary>
+			public UtgardeKeep Instance { get { return (UtgardeKeep)m_owner.Map; } }
 
 			public override void Start()
 			{
@@ -375,20 +383,14 @@ namespace WCell.Addons.Default.Instances
 				base.Stop();
 			}
 
-			/// <summary>
-			/// Returns all skeletons that are in the prince' AIGroup
-			/// </summary>
-			public IEnumerable<NPC> Skeletons
-			{
-				get { return ((NPC)m_owner).Group.Where(mob => mob.Entry.Id == PrinceSkeletonEntry.Id); }
-			}
-
 
 			void CheckVrykulSekeltonIsDead(WorldObject owner)
 			{
-				if (Skeletons.Any(mob => mob.IsAlive))
+				if (!m_owner.IsAlive || m_owner.IsDeleted) return;
+
+				if (Instance.PrinceDeadSkeletons.Any(mob => mob == null))
 				{
-					// at least one skeleton is still alive
+					// at least one skeleton is still alive in the prince' group
 					return;
 				}
 
@@ -397,11 +399,15 @@ namespace WCell.Addons.Default.Instances
 
 			void ResurrectSkeletons()
 			{
-				foreach (var mob in Skeletons)
+				foreach (var mob in Instance.PrinceDeadSkeletons)
 				{
-					// resurrect skeleton
-					m_owner.SpellCast.Trigger(SpellId.SoulstoneResurrection_7, mob);
-					//mob.HealthPct = 100;
+					// if Skeleton is alive, it is not in the PrinceDeadSkeletons array
+					if (mob != null)
+					{
+						// resurrect skeleton
+						m_owner.SpellCast.Trigger(SpellId.SoulstoneResurrection_7, mob);
+						mob.HealthPct = 100;
+					}
 				}
 			}
 		}

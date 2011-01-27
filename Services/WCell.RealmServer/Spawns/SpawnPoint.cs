@@ -94,13 +94,16 @@ namespace WCell.RealmServer.Spawns
 		}
 		#endregion
 
-		public void SpawnNow(int dtMillis = 0)
+		private void SpawnNow(int dt)
+		{
+			SpawnNow();
+		}
+
+		public void SpawnNow()
 		{
 			Map.AddMessage(() =>
 			{
-				m_spawnling = SpawnEntry.SpawnObject((POINT)this);
-
-				Pool.SpawnedObjects.Add(m_spawnling);
+				SpawnEntry.SpawnObject((POINT)this);
 
 				Map.UnregisterUpdatable(m_timer);
 			});
@@ -143,6 +146,15 @@ namespace WCell.RealmServer.Spawns
 			{
 				m_spawnling.Delete();
 			}
+		}
+
+		/// <summary>
+		/// Called when object enters map
+		/// </summary>
+		protected internal void SignalSpawnlingActivated(O obj)
+		{
+			m_spawnling = obj;
+			Pool.SpawnedObjects.Add(m_spawnling);
 		}
 
 		/// <summary>

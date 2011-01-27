@@ -296,6 +296,13 @@ namespace WCell.RealmServer.Entities
 				//}
 			}
 
+			// add to set of spawned objects of SpawnPoint
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingActivated(this);
+			}
+
+			// trigger events
 			m_entry.NotifyActivated(this);
 		}
 

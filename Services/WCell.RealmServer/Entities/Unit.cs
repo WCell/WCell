@@ -378,6 +378,9 @@ namespace WCell.RealmServer.Entities
 			// set health to 0
 			SetUInt32(UnitFields.HEALTH, 0);
 
+			// send quick update
+			MiscHandler.SendHealthUpdate(this, Health);
+
 			// mark this Unit to resend DynamicFlags
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 
@@ -449,6 +452,8 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal protected virtual void OnResurrect()
 		{
+			MiscHandler.SendHealthUpdate(this, Health);
+
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 		}
 

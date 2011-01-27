@@ -87,6 +87,8 @@ namespace WCell.RealmServer.AI.Groups
 		/// </summary>
 		public void Add(NPC npc)
 		{
+			if (!npc.IsAlive) return;
+
 			groupList.Add(npc);
 			npc.Group = this;
 			if (Leader == null)

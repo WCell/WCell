@@ -1,4 +1,3 @@
-- ammo for new hunters is now equipped
-- updated quest dump to also show the quest graph and correct starters
-- fixed some things in and cleaned up quest graph
-- added ClassFixes and RaceFixes to DefaultAddon
+- fixed the order of spawn pool maintenance events
+- don't add dead spawnlings to AIGroup
+- fixed a few inconsistencies in UK
