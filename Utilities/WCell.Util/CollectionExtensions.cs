@@ -89,6 +89,14 @@ namespace WCell.Util
 		}
 		#endregion
 
+		public static void AddUnique<T>(this IList<T> items, T item)
+		{
+			if (!items.Contains(item))
+			{
+				items.Add(item);
+			}
+		}
+
 		public static bool Iterate<T>(this IEnumerable<T> items, Func<T, bool> action)
 		{
 			foreach (var item in items)

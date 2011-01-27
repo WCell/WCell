@@ -95,6 +95,12 @@ namespace WCell.RealmServer.Items
 			get { return this; }
 		}
 
+		//Item GetItemOrAmmo(EquipmentSlot slot)
+		//{
+		//    if (slot == EquipmentSlot.Invalid) return Ammo;
+		//    return this[slot];
+		//}
+
 		/// <summary>
 		/// Gets the item at the given InventorySlot (or null)
 		/// </summary>
@@ -176,6 +182,7 @@ namespace WCell.RealmServer.Items
 					if (value != null)
 					{
 						m_owner.SetUInt32(PlayerFields.AMMO_ID, value.Template.Id);
+						value.Slot = (int)InventorySlot.Invalid;
 						value.OnEquip();
 					}
 					m_ammo = value;
@@ -340,6 +347,11 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
+		IItemSlotHandler GetHandlerForItemOrAmmo(int slot)
+		{
+			return slot == -1 ? Equipment : GetHandler(slot);
+		}
+
 		/// <summary>
 		/// Returns the IItemSlotHandler for the specified InventorySlot
 		/// </summary>
@@ -365,7 +377,7 @@ namespace WCell.RealmServer.Items
 
 			if ((inclBank && ItemMgr.ContainerSlotsWithBank[(int)slot]) || (!inclBank && ItemMgr.ContainerSlotsWithoutBank[(int)slot]))
 			{
-				var bag = m_Items[(int)slot] as Container;
+				var bag = this[slot] as Container;
 				if (bag != null)
 				{
 					return bag.BaseInventory;
@@ -422,7 +434,7 @@ namespace WCell.RealmServer.Items
 
 			if (ItemMgr.ContainerBankSlots[(int)slot])
 			{
-				var bag = m_Items[(int)slot] as Container;
+				var bag = this[slot] as Container;
 				if (bag != null)
 				{
 					return bag.BaseInventory;
@@ -531,17 +543,19 @@ namespace WCell.RealmServer.Items
 
 		public InventoryError Ensure(ItemTemplate templ, int amount, bool equip)
 		{
-			if (equip && templ.EquipmentSlots == null)
+			if (templ.EquipmentSlots == null)
 			{
-				return InventoryError.ITEM_CANT_BE_EQUIPPED;
+				if (equip)
+				{
+					return InventoryError.ITEM_CANT_BE_EQUIPPED;
+				}
 			}
-
-			if (templ.EquipmentSlots != null)
+			else
 			{
 				for (var i = 0; i < templ.EquipmentSlots.Length; i++)
 				{
 					var slot = templ.EquipmentSlots[i];
-					var item = m_Items[(int)slot];
+					var item = this[slot];
 					if (item != null && item.Template.Id == templ.Id)
 					{
 						// done
@@ -594,6 +608,8 @@ namespace WCell.RealmServer.Items
 		{
 			item.m_owner = m_owner;
 			OnAddDontNotify(item);
+			// notify about new item
+
 		}
 
 		internal void OnAddDontNotify(Item item)
@@ -603,12 +619,13 @@ namespace WCell.RealmServer.Items
 				m_totalCount++;
 				//OnAmountChanged(item, (int)item.Amount);
 				AddItemUniqueCount(item);
-				m_owner.QuestLog.OnItemAmountChanged(item, (int)item.Amount);
+				m_owner.QuestLog.OnItemAmountChanged(item, item.Amount);
 				item.OnAdd();
 			}
 
 			var context = m_owner.ContextHandler;
 			if (context != null)
+			{
 				context.AddMessage(() =>
 				{
 					if (m_owner != null)
@@ -616,6 +633,7 @@ namespace WCell.RealmServer.Items
 						m_owner.AddItemToUpdate(item);
 					}
 				});
+			}
 		}
 
 		/// <summary>
@@ -631,7 +649,7 @@ namespace WCell.RealmServer.Items
 				// look for more ammo if the old stack is done:
 				SetAmmo(m_ammo.Template.Id);
 			}
-			
+
 			m_owner.RemoveOwnedItem(item);
 			m_owner.QuestLog.OnItemAmountChanged(item, -item.Amount);
 			RemoveItemUniqueCount(item);
@@ -707,10 +725,10 @@ namespace WCell.RealmServer.Items
 				for (var i = 0; i < templ.EquipmentSlots.Length; i++)
 				{
 					var slot = (int)templ.EquipmentSlots[i];
-					var item = m_Items[slot];
+					var item = this[slot];
 					if (item == null)
 					{
-						var handler = GetHandler(slot);
+						var handler = GetHandlerForItemOrAmmo(slot);
 						var err = InventoryError.OK;
 						handler.CheckAdd(slot, amount, templ, ref err);
 						if (err == InventoryError.OK)
@@ -1946,7 +1964,7 @@ namespace WCell.RealmServer.Items
 		{
 			foreach (var slot in includeBuyBack ? ItemMgr.AllSlots : ItemMgr.OwnedSlots)
 			{
-				var item = m_Items[(int)slot];
+				var item = this[slot];
 				if (item != null)
 				{
 					yield return item;
@@ -2099,7 +2117,7 @@ namespace WCell.RealmServer.Items
 					continue;
 				}
 
-				var occupyingItem = this[(int)slot];
+				var occupyingItem = this[slot];
 				if (occupyingItem == null)
 				{
 					return (InventorySlot)slot;
@@ -2334,6 +2352,62 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
+		#region Checks
+		/// <summary>
+		/// Checks for whether the given amount of that Item can still be added 
+		/// (due to max unique count).
+		/// </summary>
+		/// <param name="mountItem"></param>
+		/// <returns></returns>
+		internal InventoryError CheckEquipCount(IMountableItem mountItem)
+		{
+			var templ = mountItem.Template;
+			if (templ.Flags.HasFlag(ItemFlags.UniqueEquipped))
+			{
+				// may only equip a certain maximum of this item
+				foreach (var slot in templ.EquipmentSlots)
+				{
+					var item = this[slot];
+					if (item != null && item.Template.Id == templ.Id)
+					{
+						return InventoryError.ITEM_UNIQUE_EQUIPABLE;
+					}
+				}
+			}
+
+			// also check for unique gems
+			if (mountItem.Enchantments != null)
+			{
+				for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
+				{
+					var enchant = mountItem.Enchantments[(uint)i];
+					if (enchant != null && !CheckEquippedGems(enchant.Entry.GemTemplate))
+					{
+						return InventoryError.ITEM_UNIQUE_EQUIPPABLE_SOCKETED;
+					}
+				}
+			}
+			return InventoryError.OK;
+		}
+
+		internal bool CheckEquippedGems(ItemTemplate gemTempl)
+		{
+			if (gemTempl != null && gemTempl.Flags.HasFlag(ItemFlags.UniqueEquipped))
+			{
+				// may only equip a certain maximum of this kind of gem
+				for (var slot = EquipmentSlot.Head; slot < EquipmentSlot.Bag1; slot++)
+				{
+					var item = this[slot];
+					if (item != null && item.HasGem(gemTempl.ItemId))
+					{
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+		#endregion
+
 		#region Misc
 		/// <summary>
 		/// Removes the given percentage of durability from all Items of this Inventory.
@@ -2467,6 +2541,10 @@ namespace WCell.RealmServer.Items
 					}
 					slotId.Container[slotId.Slot] = item;
 					OnAddDontNotify(item);
+					if (item.Template.IsAmmo)
+					{
+						Ammo = item;
+					}
 				}
 			}
 		}

@@ -1361,7 +1361,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual float GetAggroRange(Unit victim)
 		{
-			return Math.Max(AggroBaseRange + ((Level - victim.Level) * NPCEntry.AggroRangePerLevel), NPCEntry.AggroMinRangeDefault);
+			return Math.Max(AggroBaseRange + ((Level - victim.Level) * NPCEntry.AggroRangePerLevel), NPCEntry.AggroRangeMinDefault);
 		}
 
 		public float GetAggroRangeSq(Unit victim)

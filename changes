@@ -1,6 +1,4 @@
-- fixed the bug where a spawn point does not stop spewing out new objects
-- fixed SpawnPoint to not respawn on it's own, but let the pool decide instead
-- added NPCEntry.Deleted event
-- fixed SpawnPools to not select SpawnPoints that have AutoSpawns set to false
-- resurrected NPCs are re-added into their pool's AIGroup
-- fixed up UtgardeKeep to keep track of dead skeletons
+- ammo for new hunters is now equipped
+- updated quest dump to also show the quest graph and correct starters
+- fixed some things in and cleaned up quest graph
+- added ClassFixes and RaceFixes to DefaultAddon

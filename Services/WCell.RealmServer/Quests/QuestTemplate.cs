@@ -420,14 +420,24 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public uint RequiredSkillValue;
 
+		/// <summary>
+		/// Represents the Reward XP column id.
+		/// </summary>
+		public int RewXPId;
+		#endregion
+
+		#region Graph
 		// Represents the Quest graph
 		public int PreviousQuestId, NextQuestId, ExclusiveGroup;
 		public uint FollowupQuestId;
 
 		/// <summary>
-		/// Represents the Reward XP column id.
+		/// 
 		/// </summary>
-		public int RewXPId;
+		public bool ShouldBeConnectedInGraph
+		{
+			get { return (PreviousQuestId | NextQuestId | ExclusiveGroup | FollowupQuestId) != 0; }
+		}
 
 		/// <summary>
 		/// Quests that may must all be active in order to get this Quest
@@ -454,10 +464,11 @@ namespace WCell.RealmServer.Quests
 		public readonly List<uint> ReqAnyFinishedQuests = new List<uint>(2);
 
 		/// <summary>
-		/// Quests of which
+		/// Quests of which none may have been accepted or completed
 		/// </summary>
 		[NotPersistent]
 		public readonly List<uint> ReqUndoneQuests = new List<uint>(2);
+
 		#endregion
 
 		#region QuestObjectives
@@ -735,7 +746,7 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < ReqUndoneQuests.Count; i++)
 				{
 					var preqId = ReqUndoneQuests[i];
-					if (log.FinishedQuests.Contains(preqId))
+					if (log.FinishedQuests.Contains(preqId) || log.HasActiveQuest(preqId))
 					{
 						return QuestInvalidReason.NoRequirements;
 					}
@@ -1152,7 +1163,23 @@ namespace WCell.RealmServer.Quests
 				var ins = Instructions.Where(obj => !string.IsNullOrEmpty(obj));
 				writer.WriteLineNotDefault(ins.Count(), "Instructions: " + ins.ToString(" / ") + "");
 			}
-			writer.WriteLineNotDefault(FollowupQuestId, "Next quest: " + QuestMgr.GetTemplate(FollowupQuestId));
+
+			if (ShouldBeConnectedInGraph)
+			{
+				writer.WriteLine();
+				writer.WriteLine("PreviousQuestId: {0}, NextQuestId: {1}, ExclusiveGroup: {2}, FollowupQuestId: {3} ", 
+					PreviousQuestId, NextQuestId, ExclusiveGroup, FollowupQuestId);
+				writer.WriteLineNotDefault(ReqAllActiveQuests.Count, "ReqAllActiveQuests: " + MakeQuestString(ReqAllActiveQuests));
+				writer.WriteLineNotDefault(ReqAllFinishedQuests.Count, "ReqAllFinishedQuests: " + MakeQuestString(ReqAllFinishedQuests));
+				writer.WriteLineNotDefault(ReqAnyActiveQuests.Count, "ReqAnyActiveQuests: " + MakeQuestString(ReqAnyActiveQuests));
+				writer.WriteLineNotDefault(ReqAnyFinishedQuests.Count, "ReqAnyFinishedQuests: " + MakeQuestString(ReqAnyFinishedQuests));
+				writer.WriteLineNotDefault(ReqUndoneQuests.Count, "ReqUndoneQuests: " + MakeQuestString(ReqUndoneQuests));
+			}
+		}
+
+		string MakeQuestString(IEnumerable<uint> questIds)
+		{
+			return Utility.GetStringRepresentation(questIds.Select(QuestMgr.GetTemplate));
 		}
 
 		#endregion

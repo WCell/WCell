@@ -362,7 +362,7 @@ namespace WCell.RealmServer.Handlers
 								foreach (var item in items)
 								{
 									var template = item.Template;
-									if (template.IsInventory && template.EquipmentSlots != null)
+									if (template.EquipmentSlots != null)
 									{
 										packet.Position = itemOffset + ((int)template.EquipmentSlots[0] * CharEnumItemBytes);
 

@@ -423,7 +423,7 @@ namespace WCell.RealmServer.AI.Brains
 			var owner = (NPC)m_owner;
 
 			// look around for possible enemies to attack (inverted predicate)
-			return !owner.IterateEnvironment(NPCEntry.AggroMaxRangeDefault, obj =>
+			return !owner.IterateEnvironment(NPCEntry.AggroRangeMaxDefault, obj =>
 			{
 				if (!(obj is Unit))
 				{

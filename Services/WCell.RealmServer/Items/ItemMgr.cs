@@ -184,7 +184,7 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Wrist] = new[] { EquipmentSlot.Wrist };
 
 			// special treatment
-			slots[(int)InventorySlotType.Ammo] = null;
+			slots[(int)InventorySlotType.Ammo] = null; // new[] { EquipmentSlot.Invalid };
 			return slots;
 		}
 

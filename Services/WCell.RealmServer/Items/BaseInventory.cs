@@ -452,60 +452,6 @@ namespace WCell.RealmServer.Items
 		public abstract PlayerInventory OwnerInventory { get; }
 
 		/// <summary>
-		/// Checks for whether the given amount of that Item can still be added 
-		/// (due to max unique count).
-		/// </summary>
-		/// <param name="mountItem"></param>
-		/// <returns></returns>
-		internal InventoryError CheckEquipCount(IMountableItem mountItem)
-		{
-			var templ = mountItem.Template;
-			if (templ.Flags.HasFlag(ItemFlags.UniqueEquipped))
-			{
-				// may only equip a certain maximum of this item
-				foreach (var slot in templ.EquipmentSlots)
-				{
-					var item = m_Items[(uint)slot];
-					if (item != null && item.Template.Id == templ.Id)
-					{
-						return InventoryError.ITEM_UNIQUE_EQUIPABLE;
-					}
-				}
-			}
-
-			// also check for unique gems
-			if (mountItem.Enchantments != null)
-			{
-				for (var i = EnchantSlot.Socket1; i < EnchantSlot.Socket1 + ItemConstants.MaxSocketCount; i++)
-				{
-					var enchant = mountItem.Enchantments[(uint)i];
-					if (enchant != null && !CheckEquippedGems(enchant.Entry.GemTemplate))
-					{
-						return InventoryError.ITEM_UNIQUE_EQUIPPABLE_SOCKETED;
-					}
-				}
-			}
-			return InventoryError.OK;
-		}
-
-		internal bool CheckEquippedGems(ItemTemplate gemTempl)
-		{
-			if (gemTempl != null && gemTempl.Flags.HasFlag(ItemFlags.UniqueEquipped))
-			{
-				// may only equip a certain maximum of this kind of gem
-				for (var slot = EquipmentSlot.Head; slot < EquipmentSlot.Bag1; slot++)
-				{
-					var item = m_Items[(uint)slot];
-					if (item != null && item.HasGem(gemTempl.ItemId))
-					{
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		/// <summary>
 		/// Is called before adding the given amount of the given Item. 
 		/// </summary>
 		/// <param name="item"></param>

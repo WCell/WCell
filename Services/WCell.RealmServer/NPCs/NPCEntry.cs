@@ -59,25 +59,25 @@ namespace WCell.RealmServer.NPCs
 		/// <summary>
 		/// Mobs with a distance >= this will not start aggressive actions
 		/// </summary>
-		public static float AggroMaxRangeDefault = 45;
+		public static float AggroRangeMaxDefault = 45;
 
-		private static float aggroMinRangeDefault = 5;
+		private static float aggroRangeMinDefault = 5;
 
 		/// <summary>
 		/// Mobs within this range will *definitely* aggro
 		/// </summary>
-		public static float AggroMinRangeDefault
+		public static float AggroRangeMinDefault
 		{
-			get { return aggroMinRangeDefault; }
+			get { return aggroRangeMinDefault; }
 			set
 			{
-				aggroMinRangeDefault = value;
+				aggroRangeMinDefault = value;
 				AggroMinRangeSq = value * value;
 			}
 		}
 
 		[NotVariable]
-		public static float AggroMinRangeSq = aggroMinRangeDefault * aggroMinRangeDefault;
+		public static float AggroMinRangeSq = aggroRangeMinDefault * aggroRangeMinDefault;
 
 		#endregion
 

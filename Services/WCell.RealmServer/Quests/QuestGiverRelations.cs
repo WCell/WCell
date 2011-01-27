@@ -2,6 +2,7 @@ using WCell.Constants.Quests;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
+using WCell.Util;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Quests
@@ -104,12 +105,12 @@ namespace WCell.RealmServer.Quests
 						case QuestGiverRelationType.Starter:
 							{
 								qgEntry.QuestStarts.Add(template);
-                                QuestMgr._questStarterCount++;
-                                if (newQg)
-                                {
-                                    template.Starters.Add(entry);
-                                }
-							    break;
+								template.Starters.Add(entry);
+								if (newQg)
+								{
+									QuestMgr._questStarterCount++;
+								}
+								break;
 							}
 						case QuestGiverRelationType.Finisher:
 							{

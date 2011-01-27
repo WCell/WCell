@@ -201,13 +201,13 @@ namespace WCell.RealmServer.Quests
 			{
 				if (quest != null)
 				{
-					if (quest.Id == 4641)
+					if (quest.Id == 10068)
 					{
 						quest.ToString();
 					}
 					if (quest.ExclusiveGroup != 0)
 					{
-						groups.GetOrCreate(quest.ExclusiveGroup).Add(quest.Id);
+						groups.GetOrCreate(quest.ExclusiveGroup).AddUnique(quest.Id);
 					}
 					else if (quest.NextQuestId != 0)
 					{
@@ -220,11 +220,11 @@ namespace WCell.RealmServer.Quests
 						{
 							if (quest.NextQuestId > 0)
 							{
-								nextQuest.ReqAllFinishedQuests.Add(quest.Id);
+								nextQuest.ReqAllFinishedQuests.AddUnique(quest.Id);
 							}
 							else
 							{
-								nextQuest.ReqAllActiveQuests.Add(quest.Id);
+								nextQuest.ReqAllActiveQuests.AddUnique(quest.Id);
 							}
 						}
 					}
@@ -238,20 +238,20 @@ namespace WCell.RealmServer.Quests
 						//else
 						if (quest.PreviousQuestId > 0)
 						{
-							quest.ReqAllFinishedQuests.Add((uint)quest.PreviousQuestId);
+							quest.ReqAllFinishedQuests.AddUnique((uint)quest.PreviousQuestId);
 						}
 						else
 						{
-							quest.ReqAllActiveQuests.Add((uint)-quest.PreviousQuestId);
+							quest.ReqAllActiveQuests.AddUnique((uint)-quest.PreviousQuestId);
 						}
 					}
 					if (quest.FollowupQuestId != 0)
 					{
 						// follow up quest requires this one to be finished before it can be taken
 						var followupQuest = GetTemplate(quest.FollowupQuestId);
-						if (followupQuest != null && !followupQuest.ReqAllFinishedQuests.Contains(quest.Id))
+						if (followupQuest != null)
 						{
-							followupQuest.ReqAllFinishedQuests.Add(quest.Id);
+							followupQuest.ReqAllFinishedQuests.AddUnique(quest.Id);
 						}
 					}
 				}
@@ -268,7 +268,7 @@ namespace WCell.RealmServer.Quests
 						{
 							if (group.Key > 0)
 							{
-								quest.ReqUndoneQuests.Add(qid2);
+								quest.ReqUndoneQuests.AddUnique(qid2);
 							}
 						}
 					}
@@ -284,11 +284,11 @@ namespace WCell.RealmServer.Quests
 						{
 							if (group.Key > 0)
 							{
-								nextQuest.ReqAllFinishedQuests.Add(quest.Id);
+								nextQuest.ReqAllFinishedQuests.AddUnique(quest.Id);
 							}
 							else
 							{
-								nextQuest.ReqAnyFinishedQuests.Add(quest.Id);
+								nextQuest.ReqAnyFinishedQuests.AddUnique(quest.Id);
 							}
 						}
 					}
