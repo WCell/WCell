@@ -2628,7 +2628,7 @@ namespace WCell.RealmServer.Items
 
 		public override string ToString()
 		{
-			return "Inventory of " + Owner;
+			return "Inventory of " + Owner + ": " + this.ToArray().ToString(" / ");
 		}
 	}
 }

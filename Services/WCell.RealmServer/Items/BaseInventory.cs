@@ -995,7 +995,7 @@ namespace WCell.RealmServer.Items
 			}
 			catch (Exception e)
 			{
-				LogUtil.ErrorException(e, "Unable to add Item {0} to Character {1}", item, Owner);
+				LogUtil.ErrorException(e, "Unable to add Item \"{0}\" to Container: {1}", item);
 			}
 		}
 
@@ -1359,6 +1359,11 @@ namespace WCell.RealmServer.Items
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
+		}
+
+		public override string ToString()
+		{
+			return "";
 		}
 	}
 }

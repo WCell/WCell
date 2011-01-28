@@ -1329,7 +1329,8 @@ namespace WCell.RealmServer.Entities
 
 		public override string ToString()
 		{
-			return string.Format("{0}{1} (Templ: {2}, Id: {3})", Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId);
+			return string.Format("{0}{1} in Slot {4} (Templ: {2}, Id: {3})", 
+				Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId, Slot);
 		}
 
 		public bool IsInContext
