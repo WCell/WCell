@@ -2595,7 +2595,7 @@ namespace WCell.RealmServer.Items
 			{
 				// add items to their slots
 				var record = item.Record;
-				var cont = containers.Where(inventory => inventory.Slot == record.ContainerSlot).FirstOrDefault();
+				var cont = containers.FirstOrDefault(bag => bag.Slot == record.ContainerSlot);
 				if (cont == null)
 				{
 					log.Error("Error when loading Item for Character: {0} - Could not find Container for {1} at slot {2} ({3})",

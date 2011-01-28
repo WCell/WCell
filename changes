@@ -1,3 +1,2 @@
-- fixed the order of spawn pool maintenance events
-- don't add dead spawnlings to AIGroup
-- fixed a few inconsistencies in UK
+- fixed quest count for items to be doubled after loading
+- added an exception handler to AddLoadItem to give information about the Item that we could not add
