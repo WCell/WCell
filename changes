@@ -1,2 +1,2 @@
-- fixed quest count for items to be doubled after loading
-- added an exception handler to AddLoadItem to give information about the Item that we could not add
+- fixed it so that Item quest starters don't get added to the set of provided items for a quest
+- Item quest starters will now be removed from inventory when quest is completed

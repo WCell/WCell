@@ -28,6 +28,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
 using NLog;
+using WCell.RealmServer.Items;
 using WCell.RealmServer.Spells;
 using WCell.Util.Threading;
 
@@ -388,17 +389,27 @@ namespace WCell.RealmServer.Quests
 				for (var i = 0; i < amt; i++)
 				{
 					// remove all collected Items
-					m_Owner.Inventory.Consume(true, (uint)quest.Template.CollectableItems[i].ItemId, quest.CollectedItems[i]);
+					m_Owner.Inventory.Consume((uint)quest.Template.CollectableItems[i].ItemId, true, quest.CollectedItems[i]);
 				}
 			}
 
-			if (quest.Template.InitialItems.Count > 0)
+			// remove all provided Items
+			if (quest.Template.ProvidedItems.Count > 0)
 			{
-				var amt = quest.Template.InitialItems.Count;
+				var amt = quest.Template.ProvidedItems.Count;
 				for (var i = 0; i < amt; i++)
 				{
-					// remove all initial Items
-					m_Owner.Inventory.Consume(true, (uint)quest.Template.InitialItems[i].ItemId, quest.Template.InitialItems[i].Amount);
+					var template = quest.Template.ProvidedItems[i];
+					m_Owner.Inventory.Consume((uint)template.ItemId, true, template.Amount);
+				}
+			}
+
+			// remove starter Item
+			foreach (var starter in quest.Template.Starters)
+			{
+				if (starter is ItemTemplate)
+				{
+					m_Owner.Inventory.Consume(((ItemTemplate)starter).ItemId, true);
 				}
 			}
 

@@ -166,10 +166,25 @@ namespace WCell.RealmServer.Quests
 				EnsureCharacterQuestsLoaded();
 				AddSpellCastObjectives();
 
+				// add Item quest starters & add collect quests to corresponding items
 				if (ItemMgr.Loaded)
 				{
-					ItemMgr.EnsureQuestRelations();
+					ItemMgr.EnsureItemQuestRelations();
 				}
+
+				// add items to list of provided items
+				foreach (var qTempl in Templates)
+				{
+					if (qTempl != null)
+					{
+						var itemTempl = ItemMgr.GetTemplate(qTempl.SrcItemId);
+						if (itemTempl != null && qTempl.SrcItemId != 0 && !qTempl.Starters.Contains(itemTempl))
+						{
+							qTempl.ProvidedItems.Add(new ItemStackDescription(qTempl.SrcItemId, 1));
+						}
+					}
+				}
+
 				Loaded = true;
 
 				log.Debug("{0} Quests loaded.", _questCount);

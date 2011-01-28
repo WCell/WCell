@@ -1229,7 +1229,7 @@ namespace WCell.RealmServer.Spells
 			var reagents = m_spell.Reagents;
 			if (reagents != null && CasterUnit is Character)
 			{
-				if (!((Character)CasterUnit).Inventory.Consume(false, reagents))
+				if (!((Character)CasterUnit).Inventory.Consume(reagents, false))
 				{
 					Cancel(SpellFailedReason.Reagents);
 					return false;

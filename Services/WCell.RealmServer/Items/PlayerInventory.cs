@@ -1116,10 +1116,11 @@ namespace WCell.RealmServer.Items
 		/// <param name="inclBank">whether to also search in the bank and its bags (if not enough was found in inventory and bags)</param>
 		/// <param name="templateId"></param>
 		/// <param name="amount">If 0, consumes all Items that were found</param>
+		/// <param name="force">Whether only to remove if there are at least the given amount of items</param>
 		/// <returns>whether the required amount of items was found (and thus consumed).</returns>
-		public bool Consume(bool inclBank, uint templateId, int amount)
+		public bool Consume(ItemId templateId, bool inclBank = false, int amount = 1, bool force = true)
 		{
-			return Consume(inclBank, templateId, amount, true);
+			return Consume((uint)templateId, inclBank, amount, force);
 		}
 
 		/// <summary>
@@ -1131,7 +1132,7 @@ namespace WCell.RealmServer.Items
 		/// <param name="amount">If 0, consumes all Items that were found</param>
 		/// <param name="force">Whether only to remove if there are at least the given amount of items</param>
 		/// <returns>whether the required amount of items was found (and thus consumed).</returns>
-		public bool Consume(bool inclBank, uint templateId, int amount, bool force)
+		public bool Consume(uint templateId, bool inclBank = false, int amount = 1, bool force = true)
 		{
 			var slotIds = new List<SimpleSlotId>();						// the locations of the found items
 			var found = Find(inclBank, amount, slotIds, item => item.Template.Id == templateId);
@@ -1166,7 +1167,7 @@ namespace WCell.RealmServer.Items
 		/// Finds and consumes all of the given items. 
 		/// Does not consume anything and returns false if not all items were found.
 		/// </summary>
-		public bool Consume(bool inclBank, ItemStackDescription[] items)
+		public bool Consume(ItemStackDescription[] items, bool inclBank)
 		{
 			var slotIdLists = new List<SimpleSlotId>[items.Length];				// the slots of the found items
 			var foundAmounts = new int[items.Length];

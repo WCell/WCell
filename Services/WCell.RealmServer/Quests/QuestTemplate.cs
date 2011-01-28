@@ -390,7 +390,7 @@ namespace WCell.RealmServer.Quests
 		/// Array of Items to be given upon accepting the quest. These items will be destroyed when the Quest is solved or canceled.
 		/// </summary>
 		[NotPersistent]
-		public List<ItemStackDescription> InitialItems = new List<ItemStackDescription>(1);
+		public List<ItemStackDescription> ProvidedItems = new List<ItemStackDescription>(1);
 
 		#endregion
 
@@ -568,9 +568,9 @@ namespace WCell.RealmServer.Quests
 			GOInteractions[goIndex] = templ;
 		}
 
-		public void AddInitialItem(ItemId id, int amount)
+		public void AddProvidedItem(ItemId id, int amount = 1)
 		{
-			InitialItems.Add(new ItemStackDescription(id, amount));
+			ProvidedItems.Add(new ItemStackDescription(id, amount));
 		}
 
 		public void AddAreaTriggerObjective(uint id)
@@ -983,9 +983,9 @@ namespace WCell.RealmServer.Quests
 		/// <returns>Whether initial Items were given.</returns>
 		public bool GiveInitialItems(Character receiver)
 		{
-			if (InitialItems.Count > 0)
+			if (ProvidedItems.Count > 0)
 			{
-				var err = receiver.Inventory.TryAddAll(InitialItems.ToArray());
+				var err = receiver.Inventory.TryAddAll(ProvidedItems.ToArray());
 				if (err != InventoryError.OK)
 				{
 					ItemHandler.SendInventoryError(receiver.Client, null, null, err);
@@ -1140,12 +1140,12 @@ namespace WCell.RealmServer.Quests
 			//writer.WriteLine(this);
 			writer.WriteLineNotDefault(QuestType, "Type: " + QuestType);
 			writer.WriteLineNotDefault(Flags, "Flags: " + Flags);
-			writer.WriteLineNotDefault(RequiredLevel, "Required Level: " + RequiredLevel);
+			writer.WriteLineNotDefault(RequiredLevel, "RequiredLevel: " + RequiredLevel);
 			writer.WriteLineNotDefault(RequiredRaces, "Races: " + RequiredRaces);
 			writer.WriteLineNotDefault(RequiredClass, "Class: " + RequiredClass);
-			writer.WriteLineNotDefault(InitialItems.Count, "Provided Items: " + InitialItems.ToString(", "));
-			writer.WriteLineNotDefault(Starters.Count, "Starts at: " + Starters.ToString(", "));
-			writer.WriteLineNotDefault(Finishers.Count, "Ends at: " + Finishers.ToString(", "));
+			writer.WriteLineNotDefault(ProvidedItems.Count, "ProvidedItems: " + ProvidedItems.ToString(", "));
+			writer.WriteLineNotDefault(Starters.Count, "Starters: " + Starters.ToString(", "));
+			writer.WriteLineNotDefault(Finishers.Count, "Finishers: " + Finishers.ToString(", "));
 
 			var interactions = ObjectOrSpellInteractions.Where(action => action != null && action.TemplateId > 0);
 			writer.WriteLineNotDefault(interactions.Count(), "Interactions: " + interactions.ToString(", "));
@@ -1328,17 +1328,12 @@ namespace WCell.RealmServer.Quests
 			//    }
 			//}
 
-			if (SrcItemId != 0)
-			{
-				InitialItems.Add(new ItemStackDescription(SrcItemId, 1));
-			}
-
 			// make sure that provided items are not required
 			var colItems = new List<ItemStackDescription>(4);
 			for (var i = 0; i < CollectableItems.Length; i++)
 			{
 				var item = CollectableItems[i];
-				if (item.ItemId == 0 || InitialItems.Find(stack => stack.ItemId == item.ItemId).ItemId != 0)
+				if (item.ItemId == 0 || ProvidedItems.Find(stack => stack.ItemId == item.ItemId).ItemId != 0)
 				{
 					continue;
 				}
