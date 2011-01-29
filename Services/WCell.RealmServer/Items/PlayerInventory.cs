@@ -487,42 +487,6 @@ namespace WCell.RealmServer.Items
 
 		#region Adding
 		/// <summary>
-		/// Tries to add a new item with the given template and amount ot the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// If slot is occupied, method will find another unoccupied slot.
-		/// </summary>
-		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
-		public InventoryError TryAdd(ItemId id, ref int amount, InventorySlot targetSlot)
-		{
-			var templ = ItemMgr.GetTemplate(id);
-			if (templ != null)
-			{
-				return TryAdd(templ, ref amount, (int)targetSlot, true);
-			}
-			return InventoryError.Invalid;
-		}
-
-		/// <summary>
-		/// Tries to add ONE new item with the given template to the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// </summary>
-		public InventoryError TryAdd(ItemTemplate template, InventorySlot targetSlot)
-		{
-			var amount = 1;
-			return TryAdd(template, ref amount, (int)targetSlot, true);
-		}
-
-		/// <summary>
-		/// Tries to add a single new item with the given template to the given slot.
-		/// Make sure the given targetSlot is valid before calling this method.
-		/// </summary>
-		public InventoryError TryAdd(ItemTemplate template, EquipmentSlot targetSlot)
-		{
-			var amount = 1;
-			return TryAdd(template, ref amount, (int)targetSlot, true);
-		}
-
-		/// <summary>
 		/// 
 		/// </summary>
 		/// <returns>The result (InventoryError.OK in case that it worked)</returns>
@@ -1274,7 +1238,6 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Returns the total amount of Items within this Inventory of the given ItemId
 		/// </summary>
-		/// <returns></returns>
 		public int GetAmount(ItemId id)
 		{
 			var amount = 0;
@@ -2627,9 +2590,19 @@ namespace WCell.RealmServer.Items
 		}
 		#endregion
 
-		public override string ToString()
+		public override IEnumerator<Item> GetEnumerator()
 		{
-			return "Inventory of " + Owner + ": " + this.ToArray().ToString(" / ");
+			foreach (var item in m_Items)
+			{
+				yield return item;
+				if (!item.IsContainer) continue;
+
+				var cont = ((Container) item).BaseInventory;
+				foreach (var bagItem in cont)
+				{
+					yield return bagItem;
+				}
+			}
 		}
 	}
 }

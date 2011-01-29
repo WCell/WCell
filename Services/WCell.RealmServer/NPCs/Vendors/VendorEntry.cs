@@ -211,7 +211,7 @@ namespace WCell.RealmServer.NPCs.Vendors
 			InventoryError err;
 			if (inv.IsValidSlot(slot))
 			{
-				err = inv.TryAdd(item.Template, ref amount, slot, true);
+				err = inv.TryAdd(item.Template, ref amount, slot);
 			}
 			else
 			{

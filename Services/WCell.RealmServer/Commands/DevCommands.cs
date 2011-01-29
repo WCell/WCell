@@ -287,9 +287,9 @@ namespace WCell.RealmServer.Commands
 			get { return RoleStatus.Admin; }
 		}
 
-		public class ItemsCommand : SubCommand
+		public class LoadItemsCommand : SubCommand
 		{
-			protected ItemsCommand() { }
+			protected LoadItemsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -316,9 +316,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class GOsCommand : SubCommand
+		public class LoadGOsCommand : SubCommand
 		{
-			protected GOsCommand() { }
+			protected LoadGOsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -350,9 +350,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class NPCsCommand : SubCommand
+		public class LoadNPCsCommand : SubCommand
 		{
-			protected NPCsCommand() { }
+			protected LoadNPCsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -405,9 +405,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 
-		public class LoadQuestCommand : SubCommand
+		public class LoadQuestsCommand : SubCommand
 		{
-			protected LoadQuestCommand() { }
+			protected LoadQuestsCommand() { }
 
 			protected override void Initialize()
 			{
@@ -433,9 +433,9 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class LootCommand : SubCommand
+		public class LoadLootCommand : SubCommand
 		{
-			protected LootCommand() { }
+			protected LoadLootCommand() { }
 
 			protected override void Initialize()
 			{
@@ -461,9 +461,9 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 
-		public class AllCommand : SubCommand
+		public class LoadAllCommand : SubCommand
 		{
-			protected AllCommand() { }
+			protected LoadAllCommand() { }
 
 			protected override void Initialize()
 			{

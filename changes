@@ -1,2 +1,5 @@
-- fixed it so that Item quest starters don't get added to the set of provided items for a quest
-- Item quest starters will now be removed from inventory when quest is completed
+- fixed gathering skills
+- added log message for new items again, now also shown if item is added to existing stacks
+- fixed #npc goto to coincide with the new way, #npc spawn works -> Create instance if not owning one that contains the NPC
+- if an instance is created through a command, everyone in the GM's group who is not staff, gets kicked
+- also add profession spell when setting skill level via command

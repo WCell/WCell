@@ -8,6 +8,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util;
 
@@ -202,18 +203,18 @@ namespace WCell.RealmServer.Items
 		/// Tries to add the given item to the corresponding slot: The offset of this inventory + the given slot
 		/// </summary>
 		/// <returns>whether the item could be added</returns>
-		public virtual InventoryError TryAdd(int slot, Item item, bool isNew)
+		public virtual InventoryError TryAdd(int slot, Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
-			return m_inventory.TryAdd(slot, item, isNew);
+			return m_inventory.TryAdd(slot, item, isNew, reception);
 		}
 
 		/// <summary>
 		/// Tries to add the item to a free slot in this srcCont
 		/// </summary>
 		/// <returns>whether the item could be added</returns>
-		public virtual InventoryError TryAdd(Item item, bool isNew)
+		public virtual InventoryError TryAdd(Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
-			return m_inventory.TryAdd(FindFreeSlot(), item, isNew);
+			return m_inventory.TryAdd(FindFreeSlot(), item, isNew, reception);
 		}
 
 		/// <summary>
@@ -707,12 +708,12 @@ namespace WCell.RealmServer.Items
 			get { return (int)InventorySlot.BuyBackLast; }
 		}
 
-		public override InventoryError TryAdd(int slot, Item item, bool isNew)
+		public override InventoryError TryAdd(int slot, Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			return AddBuyBackItem(slot, item, isNew);
 		}
 
-		public override InventoryError TryAdd(Item item, bool isNew)
+		public override InventoryError TryAdd(Item item, bool isNew, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			return AddBuyBackItem(item, isNew);
 		}
@@ -741,7 +742,7 @@ namespace WCell.RealmServer.Items
 				item.Remove(true);
 			}
 
-			m_inventory.AddUnchecked(slot, item, true);
+			m_inventory.AddUnchecked(slot, item, isNew);
 			return InventoryError.OK;
 		}
 

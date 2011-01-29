@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Guilds
 			{
 				// unoccupied slot
 				var newAmt = (int)amount;
-				var msg = bag.TryAdd(fromItem.Template, ref newAmt, slot, true);
+				var msg = bag.TryAdd(fromItem.Template, ref newAmt, slot);
 				if (msg != InventoryError.OK)
 				{
 					ItemHandler.SendInventoryError(chr, msg);
@@ -349,7 +349,7 @@ namespace WCell.RealmServer.Guilds
 
 					// Take the bank Item and add it to the character.
 					var amtAdded = (int)amount;
-					var msg = bag.TryAdd(fromItem.Template, ref amtAdded, slot, true);
+					var msg = bag.TryAdd(fromItem.Template, ref amtAdded, slot);
 					if (msg != InventoryError.OK)
 					{
 						// put the old item back.
@@ -486,7 +486,7 @@ namespace WCell.RealmServer.Guilds
 
 					// Take the bank Item and add it to the character.
 					var amtAdded = (int)amount;
-					var msg = bag.TryAdd(toItem.Template, ref amtAdded, slot, true);
+					var msg = bag.TryAdd(toItem.Template, ref amtAdded, slot);
 					if (msg != InventoryError.OK)
 					{
 						// put the old item back.

@@ -14,6 +14,24 @@ using WCell.Util;
 
 namespace WCell.RealmServer.Handlers
 {
+	/// <summary>
+	/// Send in the packet that logs receiving of new items
+	/// </summary>
+	public enum ItemReceptionType : ulong
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		Loot = 0,
+
+		/// <summary>
+		/// "You receive item:"
+		/// When buying an item etc
+		/// </summary>
+		Receive = 1,
+		YouCreated = 1l << 32
+	}
+
 	public static class ItemHandler
 	{
 
@@ -112,7 +130,7 @@ namespace WCell.RealmServer.Handlers
 					client.ActiveCharacter.SendSystemMessage("Item {0} has no Spell associated with it.", item);
 #endif
 				}
-				else if (!template.UseSpell.HasCharges || 
+				else if (!template.UseSpell.HasCharges ||
 					item.GetSpellCharges(template.UseSpell.Index) > 0)
 				{
 					err = item.Template.CheckEquip(chr);
@@ -179,7 +197,7 @@ namespace WCell.RealmServer.Handlers
 			if (inv.CheckInteract() == InventoryError.OK)
 			{
 				var destSlot = packet.ReadByte();
-                var srcSlot = packet.ReadByte();
+				var srcSlot = packet.ReadByte();
 
 				inv.TrySwap(inv, srcSlot, inv, destSlot);
 			}
@@ -288,25 +306,46 @@ namespace WCell.RealmServer.Handlers
 				item.ApplyGems(gems);
 			}
 		}
-		
+
 		/// <summary>
 		/// Sends the Item's PushResult (required after adding items).
 		/// </summary>
-		public static void SendItemPushResult(Character owner, Item item, bool isNew, bool looted, int amount)
+		public static void SendItemPushResult(Character owner, Item item, ItemTemplate templ, int amount, ItemReceptionType reception)
 		{
+			bool isStacked;
+			int contSlot;
+			uint propertySeed, randomPropid;
+			if (item != null)
+			{
+				contSlot = item.Container.Slot;
+				isStacked = item.Amount != amount; // item.Amount == amount means that it was not added to an existing stack
+				propertySeed = item.PropertySeed;
+				randomPropid = item.RandomPropertiesId;
+			}
+			else
+			{
+				contSlot = BaseInventory.INVALID_SLOT;
+				isStacked = true;													// we did not have an item -> stacked
+				propertySeed = 0;
+				randomPropid = 0;
+			}
+
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_ITEM_PUSH_RESULT, 44))
 			{
 				packet.Write(owner.EntityId);
-				packet.Write(looted ? 1 : 0);							// 0 = looted, 1 = bought or traded
-				packet.Write(isNew ? 1 : 0);
-				packet.Write(1);
-				packet.Write(item.Container.Slot);
-				packet.Write((item.Amount == amount) ? item.Slot : -1);	// item.Amount == amount means that it was not just added to a stack
-				packet.Write(item.Template.Id);
-				packet.Write(item.PropertySeed);
-				packet.Write(item.RandomPropertiesId);
-				packet.Write(amount);									// amount added
-				packet.Write(item.Amount);								// amount of that type of item in inventory
+				packet.Write((ulong)reception);
+
+				//packet.Write(received ? 1 : 0);										// 0 = "You looted...", 1 = "You received..."
+				//packet.Write(isNew ? 1 : 0);										// 0 = "You received/looted...", 1 = "You created..."
+
+				packet.Write(1);													// log message
+				packet.Write((byte)contSlot);
+				packet.Write(isStacked ? -1 : item.Slot);
+				packet.Write(templ.Id);
+				packet.Write(propertySeed);
+				packet.Write(randomPropid);
+				packet.Write(amount);												// amount added
+				packet.Write(owner.Inventory.GetAmount(templ.ItemId));				// amount of that type of item in inventory
 
 				owner.Send(packet);
 			}
@@ -363,8 +402,8 @@ namespace WCell.RealmServer.Handlers
 				client.Send(packet);
 			}
 		}
-		
-        /// <summary>
+
+		/// <summary>
 		/// item1 and item2 can be null, but item1 must be set in case of YOU_MUST_REACH_LEVEL_N.
 		/// </summary>
 		/// <param name="client"></param>
@@ -454,7 +493,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.DisplayId);
 				packet.Write((uint)item.Quality);
 				packet.Write((uint)item.Flags);
-                packet.Write((uint)item.Flags2);		// new 3.2.0
+				packet.Write((uint)item.Flags2);		// new 3.2.0
 				packet.Write(item.BuyPrice);
 				packet.Write(item.SellPrice);
 				packet.Write((int)item.InventorySlotType);
@@ -476,7 +515,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.Mods.Length);
 				for (var m = 0; m < item.Mods.Length; m++)
 				{
-					packet.Write((int) item.Mods[m].Type);
+					packet.Write((int)item.Mods[m].Type);
 					packet.Write(item.Mods[m].Value);
 				}
 
@@ -519,23 +558,23 @@ namespace WCell.RealmServer.Handlers
 					}
 					else
 					{
-                        packet.WriteUInt(0u);
-                        packet.WriteUInt(0u);
-                        packet.WriteUInt(0u);
-                        packet.Write(-1);
-                        packet.WriteUInt(0u);
-                        packet.Write(-1);
+						packet.WriteUInt(0u);
+						packet.WriteUInt(0u);
+						packet.WriteUInt(0u);
+						packet.Write(-1);
+						packet.WriteUInt(0u);
+						packet.Write(-1);
 					}
 				}
 
 				for (; s < ItemConstants.MaxSpellCount; s++)
 				{
-                    packet.WriteUInt(0u);
-                    packet.WriteUInt(0u);
-                    packet.WriteUInt(0u);
-                    packet.Write(-1);
-                    packet.WriteUInt(0u);
-                    packet.Write(-1);
+					packet.WriteUInt(0u);
+					packet.WriteUInt(0u);
+					packet.WriteUInt(0u);
+					packet.Write(-1);
+					packet.WriteUInt(0u);
+					packet.Write(-1);
 				}
 
 				packet.Write((uint)item.BondType);
@@ -579,106 +618,107 @@ namespace WCell.RealmServer.Handlers
 		}
 		#endregion
 
-        #region Equipment Sets
+		#region Equipment Sets
 
-        public static void SendEquipmentSetList(IPacketReceiver client, IList<EquipmentSet> setList)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_EQUIPMENT_SET_LIST))
-            {
-                packet.Write(setList.Count);
-                foreach (var set in setList)
-                {
-                    set.SetGuid.WritePacked(packet);
-                    packet.Write(set.Id);
-                    packet.Write(set.Name);
-                    packet.Write(set.Icon);
+		public static void SendEquipmentSetList(IPacketReceiver client, IList<EquipmentSet> setList)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_EQUIPMENT_SET_LIST))
+			{
+				packet.Write(setList.Count);
+				foreach (var set in setList)
+				{
+					set.SetGuid.WritePacked(packet);
+					packet.Write(set.Id);
+					packet.Write(set.Name);
+					packet.Write(set.Icon);
 
-                    var items = set.Items ?? new EquipmentSetItemMapping[19];
-                    for (var i = 0; i < 19; i++)
-                    {
-                        var item = items[i];
-                        if (item != null)
-                        {
-                            item.ItemEntityId.WritePacked(packet);
-                            continue;
-                        }
+					var items = set.Items ?? new EquipmentSetItemMapping[19];
+					for (var i = 0; i < 19; i++)
+					{
+						var item = items[i];
+						if (item != null)
+						{
+							item.ItemEntityId.WritePacked(packet);
+							continue;
+						}
 
-                        EntityId.Zero.WritePacked(packet);
-                    }
-                }
+						EntityId.Zero.WritePacked(packet);
+					}
+				}
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
-        public static void SendEquipmentSetSaved(IPacketReceiver client, EquipmentSet set)
-        {
-            if (set == null) return;
+		public static void SendEquipmentSetSaved(IPacketReceiver client, EquipmentSet set)
+		{
+			if (set == null) return;
 
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_EQUIPMENT_SET_SAVED))
-            {
-                packet.Write(set.Id);
-                packet.Write(set.SetGuid);
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_EQUIPMENT_SET_SAVED))
+			{
+				packet.Write(set.Id);
+				packet.Write(set.SetGuid);
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
-        public static void SendUseEquipmentSetResult(IPacketReceiver client, UseEquipmentSetError error)
-        {
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_USE_EQUIPMENT_SET_RESULT))
-            {
-                packet.Write((byte)error);
+		public static void SendUseEquipmentSetResult(IPacketReceiver client, UseEquipmentSetError error)
+		{
+			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_USE_EQUIPMENT_SET_RESULT))
+			{
+				packet.Write((byte)error);
 
-                client.Send(packet);
-            }
-        }
+				client.Send(packet);
+			}
+		}
 
-        [ClientPacketHandler(RealmServerOpCode.CMSG_SET_EQUIPMENT_SET)]
-        public static void HandleSetEquipmentSet(IRealmClient client, RealmPacketIn packet)
-        {
-            var setEntityId = packet.ReadPackedEntityId();
-            var setId = packet.ReadInt32();
-            var name = packet.ReadCString();
-            var icon = packet.ReadCString();
+		[ClientPacketHandler(RealmServerOpCode.CMSG_SET_EQUIPMENT_SET)]
+		public static void HandleSetEquipmentSet(IRealmClient client, RealmPacketIn packet)
+		{
+			var setEntityId = packet.ReadPackedEntityId();
+			var setId = packet.ReadInt32();
+			var name = packet.ReadCString();
+			var icon = packet.ReadCString();
 
-            var itemList = new EntityId[19];
-            for (var i = 0; i < 19; i++)
-            {
-                itemList[i] = packet.ReadPackedEntityId();
-            }
+			var itemList = new EntityId[19];
+			for (var i = 0; i < 19; i++)
+			{
+				itemList[i] = packet.ReadPackedEntityId();
+			}
 
-            var chr = client.ActiveCharacter;
+			var chr = client.ActiveCharacter;
 
-            chr.Inventory.SetEquipmentSet(setEntityId, setId, name, icon, itemList);
-        }
+			chr.Inventory.SetEquipmentSet(setEntityId, setId, name, icon, itemList);
+		}
 
-        [ClientPacketHandler(RealmServerOpCode.CMSG_DELETE_EQUIPMENT_SET)]
-        public static void HandleDeleteEquipmentSet(IRealmClient client, RealmPacketIn packet)
-        {
-            var setGuid = packet.ReadPackedEntityId();
+		[ClientPacketHandler(RealmServerOpCode.CMSG_DELETE_EQUIPMENT_SET)]
+		public static void HandleDeleteEquipmentSet(IRealmClient client, RealmPacketIn packet)
+		{
+			var setGuid = packet.ReadPackedEntityId();
 
-            var chr = client.ActiveCharacter;
+			var chr = client.ActiveCharacter;
 
-            chr.Inventory.DeleteEquipmentSet(setGuid);
-        }
+			chr.Inventory.DeleteEquipmentSet(setGuid);
+		}
 
-        [ClientPacketHandler(RealmServerOpCode.CMSG_USE_EQUIPMENT_SET)]
-        public static void HandleUseEquipmentSet(IRealmClient client, RealmPacketIn packet)
-        {
-            var equipmentSwap = new EquipmentSwapHolder[19];
-            for (var i = 0; i < 19; i++)
-            {
-                equipmentSwap[i] = new EquipmentSwapHolder {
-                    ItemGuid = packet.ReadPackedEntityId(),
-                    SrcContainer = (InventorySlot)packet.ReadByte(),
-                    SrcSlot = packet.ReadByte()
-                };
-            }
+		[ClientPacketHandler(RealmServerOpCode.CMSG_USE_EQUIPMENT_SET)]
+		public static void HandleUseEquipmentSet(IRealmClient client, RealmPacketIn packet)
+		{
+			var equipmentSwap = new EquipmentSwapHolder[19];
+			for (var i = 0; i < 19; i++)
+			{
+				equipmentSwap[i] = new EquipmentSwapHolder
+				{
+					ItemGuid = packet.ReadPackedEntityId(),
+					SrcContainer = (InventorySlot)packet.ReadByte(),
+					SrcSlot = packet.ReadByte()
+				};
+			}
 
-            var chr = client.ActiveCharacter;
-            chr.Inventory.UseEquipmentSet(equipmentSwap);
-        }
-        #endregion
-    }
+			var chr = client.ActiveCharacter;
+			chr.Inventory.UseEquipmentSet(equipmentSwap);
+		}
+		#endregion
+	}
 }

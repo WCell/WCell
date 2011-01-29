@@ -58,16 +58,25 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var id = trigger.Text.NextEnum(SkillId.None);
-				var amount = trigger.Text.NextUInt(1);
-				var max = Math.Max(trigger.Text.NextUInt(1), amount);
 
 				var skillLine = SkillHandler.Get(id);
 				if (skillLine != null)
 				{
-					var skill = ((Character)trigger.Args.Target).Skills.GetOrCreate(id, true);
+					var chr = ((Character)trigger.Args.Target);
+					var amount = trigger.Text.NextInt(1);
+					//var max = Math.Max(trigger.Text.NextInt(1), amount);
+					var tier = skillLine.GetTierForLevel(amount);
+					var skill = chr.Skills.GetOrCreate(id, true);
+
 					skill.CurrentValue = (ushort)amount;
-					skill.MaxValue = (ushort)max;
-					trigger.Reply(RealmLangKey.CmdSkillSetResponse, skillLine, amount, max);
+					//skill.MaxValue = (ushort)skillLine.Tiers.GetMaxValue(tier);
+
+					var spell = skillLine.GetSpellForTier(tier);
+					if (spell != null)
+					{
+						chr.Spells.AddSpell(spell);
+					}
+					trigger.Reply(RealmLangKey.CmdSkillSetResponse, skillLine, amount, tier);
 				}
 				else
 				{

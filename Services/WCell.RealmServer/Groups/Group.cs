@@ -15,7 +15,9 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants;
@@ -43,7 +45,7 @@ namespace WCell.RealmServer.Groups
 	/// Base group class for every group type.
 	/// Don't forget to lock the SyncRoot while iterating over a Group.
 	/// </summary>
-	public abstract partial class Group : IInstanceHolderSet, ICharacterSet
+	public abstract partial class Group : IInstanceHolderSet, ICharacterSet, IEnumerable<GroupMember>
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
@@ -307,9 +309,18 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void ForeachCharacter(Action<Character> callback)
 		{
-			foreach (var chr in GetCharacters())
+			m_syncLock.EnterReadLock();
+
+			try
 			{
-				callback(chr);
+				foreach (var chr in GetCharacters())
+				{
+					callback(chr);
+				}
+			}
+			finally
+			{
+				m_syncLock.ExitReadLock();
 			}
 		}
 
@@ -1385,6 +1396,7 @@ namespace WCell.RealmServer.Groups
 		}
 		#endregion
 
+		#region Find certain members
 		/// <summary>
 		/// Selects and returns the next online Member whose turn it is in RoundRobin.
 		/// </summary>
@@ -1441,6 +1453,7 @@ namespace WCell.RealmServer.Groups
 				}
 			}
 		}
+		#endregion
 
 		/// <summary>
 		/// Sets the given Looting-parameters and updates the Group.
@@ -1488,6 +1501,12 @@ namespace WCell.RealmServer.Groups
 				}
 			}
 			member.Character.GroupUpdateFlags = GroupUpdateFlags.None;
+		}
+
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 
 		/// <summary>
@@ -1596,6 +1615,7 @@ namespace WCell.RealmServer.Groups
 
 		#endregion
 
+		#region Kills & Honor
 		public void DistributeGroupHonor(Character earner, Character victim, uint honorPoints)
 		{
 			if (Count < 1) return;
@@ -1626,5 +1646,35 @@ namespace WCell.RealmServer.Groups
 				}
 			});
 		}
+		#endregion
+
+		#region Staff Management
+		/// <summary>
+		/// Kick every non-staff member
+		/// </summary>
+		public void EnsurePureStaffGroup()
+		{
+			m_syncLock.EnterReadLock();
+			try
+			{
+				foreach (var member in this.ToArray())
+				{
+					var chr = member.Character;
+					if (chr == null || !chr.Role.IsStaff)
+					{
+						member.LeaveGroup();
+						if (chr != null)
+						{
+							chr.AddMessage(() => chr.SendSystemMessage("You have been kicked from the group since you are not a staff member."));
+						}
+					}
+				}
+			}
+			finally
+			{
+				m_syncLock.ExitReadLock();
+			}
+		}
+		#endregion
 	}
 }

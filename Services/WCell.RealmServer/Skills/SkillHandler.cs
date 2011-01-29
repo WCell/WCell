@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Skills
 							ability.Spell.BaseLevel == 0 &&
 							ability.Spell.Rank == 0)
 						{
-							var spell = ability.Skill.ApprenticeSpell;
+							var spell = ability.Skill.GetSpellForTier(SkillTierId.Apprentice);
 							if (spell != null)
 							{
 								spell.AdditionallyTaughtSpells.Add(ability.Spell);

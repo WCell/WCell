@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Groups
 
 		public void ForeachCharacter(Action<Character> callback)
 		{
-
+			
 		}
 
 		public Character[] GetCharacters()

@@ -17,6 +17,7 @@
 using System.Collections.Generic;
 using WCell.Constants.Items;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Items
 {
@@ -69,13 +70,13 @@ namespace WCell.RealmServer.Items
 		/// Tries to add the given item to the given slot in this srcCont
 		/// </summary>
 		/// <returns>Whether the item could be added</returns>
-		InventoryError TryAdd(int slot, Item item, bool isNew);
+		InventoryError TryAdd(int slot, Item item, bool isNew, ItemReceptionType reception);
 
 		/// <summary>
 		/// Tries to add the item to a free slot in this srcCont
 		/// </summary>
 		/// <returns>Whether the item could be added</returns>
-		InventoryError TryAdd(Item item, bool isNew);
+		InventoryError TryAdd(Item item, bool isNew, ItemReceptionType reception);
 
 		/// <summary>
 		/// Removes the item at the given slot. If you intend to enable the user continuing to use that item, do not use this method

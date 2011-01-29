@@ -93,11 +93,15 @@ namespace WCell.RealmServer.Instances
 			return SetupInstance(creator, instance, template, difficultyIndex);
 		}
 
+		/// <summary>
+		/// Convinience method for development
+		/// </summary>
 		public static BaseInstance CreateInstance(Character creator, MapId mapId)
 		{
 			var mapTemplate = World.GetMapTemplate(mapId);
 			if (mapTemplate == null || !mapTemplate.IsInstance) return null;
 
+			creator.EnsurePureStaffGroup();		// for development purposes only, don't drag players into the instance
 			var diffIndex = creator.GetInstanceDifficulty(mapTemplate.IsRaid);
 			var instance = mapTemplate.InstanceTemplate.Create();
 			return SetupInstance(creator, instance, mapTemplate.InstanceTemplate, diffIndex);

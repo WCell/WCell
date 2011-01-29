@@ -460,13 +460,14 @@ namespace WCell.RealmServer.Looting
 			{
 				// specific slot
 				amount = lootItem.Amount;
-				if (!targetCont.IsValidSlot(targetSlot))
+				if (!targetCont.IsValidSlot(targetSlot) || targetCont.Items[targetSlot] != null)
 				{
-					err = targetCont.TryAdd(lootItem.Template, ref amount, true);
+					// slot is not valid or occupied
+					err = targetCont.TryAdd(lootItem.Template, ref amount, ItemReceptionType.Loot);
 				}
 				else
 				{
-					err = targetCont.TryAdd(lootItem.Template, ref amount, targetSlot, true);
+					err = targetCont.TryAdd(lootItem.Template, ref amount, targetSlot, ItemReceptionType.Loot);
 				}
 			}
 			else
@@ -474,7 +475,7 @@ namespace WCell.RealmServer.Looting
 				// auto loot
 				amount = lootItem.Amount;
 				//err = chr.Inventory.TryAdd(lootItem.Template, ref amount);
-				err = chr.Inventory.TryAdd(lootItem.Template, ref amount);
+				err = chr.Inventory.TryAdd(lootItem.Template, ref amount, ItemReceptionType.Loot);
 			}
 
 			if (err == InventoryError.OK)

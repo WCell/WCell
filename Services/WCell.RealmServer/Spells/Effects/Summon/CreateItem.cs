@@ -3,7 +3,7 @@
  *   file		: CreateItem.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-24 17:50:44 +0100 (sø, 24 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-24 17:50:44 +0100 (s? 24 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1216 $
  *
@@ -69,12 +69,12 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			if (slotId.Container[slotId.Slot] == null)
 			{
-				slotId.Container.DistributeUnchecked(templ, amount, true);
+				slotId.Container.TryAdd(templ, ref amount, slotId.Slot, ItemReceptionType.YouCreated);
 			}
 			else
 			{
 				// slot got occupied in the meantime (should usually not happen)
-				((Character)target).Inventory.TryAdd(templ, ref amount, true);
+				((Character)target).Inventory.TryAdd(templ, ref amount, ItemReceptionType.YouCreated);
 			}
 		}
 
