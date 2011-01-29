@@ -15,20 +15,24 @@ using WCell.Util;
 namespace WCell.RealmServer.Handlers
 {
 	/// <summary>
-	/// Send in the packet that logs receiving of new items
+	/// Send in the packet that logs new items
 	/// </summary>
 	public enum ItemReceptionType : ulong
 	{
 		/// <summary>
-		/// 
+		/// "You looted item:"
 		/// </summary>
 		Loot = 0,
 
 		/// <summary>
 		/// "You receive item:"
-		/// When buying an item etc
+		/// (When buying an item etc)
 		/// </summary>
 		Receive = 1,
+
+		/// <summary>
+		/// "You created: "
+		/// </summary>
 		YouCreated = 1l << 32
 	}
 
