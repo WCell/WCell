@@ -182,7 +182,6 @@ namespace WCell.RealmServer.Items
 					if (value != null)
 					{
 						m_owner.SetUInt32(PlayerFields.AMMO_ID, value.Template.Id);
-						value.Slot = (int)InventorySlot.Invalid;
 						value.OnEquip();
 					}
 					m_ammo = value;
@@ -346,11 +345,6 @@ namespace WCell.RealmServer.Items
 			return count;
 		}
 		#endregion
-
-		IItemSlotHandler GetHandlerForItemOrAmmo(int slot)
-		{
-			return slot == -1 ? Equipment : GetHandler(slot);
-		}
 
 		/// <summary>
 		/// Returns the IItemSlotHandler for the specified InventorySlot
@@ -633,14 +627,17 @@ namespace WCell.RealmServer.Items
 		#endregion
 
 		#region Searching
+		public override int FindFreeSlot()
+		{
+			return BackPack.FindFreeSlot();
+		}
 
 		/// <summary>
 		/// Gets a free slot in the backpack (use FindFreeSlot(IMountableItem, uint) to also look through equipped bags and optionally the bank)
 		/// </summary>
 		public override int FindFreeSlot(int offset, int end)
 		{
-			var slot = BackPack.FindFreeSlot();
-			return slot;
+			return BackPack.FindFreeSlot();
 		}
 
 		/// <summary>
@@ -675,6 +672,11 @@ namespace WCell.RealmServer.Items
 			return FindFreeSlot(mountItem, amount, AutoEquipNewItems);
 		}
 
+		public SimpleSlotId FindFreeSlot(Item item, bool tryEquip)
+		{
+			return FindFreeSlot(item, item.Amount, tryEquip);
+		}
+
 		/// <summary>
 		/// Gets a free slot in a preferred equipped bag (eg Herb bag for Herbs) or backpack.
 		/// Looks for a suitable equipment slot first, if tryEquip is true
@@ -692,7 +694,7 @@ namespace WCell.RealmServer.Items
 					var item = this[slot];
 					if (item == null)
 					{
-						var handler = GetHandlerForItemOrAmmo(slot);
+						var handler = GetHandler(slot);
 						var err = InventoryError.OK;
 						handler.CheckAdd(slot, amount, templ, ref err);
 						if (err == InventoryError.OK)

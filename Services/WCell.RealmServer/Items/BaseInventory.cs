@@ -949,11 +949,26 @@ namespace WCell.RealmServer.Items
 		{
 			try
 			{
-				if (this[item.Slot] != null)
+				var slot = item.Slot;
+				var cont = this;
+				if (!IsValidSlot(slot))
+				{
+					var slotId = OwnerInventory.FindFreeSlot(item, false);
+					if (slot == INVALID_SLOT)
+					{
+						// no space left
+						LogManager.GetCurrentClassLogger().Warn("Ignoring loaded Item {0} in {1} because it has an invalid Slot: {2}", item, this, item.Slot);
+						return;
+					}
+					LogManager.GetCurrentClassLogger().Warn("Loaded Item {0} in {1} has invalid Slot: {2}", item, this, item.Slot);
+					slot = slotId.Slot;
+					cont = slotId.Container;
+				}
+				if (cont[slot] != null)
 				{
 					// no idea why items get saved in the same slot
 					LogManager.GetCurrentClassLogger().Warn("Ignoring Item {0} for {1} because slot is already occupied by: {2}", item,
-															Owner, this[item.Slot]);
+															Owner, cont[slot]);
 					item.Destroy();
 					return;
 				}
@@ -963,36 +978,31 @@ namespace WCell.RealmServer.Items
 				var inv = OwnerInventory;
 
 				// add enchants
-				// item.ApplyEnchant(item.Record.EnchantPerm, EnchantSlot.Permanent, 0, 0);
-				// item.ApplyEnchant(item.Record.EnchantTemp, EnchantSlot.Temporary, (uint)item.Record.EnchantTempTime, 0);
-				// item.ApplyEnchant(item.Record.EnchantSock1, EnchantSlot.Socket1, 0, 0);
-				// item.ApplyEnchant(item.Record.EnchantSock2, EnchantSlot.Socket2, 0, 0);
-				// item.ApplyEnchant(item.Record.EnchantSock3, EnchantSlot.Socket3, 0, 0);
 				if (record.EnchantIds != null)
 				{
-					for (var slot = 0; slot < record.EnchantIds.Length; slot++)
+					for (var enchSlot = 0; enchSlot < record.EnchantIds.Length; enchSlot++)
 					{
-						var enchant = record.EnchantIds[slot];
-						if (slot == (int)EnchantSlot.Temporary)
+						var enchant = record.EnchantIds[enchSlot];
+						if (enchSlot == (int)EnchantSlot.Temporary)
 						{
-							item.ApplyEnchant(enchant, (EnchantSlot)slot, record.EnchantTempTime, 0, false);
+							item.ApplyEnchant(enchant, (EnchantSlot)enchSlot, record.EnchantTempTime, 0, false);
 						}
 						else
 						{
-							item.ApplyEnchant(enchant, (EnchantSlot)slot, 0, 0, false);
+							item.ApplyEnchant(enchant, (EnchantSlot)enchSlot, 0, 0, false);
 						}
 					}
 					//item.CheckSocketColors();
 				}
 
-				this[item.Slot] = item;
+				cont[slot] = item;
 
 				owner.AddItemToUpdate(item);
 				inv.OnAddDontNotify(item);
 			}
 			catch (Exception e)
 			{
-				LogUtil.ErrorException(e, "Unable to add Item \"{0}\" to Container: {1}", item, this);
+				LogUtil.ErrorException(e, "Unable to add Item \"{0}\" to {1}", item, this);
 			}
 		}
 
