@@ -28,6 +28,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var caster = cast.CasterUnit;
 			var duration = cast.Spell.GetDuration(cast.CasterReference);
+
 			NPC minion;
 			if (caster != null)
 			{
@@ -80,10 +81,9 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var caster = cast.CasterUnit;
-			if (caster != null)
+			if (caster is Character)
 			{
-				var pet = ((Character) caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.SharedReference));
-				return pet;
+				return ((Character)caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.SharedReference));
 			}
 			else
 			{
@@ -107,7 +107,7 @@ namespace WCell.RealmServer.Spells
 		public SpellSummonTotemHandler(uint index)
 		{
 			Index = index;
-			
+
 		}
 
 		public uint Index

@@ -1,2 +1,1 @@
-- loaded items with invalid slots will now be added to an unoocupied slot
-- fixed saving of items in containers
+- enabled SummonPet spells to also be casted by NPCs

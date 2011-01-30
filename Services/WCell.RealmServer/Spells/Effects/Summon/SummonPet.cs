@@ -34,14 +34,14 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			_ownedPet = Effect.MiscValue == 0;
+			_ownedPet = Effect.MiscValue == 0 && m_cast.CasterObject is Character;
 			if (_ownedPet)
 			{
+				// TODO: Check for whether Pet may be summoned
 				if (((Character)m_cast.CasterObject).ActivePet == null)
 				{
 					failReason = SpellFailedReason.NoPet;
 				}
-				// TODO: Check for whether Pet may be summoned
 			}
 			else
 			{
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override ObjectTypes CasterType
 		{
-			get { return ObjectTypes.Player; }
+			get { return ObjectTypes.Unit; }
 		}
 	}
 }
