@@ -185,10 +185,9 @@ namespace WCell.RealmServer.Handlers
 					var templ = item.Template;
 					var looters = item.MultiLooters;
 					if (!item.Taken &&
-						((looters == null && templ.CheckLootRequirements(looter)) ||
+						((looters == null && templ.CheckLootConstraints(looter)) ||
 						(looters != null && looters.Contains(looterEntry))))
 					{
-
 						packet.Write((byte)i);
 						packet.Write(templ.Id);
 						packet.Write(item.Amount);

@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemSubClass SubClass;
 
-	    public int Unk0;
+		public int Unk0;
 
 		public uint DisplayId;
 
@@ -95,13 +95,13 @@ namespace WCell.RealmServer.Items
 
 		public int UniqueCount;
 
-        public uint ScalingStatDistributionId;
+		public uint ScalingStatDistributionId;
 
-	    public uint ScalingStatValueFlags;
+		public uint ScalingStatValueFlags;
 
-	    public uint ItemLimitCategoryId;
+		public uint ItemLimitCategoryId;
 
-	    public uint HolidayId;
+		public uint HolidayId;
 
 		/// <summary>
 		/// The size of a stack of this item.
@@ -155,8 +155,7 @@ namespace WCell.RealmServer.Items
 		public PageMaterial PageMaterial;
 
 		/// <summary>
-		/// The Id of the Quest that will be started
-		/// when this Item is used.
+		/// The Id of the Quest that will be started when this Item is used
 		/// </summary>
 		public uint QuestId;
 
@@ -242,7 +241,7 @@ namespace WCell.RealmServer.Items
 
 		public int GetResistance(DamageSchool school)
 		{
-			return Resistances[(int) school];
+			return Resistances[(int)school];
 		}
 		#endregion
 
@@ -402,15 +401,9 @@ namespace WCell.RealmServer.Items
 
 		[NotPersistent]
 		/// <summary>
-		/// The Quest for which this Item needs to be collected
+		/// The Quests for which this Item needs to be collected
 		/// </summary>
 		public QuestTemplate[] CollectQuests;
-
-		/// <summary>
-		/// The Quest that will be started by this Item
-		/// </summary>
-		[NotPersistent]
-		public QuestTemplate StartQuest;
 
 		[NotPersistent]
 		/// <summary>
@@ -552,7 +545,7 @@ namespace WCell.RealmServer.Items
 			if (Spells != null)
 			{
 				ArrayUtil.Prune(ref Spells);
-				for (int i = 0; i < 5; i++ )
+				for (int i = 0; i < 5; i++)
 				{
 					Spells[i].Index = (uint)i;
 					Spells[i].FinalizeAfterLoad();
@@ -646,34 +639,50 @@ namespace WCell.RealmServer.Items
 
 		#region Checks
 		/// <summary>
-		/// 
+		/// Returns false if the looter may not take one of these items.
+		/// E.g. due to quest requirements, if this is a quest item and the looter does not need it (yet, or anymore).
 		/// </summary>
 		/// <param name="looter">Can be null</param>
-		/// <returns></returns>
-		public bool CheckLootRequirements(Character looter)
+		public bool CheckLootConstraints(Character looter)
 		{
-			if (CollectQuests != null)
+			return CheckQuestConstraints(looter);
+		}
+
+		public bool CheckQuestConstraints(Character looter)
+		{
+			if (QuestHolderInfo == null && CollectQuests == null)			// no quest requirements
+				return true;
+
+			if (looter == null)
 			{
-				if (looter == null)
+				// cannot determine quest constraints if looter is offline
+				return false;
+			}
+
+			if (QuestHolderInfo != null)
+			{
+				// starts a quest
+				if (QuestHolderInfo.QuestStarts.Any(quest => looter.QuestLog.HasActiveQuest(quest)))
 				{
 					return false;
 				}
+			}
 
+			if (CollectQuests != null)
+			{
+				// is collectable for one or more quests
 				// check whether the looter has any of the required quests
-				var count = 0;
 				for (var i = 0; i < CollectQuests.Length; i++)
 				{
 					var q = CollectQuests[i];
 					if (q != null)
 					{
-						count++;
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return true;
+							return false;
 						}
 					}
 				}
-				return count == 0;
 			}
 			return true;
 		}
@@ -818,6 +827,9 @@ namespace WCell.RealmServer.Items
 			return ItemMgr.Templates;
 		}
 
+		/// <summary>
+		/// Contains the quests that this item can start (items usually can only start one)
+		/// </summary>
 		public QuestHolderInfo QuestHolderInfo
 		{
 			get;
@@ -1003,10 +1015,6 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "PageCount: " + PageCount);
 			}
-			if ((int)QuestId != 0)
-			{
-				writer.WriteLine(indent + "Quest: " + QuestId);
-			}
 			if ((int)LockId != 0)
 			{
 				writer.WriteLine(indent + "Lock: " + LockId);
@@ -1118,6 +1126,21 @@ namespace WCell.RealmServer.Items
 			if (RequiredFactionId != FactionId.None)
 			{
 				writer.WriteLine(indent + "Faction: " + RequiredFactionId + " (" + RequiredFactionStanding + ")");
+			}
+			if ((int)QuestId != 0)
+			{
+				writer.WriteLine(indent + "Quest: " + QuestId);
+			}
+			if (QuestHolderInfo != null)
+			{
+				if (QuestHolderInfo.QuestStarts.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestStarts: " + QuestHolderInfo.QuestStarts.ToString(", "));
+				}
+				if (QuestHolderInfo.QuestEnds.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestEnds: " + QuestHolderInfo.QuestEnds.ToString(", "));
+				}
 			}
 		}
 		#endregion

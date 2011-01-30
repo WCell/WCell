@@ -785,6 +785,7 @@ namespace WCell.RealmServer.Quests
 		}
 		#endregion
 
+		#region Save
 		public void SaveQuests()
 		{
 			for (var i = 0; i < MaxQuestCount; i++)
@@ -795,7 +796,9 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 		}
+		#endregion
 
+		#region Load
 		/// <summary>
 		/// If we want this method to be public, 
 		/// it should update all Quests correctly (remove non-existant ones etc)
@@ -832,7 +835,9 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 		}
+		#endregion
 
+		#region Remove
 		/// <summary>
 		/// Removes the given quest from the list of finished quests
 		/// </summary>
@@ -847,5 +852,14 @@ namespace WCell.RealmServer.Quests
 			}
 			return false;
 		}
+		#endregion
+
+
+		#region Quest interaction
+		public bool CanGiveQuestTo(Character chr)
+		{
+			return chr.IsAlliedWith(Owner); // since 3.0 you can share quests within any range
+		}
+		#endregion
 	}
 }

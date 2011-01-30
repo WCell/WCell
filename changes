@@ -1,1 +1,2 @@
-- enabled SummonPet spells to also be casted by NPCs
+- fixed item-quest relations
+	- item quest givers and collectable quest items should now only appear to those who need them

@@ -845,7 +845,7 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Quests
+		#region Quest Fields
 
 		public void ResetQuest(int slot)
 		{

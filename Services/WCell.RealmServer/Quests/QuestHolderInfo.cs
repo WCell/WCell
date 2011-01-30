@@ -22,12 +22,12 @@ namespace WCell.RealmServer.Quests
 	public class QuestHolderInfo : IQuestHolderInfo
 	{
 		/// <summary>
-		/// 
+		/// Set of Quests that may start at this QuestHolder
 		/// </summary>
 		public List<QuestTemplate> QuestStarts;
 
 		/// <summary>
-		/// 
+		/// Set of Quests that may be turned in at this QuestHolder
 		/// </summary>
 		public List<QuestTemplate> QuestEnds;
 

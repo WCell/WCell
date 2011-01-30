@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Looting;
@@ -119,13 +120,14 @@ namespace WCell.RealmServer.Looting
 
 		static void LookupRef(ResolvedLootItemList list, LootItemEntry entry)
 		{
-			// TODO: Loot groups (see http://udbwiki.webhop.net/index.php/Gameobject_loot_template#groupid)
+			// TODO: Loot groups (see http://udbwiki.no-ip.org/index.php/Gameobject_loot_template#groupid)
 
 			var referencedEntries = GetEntries(LootEntryType.Reference, entry.ReferencedEntryId);
 			if (referencedEntries != null)
 			{
 				if (referencedEntries.ResolveStatus < 1)
 				{
+					// first step
 					referencedEntries.ResolveStatus = 1;
 					foreach (var refEntry in referencedEntries)
 					{
@@ -144,10 +146,12 @@ namespace WCell.RealmServer.Looting
 				}
 				else if (list.ResolveStatus == 1)
 				{
+					// list is already being resolved
 					LogManager.GetCurrentClassLogger().Warn("Infinite loop in Loot references detected in: " + entry);
 				}
 				else
 				{
+					// second step
 					foreach (var refEntry in referencedEntries)
 					{
 						AddRef(list, refEntry);
@@ -161,6 +165,10 @@ namespace WCell.RealmServer.Looting
 			list.Add(ent);
 		}
 
+		/// <summary>
+		/// Adds the new LootItemEntry to the global container.
+		/// Keeps the set of entries sorted by rarity.
+		/// </summary>
 		public static void AddEntry(LootItemEntry entry)
 		{
 			var entries = LootEntries[(uint)entry.LootType];
@@ -227,12 +235,13 @@ namespace WCell.RealmServer.Looting
 		{
 			var looters = FindLooters(lootable, initialLooter);
 
-			var items = CreateItemLoot(lootable.GetLootId(type), type, heroic, looters);
+			var items = CreateLootItems(lootable.GetLootId(type), type, heroic, looters);
 			var money = lootable.LootMoney;
 			if (items.Length == 0 && money == 0)
 			{
 				if (lootable is GameObject)
 				{
+					// TODO: Don't mark GO as lootable if it has nothing to loot
 					money = 1;
 				}
 			}
@@ -311,7 +320,7 @@ namespace WCell.RealmServer.Looting
 		/// <summary>
 		/// Returns all Items that can be looted off the given lootable
 		/// </summary>
-		public static LootItem[] CreateItemLoot(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
+		public static LootItem[] CreateLootItems(uint lootId, LootEntryType type, bool heroic, IList<LooterEntry> looters)
 		{
 #if DEBUG
 			if (!ItemMgr.Loaded)
@@ -328,53 +337,32 @@ namespace WCell.RealmServer.Looting
 			var items = new LootItem[Math.Min(MaxLootCount, entries.Count)];
 			//var i = max;
 			var i = 0;
-			for (var j = 0; j < entries.Count; j++)
+			foreach (var entry in entries)
 			{
-				var entry = entries[j];
 				var chance = entry.DropChance * LootItemDropFactor;
-				if ((100 * Utility.RandomFloat()) < chance)
+				if ((100*Utility.RandomFloat()) >= chance) continue;
+
+				var template = entry.ItemTemplate;
+				if (template == null)
 				{
-					var template = entry.ItemTemplate;
-					if (template == null)
-					{
-						// weird
-						continue;
-					}
+					// weird
+					continue;
+				}
 
-					if (template.CollectQuests != null)
-					{
-						var drop = false;
-						// only drop quest item if one of the Looters needs it
-						foreach (var looter in looters)
-						{
-							if (looter.Owner != null &&
-								looter.Owner.QuestLog.RequiresItem(template.ItemId))
-							{
-								drop = true;
-								break;
-							}
-						}
+				if (!looters.Any(looter => template.CheckLootConstraints(looter.Owner)))
+				{
+					continue;
+				}
 
-						if (!drop)
-						{
-							continue;
-						}
-					}
-					else if (template.StartQuest != null)
-					{
-						// TODO: Start quest
-					}
+				items[i] = new LootItem(template,
+				                        Utility.Random(entry.MinAmount, entry.MaxAmount),
+				                        (uint)i,
+				                        template.RandomPropertiesId);
+				i++;
 
-					items[i] = new LootItem(template,
-						Utility.Random(entry.MinAmount, entry.MaxAmount),
-						(uint)i,
-						template.RandomPropertiesId);
-
-					if (i == MaxLootCount - 1)
-					{
-						break;
-					}
-					i++;
+				if (i == MaxLootCount)
+				{
+					break;
 				}
 			}
 

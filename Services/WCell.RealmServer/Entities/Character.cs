@@ -949,11 +949,6 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_questLog; }
 		}
-
-		public bool CanGiveQuestTo(Character chr)
-		{
-			return chr.IsAlliedWith(this); // since 3.0 you can share quests within any range
-		}
 		#endregion
 
 		#region Combat
