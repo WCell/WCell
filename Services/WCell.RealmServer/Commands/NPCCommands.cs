@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Commands
 						return null;
 					}
 
-					entry = target == null ? npcEntry.SpawnEntries.GetClosestSpawnEntry(target) : npcEntry.SpawnEntries.First();
+					entry = target != null ? npcEntry.SpawnEntries.GetClosestSpawnEntry(target) : npcEntry.SpawnEntries.First();
 				}
 			}
 
@@ -104,42 +104,28 @@ namespace WCell.RealmServer.Commands
 			map = entry.Map;
 			if (map == null)
 			{
-				if (target == null)
+				if (target != null && entry.MapId == target.MapId)
 				{
-					trigger.Reply("Cannot create instance NPC if no target is given.");
-					return null;
+					// is in same map
+					map = target.Map;
 				}
 				else
 				{
-					// no map but a target object
-					if (entry.MapId == target.MapId)
+					// must create Map
+					if (World.IsInstance(entry.MapId))
 					{
-						map = target.Map;
+						// create instance
+						map = InstanceMgr.CreateInstance(target as Character, entry.MapId);
+						if (map == null)
+						{
+							trigger.Reply("Failed to create instance: " + entry.MapId);
+							return null;
+						}
 					}
 					else
 					{
-						// must create Map
-						if (World.IsInstance(entry.MapId))
-						{
-							if (!(target is Character))
-							{
-								trigger.Reply("Cannot create instance for non-Character target.");
-								return null;
-							}
-
-							// create instance
-							map = InstanceMgr.CreateInstance((Character)target, entry.MapId);
-							if (map == null)
-							{
-								trigger.Reply("Failed to create instance: " + entry.MapId);
-								return null;
-							}
-						}
-						else
-						{
-							trigger.Reply("Cannot spawn NPC for map: " + entry.MapId);
-							return null;
-						}
+						trigger.Reply("Cannot spawn NPC for map: " + entry.MapId);
+						return null;
 					}
 				}
 			}

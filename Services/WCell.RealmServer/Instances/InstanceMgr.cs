@@ -81,12 +81,14 @@ namespace WCell.RealmServer.Instances
 			}
 		}
 
+		/// <param name="creator">Can be null</param>
 		public static I CreateInstance<I>(Character creator, InstanceTemplate template, uint difficultyIndex)
 			where I : BaseInstance, new()
 		{
 			return (I)SetupInstance(creator, new I(), template, difficultyIndex);
 		}
 
+		/// <param name="creator">Can be null</param>
 		public static BaseInstance CreateInstance(Character creator, InstanceTemplate template, uint difficultyIndex)
 		{
 			var instance = template.Create();
@@ -96,18 +98,28 @@ namespace WCell.RealmServer.Instances
 		/// <summary>
 		/// Convinience method for development
 		/// </summary>
+		/// <param name="creator">Can be null</param>
 		public static BaseInstance CreateInstance(Character creator, MapId mapId)
 		{
 			var mapTemplate = World.GetMapTemplate(mapId);
 			if (mapTemplate == null || !mapTemplate.IsInstance) return null;
 
-			creator.EnsurePureStaffGroup();		// for development purposes only, don't drag players into the instance
-			var diffIndex = creator.GetInstanceDifficulty(mapTemplate.IsRaid);
+			uint diffIndex;
+			if (creator != null)
+			{
+				creator.EnsurePureStaffGroup(); // for development purposes only, don't drag players into the instance
+				diffIndex = creator.GetInstanceDifficulty(mapTemplate.IsRaid);
+			}
+			else
+			{
+				diffIndex = 0;
+			}
 			var instance = mapTemplate.InstanceTemplate.Create();
 			return SetupInstance(creator, instance, mapTemplate.InstanceTemplate, diffIndex);
 		}
 
-		static BaseInstance SetupInstance(Character creator, BaseInstance instance, InstanceTemplate template, uint difficultyIndex)
+		/// <param name="creator">Can be null</param>
+		static BaseInstance SetupInstance(Character creator, BaseInstance instance, InstanceTemplate template, uint difficultyIndex = 0u)
 		{
 			if (instance != null)
 			{

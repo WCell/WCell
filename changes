@@ -1,4 +1,2 @@
-- fixed #npc spawn command
-- started adding SpellCast AI code, hopefully will finish tomorrow
-- added Phase property to IWorldLocation and updated all usages of it (since every location is uniquely determined by map, pos, phase)
-- restructured SpellCast PrePerform step
+- fixed some more bugs and improved #npc spawn and #npc goto commands
+- instances and instance NPCs can now be created without a character argument

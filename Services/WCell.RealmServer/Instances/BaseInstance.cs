@@ -70,6 +70,8 @@ namespace WCell.RealmServer.Instances
 		{
 			if (base.CanEnter(chr))
 			{
+				if (Owner == null) return true;
+
 				var leader = Owner.InstanceLeader;
 				return (leader != null && chr.IsAlliedWith(leader)) || chr.GodMode;
 			}
