@@ -190,7 +190,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Death Strike heals for each disease on the target
 			SpellLineId.DeathKnightDeathStrike.Apply(spell =>
 			{
-				spell.AddEffect((cast, effct) => new DeathStrikeHealHandler(cast, effct), ImplicitTargetType.SingleEnemy);
+				spell.AddEffect((cast, effct) => new DeathStrikeHealHandler(cast, effct), ImplicitSpellTargetType.SingleEnemy);
 			});
 		}
 

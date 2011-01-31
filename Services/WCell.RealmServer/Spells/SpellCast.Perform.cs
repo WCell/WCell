@@ -188,7 +188,7 @@ namespace WCell.RealmServer.Spells
 			else if (handler.HasOwnTargets)
 			{
 				// see if targets are shared between effects
-				if (IsPlayerCast && m_spell.AISpellCastSettings != null && m_spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
+				if (!IsPlayerCast && m_spell.AISettings != null && m_spell.AISettings.Target != AISpellCastTarget.Default)
 				{
 					// targets of all effects are determined by AI behavior
 					if (targets == null)
@@ -198,7 +198,7 @@ namespace WCell.RealmServer.Spells
 				}
 				else
 				{
-					// check if we have same target-types, else collect targets specifically for this Effect
+					// check if multiple effects can share their targets
 					targets = null;
 
 					for (var j = 0; j < h; j++)
@@ -206,6 +206,7 @@ namespace WCell.RealmServer.Spells
 						var handler2 = handlers[j];
 						if (handler.Effect.TargetsEqual(handler2.Effect))
 						{
+							// same targets -> share target collection
 							targets = handler2.m_targets;
 							break;
 						}

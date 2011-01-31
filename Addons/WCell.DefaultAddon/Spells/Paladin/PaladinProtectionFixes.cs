@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				for (var i = spell.Effects.Length; i < 3; i++)
 				{
 					// add up to two filler effects, so the heal effect is at the 4th place
-					spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.None);
+					spell.AddEffect(SpellEffectType.Dummy, ImplicitSpellTargetType.None);
 				}
 
 				if (spell.Effects.Length != 3)
@@ -34,7 +34,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 				}
 
 				// add heal effect as the 4th effect
-				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura, ImplicitTargetType.AllPartyInArea);
+				var healEffect = spell.AddEffect(SpellEffectType.ApplyGroupAura, ImplicitSpellTargetType.AllPartyInArea);
 				healEffect.ImplicitTargetA = firstEffect.ImplicitTargetA;
 				healEffect.Radius = firstEffect.Radius;
 				healEffect.AuraType = AuraType.ModHealingTakenPercent;
@@ -100,7 +100,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				// add taunt effect
 				var tauntEff = triggerSpell.AddAuraEffect(AuraType.ModTaunt);
-				tauntEff.ImplicitTargetA = ImplicitTargetType.AllEnemiesInArea;
+				tauntEff.ImplicitTargetA = ImplicitSpellTargetType.AllEnemiesInArea;
 				tauntEff.Radius = 5;
 			});
 
@@ -114,7 +114,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Hammer of Justice also interrupts spell casting
 			SpellLineId.PaladinHammerOfJustice.Apply(spell =>
 			{
-				spell.AddTriggerSpellEffect(SpellId.InterruptRank1, ImplicitTargetType.SingleEnemy);
+				spell.AddTriggerSpellEffect(SpellId.InterruptRank1, ImplicitSpellTargetType.SingleEnemy);
 			});
 		}
 	}

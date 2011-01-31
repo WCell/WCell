@@ -216,10 +216,10 @@ namespace WCell.RealmServer.Entities
 				var cdTicks = NPCSpells.TicksUntilCooldown(spell);
 				var cdTime = DateTime.Now.AddMilliseconds(cdTicks * Map.UpdateDelay);
 				var spellRecord = new PetTalentSpellRecord
-									{
-										SpellId = spell.Id,
-										CooldownUntil = cdTime
-									};
+				{
+					SpellId = spell.Id,
+					CooldownUntil = cdTime
+				};
 				spellList.Add(spellRecord);
 			}
 			// TODO: Implement

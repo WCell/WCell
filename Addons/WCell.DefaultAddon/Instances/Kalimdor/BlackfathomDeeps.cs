@@ -28,7 +28,6 @@ namespace WCell.Addons.Default.Instances
 
 		[Initialization]
 		[DependentInitialization(typeof(NPCMgr))]
-
 		public static void InitNPCs()
 		{
 			LadySarevessEntry = NPCMgr.GetEntry(NPCId.LadySarevess);
@@ -70,13 +69,13 @@ namespace WCell.Addons.Default.Instances
 			public static void InitLadySpells()
 			{
 				var forkedLightning = SpellHandler.Get(SpellId.ForkedLightningRank1);
-				forkedLightning.SetAISpellCastSettings(8000, AISpellCastTarget.RandomHostilePlayer);
+				forkedLightning.AISettings.SetValues(8000, AISpellCastTarget.RandomHostilePlayer);
 
 				var slow = SpellHandler.Get(SpellId.SlowRank1);
-				slow.SetAISpellCastSettings(13000, AISpellCastTarget.RandomHostilePlayer);
+				slow.AISettings.SetValues(13000, AISpellCastTarget.RandomHostilePlayer);
 
 				var frostNova = SpellHandler.Get(SpellId.ClassSkillFrostNovaRank2);
-				frostNova.SetAISpellCastSettings(20000);
+				frostNova.AISettings.SetCooldown(20000);
 				frostNova.AddTextAndSoundEvent(NPCAiTextMgr.GetFirstTextByEnglishPrefix("You should not be here! Slay them!"));
 			}
 
@@ -96,7 +95,7 @@ namespace WCell.Addons.Default.Instances
 			public static void InitGelihast()
 			{
 				var net = SpellHandler.Get(SpellId.Net);
-				net.SetAISpellCastSettings(3000, AISpellCastTarget.RandomHostilePlayer);
+				net.AISettings.SetValues(3000, AISpellCastTarget.RandomHostilePlayer);
 			}
 
 			public GelihastAttackAction(NPC Gelihast)
@@ -195,13 +194,13 @@ namespace WCell.Addons.Default.Instances
 			[Initialization(InitializationPass.Second)]
 			public static void InitLordSpells()
 			{
-				// TODO: Even use mindblast if there are one or more sleeping targets nearby?
+				// Even use mindblast if there are one or more sleeping targets nearby? -> AI code should prevent targeting of enemies with debuffs that might get cancelled
 				var mindblast = SpellHandler.Get(SpellId.MindBlast_2);
-				mindblast.SetAISpellCastSettings(3000);
+				mindblast.AISettings.SetCooldown(3000);
 
-				// TODO: What to do if no one is in range for Sleep?
+				// What to do if no one is in range for Sleep? -> It won't cast it
 				var sleep = SpellHandler.Get(SpellId.Sleep);
-				sleep.SetAISpellCastSettings(7000);
+				sleep.AISettings.SetCooldown(7000);
 				sleep.AddTextAndSoundEvent(NPCAiTextMgr.GetFirstTextByEnglishPrefix("Sleep..."));
 			}
 

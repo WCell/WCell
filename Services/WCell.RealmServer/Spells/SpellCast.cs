@@ -803,8 +803,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Use this method to change the SpellCast object
-		/// after it has been prepared.
+		/// Use this method to change the SpellCast object after it has been prepared.
 		/// If no changes are necessary, simply use <see cref="Start(Spell, bool, WorldObject[])"/>
 		/// </summary>
 		public SpellFailedReason Prepare(Spell spell, bool passiveCast, params WorldObject[] initialTargets)
@@ -881,10 +880,10 @@ namespace WCell.RealmServer.Spells
 							Cancel(failReason);
 							return failReason;
 						}
-
-						// remove certain Auras
-						CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
 					}
+
+					// remove certain Auras
+					CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
 				}
 
 				m_startTime = Environment.TickCount;

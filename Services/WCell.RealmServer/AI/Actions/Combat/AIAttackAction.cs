@@ -207,8 +207,15 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		/// <param name="spell"></param>
 		protected bool CastBeneficialSpell(Spell spell)
 		{
-			// TODO: Cast beneficial spell
-			return false;
+			var targets = spell.AISettings.FindValidTargetsForCaster(m_owner);
+			if (targets == null)
+			{
+				return false;
+			}
+
+			// cast the spell
+			m_owner.SpellCast.Start(spell, false, targets);
+			return true;
 		}
 
 		public override UpdatePriority Priority

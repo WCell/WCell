@@ -19,24 +19,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Talents;
 using WCell.Util;
 using WCell.Util.Data;
 using System.Text.RegularExpressions;
 using WCell.Util.Graphics;
-using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -63,6 +58,11 @@ namespace WCell.RealmServer.Spells
 		private static readonly Regex numberRegex = new Regex(@"\d+");
 
 		public static readonly Spell[] EmptyArray = new Spell[0];
+
+		public Spell()
+		{
+			AISettings = new AISpellSettings(this);
+		}
 
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
@@ -182,6 +182,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Initialize()
 		{
+			if (Id == 11986)
+				ToString();
+
 			init1 = true;
 			var learnSpellEffect = GetEffect(SpellEffectType.LearnSpell);
 			if (learnSpellEffect == null)
@@ -247,6 +250,7 @@ namespace WCell.RealmServer.Spells
 			{
 				return;
 			}
+
 			init2 = true;
 
 			IsPassive = (Attributes.HasFlag(SpellAttributes.Passive)) ||
@@ -317,8 +321,8 @@ namespace WCell.RealmServer.Spells
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
-				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire,
-				ImplicitTargetType.TotemWater));
+				ImplicitSpellTargetType.TotemAir, ImplicitSpellTargetType.TotemEarth, ImplicitSpellTargetType.TotemFire,
+				ImplicitSpellTargetType.TotemWater));
 
 			IsEnchantment = HasEffectWith(effect => effect.IsEnchantmentEffect);
 
@@ -380,7 +384,7 @@ namespace WCell.RealmServer.Spells
 
 			IsProfession = !IsRangedAbility && Ability != null && Ability.Skill.Category == SkillCategory.Profession;
 			IsEnhancer = HasEffectWith(effect => effect.IsEnhancer);
-			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
+			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.SelfFishing));
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
@@ -413,7 +417,7 @@ namespace WCell.RealmServer.Spells
 
 			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
-			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.Self));
+			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.Self));
 
 			//HasSingleNotSelfTarget = 
 
@@ -435,14 +439,14 @@ namespace WCell.RealmServer.Spells
 				DamageMultipliers[0] = 1;
 			}
 
-			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
+			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.HeartstoneLocation));
 
 			// ResurrectFlat usually has no target type set
 			ForeachEffect(effect =>
 			{
-				if (effect.ImplicitTargetA == ImplicitTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
+				if (effect.ImplicitTargetA == ImplicitSpellTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
 				{
-					effect.ImplicitTargetA = ImplicitTargetType.SingleFriend;
+					effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
 				}
 			});
 
@@ -517,19 +521,20 @@ namespace WCell.RealmServer.Spells
 			ArrayUtil.PruneVals(ref RequiredTotemCategories);
 
 			ForeachEffect(effect =>
-							{
-								if (effect.SpellEffectHandlerCreator != null)
-								{
-									EffectHandlerCount++;
-								}
-							});
+			{
+				if (effect.SpellEffectHandlerCreator != null)
+				{
+					EffectHandlerCount++;
+				}
+			});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
-
 
 			if (GetEffect(SpellEffectType.QuestComplete) != null)
 			{
 				SpellHandler.QuestCompletors.Add(this);
 			}
+
+			AISettings.InitializeAfterLoad();
 		}
 
 		#endregion
@@ -678,7 +683,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitTargetType target)
+		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitSpellTargetType target)
 		{
 			var effect = AddEffect(SpellEffectType.Dummy, target);
 			effect.SpellEffectHandlerCreator = creator;
@@ -690,7 +695,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target)
+		public SpellEffect AddEffect(SpellEffectType type, ImplicitSpellTargetType target)
 		{
 			var effect = new SpellEffect(this, Effects.Length > 0 ? Effects[Effects.Length - 1].EffectIndex : 0) { EffectType = type };
 			var effects = new SpellEffect[Effects.Length + 1];
@@ -707,13 +712,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell)
 		{
-			return AddTriggerSpellEffect(triggerSpell, ImplicitTargetType.Self);
+			return AddTriggerSpellEffect(triggerSpell, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will trigger the given Spell on the given type of target
 		/// </summary>
-		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
+		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.TriggerSpell, targetType);
 			effect.TriggerSpellId = triggerSpell;
@@ -725,13 +730,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell)
 		{
-			return AddPeriodicTriggerSpellEffect(triggerSpell, ImplicitTargetType.Self);
+			return AddPeriodicTriggerSpellEffect(triggerSpell, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will trigger the given Spell on the given type of target
 		/// </summary>
-		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
+		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddAuraEffect(AuraType.PeriodicTriggerSpell);
 			effect.TriggerSpellId = triggerSpell;
@@ -744,13 +749,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraType type)
 		{
-			return AddAuraEffect(type, ImplicitTargetType.Self);
+			return AddAuraEffect(type, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will be applied to an Aura to be casted on the given type of target
 		/// </summary>
-		public SpellEffect AddAuraEffect(AuraType type, ImplicitTargetType targetType)
+		public SpellEffect AddAuraEffect(AuraType type, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = type;
@@ -762,13 +767,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator)
 		{
-			return AddAuraEffect(creator, ImplicitTargetType.Self);
+			return AddAuraEffect(creator, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will be applied to an Aura to be casted on the given type of target
 		/// </summary>
-		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitTargetType targetType)
+		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = AuraType.Dummy;

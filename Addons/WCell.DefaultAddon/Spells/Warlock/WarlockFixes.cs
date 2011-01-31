@@ -34,8 +34,8 @@ namespace WCell.Addons.Default.Spells.Warlock
             // Shadowflame DoT
             SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(SpellId.Shadowflame_3), SpellId.ClassSkillShadowflameRank1);
             SpellHandler.Apply(spell => spell.AddTargetTriggerSpells(SpellId.Shadowflame_5), SpellId.ClassSkillShadowflameRank2);
-            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_3);
-            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_5);
+            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_3);
+            SpellHandler.Apply(spell => spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.ConeInFrontOfCaster, SpellId.Shadowflame_5);
 
             // Incinerate has extra damage if target has Immolate
             SpellLineId.WarlockIncinerate.Apply(spell =>
@@ -49,7 +49,7 @@ namespace WCell.Addons.Default.Spells.Warlock
             teleReqSpell.Durations = new Spell.DurationEntry { Min = 360000, Max = 360000 };
             SpellHandler.Apply(spell =>
             {
-				var efct = spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.None);
+				var efct = spell.AddEffect(SpellEffectType.Dummy, ImplicitSpellTargetType.None);
                 efct.MiscValue = (int)GOEntryId.DemonicCircleSummon;
                 efct.SpellEffectHandlerCreator = (cast, effect) => new RecallToGOHandler(cast, effect);
                 spell.AddCasterTriggerSpells(teleReqSpell);

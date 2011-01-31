@@ -468,7 +468,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-
 		#region Check Proc
 		public bool CanProcBeTriggeredBy(Unit owner, IUnitAction action, bool active)
 		{
@@ -522,14 +521,13 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-
 		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
 			int cd;
-			if (AISpellCastSettings != null)
+			if (unit is NPC)
 			{
-				cd = Utility.Random(AISpellCastSettings.CooldownMin, AISpellCastSettings.CooldownMax);
+				cd = AISettings.Cooldown.GetRandomCooldown();
 			}
 			else
 			{

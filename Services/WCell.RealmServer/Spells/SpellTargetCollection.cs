@@ -14,10 +14,8 @@
  *
  *************************************************************************/
 
-using System;
 using System.Collections.Generic;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
@@ -88,10 +86,10 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.Error;
 			}
 
-			var spell = cast.Spell;
-			if (!cast.IsPlayerCast && spell.AISpellCastSettings != null && spell.AISpellCastSettings.Target != AISpellCastTarget.Default)
+			if (!cast.IsPlayerCast)
 			{
-				return FindTargets(spell.AISpellCastSettings.Target);
+				log.Warn("Invalid SpellCast - NPC \"{0}\" tried to cast spell without prepared targets: {1}", caster, cast.Spell);
+				return SpellFailedReason.Error;
 			}
 
 			var firstEffect = FirstHandler.Effect;
@@ -113,7 +111,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var failReason = SpellFailedReason.Ok;
-			if (firstEffect.ImplicitTargetA != ImplicitTargetType.None)
+			if (firstEffect.ImplicitTargetA != ImplicitSpellTargetType.None)
 			{
 				failReason = FindTargets(firstEffect.ImplicitTargetA);
 				if (failReason != SpellFailedReason.Ok)
@@ -121,56 +119,14 @@ namespace WCell.RealmServer.Spells
 					return failReason;
 				}
 			}
-			if (firstEffect.ImplicitTargetB != ImplicitTargetType.None)
+			if (firstEffect.ImplicitTargetB != ImplicitSpellTargetType.None)
 			{
 				failReason = FindTargets(firstEffect.ImplicitTargetB);
 			}
 			return failReason;
 		}
 
-		/// <summary>
-		/// Finds targets by the given custom AI target enum
-		/// </summary>
-		private SpellFailedReason FindTargets(AISpellCastTarget targetType)
-		{
-			var caster = Cast.CasterObject;
-
-			// TODO: Use effect radius?
-
-			// find single target
-			WorldObject singleTarget;
-			switch (targetType)
-			{
-				case AISpellCastTarget.NearestHostilePlayer:
-					singleTarget = caster.GetNearestUnit(obj => obj is Character && caster.IsHostileWith(obj));
-					break;
-				case AISpellCastTarget.RandomAlliedUnit:
-					singleTarget = caster.GetRandomAlliedUnit();
-					break;
-				case AISpellCastTarget.RandomHostilePlayer:
-					singleTarget = caster.GetNearbyRandomHostileCharacter();
-					break;
-				case AISpellCastTarget.SecondHighestThreatTarget:
-					if (!(caster is NPC))
-					{
-						return SpellFailedReason.Error;
-					}
-					var npc = (NPC)caster;
-					singleTarget = npc.ThreatCollection.GetAggressorByThreatRank(1);
-					break;
-				default:
-					singleTarget = null;
-					break;
-			}
-
-			if (singleTarget != null)
-			{
-				Add(singleTarget);
-			}
-			return SpellFailedReason.Ok;
-		}
-
-		public SpellFailedReason FindTargets(ImplicitTargetType targetType)
+		public SpellFailedReason FindTargets(ImplicitSpellTargetType targetType)
 		{
 			var failedReason = SpellFailedReason.Ok;
 			var def = targetHandlers[(int)targetType];
@@ -307,12 +263,12 @@ namespace WCell.RealmServer.Spells
 		public delegate void TargetHandler();
 
 		private static readonly TargetDefinition[] targetHandlers =
-			new TargetDefinition[(int)Utility.GetMaxEnum<ImplicitTargetType>() + 1];
+			new TargetDefinition[(int)Utility.GetMaxEnum<ImplicitSpellTargetType>() + 1];
 
 		/// <summary>
 		/// Returns the handler and filter for the given target type
 		/// </summary>
-		public static TargetDefinition GetTargetDefinition(ImplicitTargetType target)
+		public static TargetDefinition GetTargetDefinition(ImplicitSpellTargetType target)
 		{
 			return targetHandlers[(int)target];
 		}
@@ -337,48 +293,48 @@ namespace WCell.RealmServer.Spells
 
 		private static void InitTargetHandlers()
 		{
-			targetHandlers[(int)ImplicitTargetType.AllAroundLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllAroundLocation] = new TargetDefinition(
 					TargetMethods.AddAreaDest,	// Is this right?
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.AllEnemiesAroundCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllEnemiesAroundCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.AllEnemiesInArea] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllEnemiesInArea] = new TargetDefinition(
 					TargetMethods.AddAreaDest,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.AllEnemiesInAreaInstant] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllEnemiesInAreaInstant] = new TargetDefinition(
 					TargetMethods.AddAreaDest,
 					TargetMethods.CanHarm);
 
 			// ImplicitTargetType.AllFriendlyInAura
 
-			targetHandlers[(int)ImplicitTargetType.AllParty] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllParty] = new TargetDefinition(
 					TargetMethods.AddAllParty,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.AllPartyAroundCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllPartyAroundCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 
 			// Seems to be bogus: Often used together with AllEnemiesAroundCaster
-			targetHandlers[(int)ImplicitTargetType.AllPartyInArea] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllPartyInArea] = new TargetDefinition(
 					TargetMethods.AddAreaDest,
 					TargetMethods.IsAllied);
 
-			targetHandlers[(int)ImplicitTargetType.AllPartyInAreaChanneled] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllPartyInAreaChanneled] = new TargetDefinition(
 					TargetMethods.AddAreaDest,
 					TargetMethods.IsAllied);
 
 			// Odd: Mostly in combination with LocationToSummon and TeleportLocation
 			// The only spell that has this with a negative effect is: Goblin Mortar (Id: 13238, Target: Default)
-			targetHandlers[(int)ImplicitTargetType.AllTargetableAroundLocationInRadiusOverTime] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AllTargetableAroundLocationInRadiusOverTime] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
-			targetHandlers[(int)ImplicitTargetType.AreaEffectPartyAndClass] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.AreaEffectPartyAndClass] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsSamePartyAndClass);
 
@@ -390,11 +346,11 @@ namespace WCell.RealmServer.Spells
 			// ImplicitTargetType.CaliriEggs
 
 			// any kind of chain effect
-			targetHandlers[(int)ImplicitTargetType.Chain] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Chain] = new TargetDefinition(
 					TargetMethods.AddChain,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.CurrentSelection] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.CurrentSelection] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					null);
 			/*
@@ -414,36 +370,36 @@ namespace WCell.RealmServer.Spells
 	AttributesExB: Flag0x4
 			 */
 
-			targetHandlers[(int)ImplicitTargetType.Duel] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Duel] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.CanHarmOrHeal);
 
-			targetHandlers[(int)ImplicitTargetType.DynamicObject] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.DynamicObject] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
 			// Some poision effects which always have other targets set
 			// ImplicitTargetType.EnemiesInAreaChanneledWithExceptions
 
-			targetHandlers[(int)ImplicitTargetType.GameObject] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.GameObject] = new TargetDefinition(
 					TargetMethods.AddObject,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.GameObjectOrItem] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.GameObjectOrItem] = new TargetDefinition(
 					TargetMethods.AddItemOrObject,
 					null);
 
 			// ImplicitTargetType.HeartstoneLocation
 
-			targetHandlers[(int)ImplicitTargetType.InFrontOfCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.InFrontOfCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
-			targetHandlers[(int)ImplicitTargetType.ConeInFrontOfCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.ConeInFrontOfCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
-			targetHandlers[(int)ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.InvisibleOrHiddenEnemiesAtLocationRadius] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					null);
 
@@ -453,7 +409,7 @@ namespace WCell.RealmServer.Spells
 
 			// ImplicitTargetType.LocationInFrontCasterAtRange
 
-			targetHandlers[(int)ImplicitTargetType.LocationNearCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.LocationNearCaster] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
@@ -463,15 +419,15 @@ namespace WCell.RealmServer.Spells
 			//        TargetMethods.AddSelf,
 			//        null));
 
-			targetHandlers[(int)ImplicitTargetType.Minion] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Minion] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.MultipleGuardianSummonLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.MultipleGuardianSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.MultipleSummonLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.MultipleSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
@@ -479,66 +435,66 @@ namespace WCell.RealmServer.Spells
 			//        TargetMethods.AddSelf,
 			//        null);
 
-			targetHandlers[(int)ImplicitTargetType.NatureSummonLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.NatureSummonLocation] = new TargetDefinition(
 					TargetMethods.AddAreaDest,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.NetherDrakeSummonLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.NetherDrakeSummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.Pet] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Pet] = new TargetDefinition(
 					TargetMethods.AddPet,
 					null);
 
 			// default
 			// TODO: What happens if items/gameobjects are involved?
-			targetHandlers[(int)ImplicitTargetType.None] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.None] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
 			// odd:
-			targetHandlers[(int)ImplicitTargetType.PartyMember] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.PartyMember] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.IsFriendly);
 
-			targetHandlers[(int)ImplicitTargetType.PartyAroundCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.PartyAroundCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsFriendly);
 
-			targetHandlers[(int)ImplicitTargetType.ScriptedOrSingleTarget] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.ScriptedOrSingleTarget] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.IsFriendly);
 
-			targetHandlers[(int)ImplicitTargetType.SelectedEnemyChanneled] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SelectedEnemyChanneled] = new TargetDefinition(
 					TargetMethods.AddChannelObject,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.Self] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Self] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.SingleEnemy] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SingleEnemy] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.SingleFriend] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SingleFriend] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.IsFriendly);
 
-			targetHandlers[(int)ImplicitTargetType.SingleParty] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SingleParty] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.IsAllied);
 
-			targetHandlers[(int)ImplicitTargetType.SpreadableDesease] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SpreadableDesease] = new TargetDefinition(
 					TargetMethods.AddSelection,
 					TargetMethods.CanHarm);
 
-			targetHandlers[(int)ImplicitTargetType.SummonLocation] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.SummonLocation] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.TargetAtOrientationOfCaster] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.TargetAtOrientationOfCaster] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsInFrontEnemies);
 
@@ -547,23 +503,23 @@ namespace WCell.RealmServer.Spells
 			// ImplicitTargetType.TeleportLocation, <- Used for Summon spells
 
 			// Totem summoning
-			targetHandlers[(int)ImplicitTargetType.TotemAir] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.TotemAir] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.TotemEarth] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.TotemEarth] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.TotemFire] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.TotemFire] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.TotemWater] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.TotemWater] = new TargetDefinition(
 					TargetMethods.AddSelf,
 					null);
 
-			targetHandlers[(int)ImplicitTargetType.Tranquility] = new TargetDefinition(
+			targetHandlers[(int)ImplicitSpellTargetType.Tranquility] = new TargetDefinition(
 					TargetMethods.AddAreaSource,
 					TargetMethods.IsAllied);
 		}

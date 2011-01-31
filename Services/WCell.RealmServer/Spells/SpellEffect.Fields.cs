@@ -53,8 +53,8 @@ namespace WCell.RealmServer.Spells
 
 		public SpellMechanic Mechanic;
 
-		public ImplicitTargetType ImplicitTargetA;
-		public ImplicitTargetType ImplicitTargetB;
+		public ImplicitSpellTargetType ImplicitTargetA;
+		public ImplicitSpellTargetType ImplicitTargetB;
 
 		/// <summary>
 		/// SpellRadius.dbc

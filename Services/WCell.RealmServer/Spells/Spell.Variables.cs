@@ -99,6 +99,10 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect[] AuraConditionalEffects;
 		#endregion
 
+		#region AI Spell Casting
+		public AISpellSettings AISettings;
+		#endregion
+
 		#region Auto generated Spell Fields (will be overridden on initialization)
 		/// <summary>
 		/// Whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
@@ -413,27 +417,6 @@ namespace WCell.RealmServer.Spells
 		{
 		}
 		#endregion
-
-		#region AI Spell casting
-		public AISpellCastSettings AISpellCastSettings;
-
-		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillis, AISpellCastTarget target = AISpellCastTarget.Default)
-		{
-			return AISpellCastSettings = new AISpellCastSettings { Target = target, CooldownMin = cooldownMillis, CooldownMax = cooldownMillis };
-		}
-
-		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillisMin, int cooldownMillisMax, int idleTimeAfterCastMillis = 10000,
-			AISpellCastTarget target = AISpellCastTarget.Default)
-		{
-			return AISpellCastSettings = new AISpellCastSettings
-			{
-				Target = target,
-				CooldownMin = cooldownMillisMin,
-				CooldownMax = cooldownMillisMax,
-				IdleTimeAfterCastMillis = idleTimeAfterCastMillis
-			};
-		}
-		#endregion
 	}
 
 	public enum RequiredSpellTargetType
@@ -444,6 +427,7 @@ namespace WCell.RealmServer.Spells
 		NPCDead
 	}
 
+	#region SpellTargetLocation
 	public class SpellTargetLocation : IWorldLocation
 	{
 		private Vector3 m_Position;
@@ -496,4 +480,5 @@ namespace WCell.RealmServer.Spells
 			get { return World.GetMap(MapId); }
 		}
 	}
+	#endregion
 }

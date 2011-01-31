@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Spells
 
 		protected List<Spell> m_readySpells;
 		protected List<CooldownRemoveAction> m_cooldowns;
-		
+
 		#region Init & Cleanup
 		private NPCSpellCollection()
 		{
@@ -177,24 +177,24 @@ namespace WCell.RealmServer.Spells
 				{
 					// no cooldown, no cast delay, no duration: Add default cooldown
 					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
-					ProcessCooldown(spell, millis);
+					AddCooldown(spell, millis);
 				}
 			}
 			else
 			{
 				// add existing cooldown
 				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
-				ProcessCooldown(spell, millis);
+				AddCooldown(spell, millis);
 			}
 		}
 
-		public void RestoreCooldown(Spell spell, DateTime cdTime)
+		public void AddCooldown(Spell spell, DateTime cdTime)
 		{
 			var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
-			ProcessCooldown(spell, millis);
+			AddCooldown(spell, millis);
 		}
 
-		private void ProcessCooldown(Spell spell, int millis)
+		private void AddCooldown(Spell spell, int millis)
 		{
 			if (millis <= 0) return;
 			m_readySpells.Remove(spell);
@@ -213,18 +213,17 @@ namespace WCell.RealmServer.Spells
 		{
 			var context = Owner.ContextHandler;
 			if (context != null)
+			{
 				context.AddMessage(() =>
 				{
-					if (m_cooldowns != null)
+					if (m_cooldowns == null) return;
+					foreach (var cd in m_cooldowns)
 					{
-						for (var i = 0; i < m_cooldowns.Count; i++)
-						{
-							var cd = m_cooldowns[i];
-							Owner.RemoveUpdateAction(cd);
-							AddReadySpell(cd.Spell);
-						}
+						Owner.RemoveUpdateAction(cd);
+						AddReadySpell(cd.Spell);
 					}
 				});
+			}
 		}
 
 		public override bool IsReady(Spell spell)
@@ -239,12 +238,11 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_cooldowns.Count; i++)
 				{
 					var cd = m_cooldowns[i];
-					if (cd.Spell.Id == spell.Id)
-					{
-						m_cooldowns.Remove(cd);
-						AddReadySpell(cd.Spell);
-						break;
-					}
+					if (cd.Spell.Id != spell.Id) continue;
+
+					m_cooldowns.Remove(cd);
+					AddReadySpell(cd.Spell);
+					break;
 				}
 			}
 		}

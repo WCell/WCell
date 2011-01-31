@@ -83,11 +83,11 @@ namespace WCell.Addons.Default.Spells.Paladin
 					));
 
 				// add str & stam
-				var strEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitTargetType.SingleFriend);
+				var strEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitSpellTargetType.SingleFriend);
 				strEff.MiscValue = (int)StatType.Strength;
 				strEff.BasePoints = 10;
 
-				var stamEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitTargetType.SingleFriend);
+				var stamEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitSpellTargetType.SingleFriend);
 				stamEff.MiscValue = (int)StatType.Stamina;
 				stamEff.BasePoints = 10;
 			},

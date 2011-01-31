@@ -1,2 +1,4 @@
-- fixed item-quest relations
-	- item quest givers and collectable quest items should now only appear to those who need them
+-> *WARNING* AI Spell casting does not quite work right now because AI spell cast system is being overhauled
+-> however the new Spell.AISpellSettings property can now be used
+- fixed some minor problems in AuchindounManaTombs
+- renamed ImplicitTargetType to ImplicitSpellTargetType

@@ -84,7 +84,7 @@ namespace WCell.Addons.Default.Spells.Paladin
 			// Lay on Hands applies Forbearance, if used on self
 			SpellLineId.PaladinLayOnHands.Apply(spell =>
 			{
-				spell.AddAuraEffect(() => new ApplySelfForbearanceHandler(), ImplicitTargetType.Self);
+				spell.AddAuraEffect(() => new ApplySelfForbearanceHandler(), ImplicitSpellTargetType.Self);
 			});
 		}
 

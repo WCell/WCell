@@ -281,7 +281,8 @@ namespace WCell.RealmServer.AI
 		}
 
 		/// <summary>
-		/// Returns the aggressor at the given 0-based index within the collection; or the next one above, if there is no such target.
+		/// Returns the aggressor at the given 0-based index within the collection.
+		/// Selects the least one in the list, if there is no such low rank
 		/// Note: The aggressor with Rank = 0 is usually the CurrentAggressor
 		/// </summary>
 		public Unit GetAggressorByThreatRank(int rank)

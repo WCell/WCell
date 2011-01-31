@@ -712,7 +712,7 @@ namespace WCell.Constants.Spells
 		Flag_0x200000 = 0x200000,
 	}
 
-	public enum ImplicitTargetType
+	public enum ImplicitSpellTargetType
 	{
 		/// <summary>
 		/// Default

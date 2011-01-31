@@ -13,7 +13,7 @@ namespace WCell.Addons.Default.Spells.Hunter
 			// taming has an invalid target
 			SpellHandler.Apply(spell =>
 			{
-				spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitTargetType.SingleEnemy;
+				spell.GetEffect(AuraType.PeriodicTriggerSpell).ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
 			}, SpellId.ClassSkillTameBeast);
 
 			// Only one Aspect can be active at a time

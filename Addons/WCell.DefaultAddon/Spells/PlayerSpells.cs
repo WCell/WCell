@@ -54,7 +54,7 @@ namespace WCell.Addons.Default.Spells
 			// Stoneform is missing a trigger spell (because it already has 3 other effects)
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddTriggerSpellEffect(SpellId.StoneformRacial, ImplicitTargetType.Self);
+				spell.AddTriggerSpellEffect(SpellId.StoneformRacial, ImplicitSpellTargetType.Self);
 			},
 			SpellId.SecondarySkillStoneformRacial);
 

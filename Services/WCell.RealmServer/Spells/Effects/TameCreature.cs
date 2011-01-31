@@ -3,7 +3,7 @@
  *   file		: TameCreature.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-16 21:33:51 +0100 (lø, 16 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-16 21:33:51 +0100 (l? 16 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1197 $
  *

@@ -450,17 +450,17 @@ namespace WCell.RealmServer.Spells
 				effect.Mechanic = (SpellMechanic)GetUInt32(rawData, currentIndex);      // 83
 				currentIndex += 3;
 
-				effect.ImplicitTargetA = (ImplicitTargetType)GetUInt32(rawData, currentIndex);      // 86
+				effect.ImplicitTargetA = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 86
 				currentIndex += 3;
 
-				effect.ImplicitTargetB = (ImplicitTargetType)GetUInt32(rawData, currentIndex);      // 89
+				effect.ImplicitTargetB = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 89
 				currentIndex += 3;
 
 				// Fix: This is a default AoE effect, thus doesn't have a fact at destination
-				if (effect.ImplicitTargetA == ImplicitTargetType.AllEnemiesAroundCaster &&
-					effect.ImplicitTargetB == ImplicitTargetType.AllEnemiesInArea)
+				if (effect.ImplicitTargetA == ImplicitSpellTargetType.AllEnemiesAroundCaster &&
+					effect.ImplicitTargetB == ImplicitSpellTargetType.AllEnemiesInArea)
 				{
-					effect.ImplicitTargetB = ImplicitTargetType.None;
+					effect.ImplicitTargetB = ImplicitSpellTargetType.None;
 				}
 
 				int radiusIndex = GetInt32(rawData, currentIndex);                                  // 92

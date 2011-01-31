@@ -240,10 +240,10 @@ namespace WCell.Tools.Domi.Output
 
 		private struct TargetPair
 		{
-			public ImplicitTargetType TargetA;
-			public ImplicitTargetType TargetB;
+			public ImplicitSpellTargetType TargetA;
+			public ImplicitSpellTargetType TargetB;
 
-			public TargetPair(ImplicitTargetType targetA, ImplicitTargetType targetB)
+			public TargetPair(ImplicitSpellTargetType targetA, ImplicitSpellTargetType targetB)
 			{
 				TargetA = targetA;
 				TargetB = targetB;
@@ -278,7 +278,7 @@ namespace WCell.Tools.Domi.Output
 					bool contin = false;
 					foreach (SpellEffect effect in spell.Effects)
 					{
-						if (effect.ImplicitTargetA != ImplicitTargetType.None && effect.ImplicitTargetB != ImplicitTargetType.None)
+						if (effect.ImplicitTargetA != ImplicitSpellTargetType.None && effect.ImplicitTargetB != ImplicitSpellTargetType.None)
 						{
 							contin = true;
 

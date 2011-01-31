@@ -1,4 +1,4 @@
-﻿using WCell.Constants.Spells;
+using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
@@ -30,7 +30,7 @@ namespace WCell.Addons.Default.Spells.Hunter
             // Multi-Shot affects three targets
             SpellLineId.HunterMultiShot.Apply(spell =>
                 {
-                    spell.Effects[0].ImplicitTargetA = ImplicitTargetType.Chain;
+                    spell.Effects[0].ImplicitTargetA = ImplicitSpellTargetType.Chain;
                 });
 
             // Readiness clears cooldown of every spells of the hunter except Beast Mastery

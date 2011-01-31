@@ -22,7 +22,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			{
 				// consume mana for the given spells
 				burnoutEffect = spell.GetEffect(SpellEffectType.Dummy);
-				burnoutEffect.ImplicitTargetA = ImplicitTargetType.None;	// no target selection (we find the target in the Apply method)
+				burnoutEffect.ImplicitTargetA = ImplicitSpellTargetType.None;	// no target selection (we find the target in the Apply method)
 				burnoutEffect.SpellEffectHandlerCreator = (cast, effect) => new BurnoutHandler(cast, effect);
 			}, SpellId.ClassSkillBurnout);
 			SpellLineId.MageFireBurnout.Apply(spell =>
@@ -55,7 +55,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			{
 				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
-				triggerEffect.ImplicitTargetA = ImplicitTargetType.SingleEnemy;
+				triggerEffect.ImplicitTargetA = ImplicitSpellTargetType.SingleEnemy;
 				triggerEffect.AddAffectingSpells(SpellLineId.MageFireBlast);		// triggered by fire blast only
 			}, SpellId.EffectImpactRank1);
 
