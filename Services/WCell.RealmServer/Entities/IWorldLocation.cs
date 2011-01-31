@@ -8,14 +8,20 @@ using Zone = WCell.RealmServer.Global.Zone;
 
 namespace WCell.RealmServer.Entities
 {
+	#region IWorldLocation
 	public interface IWorldLocation : IHasPosition
 	{
 		MapId MapId { get; }
 
 		[NotPersistent]
 		Map Map { get; }
-	}
 
+		[NotPersistent]
+		uint Phase { get; }
+	}
+	#endregion
+
+	#region IWorldZoneLocation
 	public interface IWorldZoneLocation : IWorldLocation
 	{
 		ZoneId ZoneId { get; }
@@ -23,7 +29,9 @@ namespace WCell.RealmServer.Entities
 		[NotPersistent]
 		ZoneTemplate ZoneTemplate { get; }
 	}
+	#endregion
 
+	#region INamedWorldZoneLocation
 	public interface INamedWorldZoneLocation : IWorldZoneLocation
 	{
 		string[] Names
@@ -34,23 +42,27 @@ namespace WCell.RealmServer.Entities
 
 		string DefaultName { get; }
 	}
+	#endregion
 
+	#region WorldLocation
 	public class WorldLocation : IWorldLocation
 	{
-		public WorldLocation(MapId map, Vector3 pos)
+		public WorldLocation(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
 			Map = World.GetMap(map);
 			if (Map == null)
 			{
-				throw new Exception("Invalid Map in WorldLocation: " + map);
+				throw new ArgumentException("map", "Invalid Map in WorldLocation: " + map);
 			}
+			Phase = phase;
 		}
 
-		public WorldLocation(Map map, Vector3 pos)
+		public WorldLocation(Map map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
 			Map = map;
+			Phase = phase;
 		}
 
 		public Vector3 Position { get; set; }
@@ -60,14 +72,19 @@ namespace WCell.RealmServer.Entities
 		}
 
 		public Map Map { get; set; }
-	}
 
+		public uint Phase { get; set; }
+	}
+	#endregion
+
+	#region WorldLocationStruct
 	public struct WorldLocationStruct : IWorldLocation
 	{
 		private Vector3 m_Position;
 		private Map m_Map;
+		private uint m_Phase;
 
-		public WorldLocationStruct(MapId map, Vector3 pos)
+		public WorldLocationStruct(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			m_Position = pos;
 			m_Map = World.GetMap(map);
@@ -75,12 +92,14 @@ namespace WCell.RealmServer.Entities
 			{
 				throw new Exception("Invalid Map in WorldLocationStruct: " + map);
 			}
+			m_Phase = phase;
 		}
 
-		public WorldLocationStruct(Map map, Vector3 pos)
+		public WorldLocationStruct(Map map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			m_Position = pos;
 			m_Map = map;
+			m_Phase = phase;
 		}
 
 		public Vector3 Position
@@ -95,21 +114,35 @@ namespace WCell.RealmServer.Entities
 			set { m_Map = value; }
 		}
 
+		public uint Phase
+		{
+			get { return m_Phase; }
+			set { m_Phase = value; }
+		}
+
 		public MapId MapId
 		{
 			get { return Map.Id; }
 		}
 	}
+	#endregion
 
+	#region SimpleWorldLocation
 	public class SimpleWorldLocation : IWorldLocation
 	{
-		public SimpleWorldLocation(MapId map, Vector3 pos)
+		public SimpleWorldLocation(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
 			MapId = map;
+			Phase = phase;
 		}
 
-		public Vector3 Position { get; set; }
+		public Vector3 Position
+		{
+			get;
+			set;
+		}
+
 		public MapId MapId
 		{
 			get;
@@ -120,29 +153,37 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return World.GetMap(MapId); }
 		}
+
+		public uint Phase
+		{
+			get;
+			set;
+		}
 	}
+	#endregion
 
-	public class ZoneWorldLocation : WorldLocation, IWorldZoneLocation
+	#region WorldZoneLocation
+	public class WorldZoneLocation : WorldLocation, IWorldZoneLocation
 	{
-		public ZoneWorldLocation(MapId map, Vector3 pos, ZoneTemplate zone)
+		public WorldZoneLocation(MapId map, Vector3 pos, ZoneTemplate zone)
 			: base(map, pos)
 		{
 			ZoneTemplate = zone;
 		}
 
-		public ZoneWorldLocation(Map map, Vector3 pos, ZoneTemplate zone)
+		public WorldZoneLocation(Map map, Vector3 pos, ZoneTemplate zone)
 			: base(map, pos)
 		{
 			ZoneTemplate = zone;
 		}
 
-		public ZoneWorldLocation(IWorldZoneLocation location)
+		public WorldZoneLocation(IWorldZoneLocation location)
 			: base(location.Map, location.Position)
 		{
 			ZoneTemplate = location.ZoneTemplate;
 		}
 
-		public ZoneWorldLocation(MapId map, Vector3 pos, ZoneId zone)
+		public WorldZoneLocation(MapId map, Vector3 pos, ZoneId zone)
 			: base(map, pos)
 		{
 			if (Map != null)
@@ -158,6 +199,7 @@ namespace WCell.RealmServer.Entities
 
 		public ZoneTemplate ZoneTemplate { get; set; }
 	}
+	#endregion
 
 	public static class LocationUtil
 	{

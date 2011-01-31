@@ -166,7 +166,7 @@ namespace WCell.RealmServer.Entities
 
 			if (m_initialized)
 			{
-				IterateEnvironment(BroadcastRange, (obj) =>
+				this.IterateEnvironment(BroadcastRange, (obj) =>
 				{
 					if (!IsInPhase(obj))
 					{

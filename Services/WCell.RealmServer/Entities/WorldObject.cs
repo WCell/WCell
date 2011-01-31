@@ -58,9 +58,14 @@ namespace WCell.RealmServer.Entities
 		public static readonly ObjectPool<List<WorldObject>> WorldObjectListPool = ObjectPoolMgr.CreatePool(() => new List<WorldObject>());
 
 		/// <summary>
-		/// Default phase for "normal" things to happen
+		/// Default phase (the one that existed long before phasing was added)
 		/// </summary>
 		public const uint DefaultPhase = 1;
+
+		/// <summary>
+		/// All phases
+		/// </summary>
+		public const uint AllPhases = uint.MaxValue;
 
 		#region Variables
 		/// <summary>
@@ -76,7 +81,7 @@ namespace WCell.RealmServer.Entities
 
 		public const float BehindAngleMax = 4f * MathUtil.PI / 3f;
 
-		public static readonly List<WorldObject> EmptyArray = new List<WorldObject>();
+		public static readonly WorldObject[] EmptyArray = new WorldObject[0];
 		public static readonly List<WorldObject> EmptyList = new List<WorldObject>();
 
 		public static UpdatePriority DefaultObjectUpdatePriority = UpdatePriority.LowPriority;
@@ -490,346 +495,6 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Nearby objects/clients
-		/// <summary>
-		/// Iterates over all objects within the given radius around this object.
-		/// </summary>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateEnvironment(float radius, Func<WorldObject, bool> predicate)
-		{
-			return m_Map.IterateObjects(ref m_position, radius, m_Phase, predicate);
-		}
-		/// <summary>
-		/// Iterates over all objects of the given Type within the given radius around this object.
-		/// </summary>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateEnvironment<O>(float radius, Func<O, bool> predicate)
-			where O : WorldObject
-		{
-			return m_Map.IterateObjects(ref m_position, radius, m_Phase, obj => !(obj is O) || predicate((O)obj));
-		}
-
-		/// <summary>
-		/// Returns all objects in radius
-		/// </summary>
-		public IList<WorldObject> GetObjectsInRadius(float radius, ObjectTypes filter, bool checkVisible, int limit)
-		{
-			if (m_Map != null)
-			{
-				IList<WorldObject> objects;
-
-				if (checkVisible)
-				{
-					Func<WorldObject, bool> visCheck = obj => obj.CheckObjType(filter) && CanSee(obj);
-
-					objects = Map.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, limit);
-				}
-				else
-				{
-					objects = Map.GetObjectsInRadius(ref m_position, radius, filter, m_Phase, limit);
-				}
-
-				return objects;
-			}
-
-			return EmptyArray;
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInRadius(float radius, ObjectTypes filter, int limit)
-		{
-			return GetObjectsInRadius(radius, filter, true, limit);
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInRadius(float radius, Func<WorldObject, bool> filter, int limit)
-		{
-			if (m_Map != null)
-			{
-				Func<WorldObject, bool> visCheck = obj => filter(obj) && CanSee(obj);
-
-				return Map.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, limit);
-			}
-
-			return EmptyArray;
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInUpdateRadius(ObjectTypes filter)
-		{
-			return GetVisibleObjectsInRadius(BroadcastRange, filter, 0);
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInUpdateRadius(Func<WorldObject, bool> filter)
-		{
-			return GetVisibleObjectsInRadius(BroadcastRange, filter, 0);
-		}
-
-		/// <summary>
-		/// Gets all clients in update-radius that can see this object
-		/// </summary>
-		public ICollection<IRealmClient> GetNearbyClients(bool includeSelf)
-		{
-			return GetNearbyClients(BroadcastRange, includeSelf);
-		}
-
-		/// <summary>
-		/// Gets all clients that can see this object
-		/// </summary>
-		public ICollection<IRealmClient> GetNearbyClients(float radius, bool includeSelf)
-		{
-			if (m_Map != null && IsAreaActive)
-			{
-				Func<Character, bool> visCheck = obj => obj.CanSee(this) && (includeSelf || obj != this);
-
-				var entities = m_Map.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, 0);
-
-				return entities.TransformList(chr => chr.Client);
-			}
-
-			return RealmClient.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters()
-		{
-			return GetNearbyCharacters(BroadcastRange);
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(bool includeSelf)
-		{
-			return GetNearbyCharacters(BroadcastRange, includeSelf);
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(float radius)
-		{
-			if (m_Map != null)
-			{
-				return m_Map.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.CanSee(this), m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(float radius, bool includeSelf)
-		{
-			if (m_Map != null && AreaCharCount > 0)
-			{
-				Func<Character, bool> visCheck =
-					obj => obj.CanSee(this) && (obj != this || includeSelf || !(this is Character));
-
-				return m_Map.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all Horde players in the given radius.
-		/// </summary>
-		public ICollection<Character> GetNearbyHorde(float radius)
-		{
-			if (m_Map != null)
-			{
-				return m_Map.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.FactionGroup == FactionGroup.Horde, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all alliance players in the given radius.
-		/// </summary>
-		public ICollection<Character> GetNearbyAlliance(float radius)
-		{
-			if (m_Map != null)
-			{
-				return m_Map.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.FactionGroup == FactionGroup.Alliance, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		public GameObject GetNearbyGO(GOEntryId id)
-		{
-			return GetNearbyGO(id, BroadcastRange);
-		}
-
-		public GameObject GetNearbyGO(GOEntryId id, float radius)
-		{
-			GameObject go = null;
-			IterateEnvironment(radius, obj =>
-			{
-				if (obj.IsInPhase(this) && obj is GameObject && ((GameObject)obj).Entry.GOId == id)
-				{
-					go = (GameObject)obj;
-					return false;
-				}
-				return true;
-			});
-			return go;
-		}
-
-		public NPC GetNearbyNPC(NPCId id)
-		{
-			return GetNearbyNPC(id, BroadcastRange);
-		}
-
-		public NPC GetNearbyNPC(NPCId id, float radius)
-		{
-			NPC npc = null;
-			IterateEnvironment(radius, obj =>
-			{
-				if (obj.IsInPhase(this) && obj is NPC && ((NPC)obj).Entry.NPCId == id)
-				{
-					npc = (NPC)obj;
-					return false;
-				}
-				return true;
-			});
-			return npc;
-		}
-
-		/// <summary>
-		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
-		/// </summary>
-		public Character GetNearbyRandomHostileCharacter()
-		{
-			return GetNearbyRandomHostileCharacter(BroadcastRange);
-		}
-
-		/// <summary>
-		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
-		/// </summary>
-		public Character GetNearbyRandomHostileCharacter(float radius)
-		{
-			if (AreaCharCount == 0)
-			{
-				return null;
-			}
-
-			if (radius > BroadcastRange)
-			{
-				// TODO: This won't quite work
-			}
-
-			Character chr = null;
-			var r = Utility.Random(0, AreaCharCount);
-			var i = 0;
-			var radiusSq = radius*radius;
-			IterateEnvironment(BroadcastRange, obj =>
-			{
-				if (obj is Character)
-				{
-					if (!CanSee(obj) || 
-						!((Character)obj).IsAlive ||
-						!IsHostileWith(obj) ||
-						!IsInRadiusSq(obj, radiusSq))
-					{
-						// does not count
-						r--;
-						return true;
-					}
-					chr = (Character)obj;
-				}
-				return ++i != r;
-			});
-			return chr;
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object
-		/// </summary>
-		public Unit GetNearestUnit(float radius)
-		{
-			Unit unit = null;
-			var sqDist = float.MaxValue;
-			IterateEnvironment<Unit>(radius, obj =>
-			{
-				var curSqDist = GetDistanceSq(obj);
-				if (curSqDist < sqDist)
-				{
-					sqDist = curSqDist;
-					unit = obj;
-				}
-				return true;
-			}
-			);
-			return unit;
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
-		/// </summary>
-		public Unit GetNearestUnit(Func<Unit, bool> filter)
-		{
-			return GetNearestUnit(BroadcastRange, filter);
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
-		/// </summary>
-		public Unit GetNearestUnit(float radius, Func<Unit, bool> filter)
-		{
-			Unit target = null;
-			var sqDist = float.MaxValue;
-			IterateEnvironment<Unit>(radius, unit =>
-			{
-				if (filter(unit))
-				{
-					var curSqDist = GetDistanceSq(unit);
-					if (curSqDist < sqDist)
-					{
-						sqDist = curSqDist;
-						target = unit;
-					}
-				}
-				return true;
-			}
-			);
-			return target;
-		}
-
-		public Unit GetRandomUnit(float radius, bool checkVisible)
-		{
-			return (Unit)GetObjectsInRadius(radius, ObjectTypes.Unit, checkVisible, 0).GetRandom();
-		}
-
-		public Unit GetRandomUnit(float radius, Func<Unit, bool> filter)
-		{
-			return (Unit)GetVisibleObjectsInRadius(radius, obj => obj is Unit && filter((Unit)obj), 0).GetRandom();
-		}
-
-		public Unit GetRandomAlliedUnit()
-		{
-			return GetRandomAlliedUnit(BroadcastRange);
-		}
-
-		public Unit GetRandomAlliedUnit(float radius)
-		{
-			return GetRandomUnit(radius, IsAlliedWith);
-		}
-
-		public Unit GetRandomHostileUnit(float radius)
-		{
-			return GetRandomUnit(radius, MayAttack);
-		}
-		#endregion
-
 		#region Positions & Distances
 		/// <summary>
 		/// The Terrain height at this object's current location
@@ -890,11 +555,6 @@ namespace WCell.RealmServer.Entities
 		public bool IsInRadiusSq(ref Vector3 pt, float sqDistance)
 		{
 			return GetDistanceSq(ref pt) <= sqDistance;
-		}
-
-		public bool IsInRadiusSq(WorldObject obj, float sqDistance)
-		{
-			return GetDistanceSq(obj) <= sqDistance;
 		}
 
 		public bool IsInRadiusSq(Vector3 pos, float sqDistance)
@@ -1244,7 +904,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsAreaActive)
 			{
-				IterateEnvironment(BroadcastRange, obj =>
+				this.IterateEnvironment(BroadcastRange, obj =>
 				{
 					if (obj is Character)
 					{
@@ -1265,7 +925,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (radius > 0)
 			{
-				IterateEnvironment(radius, obj =>
+				this.IterateEnvironment(radius, obj =>
 				{
 					if (obj is Character)
 					{
@@ -1292,7 +952,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsAreaActive)
 			{
-				IterateEnvironment(BroadcastRange, obj =>
+				this.IterateEnvironment(BroadcastRange, obj =>
 				{
 					if (obj is Character)
 					{

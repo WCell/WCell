@@ -1,4 +1,4 @@
--> *WARNING* AI Spell casting does not quite work right now because AI spell cast system is being overhauled
--> however the new Spell.AISpellSettings property can now be used
-- fixed some minor problems in AuchindounManaTombs
-- renamed ImplicitTargetType to ImplicitSpellTargetType
+- fixed #npc spawn command
+- started adding SpellCast AI code, hopefully will finish tomorrow
+- added Phase property to IWorldLocation and updated all usages of it (since every location is uniquely determined by map, pos, phase)
+- restructured SpellCast PrePerform step

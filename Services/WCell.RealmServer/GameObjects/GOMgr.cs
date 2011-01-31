@@ -352,7 +352,7 @@ namespace WCell.RealmServer.GameObjects
 			GOSpawnEntry closest = null;
 			foreach (var entry in entries)
 			{
-				if (entry.MapId != pos.MapId)
+				if (entry.MapId != pos.MapId || entry.Phase != pos.Phase)
 				{
 					continue;
 				}
@@ -384,6 +384,8 @@ namespace WCell.RealmServer.GameObjects
 
 				foreach (var entry in template.Entries)
 				{
+					if (entry.Phase != pos.Phase) continue;
+
 					var distSq = pos.Position.DistanceSquared(entry.Position);
 					if (distSq < closestDistSq)
 					{

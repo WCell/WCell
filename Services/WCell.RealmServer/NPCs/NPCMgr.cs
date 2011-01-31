@@ -879,6 +879,8 @@ namespace WCell.RealmServer.NPCs
 			{
 				foreach (var entry in pool.Entries)
 				{
+					if (entry.Phase != pos.Phase) continue;
+
 					var distSq = pos.Position.DistanceSquared(entry.Position);
 					if (distSq < distanceSq)
 					{
@@ -896,6 +898,8 @@ namespace WCell.RealmServer.NPCs
 			var distanceSq = Single.MaxValue;
 			foreach (var entry in entries)
 			{
+				if (entry.Phase != pos.Phase) continue;
+
 				var distSq = pos.Position.DistanceSquared(entry.Position);
 				if (distSq < distanceSq)
 				{

@@ -35,13 +35,13 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (m_cast.UsedItem == null)
+			if (m_cast.TargetItem == null)
 			{
 				failReason = SpellFailedReason.ItemNotReady;
 			}
 			else
 			{
-				var templ = m_cast.UsedItem.Template;
+				var templ = m_cast.TargetItem.Template;
 				if (templ.RequiredDisenchantingLevel == -1)
 				{
 					failReason = SpellFailedReason.CantBeDisenchanted;
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Spells.Effects
 		{
 			var caster = m_cast.CasterChar;
 			caster.Emote(EmoteType.SimpleTalk);
-			LootMgr.CreateAndSendObjectLoot(m_cast.UsedItem, caster, LootEntryType.Disenchanting, false);
+			LootMgr.CreateAndSendObjectLoot(m_cast.TargetItem, caster, LootEntryType.Disenchanting, false);
 			//m_cast.CasterChar.Inventory.AddAllUnchecked(loot, slots);
 		}
 

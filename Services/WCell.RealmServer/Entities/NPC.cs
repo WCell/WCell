@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Entities
 				// Spawn-specific information
 				spawnEntry = spawnPoint.SpawnEntry;
 				m_spawnPoint = spawnPoint;
-				Phase = spawnEntry.PhaseMask;
+				Phase = spawnEntry.Phase;
 				m_orientation = spawnEntry.Orientation;
 
 				if (spawnEntry.DisplayIdOverride != 0)

@@ -893,7 +893,7 @@ namespace WCell.RealmServer.Entities
 		protected virtual void OnHeal(Unit healer, SpellEffect effect, int value)
 		{
 			// TODO: Remove method and instead trigger map-wide event (a lot more efficient than this)
-			IterateEnvironment(40.0f, obj =>
+			this.IterateEnvironment(40.0f, obj =>
 			{
 				if (obj is Unit && ((Unit)obj).m_brain != null)
 				{

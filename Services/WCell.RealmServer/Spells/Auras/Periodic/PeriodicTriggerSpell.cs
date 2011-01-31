@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 				return;
 			}
 			
-			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner,  m_aura.Controller as SpellChannel, cast != null ? cast.UsedItem : null,
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner,  m_aura.Controller as SpellChannel, cast != null ? cast.TargetItem : null,
 				null, m_spellEffect);
 		}
 

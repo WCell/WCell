@@ -34,6 +34,11 @@ namespace WCell.RealmServer.Misc
 			}
 		}
 
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
+		}
+
 		public ZoneId ZoneId
 		{
 			get;

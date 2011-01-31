@@ -245,27 +245,26 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var mod = trigger.Text.NextModifiers();
+				Map map;
+				var spawnEntry = GetNPCSpawnEntry(trigger, mod == "c", out map);
+				if (spawnEntry == null) return;
+
 				var amount = trigger.Text.NextUInt(1);
 
 				if (amount < 1)
 				{
 					trigger.Reply("Invalid amount: " + amount);
+					return;
 				}
-				else
+
+				// create & teleport
+				map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
+				if (trigger.Args.Target != null)
 				{
-					Map map;
-					var spawnEntry = GetNPCSpawnEntry(trigger, mod == "c", out map);
-					if (spawnEntry == null) return;
-
-					// create & teleport
-					map.AddNPCSpawnPoolLater(spawnEntry.PoolTemplate);
-					if (trigger.Args.Target != null)
-					{
-						trigger.Args.Target.TeleportTo(map, spawnEntry.Position);
-					}
-
-					trigger.Reply("Created spawn: {0}", spawnEntry);
+					trigger.Args.Target.TeleportTo(map, spawnEntry.Position);
 				}
+
+				trigger.Reply("Created spawn: {0}", spawnEntry);
 			}
 		}
 		#endregion

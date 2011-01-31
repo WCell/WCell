@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (m_cast.UsedItem.Template.Level < Effect.Spell.BaseLevel)
+			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
 			{
 				failReason = SpellFailedReason.Lowlevel;
 			}
@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Apply()
 		{
-			var item = m_cast.UsedItem;
+			var item = m_cast.TargetItem;
 			var duration = CalcEffectValue();
 			if (duration < 0)
 			{

@@ -1,5 +1,6 @@
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util;
 
 namespace WCell.RealmServer.Spells
@@ -37,7 +38,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int IdleTimeAfterCastMillis = 500;
 
-		public AISpellCastTarget Target;
+		public AISpellCastTarget TargetType;
 
 		public AISpellSettings(Spell spell)
 		{
@@ -53,18 +54,18 @@ namespace WCell.RealmServer.Spells
 		public void SetValues(int cdMin, int cdMax, AISpellCastTarget target)
 		{
 			SetCooldown(cdMin, cdMax);
-			Target = target;
+			TargetType = target;
 		}
 
 		public void SetValues(int cd, AISpellCastTarget target)
 		{
 			SetCooldown(cd);
-			Target = target;
+			TargetType = target;
 		}
 
 		public void SetTarget(AISpellCastTarget target)
 		{
-			Target = target;
+			TargetType = target;
 		}
 
 		public void SetCooldown(int cd)
@@ -77,49 +78,6 @@ namespace WCell.RealmServer.Spells
 			Cooldown.MinDelay = cdMin;
 			Cooldown.MaxDelay = cdMax;
 		}
-
-		#region Target Finding
-		/// <summary>
-		/// Returns a set of potential targets for this Spell and the given caster, 
-		/// using this Spell's AIBehavior as parameters.
-		/// </summary>
-		public WorldObject[] FindValidTargetsForCaster(Unit caster)
-		{
-			// TODO: Use effect radius?
-
-			// find single target
-			WorldObject singleTarget;
-			switch (Target)
-			{
-				case AISpellCastTarget.NearestHostilePlayer:
-					singleTarget = caster.GetNearestUnit(obj => obj is Character && caster.IsHostileWith(obj));
-					break;
-				case AISpellCastTarget.RandomAlliedUnit:
-					singleTarget = caster.GetRandomAlliedUnit();
-					break;
-				case AISpellCastTarget.RandomHostilePlayer:
-					singleTarget = caster.GetNearbyRandomHostileCharacter();
-					break;
-				case AISpellCastTarget.SecondHighestThreatTarget:
-					if (!(caster is NPC))
-					{
-						return null;
-					}
-					var npc = (NPC)caster;
-					singleTarget = npc.ThreatCollection.GetAggressorByThreatRank(1);
-					break;
-				default:
-					singleTarget = null;
-					break;
-			}
-
-			if (singleTarget != null)
-			{
-				return new [] {singleTarget};
-			}
-			return null;
-		}
-		#endregion
 
 		#region Initialization & Loading
 		internal void InitializeAfterLoad()
@@ -215,7 +173,7 @@ namespace WCell.RealmServer.Spells
 	#endregion
 
 	#region SpellAIUtil
-	public static class SpellAIUtil
+	public static class AISpellUtil
 	{
 		public static AISpellCategory GetSpellAICategory(this Spell spell)
 		{

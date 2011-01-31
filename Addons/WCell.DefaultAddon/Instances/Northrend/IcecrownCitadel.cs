@@ -12,6 +12,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.AI.Actions.Combat;
 using System;
+using WCell.Util;
 using WCell.Util.Graphics;
 
 
@@ -56,13 +57,11 @@ namespace WCell.Addons.Default.Instances
         private static Spell BoneSlice, BoneStorm, ColdFlame, ColdFlameBone;
         private int BoneSliceTick, BoneStormTick, BoneStormStopTick, BoneStormWarnTick, ColdFlameTick, ColdFlameBoneTick, BoneStormMove;
 
-        private static Random urand = new Random();
-
         private DateTime timeSinceLastInterval;
 
         private static float fbasespeed;
         private static bool IntroDone;
-        private static int interVal = 1;
+        private static int interval = 1;
 
         private bool isBoneStorm;
         private static int boneLength;
@@ -71,13 +70,13 @@ namespace WCell.Addons.Default.Instances
         private bool BoneStormWarned;
 
         [Initialization(InitializationPass.Second)]
-        static void InitMarrowgar()
+        public static void InitMarrowgar()
         {
             BoneSlice = SpellHandler.Get(SpellId.BoneSlice);
             BoneStorm = SpellHandler.Get(SpellId.BoneStorm);
             ColdFlame = SpellHandler.Get(SpellId.Coldflame_3);
             ColdFlameBone = SpellHandler.Get(SpellId.Coldflame_13);
-            boneLength = urand.Next(20, 30);
+            boneLength = Utility.Random(20, 30);
         }
 
 
@@ -106,7 +105,7 @@ namespace WCell.Addons.Default.Instances
             var timeNow = DateTime.Now;
             var timeBetween = timeNow - timeSinceLastInterval;
 
-            if (timeBetween.TotalSeconds >= interVal)
+            if (timeBetween.TotalSeconds >= interval)
             {
                 timeSinceLastInterval = timeNow;
                 CheckSpellCast();
@@ -120,7 +119,7 @@ namespace WCell.Addons.Default.Instances
             {
                 ColdFlameBoneTick++;
                 BoneStormStopTick++;
-                if (ColdFlameTick >= urand.Next(10, 15))
+                if (ColdFlameTick >= Utility.Random(10, 15))
                 {
                     m_owner.SpellCast.Start(ColdFlameBone, false);
                     ColdFlameTick = 0;
@@ -149,7 +148,7 @@ namespace WCell.Addons.Default.Instances
                 if (bBoneStormWarn)
                     BoneStormWarnTick++;
 
-                if (BoneStormWarnTick >= urand.Next(35, 50))
+                if (BoneStormWarnTick >= Utility.Random(35, 50))
                 {
                     BoneStormWarned = true;
                     m_owner.SpellCast.Start(BoneStorm, false);

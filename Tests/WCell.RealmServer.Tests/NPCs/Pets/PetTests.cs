@@ -367,7 +367,7 @@ namespace WCell.RealmServer.Tests.NPCs.Pets
             var preHappiness = Cat.Power;
             Master.Map.AddMessageAndWait(new Message(() => {
                 var cast = Master.SpellCast;
-                cast.UsedItem = meat;
+                cast.TargetItem = meat;
                 var err = cast.Start(spell, false);
                 
                 Assert.AreEqual(SpellFailedReason.Ok, err);

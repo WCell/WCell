@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Handlers
 						var glyphSlot = packet.ReadUInt32();
 						var unkFlag = packet.ReadByte();
 
-						cast.UsedItem = cast.CasterItem = item;
+						cast.TargetItem = cast.CasterItem = item;
 
 						if (item.Template.UseSpell.Id == spellId)
 						{

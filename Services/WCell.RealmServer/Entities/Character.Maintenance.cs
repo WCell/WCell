@@ -100,7 +100,7 @@ namespace WCell.RealmServer.Entities
 
 			Orientation = m_record.Orientation;
 
-			m_bindLocation = new ZoneWorldLocation(
+			m_bindLocation = new WorldZoneLocation(
 				m_record.BindMap,
 				new Vector3(m_record.BindX, m_record.BindY, m_record.BindZ),
 				m_record.BindZone);

@@ -51,6 +51,11 @@ namespace WCell.RealmServer.Spawns
 			get { return m_spawnEntry.Position; }
 		}
 
+		public uint Phase
+		{
+			get { return m_spawnEntry.Phase; }
+		}
+
 		public E SpawnEntry
 		{
 			get { return m_spawnEntry; }

@@ -105,7 +105,7 @@ namespace WCell.RealmServer.Tests.Skills
 			skill.CurrentValue = 50;
 			skill.MaxValue = 75;
 
-			chr.SpellCast.UsedItem = item;
+			chr.SpellCast.TargetItem = item;
 			
 			// start disenchanting
 			var err = chr.SpellCast.Start(disenchantSpell, false);

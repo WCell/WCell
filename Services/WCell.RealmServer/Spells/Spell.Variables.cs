@@ -434,13 +434,16 @@ namespace WCell.RealmServer.Spells
 
 		public SpellTargetLocation()
 		{
+			Phase = WorldObject.DefaultPhase;
 		}
 
-		public SpellTargetLocation(MapId map, Vector3 pos)
+		public SpellTargetLocation(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
 			MapId = map;
+			Phase = phase;
 		}
+
 		public Vector3 Position
 		{
 			get { return m_Position; }
@@ -478,6 +481,12 @@ namespace WCell.RealmServer.Spells
 		public Map Map
 		{
 			get { return World.GetMap(MapId); }
+		}
+
+		public uint Phase
+		{
+			get;
+			set;
 		}
 	}
 	#endregion

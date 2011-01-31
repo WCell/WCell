@@ -71,6 +71,11 @@ namespace WCell.Addons.Default.Teleport
 			set { m_Position = value; }
 		}
 
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
+		}
+
 		public ZoneId ZoneId
 		{
 			get { return ZoneId.None; }

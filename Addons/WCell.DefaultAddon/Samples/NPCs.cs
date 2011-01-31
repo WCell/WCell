@@ -33,15 +33,15 @@ namespace WCell.Addons.Default.Samples
 
 		public static void CreateTeleportNPC(NPCId id, IWorldLocation loc)
 		{
-			CreateTeleportNPC(id, loc.Position, loc.MapId);
+			CreateTeleportNPC(id, loc.Position, loc.MapId, loc.Phase);
 		}
 
-		public static void CreateTeleportNPC(uint id, Vector3 location, MapId mapId)
+		public static void CreateTeleportNPC(uint id, Vector3 location, MapId mapId, uint phase = WorldObject.DefaultPhase)
 		{
-			CreateTeleportNPC((NPCId)id, location, mapId);
+			CreateTeleportNPC((NPCId)id, location, mapId, phase);
 		}
 
-		public static void CreateTeleportNPC(NPCId id, Vector3 location, MapId mapId)
+		public static void CreateTeleportNPC(NPCId id, Vector3 location, MapId mapId, uint phase = WorldObject.DefaultPhase)
 		{
 			var spawn = new NPCSpawnEntry(id, mapId, location);
 			spawn.FinalizeDataHolder();

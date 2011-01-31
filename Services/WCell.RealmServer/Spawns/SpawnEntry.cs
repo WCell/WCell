@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spawns
 			set;
 		}
 
-		uint PhaseMask
+		uint Phase
 		{
 			get;
 			set;
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Spawns
 		int GetRandomRespawnMillis();
 	}
 
-	public abstract class SpawnEntry<T, E, O, POINT, POOL> : ISpawnEntry
+	public abstract class SpawnEntry<T, E, O, POINT, POOL> : ISpawnEntry, IWorldLocation
 		where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
 		where E : SpawnEntry<T, E, O, POINT, POOL>
 		where O : WorldObject
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Spawns
 
 		protected SpawnEntry()
 		{
-			PhaseMask = 1;
+			Phase = 1;
 		}
 
 		public MapId MapId
@@ -146,7 +146,7 @@ namespace WCell.RealmServer.Spawns
 			set;
 		}
 
-		public uint PhaseMask
+		public uint Phase
 		{
 			get;
 			set;
@@ -242,9 +242,9 @@ namespace WCell.RealmServer.Spawns
 				RespawnSecondsMin = RespawnSecondsMax = 0;
 			}
 
-			if (PhaseMask == 0)
+			if (Phase == 0)
 			{
-				PhaseMask = 1;
+				Phase = 1;
 			}
 
 			if (SpawnId > highestSpawnId)

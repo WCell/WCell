@@ -201,6 +201,7 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
+    <Compile Include="AI\Spells\SpellTargetCollection.AI.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />
     <Compile Include="ArenaTeams\ArenaTeamStats.cs" />
@@ -216,6 +217,7 @@
     <Compile Include="Entities\ObjectTemplate.cs" />
     <Compile Include="Entities\NPC.Mechanics.cs" />
     <Compile Include="Entities\NPC.StatUpdates.cs" />
+    <Compile Include="Entities\Targeting.cs" />
     <Compile Include="Entities\Unit.StatUpdates.cs" />
     <Compile Include="Events\Spells\Spell.Events.cs" />
     <Compile Include="Formulas\RegenerationFormulas.cs" />
@@ -246,6 +248,7 @@
     <Compile Include="Spawns\SpawnPool.cs" />
     <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
+    <Compile Include="AI\Spells\SpellCast.AI.cs" />
     <Compile Include="Spells\SpellProcEventEntry.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />

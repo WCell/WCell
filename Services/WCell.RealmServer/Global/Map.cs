@@ -1523,7 +1523,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="filter">the entities to return</param>
 		/// <param name="limit">Max amount of objects to search for</param>
 		/// <returns>a linked list of the entities which were found in the search area</returns>
-		public IList<WorldObject> GetObjectsInRadius(ref Vector3 origin, float radius, ObjectTypes filter, uint phase, int limit)
+		public IList<WorldObject> GetObjectsInRadius(Vector3 origin, float radius, ObjectTypes filter, uint phase, int limit)
 		{
 			EnsureContext();
 
@@ -1549,7 +1549,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="radius">the area to check in</param>
 		/// <param name="limit">Max amount of objects to search for</param>
 		/// <returns>a linked list of the entities which were found in the search area</returns>
-		public ICollection<T> GetObjectsInRadius<T>(ref Vector3 origin, float radius, uint phase, int limit) where T : WorldObject
+		public ICollection<T> GetObjectsInRadius<T>(Vector3 origin, float radius, uint phase, int limit = int.MaxValue) where T : WorldObject
 		{
 			EnsureContext();
 
@@ -1574,7 +1574,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="filter">the entities to return</param>
 		/// <param name="limit">Max amount of objects to search for</param>
 		/// <returns>a linked list of the entities which were found in the search area</returns>
-		public ICollection<T> GetObjectsInRadius<T>(ref Vector3 origin, float radius, Func<T, bool> filter, uint phase, int limit) where T : WorldObject
+		public ICollection<T> GetObjectsInRadius<T>(Vector3 origin, float radius, Func<T, bool> filter, uint phase, int limit = int.MaxValue) where T : WorldObject
 		{
 			EnsureContext();
 
@@ -1597,7 +1597,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="radius">the area to check in</param>
 		/// <param name="filter">a delegate to filter search results</param>
 		/// <returns>a linked list of the entities which were found in the search area</returns>
-		public IList<WorldObject> GetObjectsInRadius(ref Vector3 origin, float radius, Func<WorldObject, bool> filter, uint phase, int limit)
+		public IList<WorldObject> GetObjectsInRadius(Vector3 origin, float radius, Func<WorldObject, bool> filter, uint phase, int limit)
 		{
 			EnsureContext();
 
@@ -1712,7 +1712,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="radius"></param>
 		/// <param name="predicate">Returns whether to continue iteration.</param>
 		/// <returns>Whether Iteration was not cancelled (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateObjects(ref Vector3 origin, float radius, uint phase, Func<WorldObject, bool> predicate)
+		public bool IterateObjects(Vector3 origin, float radius, uint phase, Func<WorldObject, bool> predicate)
 		{
 			EnsureContext();
 
@@ -1727,7 +1727,7 @@ namespace WCell.RealmServer.Global
 		/// <param name="includeSelf">whether or not to send the packet to ourselves (if we're a character)</param>
 		public void SendPacketToArea(RealmPacketOut packet, ref Vector3 center, uint phase)
 		{
-			IterateObjects(ref center, WorldObject.BroadcastRange, phase, obj =>
+			IterateObjects(center, WorldObject.BroadcastRange, phase, obj =>
 			{
 				if (obj is Character)
 				{
@@ -2098,7 +2098,7 @@ namespace WCell.RealmServer.Global
 			GameObject closest = null;
 			float distanceSq = int.MaxValue;
 
-			IterateObjects(ref pos, WorldObject.BroadcastRange, phase, obj =>
+			IterateObjects(pos, WorldObject.BroadcastRange, phase, obj =>
 			{
 				if (obj is GameObject && ((GameObject)obj).Entry.GOId == goId)
 				{
@@ -2180,7 +2180,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public GameObject GetGOWithSpellFocus(Vector3 pos, SpellFocus focus, float radius, uint phase)
 		{
-			foreach (GameObject go in GetObjectsInRadius(ref pos, radius, ObjectTypes.GameObject, phase, 0))
+			foreach (GameObject go in GetObjectsInRadius(pos, radius, ObjectTypes.GameObject, phase, 0))
 			{
 				if (go.Entry is GOSpellFocusEntry && ((GOSpellFocusEntry)go.Entry).SpellFocus == focus)
 				{

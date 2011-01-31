@@ -34,13 +34,13 @@ namespace WCell.RealmServer.Spells.Effects
 				return;
 			}
 
-			if (Cast.UsedItem == null)
+			if (Cast.TargetItem == null)
 			{
 				failReason = SpellFailedReason.ItemNotFound;
 				return;
 			}
 
-			var food = Cast.UsedItem.Template;
+			var food = Cast.TargetItem.Template;
 
 			if (!pet.CanEat(food.m_PetFood))
 			{
@@ -65,7 +65,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override void Apply()
 		{
 			var pet = Cast.CasterChar.ActivePet;
-			var food = Cast.UsedItem.Template;
+			var food = Cast.TargetItem.Template;
 
 			if (pet == null || food == null)
 			{

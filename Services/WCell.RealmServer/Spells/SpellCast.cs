@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// An Item that this Spell is being used on
 		/// </summary>
-		public Item UsedItem;
+		public Item TargetItem;
 
 		/// <summary>
 		/// Any kind of item that was used to trigger this cast
@@ -309,6 +309,14 @@ namespace WCell.RealmServer.Spells
 		public bool IsPlayerCast
 		{
 			get { return isPlayerCast; }
+		}
+
+		/// <summary>
+		/// Whether the was SpellCast was started by an AI-controlled Unit
+		/// </summary>
+		public bool IsAICast
+		{
+			get { return !isPlayerCast && CasterUnit != null; }
 		}
 
 		public bool UsesRunes
@@ -653,8 +661,8 @@ namespace WCell.RealmServer.Spells
 			if (CasterObject is Character && TargetFlags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				var uid = packet.ReadPackedEntityId();
-				UsedItem = ((Character)CasterObject).Inventory.GetItem(uid);
-				if (UsedItem == null || !UsedItem.CanBeUsed)
+				TargetItem = ((Character)CasterObject).Inventory.GetItem(uid);
+				if (TargetItem == null || !TargetItem.CanBeUsed)
 				{
 					Cancel(SpellFailedReason.BadTargets);
 					return SpellFailedReason.BadTargets;
@@ -779,6 +787,26 @@ namespace WCell.RealmServer.Spells
 		/// if <code>GodMode</code> is set or the spell is not delayed.
 		/// Returns whether, under the given circumstances, this spell may be casted.
 		/// </summary>
+		public SpellFailedReason Start(Spell spell)
+		{
+			return Start(spell, false, WorldObject.EmptyArray);
+		}
+
+		/// <summary>
+		/// Starts casting the given spell.
+		/// if <code>GodMode</code> is set or the spell is not delayed.
+		/// Returns whether, under the given circumstances, this spell may be casted.
+		/// </summary>
+		public SpellFailedReason Start(SpellId spell)
+		{
+			return Start(spell, false, WorldObject.EmptyArray);
+		}
+
+		/// <summary>
+		/// Starts casting the given spell.
+		/// if <code>GodMode</code> is set or the spell is not delayed.
+		/// Returns whether, under the given circumstances, this spell may be casted.
+		/// </summary>
 		/// <param name="passiveCast">whether the Spell is a simple spell-application or an actual spell-cast</param>
 		/// <param name="initialTargets">A collection of initial targets or null.</param>
 		public SpellFailedReason Start(Spell spell, bool passiveCast, params WorldObject[] initialTargets)
@@ -842,6 +870,17 @@ namespace WCell.RealmServer.Spells
 
 			try
 			{
+				// Let AI caster prepare targets and only cast, if valid targets were found
+				if (IsAICast)
+				{
+					var err = PrepareAI(this);
+					if (err != SpellFailedReason.Ok)
+					{
+						Cancel(err);
+						return err;
+					}
+				}
+
 				//var stopwatch = Stopwatch.StartNew();
 				if (Selected == null && CasterUnit != null)
 				{
@@ -1086,7 +1125,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Item restrictions			
-			return m_spell.CheckItemRestrictions(UsedItem, caster.Inventory);
+			return m_spell.CheckItemRestrictions(TargetItem, caster.Inventory);
 		}
 
 		List<CastMiss> CheckHit(Spell spell)
@@ -1562,7 +1601,7 @@ namespace WCell.RealmServer.Spells
 			{
 				cast.TargetLoc = target.Position;
 			}
-			cast.UsedItem = cast.CasterItem = usedItem;
+			cast.TargetItem = cast.CasterItem = usedItem;
 
 			cast.ValidateAndTrigger(spell, triggerOwner, target, action, triggerEffect);
 		}
@@ -1721,7 +1760,7 @@ namespace WCell.RealmServer.Spells
 				((NPC)Selected).CurrentTamer = null;
 			}
 
-			UsedItem = null;
+			TargetItem = null;
 			CasterItem = null;
 			m_castTimer.Stop();
 			m_initialTargets = null;

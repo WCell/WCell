@@ -13,7 +13,7 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
-			if (m_cast.UsedItem.Amount < Effect.MinValue)
+			if (m_cast.TargetItem.Amount < Effect.MinValue)
 			{
 				failReason = SpellFailedReason.NeedMoreItems;
 			}
@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override void Apply()
 		{
 			var caster = m_cast.CasterChar;
-			var item = m_cast.UsedItem;
+			var item = m_cast.TargetItem;
 			var loot = LootMgr.CreateAndSendObjectLoot(item, caster, LootEntryType, false);
 			if (loot != null)
 			{

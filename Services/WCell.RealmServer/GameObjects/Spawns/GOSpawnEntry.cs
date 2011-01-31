@@ -20,7 +20,7 @@ namespace WCell.RealmServer.GameObjects.Spawns
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public class GOSpawnEntry : SpawnEntry<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>, IDataHolder, IWorldLocation
+	public class GOSpawnEntry : SpawnEntry<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>, IDataHolder
 	{
 		#region GO-Specific Data
 		public uint Id;

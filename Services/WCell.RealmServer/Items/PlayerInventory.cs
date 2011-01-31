@@ -939,6 +939,8 @@ namespace WCell.RealmServer.Items
 
 		public bool Iterate(InventorySlot[] slots, Func<Item, bool> validator)
 		{
+			Owner.EnsureContext();
+
 			var contLookup = ItemMgr.ContainerSlotsWithBank;
 
 			for (var i1 = 0; i1 < slots.Length; i1++)
@@ -1138,19 +1140,24 @@ namespace WCell.RealmServer.Items
 			var slotIdLists = new List<SimpleSlotId>[items.Length];				// the slots of the found items
 			var foundAmounts = new int[items.Length];
 			List<SimpleSlotId> slotIds;
+
+			// find all necessary items
 			for (var i = 0; i < items.Length; i++)
 			{
 				var template = items[i];
-				slotIdLists[i] = slotIds = new List<SimpleSlotId>();
+				slotIdLists[i] = slotIds = new List<SimpleSlotId>(3);
 
 				foundAmounts[i] = Find(inclBank, template.Amount, slotIds, item => item.Template.ItemId == template.ItemId);
 
 				if (foundAmounts[i] < template.Amount)
 				{
+					// one of the required items does not have a sufficient amount -> Cancel
 					return false;
 				}
 			}
 
+			// we made sure that we have enough of all items
+			// => Remove all of them
 			for (var i = 0; i < items.Length; i++)
 			{
 				var template = items[i];
@@ -1187,53 +1194,22 @@ namespace WCell.RealmServer.Items
 		/// <returns>The amount of found items</returns>
 		public int Find(bool inclBank, int max, IList<SimpleSlotId> list, Func<Item, bool> validator)
 		{
-			var slots = inclBank ? ItemMgr.InvSlotsWithBank : ItemMgr.StorageSlotsWithoutBank;
 			var found = 0;
 
-			var contLookup = ItemMgr.ContainerSlotsWithBank;
-
-			Item item;
-			foreach (int avlblSlot in slots)
+			Iterate(inclBank, item =>
 			{
-				item = m_Items[avlblSlot];
-				if (contLookup[avlblSlot])
-				{
-					var container = item as Container;
-					if (container != null)
-					{
-						var contInv = container.BaseInventory;
-						var contItems = contInv.Items;
-						for (var i = 0; i < contItems.Length; i++)
-						{
-							item = contItems[i];
-							if (item != null && validator(item))
-							{
-								found += item.Amount;
-								var slotId = new SimpleSlotId { Container = contInv, Slot = i };
-								list.Add(slotId);
-								if (found >= max)
-								{
-									return found;
-								}
-							}
-						}
-					}
-				}
-				else if (item != null && validator(item))
+				if (validator(item))
 				{
 					found += item.Amount;
-					var slotId = new SimpleSlotId
-					{
-						Container = this,
-						Slot = avlblSlot
-					};
+					var slotId = new SimpleSlotId { Container = item.Container, Slot = item.Slot };
 					list.Add(slotId);
 					if (found >= max)
 					{
-						return found;
+						return false;
 					}
 				}
-			}
+				return true;
+			});
 			return found;
 		}
 
@@ -2599,7 +2575,7 @@ namespace WCell.RealmServer.Items
 				yield return item;
 				if (!item.IsContainer) continue;
 
-				var cont = ((Container) item).BaseInventory;
+				var cont = ((Container)item).BaseInventory;
 				foreach (var bagItem in cont)
 				{
 					yield return bagItem;

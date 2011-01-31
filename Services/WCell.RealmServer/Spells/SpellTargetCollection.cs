@@ -29,13 +29,11 @@ namespace WCell.RealmServer.Spells
 	public delegate void TargetFilter(SpellCast cast, WorldObject target, ref SpellFailedReason failReason);
 
 	/// <summary>
-	/// A list of all targets for a spell.
-	/// 
-	/// TODO: Add only subgroups for party targeting?
+	/// A list of all targets for a Spell
 	/// </summary>
 	public class SpellTargetCollection : List<WorldObject>
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
+		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 		static readonly ObjectPool<SpellTargetCollection> SpellTargetCollectionPool = ObjectPoolMgr.CreatePool(() => new SpellTargetCollection());
 
 		public static SpellTargetCollection Obtain()
@@ -83,12 +81,6 @@ namespace WCell.RealmServer.Spells
 			{
 				// TODO: This still needs to work without a caster?!
 				log.Warn("Invalid SpellCast - Tried to find targets, without Caster set: {0}", caster);
-				return SpellFailedReason.Error;
-			}
-
-			if (!cast.IsPlayerCast)
-			{
-				log.Warn("Invalid SpellCast - NPC \"{0}\" tried to cast spell without prepared targets: {1}", caster, cast.Spell);
 				return SpellFailedReason.Error;
 			}
 
@@ -198,7 +190,7 @@ namespace WCell.RealmServer.Spells
 				limit = int.MaxValue;
 			}
 
-			Cast.Map.IterateObjects(ref pos, radius > 0 ? radius : 5, Cast.Phase,
+			Cast.Map.IterateObjects(pos, radius > 0 ? radius : 5, Cast.Phase,
 				obj =>
 				{
 					if (ValidateTarget(obj, targetFilter) == SpellFailedReason.Ok)
@@ -802,7 +794,7 @@ namespace WCell.RealmServer.Spells.Extensions
 		/// </summary>
 		public static void AddItemOrObject(this SpellTargetCollection targets, TargetFilter filter, ref SpellFailedReason failReason)
 		{
-			if (targets.Cast.UsedItem == null && !(targets.Cast.Selected is GameObject))
+			if (targets.Cast.TargetItem == null && !(targets.Cast.Selected is GameObject))
 			{
 				failReason = SpellFailedReason.BadTargets;
 			}

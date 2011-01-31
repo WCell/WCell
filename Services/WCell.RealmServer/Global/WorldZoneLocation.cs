@@ -27,6 +27,11 @@ namespace WCell.RealmServer.Global
 			set { m_Names = value; }
 		}
 
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
+		}
+
 		public WorldZoneLocation()
 		{
 		}

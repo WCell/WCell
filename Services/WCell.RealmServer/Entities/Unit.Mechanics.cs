@@ -1376,6 +1376,8 @@ namespace WCell.RealmServer.Entities
 			}
 
 			TeleportTo(rgn, ref pos, m_orientation);
+			Phase = location.Phase;
+
 			if (location is WorldObject)
 			{
 				Zone = ((WorldObject)location).Zone;

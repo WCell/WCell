@@ -15,7 +15,7 @@
     <Flat Name="MoveType" Column="MovementType" />
     <Flat Name="DisplayIdOverride" Column="modelid" />
     <Flat Name="DelayMin" Column="spawntimesecs" />
-    <Flat Name="PhaseMask" Column="phaseMask" />
+    <Flat Name="Phase" Column="phaseMask" />
     <Flat Name="EquipmentId" Column="equipment_id" />
     <Flat Name="IsDead" Column="DeathState" />
     <Flat Name="RespawnSeconds" Column="spawntimesecs" />

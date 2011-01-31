@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
-using WCell.Constants.Items;
 using WCell.Constants.Misc;
 using WCell.Core;
 using WCell.RealmServer.Content;
@@ -11,7 +10,6 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.Util.Data;
 using WCell.Constants.World;
-using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.RacesClasses
@@ -100,7 +98,7 @@ namespace WCell.RealmServer.RacesClasses
 				ArchetypeMgr.Archetypes[(uint)ClassId] = races = new Archetype[WCellDef.RaceTypeLength];
 			}
 
-			StartLocation = new ZoneWorldLocation(StartMapId, StartPosition, StartZoneId);
+			StartLocation = new WorldZoneLocation(StartMapId, StartPosition, StartZoneId);
 			if (StartLocation.Map == null)
 			{
 				LogManager.GetCurrentClassLogger().Warn("Failed to initialize Archetype \"" + this + "\" - StartMap does not exist: " + StartMapId);

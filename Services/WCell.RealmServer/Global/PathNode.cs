@@ -22,6 +22,12 @@ namespace WCell.RealmServer.Global
 			get;
 			set;
 		}
+
+		public uint Phase
+		{
+			get { return WorldObject.AllPhases; }
+		}
+
 		public string Name;
 
 		public NPCId HordeMountId;
@@ -70,13 +76,13 @@ namespace WCell.RealmServer.Global
 			var node = new PathNode();
 
 			int currentIndex = 0;
-            id = (int)(node.Id = GetUInt32(rawData, currentIndex++));// col 0
+			id = (int)(node.Id = GetUInt32(rawData, currentIndex++));// col 0
 			node.mapId = (MapId)GetUInt32(rawData, currentIndex++);// col 1
-            node.Position = rawData.GetLocation((uint)currentIndex);// col 2, 3, 4
+			node.Position = rawData.GetLocation((uint)currentIndex);// col 2, 3, 4
 			currentIndex += 3;// 3 floats for location
 			node.Name = GetString(rawData, ref currentIndex); // col 5 - 21
-            node.HordeMountId = (NPCId)GetUInt32(rawData, currentIndex++);// col 22
-            node.AllianceMountId = (NPCId)GetUInt32(rawData, currentIndex);// col 23
+			node.HordeMountId = (NPCId)GetUInt32(rawData, currentIndex++);// col 22
+			node.AllianceMountId = (NPCId)GetUInt32(rawData, currentIndex);// col 23
 
 			return node;
 		}

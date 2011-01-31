@@ -211,6 +211,7 @@ namespace WCell.RealmServer.Entities
 				go.Delete();
 				return null;
 			}
+			go.Phase = where.Phase;
 			var pos = where.Position;
 			where.Map.AddObject(go, ref pos);
 			return go;
@@ -239,7 +240,7 @@ namespace WCell.RealmServer.Entities
 			spawnEntry = spawnEntry ?? entry.FirstSpawnEntry;
 			if (spawnEntry != null)
 			{
-				Phase = spawnEntry.PhaseMask;
+				Phase = spawnEntry.Phase;
 				State = spawnEntry.State;
 				if (spawnEntry.Scale != 1)
 				{

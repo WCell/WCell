@@ -278,9 +278,9 @@ namespace WCell.RealmServer.Spells
 			// 0x1010
 			if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
-				if (cast.UsedItem != null)
+				if (cast.TargetItem != null)
 				{
-					cast.UsedItem.EntityId.WritePacked(packet);
+					cast.TargetItem.EntityId.WritePacked(packet);
 				}
 			}
 			// 0x20
@@ -453,7 +453,7 @@ namespace WCell.RealmServer.Spells
 
 		private static void WriteCaster(SpellCast cast, RealmPacketOut packet)
 		{
-			if (cast.UsedItem != null)
+			if (cast.TargetItem != null)
 			{
 				//packet.Write(cast.UsedItem.EntityId);
 				cast.CasterItem.EntityId.WritePacked(packet);

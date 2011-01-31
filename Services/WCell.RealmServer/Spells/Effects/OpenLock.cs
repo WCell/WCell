@@ -52,7 +52,7 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 			else
 			{
-				lockable = m_cast.UsedItem;
+				lockable = m_cast.TargetItem;
 			}
 
 			if (lockable == null)

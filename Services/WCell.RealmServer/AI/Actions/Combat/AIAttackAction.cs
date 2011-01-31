@@ -65,6 +65,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			{
 				((NPC)m_owner).NPCSpells.ShuffleReadySpells();
 			}
+
 			m_target = m_owner.Target;
 			if (m_target != null)
 			{
@@ -123,99 +124,21 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		{
 			var owner = (NPC)m_owner;
 
-			var spells = owner.NPCSpells;
-			if (owner.CheckTicks(SpellShuffleTicks))
-			{
-				spells.ShuffleReadySpells();
-			}
+			// no need to shuffle - spells are on cooldowns anyway
+			//var spells = owner.NPCSpells;
+			//if (owner.CheckTicks(SpellShuffleTicks))
+			//{
+			//    spells.ShuffleReadySpells();
+			//}
 
 			foreach (var spell in owner.NPCSpells.ReadySpells)
 			{
 				if (spell.CanCast(owner))
 				{
-					if (!ShouldCast(spell))
-					{
-						continue;
-					}
-
-					if (Cast(spell))
-					{
-						return true;
-					}
+					return m_owner.SpellCast.Start(spell) == SpellFailedReason.Ok;
 				}
 			}
 			return false;
-		}
-
-		/// <summary>
-		/// Whether the unit should cast the given spell
-		/// </summary>
-		private bool ShouldCast(Spell spell)
-		{
-			if (spell.IsAura)
-			{
-				if (spell.CasterIsTarget)
-				{
-					if (m_owner.Auras.Contains(new AuraIndexId(spell.AuraUID, true)))
-					{
-						// caster already has Aura
-						return false;
-					}
-				}
-				else if (spell.HasTargets && !spell.IsAreaSpell)
-				{
-					if (m_target.Auras.Contains(spell))
-					{
-						// target already has Aura
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		private bool Cast(Spell spell)
-		{
-			if (spell.HasHarmfulEffects)
-			{
-				return CastHarmfulSpell(spell);
-			}
-			else
-			{
-				return CastBeneficialSpell(spell);
-			}
-		}
-
-		/// <summary>
-		/// Casts the given harmful Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		protected bool CastHarmfulSpell(Spell spell)
-		{
-			if (m_owner.IsInSpellRange(spell, m_target))
-			{
-				m_owner.SpellCast.SourceLoc = m_owner.Position;
-				m_owner.SpellCast.TargetLoc = m_target.Position;
-				return m_owner.SpellCast.Start(spell, false) == SpellFailedReason.Ok;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Casts the given beneficial spell on a friendly Target
-		/// </summary>
-		/// <param name="spell"></param>
-		protected bool CastBeneficialSpell(Spell spell)
-		{
-			var targets = spell.AISettings.FindValidTargetsForCaster(m_owner);
-			if (targets == null)
-			{
-				return false;
-			}
-
-			// cast the spell
-			m_owner.SpellCast.Start(spell, false, targets);
-			return true;
 		}
 
 		public override UpdatePriority Priority

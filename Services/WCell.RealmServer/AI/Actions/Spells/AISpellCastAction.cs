@@ -6,7 +6,6 @@ namespace WCell.RealmServer.AI.Actions.Spells
 {
 	/// <summary>
 	/// AI Action for casting a spell
-	/// TODO: Spell casting
 	/// </summary>
 	public class AISpellCastAction : AITargetedAction
 	{
@@ -26,14 +25,17 @@ namespace WCell.RealmServer.AI.Actions.Spells
 		public override void Start()
 		{
 			var spellCast = m_owner.SpellCast;
-			spellCast.Start(m_spell, false, m_owner.Target);
+			spellCast.Start(m_spell, false);
 		}
 
 		public override void Update()
 		{
 			var spellCast = m_owner.SpellCast;
 
-			// TODO: 
+			if (!spellCast.IsCasting)
+			{
+				m_owner.Brain.StopCurrentAction();
+			}
 		}
 
 		public override void Stop()

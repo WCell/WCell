@@ -914,6 +914,7 @@ namespace WCell.RealmServer.NPCs
 		{
 			var npc = Create(loc.Map.DifficultyIndex);
 			loc.Map.AddObject(npc, loc.Position);
+			npc.Phase = loc.Phase;
 			return npc;
 		}
 

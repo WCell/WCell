@@ -20,7 +20,6 @@ namespace WCell.RealmServer.Help.Tickets
 		private string m_ownerName;
 		private TicketType m_Type;
 		private Map m_Map;
-		private Vector3 m_position;
 		private string m_Message;
 		private DateTime m_Timestamp;
 
@@ -34,8 +33,11 @@ namespace WCell.RealmServer.Help.Tickets
 			m_ownerName = chr.Name;
 			m_charId = chr.EntityId.Low;
 			m_Message = message;
+
 			m_Map = chr.Map;
-			m_position = chr.Position;
+			Position = chr.Position;
+			Phase = chr.Phase;
+
 			m_Timestamp = DateTime.Now;
 			m_Type = type;
 		}
@@ -127,26 +129,14 @@ namespace WCell.RealmServer.Help.Tickets
 		/// </summary>
 		public Vector3 Position
 		{
-			get { return m_position; }
-			set { m_position = value; }
+			get;
+			set;
 		}
 
-		public float PositionX
+		public uint Phase
 		{
-			get { return m_position.X; }
-			set { m_position.X = value; }
-		}
-
-		public float PositionY
-		{
-			get { return m_position.Y; }
-			set { m_position.Y = value; }
-		}
-
-		public float PositionZ
-		{
-			get { return m_position.Z; }
-			set { m_position.Z = value; }
+			get;
+			set;
 		}
 
 		public string Message
@@ -314,12 +304,15 @@ namespace WCell.RealmServer.Help.Tickets
 			TicketMgr.Instance.lck.EnterWriteLock();
 			try
 			{
-				m_position = m_owner.Position;
+				Position = m_owner.Position;
 				m_Map = m_owner.Map;
+				Phase = m_owner.Phase;
+
 				m_owner = null;
-				if (m_handler != null)
+				var handler = m_handler;
+				if (handler != null)
 				{
-					m_handler.SendMessage("Owner of the Ticket you are handling went -{0}-.", ChatUtility.Colorize("offline", Color.Red));
+					handler.SendMessage("Owner of the Ticket you are handling went -{0}-.", ChatUtility.Colorize("offline", Color.Red));
 				}
 			}
 			finally

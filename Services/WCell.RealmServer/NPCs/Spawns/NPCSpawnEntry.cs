@@ -18,7 +18,7 @@ namespace WCell.RealmServer.NPCs.Spawns
 	/// Spawn-information for NPCs
 	/// </summary>
 	[DataHolder]
-	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, INPCDataHolder, IWorldLocation
+	public partial class NPCSpawnEntry : SpawnEntry<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>, INPCDataHolder
 	{
 		public NPCSpawnEntry()
 		{

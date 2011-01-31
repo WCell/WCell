@@ -44,25 +44,15 @@ namespace WCell.RealmServer.Spells
 					}
 					lastHandler = spellHandler;
 
-					var doubleTarget = false;
 					if (spellHandler.m_targets != null)
 					{
 						foreach (var target in spellHandler.m_targets)
 						{
 							if (target is Unit)
 							{
-								foreach (var info in m_auraApplicationInfos)
+								if (m_auraApplicationInfos.Any(info => info.Target == target))
 								{
-									if (info.Target == target)
-									{
-										doubleTarget = true;
-										break;
-									}
-								}
-
-								if (doubleTarget)
-								{
-									doubleTarget = false;
+									// target was already added
 									continue;
 								}
 
@@ -172,7 +162,7 @@ namespace WCell.RealmServer.Spells
 				else
 				{
 					// create aura
-					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, UsedItem, !m_spell.IsPreventionDebuff && !hostile);
+					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, TargetItem, !m_spell.IsPreventionDebuff && !hostile);
 					if (newAura != null)
 					{
 						// check for debuff
