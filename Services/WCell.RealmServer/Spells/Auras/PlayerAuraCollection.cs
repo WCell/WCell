@@ -96,9 +96,9 @@ namespace WCell.RealmServer.Spells.Auras
 
 		}
 
-		protected internal override void Cancel(Aura aura)
+		protected internal override void Remove(Aura aura)
 		{
-			base.Cancel(aura);
+			base.Remove(aura);
 			OnAuraAddedOrRemoved();
 			if (aura.Spell.IsPassive)
 			{

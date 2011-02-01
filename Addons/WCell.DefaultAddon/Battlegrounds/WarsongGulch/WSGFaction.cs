@@ -230,7 +230,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				FlagCaptured(FlagCarrier);
 			}
 
-			if (FlagCarrier.Auras.Cancel(_flagSpell.SpellId))
+			if (FlagCarrier.Auras.Remove(_flagSpell.SpellId))
 			{
 				Instance.CallDelayed(_flagRespawnTime, () => RespawnFlag()); //Respawn the flag in X seconds
 

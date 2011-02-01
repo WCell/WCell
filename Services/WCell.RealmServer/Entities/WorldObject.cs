@@ -1319,7 +1319,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (this is Unit)
 				{
-					((Unit)this).Auras.Cancel(aura.Spell);
+					((Unit)this).Auras.Remove(aura.Spell);
 				}
 				else if (m_areaAuras.Count == 0 && (IsTrap || this is DynamicObject))
 				{

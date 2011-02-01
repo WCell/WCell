@@ -1138,7 +1138,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (spell.IsAura)
 					{
-						m_owner.Auras.Cancel(spell);
+						m_owner.Auras.Remove(spell);
 					}
 				}
 			}

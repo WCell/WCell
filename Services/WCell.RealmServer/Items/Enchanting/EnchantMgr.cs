@@ -155,7 +155,7 @@ namespace WCell.RealmServer.Items.Enchanting
 
 		private static void RemoveEquipSpell(Item item, ItemEnchantmentEffect effect)
 		{
-			item.OwningCharacter.Auras.Cancel((SpellId)effect.Misc);
+			item.OwningCharacter.Auras.Remove((SpellId)effect.Misc);
 		}
 
 		private static void RemoveResistance(Item item, ItemEnchantmentEffect effect)

@@ -196,9 +196,9 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		/// <param name="chr"></param>
 		protected override void OnLeave(Character chr)
 		{
-			chr.Auras.Cancel(SpellId.WarsongFlag);
-			chr.Auras.Cancel(SpellId.WarsongFlag_2);
-			chr.Auras.Cancel(SpellId.SilverwingFlag);
+			chr.Auras.Remove(SpellId.WarsongFlag);
+			chr.Auras.Remove(SpellId.WarsongFlag_2);
+			chr.Auras.Remove(SpellId.SilverwingFlag);
 
 			Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSOnLeave), chr.Name);
 

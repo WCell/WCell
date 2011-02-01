@@ -56,7 +56,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (owner.Race == RaceId.NightElf)
 			{
 				// Whisp
-				m_aura.Auras.Cancel(SpellId.Ghost_3);
+				m_aura.Auras.Remove(SpellId.Ghost_3);
 			}
 
 			if (m_aura.Auras.GhostAura == m_aura)

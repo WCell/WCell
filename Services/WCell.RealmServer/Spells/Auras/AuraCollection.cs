@@ -719,13 +719,13 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		public bool Cancel(uint auraUID, bool positive)
+		public bool Remove(uint auraUID, bool positive)
 		{
 			var id = new AuraIndexId { AuraUID = auraUID, IsPositive = positive };
-			return Cancel(id);
+			return Remove(id);
 		}
 
-		public bool Cancel(AuraIndexId auraId)
+		public bool Remove(AuraIndexId auraId)
 		{
 			Aura aura;
 			if (m_auras.TryGetValue(auraId, out aura))
@@ -736,12 +736,12 @@ namespace WCell.RealmServer.Spells.Auras
 			return false;
 		}
 
-		public bool Cancel(SpellId id)
+		public bool Remove(SpellId id)
 		{
 			var spell = SpellHandler.Get(id);
 			if (spell != null)
 			{
-				return Cancel(spell);
+				return Remove(spell);
 			}
 			return false;
 		}
@@ -749,7 +749,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Removes and cancels the first Aura of the given Spell
 		/// </summary>
-		public bool Cancel(Spell spell)
+		public bool Remove(Spell spell)
 		{
 			Aura aura;
 			if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
@@ -778,7 +778,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Removes the given Aura without cancelling it.
 		/// Automatically called by <see cref="Aura.Remove"/>.
 		/// </summary>
-		internal protected virtual void Cancel(Aura aura)
+		internal protected virtual void Remove(Aura aura)
 		{
 			m_auras.Remove(aura.Id);
 			if (aura.Spell.IsProc)

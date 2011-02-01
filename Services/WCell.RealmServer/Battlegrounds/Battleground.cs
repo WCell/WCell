@@ -275,7 +275,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 			foreach (var chr in m_characters)
 			{
-				chr.Auras.Cancel(_preparationSpell);
+				chr.Auras.Remove(_preparationSpell);
 			}
 		}
 
@@ -314,7 +314,7 @@ namespace WCell.RealmServer.Battlegrounds
 					_status = BattlegroundStatus.Active;
 					foreach (var chr in m_characters)
 					{
-						chr.Auras.Cancel(_preparationSpell);
+						chr.Auras.Remove(_preparationSpell);
 					}
 					OnStart();
 				}

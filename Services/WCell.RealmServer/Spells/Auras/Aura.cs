@@ -923,7 +923,7 @@ namespace WCell.RealmServer.Spells.Auras
 				Deactivate(cancelled);
 				RemoveVisibleEffects(cancelled);
 
-				auras.Cancel(this);
+				auras.Remove(this);
 				OnRemove();
 
 				if (m_spell.IsAreaAura && owner.EntityId == CasterReference.EntityId && owner.CancelAreaAura(m_spell))
