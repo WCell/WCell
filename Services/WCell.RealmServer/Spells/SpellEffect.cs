@@ -510,7 +510,7 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
+			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}

@@ -186,11 +186,12 @@ namespace WCell.RealmServer.Tests.Entities
 		{
 			var chr = Setup.DefaultCharacter;
 
+			chr.PowerType = PowerType.Mana;
 			chr.EnsureInWorld();
 			chr.EnsureHealth(100);
 			chr.EnsurePower(100);
 			chr.Power = chr.MaxPower - 10;
-			chr.PowerRegenPerTick = 20;
+			chr.SetBaseStat(StatType.Spirit, 100000);		// should be enough to regen 10 mana
 
 			// wait one map tick to regen
 			chr.Map.AddMessageAndWait(new Message(() => {

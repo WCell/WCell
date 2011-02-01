@@ -730,6 +730,11 @@ namespace WCell.Util
 			return indices.ToArray();
 		}
 
+		public static uint Sum(this IEnumerable<uint> arr)
+		{
+			return arr.Aggregate(0u, (current, n) => current + n);
+		}
+
 		/// <summary>
 		/// Creates and returns an array of all indices that are set within the given flag field.
 		/// eg. 11000011 would result into an array containing: 0,1,6,7

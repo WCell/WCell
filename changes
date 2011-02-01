@@ -1,1 +1,3 @@
-- fixed #bg create to not throw an exception, if an invalid bgid was used
+- MageArcaneArcaneShielding now reduces mana drained by mana shield
+- when ManaRegenPerTickInterruptedPct is set, update mana regen calculations
+- compressed SpellProcEvent.cs; fixed event indexing; prevent assigning of "null masks"; added more overriding; added xml file to sln; also, load the DB proc info before the second initialization pass, so values can be overridden

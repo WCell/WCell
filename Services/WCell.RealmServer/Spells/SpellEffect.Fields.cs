@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public Spell Spell;
 
-		public int EffectIndex;
+		public int EffectIndex = -1;
 
 		[NotPersistent]
 		public int ValueMin, ValueMax;

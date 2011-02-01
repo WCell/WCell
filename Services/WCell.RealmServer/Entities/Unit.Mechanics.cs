@@ -1237,7 +1237,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return dmg;
 			}
-			return dmg + ((dmg * m_threatMods[(int)school]) / 100);
+			return Math.Max(0, dmg + ((dmg * m_threatMods[(int)school]) / 100));
 		}
 		#endregion
 
