@@ -22,13 +22,13 @@ namespace WCell.RealmServer.Spells
 		public SpellClassSet SpellClassSet;
 
 		[Persistent(3)]
-		public uint[] SpellFamilyMaskA;
+		public uint[] SpellFamilyMask0;
 
 		[Persistent(3)]
-		public uint[] SpellFamilyMaskB;
+		public uint[] SpellFamilyMask1;
 
 		[Persistent(3)]
-		public uint[] SpellFamilyMaskC;
+		public uint[] SpellFamilyMask2;
 
 		public ProcTriggerFlags ProcTriggerFlags;
 
@@ -42,34 +42,36 @@ namespace WCell.RealmServer.Spells
 		{
 			switch (index)
 			{
-				case 0: return SpellFamilyMaskA;
-				case 1: return SpellFamilyMaskB;
-				case 3: return SpellFamilyMaskC;
+				case 0: return SpellFamilyMask0;
+				case 1: return SpellFamilyMask1;
+				case 3: return SpellFamilyMask2;
 			}
 			return null;
 		}
 
+		[NotPersistent]
 		public DataHolderState DataHolderState
 		{
 			get;
 			set;
 		}
+
 		public void FinalizeDataHolder()
 		{
 			ProcEventHelper.Entries.Add(SpellId, this);
 
 			// sieve out "null masks"
-			if (SpellFamilyMaskA.Sum() == 0)
+			if (SpellFamilyMask0.Sum() == 0)
 			{
-				SpellFamilyMaskA = null;
+				SpellFamilyMask0 = null;
 			}
-			if (SpellFamilyMaskB.Sum() == 0)
+			if (SpellFamilyMask1.Sum() == 0)
 			{
-				SpellFamilyMaskB = null;
+				SpellFamilyMask1 = null;
 			}
-			if (SpellFamilyMaskC.Sum() == 0)
+			if (SpellFamilyMask2.Sum() == 0)
 			{
-				SpellFamilyMaskC = null;
+				SpellFamilyMask2 = null;
 			}
 		}
 
