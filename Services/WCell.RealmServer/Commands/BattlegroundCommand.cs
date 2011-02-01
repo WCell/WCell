@@ -209,13 +209,13 @@ namespace WCell.RealmServer.Commands
 				}
 
 				var bgid = trigger.Text.NextEnum(BattlegroundId.End);
-				if (bgid == BattlegroundId.End || bgid <= BattlegroundId.None)
+				var templ = BattlegroundMgr.GetTemplate(bgid);
+
+				if (templ == null)
 				{
-					trigger.Reply("Invalid BGId.");
+					trigger.Reply("Invalid BGId: {0}", bgid);
 					return;
 				}
-
-				var templ = BattlegroundMgr.GetTemplate(bgid);
 				if (level < templ.MinLevel || level > templ.MaxLevel)
 				{
 					trigger.Reply("Invalid level: Must be between {0} and {1}", templ.MinLevel, templ.MaxLevel);
@@ -224,23 +224,32 @@ namespace WCell.RealmServer.Commands
 
 				var queue = templ.GetQueue(level);
 				var instance = queue.CreateBattleground();
+
 				if (instance != null)
 				{
 					trigger.Reply("Battleground created: " + instance);
+					if (mod.Length == 0) return;
+
+					// process modifiers
+					var chr = target as Character;
+					if (chr == null)
+					{
+						// requires Character
+						trigger.Reply("Modifiers require a Character target: " + mod);
+						return;
+					}
+
 					if (mod.Contains("i"))
 					{
-						if (target is Character)
-						{
-							var team = instance.GetTeam(target.FactionGroup.GetBattlegroundSide());
-							team.Invite((Character)target);
-						}
+						// invite
+						var team = instance.GetTeam(chr.FactionGroup.GetBattlegroundSide());
+						team.Invite(chr);
 					}
-					else if (mod.Contains("e"))
+					
+					if (mod.Contains("e"))
 					{
-						if (target is Character)
-						{
-							instance.TeleportInside((Character)target);
-						}
+						// enter
+						instance.TeleportInside(chr);
 					}
 				}
 				else

@@ -1,4 +1,1 @@
-- fixed #listplayers
-- renamed SendMultiStringSystemMessage to SendSystemMessage and cleaned it up a bit
-- added "params object[] args" parameter to Localize* methods
-- more work on spell cast AI
+- fixed #bg create to not throw an exception, if an invalid bgid was used
