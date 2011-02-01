@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 
-namespace WCell.RealmServer.Spells
+namespace WCell.RealmServer.AI.Spells
 {
 	public class AISpellTargetCollection : SpellTargetCollection
 	{
@@ -52,9 +49,10 @@ namespace WCell.RealmServer.Spells
 		/// Returns a set of potential targets for this Spell and the given caster, 
 		/// using this Spell's AIBehavior as parameters.
 		/// </summary>
-		WorldObject[] FindValidAICasterTargets()
+		IEnumerable<WorldObject> FindValidAICasterTargets()
 		{
-			var cast = Cast;
+			var handler = FirstHandler;
+			var cast = handler.Cast;
 			var caster = cast.CasterUnit;
 			var spell = cast.Spell;
 
@@ -65,27 +63,44 @@ namespace WCell.RealmServer.Spells
 			//}
 
 			var aiSettings = spell.AISettings;
+			var targetType = aiSettings.TargetType != AISpellCastTargetType.Default
+			                 	? aiSettings.TargetType
+			                 	: handler.Effect.AISpellCastTargetType;
 
 			// find single target
 			WorldObject singleTarget;
-			switch (aiSettings.TargetType)
+			var maxDist = spell.Range.MaxDist;
+			switch (targetType)
 			{
-				case AISpellCastTarget.NearestHostilePlayer:
-					singleTarget = caster.GetNearestUnit(obj => obj is Character && caster.IsHostileWith(obj));
+				// default targets
+				//case AISpellCastTargetType.Allied:
+					
+				//    break;
+
+				// special targets
+				case AISpellCastTargetType.NearestHostilePlayer:
+					singleTarget = caster.GetNearestUnit(maxDist, obj => obj is Character && caster.IsHostileWith(obj));
 					break;
-				case AISpellCastTarget.RandomAlliedUnit:
-					singleTarget = caster.GetNearbyRandomAlliedUnit();
+				case AISpellCastTargetType.RandomAlliedUnit:
+					singleTarget = caster.GetNearbyRandomAlliedUnit(maxDist);
 					break;
-				case AISpellCastTarget.RandomHostilePlayer:
-					singleTarget = caster.GetNearbyRandomHostileCharacter();
+				case AISpellCastTargetType.RandomHostilePlayer:
+					singleTarget = caster.GetNearbyRandomHostileCharacter(maxDist);
 					break;
-				case AISpellCastTarget.SecondHighestThreatTarget:
+				case AISpellCastTargetType.SecondHighestThreatTarget:
 					if (!(caster is NPC))
 					{
-						return null;
+						singleTarget = null;
 					}
-					var npc = (NPC)caster;
-					singleTarget = npc.ThreatCollection.GetAggressorByThreatRank(1);
+					else
+					{
+						var npc = (NPC) caster;
+						singleTarget = npc.ThreatCollection.GetAggressorByThreatRank(1);
+						if (singleTarget != null && !singleTarget.IsInRadius(caster, maxDist))
+						{
+							singleTarget = null;
+						}
+					}
 					break;
 				default:
 					singleTarget = null;
@@ -94,9 +109,8 @@ namespace WCell.RealmServer.Spells
 
 			if (singleTarget != null)
 			{
-				return new[] { singleTarget };
+				yield return singleTarget;
 			}
-			return null;
 		}
 		#endregion
 	}

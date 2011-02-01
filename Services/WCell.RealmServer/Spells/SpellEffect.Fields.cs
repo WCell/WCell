@@ -188,6 +188,11 @@ namespace WCell.RealmServer.Spells
 		/// If not it uses this Effect's original value.
 		/// </summary>
 		public SpellEffect EffectValueOverrideEffect;
+
+		/// <summary>
+		/// Used to determine the targets for this effect when casted by an AI caster
+		/// </summary>
+		public AISpellCastTargetType AISpellCastTargetType = AISpellCastTargetType.Default;
 		#endregion
 
 		#region Auto generated Fields
@@ -257,6 +262,12 @@ namespace WCell.RealmServer.Spells
 		public bool IsHealEffect;
 
 		/// <summary>
+		/// Whether this is a damage effect
+		/// </summary>
+		[NotPersistent]
+		public bool IsDamageEffect;
+
+		/// <summary>
 		/// Whether this Effect is triggered by Procs
 		/// </summary>
 		[NotPersistent]
@@ -280,6 +291,9 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public bool IsStrikeEffectPct;
 
+		/// <summary>
+		/// Whether this is an effect that applies damage on strike
+		/// </summary>
 		public bool IsStrikeEffect
 		{
 			get { return IsStrikeEffectFlat || IsStrikeEffectPct; }

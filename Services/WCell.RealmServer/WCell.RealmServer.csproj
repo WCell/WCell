@@ -201,7 +201,7 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
-    <Compile Include="AI\Spells\SpellTargetCollection.AI.cs" />
+    <Compile Include="AI\Spells\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />
     <Compile Include="ArenaTeams\ArenaTeamStats.cs" />

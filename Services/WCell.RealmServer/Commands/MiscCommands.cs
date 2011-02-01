@@ -656,7 +656,7 @@ namespace WCell.RealmServer.Commands
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var target = trigger.Args.Target;
-			if ( object.ReferenceEquals(target, trigger.Args.User) )
+			if (object.ReferenceEquals(target, trigger.Args.User))
 			{
 				target = target.Target;
 				if (target == null)
@@ -685,9 +685,9 @@ namespace WCell.RealmServer.Commands
 	{
 		protected override void Initialize()
 		{
-			Init("ListPlayers");
-			EnglishParamInfo = "[-[rfcna] [<Map>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
-			EnglishDescription = "Lists all currently logged in Players.";
+			Init("ListPlayers", "Players");
+			EnglishParamInfo = "[-[mfcna] [<Map>]|[<Faction>]|[<Class>]|[<namepart>]|[<accountnamepart>]]";
+			EnglishDescription = "Lists all currently logged in Players, or only those that match the given filter(s) - Example: ListPlayers -m kalimdor";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -700,34 +700,23 @@ namespace WCell.RealmServer.Commands
 
 			var mod = trigger.Text.NextModifiers();
 			//var matches = new List<Character>();
-			var matches = World.GetAllCharacters();
 
-			MapId map;
+			MapId mapId;
 			FactionId faction;
 			ClassId classId;
 			string namepart;
 			string accnamepart;
 
+			List<Character> matches;
 			if (mod.Contains("r"))
 			{
-				map = trigger.Text.NextEnum(MapId.End);
+				mapId = trigger.Text.NextEnum(MapId.End);
 
-				var rgn = World.GetMap(map);
-				if (rgn != null)
+				var map = World.GetMap(mapId);
+				if (map != null)
 				{
-					if (rgn.CharacterCount > 0)
-					{
-						matches.Clear();
-						foreach (var chr in rgn.Characters)
-						{
-							matches.Add(chr);
-						}
-					}
-					else
-					{
-						trigger.Reply("There are no characters in map: {0}", rgn.Name);
-						return;
-					}
+					matches = new List<Character>(map.CharacterCount);
+					matches.AddRange(map.Characters);
 				}
 				else
 				{
@@ -735,14 +724,19 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 			}
+			else
+			{
+				matches = World.GetAllCharacters();
+			}
 
 			if (mod.Contains("f"))
 			{
 				faction = trigger.Text.NextEnum(FactionId.End);
 				if (faction != FactionId.None && faction != FactionId.End)
 				{
-					foreach (var chr in matches)
+					for (var i = matches.Count - 1; i >= 0; i--)
 					{
+						var chr = matches[i];
 						if (chr.FactionId != faction)
 						{
 							matches.Remove(chr);
@@ -765,8 +759,9 @@ namespace WCell.RealmServer.Commands
 					return;
 				}
 
-				foreach (var chr in matches)
+				for (var i = matches.Count - 1; i >= 0; i--)
 				{
+					var chr = matches[i];
 					if (chr.Class != classId)
 					{
 						matches.Remove(chr);
@@ -779,8 +774,9 @@ namespace WCell.RealmServer.Commands
 				namepart = trigger.Text.NextWord();
 				if (namepart.Length > 1)
 				{
-					foreach (var chr in matches)
+					for (var i = matches.Count - 1; i >= 0; i--)
 					{
+						var chr = matches[i];
 						if (!chr.Name.Contains(namepart))
 						{
 							matches.Remove(chr);
@@ -789,8 +785,9 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					foreach (var chr in matches)
+					for (var i = matches.Count - 1; i >= 0; i--)
 					{
+						var chr = matches[i];
 						if (!chr.Name.StartsWith(namepart))
 						{
 							matches.Remove(chr);
@@ -804,8 +801,9 @@ namespace WCell.RealmServer.Commands
 				accnamepart = trigger.Text.NextWord();
 				if (accnamepart.Length > 1)
 				{
-					foreach (var chr in matches)
+					for (var i = matches.Count - 1; i >= 0; i--)
 					{
+						var chr = matches[i];
 						if (!chr.Account.Name.Contains(accnamepart))
 						{
 							matches.Remove(chr);
@@ -814,8 +812,9 @@ namespace WCell.RealmServer.Commands
 				}
 				else
 				{
-					foreach (var chr in matches)
+					for (var i = matches.Count - 1; i >= 0; i--)
 					{
+						var chr = matches[i];
 						if (!chr.Name.StartsWith(accnamepart))
 						{
 							matches.Remove(chr);
@@ -826,18 +825,17 @@ namespace WCell.RealmServer.Commands
 
 			if (matches.Count == World.CharacterCount)
 			{
-				trigger.Reply("Onliny Players:");
+				trigger.Reply("All Online Players:");
 			}
-
 			else if (matches.Count == 0)
 			{
 				trigger.Reply("No players match the given conditions.");
 			}
-
 			else
 			{
 				trigger.Reply("Matching Players:");
 			}
+
 			foreach (var chr in matches)
 			{
 				trigger.Reply(chr.ToString());

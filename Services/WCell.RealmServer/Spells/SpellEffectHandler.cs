@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		#region Validate & Initialize
-		internal SpellFailedReason ValidateTarget(WorldObject target)
+		internal SpellFailedReason ValidateAndInitializeTarget(WorldObject target)
 		{
 			if (!target.CheckObjType(TargetType))
 			{

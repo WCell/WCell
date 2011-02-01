@@ -1,2 +1,4 @@
-- fixed some more bugs and improved #npc spawn and #npc goto commands
-- instances and instance NPCs can now be created without a character argument
+- fixed #listplayers
+- renamed SendMultiStringSystemMessage to SendSystemMessage and cleaned it up a bit
+- added "params object[] args" parameter to Localize* methods
+- more work on spell cast AI
