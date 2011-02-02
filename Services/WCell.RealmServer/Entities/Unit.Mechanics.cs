@@ -1324,7 +1324,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		public void TeleportTo(MapId map, ref Vector3 pos)
 		{
-			TeleportTo(World.GetMap(map), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>
@@ -1334,7 +1334,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		public void TeleportTo(MapId map, Vector3 pos)
 		{
-			TeleportTo(World.GetMap(map), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>

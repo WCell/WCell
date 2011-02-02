@@ -14,7 +14,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Horde
         public static void CreateOrgrimmarGossipMenu()
         {
             var entry = NPCMgr.GetEntry(Constants.NPCs.NPCId.OrgrimmarGrunt);
-            entry.DefaultGossip = new GossipMenu(2593,
+            entry.DefaultGossip = new GossipMenu(2593,		// "What are you looking for"?
                 new MultiStringGossipMenuItem(GossipMenuIcon.Trade, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.GuardBank),
                     convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, 1631.0f, -4375.0f, 7, 7, "Bank of Orgrimmar"), new GossipMenu(2554)),
                 new MultiStringGossipMenuItem(GossipMenuIcon.Taxi, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.GuardWindRider),
@@ -39,7 +39,7 @@ namespace WCell.Addons.Default.Gossip.GuardGossip.Horde
                     convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, 1983.0f, -4794.0f, 7, 7, "Hall of the Brave"), new GossipMenu(7521)),
 
                 new MultiStringGossipMenuItem(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.GuardClass),
-                    new GossipMenu(2599,
+					new GossipMenu(2599,		// "Which trainer do you seek?"
                         new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.TrainHunter),
                             convo => GossipHandler.SendGossipPOI(convo.Character, GossipPOIFlags.Six, 2114.0f, -4625.0f, 7, 7, "Orgrimmar Hunter's Hall"), new GossipMenu(2559)),
                         new MultiStringGossipMenuItem(GossipMenuIcon.Train, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.TrainMage),

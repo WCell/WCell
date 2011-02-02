@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Global
 
 		public Map Map
 		{
-			get { return World.GetMap(mapId); }
+			get { return World.GetNonInstancedMap(mapId); }
 		}
 
 		public void AddPath(TaxiPath path)

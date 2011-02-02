@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Threading;
 using WCell.Constants.World;
@@ -128,7 +128,7 @@ namespace WCell.RealmServer.Spawns
 
 		public Map Map
 		{
-			get { return World.GetMap(MapId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		/// <summary>

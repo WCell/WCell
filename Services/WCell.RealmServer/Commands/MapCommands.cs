@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						var mapId = trigger.Text.NextEnum(MapId.End);
-						map = World.GetMap(mapId);
+						map = World.GetNonInstancedMap(mapId);
 						if (map == null)
 						{
 							trigger.Reply(RealmLangKey.CmdMapSpawnError1);
@@ -143,7 +143,7 @@ namespace WCell.RealmServer.Commands
 				if (trigger.Text.HasNext)
 				{
 					var mapId = trigger.Text.NextEnum(MapId.End);
-					map = World.GetMap(mapId);
+					map = World.GetNonInstancedMap(mapId);
 					if (map == null)
 					{
 						trigger.Reply(RealmLangKey.CmdMapClearError1);

@@ -212,7 +212,7 @@ namespace WCell.Util.DynamicAccess
 			}
 
 			var targetType = ctor.DeclaringType;
-			var typeName = NextTypeName(ctor.GetMemberName());
+			var typeName = NextTypeName(ctor.GetFullMemberName());
 			var myType = module.DefineType(typeName, TypeAttributes.Public);
 
 			myType.AddInterfaceImplementation(typeof(IProducer));
@@ -255,7 +255,7 @@ namespace WCell.Util.DynamicAccess
 
 		public static IGetterSetter AddToModule(ModuleBuilder module, FieldInfo field)
 		{
-			var typeName = NextTypeName(field.GetMemberName());
+			var typeName = NextTypeName(field.GetFullMemberName());
 
 			var targetType = field.DeclaringType;
 			var fieldType = field.FieldType;
@@ -383,7 +383,7 @@ namespace WCell.Util.DynamicAccess
 
 		public static IGetterSetter AddToModule(ModuleBuilder module, PropertyInfo prop)
 		{
-			var typeName = NextTypeName(prop.GetMemberName());
+			var typeName = NextTypeName(prop.GetFullMemberName());
 
 			var targetType = prop.DeclaringType;
 			//		

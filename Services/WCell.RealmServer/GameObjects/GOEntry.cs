@@ -286,7 +286,7 @@ namespace WCell.RealmServer.GameObjects
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
 		public GameObject Spawn(MapId map, Vector3 pos, Unit owner)
 		{
-			return Spawn(World.GetMap(map), pos, owner);
+			return Spawn(World.GetNonInstancedMap(map), pos, owner);
 		}
 
 		/// <summary>

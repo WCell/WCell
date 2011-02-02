@@ -70,10 +70,13 @@ namespace WCell.RealmServer.Global
 		public int DefaultResetTime;
 
 		/// <summary>
-		/// The default BattlegroundTemplate, associated with this MapInfo
+		/// The default BattlegroundTemplate, associated with this MapTemplate
 		/// </summary>
-		[NotPersistent]
-		public BattlegroundTemplate BGTemplate;
+		public BattlegroundTemplate BattlegroundTemplate
+		{
+			get;
+			internal set;
+		}
 
 		/// <summary>
 		/// The default InstanceTemplate, associated with this MapInfo
@@ -118,9 +121,16 @@ namespace WCell.RealmServer.Global
 			get { return Type == MapType.Dungeon || Type == MapType.Raid; }
 		}
 
-		public bool IsPvP
+		/// <summary>
+		/// Battleground or Arena
+		/// </summary>
+		public bool IsBattleground
 		{
-			get { return Type == MapType.Battleground || Type == MapType.Arena; }
+			get
+			{
+				//return Type == MapType.Battleground || Type == MapType.Arena;
+				return BattlegroundTemplate != null;
+			}
 		}
 
 		public Map RepopMap
@@ -129,7 +139,7 @@ namespace WCell.RealmServer.Global
 			{
 				if (RepopMapId != MapId.End)
 				{
-					return World.GetMap(RepopMapId);
+					return World.GetNonInstancedMap(RepopMapId);
 				}
 				return null;
 			}

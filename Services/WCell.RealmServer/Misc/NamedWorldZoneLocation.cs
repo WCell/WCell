@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Misc
 		{
 			get
 			{
-				return World.GetMap(MapId);
+				return World.GetNonInstancedMap(MapId);
 			}
 		}
 

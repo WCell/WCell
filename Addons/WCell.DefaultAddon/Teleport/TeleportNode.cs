@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Teleport
 		public TeleportNode(string defaultName, MapId id, Vector3 pos)
 		{
 			DefaultName = defaultName;
-			Map = World.GetMap(id);
+			Map = World.GetNonInstancedMap(id);
 			if (Map == null)
 			{
 				throw new ArgumentException("Map is not a continent: " + id);

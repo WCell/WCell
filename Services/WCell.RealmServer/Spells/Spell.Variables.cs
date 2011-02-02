@@ -480,7 +480,7 @@ namespace WCell.RealmServer.Spells
 
 		public Map Map
 		{
-			get { return World.GetMap(MapId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		public uint Phase

@@ -17,12 +17,17 @@ namespace WCell.Util.Data
 		/// <summary>
 		/// A custom variable accessor.
 		/// </summary>
-		public IGetterSetter Accessor;
+		public Type AccessorType;
 
         /// <summary>
         /// Used to read data from the db as this type
         /// </summary>
         public Type ReadType;
+
+		/// <summary>
+		/// Used if this object is actually of a different type then it's field/property declares
+		/// </summary>
+		public Type ActualType;
 
 		public PersistentAttribute()
 		{
@@ -31,9 +36,9 @@ namespace WCell.Util.Data
 		/// <summary>
 		/// Used to convert the type in the Db to this type
 		/// </summary>
-		public PersistentAttribute(Type type)
+		public PersistentAttribute(Type readType)
 		{
-		    ReadType = type;
+		    ReadType = readType;
 		}
 
 		public PersistentAttribute(string name)
@@ -48,24 +53,6 @@ namespace WCell.Util.Data
 
 		public PersistentAttribute(string name, int arrLength)
 		{
-			Length = arrLength;
-			Name = name;
-		}
-
-		public PersistentAttribute(IGetterSetter accessor)
-		{
-			Accessor = accessor;
-		}
-
-		public PersistentAttribute(string name, IGetterSetter accessor)
-		{
-			Name = name;
-			Accessor = accessor;
-		}
-
-		public PersistentAttribute(string name, IGetterSetter accessor, int arrLength)
-		{
-			Accessor = accessor;
 			Length = arrLength;
 			Name = name;
 		}

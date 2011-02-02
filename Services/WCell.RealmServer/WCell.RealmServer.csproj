@@ -226,6 +226,7 @@
     <Compile Include="GameObjects\Spawns\GOSpawnPoint.cs" />
     <Compile Include="GameObjects\Spawns\GOSpawnPool.cs" />
     <Compile Include="GameObjects\Spawns\GOSpawnPoolTemplate.cs" />
+    <Compile Include="Global\WorldInstanceCollection.cs" />
     <Compile Include="Global\WorldEvent.cs" />
     <Compile Include="Global\WorldEventMgr.cs" />
     <Compile Include="Global\WorldMapOverlayEntry.cs" />

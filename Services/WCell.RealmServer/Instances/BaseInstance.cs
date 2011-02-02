@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Instances
 
 		public override void DeleteNow()
 		{
-			World.RemoveInstance(this);
+			InstanceMgr.Instances.RemoveInstance(MapId, InstanceId);
 			base.DeleteNow();
 		}
 

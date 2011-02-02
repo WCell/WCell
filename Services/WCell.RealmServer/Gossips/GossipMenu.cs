@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using NLog;
 using WCell.Constants;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
@@ -36,7 +37,8 @@ namespace WCell.RealmServer.Gossips
 			m_textEntry = GossipMgr.GetEntry(bodyTextID);
 			if (m_textEntry == null)
 			{
-				throw new ArgumentException("GossipEntry with given id does not exist: " + bodyTextID, "bodyTextId");
+				m_textEntry = GossipMgr.DefaultGossipEntry;
+				LogManager.GetCurrentClassLogger().Warn("Tried to create GossipMenu with invalid GossipEntry id: " + bodyTextID);
 			}
 		}
 

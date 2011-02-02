@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Instances
 		/// </summary>
 		public InstancedMap Instance
 		{
-			get { return World.GetInstance(MapId, InstanceId); }
+			get { return InstanceMgr.Instances.GetInstance(MapId, InstanceId); }
 		}
 
 		public DateTime NextResetTime

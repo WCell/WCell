@@ -58,14 +58,15 @@ namespace WCell.RealmServer.Commands
 			protected override void Initialize()
 			{
 				Init("List", "L");
-				EnglishParamInfo = "[-f <bgid>]";
+				EnglishParamInfo = "[<bgid>]";
 				EnglishDescription = "Shows an overview over all existing BGs. " +
-					"-f (filter) switch only shows BGs of the given type.";
+					"Optionally, you can choose to only show BGs of a given type.";
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				if (trigger.Text.NextModifiers() == "f")
+				IEnumerable<Battleground> instances;
+				if (trigger.Text.HasNext)
 				{
 					var bgId = trigger.Text.NextEnum(BattlegroundId.End);
 					if (bgId == BattlegroundId.End)
@@ -73,38 +74,34 @@ namespace WCell.RealmServer.Commands
 						trigger.Reply("Invalid BattlegroundId.");
 						return;
 					}
-					List(trigger, BattlegroundMgr.GetInstances(bgId).Values);
+					instances = BattlegroundMgr.Instances.GetInstances(bgId);
 				}
 				else
 				{
-					var total = 0;
-					for (var i = 0; i < BattlegroundMgr.Instances.Length; i++)
-					{
-						var bgs = BattlegroundMgr.Instances[i];
-						if (bgs != null)
-						{
-							total += List(trigger, bgs.Values);
-						}
-					}
-
-					if (total == 0)
-					{
-						trigger.Reply("There are no active Battleground instances");
-					}
+					instances = BattlegroundMgr.Instances.GetAllInstances();
 				}
+
+				List(trigger, instances);
 			}
 
+			/// <summary>
+			/// Shaky method - BG can be disposed at any point during the iteration
+			/// </summary>
 			public static int List(CmdTrigger<RealmServerCmdArgs> trigger, IEnumerable<Battleground> bgs)
 			{
 				var count = bgs.Count();
 				if (count > 0)
 				{
-					trigger.Reply("Found {0} instances:", count);
+					trigger.Reply("Found {0} Battlegrounds:", count);
 
 					foreach (var bg in bgs)
 					{
 						BattlegroundInfoCommand.DisplayInfo(trigger, bg);
 					}
+				}
+				else
+				{
+					trigger.Reply("Found no (matching) Battlegrounds.");
 				}
 
 				return count;
@@ -232,16 +229,16 @@ namespace WCell.RealmServer.Commands
 
 					// process modifiers
 					var chr = target as Character;
-					if (chr == null)
-					{
-						// requires Character
-						trigger.Reply("Modifiers require a Character target: " + mod);
-						return;
-					}
 
 					if (mod.Contains("i"))
 					{
 						// invite
+						if (chr == null)
+						{
+							// requires Character
+							trigger.Reply("-i modifier requires a Character target: " + mod);
+							return;
+						}
 						var team = instance.GetTeam(chr.FactionGroup.GetBattlegroundSide());
 						team.Invite(chr);
 					}
@@ -249,6 +246,12 @@ namespace WCell.RealmServer.Commands
 					if (mod.Contains("e"))
 					{
 						// enter
+						if (chr == null)
+						{
+							// requires Character
+							trigger.Reply("-e modifier requires a Character target: " + mod);
+							return;
+						}
 						instance.TeleportInside(chr);
 					}
 				}
@@ -421,7 +424,7 @@ namespace WCell.RealmServer.Commands
 					else
 					{
 						var id = trigger.Text.NextUInt();
-						bg = BattlegroundMgr.GetInstance(bgId, id);
+						bg = BattlegroundMgr.Instances.GetInstance(bgId, id);
 						if (bg == null)
 						{
 							trigger.Reply("Invalid id (" + id + ") for " + bgId);

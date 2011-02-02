@@ -177,7 +177,7 @@ namespace WCell.RealmServer.Instances
 			var binding = GetBinding(template.Id, template.GetDifficulty(chr.GetInstanceDifficulty(template.IsRaid)).BindingType);
 			if (binding != null)
 			{
-				var instance = World.GetInstance(binding);
+				var instance = InstanceMgr.Instances.GetInstance(binding.MapId, binding.InstanceId);
 				if (instance.IsActive)
 				{
 					return instance as BaseInstance;

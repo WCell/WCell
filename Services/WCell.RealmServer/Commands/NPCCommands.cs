@@ -316,7 +316,7 @@ namespace WCell.RealmServer.Commands
 						MapId mapId;
 						if (EnumUtil.TryParse(destName, out mapId))
 						{
-							rgn = World.GetMap(mapId);
+							rgn = World.GetNonInstancedMap(mapId);
 						}
 						else
 						{

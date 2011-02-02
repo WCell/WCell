@@ -80,9 +80,9 @@ namespace WCell.RealmServer.AreaTriggers
 					return InstanceMgr.EnterInstance(chr, mapInfo, trigger.Template.TargetPos);
 				}
 			}
-			else if (mapInfo.BGTemplate == null)
+			else if (mapInfo.BattlegroundTemplate == null)
 			{
-				var rgn = World.GetMap(mapInfo.Id);
+				var rgn = World.GetNonInstancedMap(mapInfo.Id);
 				if (rgn != null)
 				{
 					chr.TeleportTo(rgn, trigger.Template.TargetPos, trigger.Template.TargetOrientation);

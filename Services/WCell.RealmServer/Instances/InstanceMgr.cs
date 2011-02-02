@@ -51,6 +51,8 @@ namespace WCell.RealmServer.Instances
 
 		private static readonly ReaderWriterLockSlim s_syncLock = new ReaderWriterLockSlim();
 
+		public static readonly WorldInstanceCollection<MapId, BaseInstance> Instances = new WorldInstanceCollection<MapId, BaseInstance>(MapId.End);
+
 		#region Properties
 		#endregion
 
@@ -130,6 +132,7 @@ namespace WCell.RealmServer.Instances
 					instance.Owner = creator.InstanceLeader;
 				}
 				instance.InitMap(template.MapTemplate);
+				Instances.AddInstance(instance.MapId, instance);
 			}
 
 			return instance;
@@ -244,7 +247,7 @@ namespace WCell.RealmServer.Instances
 		/// </summary>
 		public static void LeaveInstance(Character player, MapTemplate mapTemplate, Vector3 entryInfo)
 		{
-			var map = World.GetMap(mapTemplate.Id);
+			var map = World.GetNonInstancedMap(mapTemplate.Id);
 			player.TeleportTo(map, entryInfo);
 		}
 		#endregion

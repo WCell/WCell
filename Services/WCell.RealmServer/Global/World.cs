@@ -24,6 +24,7 @@ using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Lang;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
@@ -80,8 +81,6 @@ namespace WCell.RealmServer.Global
 		internal static Map[] s_Maps = new Map[(int)MapId.End];
 		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
         internal static WorldMapOverlayEntry[] s_WorldMapOverlayEntries = new WorldMapOverlayEntry[(int)WorldMapOverlayId.End];
-
-		internal static InstancedMap[][] s_instances = new InstancedMap[(int)MapId.End][];
 
 		private static int s_totalPlayerCount, s_hordePlayerCount, s_allyPlayerCount, s_staffMemberCount;
 
@@ -219,7 +218,7 @@ namespace WCell.RealmServer.Global
 							{
 								// pause
 								m_pauseThreadId = Thread.CurrentThread.ManagedThreadId;
-								var activeMaps = s_Maps.Where((map) => map != null && map.IsRunning);
+								var activeMaps = GetAllMaps().Where((map) => map != null && map.IsRunning);
 								var pauseCount = activeMaps.Count();
 								foreach (var map in activeMaps)
 								{
@@ -883,6 +882,7 @@ namespace WCell.RealmServer.Global
 		/// <returns></returns>
 		public static IEnumerable<Map> GetAllMaps()
 		{
+			// default maps
 			for (var i = 0; i < s_Maps.Length; i++)
 			{
 				var rgn = s_Maps[i];
@@ -892,108 +892,38 @@ namespace WCell.RealmServer.Global
 				}
 			}
 
-			for (var j = 0; j < s_instances.Length; j++)
+			// instances
+			foreach (var instance in InstanceMgr.Instances.GetAllInstances())
 			{
-				var instances = s_instances[j];
-				if (instances != null)
-				{
-					for (var i = 0; i < instances.Length; i++)
-					{
-						var instance = instances[i];
-						if (instance != null)
-						{
-							yield return instance;
-						}
-					}
-				}
+				yield return instance;
+			}
+
+			// BGs
+			foreach (var instance in BattlegroundMgr.Instances.GetAllInstances())
+			{
+				yield return instance;
 			}
 		}
 
 		/// <summary>
-		/// Adds a map, associated with its unique Id (and InstanceId).
+		/// Adds the map, associated with its unique Id
 		/// </summary>
 		/// <param name="map">the map to add</param>
-		internal static void AddMap(Map map)
+		static void AddMap(Map map)
 		{
 			MapCount++;
-
-			if (!map.IsInstance)
+			if (s_Maps[(uint)map.Id] != null)
 			{
-				ArrayUtil.Set(ref s_Maps, (uint)map.Id, map);
+				throw new InvalidOperationException("Tried to a second non-instanced map of the same type to World: " + map);
 			}
-			else
-			{
-				var instances = GetInstances(map.Id);
-				if (map.InstanceId >= instances.Length)
-				{
-					Array.Resize(ref instances, (int)(map.InstanceId * ArrayUtil.LoadConstant));
-					s_instances[(uint)map.Id] = instances;
-				}
-				instances[map.InstanceId] = (InstancedMap)map;
-			}
-		}
-
-		internal static void RemoveInstance(InstancedMap map)
-		{
-			var instances = GetInstances(map.Id);
-			MapCount--;
-			ArrayUtil.Set(ref instances, map.InstanceId, null);
-		}
-
-		public static InstancedMap[][] GetAllInstances()
-		{
-			return s_instances.ToArray();
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="map"></param>
-		/// <returns></returns>
-		/// <remarks>Never returns null</remarks>
-		public static InstancedMap[] GetInstances(MapId map)
-		{
-			var instances = s_instances.Get((uint)map);
-			if (instances == null)
-			{
-				s_instances[(uint)map] = instances = new InstancedMap[10];
-			}
-			return instances;
-		}
-
-		/// <summary>
-		/// Gets an instance
-		/// </summary>
-		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>s
-		public static InstancedMap GetInstance(MapId mapId, uint instanceId)
-		{
-			var instances = GetInstances(mapId);
-			if (instances != null)
-			{
-				return GetInstances(mapId).Get(instanceId);
-			}
-			return null;
-		}
-
-		/// <summary>
-		/// Gets an instance
-		/// </summary>
-		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>s
-		public static InstancedMap GetInstance(IMapId mapId)
-		{
-			var instances = GetInstances(mapId.MapId);
-			if (instances != null)
-			{
-				return instances.Get(mapId.InstanceId);
-			}
-			return null;
+			ArrayUtil.Set(ref s_Maps, (uint) map.Id, map);
 		}
 
 		/// <summary>
 		/// Gets a normal Map by its Id
 		/// </summary>
 		/// <returns>the <see cref="Map" /> object; null if the ID is not valid</returns>
-		public static Map GetMap(MapId mapId)
+		public static Map GetNonInstancedMap(MapId mapId)
 		{
 			return s_Maps.Get((uint)mapId);
 		}
@@ -1006,7 +936,17 @@ namespace WCell.RealmServer.Global
 		{
 			if (mapId.InstanceId > 0)
 			{
-				return GetInstance(mapId);
+				var templ = GetMapTemplate(mapId.MapId);
+				if (templ == null) return null;
+
+				if (templ.IsBattleground)
+				{
+					return BattlegroundMgr.Instances.GetInstance(templ.BattlegroundTemplate.Id, mapId.InstanceId);
+				}
+				else
+				{
+					return InstanceMgr.Instances.GetInstance(mapId.MapId, mapId.InstanceId);
+				}
 			}
 			return s_Maps.Get((uint)mapId.MapId);
 		}
@@ -1079,6 +1019,7 @@ namespace WCell.RealmServer.Global
 					}
 
 					map.InitMap();
+					AddMap(map);
 				}
 			}
 		}

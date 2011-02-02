@@ -712,7 +712,7 @@ namespace WCell.RealmServer.Commands
 			{
 				mapId = trigger.Text.NextEnum(MapId.End);
 
-				var map = World.GetMap(mapId);
+				var map = World.GetNonInstancedMap(mapId);
 				if (map != null)
 				{
 					matches = new List<Character>(map.CharacterCount);

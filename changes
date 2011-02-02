@@ -1,4 +1,4 @@
-- fixed some minor issues in gossip system
-- changed GossipMenu to allow for dynamic gossip texts that are resent everytime and thus, effectively, not cached
-(we can use a similar trick to allow for dynamic names and other properties of items and/or npcs)
--> Check out the new DynamicGossipEntry
+- added ability to add custom IGetterSetter and custom ActualType for DataHolder fields/properties
+- added locking to global instance containers
+- cleaned up and improved instance/bg code & commands
+- added a warning if an HTTP crawler bot connects

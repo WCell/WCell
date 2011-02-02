@@ -211,7 +211,7 @@ namespace WCell.Util
 			throw new Exception("Can only get VariableType of Fields and Properties");
 		}
 
-		public static string GetMemberName(this MemberInfo member)
+		public static string GetFullMemberName(this MemberInfo member)
 		{
 			var str = member.DeclaringType.FullName + "." + member.Name;
 			if (member is MethodInfo)
@@ -232,15 +232,14 @@ namespace WCell.Util
 			{
 				rawType = (Type)member;
 			}
-			var isArr = rawType.IsArray;
 
 			Type memberType;
-			if (isArr)
+			if (rawType.IsArray)
 			{
 				memberType = rawType.GetElementType();
 				if (memberType == null)
 				{
-					throw new Exception(string.Format("Unable to get Type of Array {0} ({1}).", rawType, member.GetMemberName()));
+					throw new Exception(string.Format("Unable to get Type of Array {0} ({1}).", rawType, member.GetFullMemberName()));
 				}
 			}
 			else

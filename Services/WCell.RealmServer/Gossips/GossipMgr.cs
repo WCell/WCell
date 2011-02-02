@@ -1,6 +1,7 @@
 using System;
 using NLog;
 using WCell.Core;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
@@ -30,12 +31,12 @@ namespace WCell.RealmServer.Gossips
 		//private SynchronizedDictionary<WorldObject, GossipMenu> m_gossipMenus;
 		//private SynchronizedDictionary<Character, GossipConversation> m_gossipConversations;
 
-		internal static IDictionary<uint, IGossipEntry> NPCTexts = new Dictionary<uint, IGossipEntry>(5000);
+		internal static IDictionary<uint, IGossipEntry> GossipEntries = new Dictionary<uint, IGossipEntry>(5000);
 
 		public static IGossipEntry GetEntry(uint id)
 		{
 			IGossipEntry entry;
-			NPCTexts.TryGetValue(id, out entry);
+			GossipEntries.TryGetValue(id, out entry);
 			return entry;
 		}
 
@@ -125,20 +126,27 @@ namespace WCell.RealmServer.Gossips
 
 		#region Initializing and Loading
 
-		public static bool Loaded
+		public static void LoadAll()
 		{
-			get;
-			private set;
+			LoadEntries();
+			LoadNPCRelations();
 		}
 
-		static void LoadAll()
+		[Initialization(InitializationPass.Third)]
+		public static void LoadEntries()
 		{
-			Loaded = true;
-
 			ContentMgr.Load<StaticGossipEntry>();
-			ContentMgr.Load<NPCGossipRelation>();
+		}
 
-			AddDefaultGossipOptions();
+		/// <summary>
+		/// Automatically called after NPCs are initialized
+		/// </summary>
+		internal static void LoadNPCRelations()
+		{
+			if (ContentMgr.Load<NPCGossipRelation>())
+			{
+				AddDefaultGossipOptions();
+			}
 		}
 
 		/// <summary>
@@ -256,28 +264,17 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
-		/// <summary>
-		/// Automatically called after NPCs are initialized
-		/// </summary>
-		internal static void EnsureInitialized()
-		{
-			if (!Loaded)
-			{
-				LoadAll();
-			}
-		}
-
 		#endregion
 
 		#region Methods
 		public static void AddEntry(StaticGossipEntry entry)
 		{
-			NPCTexts[entry.GossipId] = entry;
+			GossipEntries[entry.GossipId] = entry;
 		}
 
 		public static void AddText(uint id, params StaticGossipText[] entries)
 		{
-			NPCTexts[id] =
+			GossipEntries[id] =
 				new StaticGossipEntry
 				{
 					GossipId = id,

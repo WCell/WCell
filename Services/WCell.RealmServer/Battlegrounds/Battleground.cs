@@ -498,8 +498,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public override void DeleteNow()
 		{
-			BattlegroundMgr.GetInstances(Template.Id).Remove(InstanceId);
-			World.RemoveInstance(this);
+			BattlegroundMgr.Instances.RemoveInstance(Template.Id, InstanceId);
 			FinalizeBattleground(true); // make sure that things are cleaned up
 
 			base.DeleteNow();
@@ -561,7 +560,7 @@ namespace WCell.RealmServer.Battlegrounds
 		protected internal override void InitMap()
 		{
 			base.InitMap();
-			BattlegroundMgr.GetInstances(Template.Id).Add(InstanceId, this);
+			BattlegroundMgr.Instances.AddInstance(Template.Id, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
 

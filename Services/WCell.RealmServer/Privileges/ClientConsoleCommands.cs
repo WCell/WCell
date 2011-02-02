@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Chat
 			var pos = packet.ReadVector3();
             float orientation = packet.ReadFloat(); // in client specified as degrees
 
-			var map = World.GetMap(mapId);
+			var map = World.GetNonInstancedMap(mapId);
 			if (map != null)
 			{
 				client.ActiveCharacter.TeleportTo(map, ref pos);

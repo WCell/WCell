@@ -50,7 +50,7 @@ namespace WCell.RealmServer.Entities
 		public WorldLocation(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
-			Map = World.GetMap(map);
+			Map = World.GetNonInstancedMap(map);
 			if (Map == null)
 			{
 				throw new ArgumentException("map", "Invalid Map in WorldLocation: " + map);
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Entities
 		public WorldLocationStruct(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			m_Position = pos;
-			m_Map = World.GetMap(map);
+			m_Map = World.GetNonInstancedMap(map);
 			if (m_Map == null)
 			{
 				throw new Exception("Invalid Map in WorldLocationStruct: " + map);
@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Entities
 
 		public Map Map
 		{
-			get { return World.GetMap(MapId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		public uint Phase

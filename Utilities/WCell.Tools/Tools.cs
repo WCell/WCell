@@ -314,9 +314,9 @@ namespace WCell.Tools
 				});
 
 				Map.AutoSpawnMaps = true;
-				var easternKD = World.GetMap(MapId.EasternKingdoms);
-				var kalimdor = World.GetMap(MapId.Kalimdor);
-				var outlands = World.GetMap(MapId.Outland);
+				var easternKD = World.GetNonInstancedMap(MapId.EasternKingdoms);
+				var kalimdor = World.GetNonInstancedMap(MapId.Kalimdor);
+				var outlands = World.GetNonInstancedMap(MapId.Outland);
 				Utility.Measure("Spawning Main Maps", 1, () =>
 				{
 					//easternKD.Start();

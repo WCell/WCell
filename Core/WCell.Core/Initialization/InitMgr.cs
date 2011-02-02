@@ -181,7 +181,7 @@ namespace WCell.Core.Initialization
                     {
                         throw new InitializationException("Invalid Dependency - " +
                                                           "{0} is dependent on {1} which is not a GlobalMgr.",
-                                                          depInitor.Step.InitMethod.GetMemberName(), dep.DependentType.FullName);
+                                                          depInitor.Step.InitMethod.GetFullMemberName(), dep.DependentType.FullName);
                     }
                     info.Dependencies.Add(depInitor);
                     dep.DependentMgr = info;
@@ -240,7 +240,7 @@ namespace WCell.Core.Initialization
                         throw new InitializationException("Invalid {0} - Requires missing {1} for: {2}",
                             typeof(DependentInitializationAttribute).Name,
                             typeof(InitializationAttribute).Name,
-                            method.GetMemberName());
+                            method.GetFullMemberName());
                     }
                 }
 

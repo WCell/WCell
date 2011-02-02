@@ -284,7 +284,6 @@ namespace WCell.RealmServer.Global
 			WorldStates = new WorldStateCollection(this, states);
 
 			CreateZones();
-			World.AddMap(this);
 
 			m_MapTemplate.NotifyCreated(this);
 		}
@@ -1451,7 +1450,7 @@ namespace WCell.RealmServer.Global
 		/// <summary>
 		/// Partitions the space of the zone.
 		/// </summary>
-		internal void PartitionSpace()
+		void PartitionSpace()
 		{
 			// Start partitioning the map space
 			m_root.PartitionSpace(null, ZoneSpacePartitionNode.DefaultPartitionThreshold, 0);

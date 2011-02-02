@@ -233,7 +233,7 @@ namespace WCell.RealmServer.Commands
 				if (trigger.Text.HasNext)
 				{
 					var mapId = trigger.Text.NextEnum(MapId.End);
-					map = World.GetMap(mapId);
+					map = World.GetNonInstancedMap(mapId);
 					if (map == null)
 					{
 						trigger.Reply("Invalid map: " + mapId);

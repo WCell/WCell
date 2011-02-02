@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Global
 
 		public Map Map
 		{
-			get { return World.GetMap(MapId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		public Vector3 Position

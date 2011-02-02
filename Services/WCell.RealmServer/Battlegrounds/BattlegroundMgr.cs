@@ -35,7 +35,8 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// All Battleground instances
 		/// </summary>
-		public static readonly IDictionary<uint, Battleground>[] Instances;
+		public static readonly WorldInstanceCollection<BattlegroundId, Battleground> Instances =
+			 new WorldInstanceCollection<BattlegroundId,Battleground>(BattlegroundId.End);
 
 		public static MappedDBCReader<BattlemasterList, BattlemasterConverter> BattlemasterListReader;
 
@@ -124,16 +125,6 @@ namespace WCell.RealmServer.Battlegrounds
 		#region Initialize
 		public static bool Loaded { get; private set; }
 
-		static BattlegroundMgr()
-		{
-			Instances = new SynchronizedDictionary<uint, Battleground>[(int)BattlegroundId.End];
-
-			for (var id = BattlegroundId.None + 1; id < BattlegroundId.End; id++)
-			{
-				Instances[(uint)id] = new SynchronizedDictionary<uint, Battleground>();
-			}
-		}
-
 		[Initialization(InitializationPass.Eighth, "Initialize Battlegrounds")]
 		public static void InitializeBGs()
 		{
@@ -205,28 +196,6 @@ namespace WCell.RealmServer.Battlegrounds
 		public static void SetCreator(BattlegroundId id, BattlegroundCreator creator)
 		{
 			GetTemplate(id).Creator = creator;
-		}
-
-		/// <summary>
-		/// Gets all instances of the given battleground type.
-		/// </summary>
-		/// <param name="bgId">the type of battleground</param>
-		public static IDictionary<uint, Battleground> GetInstances(BattlegroundId bgId)
-		{
-			return Instances[(int)bgId];
-		}
-
-		/// <summary>
-		/// Gets the battleground instance of the given battleground type and instance id.
-		/// </summary>
-		/// <param name="bgId">the type of battleground</param>
-		/// <param name="instanceId">the instance id</param>
-		/// <returns>the given instance, if it exists</returns>
-		public static Battleground GetInstance(BattlegroundId bgId, uint instanceId)
-		{
-			Battleground bg;
-			Instances[(int)bgId].TryGetValue(instanceId, out bg);
-			return bg;
 		}
 
 		public static BattlegroundTemplate GetTemplate(BattlegroundId bgid)

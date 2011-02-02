@@ -562,8 +562,6 @@ namespace WCell.RealmServer.NPCs
 			ContentMgr.Load<NPCEquipmentEntry>();
 			ContentMgr.Load<NPCEntry>();
 
-			EntriesLoaded = true;
-
 			//foreach (var entry in Entries)
 			//{
 			//    if (entry != null && entry.Template == null)
@@ -573,8 +571,6 @@ namespace WCell.RealmServer.NPCs
 			//}
 
 			LoadTrainers();
-
-			GossipMgr.EnsureInitialized();
 
 			// mount-entries
 			//foreach (var spell in SpellHandler.ById)
@@ -595,18 +591,22 @@ namespace WCell.RealmServer.NPCs
 			//        }
 			//    }
 			//}
+
+			EntriesLoaded = true;
 		}
 
 		public static void LoadSpawns()
 		{
 			OnlyLoadSpawns();
 			LoadWaypoints();
+			GossipMgr.LoadNPCRelations();
 
 			if (!RealmServer.Instance.IsRunning) return;
 
+			// spawn immediately
 			for (MapId mapId = 0; mapId < MapId.End; mapId++)
 			{
-				var map = World.GetMap(mapId);
+				var map = World.GetNonInstancedMap(mapId);
 				if (map != null && map.NPCsSpawned)
 				{
 					var pools = GetSpawnPoolTemplatesByMap(mapId);

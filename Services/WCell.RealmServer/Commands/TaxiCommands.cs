@@ -98,7 +98,7 @@ namespace WCell.RealmServer.Commands
 					PathNode node;
 					if (mod.Contains("r"))
 					{
-						map = World.GetMap(trigger.Text.NextEnum(MapId.End));
+						map = World.GetNonInstancedMap(trigger.Text.NextEnum(MapId.End));
 						if (map == null)
 						{
 							trigger.Reply("Invalid Map.");

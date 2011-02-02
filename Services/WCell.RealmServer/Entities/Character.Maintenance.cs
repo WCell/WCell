@@ -364,7 +364,7 @@ namespace WCell.RealmServer.Entities
 			if (m_record.CorpseX != null)
 			{
 				// we were dead and released the corpse
-				var map = World.GetMap(m_record.CorpseMap);
+				var map = World.GetNonInstancedMap(m_record.CorpseMap);
 				if (map != null)
 				{
 					m_corpse = SpawnCorpse(false, false, map,

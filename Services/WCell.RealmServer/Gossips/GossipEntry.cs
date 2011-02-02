@@ -50,8 +50,13 @@ namespace WCell.RealmServer.Gossips
 		{
 			return TextFemale;
 		}
+
+		public override string ToString()
+		{
+			return "Text: " + TextFemale;	// female and male should both be about equivalent
+		}
 	}
-	
+
 	public delegate string GossipStringFactory(Character chr);
 	public class DynamicGossipText : GossipTextBase
 	{
@@ -154,7 +159,10 @@ namespace WCell.RealmServer.Gossips
 
 		public abstract bool IsDynamic { get; }
 
-		[Persistent(8)]
+		/// <summary>
+		/// The texts of the StaticGossipEntry DataHolder are actually of type StaticGossipText
+		/// </summary>
+		[Persistent(8, ActualType = typeof(StaticGossipText))]
 		public GossipTextBase[] GossipTexts
 		{
 			get { return m_Texts; }
@@ -182,6 +190,11 @@ namespace WCell.RealmServer.Gossips
 	{
 		public StaticGossipEntry()
 		{
+			GossipTexts = new StaticGossipText[8];
+			for (int i = 0; i < GossipTexts.Length; i++)
+			{
+				GossipTexts[i] = new StaticGossipText();
+			}
 		}
 
 		public StaticGossipEntry(uint id, params string[] texts)
@@ -240,7 +253,7 @@ namespace WCell.RealmServer.Gossips
 					entry => !string.IsNullOrEmpty(((StaticGossipText)entry).TextFemale) || !string.IsNullOrEmpty(((StaticGossipText)entry).TextMale)
 				).ToArray();
 
-				GossipMgr.NPCTexts[GossipId] = this;
+				GossipMgr.GossipEntries[GossipId] = this;
 
 				foreach (StaticGossipText entry in m_Texts)
 				{
@@ -276,8 +289,8 @@ namespace WCell.RealmServer.Gossips
 
 		public static IEnumerable<StaticGossipEntry> GetAllDataHolders()
 		{
-			var list = new List<StaticGossipEntry>(GossipMgr.NPCTexts.Count);
-			list.AddRange(GossipMgr.NPCTexts.Values.Where(entry => entry is StaticGossipEntry).OfType<StaticGossipEntry>());
+			var list = new List<StaticGossipEntry>(GossipMgr.GossipEntries.Count);
+			list.AddRange(GossipMgr.GossipEntries.Values.Where(entry => entry is StaticGossipEntry).OfType<StaticGossipEntry>());
 			return list;
 		}
 	}
@@ -330,13 +343,13 @@ namespace WCell.RealmServer.Gossips
 	[DataHolder]
 	public class NPCGossipRelation : IDataHolder
 	{
-		public NPCId NPCId;
+		public uint NPCSpawnId;
 
-		public uint TextId;
+		public uint GossipId;
 
 		public uint GetId()
 		{
-			return (uint)NPCId;
+			return NPCSpawnId;
 		}
 
 		public DataHolderState DataHolderState
@@ -347,22 +360,39 @@ namespace WCell.RealmServer.Gossips
 
 		public void FinalizeDataHolder()
 		{
-			var entry = NPCMgr.GetEntry(NPCId);
-			if (entry != null && entry.DefaultGossip == null)
+			var spawn = NPCMgr.GetSpawnEntry(NPCSpawnId);
+			var gossipEntry = GossipMgr.GetEntry(GossipId);
+
+			if (spawn == null)
 			{
-				var menu = new GossipMenu(TextId);
-
-				entry.DefaultGossip = menu;
-
-				if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
+				ContentMgr.OnInvalidDBData("{0} refers to invalid spawn id: {1}", GetType(), this);
+			}
+			else if (gossipEntry == null)
+			{
+				ContentMgr.OnInvalidDBData("{0} has invalid GossipId: {1}", GetType(), this);
+			}
+			else
+			{
+				// for now, assume that all spawns share the same gossip menu
+				var entry = spawn.Entry;
+				if (entry.DefaultGossip == null)
 				{
-					entry.NPCFlags |= NPCFlags.Gossip;
+					var menu = new GossipMenu(gossipEntry);
+
+					entry.DefaultGossip = menu;
 				}
 				else
 				{
-					entry.NPCFlags &= ~NPCFlags.Gossip;
+					entry.DefaultGossip.GossipEntry = gossipEntry;
 				}
+
+				entry.NPCFlags |= NPCFlags.Gossip;
 			}
+		}
+
+		public override string ToString()
+		{
+			return string.Format("NPC: {0} <-> Gossip id: {2}", NPCSpawnId, GossipId);
 		}
 	}
 	#endregion
