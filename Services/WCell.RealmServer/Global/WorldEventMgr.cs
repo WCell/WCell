@@ -4,8 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
+using WCell.Constants.Quests;
 using WCell.Core.Initialization;
+using WCell.Core.Timers;
 using WCell.RealmServer.Content;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.Threading.TaskParallel;
 
@@ -25,6 +29,8 @@ namespace WCell.RealmServer.Global
         internal static uint _eventCount;
 
 	    private static DateTime LastUpdateTime;
+
+        public static List<WorldEventQuest> WorldEventQuests = new List<WorldEventQuest>();
         #endregion
 
         #region Properties
@@ -33,7 +39,7 @@ namespace WCell.RealmServer.Global
             get { return _eventCount; }
         }
 
-	    public static bool Loaded 
+	    public static bool Loaded
         { 
             get;
             private set;
@@ -56,11 +62,13 @@ namespace WCell.RealmServer.Global
             if (!Loaded)
             {
                 ContentMgr.Load<WorldEvent>();
+                ContentMgr.Load<WorldEventNpcData>();
+                ContentMgr.Load<WorldEventQuest>();
                 Loaded = true;
                 LastUpdateTime = DateTime.Now;
 
                 Log.Debug("{0} World Events loaded.", _eventCount);
-
+                
                 // start updating
                 //TODO: Enable this
                 //Disabled for now, no point updating nothing!!!
@@ -96,7 +104,8 @@ namespace WCell.RealmServer.Global
 
             var updateInterval = DateTime.Now - LastUpdateTime;
             LastUpdateTime = DateTime.Now;
-            foreach (var worldEvent in AllEvents.Where(worldEvent => worldEvent != null))
+            foreach (var worldEvent in
+                AllEvents.Where(worldEvent => worldEvent != null).Where(worldEvent => worldEvent.TimeUntilNextStart != null))
             {
                 worldEvent.TimeUntilNextStart -= updateInterval;
                 worldEvent.TimeUntilEnd -= updateInterval;
@@ -140,8 +149,12 @@ namespace WCell.RealmServer.Global
 
         public static void StartEvent(WorldEvent worldEvent)
         {
+            Log.Info("Starting event {0}:{1}", worldEvent.Id, worldEvent.Description);
+            if (IsEventActive(worldEvent.Id))
+                return;
+            
             worldEvent.TimeUntilNextStart = worldEvent.Occurence;
-            ActiveEvents[worldEvent.Id] = worldEvent;
+            ArrayUtil.Set(ref ActiveEvents, worldEvent.Id, worldEvent);
         }
 
         public static bool StopEvent(uint id)
@@ -156,6 +169,10 @@ namespace WCell.RealmServer.Global
 
         public static void StopEvent(WorldEvent worldEvent)
         {
+            Log.Info("Stopping event {0}:{1}", worldEvent.Id, worldEvent.Description);
+            if (!IsEventActive(worldEvent.Id))
+                return;
+
             worldEvent.TimeUntilEnd = worldEvent.Occurence + worldEvent.Duration;
             ActiveEvents[worldEvent.Id] = null;
         }

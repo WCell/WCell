@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.Quests;
+using WCell.Constants.Spells;
 using WCell.RealmServer.Lang;
 using WCell.Util;
 using WCell.Util.Data;
@@ -32,10 +34,10 @@ namespace WCell.RealmServer.Global
 		public DateTime Until;
 
 	    [NotPersistent]
-        public TimeSpan TimeUntilNextStart;
+        public TimeSpan? TimeUntilNextStart;
 
         [NotPersistent]
-        public TimeSpan TimeUntilEnd;
+        public TimeSpan? TimeUntilEnd;
 
         /// <summary>
         /// Do not use, time in minutes read from database.
@@ -71,6 +73,13 @@ namespace WCell.RealmServer.Global
 	    /// </summary>
         public string Description;
 
+        [NotPersistent]
+        public List<WorldEventNPC> NPCSpawns = new List<WorldEventNPC>();
+        [NotPersistent]
+        public List<WorldEventGameObject> GOSpawns = new List<WorldEventGameObject>();
+        [NotPersistent]
+        public List<WorldEventNpcData> ModelEquips = new List<WorldEventNpcData>();
+
         public void FinalizeDataHolder()
         {
             Occurence = TimeSpan.FromMinutes(_Occurence);
@@ -101,9 +110,119 @@ namespace WCell.RealmServer.Global
                     }
                     TimeUntilNextStart = timeToCheck - time;
                 }
+                
                 TimeUntilEnd = TimeUntilNextStart + Duration;
             }
+
             WorldEventMgr.AddEvent(this);
+        }
+    }
+
+    /// <summary>
+	/// Holds all information regarding a spawn
+	/// involved in a WorldEvent
+	/// </summary>
+    [DataHolder]
+    public class WorldEventNPC : IDataHolder
+    {
+        /// <summary>
+        /// Spawn id of the object
+        /// </summary>
+        public uint Guid;
+
+        /// <summary>
+        /// ID of the world event relating to this entry
+        /// </summary>
+        public uint EventId;
+
+        public void FinalizeDataHolder()
+        {
+            var worldEvent = WorldEventMgr.GetEvent(EventId);
+            if (worldEvent == null)
+                return;
+
+            worldEvent.NPCSpawns.Add(this);
+        }
+    }
+
+    /// <summary>
+    /// Holds all information regarding a spawn
+    /// involved in a WorldEvent
+    /// </summary>
+    [DataHolder]
+    public class WorldEventGameObject : IDataHolder
+    {
+        /// <summary>
+        /// Spawn id of the object
+        /// </summary>
+        public uint Guid;
+
+        /// <summary>
+        /// ID of the world event relating to this entry
+        /// </summary>
+        public uint EventId;
+
+        public void FinalizeDataHolder()
+        {
+            var worldEvent = WorldEventMgr.GetEvent(EventId);
+            if (worldEvent != null)
+                worldEvent.GOSpawns.Add(this);
+        }
+    }
+
+    /// <summary>
+    /// Holds all information regarding a change of model
+    /// or equipment for a WorldEvent
+    /// </summary>
+    [DataHolder]
+    public class WorldEventNpcData : IDataHolder
+    {
+        /// <summary>
+        /// Spawn id of the object
+        /// </summary>
+        public uint Guid;
+
+        public uint ModelId;
+
+        public uint EquipmentId;
+
+        public SpellId spell_start;
+
+        public SpellId spell_end;
+
+        /// <summary>
+        /// ID of the world event relating to this entry
+        /// </summary>
+        public uint EventId;
+
+        public void FinalizeDataHolder()
+        {
+            var worldEvent = WorldEventMgr.GetEvent(EventId);
+            if (worldEvent != null)
+                worldEvent.ModelEquips.Add(this);
+        }
+    }
+
+        /// <summary>
+    /// Holds all information regarding a quest
+    /// involved in a WorldEvent
+    /// </summary>
+    [DataHolder]
+    public class WorldEventQuest : IDataHolder
+    {
+        /// <summary>
+        /// Id of the quest
+        /// </summary>
+        public uint QuestId;
+
+        /// <summary>
+        /// ID of the world event relating to this entry
+        /// </summary>
+        public uint EventId;
+
+        public void FinalizeDataHolder()
+        {
+            WorldEventMgr.WorldEventQuests.Add(this);
         }
     }
 }
