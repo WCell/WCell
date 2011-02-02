@@ -5,6 +5,7 @@ using WCell.Constants.World;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.Util;
+using WCell.Util.Collections;
 using WCell.Util.Data;
 using WCell.Util.Graphics;
 
@@ -108,6 +109,7 @@ namespace WCell.RealmServer.Spawns
 		public uint SpawnId;
 		public uint PoolId;
 		public float PoolRespawnProbability;
+		public readonly SynchronizedList<POINT> SpawnPoints = new SynchronizedList<POINT>(2);
 
 		protected T m_PoolTemplate;
 

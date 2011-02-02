@@ -836,6 +836,7 @@ namespace WCell.RealmServer.Global
 			if (!m_npcSpawnPools.ContainsKey(pool.Template.PoolId))
 			{
 				m_npcSpawnPools.Add(pool.Template.PoolId, pool);
+				OnPoolAdded<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>(pool);
 			}
 			pool.IsActive = true;
 		}
@@ -852,8 +853,22 @@ namespace WCell.RealmServer.Global
 			if (!m_goSpawnPools.ContainsKey(pool.Template.PoolId))
 			{
 				m_goSpawnPools.Add(pool.Template.PoolId, pool);
+				OnPoolAdded<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>(pool);
 			}
 			pool.IsActive = true;
+		}
+
+		static void OnPoolAdded<T, E, O, POINT, POOL>(POOL pool) 
+			where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
+			where E : SpawnEntry<T, E, O, POINT, POOL>
+			where O : WorldObject
+			where POINT : SpawnPoint<T, E, O, POINT, POOL>, new()
+			where POOL : SpawnPool<T, E, O, POINT, POOL>
+		{
+			foreach (var point in pool.SpawnPoints)
+			{
+				point.SpawnEntry.SpawnPoints.Add(point);
+			}
 		}
 
 		/// <summary>
@@ -873,10 +888,19 @@ namespace WCell.RealmServer.Global
 				{
 					pool.IsActive = false;
 				}
+
+				// remove from list of SpawnEntry.SpawnPoints
+				foreach (var point in pool.SpawnPoints)
+				{
+					point.SpawnEntry.SpawnPoints.Remove(point);
+				}
 			}
 			else if (typeof(O) == typeof(GameObject))
 			{
-				// TODO: GO spawns
+				if (m_goSpawnPools.Remove(pool.Template.PoolId))
+				{
+					pool.IsActive = false;
+				}
 			}
 			else
 			{
