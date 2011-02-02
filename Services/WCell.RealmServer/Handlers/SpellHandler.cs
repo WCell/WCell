@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Constants.Items;
@@ -14,6 +15,8 @@ namespace WCell.RealmServer.Spells
 {
 	public static partial class SpellHandler
 	{
+		private static Logger log = LogManager.GetCurrentClassLogger();
+
 		#region OUT Packets
 		/// <summary>
 		/// Sends initially all spells and item cooldowns to the character

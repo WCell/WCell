@@ -228,10 +228,10 @@ namespace WCell.RealmServer.Spells
 					spell.RequiredTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 21
 					spell.ExcludeCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 22
 					spell.ExcludeTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 23
-					spell.RequiredCasterAuraId = GetUInt32(rawData, currentIndex++);                        // 24
-					spell.RequiredTargetAuraId = GetUInt32(rawData, currentIndex++);                        // 25
-					spell.ExcludeCasterAuraId = GetUInt32(rawData, currentIndex++);                         // 26
-					spell.ExcludeTargetAuraId = GetUInt32(rawData, currentIndex++);                         // 27
+					spell.RequiredCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 24
+					spell.RequiredTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 25
+					spell.ExcludeCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 26
+					spell.ExcludeTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 27
 
 					int castTimeIndex = GetInt32(rawData, currentIndex++);                                  // 28
 					if (castTimeIndex > 0)

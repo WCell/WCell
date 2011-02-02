@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Handlers
 				if (pet.Master == chr)
 				{
 					var aura = pet.Auras[spellId, true];
-					if (aura != null && aura.CanBeCancelled)
+					if (aura != null && aura.CanBeRemoved)
 					{
 						aura.TryRemove(true);
 					}

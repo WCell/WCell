@@ -69,10 +69,16 @@ namespace WCell.Addons.Default.Instances
 			public static void InitLadySpells()
 			{
 				var forkedLightning = SpellHandler.Get(SpellId.ForkedLightningRank1);
-				forkedLightning.AISettings.SetValues(8000, AISpellCastTargetType.RandomHostilePlayer);
+				forkedLightning.AISettings.SetValues(8000);
+
+				// is this correct? shouldn't it be AoE? that spell only does 5 damage
+				// in that case it should not have a custom target definition, but stick with the default one
+				forkedLightning.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
 
 				var slow = SpellHandler.Get(SpellId.SlowRank1);
-				slow.AISettings.SetValues(13000, AISpellCastTargetType.RandomHostilePlayer);
+				slow.AISettings.SetValues(13000);
+				slow.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
+
 
 				var frostNova = SpellHandler.Get(SpellId.ClassSkillFrostNovaRank2);
 				frostNova.AISettings.SetCooldown(20000);
@@ -95,7 +101,8 @@ namespace WCell.Addons.Default.Instances
 			public static void InitGelihast()
 			{
 				var net = SpellHandler.Get(SpellId.Net);
-				net.AISettings.SetValues(3000, AISpellCastTargetType.RandomHostilePlayer);
+				net.AISettings.SetValues(3000);
+				net.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
 			}
 
 			public GelihastAttackAction(NPC Gelihast)

@@ -44,12 +44,10 @@ namespace WCell.RealmServer.Spells
 	public delegate SpellEffectHandler SpellEffectHandlerCreator(SpellCast cast, SpellEffect effect);
 
 	/// <summary>
-	/// Static helper class for packet sending/receiving and srcCont of all spells.
+	/// Static helper class for packet sending/receiving and container of all spells
 	/// </summary>
 	public static partial class SpellHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		/// <summary>
 		/// Whether to cast the learn spell when adding spells
 		/// </summary>

@@ -18,28 +18,71 @@ namespace WCell.RealmServer.Spells
 	{
 		#region Prepare
 		/// <summary>
-		/// Find valid targets for AI cast during preparation
+		/// Called during Preparation
 		/// </summary>
-		SpellFailedReason PrepareAI(SpellCast cast)
+		SpellFailedReason PrepareAI()
 		{
-			var caster = cast.CasterUnit;
-			cast.SourceLoc = caster.Position;
+			var caster = CasterUnit;
+			SourceLoc = caster.Position;
 
 			if (caster.Target != null)
 			{
 				caster.SpellCast.TargetLoc = caster.Target.Position;
 			}
 
+			// init handlers pre-maturely, to make sure we got any targets
+			// revalidate handlers again, later
+			var err = InitHandlers();
 
-			// TODO: Init handlers
-			//var targets = FindValidTargetsForCaster(caster);
-			//if (targets == null)
-			//{
-			//    return SpellFailedReason.NoValidTargets;
-			//}
+			if (err == SpellFailedReason.Ok && m_targets.Count == 0)
+			{
+				// NPC must have targets
+				err = SpellFailedReason.NoValidTargets;
+			}
 
-			return SpellFailedReason.NoValidTargets;
+			if (m_targets != null && m_targets.Count == 1)
+			{
+				// look at single target
+				var target = m_targets.First() as Unit;
+				if (target != null)
+				{
+					caster.Target = target;
+				}
+			}
+
+			return err;
 		}
+		#endregion
+
+		#region Perform
+		bool PrePerformAI()
+		{
+			RevalidateAllTargets();
+
+			return m_targets.Count > 0;
+		}
+
+		void RevalidateAllTargets()
+		{
+			// clear original target set
+			m_targets.Clear();
+
+			// find all SpellTargetCollections to revalidate
+			var uniqueTargets = new HashSet<SpellTargetCollection>();
+			foreach (var handler in m_handlers)
+			{
+				uniqueTargets.Add(handler.Targets);
+			}
+
+			// remove from each collection
+			foreach (var targets in uniqueTargets)
+			{
+				// revalidate and then re-add to unique target set
+				targets.RevalidateAll();
+				m_targets.AddRange(targets);
+			}
+		}
+
 		#endregion
 	}
 }

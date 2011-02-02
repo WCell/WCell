@@ -236,7 +236,7 @@ namespace WCell.RealmServer.Spells.Auras
 			protected internal set;
 		}
 
-		public bool CanBeCancelled
+		public bool CanBeRemoved
 		{
 			get
 			{
@@ -830,6 +830,70 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 			}
 		}
+
+		public enum AuraOverrideStatus
+		{
+			/// <summary>
+			/// Aura does not exist
+			/// </summary>
+			NotPresent,
+
+			/// <summary>
+			/// Aura can be overridden (if the previous Aura can be removed)
+			/// </summary>
+			Replace,
+
+			/// <summary>
+			/// 
+			/// </summary>
+			Refresh,
+			Bounced
+		}
+
+		/// <summary>
+		/// Stack or removes the given Aura, if possible.
+		/// Returns whether the given incompatible Aura was removed or stacked.
+		/// <param name="err">Ok, if stacked or no incompatible Aura was found</param>
+		/// </summary>
+		public AuraOverrideStatus GetOverrideStatus(ObjectReference caster, Spell spell)
+		{
+			if (Spell.IsPreventionDebuff)
+			{
+				return AuraOverrideStatus.Bounced;
+			}
+
+			if (Spell == spell)
+			{
+				// same spell can always be refreshed
+				return AuraOverrideStatus.Refresh;
+			}
+			else
+			{
+				if (caster == CasterReference)
+				{
+					if (spell != Spell &&
+						spell.AuraCasterGroup != null &&
+						spell.AuraCasterGroup == Spell.AuraCasterGroup &&
+						spell.AuraCasterGroup.MaxCount == 1)
+					{
+						// same caster group, can override
+						return AuraOverrideStatus.Replace;
+					}
+					else
+					{
+						// no caster group restriction, but same caster
+						// Aura can be refreshed
+						return AuraOverrideStatus.Refresh;
+					}
+				}
+				else if (!spell.CanOverride(Spell))
+				{
+					return AuraOverrideStatus.Bounced;
+				}
+
+				return AuraOverrideStatus.Refresh;
+			}
+		}
 		#endregion
 
 		#region Remove & Cancel
@@ -850,14 +914,6 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		/// <summary>
-		/// Cancels and removes this Aura
-		/// </summary>
-		public void Cancel()
-		{
-			Remove(true);
-		}
-
 		public bool TryRemove(bool cancelled)
 		{
 			if (m_spell.IsAreaAura)
@@ -866,7 +922,8 @@ namespace WCell.RealmServer.Spells.Auras
 				var owner = m_auras.Owner;
 				if (owner.EntityId.Low == CasterReference.EntityId || CasterUnit == null || CasterUnit.UnitMaster == owner)
 				{
-					return owner.CancelAreaAura(m_spell);
+					owner.CancelAreaAura(m_spell);
+					return true;
 				}
 			}
 			else
@@ -875,6 +932,11 @@ namespace WCell.RealmServer.Spells.Auras
 				return true;
 			}
 			return false;
+		}
+
+		public void Cancel()
+		{
+			Remove();
 		}
 
 		internal void RemoveWithoutCleanup()
@@ -896,7 +958,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <summary>
 		/// Removes this Aura from the player
 		/// </summary>
-		public void Remove(bool cancelled)
+		public void Remove(bool cancelled = true)
 		{
 			if (IsAdded)
 			{

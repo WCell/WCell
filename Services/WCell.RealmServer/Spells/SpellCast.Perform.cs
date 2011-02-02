@@ -238,39 +238,42 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		protected SpellFailedReason PrePerform()
 		{
-			// Make sure that there is an Item for Spells that require an Item target
-			if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
+			if (isPlayerCast)
 			{
-				// Spell targets an item
-				if (TargetItem == null || !TargetItem.IsInWorld || TargetItem.Owner != CasterObject)
+				// Make sure that there is an Item for Spells that require an Item target
+				if (m_spell.TargetFlags.HasAnyFlag(SpellTargetFlags.Item))
 				{
-					if (m_passiveCast)
+					// Spell targets an item
+					if (TargetItem == null || !TargetItem.IsInWorld || TargetItem.Owner != CasterObject)
 					{
-						LogManager.GetCurrentClassLogger().Warn("Trying to trigger Spell without Item selected: " + this);
-					}
-					return SpellFailedReason.ItemNotFound;
-				}
-
-				if (TargetItem.IsEquipped && !TargetItem.Unequip())
-				{
-					if (m_passiveCast)
-					{
-						LogManager.GetCurrentClassLogger().Warn("Trying to trigger Spell without Item ready: " + this);
+						if (m_passiveCast)
+						{
+							LogManager.GetCurrentClassLogger().Warn("Trying to trigger Spell without Item selected: " + this);
+						}
+						return SpellFailedReason.ItemNotFound;
 					}
 
-					// make sure, Item is not equipped					
-					return SpellFailedReason.ItemNotReady;
-				}
-			}
+					if (TargetItem.IsEquipped && !TargetItem.Unequip())
+					{
+						if (m_passiveCast)
+						{
+							LogManager.GetCurrentClassLogger().Warn("Trying to trigger Spell without Item ready: " + this);
+						}
 
-			// check immunities
-			if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
-			{
-				var hostile = m_spell.IsHarmfulFor(CasterReference, Selected);
-				if (!CheckImmune((Unit)Selected, m_spell, hostile))
+						// make sure, Item is not equipped					
+						return SpellFailedReason.ItemNotReady;
+					}
+				}
+
+				// check immunities
+				if (!IsAoE && Selected is Unit && !m_spell.IsPreventionDebuff)
 				{
-					Cancel(SpellFailedReason.Immune);
-					return SpellFailedReason.Immune;
+					var hostile = m_spell.IsHarmfulFor(CasterReference, Selected);
+					if (!CheckImmune((Unit)Selected, m_spell, hostile))
+					{
+						Cancel(SpellFailedReason.Immune);
+						return SpellFailedReason.Immune;
+					}
 				}
 			}
 
@@ -349,8 +352,7 @@ namespace WCell.RealmServer.Spells
 					return SpellFailedReason.Reagents;
 				}
 			}
-			
-			// 
+
 			if (CasterUnit != null)
 			{
 				// we might have to kneel
@@ -361,12 +363,18 @@ namespace WCell.RealmServer.Spells
 						CasterUnit.StandState = StandState.Kneeling;
 					}
 				}
-				
+
 				// cancel stealth
 				if (!m_spell.AttributesEx.HasFlag(SpellAttributesEx.RemainStealthed))
 				{
 					CasterUnit.Auras.RemoveWhere(aura => aura.Spell.DispelType == DispelType.Stealth);
 				}
+			}
+
+			// revalidate targets for AI, amongst others
+			if (IsAICast && !PrePerformAI())
+			{
+				return SpellFailedReason.NoValidTargets;
 			}
 
 			return SpellFailedReason.Ok;

@@ -532,6 +532,36 @@ namespace WCell.RealmServer.Spells
 
 			AISettings.InitializeAfterLoad();
 		}
+		#endregion
+
+		#region Targeting
+		/// <summary>
+		/// Sets the CustomTargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideCustomTargetDefinitions(TargetAdder adder, TargetFilter filter)
+		{
+			OverrideCustomTargetDefinitions(new TargetDefinition(adder, filter));
+		}
+
+		public void OverrideCustomTargetDefinitions(TargetDefinition def)
+		{
+			ForeachEffect(
+				effect => effect.CustomTargetHandlerDefintion = def);
+		}
+
+		/// <summary>
+		/// Sets the AITargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideAITargetDefinitions(TargetAdder adder, TargetFilter filter)
+		{
+			OverrideAITargetDefinitions(new TargetDefinition(adder, filter));
+		}
+
+		public void OverrideAITargetDefinitions(TargetDefinition def)
+		{
+			ForeachEffect(
+				effect => effect.AITargetHandlerDefintion = def);
+		}
 
 		#endregion
 

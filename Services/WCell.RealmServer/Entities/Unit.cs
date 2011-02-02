@@ -1659,6 +1659,15 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public void RemoveProcHandler<T>() where T : IProcHandler
+		{
+			var handler = GetProcHandler<T>();
+			if (handler != null)
+			{
+				m_procHandlers.Remove(handler);
+			}
+		}
+
 		/// <summary>
 		/// Removes the first custom ProcHandler that uses the given template.
 		/// </summary>

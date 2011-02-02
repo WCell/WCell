@@ -118,7 +118,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			Owner.AddMessage(() =>
 			{
-				var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != triggerer);
+				var nextTarget = Owner.GetRandomVisibleUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != triggerer);
 				if (nextTarget != null)
 				{
 					dmgAction.Victim = nextTarget;

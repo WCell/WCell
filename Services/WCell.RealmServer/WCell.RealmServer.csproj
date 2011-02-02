@@ -252,6 +252,7 @@
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="AI\Spells\SpellCast.AI.cs" />
     <Compile Include="Spells\SpellProcEventEntry.cs" />
+    <Compile Include="Spells\SpellTargetMethods.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />

@@ -189,10 +189,30 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect EffectValueOverrideEffect;
 
+		public TargetDefinition GetTargetDefinition(bool isAiCast)
+		{
+			return isAiCast && CustomTargetHandlerDefintion == null ? AITargetHandlerDefintion : CustomTargetHandlerDefintion;
+		}
+
 		/// <summary>
-		/// Used to determine the targets for this effect when casted by an AI caster
+		/// Used to determine the targets for this effect
 		/// </summary>
-		public AISpellCastTargetType AISpellCastTargetType = AISpellCastTargetType.Default;
+		public TargetDefinition CustomTargetHandlerDefintion;
+
+		/// <summary>
+		/// Used only by AI to determine targets
+		/// </summary>
+		public TargetDefinition AITargetHandlerDefintion;
+
+		public void SetCustomTargetDefinition(TargetAdder adder, TargetFilter filter)
+		{
+			CustomTargetHandlerDefintion = new TargetDefinition(adder, filter);
+		}
+
+		public void SetAITargetDefinition(TargetAdder adder, TargetFilter filter)
+		{
+			AITargetHandlerDefintion = new TargetDefinition(adder, filter);
+		}
 		#endregion
 
 		#region Auto generated Fields

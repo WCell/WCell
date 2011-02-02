@@ -215,7 +215,6 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Gets a random nearby Character in WorldObject.BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
 		/// </summary>
 		public static Character GetNearbyRandomHostileCharacter<O>(this O wObj) where O : WorldObject
 		{
@@ -224,7 +223,6 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Gets a random nearby Character in WorldObject.BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
 		/// </summary>
 		public static Character GetNearbyRandomHostileCharacter<O>(this O wObj, float radius) where O : WorldObject
 		{
@@ -319,12 +317,12 @@ namespace WCell.RealmServer.Entities
 			return target;
 		}
 
-		public static Unit GetRandomUnit<O>(this O wObj, float radius, bool checkVisible) where O : WorldObject
+		public static Unit GetRandomUnit<O>(this O wObj, float radius, bool checkVisible = true) where O : WorldObject
 		{
 			return (Unit)wObj.GetObjectsInRadius(radius, ObjectTypes.Unit, checkVisible, 0).GetRandom();
 		}
 
-		public static Unit GetRandomUnit<O>(this O wObj, float radius, Func<Unit, bool> filter) where O : WorldObject
+		public static Unit GetRandomVisibleUnit(this WorldObject wObj, float radius, Func<Unit, bool> filter)
 		{
 			return (Unit)wObj.GetVisibleObjectsInRadius(radius, obj => obj is Unit && filter((Unit)obj), 0).GetRandom();
 		}
@@ -336,12 +334,12 @@ namespace WCell.RealmServer.Entities
 
 		public static Unit GetNearbyRandomAlliedUnit<O>(this O wObj, float radius) where O : WorldObject
 		{
-			return wObj.GetRandomUnit(radius, unit => unit.IsAlliedWith(wObj));
+			return wObj.GetRandomVisibleUnit(radius, unit => unit.IsAlliedWith(wObj));
 		}
 
-		public static Unit GetRandomHostileUnit<O>(this O wObj, float radius) where O : WorldObject
+		public static Unit GetNearbyRandomHostileUnit<O>(this O wObj, float radius) where O : WorldObject
 		{
-			return wObj.GetRandomUnit(radius, wObj.MayAttack);
+			return wObj.GetRandomVisibleUnit(radius, wObj.MayAttack);
 		}
 		#endregion
 	}

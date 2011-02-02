@@ -1,1 +1,2 @@
-- fixed startup error caused by the fix for MageFireBlazingSpeed (it has a ProcTriggerSpell effect, not TriggerSpell)
+- improved aura stacking logic
+- finally finished the first version of the new NPC Spell AI system - it rocks, to say the least.

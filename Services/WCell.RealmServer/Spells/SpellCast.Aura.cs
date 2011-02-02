@@ -58,7 +58,7 @@ namespace WCell.RealmServer.Spells
 
 								var id = m_spell.GetAuraUID(CasterReference, target);
 								var failReason = SpellFailedReason.Ok;
-								if (((Unit)target).Auras.CheckStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
+								if (((Unit)target).Auras.PrepareStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
 								{
 									m_auraApplicationInfos.Add(new AuraApplicationInfo((Unit)target));
 								}

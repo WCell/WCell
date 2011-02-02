@@ -240,14 +240,7 @@ namespace WCell.RealmServer.Spells
 
 			IsModifierEffect = AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent;
 
-			foreach (var mask in AffectMask)
-			{
-				if (mask != 0)
-				{
-					HasAffectMask = true;
-					break;
-				}
-			}
+			HasAffectMask = AffectMask.Any(mask => mask != 0);
 
 			if (HasAffectMask)
 			{
@@ -272,6 +265,8 @@ namespace WCell.RealmServer.Spells
 			IsEnchantmentEffect = EffectType == SpellEffectType.EnchantHeldItem ||
 				EffectType == SpellEffectType.EnchantItem ||
 				EffectType == SpellEffectType.EnchantItemTemporary;
+
+			AITargetHandlerDefintion = AISpellUtil.GetDefaultAITargetHandlerDefintion(this);
 		}
 
 		/// <summary>
@@ -294,18 +289,8 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool SharesTargets(SpellEffect b, bool aiCast)
 		{
-			if (aiCast)
-			{
-				if (Spell == b.Spell && Spell.AISettings.TargetType != Spells.AISpellCastTargetType.Default)
-				{
-					// both spells have default AI spell casting
-					// special targeting -> All effects share the same targets
-					return true;
-				}
-				return AISpellCastTargetType == b.AISpellCastTargetType;
-			}
-			return ImplicitTargetA == b.ImplicitTargetA && 
-				ImplicitTargetB == b.ImplicitTargetB;
+			return CustomTargetHandlerDefintion == b.CustomTargetHandlerDefintion ||
+				(ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB);
 		}
 
 		public bool HasTarget(ImplicitSpellTargetType target)

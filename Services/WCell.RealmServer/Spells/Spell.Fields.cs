@@ -98,19 +98,19 @@ namespace WCell.RealmServer.Spells
 		/// Can only cast if caster has this Aura
 		/// Used for some new BG features (Homing missiles etc)
 		/// </summary>
-		public uint RequiredCasterAuraId;
+		public SpellId RequiredCasterAuraId;
 		/// <summary>
 		/// Can only cast if target has this Aura
 		/// </summary>
-		public uint RequiredTargetAuraId;
+		public SpellId RequiredTargetAuraId;
 		/// <summary>
 		/// Cannot be cast if caster has this
 		/// </summary>
-		public uint ExcludeCasterAuraId;
+		public SpellId ExcludeCasterAuraId;
 		/// <summary>
 		/// Cannot be cast on target if he has this
 		/// </summary>
-		public uint ExcludeTargetAuraId;
+		public SpellId ExcludeTargetAuraId;
 
 		/// <summary>
 		/// Cast delay in milliseconds

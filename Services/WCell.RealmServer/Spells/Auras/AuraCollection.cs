@@ -19,9 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
-using WCell.Constants;
 using WCell.Constants.Spells;
-using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
@@ -231,12 +229,14 @@ namespace WCell.RealmServer.Spells.Auras
 			get
 			{
 				Aura aura;
-				m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
-				if (aura != null && aura.Spell.Line == line)
+				if (!m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura))
 				{
-					return aura;
+					if (!m_auras.TryGetValue(new AuraIndexId(line.AuraUID, line.BaseSpell.HasHarmfulEffects), out aura))
+					{
+						return null;
+					}
 				}
-				return aura;
+				return aura.Spell.Line == line ? aura : null;
 			}
 		}
 
@@ -377,7 +377,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// <returns></returns>
 		public bool Contains(SpellLineId id)
 		{
-			var line = SpellLines.GetLine(id);
+			var line = id.GetLine();
 			if (line != null)
 			{
 				return this[line] != null;
@@ -390,18 +390,6 @@ namespace WCell.RealmServer.Spells.Auras
 			Aura aura;
 			m_auras.TryGetValue(new AuraIndexId(line.AuraUID, !line.BaseSpell.HasHarmfulEffects), out aura);
 			return aura != null && aura.Spell.Line == line;
-		}
-
-		public bool Contains(uint id)
-		{
-			foreach (var aura in m_AuraArray)
-			{
-				if (aura.Spell.Id == id)
-				{
-					return true;
-				}
-			}
-			return false;
 		}
 		#endregion
 
@@ -424,57 +412,6 @@ namespace WCell.RealmServer.Spells.Auras
 		public Aura CreateSelf(Spell spell, bool noTimeout = false)
 		{
 			return CreateAndStartAura(m_owner.SharedReference, spell, noTimeout);
-		}
-
-		/// <summary>
-		/// Applies the given spell as a buff or debuff.
-		/// Also initializes the new Aura.
-		/// </summary>
-		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
-		public Aura CreateAura(ObjectReference caster, Spell spell, Item usedItem = null)
-		{
-			try
-			{
-				var beneficial = spell.IsBeneficialFor(caster, m_owner);
-				var id = spell.GetAuraUID(beneficial);
-				var err = SpellFailedReason.Ok;
-
-				// check for existing auras & stacking
-				var oldAura = GetAura(caster, id, spell);
-				if (oldAura != null)
-				{
-					if (!CheckStackOrOverride(oldAura, caster, spell, ref err))
-					{
-						if (err == SpellFailedReason.Ok)
-						{
-							// Stacked
-							return oldAura;
-						}
-						if (caster.Object is Character)
-						{
-							SpellHandler.SendCastFailed((Character)caster.Object, 0, spell, err);
-						}
-						return null;
-					}
-				}
-
-				// create new Aura
-				var handlers = spell.CreateAuraEffectHandlers(caster, m_owner, beneficial);
-				if (handlers != null)
-				{
-					var aura = CreateAura(caster, spell, handlers, usedItem, beneficial);
-					if (aura != null)
-					{
-						OnCreated(aura);
-					}
-					return aura;
-				}
-			}
-			catch (Exception ex)
-			{
-				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
-			}
-			return null;
 		}
 
 		/// <summary>
@@ -529,7 +466,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// Overrides any existing Aura that matches.
 		/// </summary>
 		/// <returns>null if Spell is not an Aura</returns>
-		public Aura CreateAura(ObjectReference casterReference, Spell spell, List<AuraEffectHandler> handlers, Item usedItem, bool beneficial)
+		internal Aura CreateAura(ObjectReference casterReference, Spell spell, List<AuraEffectHandler> handlers, Item usedItem, bool beneficial)
 		{
 			// create new Aura
 			// Get an index for the aura
@@ -545,6 +482,59 @@ namespace WCell.RealmServer.Spells.Auras
 			aura.UsedItem = usedItem;
 			AddAura(aura, false);
 			return aura;
+		}
+
+		/// <summary>
+		/// Applies the given spell as a buff or debuff.
+		/// Does not necessarily create
+		/// Also, initializes new Auras.
+		/// </summary>
+		/// <returns>null if Spell is not an Aura or an already existing version of the Aura that was refreshed</returns>
+		public Aura CreateAura(ObjectReference caster, Spell spell, Item usedItem = null)
+		{
+			try
+			{
+				var beneficial = spell.IsBeneficialFor(caster, m_owner);
+				var id = spell.GetAuraUID(beneficial);
+				var err = SpellFailedReason.Ok;
+
+				// check for existing auras & stacking
+				var oldAura = GetAura(caster, id, spell);
+				if (oldAura != null)
+				{
+					if (!PrepareStackOrOverride(caster, oldAura, spell, ref err))
+					{
+						if (err == SpellFailedReason.Ok)
+						{
+							// Stacked
+							return oldAura;
+						}
+
+						if (caster.Object is Character)
+						{
+							SpellHandler.SendCastFailed((Character)caster.Object, 0, spell, err);
+						}
+						return null;
+					}
+				}
+
+				// create new Aura
+				var handlers = spell.CreateAuraEffectHandlers(caster, m_owner, beneficial);
+				if (handlers != null)
+				{
+					var aura = CreateAura(caster, spell, handlers, usedItem, beneficial);
+					if (aura != null)
+					{
+						OnCreated(aura);
+					}
+					return aura;
+				}
+			}
+			catch (Exception ex)
+			{
+				LogUtil.ErrorException(ex, "Unable to add new Aura \"{0}\" by \"{1}\" to: {2}", spell, caster, m_owner);
+			}
+			return null;
 		}
 
 		/// <summary>
@@ -585,62 +575,54 @@ namespace WCell.RealmServer.Spells.Auras
 
 		#region Checks
 		/// <summary>
+		/// 
+		/// </summary>
+		public Aura.AuraOverrideStatus GetOverrideStatus(ObjectReference caster, Spell spell)
+		{
+			var oldAura = this[spell];
+			if (oldAura != null)
+			{
+				return oldAura.GetOverrideStatus(caster, spell);
+			}
+			return Aura.AuraOverrideStatus.NotPresent;
+		}
+
+		/// <summary>
 		/// Stack or removes the Aura represented by the given spell, if possible.
-		/// Returns true if there is no incompatible Aura or if it could be removed.
+		/// Returns true if there is no incompatible Aura or if the Aura could be removed.
 		/// <param name="err">Ok, if stacked or no incompatible Aura is blocking a new Aura</param>
 		/// </summary>
-		public bool CheckStackOrOverride(ObjectReference caster, AuraIndexId id, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
+		internal bool PrepareStackOrOverride(ObjectReference caster, AuraIndexId id, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
 		{
 			var oldAura = GetAura(caster, id, spell);
 			if (oldAura != null)
 			{
-				return CheckStackOrOverride(oldAura, caster, spell, ref err, triggeringCast);
+				return PrepareStackOrOverride(caster, oldAura, spell, ref err, triggeringCast);
 			}
 			return true;
 		}
 
-		/// <summary>
-		/// Stack or removes the given Aura, if possible.
-		/// Returns whether the given incompatible Aura was removed or stacked.
-		/// <param name="err">Ok, if stacked or no incompatible Aura was found</param>
-		/// </summary>
-		public static bool CheckStackOrOverride(Aura oldAura, ObjectReference caster, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
+
+		internal bool PrepareStackOrOverride(ObjectReference caster, Aura oldAura, Spell spell, ref SpellFailedReason err, SpellCast triggeringCast = null)
 		{
-			if (oldAura.Spell.IsPreventionDebuff)
+			var status = oldAura.GetOverrideStatus(caster, spell);
+
+			if (status == Aura.AuraOverrideStatus.Replace)
 			{
-				err = SpellFailedReason.AuraBounced;
-				return false;
+				status = oldAura.TryRemove(true) ? Aura.AuraOverrideStatus.NotPresent : Aura.AuraOverrideStatus.Bounced;
 			}
 
-			if (oldAura.Spell == spell)
+			switch (status)
 			{
-				// refresh and (if applicable) increase StackCount
-				err = SpellFailedReason.Ok;
-				oldAura.Refresh(caster);
-			}
-			else
-			{
-				if (caster == oldAura.CasterReference)
-				{
-					if (spell != oldAura.Spell &&
-						spell.AuraCasterGroup != null &&
-						spell.AuraCasterGroup == oldAura.Spell.AuraCasterGroup &&
-						spell.AuraCasterGroup.Count > 1)
-					{
-						err = SpellFailedReason.AuraBounced;
-						return false;
-					}
-				}
-				else if (!spell.CanOverride(oldAura.Spell))
-				{
-					err = SpellFailedReason.AuraBounced;
+				case Aura.AuraOverrideStatus.NotPresent:
+					return true;							// no obstacles in the way
+				case Aura.AuraOverrideStatus.Refresh:
+					oldAura.Refresh(caster);
+					return false;							// don't need to create a new one
+				default:
+					err = SpellFailedReason.AuraBounced;	// cannot help it
 					return false;
-				}
-
-				// cancel previously existing Aura
-				return oldAura.TryRemove(true);
 			}
-			return false;
 		}
 		#endregion
 
@@ -730,7 +712,7 @@ namespace WCell.RealmServer.Spells.Auras
 			Aura aura;
 			if (m_auras.TryGetValue(auraId, out aura))
 			{
-				aura.Cancel();
+				aura.Remove();
 				return true;
 			}
 			return false;
@@ -768,7 +750,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			if (aura != null && aura.Spell.Id == spell.Id)
 			{
-				aura.Cancel();
+				aura.Remove();
 				return true;
 			}
 			return false;
