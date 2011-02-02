@@ -1,4 +1,1 @@
-- added ability to add custom IGetterSetter and custom ActualType for DataHolder fields/properties
-- added locking to global instance containers
-- cleaned up and improved instance/bg code & commands
-- added a warning if an HTTP crawler bot connects
+- fixed an exception that occured when loading and no ActualType is set (thanks Pepsi)

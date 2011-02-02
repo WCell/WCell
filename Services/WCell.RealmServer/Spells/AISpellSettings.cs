@@ -11,14 +11,14 @@ namespace WCell.RealmServer.Spells
 	/// </summary>
 	public class AISpellSettings
 	{
-		public static readonly CooldownRange[] DefaultCooldownsByCategory = new CooldownRange[(int)AISpellCategory.End];
+		public static readonly CooldownRange[] DefaultCooldownsByCategory = new CooldownRange[(int)AISpellCooldownCategory.End];
 
-		public static CooldownRange GetDefaultCategoryCooldown(AISpellCategory cat)
+		public static CooldownRange GetDefaultCategoryCooldown(AISpellCooldownCategory cat)
 		{
 			return DefaultCooldownsByCategory[(int)cat];
 		}
 
-		public static void SetDefaultCategoryCooldown(AISpellCategory cat, int min, int max)
+		public static void SetDefaultCategoryCooldown(AISpellCooldownCategory cat, int min, int max)
 		{
 			DefaultCooldownsByCategory[(int)cat] = new CooldownRange(min, max);
 		}
@@ -26,10 +26,10 @@ namespace WCell.RealmServer.Spells
 		static AISpellSettings()
 		{
 			// initialize with default values - can be changed using the static SetDefaultCategoryCooldown method
-			DefaultCooldownsByCategory[(int)AISpellCategory.AuraBeneficial] = new CooldownRange(30000, 60000);
-			DefaultCooldownsByCategory[(int)AISpellCategory.AuraHarmful] = new CooldownRange(30000, 60000);
-			DefaultCooldownsByCategory[(int)AISpellCategory.DirectBeneficial] = new CooldownRange(30000, 60000);
-			DefaultCooldownsByCategory[(int)AISpellCategory.DirectHarmful] = new CooldownRange(5000, 10000);
+			DefaultCooldownsByCategory[(int)AISpellCooldownCategory.AuraBeneficial] = new CooldownRange(30000, 60000);
+			DefaultCooldownsByCategory[(int)AISpellCooldownCategory.AuraHarmful] = new CooldownRange(30000, 60000);
+			DefaultCooldownsByCategory[(int)AISpellCooldownCategory.DirectBeneficial] = new CooldownRange(30000, 60000);
+			DefaultCooldownsByCategory[(int)AISpellCooldownCategory.DirectHarmful] = new CooldownRange(5000, 10000);
 		}
 
 		public readonly CooldownRange Cooldown = new CooldownRange(-1, -1);
@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Spells
 		internal void InitializeAfterLoad()
 		{
 			// set all values that were not overridden
-			var category = Spell.GetSpellAICategory();
+			var category = Spell.GetAISpellCooldownCategory();
 			var def = GetDefaultCategoryCooldown(category);
 
 			if (Cooldown.MinDelay < 0)
@@ -156,11 +156,11 @@ namespace WCell.RealmServer.Spells
 	}
 	#endregion
 
-	#region AISpellCategory
+	#region AISpellCooldownCategory
 	/// <summary>
-	/// Categories of spells for AI casters
+	/// Categories of default cooldowns for AI casters
 	/// </summary>
-	public enum AISpellCategory
+	public enum AISpellCooldownCategory
 	{
 		/// <summary>
 		/// Buff or positive aura (eg. to improve stats, speed etc)
@@ -244,16 +244,16 @@ namespace WCell.RealmServer.Spells
 	#region SpellAIUtil
 	public static class AISpellUtil
 	{
-		public static AISpellCategory GetSpellAICategory(this Spell spell)
+		public static AISpellCooldownCategory GetAISpellCooldownCategory(this Spell spell)
 		{
 			var beneficial = spell.HarmType == HarmType.Beneficial;
 			if (spell.IsAura)
 			{
-				return beneficial ? AISpellCategory.AuraBeneficial : AISpellCategory.AuraHarmful;
+				return beneficial ? AISpellCooldownCategory.AuraBeneficial : AISpellCooldownCategory.AuraHarmful;
 			}
 			else
 			{
-				return beneficial ? AISpellCategory.DirectBeneficial : AISpellCategory.DirectHarmful;
+				return beneficial ? AISpellCooldownCategory.DirectBeneficial : AISpellCooldownCategory.DirectHarmful;
 			}
 		}
 	}

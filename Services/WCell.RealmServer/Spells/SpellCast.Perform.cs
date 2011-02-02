@@ -829,7 +829,7 @@ namespace WCell.RealmServer.Spells
 				var spells = ((Character)caster).PlayerSpells;
 				if (spells != null)
 				{
-					spells.ClearCooldown(m_spell, true);
+					spells.ClearCooldown(m_spell);
 				}
 			}
 

@@ -162,7 +162,7 @@ namespace WCell.Util.Data
 			get
 			{
 				var attr = (PersistentAttribute)m_mappedMember.GetCustomAttributes(typeof (PersistentAttribute), true).FirstOrDefault();
-				if (attr != null)
+				if (attr != null && attr.ActualType != null)
 				{
 					return attr.ActualType;
 				}
