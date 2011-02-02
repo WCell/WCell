@@ -371,6 +371,7 @@ namespace WCell.Constants.Misc
 		SimpleCustomspell08 = 409,
 		SimpleCustomspell09 = 410,
 		SimpleCustomspell10 = 411,
-		StateExclaim = 412
+		StateExclaim = 412,
+        PullingString = 416
 	}
 }

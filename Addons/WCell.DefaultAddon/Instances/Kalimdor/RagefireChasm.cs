@@ -11,9 +11,9 @@ using WCell.Util;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.States;
 using WCell.RealmServer.AI.Actions.Combat;
+using WCell.RealmServer.Misc;
 using System.Collections.Generic;
 using System;
-
 
 namespace WCell.Addons.Default.Instances
 {
@@ -24,80 +24,71 @@ namespace WCell.Addons.Default.Instances
 		private static NPCEntry taragamanEntry;
 		private static NPCEntry jergoshEntry;
 		private static NPCEntry bazzalanEntry;
-
+//      Oggleflint
+        static readonly ProcHandlerTemplate cleave = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Cleave_28), ProcTriggerFlags.AnyHit, 10);
+//      Taragaman
+//      static readonly ProcHandlerTemplate uppercut = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Uppercut_2), ProcTriggerFlags.AnyHit, 10);  //Not working properly
+        static readonly ProcHandlerTemplate firenova = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.FireNova_2), ProcTriggerFlags.AnyHit, 10);
+//      Jergosh
+        static readonly ProcHandlerTemplate weakness = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.CurseOfWeakness_6), ProcTriggerFlags.AnyHit, 10);
+        static readonly ProcHandlerTemplate immolate = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Immolate_13), ProcTriggerFlags.AnyHit, 15);
+//      Bazzalan
+        static readonly ProcHandlerTemplate poison = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.Poison_10), ProcTriggerFlags.AnyHit, 5);
+        static readonly ProcHandlerTemplate sstrike = new TriggerSpellProcHandlerTemplate(SpellHandler.Get(SpellId.SinisterStrike), ProcTriggerFlags.AnyHit, 10);
+        
 		[Initialization]
 		[DependentInitialization(typeof(NPCMgr))]
 		public static void InitNPCs()
 		{
-			// Oggleflint
+//          Oggleflint
 			oggleflintEntry = NPCMgr.GetEntry(NPCId.Oggleflint);
-
-			oggleflintEntry.AddSpell(SpellId.Cleave);
-
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-							   SpellId.Cleave);
-
+			oggleflintEntry.AddSpell(SpellId.Cleave);            
 			oggleflintEntry.Activated += oggleflint =>
 			{
 				var brain = (BaseBrain)oggleflint.Brain;
 				var combatAction = (AICombatAction)brain.Actions[BrainState.Combat];
 				combatAction.Strategy = new OggleflintAttackAction(oggleflint);
+                oggleflint.AddProcHandler(cleave);
 			};
 
-			// Taragaman the Hungerer
+//          Taragaman the Hungerer
 			taragamanEntry = NPCMgr.GetEntry(NPCId.TaragamanTheHungerer);
-
-			taragamanEntry.AddSpell(SpellId.Uppercut);
+//          taragamanEntry.AddSpell(SpellId.Uppercut);  //Not working properly
 			taragamanEntry.AddSpell(SpellId.FireNova);
-
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-							   SpellId.Uppercut);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 10000; },
-							   SpellId.FireNova);
-
 			taragamanEntry.Activated += taragaman =>
 			{
 				var brain = (BaseBrain)taragaman.Brain;
 				var combatAction = (AICombatAction)brain.Actions[BrainState.Combat];
 				combatAction.Strategy = new TaragamanAttackAction(taragaman);
-			};
+//              taragaman.AddProcHandler(uppercut);  //Currently not working
+                taragaman.AddProcHandler(firenova); 
+            };
 
-			// Jergosh the Invoker
+//          Jergosh the Invoker
 			jergoshEntry = NPCMgr.GetEntry(NPCId.JergoshTheInvoker);
-
 			jergoshEntry.AddSpell(SpellId.CurseOfWeakness);
 			jergoshEntry.AddSpell(SpellId.Immolate);
-
-			SpellHandler.Apply(spell => { spell.CooldownTime = 12000; },
-							   SpellId.CurseOfWeakness);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 5000; },
-							   SpellId.Immolate);
-
 			jergoshEntry.Activated += jergosh =>
 			{
 				var brain = (BaseBrain)jergosh.Brain;
 				var combatAction = (AICombatAction)brain.Actions[BrainState.Combat];
 				combatAction.Strategy = new JergoshAttackAction(jergosh);
+                jergosh.AddProcHandler(weakness);
+                jergosh.AddProcHandler(immolate);
 			};
 
-			// Bazzalan
+//          Bazzalan
 			bazzalanEntry = NPCMgr.GetEntry(NPCId.Bazzalan);
-
 			bazzalanEntry.AddSpell(SpellId.Poison);
 			bazzalanEntry.AddSpell(SpellId.SinisterStrike);
-
-			SpellHandler.Apply(spell => { spell.CooldownTime = 10000; },
-							   SpellId.Poison);
-			SpellHandler.Apply(spell => { spell.CooldownTime = 12000; },
-							   SpellId.SinisterStrike);
-
 			bazzalanEntry.Activated += bazzalan =>
 			{
 				var brain = (BaseBrain)bazzalan.Brain;
 				var combatAction = (AICombatAction)brain.Actions[BrainState.Combat];
 				combatAction.Strategy = new BazzalanAttackAction(bazzalan);
+                bazzalan.AddProcHandler(poison);
+                bazzalan.AddProcHandler(sstrike);
 			};
-
 		}
 		#endregion
 	}
@@ -117,7 +108,7 @@ namespace WCell.Addons.Default.Instances
 		public TaragamanAttackAction(NPC taragaman)
 			: base(taragaman)
 		{
-		}
+  		}
 	}
 	#endregion
 
