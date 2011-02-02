@@ -1,2 +1,5 @@
+- last commit was a bust - accidentally slipped "-a" into the commit command
+ -> the last commit also added a big bulk to the new AI spell cast system
+ -> this cures things again, including spell targeting which was bugged before
 - improved aura stacking logic
-- finally finished the first version of the new NPC Spell AI system - it rocks, to say the least.
+- added NPCDifficulty override info to the npc dump

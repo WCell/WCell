@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.RealmServer.Misc;
 
-namespace WCell.RealmServer.Spells.Auras.Misc
+namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
 	/// Adds a custom ProcHandler to the Owner while its active

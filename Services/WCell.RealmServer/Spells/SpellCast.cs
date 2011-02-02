@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsAICast
 		{
-			get { return !isPlayerCast && CasterUnit != null; }
+			get { return !isPlayerCast && CasterUnit != null && !IsPassive; }
 		}
 
 		public bool UsesRunes

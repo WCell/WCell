@@ -166,7 +166,8 @@ namespace WCell.RealmServer.Spells
 
 		public static TargetDefinition GetDefaultAITargetHandlerDefintion(SpellEffect effect)
 		{
-			
+			// TODO
+			return null;
 		}
 	}
 	#endregion
