@@ -486,6 +486,11 @@ namespace WCell.RealmServer.Entities
 			get { return m_spawnPoint; }
 		}
 
+		public NPCSpawnEntry SpawnEntry
+		{
+			get { return m_spawnPoint != null ? m_spawnPoint.SpawnEntry : null; }
+		}
+
 		public override LinkedList<WaypointEntry> Waypoints
 		{
 			get
