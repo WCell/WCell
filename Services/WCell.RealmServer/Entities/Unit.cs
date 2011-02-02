@@ -1577,6 +1577,39 @@ namespace WCell.RealmServer.Entities
 			get { return m_procHandlers; }
 		}
 
+		public IProcHandler GetProcHandler(Func<IProcHandler, bool> predicate)
+		{
+			if (m_procHandlers != null)
+			{
+				foreach (var handler in m_procHandlers)
+				{
+					if (predicate(handler))
+					{
+						return handler;
+					}
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Returns the first proc handler of the given type
+		/// </summary>
+		public T GetProcHandler<T>() where T : IProcHandler
+		{
+			if (m_procHandlers != null)
+			{
+				foreach (var handler in m_procHandlers)
+				{
+					if (handler is T)
+					{
+						return (T)handler;
+					}
+				}
+			}
+			return default(T);
+		}
+
 		public void AddProcHandler(ProcHandlerTemplate templ)
 		{
 			AddProcHandler(new ProcHandler(this, this, templ));
@@ -1619,16 +1652,10 @@ namespace WCell.RealmServer.Entities
 
 		public void RemoveProcHandler(Func<IProcHandler, bool> predicate)
 		{
-			if (m_procHandlers != null)
+			var handler = GetProcHandler(predicate);
+			if (handler != null)
 			{
-				foreach (var handler in m_procHandlers)
-				{
-					if (predicate(handler))
-					{
-						m_procHandlers.Remove(handler);
-						break;
-					}
-				}
+				m_procHandlers.Remove(handler);
 			}
 		}
 
