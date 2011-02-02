@@ -3,15 +3,42 @@
   <DataHolder Name="WorldEvent">
     <DefaultTable>game_event</DefaultTable>
     <Flat Name="Id" Column="entry" />
-    <!--Cant load these fields yet until we do something about
-    the DB connection string, since UDB uses Zero TimeStamps which
-    when we try to read the causes an exception since it is lower
-    than DateTime.MinValue-->
     <Flat Name="From" Column="start_time" />
     <Flat Name="Until" Column="end_time" />
     <Flat Name="_Occurence" Column="occurence" />
     <Flat Name="_Length" Column="length" />
     <Flat Name="HolidayId" Column="holiday" />
     <Flat Name="Description" Column="description" />
-  </DataHolder> 
+  </DataHolder>
+
+  <!--
+  <DataHolder Name="WorldEventNPC">
+    <DefaultTable>game_event_creature</DefaultTable>
+    <Flat Name="Guid" Column="guid" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+
+  <DataHolder Name="WorldEventGameObject">
+    <DefaultTable>game_event_gameobject</DefaultTable>
+    <Flat Name="Guid" Column="guid" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+    -->
+  
+  <DataHolder Name="WorldEventQuest">
+    <DefaultTable>game_event_quest</DefaultTable>
+    <Flat Name="QuestId" Column="quest" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
+
+
+  <DataHolder Name="WorldEventNpcData">
+    <DefaultTable>game_event_creature_data</DefaultTable>
+    <Flat Name="Guid" Column="guid" />
+    <Flat Name="ModelId" Column="modelid" />
+    <Flat Name="EquipmentId" Column="equipment_id" />
+    <Flat Name="spell_start" Column="spell_start" />
+    <Flat Name="spell_end" Column="spell_end" />
+    <Flat Name="EventId" Column="event" />
+  </DataHolder>
 </DataHolders>

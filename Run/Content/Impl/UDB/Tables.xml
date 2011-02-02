@@ -147,18 +147,18 @@
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_creature_quest">
-    <PrimaryColumn Name="id"/>
-    <PrimaryColumn Name="quest"/>
+  <Table Name="game_event_quest" MainDataHolder="WorldEventQuest">
+    <PrimaryColumn Name="quest" TypeName="UInt32"/>
+    <PrimaryColumn Name="event" TypeName="UInt32"/>
   </Table>
 
   <Table Name="game_event_gameobject" MainDataHolder="GOSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_creature_data">
-    <PrimaryColumn Name="guid"/>
-	<PrimaryColumn Name="event"/>
+  <Table Name="game_event_creature_data" MainDataHolder="WorldEventNpcData">
+    <PrimaryColumn Name="guid" TypeName="UInt32"/>
+    <PrimaryColumn Name="event" TypeName="UInt32"/>
   </Table>
   
   <Table Name="game_event_mail">

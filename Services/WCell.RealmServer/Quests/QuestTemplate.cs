@@ -333,6 +333,9 @@ namespace WCell.RealmServer.Quests
 		[Persistent((int)ClientLocale.End)]
 		public QuestObjectiveSet[] ObjectiveTexts = new QuestObjectiveSet[(int)ClientLocale.End];
 
+        [NotPersistent]
+	    public List<uint> EventIds = new List<uint>();
+
 		#endregion
 
 		#region QuestSettings
@@ -619,7 +622,7 @@ namespace WCell.RealmServer.Quests
 		/// </summary>
 		public QuestInvalidReason CheckBasicRequirements(Character chr)
 		{
-			if (RequiredRaces != 0 && !RequiredRaces.HasAnyFlag(chr.RaceMask))
+		    if (RequiredRaces != 0 && !RequiredRaces.HasAnyFlag(chr.RaceMask))
 			{
 				return QuestInvalidReason.WrongRace;
 			}
@@ -669,7 +672,12 @@ namespace WCell.RealmServer.Quests
 				return QuestInvalidReason.NotEnoughMoney;
 			}
 			//TimeOut = 27 how the heck to work with this one?
-
+            if (EventIds.Count != 0)
+            {
+                bool ok = EventIds.Where(WorldEventMgr.IsEventActive).Any();
+                if (!ok)
+                    return QuestInvalidReason.NoRequirements;
+            }
 			return QuestInvalidReason.Ok;
 		}
 
@@ -1349,6 +1357,11 @@ namespace WCell.RealmServer.Quests
 			{
 				NPCInteractions = npcInteractions.ToArray();
 			}
+
+            foreach (var worldEventQuest in WorldEventMgr.WorldEventQuests.Where(worldEventQuest => worldEventQuest.QuestId == Id))
+            {
+                EventIds.Add(worldEventQuest.EventId);
+            }
 
 			ArrayUtil.PruneVals(ref AreaTriggerObjectives);
 			ArrayUtil.PruneVals(ref RewardChoiceItems);
