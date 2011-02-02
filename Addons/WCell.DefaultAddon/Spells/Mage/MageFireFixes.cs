@@ -8,6 +8,8 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Misc;
 
 namespace WCell.Addons.Default.Spells.Mage
 {
@@ -79,11 +81,32 @@ namespace WCell.Addons.Default.Spells.Mage
                 var triggerEffect = spell.GetEffect(SpellEffectType.TriggerSpell);
                 triggerEffect.TriggerSpellId = SpellId.ClassSkillBlazingSpeed;
             });
+
+            SpellLineId.MageFireMasterOfElements.Apply(spell =>
+            {
+                var effect = spell.GetEffect(AuraType.Dummy);
+                effect.AuraEffectHandlerCreator = () => new MasterOfElementsHandler();
+            });
 		}
 	}
 
-	#region Burnout
-	public class BurnoutHandler : SpellEffectHandler
+    #region Master of Elements
+    public class MasterOfElementsHandler : AttackEventEffectHandler
+    {
+        public override void OnAttack(DamageAction action)
+        {
+            if (action.IsMagic && action.IsCritical)
+            {
+                var owner = m_aura.CasterUnit;
+                if (owner == null) return;
+                owner.Power += (action.Spell.CalcPowerCost(owner, action.UsedSchool) * 100 + 50 )/ EffectValue;
+            }
+        }
+    }
+    #endregion
+
+    #region Burnout
+    public class BurnoutHandler : SpellEffectHandler
 	{
 		public BurnoutHandler(SpellCast cast, SpellEffect effect)
 			: base(cast, effect)
