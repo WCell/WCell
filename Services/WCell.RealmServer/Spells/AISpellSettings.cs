@@ -1,3 +1,4 @@
+using System;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
@@ -38,7 +39,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public int IdleTimeAfterCastMillis = 500;
 
-		public AISpellCastTarget TargetType;
+		public AISpellCastTargetType TargetType;
 
 		public AISpellSettings(Spell spell)
 		{
@@ -51,21 +52,21 @@ namespace WCell.RealmServer.Spells
 			private set;
 		}
 
-		public void SetValues(int cdMin, int cdMax, AISpellCastTarget target)
+		public void SetValues(int cdMin, int cdMax, AISpellCastTargetType targetType)
 		{
 			SetCooldown(cdMin, cdMax);
-			TargetType = target;
+			TargetType = targetType;
 		}
 
-		public void SetValues(int cd, AISpellCastTarget target)
+		public void SetValues(int cd, AISpellCastTargetType targetType)
 		{
 			SetCooldown(cd);
-			TargetType = target;
+			TargetType = targetType;
 		}
 
-		public void SetTarget(AISpellCastTarget target)
+		public void SetTarget(AISpellCastTargetType targetType)
 		{
-			TargetType = target;
+			TargetType = targetType;
 		}
 
 		public void SetCooldown(int cd)
@@ -94,6 +95,37 @@ namespace WCell.RealmServer.Spells
 			if (Cooldown.MaxDelay < 0)
 			{
 				Cooldown.MinDelay = def.MaxDelay;
+			}
+
+			if (TargetType == AISpellCastTargetType.Default)
+			{
+				// figure out what kind of targeting method each effect requires
+				foreach (var effect in Spell.Effects)
+				{
+					// only assign target type, if not overridden
+					if (effect.AISpellCastTargetType != AISpellCastTargetType.Default) continue;
+
+					if (effect.IsHealEffect)
+					{
+						effect.AISpellCastTargetType = AISpellCastTargetType.WoundedAlly;
+					}
+					else if (effect.IsDamageEffect)
+					{
+						effect.AISpellCastTargetType = AISpellCastTargetType.Hostile;
+					}
+					else if (effect.IsAuraEffect)
+					{
+						// avoid targets that already have that Aura
+						effect.AISpellCastTargetType = effect.HarmType == HarmType.Beneficial ? 
+							AISpellCastTargetType.ExclusiveBuff : AISpellCastTargetType.ExclusiveDebuff;
+					}
+					else
+					{
+						// no other category
+						effect.AISpellCastTargetType = effect.HarmType == HarmType.Beneficial ?
+							AISpellCastTargetType.Allied : AISpellCastTargetType.Hostile;
+					}
+				}
 			}
 		}
 		#endregion
@@ -158,14 +190,51 @@ namespace WCell.RealmServer.Spells
 	/// <summary>
 	/// Custom target types that are not covered by <see cref="ImplicitSpellTargetType"/>
 	/// </summary>
-	public enum AISpellCastTarget
+	public enum AISpellCastTargetType
 	{
 		Default,
+
+		// standard targets (used for any spell, by default)
+		
+		// hostile
+
+		/// <summary>
+		/// Negative auras
+		/// </summary>
+		ExclusiveDebuff,
+
+		/// <summary>
+		/// Damage spells only require hostile targets
+		/// </summary>
+		Hostile,
+
+
+		// allied
+		
+		/// <summary>
+		/// Any positive non-categorized spell
+		/// </summary>
+		Allied,
+
+		/// <summary>
+		/// Positive auras
+		/// </summary>
+		ExclusiveBuff,
+
+		/// <summary>
+		/// Heal spells
+		/// </summary>
+		WoundedAlly,
+
+
+
+		// special targets (used for boss spells)
 
 		// hostile
 		NearestHostilePlayer,
 		RandomHostilePlayer,
 		SecondHighestThreatTarget,
+
 
 		// allied
 		RandomAlliedUnit

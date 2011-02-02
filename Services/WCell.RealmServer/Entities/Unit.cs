@@ -601,12 +601,12 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// The amount of Power to add per regen-tick (while not being "interrupted").
-		/// Value is automatically set, depending on Spirit etc.
+		/// Value is automatically set, depending on Spirit
 		/// </summary>
 		public int PowerRegenPerTick
 		{
 			get { return m_PowerRegenPerTick; }
-			set
+			internal set
 			{
 				if (m_PowerRegenPerTick != value)
 				{
@@ -621,13 +621,19 @@ namespace WCell.RealmServer.Entities
 			get { return m_PowerRegenPerTick / (float)RegenerationFormulas.RegenTickDelayMillis; }
 		}
 
+		private int m_ManaRegenPerTickInterruptedPct;
+
 		/// <summary>
 		/// The precentage of power to be generated during combat per regen tick (while being "interrupted")
 		/// </summary>
 		public int ManaRegenPerTickInterruptedPct
 		{
-			get;
-			internal set;
+			get { return m_ManaRegenPerTickInterruptedPct; }
+			internal set
+			{
+				m_ManaRegenPerTickInterruptedPct = value;
+				this.UpdatePowerRegen();
+			}
 		}
 
 		/// <summary>

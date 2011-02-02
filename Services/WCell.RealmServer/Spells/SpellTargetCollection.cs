@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Spells
 
 				foreach (var handler in m_handlers)
 				{
-					err = handler.ValidateTarget(caster);
+					err = handler.ValidateAndInitializeTarget(caster);
 					if (err != SpellFailedReason.Ok)
 					{
 						return err;
@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Spells
 				{
 					return SpellFailedReason.BadTargets;
 				}
-				var failReason = handler.ValidateTarget(target);
+				var failReason = handler.ValidateAndInitializeTarget(target);
 				if (failReason != SpellFailedReason.Ok)
 				{
 					return failReason;

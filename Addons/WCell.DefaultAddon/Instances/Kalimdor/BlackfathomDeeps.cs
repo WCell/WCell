@@ -69,10 +69,10 @@ namespace WCell.Addons.Default.Instances
 			public static void InitLadySpells()
 			{
 				var forkedLightning = SpellHandler.Get(SpellId.ForkedLightningRank1);
-				forkedLightning.AISettings.SetValues(8000, AISpellCastTarget.RandomHostilePlayer);
+				forkedLightning.AISettings.SetValues(8000, AISpellCastTargetType.RandomHostilePlayer);
 
 				var slow = SpellHandler.Get(SpellId.SlowRank1);
-				slow.AISettings.SetValues(13000, AISpellCastTarget.RandomHostilePlayer);
+				slow.AISettings.SetValues(13000, AISpellCastTargetType.RandomHostilePlayer);
 
 				var frostNova = SpellHandler.Get(SpellId.ClassSkillFrostNovaRank2);
 				frostNova.AISettings.SetCooldown(20000);
@@ -95,7 +95,7 @@ namespace WCell.Addons.Default.Instances
 			public static void InitGelihast()
 			{
 				var net = SpellHandler.Get(SpellId.Net);
-				net.AISettings.SetValues(3000, AISpellCastTarget.RandomHostilePlayer);
+				net.AISettings.SetValues(3000, AISpellCastTargetType.RandomHostilePlayer);
 			}
 
 			public GelihastAttackAction(NPC Gelihast)

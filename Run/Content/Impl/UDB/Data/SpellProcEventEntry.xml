@@ -2,21 +2,31 @@
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <DataHolder Name="SpellProcEventEntry">
     <DefaultTable>spell_proc_event</DefaultTable>
-    <Flat Name="entry" Column="entry" />
+    <Flat Name="SpellId" Column="entry" />
     <Flat Name="SchoolMask" Column="SchoolMask" />
-    <Flat Name="SpellFamilyName" Column="SpellFamilyName" />
-    <Flat Name="SpellFamilyMaskA0" Column="SpellFamilyMaskA0" />
-    <Flat Name="SpellFamilyMaskA1" Column="SpellFamilyMaskA1" />
-    <Flat Name="SpellFamilyMaskA2" Column="SpellFamilyMaskA2" />
-    <Flat Name="SpellFamilyMaskB0" Column="SpellFamilyMaskB0" />
-    <Flat Name="SpellFamilyMaskB1" Column="SpellFamilyMaskB1" />
-    <Flat Name="SpellFamilyMaskB2" Column="SpellFamilyMaskB2" />
-    <Flat Name="SpellFamilyMaskC0" Column="SpellFamilyMaskC0" />
-    <Flat Name="SpellFamilyMaskC1" Column="SpellFamilyMaskC1" />
-    <Flat Name="SpellFamilyMaskC2" Column="SpellFamilyMaskC2" />
-    <Flat Name="procFlags" Column="procFlags" />
-    <Flat Name="procEx" Column="procEx" />
-    <Flat Name="ppmRate" Column="ppmRate" />
+    <Flat Name="SpellClassSet" Column="SpellFamilyName" />
+
+    <FlatArray Name="SpellFamilyMask0">
+      <Column Name="SpellFamilyMaskA0"/>
+      <Column Name="SpellFamilyMaskB0"/>
+      <Column Name="SpellFamilyMaskC0"/>
+    </FlatArray>
+
+    <FlatArray Name="SpellFamilyMask1">
+      <Column Name="SpellFamilyMaskA1"/>
+      <Column Name="SpellFamilyMaskB1"/>
+      <Column Name="SpellFamilyMaskC1"/>
+    </FlatArray>
+    
+    <FlatArray Name="SpellFamilyMask2">
+      <Column Name="SpellFamilyMaskA2"/>
+      <Column Name="SpellFamilyMaskB2"/>
+      <Column Name="SpellFamilyMaskC2"/>
+    </FlatArray>
+    
+    <Flat Name="ProcFlags" Column="procFlags" />
+    <Flat Name="ProcEx" Column="procEx" />
+    <Flat Name="PpmRate" Column="ppmRate" />
     <Flat Name="CustomChance" Column="CustomChance" />
     <Flat Name="Cooldown" Column="Cooldown" />
   </DataHolder>

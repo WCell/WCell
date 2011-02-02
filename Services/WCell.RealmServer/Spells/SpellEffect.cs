@@ -236,6 +236,8 @@ namespace WCell.RealmServer.Spells
 						   AuraType == AuraType.PeriodicHeal ||
 						   (TriggerSpell != null && TriggerSpell.IsHealSpell);
 
+			IsDamageEffect = EffectType == SpellEffectType.SchoolDamage || IsStrikeEffect;
+
 			IsModifierEffect = AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent;
 
 			foreach (var mask in AffectMask)
@@ -288,11 +290,22 @@ namespace WCell.RealmServer.Spells
 		#endregion
 
 		/// <summary>
-		/// Whether b has the same targets as this effect
+		/// Whether this effect can share targets with the given effect
 		/// </summary>
-		public bool TargetsEqual(SpellEffect b)
+		public bool SharesTargets(SpellEffect b, bool aiCast)
 		{
-			return ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB;
+			if (aiCast)
+			{
+				if (Spell == b.Spell && Spell.AISettings.TargetType != Spells.AISpellCastTargetType.Default)
+				{
+					// both spells have default AI spell casting
+					// special targeting -> All effects share the same targets
+					return true;
+				}
+				return AISpellCastTargetType == b.AISpellCastTargetType;
+			}
+			return ImplicitTargetA == b.ImplicitTargetA && 
+				ImplicitTargetB == b.ImplicitTargetB;
 		}
 
 		public bool HasTarget(ImplicitSpellTargetType target)
@@ -497,7 +510,7 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
+			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}

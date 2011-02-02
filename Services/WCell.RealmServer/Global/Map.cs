@@ -1903,7 +1903,6 @@ namespace WCell.RealmServer.Global
 						{
 							m_spiritHealers.Add(npc);
 						}
-
 					}
 				}
 

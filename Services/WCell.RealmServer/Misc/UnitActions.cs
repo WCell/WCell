@@ -392,6 +392,9 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		/// <summary>
+		/// White damage or strike ability (Heroic Strike, Ranged, Throw etc)
+		/// </summary>
 		public bool IsWeaponAttack
 		{
 			get
@@ -399,6 +402,22 @@ namespace WCell.RealmServer.Misc
 				return Weapon != null &&
 					   (SpellEffect == null || SpellEffect.Spell.IsPhysicalAbility);
 			}
+		}
+
+		/// <summary>
+		/// Any attack that involves a spell
+		/// </summary>
+		public bool IsSpellCast
+		{
+			get { return SpellEffect != null; }
+		}
+
+		/// <summary>
+		/// Pure spell attack, no weapon involved
+		/// </summary>
+		public bool IsMagic
+		{
+			get { return !IsWeaponAttack && SpellEffect != null; }
 		}
 
 		public bool IsRangedAttack

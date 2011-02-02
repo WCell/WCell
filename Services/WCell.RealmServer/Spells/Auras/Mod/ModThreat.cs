@@ -14,7 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.Constants;
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>

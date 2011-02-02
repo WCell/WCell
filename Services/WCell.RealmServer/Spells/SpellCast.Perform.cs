@@ -5,6 +5,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
+using WCell.RealmServer.AI.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Spells.Auras;
@@ -109,8 +110,7 @@ namespace WCell.RealmServer.Spells
 							var target = m_initialTargets[j];
 							if (target.IsInContext)
 							{
-								// must call ValidateTarget anyway
-								var err = handler.ValidateTarget(target);
+								var err = handler.ValidateAndInitializeTarget(target);
 								if (err != SpellFailedReason.Ok)
 								{
 									LogManager.GetCurrentClassLogger().Warn(
@@ -197,36 +197,23 @@ namespace WCell.RealmServer.Spells
 			else if (handler.HasOwnTargets)
 			{
 				// see if targets are shared between effects
-				if (IsAICast && m_spell.AISettings != null && m_spell.AISettings.TargetType != AISpellCastTarget.Default)
+				targets = null;
+
+				for (var j = 0; j < h; j++)
 				{
-					// TODO: Fixme
-					// targets of all effects are determined by AI behavior
-					if (targets == null)
+					var handler2 = handlers[j];
+					if (handler.Effect.SharesTargets(handler2.Effect, IsAICast))
 					{
-						targets = CreateSpellTargetCollection();
+						// same targets -> share target collection
+						targets = handler2.m_targets;
+						break;
 					}
 				}
-				else
+
+				if (targets == null)
 				{
-					// check if multiple effects can share their targets
-					targets = null;
-
-					for (var j = 0; j < h; j++)
-					{
-						var handler2 = handlers[j];
-						if (handler.Effect.TargetsEqual(handler2.Effect))
-						{
-							// same targets -> share target collection
-							targets = handler2.m_targets;
-							break;
-						}
-					}
-
-					if (targets == null)
-					{
-						//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
-						targets = CreateSpellTargetCollection();
-					}
+					//targets = SpellTargetCollection.SpellTargetCollectionPool.Obtain();
+					targets = CreateSpellTargetCollection();
 				}
 			}
 

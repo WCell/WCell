@@ -201,7 +201,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			_flagPickUpTime = DateTime.Now;
 			_isFlagHome = false;
 
-			Instance.Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSPickupFlag), 
+			Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSPickupFlag), 
                                                                                                                         Name, chr.Name);
 			var evt = FlagPickedUp;
 			if (evt != null)
@@ -217,7 +217,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			IsFlagCap = true;
 
-			Instance.Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSCaptureFlag), 
+			Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSCaptureFlag), 
                                                                                                                       capturer.Name, Name);
 
 			Opponent.Score++;
@@ -256,7 +256,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				FlagCarrier.SpellCast.Trigger(_flagDropSpell);
 				FlagCarrier.Auras.CreateSelf(_flagDropDebuff, false); // confirmed from logs
 
-				Instance.Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSDropFlag), 
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSDropFlag), 
                                                                                                                     Name, FlagCarrier.Name);
 
 				OnFlagAuraRemoved(FlagCarrier);
@@ -308,14 +308,14 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			if (returner != null)
 			{
-				Instance.Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlagByPlayer), 
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlagByPlayer), 
                                                                                                                     Name, returner.Name);
 				var stats = (WSGStats)returner.Battlegrounds.Stats;
 				stats.FlagReturns++;
 			}
 			else
 			{
-				Instance.Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlag), 
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlag), 
                                                                                                                                  Name);
 			}
 

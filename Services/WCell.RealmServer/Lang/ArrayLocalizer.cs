@@ -9,20 +9,20 @@ namespace WCell.RealmServer.Lang
 	/// </summary>
 	public static class ArrayLocalizer
 	{
-		public static string Localize(this string[] texts, IRealmClient client)
+		public static string Localize(this string[] texts, IRealmClient client, params object[] args)
 		{
-			return texts.Localize(client.Info.Locale);
+			return texts.Localize(client.Info.Locale, args);
 		}
 
 		/// <summary>
 		/// Returns the entry at the index that equals the numeric value of locale
 		/// </summary>
-		public static string Localize(this string[] texts, ClientLocale locale)
+		public static string Localize(this string[] texts, ClientLocale locale, params object[] args)
 		{
 			var text = texts[(int)locale];
 			if (string.IsNullOrEmpty(text))
 			{
-				return LocalizeWithDefaultLocale(texts);
+				return texts.LocalizeWithDefaultLocale(args);
 			}
 			return text;
 		}
@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Lang
 		/// <summary>
 		/// Returns the entry at the index that equals the numeric value of the default locale
 		/// </summary>
-		public static string LocalizeWithDefaultLocale(this string[] texts)
+		public static string LocalizeWithDefaultLocale(this string[] texts, params object[] args)
 		{
 			var text = texts[(int) RealmServerConfiguration.DefaultLocale];
 			if (string.IsNullOrEmpty(text) && RealmServerConfiguration.DefaultLocale != ClientLocale.English)

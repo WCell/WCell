@@ -214,7 +214,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnStart()
         {
             base.OnStart();
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnStart));
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnStart));
             _allianceDoor.State = GameObjectState.Disabled;
             _hordeDoor.State = GameObjectState.Disabled;
 
@@ -231,14 +231,14 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnPrepareHalftime()
         {
             base.OnPrepareHalftime();
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime), PreparationTimeMillis / 2000);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepareHalfTime), PreparationTimeMillis / 2000);
         }
 
         protected override void OnPrepare()
         {
             base.OnPrepare();
         	var time = RealmLocalizer.FormatTimeSecondsMinutes(PreparationTimeMillis/1000);
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare), time);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnPrepare), time);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnLeave(Character chr)
         {
             base.OnLeave(chr);
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnLeave), chr.Name);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnLeave), chr.Name);
         }
 
         /// <summary>
@@ -258,7 +258,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         protected override void OnEnter(Character chr)
         {
             base.OnEnter(chr);
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnEnter), chr.Name);
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABOnEnter), chr.Name);
         }
 
         protected override void SpawnGOs()
@@ -350,7 +350,7 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         private void InformNearVictory(BattlegroundTeam team, int score)
         {
-            Characters.SendMultiStringSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABNearVictory), 
+            Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.ABNearVictory), 
                                                                                                             team.Side.ToString(), score);
             MiscHandler.SendPlaySoundToMap(this, (uint)ABSounds.NearVictory);
             isInformatedNearVictory = true;
