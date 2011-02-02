@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace WCell.RealmServer.Gossips
 	{
 		public static readonly GossipMenuItem[] EmptyGossipItems = new GossipMenuItem[0];
 
-		private uint m_bodyTextID;
+		private IGossipEntry m_textEntry;
 		private List<GossipMenuItemBase> m_gossipItems;
 		private GossipMenu m_parent;
 
@@ -23,6 +24,7 @@ namespace WCell.RealmServer.Gossips
 		/// </summary>
 		public GossipMenu()
 		{
+			m_textEntry = GossipMgr.DefaultGossipEntry;
 		}
 
 		/// <summary>
@@ -31,7 +33,87 @@ namespace WCell.RealmServer.Gossips
 		/// <param name="bodyTextID"><see cref="BodyTextId"/></param>
 		public GossipMenu(uint bodyTextID)
 		{
-			m_bodyTextID = bodyTextID;
+			m_textEntry = GossipMgr.GetEntry(bodyTextID);
+			if (m_textEntry == null)
+			{
+				throw new ArgumentException("GossipEntry with given id does not exist: " + bodyTextID, "bodyTextId");
+			}
+		}
+
+		public GossipMenu(IGossipEntry textEntry)
+		{
+			m_textEntry = textEntry;
+			if (m_textEntry == null)
+			{
+				throw new ArgumentNullException("textEntry");
+			}
+		}
+
+		public GossipMenu(uint bodyTextId, List<GossipMenuItemBase> items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = items;
+		}
+
+		public GossipMenu(uint bodyTextId, params GossipMenuItem[] items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(uint bodyTextId, params GossipMenuItemBase[] items)
+			: this(bodyTextId)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(IGossipEntry text, List<GossipMenuItemBase> items)
+			: this(text)
+		{
+			m_gossipItems = items;
+		}
+
+		public GossipMenu(IGossipEntry text, params GossipMenuItem[] items)
+			: this(text)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(IGossipEntry text, params GossipMenuItemBase[] items)
+			: this(text)
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
+		}
+
+		public GossipMenu(params GossipMenuItemBase[] items)
+			: this()
+		{
+			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
+			foreach (var item in items)
+			{
+				CheckItem(item);
+				m_gossipItems.Add(item);
+			}
 		}
 
 		public GossipMenu ParentMenu
@@ -53,13 +135,13 @@ namespace WCell.RealmServer.Gossips
 		/// <summary>
 		/// ID of text in the body of this menu
 		/// </summary>
-		public uint BodyTextId
+		public IGossipEntry GossipEntry
 		{
 			get
 			{
-				return m_bodyTextID;
+				return m_textEntry;
 			}
-			set { m_bodyTextID = value; }
+			set { m_textEntry = value; }
 		}
 
 		/// <summary>
@@ -69,44 +151,6 @@ namespace WCell.RealmServer.Gossips
 		{
 			get;
 			set;
-		}
-
-		public GossipMenu(uint bodyTextId, List<GossipMenuItemBase> items)
-			: this(bodyTextId)
-		{
-			m_gossipItems = items;
-		}
-
-		public GossipMenu(uint bodyTextId, params GossipMenuItem[] items)
-			: this(bodyTextId)
-		{
-			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-			foreach (var item in items)
-			{
-				CheckItem(item);
-				m_gossipItems.Add(item);
-			}
-		}
-
-        public GossipMenu(uint bodyTextId, params GossipMenuItemBase[] items)
-            : this(bodyTextId)
-        {
-            m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-            foreach (var item in items)
-            {
-                CheckItem(item);
-                m_gossipItems.Add(item);
-            }
-        }
-
-		public GossipMenu(params GossipMenuItemBase[] items)
-		{
-			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-			foreach (var item in items)
-			{
-				CheckItem(item);
-				m_gossipItems.Add(item);
-			}
 		}
 
 		public void AddRange(params GossipMenuItemBase[] items)
@@ -180,11 +224,6 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
-		public GossipMenu CreateSubMenu()
-		{
-			return new GossipMenu(m_bodyTextID + 1000);
-		}
-
 		public void AddQuitMenuItem(RealmLangKey msg = RealmLangKey.Done)
 		{
 			AddItem(new QuitGossipMenuItem(msg, new object[0]));
@@ -197,7 +236,8 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddQuitMenuItem(string text, GossipActionHandler callback)
 		{
-			var action = new NonNavigatingGossipAction(convo => {
+			var action = new NonNavigatingGossipAction(convo =>
+			{
 				callback(convo);
 				convo.Character.GossipConversation.StayOpen = false;
 			});
@@ -211,7 +251,8 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text)
 		{
-			var action = new NavigatingGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo =>
+			{
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
@@ -219,7 +260,8 @@ namespace WCell.RealmServer.Gossips
 
 		public void AddGoBackItem(string text, GossipActionHandler callback)
 		{
-			var action = new NavigatingGossipAction(convo => {
+			var action = new NavigatingGossipAction(convo =>
+			{
 				callback(convo);
 				convo.Character.GossipConversation.GoBack();
 			});

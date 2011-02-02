@@ -1,3 +1,4 @@
-- MageArcaneArcaneShielding now reduces mana drained by mana shield
-- when ManaRegenPerTickInterruptedPct is set, update mana regen calculations
-- compressed SpellProcEvent.cs; fixed event indexing; prevent assigning of "null masks"; added more overriding; added xml file to sln; also, load the DB proc info before the second initialization pass, so values can be overridden
+- fixed some minor issues in gossip system
+- changed GossipMenu to allow for dynamic gossip texts that are resent everytime and thus, effectively, not cached
+(we can use a similar trick to allow for dynamic names and other properties of items and/or npcs)
+-> Check out the new DynamicGossipEntry

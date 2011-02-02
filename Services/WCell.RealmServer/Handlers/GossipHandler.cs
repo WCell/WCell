@@ -26,30 +26,22 @@ namespace WCell.RealmServer.Handlers
 
 			if (target == null)
 				return;
-
-			if (chr.GossipConversation != null)
-			{
-				chr.GossipConversation = null;
-			}
+			
+			chr.GossipConversation = null;
 
 			var menu = target.GossipMenu;
 			if (menu == null)
 				return;
 
-			if (target is NPC)
-			{
-				if (!((NPC)target).CheckVendorInteraction(chr))
-				{
-					return;
-				}
-			}
-			else if (!chr.Role.IsStaff)
+			if (target is NPC && !((NPC) target).CheckVendorInteraction(chr) && !chr.Role.IsStaff)
 			{
 				return;
 			}
+
 			chr.OnInteract(target);
-			var conversation = new GossipConversation(menu, chr, target, menu.KeepOpen);
-			client.ActiveCharacter.GossipConversation = conversation;
+
+			var conversation = new GossipConversation(menu, chr, target);
+			chr.GossipConversation = conversation;
 			conversation.DisplayCurrentMenu();
 		}
 
@@ -91,23 +83,27 @@ namespace WCell.RealmServer.Handlers
 		/// </summary>
 		/// <param name="chr">recieving character</param>
 		/// <param name="owner">EntityID of sender</param>
-		public static void SendPageToCharacter(GossipConversation convo, uint bodyTextID,
-											   IList<GossipMenuItemBase> gossipItems,
+		public static void SendPageToCharacter(GossipConversation convo,
 											   IList<QuestMenuItem> questItems)
 		{
-			var owner = convo.Speaker;
+			var speaker = convo.Speaker;
 			var chr = convo.Character;
 
-			if (bodyTextID == 0)
+			var menu = convo.CurrentMenu;
+			var gossipItems = menu.GossipItems;
+			var gossipEntry = menu.GossipEntry;
+
+			if (gossipEntry.IsDynamic)
 			{
-				// Client won't display the gossip if text id is 0
-				bodyTextID = 1;
+				// not cached
+				QueryHandler.SendNPCTextUpdate(chr, gossipEntry);
 			}
+
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_MESSAGE))
 			{
-				packet.Write(owner.EntityId);
+				packet.Write(speaker.EntityId);
 				packet.Write(0);				// new Flag field since 2.4.0 - menu id
-				packet.Write(bodyTextID);
+				packet.Write(gossipEntry.GossipId);
 
 				var countPos = packet.Position;
 				packet.Position += 4;

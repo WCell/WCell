@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
@@ -28,6 +29,9 @@ using WCell.Constants.NPCs;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Mail;
 using WCell.RealmServer.Guilds;
+using System.Collections.Generic;
+
+using Alias = System.Collections.Generic.KeyValuePair<string, string>;
 
 
 namespace WCell.RealmServer.Database
@@ -1213,6 +1217,67 @@ namespace WCell.RealmServer.Database
 				charId);
 			var query = new ScalarQuery<int>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
 			return (uint)query.Execute();
+		}
+		#endregion
+
+		#region Aliases
+		//[Property]
+		public byte[] RawAliases
+		{
+			get;
+			set;
+		}
+
+		public void SetAliases(IEnumerable<Alias> aliases)
+		{
+			var bytes = new List<byte>(100);
+			foreach (var alias in aliases)
+			{
+				// todo: Use client locale to identify correct encoding
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Key));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Value));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+			}
+			RawAliases = bytes.ToArray();
+		}
+
+		public Dictionary<string, string> ParseAliases()
+		{
+			var map = new Dictionary<string, string>();
+			if (RawAliases != null)
+			{
+				var isKey = true;
+				var keyIndex = 0;
+				var valueIndex = -1;
+				for (var i = 0; i < RawAliases.Length; i++)
+				{
+					var b = RawAliases[i];
+					if (b == 0)
+					{
+						// found new key or value
+						isKey = !isKey;
+						if (isKey)
+						{
+							// new alias
+							if (valueIndex >= 0)
+							{
+								var key = Encoding.UTF8.GetString(RawAliases, keyIndex, valueIndex - keyIndex);
+								var value = Encoding.UTF8.GetString(RawAliases, valueIndex, i - valueIndex);
+								map[key] = value;
+							}
+							keyIndex = i;
+							valueIndex = -1;
+						}
+						else
+						{
+							// read key already, now read value
+							valueIndex = i;
+						}
+					}
+				}
+			}
+			return map;
 		}
 		#endregion
 

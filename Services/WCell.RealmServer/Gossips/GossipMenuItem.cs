@@ -378,7 +378,7 @@ namespace WCell.RealmServer.Gossips
 		/// </summary>
 		public string ConfirmText;
 
-		public GossipMenuItem()
+		private GossipMenuItem()
 		{
 			Text = string.Empty;
 			ConfirmText = string.Empty;

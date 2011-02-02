@@ -210,12 +210,7 @@ namespace WCell.RealmServer.Handlers
 			//else
 
 			var text = GossipMgr.GetEntry(textId);
-			if (text == null)
-			{
-				SendNPCTextUpdateSimple(client.ActiveCharacter,
-										textId, GossipMgr.DefaultTitleMale, GossipMgr.DefaultTitleFemale);
-			}
-			else
+			if (text != null)
 			{
 				SendNPCTextUpdate(client.ActiveCharacter, text);
 			}
@@ -233,36 +228,27 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(text.GossipId);
 
 				var i = 0;
-				for (; i < text.GossipEntries.Length; i++)
+				for (; i < text.GossipTexts.Length; i++)
 				{
-					var entry = text.GossipEntries[i];
+					var entry = text.GossipTexts[i];
 					packet.WriteFloat(entry.Probability);
 
-					var isMaleTextEmpty = string.IsNullOrEmpty(entry.TextMale);
-					var isFemaleTextEmpty = string.IsNullOrEmpty(entry.TextFemale);
-
-					if (isMaleTextEmpty && isFemaleTextEmpty)
+					var maleText = entry.GetTextMale(character);
+					string femaleText;
+					if (text.IsDynamic)
 					{
-						packet.WriteCString(" ");
-						packet.WriteCString(" ");
-					}
-					else if (isMaleTextEmpty)
-					{
-						packet.WriteCString(entry.TextFemale);
-						packet.WriteCString(entry.TextFemale);
-					}
-					else if (isFemaleTextEmpty)
-					{
-						packet.WriteCString(entry.TextMale);
-						packet.WriteCString(entry.TextMale);
+						// generated dynamically anyway
+						femaleText = maleText;
 					}
 					else
 					{
-						packet.WriteCString(entry.TextMale);
-						packet.WriteCString(entry.TextFemale);
+						femaleText = entry.GetTextFemale(character);
 					}
+					packet.WriteCString(maleText);
+					packet.WriteCString(femaleText);
 
-					packet.Write((uint)entry.Language);
+
+					packet.Write((uint) entry.Language);
 
 					for (int emoteIndex = 0; emoteIndex < 3; emoteIndex++)
 					{

@@ -208,6 +208,7 @@
     <Compile Include="Battlegrounds\PvPDifficulty.cs" />
     <Compile Include="Commands\AchievementCommands.cs" />
     <Compile Include="Commands\Extensions.cs" />
+    <Compile Include="Commands\GossipCommand.cs" />
     <Compile Include="Commands\LocalizerCommand.cs" />
     <Compile Include="Database\ArenaTeam.cs" />
     <Compile Include="Database\ArenaTeamMember.cs" />

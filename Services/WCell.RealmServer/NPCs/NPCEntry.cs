@@ -142,8 +142,6 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public NPCSpawnTypeHandler[] SpawnTypeHandlers;
 
-		public uint NameGossipId;
-
 		[NotPersistent]
 		public GossipMenu DefaultGossip { get; set; }
 
@@ -750,10 +748,6 @@ namespace WCell.RealmServer.NPCs
 			{
 				IsIdle = true;
 			}
-
-			const uint gossipStartId = 200231u; // random fixed Id
-			NameGossipId = gossipStartId + Id;
-			new GossipEntry(NameGossipId, DefaultName + " (" + Id + ")");		// entry adds itself to GossipMgr
 
 			if (Resistances == null)
 			{

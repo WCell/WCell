@@ -1,6 +1,9 @@
+using System;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
 using WCell.Util;
 using WCell.Util.Data;
@@ -9,22 +12,80 @@ using WCell.RealmServer.Content;
 
 namespace WCell.RealmServer.Gossips
 {
-	public class GossipText
+	/// <summary>
+	/// The Id is used by the client to find this entry in its cache.
+	/// </summary>
+	public interface IGossipEntry
 	{
-		public GossipText()
+		uint GossipId { get; }
+
+		GossipTextBase[] GossipTexts { get; }
+
+		/// <summary>
+		/// dynamic gossip entries don't cache their texts
+		/// </summary>
+		bool IsDynamic { get; }
+	}
+
+	#region GossipText
+	public class StaticGossipText : GossipTextBase
+	{
+		public string TextMale, TextFemale;
+
+		public StaticGossipText()
 		{
 		}
 
-		public GossipText(string text, float probability)
+		public StaticGossipText(string text, float probability, ChatLanguage lang = ChatLanguage.Universal) :
+			base(probability, lang)
 		{
 			TextMale = TextFemale = text;
-			Probability = probability;
-			Language = ChatLanguage.Universal;
 		}
 
-		public GossipText(string text, float probability, ChatLanguage lang)
+		public override string GetTextMale(Character chr)
 		{
-			TextMale = TextFemale = text;
+			return TextMale;
+		}
+		public override string GetTextFemale(Character chr)
+		{
+			return TextFemale;
+		}
+	}
+	
+	public delegate string GossipStringFactory(Character chr);
+	public class DynamicGossipText : GossipTextBase
+	{
+		public DynamicGossipText(GossipStringFactory stringGetter, float probability = 1f, ChatLanguage lang = ChatLanguage.Universal)
+			: base(probability, lang)
+		{
+			StringGetter = stringGetter;
+		}
+
+		public GossipStringFactory StringGetter
+		{
+			get;
+			set;
+		}
+
+		public override string GetTextMale(Character chr)
+		{
+			return GetTextFemale(chr);
+		}
+
+		public override string GetTextFemale(Character chr)
+		{
+			return StringGetter(chr);
+		}
+	}
+
+	public abstract class GossipTextBase
+	{
+		protected GossipTextBase()
+		{
+		}
+
+		protected GossipTextBase(float probability, ChatLanguage lang = ChatLanguage.Universal)
+		{
 			Probability = probability;
 			Language = lang;
 		}
@@ -32,7 +93,6 @@ namespace WCell.RealmServer.Gossips
 		/// <summary>
 		/// $N = Character name
 		/// </summary>
-		public string TextMale, TextFemale;
 		public ChatLanguage Language;
 		public float Probability;
 
@@ -74,79 +134,138 @@ namespace WCell.RealmServer.Gossips
 			get { return Emotes[5]; }
 			set { Emotes[5] = value; }
 		}
+
+		public abstract string GetTextMale(Character chr);
+
+		public abstract string GetTextFemale(Character chr);
 	}
+	#endregion
 
-	/// <summary>
-	/// The Id is used by the client to find this entry in its cache.
-	/// </summary>
-	public interface IGossipEntry
-	{
-		uint GossipId { get; }
-
-		GossipText[] GossipEntries { get; }
-	}
-
-	[DataHolder]
-	public class GossipEntry : IDataHolder, IGossipEntry
+	#region GossipEntry
+	public abstract class GossipEntry : IGossipEntry
 	{
 		public uint GossipId { get; set; }
 
-		private GossipText[] m_Entries;
+		protected GossipTextBase[] m_Texts;
 
-		public GossipEntry()
+		protected GossipEntry()
 		{
-		}
-		
-		public GossipEntry(uint id, string text)
-		{
-			GossipId = id;
-			GossipEntries = new[] { new GossipText(text, 1) };
-			FinalizeDataHolder();
 		}
 
-		public GossipEntry(uint id, params string[] texts)
-		{
-			GossipId = id;
-			GossipEntries = new GossipText[texts.Length];
-			var chance = 1f / texts.Length;
-			for (var i = 0; i < texts.Length; i++)
-			{
-				var text = texts[i];
-				GossipEntries[i] = new GossipText(text, chance);
-			}
-			FinalizeDataHolder();
-		}
-
-		public GossipEntry(uint id, ChatLanguage lang, params string[] texts)
-		{
-			GossipId = id;
-			GossipEntries = new GossipText[texts.Length];
-			var chance = 1f / texts.Length;
-			for (var i = 0; i < texts.Length; i++)
-			{
-				var text = texts[i];
-				GossipEntries[i] = new GossipText(text, chance, lang);
-			}
-			FinalizeDataHolder();
-		}
-
-		public GossipEntry(uint id, params GossipText[] entries)
-		{
-			GossipId = id;
-			GossipEntries = entries;
-			FinalizeDataHolder();
-		}
+		public abstract bool IsDynamic { get; }
 
 		[Persistent(8)]
-		public GossipText[] GossipEntries
+		public GossipTextBase[] GossipTexts
 		{
-			get { return m_Entries; }
-			set { m_Entries = value; }
+			get { return m_Texts; }
+			set { m_Texts = value; }
 		}
 
 		public uint GetId()
 		{
 			return GossipId;
+		}
+
+		public override string ToString()
+		{
+			return GetType().Name + " (Id: " + GossipId + ")";
+		}
+	}
+	#endregion
+
+	#region StaticGossipEntry
+	/// <summary>
+	/// Cacheable GossipEntry from DB
+	/// </summary>
+	[DataHolder]
+	public class StaticGossipEntry : GossipEntry, IDataHolder
+	{
+		public StaticGossipEntry()
+		{
+		}
+
+		public StaticGossipEntry(uint id, params string[] texts)
+		{
+			GossipId = id;
+			GossipTexts = new StaticGossipText[texts.Length];
+			var chance = 1f / texts.Length;
+			for (var i = 0; i < texts.Length; i++)
+			{
+				GossipTexts[i] = new StaticGossipText(texts[i], chance);
+			}
+			FinalizeDataHolder();
+		}
+
+		public StaticGossipEntry(uint id, ChatLanguage lang, params string[] texts)
+		{
+			GossipId = id;
+			GossipTexts = new StaticGossipText[texts.Length];
+			var chance = 1f / texts.Length;
+			for (var i = 0; i < texts.Length; i++)
+			{
+				var text = texts[i];
+				GossipTexts[i] = new StaticGossipText(text, chance, lang);
+			}
+			FinalizeDataHolder();
+		}
+
+		public StaticGossipEntry(uint id, params StaticGossipText[] entries)
+		{
+			GossipId = id;
+			GossipTexts = entries;
+			FinalizeDataHolder();
+		}
+
+		/// <summary>
+		/// GossipEntry's from DB are always cached
+		/// </summary>
+		public override bool IsDynamic { get { return false; } }
+
+		public StaticGossipText GetText(int i)
+		{
+			return (StaticGossipText)m_Texts[i];
+		}
+
+		public void FinalizeDataHolder()
+		{
+			if (m_Texts == null)
+			{
+				ContentMgr.OnInvalidDBData("Entries is null in: " + this);
+				return;
+			}
+
+			if (GossipId > 0)
+			{
+				m_Texts = m_Texts.Where(
+					entry => !string.IsNullOrEmpty(((StaticGossipText)entry).TextFemale) || !string.IsNullOrEmpty(((StaticGossipText)entry).TextMale)
+				).ToArray();
+
+				GossipMgr.NPCTexts[GossipId] = this;
+
+				foreach (StaticGossipText entry in m_Texts)
+				{
+					var isMaleTextEmpty = string.IsNullOrEmpty(entry.TextMale);
+					var isFemaleTextEmpty = string.IsNullOrEmpty(entry.TextFemale);
+
+					if (isMaleTextEmpty && isFemaleTextEmpty)
+					{
+						entry.TextMale = " ";
+						entry.TextFemale = " ";
+					}
+					else if (isMaleTextEmpty)
+					{
+						entry.TextMale = entry.TextFemale;
+					}
+					else if (isFemaleTextEmpty)
+					{
+						entry.TextFemale = entry.TextMale;
+					}
+				}
+			}
+			else
+			{
+				ContentMgr.OnInvalidDBData("Invalid id: " + this);
+			}
 		}
 
 		public DataHolderState DataHolderState
@@ -155,53 +274,59 @@ namespace WCell.RealmServer.Gossips
 			set;
 		}
 
-		public void FinalizeDataHolder()
+		public static IEnumerable<StaticGossipEntry> GetAllDataHolders()
 		{
-			if (m_Entries == null)
-			{
-				ContentMgr.OnInvalidDBData("Entries is null in: " + this);
-				return;
-			}
-
-			if (GossipId > 0)
-			{
-				var list = new List<GossipText>();
-				foreach (var entry in m_Entries)
-				{
-					if (!string.IsNullOrEmpty(entry.TextFemale) || !string.IsNullOrEmpty(entry.TextMale))
-					{
-						list.Add(entry);
-					}
-				}
-				m_Entries = list.ToArray();
-
-				GossipMgr.NPCTexts[GossipId] = this;
-			}
-			else
-			{
-				ContentMgr.OnInvalidDBData("Invalid id: " + this);
-			}
-		}
-
-		public static IEnumerable<GossipEntry> GetAllDataHolders()
-		{
-			var list = new List<GossipEntry>(GossipMgr.NPCTexts.Count);
-			foreach (var text in GossipMgr.NPCTexts.Values)
-			{
-				if (text is GossipEntry)
-				{
-					list.Add((GossipEntry)text);
-				}
-			}
+			var list = new List<StaticGossipEntry>(GossipMgr.NPCTexts.Count);
+			list.AddRange(GossipMgr.NPCTexts.Values.Where(entry => entry is StaticGossipEntry).OfType<StaticGossipEntry>());
 			return list;
 		}
+	}
+	#endregion
 
-		public override string ToString()
+	#region DynamicGossipEntry
+	public class DynamicGossipEntry : GossipEntry
+	{
+		public DynamicGossipEntry(uint id, params GossipStringFactory[] texts)
 		{
-			return GetType().Name + " (Id: " + GossipId + ")";
+			GossipId = id;
+			GossipTexts = new DynamicGossipText[texts.Length];
+			var chance = 1f / texts.Length;
+			for (var i = 0; i < texts.Length; i++)
+			{
+				GossipTexts[i] = new DynamicGossipText(texts[i], chance);
+			}
+		}
+
+		public DynamicGossipEntry(uint id, ChatLanguage lang, params GossipStringFactory[] texts)
+		{
+			GossipId = id;
+			GossipTexts = new DynamicGossipText[texts.Length];
+			var chance = 1f / texts.Length;
+			for (var i = 0; i < texts.Length; i++)
+			{
+				GossipTexts[i] = new DynamicGossipText(texts[i], chance, lang);
+			}
+		}
+
+		public DynamicGossipEntry(uint id, params DynamicGossipText[] entries)
+		{
+			GossipId = id;
+			GossipTexts = entries;
+		}
+
+		public override bool IsDynamic
+		{
+			get { return true; }
+		}
+
+		public DynamicGossipText GetText(int i)
+		{
+			return (DynamicGossipText)m_Texts[i];
 		}
 	}
+	#endregion
 
+	#region NPCGossipRelation
 	[DataHolder]
 	public class NPCGossipRelation : IDataHolder
 	{
@@ -240,4 +365,5 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 	}
+	#endregion
 }

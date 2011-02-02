@@ -34,11 +34,12 @@ namespace WCell.Addons.Default.Samples
 		[NotVariable]
 		public static ItemTemplate Bow;
 
-		static uint sampleGossipTextId = 33424u;		// use a random fixed Id (must never change due to the Client cache problem)
+		// use a random fixed Id (must never change due to client-side caching)
+		static GossipEntry sampleGossipEntry = new StaticGossipEntry(403455, "Sample Gossip Menu");
 
 		#region Grizzly
-		[Initialization()]
-		static void SetupGrizzly()
+		[Initialization]
+		public static void SetupGrizzly()
 		{
 			// default settings
 			GrizzlyBear = new NPCEntry
@@ -74,12 +75,6 @@ namespace WCell.Addons.Default.Samples
 			GrizzlyBear.AddSpell(SpellId.Chilled);
 
 			// Sample gossip menu
-			GossipMgr.AddText(sampleGossipTextId, new GossipText
-			{
-				Probability = 1,
-				TextMale = "Sample Gossip Menu",
-				TextFemale = "Take a good look"
-			});
 			GrizzlyBear.DefaultGossip = CreateSampleGossipMenu();
 
 			GrizzlyBear.FinalizeDataHolder();
@@ -111,7 +106,7 @@ namespace WCell.Addons.Default.Samples
 				{
 					convo.Character.SendSystemMessage("A list of all available Gossip Icons");
 				},
-					new GossipMenu(										// nested menu
+					new GossipMenu(sampleGossipEntry,										// nested menu
 						new MultiStringGossipMenuItem(GossipMenuIcon.Trade, DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.Trade), convo =>
 						{
 							// Character selected "Trade"
@@ -126,10 +121,8 @@ namespace WCell.Addons.Default.Samples
 						new GossipMenuItem(GossipMenuIcon.Tabard, "Tabard"),
 						new GossipMenuItem(GossipMenuIcon.Battlefield, "Battlefield")
 					)
-					{
-						BodyTextId = sampleGossipTextId
-					}
 					),
+
 				new GossipMenuItem(GossipMenuIcon.Talk, "I want to go to Stormwind", convo =>
 				{
 					// Character wants to go to Stormwind

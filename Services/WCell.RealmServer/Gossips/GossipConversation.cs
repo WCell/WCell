@@ -11,6 +11,17 @@ namespace WCell.RealmServer.Gossips
 	public class GossipConversation
 	{
 		#region Constructors
+
+		/// <summary>
+		/// Creates gossip conversation by its fields
+		/// </summary>
+		/// <param name="menu">starting menu</param>
+		/// <param name="speaker">character which started the conversation</param>
+		/// <param name="target">respondent</param>
+		public GossipConversation(GossipMenu menu, Character speaker, WorldObject target) : this(menu, speaker, target, menu.KeepOpen)
+		{
+		}
+
 		/// <summary>
 		/// Creates gossip conversation by its fields
 		/// </summary>
@@ -19,10 +30,6 @@ namespace WCell.RealmServer.Gossips
 		/// <param name="target">respondent</param>
 		public GossipConversation(GossipMenu menu, Character speaker, WorldObject target, bool keepOpen)
 		{
-			if (menu.BodyTextId == 0)
-			{
-				menu.BodyTextId = GossipMgr.DefaultTextId;
-			}
 			CurrentMenu = menu;
 			Character = speaker;
 			Speaker = target;
@@ -125,11 +132,11 @@ namespace WCell.RealmServer.Gossips
 			{
 				var questMenuItems = ((IQuestHolder)Speaker).QuestHolderInfo.GetQuestMenuItems(Character);
 
-				GossipHandler.SendPageToCharacter(this, menu.BodyTextId, menu.GossipItems, questMenuItems);
+				GossipHandler.SendPageToCharacter(this, questMenuItems);
 			}
 			else
 			{
-				GossipHandler.SendPageToCharacter(this, menu.BodyTextId, menu.GossipItems, null);
+				GossipHandler.SendPageToCharacter(this, null);
 			}
 		}
 

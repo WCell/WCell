@@ -6,8 +6,8 @@ namespace WCell.RealmServer.RacesClasses
 
 	public class ArchetypeSelectionMenu : GossipMenu
 	{
-		public static readonly GossipEntry RaceTextEntry = new GossipEntry(813255, "Select your Race");
-		public static readonly GossipEntry ClassTextEntry = new GossipEntry(813256, "Select your Class");
+		public static readonly StaticGossipEntry RaceTextEntry = new StaticGossipEntry(813255, "Select your Race");
+		public static readonly StaticGossipEntry ClassTextEntry = new StaticGossipEntry(813256, "Select your Class");
 
 		public ArchetypeSelectionMenu(ArchetypeSelectionHandler callback) :
 			this(callback, RaceTextEntry.GossipId, ClassTextEntry.GossipId)

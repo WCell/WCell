@@ -3,7 +3,7 @@
   <DataHolder Name="GossipEntry">
     <DefaultTable>npc_text</DefaultTable>
     <Flat Name="GossipId" Column="ID" />
-    <NestedArray Name="GossipEntries">
+    <NestedArray Name="GossipTexts">
       <Flat Name="TextMale" Pattern="text{#}_0" Offset="0"/>
       <Flat Name="TextFemale" Pattern="text{#}_1" Offset="0"/>
       <Flat Name="Language" Pattern="lang{#}" Offset="0"/>
