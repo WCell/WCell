@@ -78,7 +78,7 @@ namespace WCell.Addons.Default.Spells.Mage
             // Mage Fire Blazing Speed has wrong trigger proc id
             SpellLineId.MageFireBlazingSpeed.Apply(spell =>
             {
-                var triggerEffect = spell.GetEffect(SpellEffectType.TriggerSpell);
+				var triggerEffect = spell.GetEffect(AuraType.ProcTriggerSpell);
                 triggerEffect.TriggerSpellId = SpellId.ClassSkillBlazingSpeed;
             });
 
