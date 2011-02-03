@@ -150,19 +150,23 @@ namespace WCell.RealmServer.Spawns
 			Map.UnregisterUpdatableLater(m_timer);
 		}
 
+		public void RemoveSpawnedObject()
+		{
+			// thread-safety -> Get local reference
+			var spawnling = m_spawnling;
+			if (spawnling != null)
+			{
+				spawnling.Delete();
+			}
+		}
+
 		/// <summary>
 		/// Stops timer and deletes spawnling
 		/// </summary>
 		public void Disable()
 		{
 			StopTimer();
-
-			// consider thread-safety -> Get local reference
-			var spawnling = m_spawnling;
-			if (spawnling != null)
-			{
-				spawnling.Delete();
-			}
+			RemoveSpawnedObject();
 		}
 
 		/// <summary>
