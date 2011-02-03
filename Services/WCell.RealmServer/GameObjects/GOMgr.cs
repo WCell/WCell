@@ -50,6 +50,11 @@ namespace WCell.RealmServer.GameObjects
 		/// </summary>
 		public static readonly Dictionary<uint, GOSpawnPoolTemplate> SpawnPoolTemplates = new Dictionary<uint, GOSpawnPoolTemplate>();
 
+		public static IEnumerator<GOSpawnEntry> GetAllSpawnEntries()
+		{
+			return SpawnPoolTemplates.Values.SelectMany(pool => pool.Entries).GetEnumerator();
+		}
+
 		[NotVariable]
 		/// <summary>
 		/// All existing GOTemplates by MapId

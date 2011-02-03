@@ -13,16 +13,6 @@ namespace WCell.RealmServer.AI.Actions.Combat
 	/// </summary>
 	public class AIAttackAction : AITargetMoveAction
 	{
-		/// <summary>
-		/// Every x Map-Ticks shuffle Spells
-		/// </summary>
-		public static int SpellShuffleTicks = 50;
-
-		/// <summary>
-		/// Every x Map-Ticks try to cast a random active spell
-		/// </summary>
-		public static int SpellCastTicks = 1;
-
 		protected float maxDist, desiredDist;
 
 		public AIAttackAction(NPC owner)
@@ -90,7 +80,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			// Check for spells that we can cast
 			if (UsesSpells && HasSpellReady && m_owner.CanCastSpells)
 			{
-				if (!m_owner.CanMelee || m_owner.CheckTicks(SpellCastTicks))
+				if (!m_owner.CanMelee)
 				{
 					if (TryCastSpell())
 					{
