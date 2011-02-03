@@ -25,6 +25,7 @@ using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
 using NLog;
@@ -818,20 +819,26 @@ namespace WCell.RealmServer.Quests
 
 			if (records != null)
 			{
-				for (var i = 0; i < records.Length; i++)
+				foreach (var record in records)
 				{
-					var record = records[i];
-					var templ = QuestMgr.GetTemplate(record.QuestTemplateId);
-					if (templ != null)
-					{
-						var quest = new Quest(this, record, templ);
-						AddQuest(quest);
-					}
-					else
-					{
-						log.Error("Character {0} had Invalid Quest: {1} (Record: {2})", Owner,
-							record.QuestTemplateId, record.QuestRecordId);
-					}
+				    var templ = QuestMgr.GetTemplate(record.QuestTemplateId);
+				    if (templ != null)
+				    {
+				        var quest = new Quest(this, record, templ);
+				        AddQuest(quest);
+
+                        //Cancel any quests relating to inactive events
+				        if(templ.EventIds.Count > 0)
+				        {
+				            if(!templ.EventIds.Where(WorldEventMgr.IsEventActive).Any())
+				                quest.Cancel(false);
+				        }
+				    }
+				    else
+				    {
+				        log.Error("Character {0} had Invalid Quest: {1} (Record: {2})", Owner,
+				                  record.QuestTemplateId, record.QuestRecordId);
+				    }
 				}
 			}
 		}

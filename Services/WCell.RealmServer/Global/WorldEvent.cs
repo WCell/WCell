@@ -79,6 +79,8 @@ namespace WCell.RealmServer.Global
         public List<WorldEventGameObject> GOSpawns = new List<WorldEventGameObject>();
         [NotPersistent]
         public List<WorldEventNpcData> ModelEquips = new List<WorldEventNpcData>();
+	    [NotPersistent]
+        public List<uint> QuestIds = new List<uint>();
 
         public void FinalizeDataHolder()
         {
@@ -223,6 +225,9 @@ namespace WCell.RealmServer.Global
         public void FinalizeDataHolder()
         {
             WorldEventMgr.WorldEventQuests.Add(this);
+            var worldEvent = WorldEventMgr.GetEvent(EventId);
+            if(worldEvent != null)
+                worldEvent.QuestIds.Add(QuestId);
         }
     }
 }

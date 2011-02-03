@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Global
 
         public static void StartEvent(WorldEvent worldEvent)
         {
-            Log.Info("Starting event {0}:{1}", worldEvent.Id, worldEvent.Description);
+            Log.Info("Starting event {0}: {1}", worldEvent.Id, worldEvent.Description);
             if (IsEventActive(worldEvent.Id))
                 return;
             
@@ -169,16 +169,39 @@ namespace WCell.RealmServer.Global
 
         public static void StopEvent(WorldEvent worldEvent)
         {
-            Log.Info("Stopping event {0}:{1}", worldEvent.Id, worldEvent.Description);
+            Log.Info("Stopping event {0}: {1}", worldEvent.Id, worldEvent.Description);
             if (!IsEventActive(worldEvent.Id))
                 return;
 
             worldEvent.TimeUntilEnd = worldEvent.Occurence + worldEvent.Duration;
             ActiveEvents[worldEvent.Id] = null;
+
+            if(worldEvent.QuestIds.Count != 0)
+                ClearActiveQuests(worldEvent.QuestIds);
         }
 		#endregion
 
-		#region Active Events
+        #region Event Actions
+
+        private static void ClearActiveQuests(IEnumerable<uint> questIds)
+        {
+           
+                World.CallOnAllChars(chr =>
+                                         {
+                                             foreach (var questId in questIds)
+                                             {
+                                                 var quest = chr.QuestLog.GetQuestById(questId);
+                                                 if (quest != null)
+                                                 {
+                                                     quest.Cancel(false);
+                                                 }
+                                             }
+                                         }
+                    );
+        }
+        #endregion
+
+        #region Active Events
 
         public static bool IsHolidayActive(uint id)
         {
