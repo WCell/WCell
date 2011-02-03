@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells;
-
-namespace WCell.RealmServer.AI.Spells
+﻿namespace WCell.RealmServer.Spells.Targeting
 {
 	public class AISpellTargetCollection : SpellTargetCollection
 	{

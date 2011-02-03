@@ -1093,6 +1093,7 @@ namespace WCell.RealmServer.NPCs
 			{
 				writer.WriteLine("Equipment: {0}", Equipment.ItemIds.Where(id => id != 0).ToString(", "));
 			}
+
 			if (DifficultyOverrideEntryIds != null && DifficultyOverrideEntryIds.Any(id => id != 0))
 			{
 				var parts = new List<string>(4);
@@ -1104,7 +1105,7 @@ namespace WCell.RealmServer.NPCs
 						var entry = NPCMgr.GetEntry(id);
 						MapTemplate map;
 						MapDifficultyEntry diff;
-						if (entry != null && (map = entry.GetMapTemplate()) != null && (diff = map.GetDifficulty(i)) != null)
+						if (entry != null && (map = GetMapTemplate()) != null && (diff = map.GetDifficulty(i)) != null)
 						{
 							parts.Add(string.Format("{0} ({1}) = " + id + " (" + (uint)id + ")", diff.IsHeroic ? "Heroic" : "Normal", diff.MaxPlayerCount));
 						}

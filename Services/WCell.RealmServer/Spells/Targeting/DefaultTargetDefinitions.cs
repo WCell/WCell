@@ -1,322 +1,15 @@
-/*************************************************************************
- *
- *   file		: SpellTargetCollection.cs
- *   copyright		: (C) The WCell Team
- *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-30 16:30:19 +0100 (lø, 30 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
- *   revision		: $Rev: 1235 $
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *************************************************************************/
-
+﻿using System;
 using System.Collections.Generic;
-using NLog;
+using System.Linq;
+using System.Text;
 using WCell.Constants.Spells;
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Misc;
 using WCell.Util;
-using WCell.Util.Graphics;
-using Cell.Core;
 
-namespace WCell.RealmServer.Spells
+namespace WCell.RealmServer.Spells.Targeting
 {
-
-	/// <summary>
-	/// A list of all targets for a Spell
-	/// </summary>
-	public class SpellTargetCollection : List<WorldObject>
+	public static class DefaultTargetDefinitions
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public static readonly TargetDefinition[] DefaultTargetHandlers = new TargetDefinition[(int)Utility.GetMaxEnum<ImplicitSpellTargetType>() + 1];
-
-		static readonly ObjectPool<SpellTargetCollection> SpellTargetCollectionPool = ObjectPoolMgr.CreatePool(() => new SpellTargetCollection());
-
-		public static SpellTargetCollection Obtain()
-		{
-			// TODO: Recycle collections
-			return new SpellTargetCollection();
-		}
-
-		/// <summary>
-		/// Further SpellEffectHandlers that are sharing this TargetCollection with the original Handler
-		/// </summary>
-		internal List<SpellEffectHandler> m_handlers;
-		public bool IsInitialized
-		{
-			get;
-			private set;
-		}
-
-		public SpellEffectHandler FirstHandler
-		{
-			get { return m_handlers[0]; }
-		}
-
-		public SpellCast Cast
-		{
-			get { return m_handlers[0].Cast; }
-		}
-
-		/// <summary>
-		/// Private ctor used by SpellTargetCollectionPool
-		/// </summary>
-		public SpellTargetCollection()
-		{
-			m_handlers = new List<SpellEffectHandler>(3);
-		}
-
-		#region Find Targets
-		public SpellFailedReason FindAllTargets()
-		{
-			IsInitialized = true;
-
-			var cast = Cast;
-			var caster = cast.CasterObject;
-			if (caster == null)
-			{
-				// TODO: This still needs to work without a caster?!
-				log.Warn("Invalid SpellCast - Tried to find targets, without Caster set: {0}", caster);
-				return SpellFailedReason.Error;
-			}
-
-			var firstEffect = FirstHandler.Effect;
-			if (firstEffect.Spell.IsPreventionDebuff)
-			{
-				// need to call InitializeTarget nevertheless
-				var err = SpellFailedReason.Ok;
-
-				foreach (var handler in m_handlers)
-				{
-					err = handler.ValidateAndInitializeTarget(caster);
-					if (err != SpellFailedReason.Ok)
-					{
-						return err;
-					}
-				}
-				Add(caster);
-				return err;
-			}
-
-			var failReason = SpellFailedReason.Ok;
-			var def = firstEffect.GetTargetDefinition(cast.IsAICast);
-			if (def != null)
-			{
-				var failedReason = SpellFailedReason.Ok;
-				if (def.Adder != null)
-				{
-					def.Adder(this, def.Filter, ref failedReason);
-				}
-			}
-			else
-			{
-				if (firstEffect.ImplicitTargetA != ImplicitSpellTargetType.None)
-				{
-					failReason = FindTargets(firstEffect.ImplicitTargetA);
-					if (failReason != SpellFailedReason.Ok)
-					{
-						return failReason;
-					}
-				}
-				if (firstEffect.ImplicitTargetB != ImplicitSpellTargetType.None)
-				{
-					failReason = FindTargets(firstEffect.ImplicitTargetB);
-				}
-			}
-			return failReason;
-		}
-
-		public SpellFailedReason FindTargets(ImplicitSpellTargetType targetType)
-		{
-			var failedReason = SpellFailedReason.Ok;
-			var def = GetTargetDefinition(targetType);
-			if (def.Adder != null)
-			{
-				def.Adder(this, def.Filter, ref failedReason);
-			}
-			return failedReason;
-		}
-
-		/// <summary>
-		/// Adds all chained units around the selected unit to the list
-		/// </summary>
-		public void FindChain(Unit first, TargetFilter filter, bool harmful, int limit)
-		{
-			var handler = FirstHandler;
-			var caster = handler.Cast.CasterObject;
-			var spell = handler.Cast.Spell;
-
-			first.IterateEnvironment(handler.GetRadius(), target =>
-			{
-				if ((spell.FacingFlags & SpellFacingFlags.RequiresInFront) != 0 &&
-					caster != null &&
-					!target.IsInFrontOf(caster))
-				{
-					return true;
-				}
-				if (target != caster &&
-					target != first)
-				{
-					if (caster == null)
-					{
-						// TODO: Add chain targets, even if there is no caster
-						return true;
-					}
-					else if ((harmful && !caster.MayAttack(target)) ||
-					(!harmful && !caster.IsInSameDivision(target)))
-					{
-						return true;
-					}
-					if (ValidateTarget(target, filter) == SpellFailedReason.Ok)
-					{
-						Add(target);
-					}
-					//return Count < limit;
-				}
-				return true;
-			});
-
-			// TODO: Consider better ways to do this?
-			Sort((a, b) => a.GetDistanceSq(first).CompareTo(b.GetDistanceSq(first)));
-			if (Count > limit)
-			{
-				RemoveRange(limit, Count - limit);
-			}
-		}
-		#endregion
-
-		#region Validate targets
-		/// <summary>
-		/// Does default checks on whether the given Target is valid for the current SpellCast
-		/// </summary>
-		public SpellFailedReason ValidateTarget(WorldObject target, TargetFilter filter)
-		{
-			var firstHandler = FirstHandler;
-			var cast = firstHandler.Cast;
-			var spell = cast.Spell;
-
-			var failReason = spell.CheckValidTarget(cast.CasterObject, target);
-			if (failReason != SpellFailedReason.Ok)
-			{
-				return failReason;
-			}
-
-			if (filter != null)
-			{
-				filter(cast, firstHandler, target, ref failReason);
-				if (failReason != SpellFailedReason.Ok)
-				{
-					return failReason;
-				}
-			}
-
-			if (cast.IsAICast)
-			{
-				
-			}
-
-			return ValidateTargetForHandlers(target);
-		}
-
-		public SpellFailedReason ValidateTargetForHandlers(WorldObject target)
-		{
-			foreach (var handler in m_handlers)
-			{
-				if (!target.CheckObjType(handler.TargetType))
-				{
-					return SpellFailedReason.BadTargets;
-				}
-				var failReason = handler.ValidateAndInitializeTarget(target);
-				if (failReason != SpellFailedReason.Ok)
-				{
-					return failReason;
-				}
-			}
-			return SpellFailedReason.Ok;
-		}
-
-		/// <summary>
-		/// Removes all targets that don't satisfy the effects' constraints
-		/// </summary>
-		public void RevalidateAll()
-		{
-			var firstHandler = FirstHandler;
-			var cast = firstHandler.Cast;
-
-			// remove all targets that are not valid anymore
-			for (var i = Count - 1; i >= 0; i--)
-			{
-				var target = this[i];
-				var def = firstHandler.Effect.GetTargetDefinition(cast.IsAICast);
-				if (def != null)
-				{
-					// custom filter
-					if (ValidateTarget(target, def.Filter) == SpellFailedReason.Ok)
-					{
-						continue;
-					}
-				}
-				else
-				{
-					// two default filters
-					if (ValidateTarget(target, GetTargetFilter(firstHandler.Effect.ImplicitTargetA)) == SpellFailedReason.Ok)
-					{
-						var filter = GetTargetFilter(firstHandler.Effect.ImplicitTargetB);
-						if (filter != null)
-						{
-							var failedReason = SpellFailedReason.Ok;
-							filter(cast, firstHandler, target, ref failedReason);
-							if (failedReason == SpellFailedReason.Ok)
-							{
-								continue;
-							}
-						}
-					}
-				}
-				RemoveAt(i);
-			}
-		}
-
-		#endregion
-
-		#region Add Targets
-		public void AddTargetsInArea(Vector3 pos, TargetFilter targetFilter, float radius)
-		{
-			var spell = FirstHandler.Effect.Spell;
-			int limit;
-			if (spell.MaxTargetEffect != null)
-			{
-				limit = spell.MaxTargetEffect.CalcEffectValue(Cast.CasterReference);
-			}
-			else
-			{
-				limit = (int)spell.MaxTargets;
-			}
-
-			if (limit < 1)
-			{
-				limit = int.MaxValue;
-			}
-
-			Cast.Map.IterateObjects(pos, radius > 0 ? radius : 5, Cast.Phase,
-				obj =>
-				{
-					if (ValidateTarget(obj, targetFilter) == SpellFailedReason.Ok)
-					{
-						Add(obj);
-						return Count < limit;
-					}
-					return true;
-				});
-		}
-		#endregion
-
-		#region Handlers
 
 		/// <summary>
 		/// Returns the handler and filter for the given target type
@@ -332,7 +25,8 @@ namespace WCell.RealmServer.Spells
 			return def != null ? def.Filter : null;
 		}
 
-		static SpellTargetCollection()
+		#region Init
+		static DefaultTargetDefinitions()
 		{
 			InitTargetHandlers();
 		}
@@ -418,7 +112,7 @@ namespace WCell.RealmServer.Spells
 
 			DefaultTargetHandlers[(int)ImplicitSpellTargetType.Duel] = new TargetDefinition(
 					DefaultTargetAdders.AddSelection,
-					DefaultTargetFilters.IsHostileOrHeal);
+					DefaultTargetFilters.IsHostileOrHealable);
 
 			DefaultTargetHandlers[(int)ImplicitSpellTargetType.DynamicObject] = new TargetDefinition(
 					DefaultTargetAdders.AddSelf,
@@ -570,31 +264,5 @@ namespace WCell.RealmServer.Spells
 					DefaultTargetFilters.IsAllied);
 		}
 		#endregion
-
-		public delegate void TargetHandler<in T>(T target);
-
-		public void ApplyToAllOf<TargetType>(TargetHandler<TargetType> handler)
-			where TargetType : ObjectBase
-		{
-			foreach (var target in this)
-			{
-				if (target is TargetType)
-					handler(target as TargetType);
-			}
-		}
-
-		internal void Dispose()
-		{
-			if (!IsInitialized)
-			{
-				return;
-			}
-
-			IsInitialized = false;
-
-			m_handlers.Clear();
-			Clear();
-			//SpellTargetCollectionPool.Recycle(this);
-		}
 	}
 }

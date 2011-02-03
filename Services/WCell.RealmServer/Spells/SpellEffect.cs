@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Spells
 				EffectType == SpellEffectType.EnchantItem ||
 				EffectType == SpellEffectType.EnchantItemTemporary;
 
-			AITargetHandlerDefintion = AISpellUtil.GetDefaultAITargetHandlerDefintion(this);
+			AISpellUtil.DecideDefaultTargetHandlerDefintion(this);
 		}
 
 		/// <summary>
@@ -289,7 +289,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool SharesTargets(SpellEffect b, bool aiCast)
 		{
-			return CustomTargetHandlerDefintion == b.CustomTargetHandlerDefintion ||
+			// if a TargetDefinition is set, it overrides the default implicit targets
+			var targetDef = GetTargetDefinition(aiCast);
+			return (targetDef != null && targetDef == b.GetTargetDefinition(aiCast)) ||
 				(ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB);
 		}
 

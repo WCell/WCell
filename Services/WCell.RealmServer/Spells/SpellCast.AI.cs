@@ -57,9 +57,14 @@ namespace WCell.RealmServer.Spells
 		#region Perform
 		bool PrePerformAI()
 		{
-			RevalidateAllTargets();
+			// in case of instant spells, we just collected the targets, and they could not have gone anywhere
+			if (!IsInstant)
+			{
+				RevalidateAllTargets();
 
-			return m_targets.Count > 0;
+				return m_targets.Count > 0;
+			}
+			return true;
 		}
 
 		void RevalidateAllTargets()

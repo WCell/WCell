@@ -12,6 +12,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.AI.Actions.Combat;
 using System;
+using WCell.RealmServer.Spells.Targeting;
 using WCell.Util.Graphics;
 
 
@@ -69,15 +70,21 @@ namespace WCell.Addons.Default.Instances
 			public static void InitLadySpells()
 			{
 				var forkedLightning = SpellHandler.Get(SpellId.ForkedLightningRank1);
-				forkedLightning.AISettings.SetValues(8000);
+				forkedLightning.AISettings.SetCooldownRange(8000);
 
 				// is this correct? shouldn't it be AoE? that spell only does 5 damage
 				// in that case it should not have a custom target definition, but stick with the default one
-				forkedLightning.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
+				forkedLightning.OverrideAITargetDefinitions(
+					DefaultTargetAdders.AddAreaSource, 									// Adder
+					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
+					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 
 				var slow = SpellHandler.Get(SpellId.SlowRank1);
-				slow.AISettings.SetValues(13000);
-				slow.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
+				slow.AISettings.SetCooldownRange(13000);
+				slow.OverrideAITargetDefinitions(
+					DefaultTargetAdders.AddAreaSource, 									// Adder
+					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
+					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 
 
 				var frostNova = SpellHandler.Get(SpellId.ClassSkillFrostNovaRank2);
@@ -101,8 +108,11 @@ namespace WCell.Addons.Default.Instances
 			public static void InitGelihast()
 			{
 				var net = SpellHandler.Get(SpellId.Net);
-				net.AISettings.SetValues(3000);
-				net.OverrideCustomTargetDefinitions(DefaultTargetAdders.AddRandomPlayer, DefaultTargetFilters.IsHostile);
+				net.AISettings.SetCooldownRange(3000);
+				net.OverrideAITargetDefinitions(
+					DefaultTargetAdders.AddAreaSource, 									// Adder
+					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
+					DefaultTargetFilters.IsHostile, DefaultTargetFilters.IsPlayer);		// Filters
 			}
 
 			public GelihastAttackAction(NPC Gelihast)

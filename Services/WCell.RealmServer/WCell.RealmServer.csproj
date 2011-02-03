@@ -201,7 +201,7 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
-    <Compile Include="AI\Spells\AISpellTargetCollection.cs" />
+    <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />
     <Compile Include="ArenaTeams\ArenaTeamMember.cs" />
     <Compile Include="ArenaTeams\ArenaTeamStats.cs" />
@@ -251,9 +251,13 @@
     <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
     <Compile Include="Spells\Auras\Misc\AddProcHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
-    <Compile Include="AI\Spells\SpellCast.AI.cs" />
+    <Compile Include="Spells\SpellCast.AI.cs" />
     <Compile Include="Spells\SpellProcEventEntry.cs" />
-    <Compile Include="Spells\SpellTargetMethods.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetAdders.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetDefinitions.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetEvaluators.cs" />
+    <Compile Include="Spells\Targeting\DefaultTargetFilters.cs" />
+    <Compile Include="Spells\Targeting\TargetDefinition.cs" />
     <Compile Include="Titles\CharacterTitleEntry.cs" />
     <Compile Include="NPCs\INPCDataHolder.cs" />
     <Compile Include="NPCs\NPCAddonData.cs" />
@@ -1329,7 +1333,7 @@
     <Compile Include="Spells\SpellEffect.Fields.cs" />
     <Compile Include="Spells\SpellEffect.cs" />
     <Compile Include="Spells\SpellHandler.cs" />
-    <Compile Include="Spells\SpellTargetCollection.cs" />
+    <Compile Include="Spells\Targeting\SpellTargetCollection.cs" />
     <Compile Include="Stats\ExtendedPacketInfo.cs" />
     <Compile Include="Stats\PerformanceCounters.cs" />
     <Compile Include="Talents\Talent.cs" />
@@ -1353,6 +1357,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Res\WCell.RealmServer.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AI\Spells\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

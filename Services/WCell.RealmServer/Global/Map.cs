@@ -888,12 +888,6 @@ namespace WCell.RealmServer.Global
 				{
 					pool.IsActive = false;
 				}
-
-				// remove from list of SpawnEntry.SpawnPoints
-				foreach (var point in pool.SpawnPoints)
-				{
-					point.SpawnEntry.SpawnPoints.Remove(point);
-				}
 			}
 			else if (typeof(O) == typeof(GameObject))
 			{
@@ -905,6 +899,12 @@ namespace WCell.RealmServer.Global
 			else
 			{
 				throw new ArgumentException("Invalid Pool type: " + pool);
+			}
+
+			// remove from list of SpawnEntry.SpawnPoints
+			foreach (var point in pool.SpawnPoints)
+			{
+				point.SpawnEntry.SpawnPoints.Remove(point);
 			}
 		}
 

@@ -838,7 +838,14 @@ namespace WCell.RealmServer.Spells
 
 			m_spell = spell;
 			m_passiveCast = passiveCast;
-			m_initialTargets = initialTargets;
+			if (initialTargets == null || initialTargets.Length == 0)
+			{
+				m_initialTargets = null;
+			}
+			else
+			{
+				m_initialTargets = initialTargets;
+			}
 
 			var reason = Prepare();
 			if (reason == SpellFailedReason.Ok)

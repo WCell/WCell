@@ -2,6 +2,7 @@ using System;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 
 namespace WCell.RealmServer.Spells
@@ -50,12 +51,12 @@ namespace WCell.RealmServer.Spells
 			private set;
 		}
 
-		public void SetValues(int cdMin, int cdMax)
+		public void SetCooldownRange(int cdMin, int cdMax)
 		{
 			SetCooldown(cdMin, cdMax);
 		}
 
-		public void SetValues(int cd)
+		public void SetCooldownRange(int cd)
 		{
 			SetCooldown(cd);
 		}
@@ -164,10 +165,40 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public static TargetDefinition GetDefaultAITargetHandlerDefintion(SpellEffect effect)
+		/// <summary>
+		/// Called on every SpellEffect, after initialization
+		/// </summary>
+		internal static void DecideDefaultTargetHandlerDefintion(SpellEffect effect)
 		{
-			// TODO
-			return null;
+			// ignore effects that already have custom settings
+			if (effect.AITargetHandlerDefintion != null || effect.AITargetEvaluator != null) return;
+
+			//var dflt = DefaultTargetDefinitions.GetTargetDefinition(effect.ImplicitTargetA);
+
+			if (effect.HarmType == HarmType.Beneficial && !effect.HasTarget(ImplicitSpellTargetType.Self))
+			{
+				// single target beneficial spells need special attention, since, in combat, AI only selects hostile targets
+
+				if (!effect.IsAreaEffect)
+				{
+					effect.Spell.MaxTargets = 1;
+				}
+
+				effect.SetAITargetDefinition(DefaultTargetAdders.AddAreaSource,					// Adder
+					DefaultTargetFilters.IsFriendly);											// Filters
+
+				// choose evaluator
+				if (effect.IsHealEffect)
+				{
+					// select most wounded
+					effect.AITargetEvaluator = DefaultTargetEvaluators.MostWoundedEvaluator;
+				}
+				else
+				{
+					// buff random person
+					effect.AITargetEvaluator = DefaultTargetEvaluators.RandomEvaluator;			
+				}
+			}
 		}
 	}
 	#endregion
