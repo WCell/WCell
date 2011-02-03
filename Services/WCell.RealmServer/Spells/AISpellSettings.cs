@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Amount of time to idle after casting the spell
 		/// </summary>
-		public int IdleTimeAfterCastMillis = 500;
+		public int IdleTimeAfterCastMillis = 1000;
 
 		public AISpellSettings(Spell spell)
 		{
@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Spells
 
 			if (Cooldown.MaxDelay < 0)
 			{
-				Cooldown.MinDelay = def.MaxDelay;
+				Cooldown.MaxDelay = def.MaxDelay;
 			}
 		}
 		#endregion
@@ -177,15 +177,19 @@ namespace WCell.RealmServer.Spells
 
 			if (effect.HarmType == HarmType.Beneficial && !effect.HasTarget(ImplicitSpellTargetType.Self))
 			{
-				// single target beneficial spells need special attention, since, in combat, AI only selects hostile targets
+				// single target beneficial spells need special attention, since else AI would never correctly select a target
 
 				if (!effect.IsAreaEffect)
 				{
 					effect.Spell.MaxTargets = 1;
+					effect.SetAITargetDefinition(DefaultTargetAdders.AddAreaSource,					// Adder
+												 DefaultTargetFilters.IsFriendly);					// Filters
 				}
-
-				effect.SetAITargetDefinition(DefaultTargetAdders.AddAreaSource,					// Adder
-					DefaultTargetFilters.IsFriendly);											// Filters
+				else
+				{
+					effect.SetAITargetDefinition(DefaultTargetAdders.AddAreaSource,					// Adder
+					                             DefaultTargetFilters.IsFriendly);					// Filters
+				}
 
 				// choose evaluator
 				if (effect.IsHealEffect)

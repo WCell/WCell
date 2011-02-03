@@ -10,13 +10,13 @@ namespace WCell.RealmServer.AI.Actions
 {
 	public class AITemporaryIdleAction : IAIAction
 	{
-		private uint m_Millis;
+		private int m_Millis;
 		private ProcTriggerFlags m_Flags;
 		private Action m_Callback;
 		private DateTime startTime;
 		private UpdatePriority m_priority = UpdatePriority.Active;
 
-		public AITemporaryIdleAction(uint millis, ProcTriggerFlags flags, Action callback)
+		public AITemporaryIdleAction(int millis, ProcTriggerFlags flags, Action callback)
 		{
 			m_Millis = millis;
 			m_Flags = flags;

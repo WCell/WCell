@@ -278,6 +278,11 @@ namespace WCell.RealmServer.AI.Brains
 		public void Perform()
 		{
 			// update current Action if any
+			if (m_owner.IsUsingSpell)
+			{
+				return;
+			}
+
 			if (m_currentAction == null)
 			{
 				m_currentAction = m_actions[m_state];

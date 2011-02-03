@@ -1006,7 +1006,6 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Checks whether the Unit can attack.
 		/// Also deactivates combat mode, if unit has left combat for long enough.
-		/// TODO: Cannot leave combat state if Pet is attacking
 		/// </summary>
 		protected virtual bool CheckCombatState()
 		{

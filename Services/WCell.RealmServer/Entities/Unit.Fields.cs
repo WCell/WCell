@@ -157,6 +157,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// As long as this count is up, cannot leave combat
+		/// </summary>
 		public int NPCAttackerCount
 		{
 			get;

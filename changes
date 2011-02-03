@@ -1,0 +1,5 @@
+- NPCs now cast beneficial spells when roaming
+- do not update brain while casting a Spell, unless spellcast is cancelled, to prevent interruption or parallel execution of actions (spellcast + something else)
+- let NPCs idle for a short time after they cast a spell, so one gets to see the animation (1s by default)
+- fixed AI random cooldowns
+- fixed entering combat mode when selecting a combat target

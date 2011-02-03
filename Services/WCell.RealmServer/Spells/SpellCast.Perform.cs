@@ -883,6 +883,11 @@ namespace WCell.RealmServer.Spells
 				return; // should not happen (but might)
 			}
 
+			if (IsAICast)
+			{
+				OnAICasted();
+			}
+
 			// Casted event
 			m_spell.NotifyCasted(this);
 

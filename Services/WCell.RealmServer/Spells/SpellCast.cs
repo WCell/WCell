@@ -330,11 +330,11 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Whether the was SpellCast was started by an AI-controlled Unit
+		/// Whether the SpellCast was started by an AI-controlled Unit
 		/// </summary>
 		public bool IsAICast
 		{
-			get { return !isPlayerCast && CasterUnit != null && !IsPassive; }
+			get { return !isPlayerCast && CasterObject is Unit && !IsPassive; }
 		}
 
 		public bool UsesRunes

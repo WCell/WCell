@@ -12,6 +12,29 @@ namespace WCell.RealmServer.Spells.Targeting
 	/// </summary>
 	public static class DefaultTargetEvaluators
 	{
+
+		/// <summary>
+		/// 
+		/// </summary>
+		public static int NearestEvaluator(SpellEffectHandler effectHandler, WorldObject target)
+		{
+			var caster = effectHandler.Cast.CasterObject;
+			if (caster == null)
+			{
+				// no one is near or close
+				return 0;
+			}
+
+			// the less the squared distance, the closer the target
+			// less means better in evaluators
+			return (int)(caster.GetDistanceSq(target) * 10);	// round the float to one digit after the dot
+		}
+
+		public static int RandomEvaluator(SpellEffectHandler effectHandler, WorldObject target)
+		{
+			return Utility.Random(0, int.MaxValue);
+		}
+
 		/// <summary>
 		/// AI heal spells
 		/// </summary>
@@ -22,7 +45,10 @@ namespace WCell.RealmServer.Spells.Targeting
 				// try to select the most wounded
 				var unit = (Unit)target;
 				var missingHealth = unit.MaxHealth - unit.Health;
-				return -missingHealth;		// the less the better
+
+				// cap at the max that the spell can heal
+				// else weaker creatures might never get healed, simply because they can't lose as much health
+				return -Math.Min(missingHealth, effectHandler.CalcDamageValue());
 			}
 			return int.MaxValue;
 		}
@@ -49,28 +75,6 @@ namespace WCell.RealmServer.Spells.Targeting
 			}
 			// should never happen
 			return int.MaxValue;
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		public static int NearestEvaluator(SpellEffectHandler effectHandler, WorldObject target)
-		{
-			var caster = effectHandler.Cast.CasterObject;
-			if (caster == null)
-			{
-				// no one is near or close
-				return 0;
-			}
-
-			// the less the squared distance, the closer the target
-			// less means better in evaluators
-			return (int)(caster.GetDistanceSq(target) * 10);	// round the float to one digit after the dot
-		}
-
-		public static int RandomEvaluator(SpellEffectHandler effectHandler, WorldObject target)
-		{
-			return Utility.Random(0, int.MaxValue);
 		}
 	}
 }

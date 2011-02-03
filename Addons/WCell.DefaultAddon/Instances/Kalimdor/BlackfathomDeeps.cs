@@ -74,6 +74,7 @@ namespace WCell.Addons.Default.Instances
 
 				// is this correct? shouldn't it be AoE? that spell only does 5 damage
 				// in that case it should not have a custom target definition, but stick with the default one
+				forkedLightning.MaxTargets = 1;
 				forkedLightning.OverrideAITargetDefinitions(
 					DefaultTargetAdders.AddAreaSource, 									// Adder
 					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
@@ -81,6 +82,7 @@ namespace WCell.Addons.Default.Instances
 
 				var slow = SpellHandler.Get(SpellId.SlowRank1);
 				slow.AISettings.SetCooldownRange(13000);
+				slow.MaxTargets = 1;
 				slow.OverrideAITargetDefinitions(
 					DefaultTargetAdders.AddAreaSource, 									// Adder
 					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator
@@ -109,6 +111,7 @@ namespace WCell.Addons.Default.Instances
 			{
 				var net = SpellHandler.Get(SpellId.Net);
 				net.AISettings.SetCooldownRange(3000);
+				net.MaxTargets = 1;
 				net.OverrideAITargetDefinitions(
 					DefaultTargetAdders.AddAreaSource, 									// Adder
 					DefaultTargetEvaluators.RandomEvaluator, 							// Evaluator

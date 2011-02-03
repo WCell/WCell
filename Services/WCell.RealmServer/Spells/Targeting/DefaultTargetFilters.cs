@@ -164,5 +164,27 @@ namespace WCell.RealmServer.Spells.Targeting
 		{
 			failedReason = target is Character ? SpellFailedReason.TargetIsPlayer : SpellFailedReason.Ok;
 		}
+
+		/// <summary>
+		/// Only select targets that have at least half of what the effect can heal
+		/// </summary>
+		public static void IsWoundedEnough(SpellEffectHandler effectHandler, WorldObject target, ref SpellFailedReason failedReason)
+		{
+			if (target is Unit)
+			{
+				// useful heal spell: Amount to be healed is greater or equal half of what the spell can heal
+				// Select anyone with that problem
+				var unit = (Unit)target;
+				var missingHealth = unit.MaxHealth - unit.Health;
+				if (missingHealth >= effectHandler.CalcDamageValue() / 2)
+				{
+					// good choice
+					return;
+				}
+			}
+
+			// not wounded or not wounded enough
+			failedReason = SpellFailedReason.AlreadyAtFullHealth;
+		}
 	}
 }

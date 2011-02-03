@@ -89,5 +89,16 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Called when finished casting
+		/// </summary>
+		void OnAICasted()
+		{
+			if (m_spell.AISettings.IdleTimeAfterCastMillis > 0)
+			{
+				CasterUnit.Idle(m_spell.AISettings.IdleTimeAfterCastMillis);
+			}
+		}
 	}
 }

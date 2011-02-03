@@ -313,6 +313,11 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
+			//if (cast.IsAICast && spell.IsAura && !spell.IsAreaSpell)
+			//{
+			//    // non-AoE aura -> Don't select target if target does already have the aura?
+			//}
+
 			return ValidateTargetForHandlers(target);
 		}
 

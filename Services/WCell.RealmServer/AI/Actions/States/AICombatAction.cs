@@ -70,7 +70,7 @@ namespace WCell.RealmServer.AI.Actions.States
 
 		public override void Update()
 		{
-			if (m_owner.IsUsingSpell || !m_owner.CanDoHarm)
+			if (!m_owner.CanDoHarm)
 			{
 				// busy
 				return;

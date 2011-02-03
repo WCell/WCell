@@ -23,6 +23,7 @@ namespace WCell.RealmServer.Handlers
 					chr.CanSee(target))
 				{
 					chr.Target = target;
+					chr.IsInCombat = true;
 					chr.IsFighting = true;
 
 					// inform everyone

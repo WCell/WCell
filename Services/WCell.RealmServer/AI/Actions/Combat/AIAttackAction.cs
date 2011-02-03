@@ -20,16 +20,6 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		{
 		}
 
-		public bool UsesSpells
-		{
-			get { return m_owner.HasSpells; }
-		}
-
-		public bool HasSpellReady
-		{
-			get { return ((NPC)m_owner).NPCSpells.ReadyCount > 0; }
-		}
-
 		public override float DistanceMin
 		{
 			get { return m_owner.BoundingRadius; }
@@ -80,13 +70,10 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			// Check for spells that we can cast
 			if (UsesSpells && HasSpellReady && m_owner.CanCastSpells)
 			{
-				if (!m_owner.CanMelee)
+				if (TryCastSpell())
 				{
-					if (TryCastSpell())
-					{
-						m_owner.Movement.Stop();
-						return;
-					}
+					m_owner.Movement.Stop();
+					return;
 				}
 			}
 
@@ -113,13 +100,6 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		protected bool TryCastSpell()
 		{
 			var owner = (NPC)m_owner;
-
-			// no need to shuffle - spells are on cooldowns anyway
-			//var spells = owner.NPCSpells;
-			//if (owner.CheckTicks(SpellShuffleTicks))
-			//{
-			//    spells.ShuffleReadySpells();
-			//}
 
 			foreach (var spell in owner.NPCSpells.ReadySpells)
 			{
