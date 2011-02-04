@@ -64,7 +64,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.ModThreat] = () => new ModThreatHandler();
 			EffectHandlers[(int)AuraType.ModStun] = () => new StunHandler();
 			EffectHandlers[(int)AuraType.ModDamageDone] = () => new ModDamageDoneHandler();
-			EffectHandlers[(int)AuraType.ModStealth] = () => new StealthHandler();
+			EffectHandlers[(int)AuraType.ModStealth] = () => new ModStealthHandler();
 			EffectHandlers[(int)AuraType.ModInvisibility] = () => new ModInvisibilityHandler();
 			EffectHandlers[(int)AuraType.RegenPercentOfTotalHealth] = () => new RegenPercentOfTotalHealthHandler();
 			EffectHandlers[(int)AuraType.RegenPercentOfTotalMana] = () => new RegenPercentOfTotalManaHandler();

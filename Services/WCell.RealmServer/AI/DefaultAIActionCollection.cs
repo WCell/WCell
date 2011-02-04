@@ -29,7 +29,8 @@ namespace WCell.RealmServer.AI
 
 			if (owner is NPC)
 			{
-				this[BrainState.Combat] = new AICombatAction((NPC)owner) {
+				this[BrainState.Combat] = new AICombatAction((NPC)owner)
+				{
 					Strategy = new AIAttackAction((NPC)owner)
 				};
 

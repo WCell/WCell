@@ -8,25 +8,34 @@ namespace WCell.RealmServer.AI.Actions
 		public readonly AIAction[] Actions = new AIAction[(int)BrainState.End];
 		protected Unit m_owner;
 
+		public Unit Owner
+		{
+			get { return m_owner; }
+		}
+
 		public bool IsInitialized
 		{
 			get { return m_owner != null; }
 		}
 
-		public virtual AIAction this[BrainState state]
+		public AIAction this[BrainState state]
 		{
 			get { return Actions[(int)state]; }
-			set { Actions[(int)state] = value; }
-		}
+			set
+			{
+				var oldAction = Actions[(int)state];
+				if (oldAction == value) return;
 
-		public void SetAction(BrainState state, AIAction action)
-		{
-			Actions[(int)state] = action;
-		}
+				Actions[(int)state] = value;
 
-		public bool Contains(BrainState state)
-		{
-			return Actions[(int)state] != null;
+				var brain = m_owner.Brain;
+				if (brain != null && brain.State == state && brain.CurrentAction == oldAction)
+				{
+					// we can quite safely assume that the Brain is using this collection
+					// owner already selected the action -> override it
+					brain.CurrentAction = value;
+				}
+			}
 		}
 
 		public virtual void Init(Unit owner)

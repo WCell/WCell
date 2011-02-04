@@ -914,7 +914,6 @@ namespace WCell.RealmServer.Entities
 			// trigger events
 			if (m_brain != null)
 			{
-				//spawn.Brain.MovementAI.SetSpawnPoint(pos);
 				m_brain.OnActivate();
 			}
 			m_entry.NotifyActivated(this);
@@ -934,6 +933,7 @@ namespace WCell.RealmServer.Entities
 				{
 					// master already gone
 					Delete();
+					return;
 				}
 			}
 		}

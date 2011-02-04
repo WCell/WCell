@@ -40,6 +40,8 @@ namespace WCell.RealmServer.AI.Actions
 	/// </summary>
 	public interface IAIActionCollection
 	{
+		Unit Owner { get; }
+
 		bool IsInitialized
 		{
 			get;
@@ -52,12 +54,10 @@ namespace WCell.RealmServer.AI.Actions
 		/// <returns>AI Action</returns>
 		AIAction this[BrainState state]
 		{
-			get; 
+			get;
 			set;
 		}
 
 		void Init(Unit owner);
-
-		bool Contains(BrainState state);
 	}
 }

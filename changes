@@ -1,3 +1,1 @@
-- fixed several bugs in Quest <-> GO relations / GO quest givers / reading of readable GOs / #sample npc command / initialization of init-dependencies, in case dependencies were resolved when step is added
-- fixed: Units now enter combat on first swing / aura timer refreshing / go dump now displays lists (quests etc) correctly
-- added GossipMenu to GameObject and GOEntry
+- fixed Brain.Actions[BrainState] setter to update CurrentAction immediately
