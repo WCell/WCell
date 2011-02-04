@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Quest.cs
  *   copyright		: (C) The WCell Team
@@ -336,11 +336,6 @@ namespace WCell.RealmServer.Quests
 		{
 			Template.NotifyCancelled(this, failed);
 			m_Log.RemoveQuest(this);
-		}
-
-		internal uint GetPacketStatus()
-		{
-			return CompleteStatus == QuestCompleteStatus.Completed ? 4 : (uint)Template.GetAvailability(m_Log.Owner);
 		}
 
 		public void UpdateStatus()

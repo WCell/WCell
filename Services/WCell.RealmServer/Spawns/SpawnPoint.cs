@@ -187,7 +187,7 @@ namespace WCell.RealmServer.Spawns
 			m_spawnling = null;
 			Pool.SpawnedObjects.Remove(obj);
 
-			if (m_spawnEntry.AutoSpawns)
+			if (Pool.IsActive && m_spawnEntry.AutoSpawns)
 			{
 				// select a spawn to respawn
 				Pool.SpawnOneLater();

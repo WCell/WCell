@@ -118,7 +118,7 @@ namespace WCell.RealmServer.Quests
 				var quest = chr.QuestLog.GetQuestById(qt.Id);
 				if (quest != null)
 				{
-					items.Add(new QuestMenuItem(qt.Id, quest.GetPacketStatus(), qt.Level, qt.Titles.Localize(chr.Locale)));
+					items.Add(new QuestMenuItem(qt.Id, 4, qt.Level, qt.Titles.Localize(chr.Locale)));
 				}
 			}
 
@@ -127,7 +127,7 @@ namespace WCell.RealmServer.Quests
 				var qs = qt.GetStartStatus(this, chr);
 				if (qs.IsAvailable())
 				{
-					items.Add(new QuestMenuItem(qt.Id, (uint)qs, qt.Level, qt.Titles.Localize(chr.Locale)));
+					items.Add(new QuestMenuItem(qt.Id, qs == QuestStatus.Available ? 2u : 4u, qt.Level, qt.Titles.Localize(chr.Locale)));
 				}
 			}
 			return items;

@@ -1,1 +1,1 @@
-- fixed Brain.Actions[BrainState] setter to update CurrentAction immediately
+- fixed quest menu icons: icon = 2 for available quests, else icon = 4!

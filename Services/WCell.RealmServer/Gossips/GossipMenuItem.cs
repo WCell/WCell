@@ -619,6 +619,10 @@ namespace WCell.RealmServer.Gossips
 	public class QuestMenuItem
 	{
 		public uint ID;
+		/// <summary>
+		/// 2 = Available
+		/// 4 = Anything else?
+		/// </summary>
 		public uint Status;
 		public uint Level;
 		public string Text;

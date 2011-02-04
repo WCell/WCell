@@ -955,7 +955,7 @@ namespace WCell.RealmServer.Global
 			for (var i = 0; i < objs.Length; i++)
 			{
 				var obj = objs[i];
-				if (!(obj is Character) && !obj.IsOwnedByPlayer)
+				if (!(obj is Character) && !obj.IsOwnedByPlayer && !obj.IsDeleted)
 				{
 					// only delete things that are not Characters or belong to Characters
 					obj.DeleteNow();

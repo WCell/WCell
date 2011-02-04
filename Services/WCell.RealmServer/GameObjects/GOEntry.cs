@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Looting;
 using WCell.Constants.World;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
@@ -257,7 +258,16 @@ namespace WCell.RealmServer.GameObjects
 			// create GossipMenu
 			if (GossipId != 0 && DefaultGossip == null)
 			{
-				DefaultGossip = new GossipMenu(GossipId);
+				var gossipEntry = GossipMgr.GetEntry(GossipId);
+				if (gossipEntry == null)
+				{
+					ContentMgr.OnInvalidDBData("GOEntry {0} has missing GossipId: {1}", this , GossipId);
+					DefaultGossip = new GossipMenu();
+				}
+				else
+				{
+					DefaultGossip = new GossipMenu(GossipId);
+				}
 			}
 			else if (QuestHolderInfo != null)
 			{
