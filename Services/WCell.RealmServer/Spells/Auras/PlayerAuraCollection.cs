@@ -151,9 +151,9 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-			SpellModifiersPct.Remove(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
+			SpellModifiersPct.Remove(modifier);
 		}
 
 		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
@@ -162,9 +162,9 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				ModifierWithChargesCount--;
 			}
-			SpellModifiersFlat.Remove(modifier);
 			OnModifierChange(modifier);
 			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
+			SpellModifiersFlat.Remove(modifier);
 		}
 
 		private void OnModifierChange(AddModifierEffectHandler modifier)
