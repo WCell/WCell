@@ -303,7 +303,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Get an Aura that is incompatible with the one represented by the given spell.
+		/// Get an Aura that is incompatible with the one represented by the given spell
 		/// </summary>
 		/// <returns>Whether or not another Aura may be applied</returns>
 		public Aura GetAura(ObjectReference caster, AuraIndexId id, Spell spell)

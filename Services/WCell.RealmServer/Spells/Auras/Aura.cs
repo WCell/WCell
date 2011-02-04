@@ -876,17 +876,18 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				if (caster == CasterReference)
 				{
-					if (spell != Spell &&
-						spell.AuraCasterGroup != null &&
-						spell.AuraCasterGroup == Spell.AuraCasterGroup &&
-						spell.AuraCasterGroup.MaxCount == 1)
+					if (spell != Spell
+						//&&
+						//spell.AuraCasterGroup != null &&
+						//spell.AuraCasterGroup == Spell.AuraCasterGroup &&
+						//spell.AuraCasterGroup.MaxCount == 1
+						)
 					{
-						// same caster group, can override
+						// different spell -> needs to be overridden
 						return AuraOverrideStatus.Replace;
 					}
 					else
 					{
-						// no caster group restriction, but same caster
 						// Aura can be refreshed
 						return AuraOverrideStatus.Refresh;
 					}

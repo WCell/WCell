@@ -243,7 +243,7 @@ namespace WCell.RealmServer.Entities
 
 					// load all the rest
 					m_achievements.Load();
-					((PlayerSpellCollection)m_spells).LoadSpells();
+					((PlayerSpellCollection)m_spells).LoadSpellsAndTalents();
 					((PlayerSpellCollection)m_spells).LoadCooldowns();
 					m_skills.Load();
 					m_mailAccount.Load();

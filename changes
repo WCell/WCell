@@ -1,1 +1,2 @@
-- fixed quest menu icons: icon = 2 for available quests, else icon = 4!
+- fixed: Auras of different spells but same group will now correctly replace each other
+- fixed: Only apply highest ranks of loaded passive talents

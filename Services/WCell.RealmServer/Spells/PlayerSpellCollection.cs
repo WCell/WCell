@@ -148,12 +148,9 @@ namespace WCell.RealmServer.Spells
 		internal void OnlyAdd(SpellRecord record)
 		{
 			var id = record.SpellId;
-			if (!m_byId.ContainsKey(id))
-			{
-				//DeleteFromDB(id);
-				var spell = SpellHandler.Get(id);
-				m_byId[id] = spell;
-			}
+			//DeleteFromDB(id);
+			var spell = SpellHandler.Get(id);
+			m_byId[id] = spell;
 		}
 
 
@@ -302,13 +299,26 @@ namespace WCell.RealmServer.Spells
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive && !spell.HasHarmfulEffects)
-				{
-					chr.SpellCast.Start(spell, true, Owner);
-				}
 				if (spell.Talent != null)
 				{
+					// add talents silently to TalentCollection
 					chr.Talents.AddExisting(spell.Talent, spell.Rank);
+				}
+				else if (spell.IsPassive && !spell.HasHarmfulEffects)
+				{
+					// cast passive spells
+					chr.SpellCast.Start(spell, true, Owner);
+				}
+			}
+
+			// apply all highest ranks of all Talents
+			foreach (var talent in chr.Talents)
+			{
+				var spell = talent.Spell;
+				if (spell.IsPassive)
+				{
+					// cast passive Talent spells
+					chr.SpellCast.Start(spell, true, Owner);
 				}
 			}
 
@@ -674,11 +684,12 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void LoadSpells()
+		internal void LoadSpellsAndTalents()
 		{
 			var owner = OwnerChar;
 			var ownerRecord = owner.Record;
 
+			// add Spells from DB into the correct collections
 			var dbSpells = SpellRecord.LoadAllRecordsFor(owner.EntityId.Low);
 			var specs = owner.SpecProfiles;
 			foreach (var record in dbSpells)
@@ -709,7 +720,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// add talent spells
+			// add talents
 			foreach (var spell in owner.CurrentSpecProfile.TalentSpells)
 			{
 				OnlyAdd(spell);
