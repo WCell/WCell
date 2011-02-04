@@ -2040,6 +2040,18 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public GossipConversation GossipConversation { get; set; }
 
+		/// <summary>
+		/// Lets the Character gossip with the given speaker
+		/// </summary>
+		public void StartGossip(GossipMenu menu, WorldObject speaker)
+		{
+			GossipConversation = new GossipConversation(menu, this, speaker, menu.KeepOpen);
+			GossipConversation.DisplayCurrentMenu();
+		}
+
+		/// <summary>
+		/// Lets the Character gossip with herself
+		/// </summary>
 		public void StartGossip(GossipMenu menu)
 		{
 			GossipConversation = new GossipConversation(menu, this, this, menu.KeepOpen);

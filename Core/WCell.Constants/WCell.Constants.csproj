@@ -157,6 +157,8 @@
     <Compile Include="Chat\TextEmote.cs" />
     <Compile Include="Externals.cs" />
     <Compile Include="Factions\Extensions.cs" />
+    <Compile Include="GameObjects\GOConstantsExtensions.cs" />
+    <Compile Include="GameObjects\GODynamicFlags.cs" />
     <Compile Include="GameObjects\GOMisc.cs" />
     <Compile Include="Groups.cs" />
     <Compile Include="Guilds\Extensions.cs" />

@@ -49,8 +49,6 @@ namespace WCell.RealmServer.Handlers
 	/// </summary>
 	public static class QuestHandler
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		#region FINISHED
 		/// <summary>
 		/// Handles the quest confirm accept.
@@ -825,6 +823,7 @@ namespace WCell.RealmServer.Handlers
 		/// <param name="chr">The client.</param>
 		public static void SendQuestGiverStatus(IQuestHolder qg, QuestStatus status, Character chr)
 		{
+			qg.OnQuestGiverStatusQuery(chr);
 			using (var pckt = new RealmPacketOut(RealmServerOpCode.SMSG_QUESTGIVER_STATUS))
 			{
 				pckt.Write(qg.EntityId);
@@ -1052,7 +1051,7 @@ namespace WCell.RealmServer.Handlers
 		[ClientPacketHandler(RealmServerOpCode.CMSG_QUESTGIVER_STATUS_MULTIPLE_QUERY)]
 		public static void HandleQuestgiverStatusMultipleQuery(IRealmClient client, RealmPacketIn packet)
 		{
-			client.ActiveCharacter.FindAndSendQGStatus();
+			client.ActiveCharacter.FindAndSendAllNearbyQuestGiverStatuses();
 		}
 
 
@@ -1203,13 +1202,13 @@ namespace WCell.RealmServer.Handlers
 		/// Finds and sends all surrounding QuestGiver's current Quest-Status to the given Character
 		/// </summary>
 		/// <param name="chr">The <see cref="Character"/>.</param>
-		public static void FindAndSendQGStatus(this Character chr)
+		public static void FindAndSendAllNearbyQuestGiverStatuses(this Character chr)
 		{
 			using (var pkt = new RealmPacketOut(new PacketId(RealmServerOpCode.SMSG_QUESTGIVER_STATUS_MULTIPLE)))
 			{
 				var objs = chr.KnownObjects;
 				var count = 0;
-				pkt.Position += 4;
+				pkt.Position += sizeof(int);		// leave space for count
 				if (objs != null)
 				{
 					foreach (var obj in objs)
@@ -1217,6 +1216,8 @@ namespace WCell.RealmServer.Handlers
 						if (obj is IQuestHolder && !(obj is Character))
 						{
 							var questgiver = (IQuestHolder)obj;
+							questgiver.OnQuestGiverStatusQuery(chr);
+
 							if (questgiver.QuestHolderInfo != null)
 							{
 								pkt.Write(questgiver.EntityId);

@@ -47,12 +47,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[4]; }
         }
 
+
 		/// <summary>
-		/// The Id of the quest required to be active in order to activate this object.
+		/// The Id of the quest required to be active
 		/// </summary>
-		public int QuestId
-        {
-            get { return Fields[5]; }
-        }
+		public override uint QuestId
+		{
+			get { return (uint)Fields[5]; }
+		}
 	}
 }

@@ -84,7 +84,7 @@ namespace WCell.RealmServer.Global
 
 		private void OnStateChanged(WorldState state, int value)
 		{
-			Area.CallOnAllCharacters(chr => MiscHandler.SendUpdateWorldState(chr, state.Key, value));
+			Area.CallOnAllCharacters(chr => WorldStateHandler.SendUpdateWorldState(chr, state.Key, value));
 		}
 
 	}

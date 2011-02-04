@@ -51,9 +51,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		}
 
 		/// <summary>
-		/// The Id of the quest this chest is associated with.
+		/// The Id of the quest required to be active
 		/// </summary>
-		public uint QuestId
+		public override uint QuestId
 		{
 			get { return (uint)Fields[8]; }
 		}

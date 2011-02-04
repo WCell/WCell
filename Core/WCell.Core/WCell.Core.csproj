@@ -205,7 +205,7 @@
     <Compile Include="Initialization\GlobalMgrAttribute.cs" />
     <Compile Include="Initialization\GlobalMgrInfo.cs" />
     <Compile Include="Initialization\IInitializationInfo.cs" />
-    <Compile Include="Initialization\InitializationDependency.cs" />
+    <Compile Include="Initialization\DependentInitializationStep.cs" />
     <Compile Include="Initialization\InitializationException.cs" />
     <Compile Include="Network\IOExtensions.cs" />
     <Compile Include="Network\NetworkStatistics.cs" />

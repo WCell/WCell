@@ -1366,7 +1366,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			if (bank == null) return;
 			if (chr.Guild == null || chr.GuildMember == null) return;
-			if (!bank.CanInteractWith(chr)) return;
+			if (!bank.CanBeUsedBy(chr)) return;
 
 			var guild = chr.Guild;
 			var gBank = guild.Bank;
@@ -1454,7 +1454,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			if (bank == null) return;
 			if (chr.Guild == null || chr.GuildMember == null) return;
-			if (!bank.CanInteractWith(chr)) return;
+			if (!bank.CanBeUsedBy(chr)) return;
 
 			var bankTab = chr.Guild.Bank[tabId];
 			if (bankTab == null) return;

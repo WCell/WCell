@@ -653,7 +653,7 @@ namespace WCell.RealmServer.Commands
 					var value = trigger.Text.NextInt();
 					//states.Add(new WorldState(key, value));
 				}
-				MiscHandler.SendInitWorldStates(chr, chr.Map.Id, chr.ZoneId, (uint)area, states.ToArray());
+				WorldStateHandler.SendInitWorldStates(chr, chr.Map.Id, chr.ZoneId, (uint)area, states.ToArray());
 			}
 		}
 

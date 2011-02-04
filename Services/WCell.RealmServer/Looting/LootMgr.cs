@@ -376,6 +376,7 @@ namespace WCell.RealmServer.Looting
 		}
 		#endregion
 
+		#region FindLooters
 		public static IList<LooterEntry> FindLooters(ILootable lootable, Character initialLooter)
 		{
 			var looters = new List<LooterEntry>();
@@ -412,11 +413,12 @@ namespace WCell.RealmServer.Looting
 
 			looters.Add(initialLooter.LooterEntry);
 		}
+		#endregion
 
 		#region Extension methods
-		public static ResolvedLootItemList GetLootEntries(this ILockable lockable, LootEntryType type)
+		public static ResolvedLootItemList GetEntries(this ILootable lootable, LootEntryType type)
 		{
-			return GetEntries(type, lockable.GetLootId(type));
+			return GetEntries(type, lootable.GetLootId(type));
 		}
 
 		/// <summary>
@@ -458,6 +460,27 @@ namespace WCell.RealmServer.Looting
 				// just open it
 				LockEntry.Loot(lockable, chr);
 				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Whether the given lootable contains quest items for the given Character when looting with the given type
+		/// </summary>
+		public static bool ContainsQuestItemsFor(this ILootable lootable, Character chr, LootEntryType type)
+		{
+			var loot = lootable.Loot;
+			if (loot != null)
+			{
+				// loot has already been created
+				return loot.Items.Any(item => item.Template.HasQuestRequirements && item.Template.CheckQuestConstraints(chr));
+			}
+
+			// no loot yet -> check what happens if we create any
+			var entries = lootable.GetEntries(type);
+			if (entries != null)
+			{
+				return entries.Any(entry => entry.ItemTemplate.HasQuestRequirements && entry.ItemTemplate.CheckQuestConstraints(chr));
 			}
 			return false;
 		}

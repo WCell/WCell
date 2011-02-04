@@ -269,14 +269,17 @@ namespace WCell.RealmServer.Entities
 
 		public void EnsureContext()
 		{
-			var handler = ContextHandler;
-			if (handler == null)
+			if (IsInWorld)
 			{
-				//throw new InvalidOperationException("Could not ensure Context because ContextHandler was not set for: " + this);
-			}
-			else
-			{
-				handler.EnsureContext();
+				var handler = ContextHandler;
+				if (handler == null)
+				{
+					//throw new InvalidOperationException("Could not ensure Context because ContextHandler was not set for: " + this);
+				}
+				else
+				{
+					handler.EnsureContext();
+				}
 			}
 		}
 	}

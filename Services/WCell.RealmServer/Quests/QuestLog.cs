@@ -20,6 +20,7 @@ using System.Linq;
 using NHibernate.SqlCommand;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
+using WCell.Constants.Looting;
 using WCell.Constants.Quests;
 using WCell.Constants.Updates;
 using WCell.Core;
@@ -30,6 +31,7 @@ using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
 using NLog;
 using WCell.RealmServer.Items;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.Spells;
 using WCell.Util.Threading;
 
@@ -447,19 +449,6 @@ namespace WCell.RealmServer.Quests
 
 		#region Checks/Getters
 
-		/// <summary>
-		/// Resets the daily quest count. Needs to be called in midnight (servertime) or when character logs in after the midnight
-		/// </summary>
-		public void ResetDailyQuests()
-		{
-			m_DailyQuestsToday.Clear();
-		}
-
-		//public void UpdateQuest(byte slot)
-		//{
-
-		//}
-
 		public bool HasActiveQuest(QuestTemplate templ)
 		{
 			return GetActiveQuest(templ.Id) != null;
@@ -468,6 +457,11 @@ namespace WCell.RealmServer.Quests
 		public bool HasActiveQuest(uint questId)
 		{
 			return GetActiveQuest(questId) != null;
+		}
+
+		public bool HasFinishedQuest(uint questId)
+		{
+			return FinishedQuests.Contains(questId);
 		}
 
 		public bool CanFinish(uint questId)
@@ -568,6 +562,21 @@ namespace WCell.RealmServer.Quests
 		}
 		#endregion
 
+		#region Repeatable Quests
+		/// <summary>
+		/// Resets the daily quest count. Needs to be called in midnight (servertime) or when character logs in after the midnight
+		/// </summary>
+		public void ResetDailyQuests()
+		{
+			m_DailyQuestsToday.Clear();
+		}
+
+		//public void UpdateQuest(byte slot)
+		//{
+
+		//}
+		#endregion
+
 		#region NPCs
 		/// <summary>
 		/// Is called when the owner of this QuestLog did
@@ -650,23 +659,41 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// The Quest that requires the given GO to be used
+		/// Whether the given GO can be used by the player to start or progress a quest
 		/// </summary>
-		public Quest GetReqObjectQuest(GOEntryId npc)
+		public bool IsRequiredForAnyQuest(GameObject go)
 		{
-			for (var j = 0; j < m_RequireItemsQuests.Count; j++)
+			// check quest start/end status
+			//var questId = go.Entry.QuestId;
+			//if (questId != 0)
+			//{
+			//    var templ = QuestMgr.GetTemplate(questId);
+			//    if (templ != null)
+			//    {
+			//    }
+			//}
+			if (go.QuestHolderInfo != null && go.QuestHolderInfo.GetHighestQuestGiverStatus(Owner).CanStartOrFinish())
 			{
-				var quest = m_RequireItemsQuests[j];
-				for (var i = 0; i < quest.Template.CollectableItems.Length; i++)
+				// GO can be used by this Character to start or finish a quest
+				return true;
+			}
+
+			// check quests that require GO interaction
+			for (var j = 0; j < m_RequireGOsQuests.Count; j++)
+			{
+				var quest = m_RequireGOsQuests[j];
+				for (var i = 0; i < quest.Template.GOInteractions.Length; i++)
 				{
 					var interaction = quest.Template.GOInteractions[i];
-					if (interaction.TemplateId == (uint)npc)
+					if (interaction.TemplateId == go.EntryId)
 					{
-						return quest;
+						return true;
 					}
 				}
 			}
-			return null;
+
+			// check if it can contain quest loot
+			return go.ContainsQuestItemsFor(Owner, LootEntryType.GameObject);
 		}
 		#endregion
 
@@ -854,7 +881,7 @@ namespace WCell.RealmServer.Quests
 		{
 			if (m_FinishedQuests.Remove(id))
 			{
-				Owner.FindAndSendQGStatus();
+				Owner.FindAndSendAllNearbyQuestGiverStatuses();
 				return true;
 			}
 			return false;

@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Global
 		internal static ZoneTemplate[] s_ZoneTemplates = new ZoneTemplate[(int)ZoneId.End];
         internal static WorldMapOverlayEntry[] s_WorldMapOverlayEntries = new WorldMapOverlayEntry[(int)WorldMapOverlayId.End];
 
-		private static int s_totalPlayerCount, s_hordePlayerCount, s_allyPlayerCount, s_staffMemberCount;
+		private static int s_characterCount, s_hordePlayerCount, s_allyPlayerCount, s_staffMemberCount;
 
 		#endregion
 
@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Global
 		{
 			get
 			{
-				return s_totalPlayerCount;
+				return s_characterCount;
 			}
 		}
 
@@ -478,7 +478,7 @@ namespace WCell.RealmServer.Global
 			m_worldLock.EnterWriteLock();
 			try
 			{
-				s_totalPlayerCount = s_staffMemberCount = s_hordePlayerCount = s_allyPlayerCount = 0;
+				s_characterCount = s_staffMemberCount = s_hordePlayerCount = s_allyPlayerCount = 0;
 				foreach (var entity in s_namedEntities.Values)
 				{
 					if (!(entity is Character))
@@ -487,7 +487,7 @@ namespace WCell.RealmServer.Global
 					}
 
 					var chr = (Character)entity;
-					s_totalPlayerCount++;
+					s_characterCount++;
 					if (chr.Role.IsStaff)
 					{
 						s_staffMemberCount++;
@@ -544,7 +544,7 @@ namespace WCell.RealmServer.Global
 			{
 				s_namedEntities.Add(chr.EntityId.Low, chr);
 				s_entitiesByName.Add(chr.Name, chr);
-				s_totalPlayerCount++;
+				s_characterCount++;
 				if (chr.Role.IsStaff)
 				{
 					s_staffMemberCount++;
@@ -578,7 +578,7 @@ namespace WCell.RealmServer.Global
 				s_entitiesByName.Remove(chr.Name);
 				if (s_namedEntities.Remove(chr.EntityId.Low))
 				{
-					s_totalPlayerCount--;
+					s_characterCount--;
 					if (chr.Role.IsStaff)
 					{
 						s_staffMemberCount--;

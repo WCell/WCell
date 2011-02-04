@@ -6,6 +6,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
@@ -184,6 +185,27 @@ namespace WCell.RealmServer.GameObjects
 		}
 		#endregion
 
+		/// <summary>
+		/// Some GOs have a QuestId
+		/// </summary>
+		public virtual uint QuestId
+		{
+			get { return 0; }
+		}
+
+		/// <summary>
+		/// Some GOs have a PageId
+		/// </summary>
+		public virtual uint PageId
+		{
+			get { return 0; }
+		}
+
+		public virtual uint GossipId
+		{
+			get { return 0; }
+		}
+
 		#region Quests
 		[NotPersistent]
 		public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
@@ -231,7 +253,19 @@ namespace WCell.RealmServer.GameObjects
 			}
 
 			InitEntry();
+			
+			// create GossipMenu
+			if (GossipId != 0 && DefaultGossip == null)
+			{
+				DefaultGossip = new GossipMenu(GossipId);
+			}
+			else if (QuestHolderInfo != null)
+			{
+				// Make sure, there is a gossip menu, so quests can be started/completed
+				DefaultGossip = new GossipMenu();
+			}
 
+			// set HandlerCreator
 			if (HandlerCreator == null)
 			{
 				HandlerCreator = GOMgr.Handlers[(int)Type];

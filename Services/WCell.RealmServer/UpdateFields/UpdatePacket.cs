@@ -89,7 +89,6 @@ namespace WCell.RealmServer.UpdateFields
 
 				if (totalLength > MaxPacketSize)
 				{
-					//TODO: Split up packet if packet size exceeds max length
 					throw new Exception("Compressed Update packet exceeded max length: " + totalLength);
 				}
 				SendPacket(client, outSegment, totalLength, length);

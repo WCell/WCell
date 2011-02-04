@@ -1318,6 +1318,11 @@ namespace WCell.RealmServer.Entities
 		{
 			return m_owner == chr;
 		}
+
+		public void OnQuestGiverStatusQuery(Character chr)
+		{
+			// do nothing
+		}
 		#endregion
 
 		public override void Dispose(bool disposing)

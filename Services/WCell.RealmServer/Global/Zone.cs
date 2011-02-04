@@ -147,7 +147,7 @@ namespace WCell.RealmServer.Global
 		internal void EnterZone(Character chr, Zone oldZone)
 		{
 			UpdateChannels(chr, oldZone);
-			MiscHandler.SendInitWorldStates(chr, WorldStates, this);
+			WorldStateHandler.SendInitWorldStates(chr, WorldStates, this);
 
 			if (oldZone != null)
 			{

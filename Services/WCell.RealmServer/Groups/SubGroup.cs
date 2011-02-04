@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Groups
 			get { return m_Id; }
 		}
 
-		public int Count
+		public int CharacterCount
 		{
 			get { return m_members.Count; }
 		}
@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Groups
 			
 		}
 
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			var chrs = new Character[MaxMemberCount];
 			var c = 0;

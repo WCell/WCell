@@ -108,7 +108,7 @@ namespace WCell.RealmServer.Tests.Groups
 
 			Assert.IsNull(leader.GroupMember);
 			Assert.IsNull(leaderMember.Next);
-			Assert.AreEqual(count - 1, group.Count);
+			Assert.AreEqual(count - 1, group.CharacterCount);
 			Assert.AreEqual(nextMember, group.Leader);
 
 			// new leader
@@ -149,7 +149,7 @@ namespace WCell.RealmServer.Tests.Groups
 
 			group.Disband();
 
-			Assert.AreEqual(0, group.Count);
+			Assert.AreEqual(0, group.CharacterCount);
 		}
 
 		[TestMethod]
@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Tests.Groups
 			Assert.IsNotNull(leaderChr, "Group was not created properly");
 
 			leaderChr.Map.WaitOneTick();
-			foreach (TestCharacter chr in group.GetCharacters())
+			foreach (TestCharacter chr in group.GetAllCharacters())
 			{
 				// purge all pending packets - we don't care for them
 				chr.FakeClient.PurgeSMSGs();
@@ -174,7 +174,7 @@ namespace WCell.RealmServer.Tests.Groups
 			leaderChr.SayGroup(text);
 			leaderChr.Map.WaitOneTick();
 
-			foreach (TestCharacter chr in group.GetCharacters())
+			foreach (TestCharacter chr in group.GetAllCharacters())
 			{
 				var chatPacket = chr.FakeClient.DequeueSMSG(RealmServerOpCode.SMSG_MESSAGECHAT);
 				Assert.IsNotNull(chatPacket, "Character did not receive Group-Chat: " + chr);
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Tests.Groups
 			}
 
 			var group = leader.Group;
-			Assert.AreEqual(count, group.Count);
+			Assert.AreEqual(count, group.CharacterCount);
 
 			return group;
 		}

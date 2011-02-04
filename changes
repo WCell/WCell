@@ -1,5 +1,3 @@
-- NPCs now cast beneficial spells when roaming
-- do not update brain while casting a Spell, unless spellcast is cancelled, to prevent interruption or parallel execution of actions (spellcast + something else)
-- let NPCs idle for a short time after they cast a spell, so one gets to see the animation (1s by default)
-- fixed AI random cooldowns
-- fixed entering combat mode when selecting a combat target
+- fixed several bugs in Quest <-> GO relations / GO quest givers / reading of readable GOs / #sample npc command / initialization of init-dependencies, in case dependencies were resolved when step is added
+- fixed: Units now enter combat on first swing / aura timer refreshing / go dump now displays lists (quests etc) correctly
+- added GossipMenu to GameObject and GOEntry

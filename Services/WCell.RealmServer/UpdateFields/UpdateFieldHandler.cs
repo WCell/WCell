@@ -96,7 +96,6 @@ namespace WCell.RealmServer.UpdateFields
 
 		private static void InitHandlers()
 		{
-			DynamicGOHandlers[(int)GameObjectFields.FLAGS] = WriteGOFlags;
 			DynamicGOHandlers[(int)GameObjectFields.DYNAMIC] = WriteGODynamic;
 			DynamicCorpseHandlers[(int)CorpseFields.DYNAMIC_FLAGS] = WriteCorpseDynFlags;
 			DynamicUnitHandlers[(int)UnitFields.NPC_FLAGS] = WriteNPCFlags;
@@ -118,30 +117,27 @@ namespace WCell.RealmServer.UpdateFields
 			packet.Write((uint)flags);
 		}
 
-		private static void WriteGOFlags(ObjectBase obj, Character receiver, UpdatePacket packet)
+		private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)
 		{
 			var go = (GameObject)obj;
-			if (go.Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
+			if (go is Transport || !go.Flags.HasAnyFlag(GameObjectFlags.ConditionalInteraction))
 			{
-				if (go.CanInteractWith(receiver))
-				{
-					// remove conditional flag, if receiver may use the GO
-					packet.Write((uint) (go.Flags ^ GameObjectFlags.ConditionalInteraction));
-				}
-				else
-				{
-					packet.Write((uint)go.Flags);
-				}
+				packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
 			}
 			else
 			{
-				packet.Write((uint)go.Flags);	
+				GODynamicLowFlags lowFlags;
+				if (go.CanBeUsedBy(receiver))
+				{
+					lowFlags = GODynamicLowFlags.Clickable | GODynamicLowFlags.Sparkle;
+				}
+				else
+				{
+					lowFlags = GODynamicLowFlags.None;
+				}
+				packet.Write((ushort)lowFlags);
+				packet.Write(ushort.MaxValue);
 			}
-		}
-
-		private static void WriteGODynamic(ObjectBase obj, Character receiver, UpdatePacket packet)
-		{
-			packet.Write(obj.GetUInt32(GameObjectFields.DYNAMIC));
 		}
 
 		private static void WriteUnitDynFlags(ObjectBase obj, Character receiver, UpdatePacket packet)

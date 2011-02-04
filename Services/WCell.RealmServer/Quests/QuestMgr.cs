@@ -353,9 +353,8 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Loads the quest giver relations.
+		/// Loads GO - questgiver relations.
 		/// </summary>
-		/// <returns></returns>
 		[Initialization]
 		[DependentInitialization(typeof(GOMgr))]
 		[DependentInitialization(typeof(QuestMgr))]
@@ -365,9 +364,8 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Loads the quest giver relations.
+		/// Loads Item - questgiver relations.
 		/// </summary>
-		/// <returns></returns>
 		[Initialization]
 		[DependentInitialization(typeof(ItemMgr))]
 		[DependentInitialization(typeof(QuestMgr))]

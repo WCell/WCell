@@ -1938,7 +1938,7 @@ namespace WCell.RealmServer.Global
 				{
 					if (obj is Character)
 					{
-						MiscHandler.SendInitWorldStates((Character)obj, DefaultZone.WorldStates, DefaultZone);
+						WorldStateHandler.SendInitWorldStates((Character)obj, DefaultZone.WorldStates, DefaultZone);
 					}
 				}
 

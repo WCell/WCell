@@ -150,7 +150,7 @@ namespace WCell.RealmServer.Groups
 					m_DungeonDifficulty = value;
 					if (!IsBattleGroup)
 					{
-						foreach (var member in GetCharacters())
+						foreach (var member in GetAllCharacters())
 						{
 							if (Flags.HasFlag(GroupFlags.Raid))
 							{
@@ -313,7 +313,7 @@ namespace WCell.RealmServer.Groups
 
 			try
 			{
-				foreach (var chr in GetCharacters())
+				foreach (var chr in GetAllCharacters())
 				{
 					callback(chr);
 				}
@@ -332,7 +332,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void CallOnAllInContext(Action<Character> callback)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				var c = chr;
 				chr.ExecuteInContext(() =>
@@ -352,7 +352,7 @@ namespace WCell.RealmServer.Groups
 		public void CallOnAllInSameContext(IContextHandler context, Action<Character> callback)
 		{
 			context.EnsureContext();
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				if (chr.ContextHandler == context)
 				{
@@ -364,7 +364,7 @@ namespace WCell.RealmServer.Groups
 		/// <summary>
 		/// The amount of Members in this Group
 		/// </summary>
-		public int Count
+		public int CharacterCount
 		{
 			get { return m_Count; }
 		}
@@ -410,7 +410,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return (byte)(MaxMemberCount - Count);
+				return (byte)(MaxMemberCount - CharacterCount);
 			}
 		}
 
@@ -490,7 +490,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public virtual void RemoveMember(GroupMember member)
 		{
-			if (Count <= MinGroupMemberCount)
+			if (CharacterCount <= MinGroupMemberCount)
 			{
 				Disband();
 			}
@@ -939,7 +939,7 @@ namespace WCell.RealmServer.Groups
 				{
 					foreach (var member in groupUnit.Members)
 					{
-						var maxLen = 35 + ((11 + CharacterHandler.MaxCharNameLength) * (Count - 1));
+						var maxLen = 35 + ((11 + CharacterHandler.MaxCharNameLength) * (CharacterCount - 1));
 						using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_LIST, maxLen))
 						{
 							if ((chr = member.Character) == null)
@@ -956,7 +956,7 @@ namespace WCell.RealmServer.Groups
 							}
 							packet.Write(0x50000000FFFFFFFEul);
 							packet.Write(0);                        // since 3.3: Some kind of sequence id
-							packet.Write(Count - 1);
+							packet.Write(CharacterCount - 1);
 
 							foreach (var memberSubGroup in m_subGroups)
 							{
@@ -1320,7 +1320,7 @@ namespace WCell.RealmServer.Groups
 		/// All online characters. 
 		/// Don't forget to lock the SyncRoot while iterating over a Group.
 		/// </summary>
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			var chrs = new Character[m_Count];
 			var c = 0;
@@ -1389,7 +1389,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void Send(RealmPacketOut packet)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				chr.Client.Send(packet);
 			}
@@ -1490,7 +1490,7 @@ namespace WCell.RealmServer.Groups
 			if (member.Group != this)
 				return;
 
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				if (chr != member.Character && chr != null
 					&& !chr.IsInUpdateRange(member.Character)
@@ -1566,7 +1566,7 @@ namespace WCell.RealmServer.Groups
 
 		public void ForeachInstanceHolder(Action<InstanceCollection> callback)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				var log = chr.Instances;
 				if (log != null)
@@ -1602,7 +1602,7 @@ namespace WCell.RealmServer.Groups
 			}
 
 			// check all other members
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				var instance = chr.GetActiveInstance(map);
 				if (instance != null)
@@ -1618,8 +1618,8 @@ namespace WCell.RealmServer.Groups
 		#region Kills & Honor
 		public void DistributeGroupHonor(Character earner, Character victim, uint honorPoints)
 		{
-			if (Count < 1) return;
-			var bonus = honorPoints / (uint)Count;
+			if (CharacterCount < 1) return;
+			var bonus = honorPoints / (uint)CharacterCount;
 
 			ForeachCharacter((chr) =>
 			{
@@ -1635,7 +1635,7 @@ namespace WCell.RealmServer.Groups
 
 		public void OnKill(Character killer, NPC victim)
 		{
-			if (Count < 1) return;
+			if (CharacterCount < 1) return;
 
 			ForeachCharacter((chr) =>
 			{

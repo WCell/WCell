@@ -54,7 +54,7 @@ namespace WCell.RealmServer.Guilds
 		public void DepositMoney(Character depositer, GameObject bank, uint deposit)
 		{
 			if (deposit == 0) return;
-			if (!bank.CanInteractWith(depositer)) return;
+			if (!bank.CanBeUsedBy(depositer)) return;
 			if (depositer.Guild == null || depositer.GuildMember == null) return;
 			if (depositer.Guild != Guild) return;
 			if (depositer.Money < deposit) return;
@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Guilds
 		public void WithdrawMoney(Character withdrawer, GameObject bank, uint withdrawl)
 		{
 			if (withdrawl == 0) return;
-			if (!bank.CanInteractWith(withdrawer)) return;
+			if (!bank.CanBeUsedBy(withdrawer)) return;
 			if (withdrawer.Guild == null || withdrawer.GuildMember == null) return;
 			if (withdrawer.Guild != Guild) return;
 			if (Guild.Money < withdrawl) return;
@@ -591,7 +591,7 @@ namespace WCell.RealmServer.Guilds
 		{
 			if (chr == null) return false;
 			if (bank == null) return false;
-			if (!bank.CanInteractWith(chr)) return false;
+			if (!bank.CanBeUsedBy(chr)) return false;
 
 			return true;
 		}

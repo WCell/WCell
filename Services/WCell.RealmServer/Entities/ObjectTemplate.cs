@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Quests;
 using WCell.Util.Data;
@@ -30,15 +31,23 @@ namespace WCell.RealmServer.Entities
 
 		#region Implementation of IQuestHolderEntry
 
+		private QuestHolderInfo m_QuestHolderInfo;
+
 		/// <summary>
 		/// The QuestHolderEntry of this template, if this is a QuestGiver
 		/// </summary>
 		[NotPersistent]
 		public QuestHolderInfo QuestHolderInfo
 		{
-			get;
-			set;
+			get { return m_QuestHolderInfo; }
+			set
+			{
+				m_QuestHolderInfo = value;
+			}
 		}
+
+		[NotPersistent]
+		public GossipMenu DefaultGossip { get; set; }
 
 		public abstract IWorldLocation[] GetInWorldTemplates();
 

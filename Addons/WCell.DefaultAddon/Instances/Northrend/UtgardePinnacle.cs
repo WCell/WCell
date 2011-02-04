@@ -72,28 +72,25 @@ namespace WCell.Addons.Default.Instances
 			// let Svala look at Arthas
 			m_svala.IsInCombat = false;
 			m_svala.Target = m_arthasMirror;
-			m_svala.CallDelayed(8000, cb =>
+			m_svala.IdleThenExecute(8000, () =>
 			{
 				m_svala.Yell("My liege! I have done as you asked, and now beseech you for your blessing!");
 				m_svala.PlaySound(13856);
 
-				m_arthasMirror.CallDelayed(10000, o1 =>
+				m_arthasMirror.IdleThenExecute(10000, () =>
 				{
 					m_arthasMirror.Yell("Your sacrifice is a testament to your obedience. Indeed you are worthy of this charge. Arise, and forever be known as Svala Sorrowgrave!");
 					m_arthasMirror.PlaySound(14732);
 					m_arthasMirror.Emote(EmoteType.SimpleTalk);
 
-					m_arthasMirror.CallDelayed(7000, o2 =>
+					m_arthasMirror.IdleThenExecute(7000, () =>
 					{
 						// we called on Artha's Mirror, so we have to make sure that Svala is still in World
-						if (!m_svala.IsInWorld)
-						{
-							return;
-						}
+						if (!m_svala.IsInWorld) return;
 
 						m_arthasMirror.SpellCast.TriggerSingle(SpellId.ArthasTransformingSvala, m_svala);
 
-						m_arthasMirror.CallDelayed(7000, o3 =>
+						m_svala.CallDelayed(7000, o3 =>
 						{
 							//m_owner.SpellCast.Cancel();
 							//svala.Auras.AddSelf(SpellId.ArthasTransformingSvala, true); //wrong id

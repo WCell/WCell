@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public int Count
 		{
-			get { return Characters.Count; }
+			get { return Characters.CharacterCount; }
 		}
 
 		public BattlegroundTeamQueue Queue

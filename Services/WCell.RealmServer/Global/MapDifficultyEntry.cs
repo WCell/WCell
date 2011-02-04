@@ -22,7 +22,11 @@ namespace WCell.RealmServer.Global
 				ResetTime = map.DefaultResetTime;
 			}
 
-			if (MaxPlayerCount != 0)
+			if (Map.Type == MapType.Dungeon)
+			{
+				IsHeroic = Index == 1;
+			}
+			else if (MaxPlayerCount != 0)
 			{
 				// use heuristics to determine whether we have a heroic difficulty:
 				foreach (var diff in Map.Difficulties)

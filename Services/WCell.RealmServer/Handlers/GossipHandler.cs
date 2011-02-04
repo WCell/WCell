@@ -39,10 +39,7 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			chr.OnInteract(target);
-
-			var conversation = new GossipConversation(menu, chr, target);
-			chr.GossipConversation = conversation;
-			conversation.DisplayCurrentMenu();
+			chr.StartGossip(menu, target);
 		}
 
 		/// <summary>

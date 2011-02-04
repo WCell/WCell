@@ -145,6 +145,11 @@ namespace WCell.RealmServer.Entities
 					if (value != null)
 					{
 						SetEntityId(UnitFields.TARGET, value.EntityId);
+						if (this is NPC)
+						{
+							// turn towards it (since thats the way it's seen anyway)
+							Orientation = GetAngleTowards(value);
+						}
 					}
 					else
 					{

@@ -248,7 +248,7 @@ namespace WCell.RealmServer.Handlers
 					packet.WriteCString(femaleText);
 
 
-					packet.Write((uint) entry.Language);
+					packet.Write((uint)entry.Language);
 
 					for (int emoteIndex = 0; emoteIndex < 3; emoteIndex++)
 					{
@@ -316,7 +316,11 @@ namespace WCell.RealmServer.Handlers
 			var entry = PageTextEntry.GetEntry(pageId);
 			if (entry != null)
 			{
-				SendPageText(chr, entry);
+				do
+				{
+					SendPageText(chr, entry);
+					entry = entry.NextPageEntry;
+				} while (entry != null);
 			}
 			else
 			{
@@ -336,6 +340,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PAGE_TEXT_QUERY_RESPONSE, 100))
 				{
+					packet.Write(entry.PageId);
 					packet.Write(entry.Texts.Localize(locale));
 					packet.Write(entry.NextPageId);
 					chr.Send(packet);

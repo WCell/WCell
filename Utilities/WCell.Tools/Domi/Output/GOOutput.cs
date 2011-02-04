@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Skills;
 using WCell.RealmServer.Database;
@@ -114,10 +115,10 @@ namespace WCell.Tools.Domi.Output
 
 		public static void Write(this GOEntry entry, TextWriter writer, string indent)
 		{
-			var args = new Object[0];
-
 			writer.WriteLine(indent + "GO: " + entry.DefaultName + string.Format(" (Id: {0} [{1}], Type: {2})", 
 				entry.Id, entry.GOId, entry.Type));
+
+			indent += "\t";
 
 			var type = entry.GetType();
 
@@ -134,15 +135,15 @@ namespace WCell.Tools.Domi.Output
 					attrs.Add("Closable");
 				}
 
-				writer.WriteLine(indent + "\tLock (Id: {0}{1})", entry.Lock.Id, attrs.Count > 0 ? ("; " + attrs.ToString(", ")) : "");
+				writer.WriteLine(indent + "Lock (Id: {0}{1})", entry.Lock.Id, attrs.Count > 0 ? ("; " + attrs.ToString(", ")) : "");
 
 				if (entry.Lock.Keys.Length > 0)
 				{
-					writer.WriteLine(indent + "\t\tPossible Keys: " + entry.Lock.Keys.ToString(", "));
+					writer.WriteLine(indent + "\tPossible Keys: " + entry.Lock.Keys.ToString(", "));
 				}
 				if (entry.Lock.OpeningMethods.Length > 0)
 				{
-					writer.WriteLine(indent + "\t\tOpening Methods:");
+					writer.WriteLine(indent + "\tOpening Methods:");
 					foreach (var method in entry.Lock.OpeningMethods)
 					{
 						string reqStr;
@@ -155,12 +156,11 @@ namespace WCell.Tools.Domi.Output
 							reqStr = "";
 						}
 
-						writer.WriteLine(indent + "\t\t{0}{1}", method.InteractionType, reqStr);
+						writer.WriteLine(indent + "\t{0}{1}", method.InteractionType, reqStr);
 					}
 				}
 			}
 
-			writer.WriteLine("{0}Flags: {1}", indent, entry.Flags);
 			foreach (var field in type.GetFields())
 			{
 				if (field.Name != "Names" && field.Name != "Id" && field.Name != "Fields" &&
@@ -169,24 +169,7 @@ namespace WCell.Tools.Domi.Output
 					field.Name != "Id" && field.Name != "GOId")
 				{
 					var val = field.GetValue(entry);
-					if (val == null || val is Delegate)
-					{
-						continue;
-					}
-					var valType = val.GetType();
-					var valStr = val;
-					if (valType.IsEnum)
-					{
-						var underlyingType = Enum.GetUnderlyingType(valType);
-						var underVal = Convert.ChangeType(val, underlyingType);
-						valStr += " (" + underVal + ")";
-					}
-
-					if (IsDefaultVal(val))
-					{
-						continue;
-					}
-					writer.WriteLine(indent + "\t{0}: {1}", field.Name, valStr);
+					WriteValue(writer, field.Name, indent, val);
 				}
 			}
 
@@ -194,34 +177,39 @@ namespace WCell.Tools.Domi.Output
 			{
 			    var val = prop.GetValue(entry, null);
 
-				if (val == null)
-				{
-					continue;
-				}
-
-			    int intVal;
-			    if (!int.TryParse(val.ToString(), out intVal) || intVal == 0)
-			    {
-			        continue;
-			    }
-			    writer.WriteLine(indent + "\t{0}: {1}", prop.Name, prop.GetValue(entry, args));
+				WriteValue(writer, prop.Name, indent, val);
 			}
 
 		    if (entry.SpawnEntries.Count > 0)
 			{
-				writer.WriteLine(indent + "\tTemplates:");
+				writer.WriteLine(indent + "Templates:");
 				for (var i = 0; i < entry.SpawnEntries.Count; i++)
 				{
 					var template = entry.SpawnEntries[i];
 					writer.WriteLine("\tTemplate #" + (i + 1) + ":");
-					template.Write(writer, indent + "\t");
+					template.Write(writer, indent);
 					writer.WriteLine();
 				}
 			}
 		}
 
+		static void WriteValue(TextWriter writer, string name, string indent, object val)
+		{
+			if (val == null || val is Delegate || IsDefaultVal(val))
+			{
+				return;
+			}
+
+			var strVal = Utility.GetStringRepresentation(val);
+			if (strVal.Length > 0)
+			{
+				writer.WriteLine(indent + "{0}: {1}", name, strVal);
+			}
+		}
+
 		private static bool IsDefaultVal(object val)
 		{
+			// TODO: Ouch - fixme
 			if ((val is int && ((int) val) == 0) ||
 			    (val is uint && ((uint) val == 0 || (uint) val == uint.MaxValue)) ||
 			    (val is float && ((float) val) == 0) ||

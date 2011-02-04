@@ -1361,6 +1361,11 @@ namespace WCell.RealmServer.Entities
 		{
 			return CheckVendorInteraction(chr);
 		}
+
+		public void OnQuestGiverStatusQuery(Character chr)
+		{
+			// do nothing
+		}
 		#endregion
 
 		#region Trainer

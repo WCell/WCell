@@ -129,13 +129,12 @@ namespace WCell.RealmServer.Spells.Auras
 			SetupTimer();
 		}
 
+		/// <summary>
+		/// Called after setting up the Aura and before calling Start()
+		/// </summary>
 		private void SetupTimer()
 		{
-			if (m_amplitude == 0 && m_duration < int.MaxValue)
-			{
-				m_amplitude = m_duration;
-			}
-			if (m_amplitude > 0 && m_controller == null)
+			if (m_controller == null && (m_amplitude > 0 || m_duration < int.MaxValue))
 			{
 				// Aura times itself
 				m_timer = new TimerEntry
@@ -395,32 +394,38 @@ namespace WCell.RealmServer.Spells.Auras
 					m_startTime = Environment.TickCount;
 
 					int time;
-					if (value < 0)
+
+					// normal timeout
+					if (m_amplitude > 0)
 					{
-						m_maxTicks = int.MaxValue;
+						// periodic
+
+						// no timeout -> infinitely many ticks
+						if (value < 0)
+						{
+							m_maxTicks = int.MaxValue;
+						}
+						else
+						{
+							m_maxTicks = value / m_amplitude;
+
+							if (m_maxTicks < 1)
+							{
+								m_maxTicks = 1;
+							}
+						}
 						time = value % (m_amplitude + 1);
 					}
 					else
 					{
-						if (m_amplitude > 0)
-						{
-							m_maxTicks = value / m_amplitude;
-							time = value % (m_amplitude + 1);
-						}
-						else
-						{
-							time = value;
-						}
-
-						if (m_maxTicks < 1)
-						{
-							m_amplitude = value;
-							m_maxTicks = 1;
-						}
+						// modal aura (either on or off)
+						time = value;
+						m_maxTicks = 1;
 					}
 
 					m_ticks = 0;
 
+					m_duration = time;
 					m_timer.Start(time);
 				}
 			}

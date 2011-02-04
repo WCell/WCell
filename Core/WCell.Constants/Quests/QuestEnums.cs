@@ -56,7 +56,15 @@ namespace WCell.Constants.Quests
 		CompletableNoMinimap      = 9, // Yellow ? - UNUSED
 		Completable               = 10,  // Yellow ?
 		Count
-	};
+	}
+
+	public static class QuestStatusHelper
+	{
+		public static bool CanStartOrFinish(this QuestStatus status)
+		{
+			return status >= QuestStatus.RepeateableCompletable;
+		}
+	}
 
 	public enum QuestTemplateStatus : uint
 	{

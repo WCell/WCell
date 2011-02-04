@@ -5,8 +5,6 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOSpellFocusEntry : GOEntry
     {
-		private static Logger sLog = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// The type of SpellFocus this is.
         /// </summary>
@@ -32,14 +30,13 @@ namespace WCell.RealmServer.GameObjects.GOEntries
             get { return Fields[3]; }
         }
 
-
-        /// <summary>
-        /// Id of the quest this object is associated with.
-        /// </summary>
-        public int QuestId
-        {
-            get { return Fields[4]; }
-        }
+		/// <summary>
+		/// The Id of the quest required to be active
+		/// </summary>
+		public override uint QuestId
+		{
+			get { return (uint)Fields[4]; }
+		}
 
         public bool Large
         {

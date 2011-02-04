@@ -126,14 +126,14 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
             var allianceTeam = GetTeam(BattlegroundSide.Alliance);
             if (allianceTeam == Winner)
             {
-                foreach (var chr in allianceTeam.GetCharacters())
+                foreach (var chr in allianceTeam.GetAllCharacters())
                 {
                     chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorWInner);
                 }
             }
             else
             {
-                foreach (var chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
+                foreach (var chr in GetTeam(BattlegroundSide.Alliance).GetAllCharacters())
                 {
                     chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorLoser);
                 }

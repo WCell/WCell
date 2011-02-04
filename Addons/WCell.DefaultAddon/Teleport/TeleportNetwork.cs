@@ -106,7 +106,7 @@ namespace WCell.Addons.Default.Teleport
 			var go = portalEntry.Spawn(map, pos);
 			go.State = GameObjectState.Enabled;
 			go.ScaleX = 1.5f;
-			go.Handler = new GossipGOHandler(teleportMenu);
+			go.GossipMenu = teleportMenu;
 			return go;
 		}
 		#endregion

@@ -6,8 +6,6 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 {
     public class GOQuestGiverEntry : GOEntry
     {
-		private static readonly Logger sLog = LogManager.GetCurrentClassLogger();
-
         /// <summary>
         /// LockId from Lock.dbc
         /// </summary>
@@ -19,9 +17,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Id of quest-list
         /// </summary>
-        public int QuestListId
+        public uint QuestListId
         {
-            get { return Fields[1]; }
+            get { return (uint) Fields[1]; }
         }
 
         /// <summary>
@@ -35,9 +33,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         /// <summary>
         /// Unknown
         /// </summary>
-        public int GossipID
+        public override uint GossipId
         {
-            get { return Fields[3]; }
+            get { return (uint) Fields[3]; }
         }
 		
         /// <summary>

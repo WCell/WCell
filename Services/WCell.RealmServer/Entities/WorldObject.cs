@@ -679,9 +679,10 @@ namespace WCell.RealmServer.Entities
 		public void PlaceInFront(WorldObject obj)
 		{
 			var pos = m_position;
-			//pos.Z += 1;
-			m_position.GetPointYX(m_orientation, 5, out pos);
+			pos.Z += 1;
+			//m_position.GetPointYX(m_orientation, 5, out pos);
 			m_Map.TransferObjectLater(obj, pos);
+			obj.Orientation = obj.GetAngleTowards(this);
 		}
 		#endregion
 

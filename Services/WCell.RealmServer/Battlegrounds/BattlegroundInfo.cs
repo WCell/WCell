@@ -351,7 +351,7 @@ namespace WCell.RealmServer.Battlegrounds
 				BattlegroundHandler.ClearStatus(_chr, index);
 			}
 
-			if (relation.IsEnqueued && relation.Characters.Count > 1)
+			if (relation.IsEnqueued && relation.Characters.CharacterCount > 1)
 			{
 				var group = _chr.Group;
 				if (group != null && group.IsLeader(_chr))

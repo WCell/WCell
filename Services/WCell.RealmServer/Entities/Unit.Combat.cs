@@ -236,6 +236,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
+			IsInCombat = true;
 			if (UsesPendingAbility(weapon))
 			{
 				m_spellCast.Perform();

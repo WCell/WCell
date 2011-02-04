@@ -255,12 +255,12 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void WriteSpontaneousOwnerUpdate(Character owner, params UpdateFieldId[] indices)
+		public void SendSpontaneousUpdate(Character receiver, params UpdateFieldId[] indices)
 		{
-			WriteSpontaneousOwnerUpdate(owner, true, indices);
+			SendSpontaneousUpdate(receiver, true, indices);
 		}
 
-		public void WriteSpontaneousOwnerUpdate(Character owner, bool visible, params UpdateFieldId[] indices)
+		public void SendSpontaneousUpdate(Character receiver, bool visible, params UpdateFieldId[] indices)
 		{
 			var highestIndex = 0;
 			foreach (var index in indices)
@@ -274,17 +274,19 @@ namespace WCell.RealmServer.Entities
 			var mask = new UpdateMask(highestIndex);
 			using (var packet = new UpdatePacket(1024))
 			{
-				packet.Position = 4;
-				packet.Write(1);
+				packet.Position = 4;						// jump over header
+				packet.Write(1);							// Update Count
 				packet.Write((byte)UpdateType.Values);
 				EntityId.WritePacked(packet);
-				WriteSpontaneousUpdate(mask, packet, owner, indices, visible);
-				owner.Send(packet);
+				WriteSpontaneousUpdate(mask, packet, receiver, indices, visible);
+
+				receiver.Send(packet);
 			}
 		}
 
 		protected void WriteSpontaneousUpdate(UpdateMask mask, UpdatePacket packet, Character receiver, UpdateFieldId[] indices, bool visible)
 		{
+			// create mask
             for (var i = 0; i < indices.Length; i++)
             {
             	var index = indices[i].RawId;
@@ -295,15 +297,17 @@ namespace WCell.RealmServer.Entities
 				}
             }
 
+			// write mask
 			mask.WriteTo(packet);
 
+			// write values
 			for (var i = mask.m_lowestIndex; i <= mask.m_highestIndex; i++)
 			{
 				if (mask.GetBit(i))
 				{
 					if (visible)
 					{
-						packet.Write(m_updateValues[i].UInt32);
+						WriteUpdateValue(packet, receiver, i);
 					}
 					else
 					{

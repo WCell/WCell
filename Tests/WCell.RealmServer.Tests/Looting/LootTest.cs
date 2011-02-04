@@ -119,7 +119,7 @@ namespace WCell.RealmServer.Tests.Looting
 
 			leader.Map.AddMessageAndWait(() => {
 				var looters = LootMgr.FindLooters(npc, leader);
-				Assert.AreEqual(group.Count, looters.Count);
+				Assert.AreEqual(group.CharacterCount, looters.Count);
 
 				// initialize the Loot
 				loot.Initialize(leader, looters, npc.MapId);

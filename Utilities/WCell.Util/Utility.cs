@@ -1215,6 +1215,13 @@ namespace WCell.Util
 			{
 				return ((TimeSpan)val).Format();
 			}
+			var valType = val.GetType();
+			if (valType.IsEnum)
+			{
+				var underlyingType = Enum.GetUnderlyingType(valType);
+				var underVal = Convert.ChangeType(val, underlyingType);
+				return val + " (" + underVal + ")";
+			}
 			return val.ToString();
 		}
 

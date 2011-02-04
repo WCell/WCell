@@ -75,7 +75,7 @@ namespace WCell.Core.Initialization
         public static bool Initialize(Type type)
         {
             var initMgr = new InitMgr();
-            var dependencies = new List<InitializationDependency>();
+            var dependencies = new List<DependentInitializationStep>();
             initMgr.AddStepsOfType(type, dependencies);
             initMgr.InitDependencies(dependencies);
 
@@ -152,7 +152,7 @@ namespace WCell.Core.Initialization
         public void AddStepsOfAsm(Assembly asm)
         {
             // Go through every type in this assembly.
-            var dependentInitors = new List<InitializationDependency>();
+            var dependentInitors = new List<DependentInitializationStep>();
             foreach (var checkType in asm.GetTypes())
             {
                 AddStepsOfType(checkType, dependentInitors);
@@ -169,36 +169,30 @@ namespace WCell.Core.Initialization
             return info;
         }
 
-        private void InitDependencies(List<InitializationDependency> dependencies)
+        private void InitDependencies(IEnumerable<DependentInitializationStep> dependentSteps)
         {
-            foreach (var depInitor in dependencies)
+            foreach (var dependentStep in dependentSteps)
             {
-                var canInit = true;
-                foreach (var dep in depInitor.Info)
+				// Add step to all managers that it depends on
+                foreach (var dep in dependentStep.Dependency)
                 {
                     var info = GetGlobalMgrInfo(dep.DependentType);
                     if (info == null)
                     {
                         throw new InitializationException("Invalid Dependency - " +
                                                           "{0} is dependent on {1} which is not a GlobalMgr.",
-                                                          depInitor.Step.InitMethod.GetFullMemberName(), dep.DependentType.FullName);
+                                                          dependentStep.Step.InitMethod.GetFullMemberName(), dep.DependentType.FullName);
                     }
-                    info.Dependencies.Add(depInitor);
+                    info.Dependencies.Add(dependentStep);
                     dep.DependentMgr = info;
-                    if (!info.IsInitialized)
-                    {
-                        canInit = false;
-                    }
                 }
 
-                if (canInit)
-                {
-                    DoExecute(depInitor.Step);
-                }
+				// try to resolve step
+            	TryResolve(dependentStep);
             }
         }
 
-        public void AddStepsOfType(Type type, List<InitializationDependency> dependentInitors)
+        public void AddStepsOfType(Type type, List<DependentInitializationStep> dependentInitors)
         {
             var mgrAttr = type.GetCustomAttributes<GlobalMgrAttribute>().FirstOrDefault();
             if (mgrAttr != null)
@@ -222,8 +216,8 @@ namespace WCell.Core.Initialization
 
                     if (depInitorAttrs.Length > 0)
                     {
-						var dep = new InitializationDependency(step,
-                            depInitorAttrs.TransformArray(attr => new DependentInitializationInfo(attr)));
+						var dep = new DependentInitializationStep(step,
+                            depInitorAttrs.TransformArray(attr => new InitializationDependency(attr)));
                         dependentInitors.Add(dep);
                     }
                     else
@@ -398,31 +392,29 @@ namespace WCell.Core.Initialization
             info.IsInitialized = true;
             foreach (var depList in info.Dependencies)
             {
+            	TryResolve(depList);
+            }
+        }
+
+    	private void TryResolve(DependentInitializationStep depList)
+    	{
+			if (depList.Dependency.All(dep => dep.DependentMgr.IsInitialized))
+			{
+				// all dependencies resolved
 				if (depList.Step.Pass != InitializationPass.Any && depList.Step.Pass > m_currentPass)
 				{
 					// not ready yet -> Add to list
 					AddIndipendentStep(depList.Step);
-					continue;
 				}
+				else
+				{
+					// can execute immediately
+					DoExecute(depList.Step);
+				}
+			}
+    	}
 
-            	var done = true;
-                foreach (var dep in depList.Info)
-                {
-                    if (!dep.DependentMgr.IsInitialized)
-                    {
-                        done = false;
-                        break;
-                    }
-                }
-
-                if (done)
-                {
-                    DoExecute(depList.Step);
-                }
-            }
-        }
-
-        private void DoExecute(InitializationStep step)
+    	private void DoExecute(InitializationStep step)
         {
             if (!Execute(step))
             {

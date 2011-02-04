@@ -405,6 +405,11 @@ namespace WCell.RealmServer.Items
 		/// </summary>
 		public QuestTemplate[] CollectQuests;
 
+		public bool HasQuestRequirements
+		{
+			get { return QuestHolderInfo == null && CollectQuests == null; }
+		}
+
 		[NotPersistent]
 		/// <summary>
 		/// Whether this ItemTemplate has any sockets
@@ -650,7 +655,7 @@ namespace WCell.RealmServer.Items
 
 		public bool CheckQuestConstraints(Character looter)
 		{
-			if (QuestHolderInfo == null && CollectQuests == null)			// no quest requirements
+			if (HasQuestRequirements)			// no quest requirements
 				return true;
 
 			if (looter == null)

@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Battlegrounds
             group.SyncRoot.EnterReadLock();
 			try
 			{
-				foreach (var chr in group.GetCharacters())
+				foreach (var chr in group.GetAllCharacters())
 				{
 					if (chr != null)
 					{

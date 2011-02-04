@@ -1,21 +1,3 @@
-/*************************************************************************
- *
- *   file		: GameObject.cs
- *   copyright		: (C) The WCell Team
- *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-17 05:08:19 +0100 (on, 17 feb 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
- *   revision		: $Rev: 1256 $
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *************************************************************************/
-
-using System;
-using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants.GameObjects;
@@ -29,6 +11,8 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
 using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Network;
@@ -48,120 +32,7 @@ namespace WCell.RealmServer.Entities
 
 		public static readonly UpdateFieldCollection UpdateFieldInfos = UpdateFieldMgr.Get(ObjectTypeId.GameObject);
 
-		public override UpdateFieldHandler.DynamicUpdateFieldHandler[] DynamicUpdateFieldHandlers
-		{
-			get { return UpdateFieldHandler.DynamicGOHandlers; }
-		}
-
-		internal static int _lastGOUID;
-
-		protected GOEntry m_entry;
-		protected Faction m_faction;
-		protected GOSpawnPoint m_spawnPoint;
-
-		protected GameObjectHandler m_handler;
-		protected bool m_respawns;
-		protected TimerEntry m_decayTimer;
-		protected GameObject m_linkedTrap;
-		protected internal bool m_IsTrap;
-
-		/// <summary>
-		/// Use the <c>Create()</c> method to create new GameObjects
-		/// </summary>
-		public GameObject()
-		{
-		}
-
-		protected override UpdateFieldCollection _UpdateFieldInfos
-		{
-			get { return UpdateFieldInfos; }
-		}
-
-		public GameObjectHandler Handler
-		{
-			get { return m_handler; }
-			set
-			{
-				m_handler = value;
-				m_handler.Initialize(this);
-			}
-		}
-
-		public override string Name
-		{
-			get { return m_entry != null ? m_entry.DefaultName : ""; }
-			set
-			{
-				throw new NotImplementedException("Dynamic renaming of GOs is not implementable.");
-			}
-		}
-
-		public GOEntry Entry
-		{
-			get { return m_entry; }
-		}
-
-		public override ObjectTemplate Template
-		{
-			get { return Entry; }
-		}
-
-		/// <summary>
-		/// The Template of this GO (if any was used)
-		/// </summary>
-		public GOSpawnPoint SpawnPoint
-		{
-			get { return m_spawnPoint; }
-		}
-
-		/// <summary>
-		/// Traps get removed when their AreaAura gets removed
-		/// </summary>
-		public override bool IsTrap
-		{
-			get { return m_IsTrap; }
-		}
-
-		public override ObjectTypeId ObjectTypeId
-		{
-			get { return ObjectTypeId.GameObject; }
-		}
-
-		public override UpdateFlags UpdateFlags
-		{
-			get { return UpdateFlags.StationaryObject | UpdateFlags.Flag_0x10 | UpdateFlags.HasRotation | UpdateFlags.StationaryObjectOnTransport; }
-		}
-
-		#region Locks and Loot
-
-		public LockEntry Lock
-		{
-			get { return m_entry.Lock; }
-		}
-
-		public override void OnFinishedLooting()
-		{
-			if (m_entry.IsConsumable)
-			{
-				Delete();
-			}
-		}
-
-		public override uint GetLootId(LootEntryType type)
-		{
-			if (m_entry is IGOLootableEntry)
-			{
-				return ((IGOLootableEntry)m_entry).LootId;
-			}
-			return 0;
-		}
-
-		public override bool UseGroupLoot
-		{
-			get { return m_entry.UseGroupLoot; }
-		}
-		#endregion
-
+		#region Create & Init
 		/// <summary>
 		/// Creates the given kind of GameObject with the default Template
 		/// </summary>
@@ -214,6 +85,8 @@ namespace WCell.RealmServer.Entities
 			go.Phase = where.Phase;
 			var pos = where.Position;
 			where.Map.AddObject(go, ref pos);
+
+			go.MarkUpdate(GameObjectFields.DYNAMIC);
 			return go;
 		}
 
@@ -236,6 +109,13 @@ namespace WCell.RealmServer.Entities
 			Flags = m_entry.Flags;
 			m_faction = m_entry.Faction ?? Faction.NullFaction;
 			ScaleX = m_entry.Scale;
+			GossipMenu = entry.DefaultGossip;
+
+			if (QuestHolderInfo != null && GossipMenu == null)
+			{
+				// make sure, there is a GossipMenu that allows the player to start/finish quests
+				GossipMenu = new GossipMenu();
+			}
 
 			spawnEntry = spawnEntry ?? entry.FirstSpawnEntry;
 			if (spawnEntry != null)
@@ -253,34 +133,63 @@ namespace WCell.RealmServer.Entities
 
 			m_entry.InitGO(this);
 		}
+		#endregion
 
-		private static readonly double RotatationConst = Math.Atan(Math.Pow(2.0f, -20.0f));
-
-		protected void SetRotationFields(float[] rotations)
+		public override UpdateFieldHandler.DynamicUpdateFieldHandler[] DynamicUpdateFieldHandlers
 		{
-			if (rotations.Length != 4)
-				return;
+			get { return UpdateFieldHandler.DynamicGOHandlers; }
+		}
 
-			SetFloat(GameObjectFields.PARENTROTATION + 0, rotations[0]);
-			SetFloat(GameObjectFields.PARENTROTATION + 1, rotations[1]);
+		internal static int _lastGOUID;
 
-			double rotSin = Math.Sin(Orientation / 2.0f),
-				   rotCos = Math.Cos(Orientation / 2.0f);
+		protected GOEntry m_entry;
+		protected Faction m_faction;
+		protected GOSpawnPoint m_spawnPoint;
 
-			Rotation = (long)(rotSin / RotatationConst * (rotCos >= 0 ? 1.0f : -1.0f)) & 0x1FFFFF;
+		protected GameObjectHandler m_handler;
+		protected bool m_respawns;
+		protected TimerEntry m_decayTimer;
+		protected GameObject m_linkedTrap;
+		protected internal bool m_IsTrap;
 
-			if (rotations[2] == 0 && rotations[3] == 0)
+		/// <summary>
+		/// Use the <c>Create()</c> method to create new GameObjects
+		/// </summary>
+		public GameObject()
+		{
+		}
+
+		#region Locks and Loot
+
+		public LockEntry Lock
+		{
+			get { return m_entry.Lock; }
+		}
+
+		public override void OnFinishedLooting()
+		{
+			if (m_entry.IsConsumable)
 			{
-				SetFloat(GameObjectFields.PARENTROTATION + 2, (float)rotSin);
-				SetFloat(GameObjectFields.PARENTROTATION + 3, (float)rotCos);
-			}
-			else
-			{
-				SetFloat(GameObjectFields.PARENTROTATION + 2, rotations[2]);
-				SetFloat(GameObjectFields.PARENTROTATION + 3, rotations[3]);
+				Delete();
 			}
 		}
 
+		public override uint GetLootId(LootEntryType type)
+		{
+			if (m_entry is IGOLootableEntry)
+			{
+				return ((IGOLootableEntry)m_entry).LootId;
+			}
+			return 0;
+		}
+
+		public override bool UseGroupLoot
+		{
+			get { return m_entry.UseGroupLoot; }
+		}
+		#endregion
+
+		#region Adding and Removing
 		protected internal override void OnEnterMap()
 		{
 			// add Trap
@@ -321,29 +230,12 @@ namespace WCell.RealmServer.Entities
 			SendDespawn();
 			base.OnLeavingMap();
 		}
+		#endregion
 
-		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags relation)
-		{
-			if (m_entry is GODuelFlagEntry)
-			{
-				return UpdateType.CreateSelf;
-			}
-			return UpdateType.Create;
-		}
-
-		public bool IsCloseEnough(Unit unit, float radius)
+		#region Using & Looting
+		public bool IsCloseEnough(Unit unit, float radius = 10)
 		{
 			return (unit.IsInRadius(this, radius)) || (unit is Character && ((Character)unit).Role.IsStaff);
-		}
-
-		public override string ToString()
-		{
-			return m_entry.DefaultName + " (SpawnPoint: " + m_spawnPoint + ")";
-		}
-
-		public bool IsCloseEnough(Character chr)
-		{
-			return IsInRadius(chr.Position, 10.0f);
 		}
 
 		public bool CanUseInstantly(Character chr)
@@ -355,29 +247,24 @@ namespace WCell.RealmServer.Entities
 
 			if (Entry.Type == GameObjectType.Chest && !Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
 			{
-				// conditional chests are chests that contain quest items
+				// conditional chests are chests that are related to at least one quest
 				// other chests must be opened through a spell
 				return false;
 			}
-			return CanInteractWith(chr);
+			return CanBeUsedBy(chr);
 		}
 
-		public bool CanInteractWith(Character chr)
+		/// <summary>
+		/// 
+		/// </summary>
+		public bool CanBeUsedBy(Character chr)
 		{
 			if (IsEnabled)
 			{
-				if (Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
-				{
-					// must have the quest
-					return Entry.RequiredQuests.Any(q => chr.QuestLog.HasActiveQuest(q));
-				}
-				// can always interact
-				return true;
+				return !Flags.HasFlag(GameObjectFlags.ConditionalInteraction) || chr.QuestLog.IsRequiredForAnyQuest(this);
 			}
 			return false;
 		}
-
-		#region Handling
 
 		/// <summary>
 		/// Makes the given Unit use this GameObject.
@@ -388,6 +275,16 @@ namespace WCell.RealmServer.Entities
 			if ((Lock == null || Lock.IsUnlocked || Lock.Keys.Length > 0) &&
 				Handler.TryUse(chr))
 			{
+				if (Entry.PageId != 0)
+				{
+					MiscHandler.SendGameObjectTextPage(chr, this);
+				}
+				if (GossipMenu != null)
+				{
+					chr.StartGossip(GossipMenu, this);
+				}
+
+
 				chr.QuestLog.OnUse(this);
 				return true;
 			}
@@ -403,6 +300,34 @@ namespace WCell.RealmServer.Entities
 			return ((ILockable)this).TryLoot(chr);
 		}
 
+		#endregion
+
+		#region Quests
+		/// <summary>
+		/// All available Quest information, in case that this is a QuestGiver
+		/// </summary>
+		public QuestHolderInfo QuestHolderInfo
+		{
+			get
+			{
+				return m_entry.QuestHolderInfo;
+			}
+			internal set
+			{
+				m_entry.QuestHolderInfo = value;
+			}
+		}
+
+		public bool CanGiveQuestTo(Character chr)
+		{
+			return IsInRadiusSq(chr, GOMgr.DefaultInteractDistanceSq);
+		}
+
+		public void OnQuestGiverStatusQuery(Character chr)
+		{
+			// re-send dynamic update
+			SendSpontaneousUpdate(chr, GameObjectFields.DYNAMIC);
+		}
 		#endregion
 
 		#region Decay
@@ -469,6 +394,30 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Update
+		protected override UpdateFieldCollection _UpdateFieldInfos
+		{
+			get { return UpdateFieldInfos; }
+		}
+
+		public override ObjectTypeId ObjectTypeId
+		{
+			get { return ObjectTypeId.GameObject; }
+		}
+
+		public override UpdateFlags UpdateFlags
+		{
+			get { return UpdateFlags.StationaryObject | UpdateFlags.Flag_0x10 | UpdateFlags.HasRotation | UpdateFlags.StationaryObjectOnTransport; }
+		}
+
+		protected override UpdateType GetCreationUpdateType(UpdateFieldFlags relation)
+		{
+			if (m_entry is GODuelFlagEntry)
+			{
+				return UpdateType.CreateSelf;
+			}
+			return UpdateType.Create;
+		}
+
 		protected override void WriteMovementUpdate(PrimitiveWriter packet, UpdateFieldFlags relation)
 		{
 			// StationaryObjectOnTransport
@@ -504,5 +453,10 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 		#endregion
+
+		public override string ToString()
+		{
+			return m_entry.DefaultName + " (SpawnPoint: " + m_spawnPoint + ")";
+		}
 	}
 }

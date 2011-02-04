@@ -46,11 +46,10 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class QuestGiverHandler : GameObjectHandler
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
-			var entry = m_go.Entry as GOQuestGiverEntry;
+			var entry = (GOQuestGiverEntry)m_go.Entry;
+			// usually there is nothing to do, since quests are resolved through the GO's GossipMenu
 			return true;
 		}
 	}
@@ -152,10 +151,6 @@ namespace WCell.RealmServer.GameObjects.Handlers
 		public override bool Use(Character user)
 		{
 			var entry = (GOGooberEntry)m_go.Entry;
-			if (entry.PageId != 0)
-			{
-				QueryHandler.SendPageText(user, entry.PageId);
-			}
 			return true;
 		}
 	}
