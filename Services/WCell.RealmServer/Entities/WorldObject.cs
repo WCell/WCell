@@ -1352,10 +1352,10 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Visibility of the given object in the eyes of this object.
-		/// Can be used to override all default visibility checks.
+		/// Visibility of this object in the eyes of the given observer.
+		/// Can be used to override default visibility checks
 		/// </summary>
-		public virtual VisibilityStatus DetermineVisibilityOf(WorldObject obj)
+		public virtual VisibilityStatus DetermineVisibilityFor(Unit observer)
 		{
 			return VisibilityStatus.Default;
 		}

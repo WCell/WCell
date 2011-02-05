@@ -178,44 +178,43 @@ namespace WCell.RealmServer.Gossips
 			}
 		}
 
-		public int GetValidItemsCount(Character speaker)
-		{
-			var gossipItems = GossipItems;
-			var count = gossipItems.Count;
-
-			for (int i = 0; i < gossipItems.Count; i++)
-			{
-				bool shouldShow = true;
-
-				if (gossipItems[i].Action != null && !gossipItems[i].Action.CanUse(speaker))
-					shouldShow = false;
-
-				if (!shouldShow)
-				{
-					gossipItems[i] = null;
-					count--;
-				}
-			}
-			return count;
-		}
-
 		public void AddItem(GossipMenuItemBase item)
 		{
 			if (m_gossipItems == null)
-				m_gossipItems = new List<GossipMenuItemBase>(1);
-
-			if (item != null)
 			{
-				CheckItem(item);
+				m_gossipItems = new List<GossipMenuItemBase>(1);
+			}
+
+			CheckItem(item);
+			m_gossipItems.Add(item);
+		}
+
+		/// <summary>
+		/// Replaces the item at the given index with the given item.
+		/// If index == count, appends item to end.
+		/// </summary>
+		public void SetItem(int index, GossipMenuItemBase item)
+		{
+			if (m_gossipItems == null)
+			{
+				m_gossipItems = new List<GossipMenuItemBase>(1);
+			}
+
+			CheckItem(item);
+			if (index == m_gossipItems.Count)
+			{
+				// append to end
 				m_gossipItems.Add(item);
+			}
+			else
+			{
+				// replace
+				m_gossipItems[index] = item;
 			}
 		}
 
 		public void AddItem(GossipMenuIcon type)
 		{
-			if (m_gossipItems == null)
-				m_gossipItems = new List<GossipMenuItemBase>(1);
-
 			AddItem(new GossipMenuItem(type, type.ToString()));
 		}
 
@@ -273,6 +272,23 @@ namespace WCell.RealmServer.Gossips
 				convo.Character.GossipConversation.GoBack();
 			});
 			AddItem(new GossipMenuItem(text, action));
+		}
+
+		public bool RemoveItem(GossipMenuItemBase item)
+		{
+			return m_gossipItems.Remove(item);
+		}
+
+		public void ClearAllItems()
+		{
+			m_gossipItems.Clear();
+		}
+
+		/// <summary>
+		/// Called before menu is sent to Character
+		/// </summary>
+		protected internal virtual void OnDisplay(GossipConversation convo)
+		{
 		}
 
 		internal void NotifyClose(GossipConversation convo)

@@ -98,6 +98,12 @@ namespace WCell.RealmServer.Entities
 			set { SetUInt32(GameObjectFields.FLAGS, (uint)value); }
 		}
 
+		public bool IsStealthed
+		{
+			get;
+			set;
+		}
+
 		#region BYTES_1
 
 		public bool IsEnabled
@@ -189,7 +195,15 @@ namespace WCell.RealmServer.Entities
 			set
 			{
 				Master = value;
-				Faction = value != null ? value.Faction : Faction.NullFaction;
+				if (value != null)
+				{
+					Faction = value.Faction;
+					Level = value.Level;
+				}
+				else
+				{
+					Faction = Faction.NullFaction;
+				}
 			}
 		}
 

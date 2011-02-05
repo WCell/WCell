@@ -90,6 +90,15 @@ namespace WCell.RealmServer.GameObjects
 					{
 						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Map, value.Position);
 						selection.Marker = marker;
+
+						// also delete marker
+						marker.CallPeriodically(2000, obj =>
+													{
+														if (!chr.IsInWorld || chr.Map != obj.Map || !selection.GO.IsInWorld)
+														{
+															marker.Delete();
+														}
+													});
 					}
 					info.m_goSelection = selection;
 				}
@@ -112,7 +121,6 @@ namespace WCell.RealmServer.GameObjects
 
 	public class GOSelection : IDisposable
 	{
-
 		private GameObject m_GO;
 
 		private DynamicObject m_Marker;
@@ -153,9 +161,11 @@ namespace WCell.RealmServer.GameObjects
 		public void Dispose()
 		{
 			GO = null;
-			if (Marker != null)
+
+			var marker = Marker;
+			if (marker != null)
 			{
-				Marker.Delete();
+				marker.Delete();
 				Marker = null;
 			}
 		}

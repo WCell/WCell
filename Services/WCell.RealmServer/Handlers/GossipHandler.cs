@@ -110,7 +110,7 @@ namespace WCell.RealmServer.Handlers
 					for (var i = 0; i < gossipItems.Count; i++)
 					{
 						var item = gossipItems[i];
-						if (item.Action != null && !item.Action.CanUse(chr))
+						if (item.Action != null && !item.Action.CanUse(convo))
 						{
 							continue;
 						}

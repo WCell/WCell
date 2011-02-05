@@ -5,6 +5,11 @@ namespace WCell.RealmServer.Gossips
 {
 	public delegate void GossipActionHandler(GossipConversation convo);
 
+	/// <summary>
+	/// Decides whether the item may be displayed/used, in the given convo
+	/// </summary>
+	public delegate bool GossipActionDecider(GossipConversation convo);
+
     /// <summary>
     /// A class determining whether an item should be shown to specific character and specifying reaction on
     /// item selection
@@ -19,16 +24,30 @@ namespace WCell.RealmServer.Gossips
 		bool Navigates { get; }
 
         /// <summary>
-        /// Should item be shown to this character?
+        /// Should item be shown to and used by this conversation's character?
         /// </summary>
-        /// <param name="character">character</param>
         /// <returns>true if yes</returns>
-        bool CanUse(Character character);
+		bool CanUse(GossipConversation convo);
 
         /// <summary>
         /// Handler of item selection
         /// </summary>
 		void OnSelect(GossipConversation convo);
+	}
+
+	public class NonNavigatingDecidingGossipAction : NonNavigatingGossipAction
+	{
+		public GossipActionDecider Decider { get; set; }
+
+		public NonNavigatingDecidingGossipAction(GossipActionHandler handler, GossipActionDecider decider) : base(handler)
+		{
+			Decider = decider;
+		}
+
+		public override bool CanUse(GossipConversation convo)
+		{
+			return Decider(convo);
+		}
 	}
 
 	public class NonNavigatingGossipAction : IGossipAction
@@ -51,7 +70,7 @@ namespace WCell.RealmServer.Gossips
 			get { return false; }
 		}
 
-		public virtual bool CanUse(Character character)
+		public virtual bool CanUse(GossipConversation convo)
 		{
 			return true;
 		}
@@ -82,7 +101,7 @@ namespace WCell.RealmServer.Gossips
 			get { return true; }
 		}
 
-		public virtual bool CanUse(Character character)
+		public virtual bool CanUse(GossipConversation convo)
 		{
 			return true;
 		}
@@ -106,9 +125,9 @@ namespace WCell.RealmServer.Gossips
 			m_level = level;
 		}
 
-		public override bool CanUse(Character character)
+		public override bool CanUse(GossipConversation convo)
 		{
-			return character.Level >= m_level;
+			return convo.Character.Level >= m_level;
 		}
 	}
 
@@ -122,9 +141,9 @@ namespace WCell.RealmServer.Gossips
 		{
 		}
 
-		public override bool CanUse(Character character)
+		public override bool CanUse(GossipConversation convo)
 		{
-			return character.Role.IsStaff;
+			return convo.Character.Role.IsStaff;
 		}
 	}
 
@@ -138,9 +157,9 @@ namespace WCell.RealmServer.Gossips
 		{
 		}
 
-		public override bool CanUse(Character character)
+		public override bool CanUse(GossipConversation convo)
 		{
-			return !character.Role.IsStaff;
+			return !convo.Character.Role.IsStaff;
 		}
 	}
 }

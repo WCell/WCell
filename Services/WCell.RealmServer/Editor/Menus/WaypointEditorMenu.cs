@@ -1,15 +1,19 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using WCell.RealmServer.Editor.Figurines;
 using WCell.RealmServer.Gossips;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 
-namespace WCell.RealmServer.Editor
+namespace WCell.RealmServer.Editor.Menus
 {
-	/// <summary>
-	/// The GossipMenu used to customize SpawnPoints
-	/// </summary>
-	public class SpawnPointMenu : GossipMenu
+	public class WaypointEditorMenu : SpawnEditorMenu
 	{
 		//private readonly NPCSpawnPoint m_point;
 
-		//public SpawnPointMenu(NPCSpawnPoint point)
+		//public WaypointEditorMenu(NPCSpawnPoint point)
 		//    : base(point.SpawnEntry.Entry.NameGossipId)
 		//{
 		//    m_point = point;
@@ -58,6 +62,7 @@ namespace WCell.RealmServer.Editor
 		//private GossipMenu CreateWaypointMenu()
 		//{
 		//    var menu = new GossipMenu(m_point.SpawnEntry.Entry.NameGossipId);
+
 		//    menu.AddGoBackItem("Go back...");
 		//    foreach (var wp in m_point.SpawnEntry.Waypoints)
 		//    {
@@ -114,9 +119,9 @@ namespace WCell.RealmServer.Editor
 		//        SubMenu = new GossipMenu(point.SpawnEntry.Entry.NameGossipId);
 		//        SubMenu.AddGoBackItem();
 		//        SubMenu.AddRange(
-		//            new GossipMenuItem("Go to " + Text, HandleGoto),
+		//            new GossipMenuItem("Go to Point" + Text, HandleGoto),
 		//            new GossipMenuItem("Remove", HandleRemove),
-		//            new GossipMenuItem("Move here", HandleMoveOver),
+		//            new GossipMenuItem("Move Point here", HandleMoveOver),
 		//            new GossipMenuItem("Insert New", HandleInsert));
 		//    }
 
@@ -165,5 +170,8 @@ namespace WCell.RealmServer.Editor
 		//        m_Point.InsertAfter(m_wp, convo.Character.Position, convo.Character.Orientation);
 		//    }
 		//}
+		public WaypointEditorMenu(MapEditor editor, NPCSpawnPoint spawnPoint, EditorFigurine figurine) : base(editor, spawnPoint, figurine)
+		{
+		}
 	}
 }

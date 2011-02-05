@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Gossips
 			if (item == null)
 				return;
 
-			if (item.Action != null && item.Action.CanUse(Character))
+			if (item.Action != null && item.Action.CanUse(this))
 			{
 				var menu = CurrentMenu;
 				item.Action.OnSelect(this);
@@ -124,6 +124,7 @@ namespace WCell.RealmServer.Gossips
 		public void DisplayMenu(GossipMenu menu)
 		{
 			CurrentMenu = menu;
+			menu.OnDisplay(this);
 
 			if (Speaker is IQuestHolder && ((IQuestHolder)Speaker).QuestHolderInfo != null)
 			{

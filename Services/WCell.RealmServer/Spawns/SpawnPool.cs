@@ -104,6 +104,20 @@ namespace WCell.RealmServer.Spawns
 			}
 		}
 
+		public void Disable()
+		{
+			IsActive = false;
+			RemoveAllSpawnedObjects();
+		}
+
+		public void RemoveAllSpawnedObjects()
+		{
+			foreach (var spawn in m_spawnPoints)
+			{
+				spawn.RemoveSpawnedObject();
+			}
+		}
+
 		internal POINT AddSpawnPoint(E entry)
 		{
 			var point = new POINT();

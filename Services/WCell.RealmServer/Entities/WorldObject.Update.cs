@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Util.Collections;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
@@ -108,14 +109,14 @@ namespace WCell.RealmServer.Entities
 		{
 			var ticks = millis / m_Map.UpdateDelay;
 			var action = new OneShotUpdateObjectAction(ticks, callback);
-			CallPeriodically(action);
+			AddUpdateAction(action);
 			return action;
 		}
 
 		public OneShotUpdateObjectAction CallDelayedTicks(int ticks, Action<WorldObject> callback)
 		{
 			var action = new OneShotUpdateObjectAction(ticks, callback);
-			CallPeriodically(action);
+			AddUpdateAction(action);
 			return action;
 		}
 
@@ -127,7 +128,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var ticks = millis / m_Map.UpdateDelay;
 			var action = new SimpleObjectUpdateAction(ticks, callback);
-			CallPeriodically(action);
+			AddUpdateAction(action);
 			return action;
 		}
 
@@ -138,14 +139,14 @@ namespace WCell.RealmServer.Entities
 		public IUpdateObjectAction CallPeriodicallyTicks(int ticks, Action<WorldObject> callback)
 		{
 			var action = new SimpleObjectUpdateAction(ticks, callback);
-			CallPeriodically(action);
+			AddUpdateAction(action);
 			return action;
 		}
 
 		/// <summary>
 		/// Adds a new Action to the list of Actions to be executed every action.Ticks Map-Ticks.
 		/// </summary>
-		public void CallPeriodically(IUpdateObjectAction action)
+		public void AddUpdateAction(IUpdateObjectAction action)
 		{
 			if (m_updateActions == null)
 			{
@@ -154,21 +155,42 @@ namespace WCell.RealmServer.Entities
 			m_updateActions.Add(action);
 		}
 
+		public bool HasUpdateAction(Func<IUpdateObjectAction, bool> predicate)
+		{
+			EnsureContext();
+
+			return m_updateActions != null && m_updateActions.Any(predicate);
+		}
+
+		public void RemoveUpdateAction(Action<WorldObject> callback)
+		{
+			if (m_updateActions != null)
+			{
+				ExecuteInContext(() =>
+				                 	{
+				                 		var action = m_updateActions.FirstOrDefault(act => act.Callback == callback);
+				                 		if (action != null)
+				                 		{
+				                 			RemoveUpdateAction(action);
+				                 		}
+				                 	});
+			}
+		}
+
 		/// <summary>
 		/// Removes the given Action
 		/// </summary>
 		/// <param name="action"></param>
-		public void RemoveUpdateAction(IUpdateObjectAction action)
+		public bool RemoveUpdateAction(IUpdateObjectAction action)
 		{
 			if (m_updateActions != null)
 			{
-				if (m_updateActions.Remove(action) 
-					//&& m_updateActions.Count == 0
-					)
+				if (m_updateActions.Remove(action))
 				{
-					//m_updateActions = null;
+					return true;
 				}
 			}
+			return false;
 		}
 
 		/// <summary>

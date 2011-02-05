@@ -87,18 +87,22 @@ namespace WCell.RealmServer.GameObjects.GOEntries
         {
             get { return Fields[9] > 0; }
         }
+
         public int Large
         {
             get { return Fields[10]; }
         }
+
         public int StealthAffected
         {
             get { return Fields[11]; }
         }
+
 	    public int OpenTextID
 	    {
             get { return Fields[12]; }
 	    }
+
 	    public int CloseTextID
 	    {
             get { return Fields[13]; }
@@ -129,6 +133,9 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		protected internal override void InitGO(GameObject trap)
 		{
 			// init Trap
+
+			trap.Level = Level;
+			trap.IsStealthed = Stealthed;
 			if (!trap.HasAreaAuras)
 			{
 				if (Spell != null)

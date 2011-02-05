@@ -254,14 +254,14 @@ namespace WCell.RealmServer.GameObjects
 			}
 
 			InitEntry();
-			
+
 			// create GossipMenu
 			if (GossipId != 0 && DefaultGossip == null)
 			{
 				var gossipEntry = GossipMgr.GetEntry(GossipId);
 				if (gossipEntry == null)
 				{
-					ContentMgr.OnInvalidDBData("GOEntry {0} has missing GossipId: {1}", this , GossipId);
+					ContentMgr.OnInvalidDBData("GOEntry {0} has missing GossipId: {1}", this, GossipId);
 					DefaultGossip = new GossipMenu();
 				}
 				else

@@ -1,3 +1,4 @@
+using System;
 using WCell.Constants;
 using WCell.RealmServer.Lang;
 
@@ -124,6 +125,12 @@ namespace WCell.RealmServer.Gossips
 			Action = action;
 		}
 
+		public LocalizedGossipMenuItem(IGossipAction action, RealmLangKey confirmLangKey, RealmLangKey msgKey, params object[] msgArgs)
+			: this(action, msgKey, msgArgs)
+		{
+			ConfirmText = new TranslatableItem(confirmLangKey);
+		}
+
 		public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params object[] msgArgs)
 			: this(msgKey, msgArgs)
 		{
@@ -135,6 +142,19 @@ namespace WCell.RealmServer.Gossips
 		{
 			ConfirmText = new TranslatableItem(confirmLangKey);
 			Action = new NonNavigatingGossipAction(callback);
+		}
+
+		public LocalizedGossipMenuItem(GossipActionHandler callback, GossipActionDecider decider, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
+		{
+			Action = new NonNavigatingDecidingGossipAction(callback, decider);
+		}
+
+		public LocalizedGossipMenuItem(GossipActionHandler callback, GossipActionDecider decider, RealmLangKey confirmLangKey, RealmLangKey msgKey, params object[] msgArgs)
+			: this(msgKey, msgArgs)
+		{
+			ConfirmText = new TranslatableItem(confirmLangKey);
+			Action = new NonNavigatingDecidingGossipAction(callback, decider);
 		}
 
 		//public LocalizedGossipMenuItem(GossipActionHandler callback, RealmLangKey msgKey, params LocalizedGossipMenuItem[] items)
@@ -579,6 +599,38 @@ namespace WCell.RealmServer.Gossips
 		}
 	}
 	#endregion
+
+	/// <summary>
+	/// Represents a GossipMenuItem that belongs to a GossipMenu of the given type
+	/// </summary>
+	public class AssociatedMenuItem<M> : GossipMenuItemBase
+		where M : GossipMenu
+	{
+		public AssociatedMenuItemAction GetTextCallback { get; set; }
+		public AssociatedMenuItemAction GetConfirmTextCallback { get; set; }
+
+		public delegate string AssociatedMenuItemAction(GossipConversation convo, M menu);
+
+		public AssociatedMenuItem(AssociatedMenuItemAction getTextCallback) : this(getTextCallback, (convo, menu) => "")
+		{
+		}
+
+		public AssociatedMenuItem(AssociatedMenuItemAction getTextCallback, AssociatedMenuItemAction getConfirmTextCallback)
+		{
+			GetTextCallback = getTextCallback;
+			GetConfirmTextCallback = getConfirmTextCallback;
+		}
+
+		public override sealed string GetText(GossipConversation convo)
+		{
+			return GetTextCallback(convo, (M)convo.CurrentMenu);
+		}
+
+		public override string GetConfirmText(GossipConversation convo)
+		{
+			return GetConfirmTextCallback(convo, (M)convo.CurrentMenu);
+		}
+	}
 
 	/// <summary>
 	/// Represents action (battlemaster, flightmaster, etc.) gossip item in menu

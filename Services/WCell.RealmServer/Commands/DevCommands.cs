@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Commands
 
 						if (Map.AutoSpawnMaps)
 						{
-							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
+							MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 						}
 						trigger.Reply("Done.");
 					});
@@ -395,7 +395,7 @@ namespace WCell.RealmServer.Commands
 
 						if (Map.AutoSpawnMaps)
 						{
-							MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
+							MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 						}
 
 						trigger.Reply("Done.");
@@ -584,7 +584,7 @@ namespace WCell.RealmServer.Commands
 
 				if (Map.AutoSpawnMaps)
 				{
-					MapCommand.SpawnMapCommand.SpawnAllMaps(trigger);
+					MapCommand.MapSpawnCommand.SpawnAllMaps(trigger);
 				}
 			}
 		}
@@ -596,17 +596,14 @@ namespace WCell.RealmServer.Commands
 	{
 		protected override void Initialize()
 		{
-			Init("ForgetSelf");
+			Init("ResetWorld");
 			EnglishParamInfo = "";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
 			var chr = (Character)trigger.Args.Target;
-			var pos = chr.Position;
-
-			MovementHandler.SendNewWorld(chr.Client, chr.MapId, ref pos, chr.Orientation);
-			chr.ClearSelfKnowledge();
+			chr.ResetOwnWorld();
 		}
 
 		public override ObjectTypeCustom TargetTypes

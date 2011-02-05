@@ -4,11 +4,21 @@
     <Item Key="Done">
       <Value>Done.</Value>
     </Item>
-    <Item Key="Addon">
-      <Value>Addon</Value>
+    <Item Key="PleaseWait">
+      <Value>Please wait...</Value>
+    </Item>
+    <Item Key="GoBack">
+      <Value>Go back...</Value>
+    </Item>
+    <Item Key="AreYouSure">
+      <Value>Are you sure?</Value>
     </Item>
     <Item Key="Custom">
       <Value>Custom</Value>
+    </Item>
+
+    <Item Key="Addon">
+      <Value>Addon</Value>
     </Item>
     <Item Key="Library">
       <Value>Library</Value>
@@ -344,5 +354,33 @@
     <Item Key ="Goodbye">
       <Value>Goodbye!</Value>
     </Item>
+  
+<!--Editor-->
+    <Item Key ="EditorMapMenuLoadData">
+      <Value>Load Map Data</Value>
+    </Item>
+    <Item Key ="EditorMapMenuSpawnMap">
+      <Value>Spawn Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuClearMap">
+      <Value>Clear Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuShow">
+      <Value>Show all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuHide">
+      <Value>Hide all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuEnableAllSpawnPoints">
+      <Value>Enable all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuDisableAllSpawnPoints">
+      <Value>Disable all Spawnpoints</Value>
+    </Item>
+
+    <Item Key ="EditorSpawnPointMenuMoveOverHere">
+      <Value>Move over here</Value>
+    </Item>
+    
   </Items>
 </Translation>

@@ -347,7 +347,7 @@ namespace WCell.RealmServer.Tests
 		public static void EnsureNPCsLoaded()
 		{
 			EnsureBasicSetup();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 		}
 		#endregion
 
