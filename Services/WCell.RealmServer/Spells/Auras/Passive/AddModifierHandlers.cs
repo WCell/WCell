@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	}
 
 	/// <summary>
-	/// All kinds of different Talent modifiers (mostly caused by talents)
+	/// All kinds of different Spell modifiers (mostly caused by talents)
 	/// </summary>
 	public class AddModifierFlatHandler : AddModifierEffectHandler
 	{

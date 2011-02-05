@@ -195,12 +195,11 @@ namespace WCell.RealmServer.Entities
 			SetUInt32(UnitFields.MAXHEALTH, health);
 			SetUInt32(UnitFields.BASE_HEALTH, health);
 
-			if (m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
+			if (m_entry.IsDead || m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
 			{
 				SetUInt32(UnitFields.HEALTH, health);
 			}
-
-			if (m_entry.Regenerates)
+			else if (m_entry.Regenerates)
 			{
 				Regenerates = true;
 				HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
@@ -219,8 +218,6 @@ namespace WCell.RealmServer.Entities
 			{
 				ManaRegenPerTickInterruptedPct = 20;
 			}
-
-			HealthRegenPerTickNoCombat = BaseHealth / 5;
 
 			UpdateUnitState();
 

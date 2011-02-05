@@ -20,6 +20,10 @@ namespace WCell.Constants.Quests
 			MenuStatusLookup[(int)QuestStatus.NotCompleted] = 1;
 		}
 
+		/// <summary>
+		/// Amounts of update fields, occupied by each quest
+		/// </summary>
+		public const int UpdateFieldCountPerQuest = 5;
 		public const int MaxReputations = 5;
 		public const int MaxRewardItems = 4;
 		public const int MaxRewardChoiceItems = 6;

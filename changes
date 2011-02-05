@@ -1,2 +1,2 @@
-- fixed: Auras of different spells but same group will now correctly replace each other
-- fixed: Only apply highest ranks of loaded passive talents
+- fixed quests with more than one interaction requirement
+- fixed dead NPC spawns by adding the NPCEntry.IsDead property

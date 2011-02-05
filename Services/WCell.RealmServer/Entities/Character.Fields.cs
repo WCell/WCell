@@ -849,7 +849,7 @@ namespace WCell.RealmServer.Entities
 
 		public void ResetQuest(int slot)
 		{
-			var i = slot * 5;
+			var i = slot * QuestConstants.UpdateFieldCountPerQuest;
 			SetUInt32((PlayerFields.QUEST_LOG_1_1 + i), 0);
 			SetUInt32((PlayerFields.QUEST_LOG_1_2 + i), 0);
 			SetUInt32((PlayerFields.QUEST_LOG_1_3 + i), 0);
@@ -863,7 +863,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="slot">The slot.</param>
 		public uint GetQuestId(int slot)
 		{
-			return GetUInt32(PlayerFields.QUEST_LOG_1_1 + (slot * 5));
+			return GetUInt32(PlayerFields.QUEST_LOG_1_1 + (slot * QuestConstants.UpdateFieldCountPerQuest));
 		}
 
 		/// <summary>
@@ -873,7 +873,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="questid">The questid.</param>
 		public void SetQuestId(int slot, uint questid)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_1 + (slot * 5)), questid);
+			SetUInt32((PlayerFields.QUEST_LOG_1_1 + (slot * QuestConstants.UpdateFieldCountPerQuest)), questid);
 		}
 
 		/// <summary>
@@ -883,7 +883,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public QuestCompleteStatus GetQuestState(int slot)
 		{
-			return (QuestCompleteStatus)GetUInt32(PlayerFields.QUEST_LOG_1_2 + (slot * 5));
+			return (QuestCompleteStatus)GetUInt32(PlayerFields.QUEST_LOG_1_2 + (slot * QuestConstants.UpdateFieldCountPerQuest));
 		}
 
 		/// <summary>
@@ -893,7 +893,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="completeStatus">The status.</param>
 		public void SetQuestState(int slot, QuestCompleteStatus completeStatus)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_2 + (slot * 5)), (uint)completeStatus);
+			SetUInt32((PlayerFields.QUEST_LOG_1_2 + (slot * QuestConstants.UpdateFieldCountPerQuest)), (uint)completeStatus);
 		}
 
 		/// <summary>
@@ -904,8 +904,18 @@ namespace WCell.RealmServer.Entities
 		/// <param name="value">The value.</param>
 		internal void SetQuestCount(int slot, uint interactionIndex, ushort value)
 		{
-			var field = PlayerFields.QUEST_LOG_1_3 + ((int)interactionIndex >> 1);
-			SetUInt16Low((field + (slot * 5)), value);
+			// each quest has 4 quest counters
+			// each counter has 2 bytes
+			var field = (slot * QuestConstants.UpdateFieldCountPerQuest) + PlayerFields.QUEST_LOG_1_3 + ((int)interactionIndex >> 1);
+			var hiLo = interactionIndex % 2;
+			if (hiLo == 0)
+			{
+				SetUInt16Low(field, value);
+			}
+			else
+			{
+				SetUInt16High(field, value);
+			}
 		}
 
 		/// <summary>
@@ -915,7 +925,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		internal uint GetQuestTimeLeft(byte slot)
 		{
-			return GetUInt32((PlayerFields.QUEST_LOG_1_4 + (slot * 5)));
+			return GetUInt32(PlayerFields.QUEST_LOG_1_4 + (slot * QuestConstants.UpdateFieldCountPerQuest) );
 		}
 
 		/// <summary>
@@ -924,7 +934,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="slot">The slot.</param>
 		internal void SetQuestTimeLeft(byte slot, uint timeleft)
 		{
-			SetUInt32((PlayerFields.QUEST_LOG_1_4 + (slot * 5)), timeleft);
+			SetUInt32(PlayerFields.QUEST_LOG_1_4 + (slot * QuestConstants.UpdateFieldCountPerQuest), timeleft);
 		}
 
 		/*

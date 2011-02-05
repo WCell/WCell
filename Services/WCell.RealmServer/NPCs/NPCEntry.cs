@@ -404,6 +404,13 @@ namespace WCell.RealmServer.NPCs
 
 		public UnitDynamicFlags DynamicFlags;
 
+		[NotPersistent]
+		public bool IsDead
+		{
+			get { return DynamicFlags.HasFlag(UnitDynamicFlags.Dead); }
+			set { DynamicFlags |= UnitDynamicFlags.Dead; }
+		}
+
 		public UnitExtraFlags ExtraFlags;
 
 		[NotPersistent]
@@ -1105,7 +1112,7 @@ namespace WCell.RealmServer.NPCs
 						}
 						else
 						{
-							parts.Add("(unknown difficulty) = " + id + " (" + (uint) id + ")");
+							parts.Add("(unknown difficulty) = " + id + " (" + (uint)id + ")");
 						}
 					}
 				}
