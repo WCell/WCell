@@ -1090,7 +1090,7 @@ namespace WCell.RealmServer.Entities
 		/// Checks whether this Unit can currently see the given obj
 		/// 
 		/// TODO: Higher staff ranks can always see lower staff ranks (too bad there are no ranks)
-		/// TODO: Stealth detection
+		/// TODO: Line of Sight
 		/// </summary>
 		public override bool CanSee(WorldObject obj)
 		{
@@ -1166,19 +1166,63 @@ namespace WCell.RealmServer.Entities
 				return IsGhost;
 			}
 
+			return HandleStealthDetection(unit);	
+
+		}
+		public bool HandleStealthDetection(Unit unit)
+		{
 			var val = unit.Stealthed;
 			if (val > 0)
 			{
 				// stealthed Unit
 				// TODO: Calc detection, based on Stealth value, boni, detection, detection boni, distance and viewing angle
+
+				//if we are stunned we don't see anything
+				if ((this.UnitFlags & UnitFlags.Stunned) != 0)
+					return false;
+
+				//he's so close we can allready touch him
+				if (GetDistance(unit.Position) <= 0.24f)
+					return true;
+
+				//he's behind us, we can't see him
+				if (!unit.IsInFrontOf(this))
+					return false;
+
+				bool HasStealthDetection = false;
+				
+				//check if we have a stealth detection aura
+				if (Auras.GetTotalAuraModifier(AuraType.Aura_228) > 0)
+					HasStealthDetection = true;
+
+				float visibleDistance;
+				//we have no stealth detection so check how stealthy he is
+				if (!HasStealthDetection)
+				{
+					visibleDistance = 10.5f - (((float)unit.Stealthed) / 100.0f);
+					// -1.0f per level diff
+					visibleDistance += this.Level - unit.Level;
+
+					//ModStealthLevel -> auras that increase his stealth
+					var stealthMod = Auras.GetTotalAuraModifier(AuraType.ModStealthLevel);
+					if (stealthMod < 0)
+						stealthMod = 0;
+					//ModDetect -> auras that we have that decrease his stealth
+					//every 5 mod he can get closer by 1.0f 
+					var DetectMod = Auras.GetTotalAuraModifier(AuraType.ModDetect, 0);
+					visibleDistance -= ((DetectMod - stealthMod) / 5.0f);
+					visibleDistance = visibleDistance > 45.0f ? 45.0f : visibleDistance;
+
+					//we see you!
+					if (GetDistance(unit.Position) <= visibleDistance)
+						return true;
+				}
+				else
+					return true;
+
 				return false;
 			}
-
 			return true;
-		}
-
-		public void OnStealth()
-		{
 		}
 		#endregion
 
