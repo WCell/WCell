@@ -1,2 +1,1 @@
-- fixed quests with more than one interaction requirement
-- fixed dead NPC spawns by adding the NPCEntry.IsDead property
+- fixed auras without timers

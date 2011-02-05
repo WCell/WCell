@@ -10,10 +10,85 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
+	interface ISpawnPoint
+	{
+		Map Map
+		{
+			get;
+		}
+
+		MapId MapId
+		{
+			get;
+		}
+
+		Vector3 Position
+		{
+			get;
+		}
+
+		uint Phase
+		{
+			get;
+		}
+
+		bool HasSpawned
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Whether timer is running and will spawn a new NPC when the timer elapses
+		/// </summary>
+		bool IsSpawning
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Inactive and autospawns
+		/// </summary>
+		bool IsReadyToSpawn
+		{
+			get;
+		}
+
+		/// <summary>
+		/// Whether NPC is alread spawned or timer is running
+		/// </summary>
+		bool IsActive
+		{
+			get;
+		}
+
+		void Respawn();
+
+		void SpawnNow();
+
+		void SpawnLater();
+
+		/// <summary>
+		/// Restarts the spawn timer with the given delay
+		/// </summary>
+		void SpawnAfter(int delay);
+
+		/// <summary>
+		/// Stops the Respawn timer, if it was running
+		/// </summary>
+		void StopTimer();
+
+		void RemoveSpawnedObject();
+
+		/// <summary>
+		/// Stops timer and deletes spawnling
+		/// </summary>
+		void Disable();
+	}
+
 	/// <summary>
 	/// Instance of SpawnEntry objects
 	/// </summary>
-	public abstract class SpawnPoint<T, E, O, POINT, POOL>
+	public abstract class SpawnPoint<T, E, O, POINT, POOL> : ISpawnPoint
 		where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
 		where E : SpawnEntry<T, E, O, POINT, POOL>
 		where O : WorldObject
@@ -39,6 +114,19 @@ namespace WCell.RealmServer.Spawns
 			protected set;
 		}
 
+		public E SpawnEntry
+		{
+			get { return m_spawnEntry; }
+		}
+
+		/// <summary>
+		/// The currently active NPC of this SpawnPoint (or null)
+		/// </summary>
+		public O ActiveSpawnling
+		{
+			get { return m_spawnling; }
+		}
+
 		public Map Map
 		{
 			get { return Pool.Map; }
@@ -57,11 +145,6 @@ namespace WCell.RealmServer.Spawns
 		public uint Phase
 		{
 			get { return m_spawnEntry.Phase; }
-		}
-
-		public E SpawnEntry
-		{
-			get { return m_spawnEntry; }
 		}
 
 		public bool HasSpawned
@@ -91,14 +174,6 @@ namespace WCell.RealmServer.Spawns
 		public bool IsActive
 		{
 			get { return HasSpawned || IsSpawning; }
-		}
-
-		/// <summary>
-		/// The currently active NPC of this SpawnPoint (or null)
-		/// </summary>
-		public O ActiveSpawnling
-		{
-			get { return m_spawnling; }
 		}
 		#endregion
 

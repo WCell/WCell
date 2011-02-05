@@ -11,35 +11,9 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
-	public interface ISpawnEntry
+	public interface ISpawnEntry : IWorldLocation
 	{
-		MapId MapId
-		{
-			get;
-			set;
-		}
-
-		Map Map
-		{
-			get;
-		}
-
-		/// <summary>
-		/// The position of this SpawnEntry
-		/// </summary>
-		Vector3 Position
-		{
-			get;
-			set;
-		}
-
 		float Orientation
-		{
-			get;
-			set;
-		}
-
-		uint Phase
 		{
 			get;
 			set;
@@ -93,7 +67,7 @@ namespace WCell.RealmServer.Spawns
 		int GetRandomRespawnMillis();
 	}
 
-	public abstract class SpawnEntry<T, E, O, POINT, POOL> : ISpawnEntry, IWorldLocation
+	public abstract class SpawnEntry<T, E, O, POINT, POOL> : ISpawnEntry
 		where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
 		where E : SpawnEntry<T, E, O, POINT, POOL>
 		where O : WorldObject

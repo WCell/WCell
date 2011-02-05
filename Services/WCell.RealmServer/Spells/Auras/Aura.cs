@@ -134,7 +134,7 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		private void SetupTimer()
 		{
-			if (m_controller == null && (m_amplitude > 0 || m_duration < int.MaxValue))
+			if (m_controller == null && (m_amplitude > 0 || m_duration > 0))
 			{
 				// Aura times itself
 				m_timer = new TimerEntry

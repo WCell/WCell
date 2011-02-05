@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var npc = base.Summon(cast, ref targetLoc, entry);
-			npc.HasOwnerPermissionToMove = false;
+			npc.HasPermissionToMove = false;
 			return npc;
 		}
 	}

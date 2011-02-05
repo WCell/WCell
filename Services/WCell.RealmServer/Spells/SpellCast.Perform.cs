@@ -875,6 +875,10 @@ namespace WCell.RealmServer.Spells
 
 			// trigger dynamic post-cast spells, eg Shadow Weaving etc
 			caster.Spells.TriggerSpellsFor(this);
+			if (!m_casting)
+			{
+				return; // should not happen (but might)
+			}
 
 			// consumes spell modifiers (if required)
 			caster.Auras.OnCasted(this);
@@ -886,6 +890,10 @@ namespace WCell.RealmServer.Spells
 			if (IsAICast)
 			{
 				OnAICasted();
+				if (!m_casting)
+				{
+					return; // should not happen (but might)
+				}
 			}
 
 			// Casted event

@@ -299,7 +299,7 @@ namespace WCell.RealmServer.Entities
 				}
 				if (flags.HasFlag(UnitFlags.Passive))
 				{
-					HasOwnerPermissionToMove = false;
+					HasPermissionToMove = false;
 				}
 			}
 		}
