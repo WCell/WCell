@@ -325,6 +325,9 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		/// <summary>
+		/// Whether this is a ghost
+		/// </summary>
 		public bool IsGhost
 		{
 			get { return m_auras.GhostAura != null; }
@@ -1091,20 +1094,30 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public override bool CanSee(WorldObject obj)
 		{
-			if (!base.CanSee(obj))
+			if (!base.CanSee(obj) || !obj.IsInWorld)
 			{
 				return false;
 			}
 
-			if (!obj.IsInWorld)
+			if (this == obj)			// one can always see oneself
+			{
+				return true;
+			}
+
+			// check for visibility overrides
+			var visibility = DetermineVisibilityOf(obj);
+			if (visibility == VisibilityStatus.Invisible)
 			{
 				return false;
 			}
+			if (visibility == VisibilityStatus.Visible)
+			{
+				return true;
+			}
 
-			if (this == obj ||												// one can always see oneself		
-				(this is Character && ((Character)this).Role.IsStaff &&
-				(!(obj is Character) || ((Character)obj).Role < ((Character)this).Role)))
-			{	// GMs see everything (just don't display the Spirit Healer to the living - because it is too confusing)
+			if (this is Character && ((Character)this).Role.IsStaff && (!(obj is Character) || ((Character)obj).Role < ((Character)this).Role))
+			{	
+				// GMs see everything (just don't display the Spirit Healer to the living - because it is too confusing)
 				return !(obj is Unit) || !((Unit)obj).IsSpiritHealer || !IsAlive;
 			}
 
@@ -1114,7 +1127,21 @@ namespace WCell.RealmServer.Entities
 				return true;
 			}
 
-			var unit = obj as Unit;
+			// Unit
+			var unit = (Unit)obj;
+			if (IsGhost)
+			{
+				// dead can only see the dead and those near their corpse!
+				if (this is Character)
+				{
+					var corpse = ((Character)this).Corpse;
+					if (corpse != null)
+					{
+						return unit.IsInRadiusSq(corpse, Corpse.GhostVisibilityRadiusSq);
+					}
+				}
+				return false;
+			}
 
 			if (obj is Character)
 			{
@@ -1137,20 +1164,6 @@ namespace WCell.RealmServer.Entities
 			if (unit.IsSpiritHealer || unit.IsGhost)
 			{
 				return IsGhost;
-			}
-
-			if (IsGhost)
-			{
-				// dead can only see the dead and those near their corpse!
-				if (this is Character)
-				{
-					var corpse = ((Character)this).Corpse;
-					if (corpse != null)
-					{
-						return unit.IsInRadiusSq(corpse, Corpse.GhostVisibilityRadiusSq);
-					}
-				}
-				return false;
 			}
 
 			var val = unit.Stealthed;

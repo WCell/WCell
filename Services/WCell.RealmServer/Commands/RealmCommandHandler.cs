@@ -6,6 +6,7 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.Util;
@@ -692,5 +693,14 @@ namespace WCell.RealmServer.Commands
 			return null;
 		}
 		#endregion
+
+		public static void ShowMenu(this CmdTrigger<RealmServerCmdArgs> trigger, GossipMenu menu)
+		{
+			var chr = trigger.Args.Character;
+			if (chr != null)
+			{
+				chr.StartGossip(menu);
+			}
+		}
 	}
 }

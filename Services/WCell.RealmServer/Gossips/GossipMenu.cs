@@ -9,6 +9,11 @@ using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
 {
+	public class DynamicTextGossipMenu : GossipMenu
+	{
+		
+	}
+
 	/// <summary>
 	/// Represents single menu in conversation with it's items
 	/// </summary>

@@ -47,8 +47,17 @@ using Cell.Core;
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>
-	/// TODO: Orientation (and position) should be easily updatable through setting the corresponding Props (needs to send movement packets)
-	/// TODO: Check if Object is visible to Owner before sending certain packets to it?
+	/// Used to override visibility of objects
+	/// </summary>
+	public enum VisibilityStatus
+	{
+		Default,
+		Visible,
+		Invisible
+	}
+
+	/// <summary>
+	/// 
 	/// </summary>
 	public abstract partial class WorldObject : ObjectBase, IFactionMember, IWorldLocation, INamedEntity, IContextHandler
 	{
@@ -1340,6 +1349,15 @@ namespace WCell.RealmServer.Entities
 		public virtual bool CanSee(WorldObject obj)
 		{
 			return IsInPhase(obj);
+		}
+
+		/// <summary>
+		/// Visibility of the given object in the eyes of this object.
+		/// Can be used to override all default visibility checks.
+		/// </summary>
+		public virtual VisibilityStatus DetermineVisibilityOf(WorldObject obj)
+		{
+			return VisibilityStatus.Default;
 		}
 
 		public virtual bool IsPlayer

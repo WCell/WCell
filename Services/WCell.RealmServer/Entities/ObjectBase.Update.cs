@@ -80,7 +80,7 @@ namespace WCell.RealmServer.Entities
 			get { return _UpdateFieldInfos.HasPrivateFields; }
 		}
 
-		public virtual UpdateFieldFlags GetVisibilityFor(Character chr)
+		public virtual UpdateFieldFlags GetUpdateFieldVisibilityFor(Character chr)
 		{
 			return UpdateFieldFlags.Public;
 		}
@@ -91,7 +91,7 @@ namespace WCell.RealmServer.Entities
 		#region Write Updates
 		protected internal virtual void WriteObjectCreationUpdate(Character chr)
 		{
-			var relation = GetVisibilityFor(chr) | UpdateFieldFlags.Dynamic;
+			var relation = GetUpdateFieldVisibilityFor(chr) | UpdateFieldFlags.Dynamic;
 			chr.m_updatePacket.Write((byte)GetCreationUpdateType(relation));
 			EntityId.WritePacked(chr.m_updatePacket);
 			chr.m_updatePacket.Write((byte)ObjectTypeId);
@@ -163,7 +163,7 @@ namespace WCell.RealmServer.Entities
 		public void WriteObjectValueUpdate(Character receiver)
 		{
 			// TODO: Find a better way to keep track of changed Dynamic UpdateFields
-			var relation = GetVisibilityFor(receiver) | UpdateFieldFlags.Dynamic;
+			var relation = GetUpdateFieldVisibilityFor(receiver) | UpdateFieldFlags.Dynamic;
 
 			receiver.m_updatePacket.Write((byte)UpdateType.Values);
 			EntityId.WritePacked(receiver.m_updatePacket);

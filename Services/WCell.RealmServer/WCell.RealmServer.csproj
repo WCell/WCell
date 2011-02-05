@@ -201,7 +201,10 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
-    <Compile Include="Editor\Figurines\Figurine.cs" />
+    <Compile Include="Editor\Commands\EditorCommand.cs" />
+    <Compile Include="Editor\MapEditorMenu.cs" />
+    <Compile Include="Editor\EditorMgr.cs" />
+    <Compile Include="Editor\Figurines\EditorFigurine.cs" />
     <Compile Include="Editor\Figurines\SpawnFigurine.cs" />
     <Compile Include="Editor\Figurines\WaypointFigurine.cs" />
     <Compile Include="Editor\MapEditor.cs" />

@@ -6,7 +6,7 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Editor.Figurines
 {
-	public class WaypointFigurine : Figurine
+	public class WaypointFigurine : EditorFigurine
 	{
 		/// <summary>
 		/// Scales the figurine in relation to its original version
@@ -17,8 +17,8 @@ namespace WCell.RealmServer.Editor.Figurines
 		private readonly NPCSpawnPoint m_SpawnPoint;
 		private readonly WaypointEntry m_Waypoint;
 
-		public WaypointFigurine(NPCSpawnPoint spawnPoint, WaypointEntry wp)
-			: base(spawnPoint.SpawnEntry.Entry)
+		public WaypointFigurine(MapEditor editor, NPCSpawnPoint spawnPoint, WaypointEntry wp)
+			: base(editor, spawnPoint.SpawnEntry.Entry)
 		{	
 			m_SpawnPoint = spawnPoint;
 			m_Waypoint = wp;

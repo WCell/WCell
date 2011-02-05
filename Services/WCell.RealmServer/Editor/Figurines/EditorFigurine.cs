@@ -12,7 +12,10 @@ using WCell.Constants.Factions;
 
 namespace WCell.RealmServer.Editor.Figurines
 {
-	public abstract class Figurine : Unit
+	/// <summary>
+	/// These figurines represent the 3D GUI elements of the editor
+	/// </summary>
+	public abstract class EditorFigurine : Unit
 	{
 		/// <summary>
 		/// Whether to also spawn a DO to make this Figurine appear clearer
@@ -22,15 +25,16 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		protected readonly NPCEntry m_entry;
 
-	    protected Figurine(NPCEntry entry)
+		protected EditorFigurine(MapEditor editor, NPCEntry entry)
 		{
+			Editor = editor;
 			m_entry = entry;
 			GenerateId(m_entry.Id);
 			UnitFlags = UnitFlags.SelectableNotAttackable | UnitFlags.Possessed;
 			DynamicFlags = UnitDynamicFlags.TrackUnit;
 			EmoteState = EmoteType.StateDead;
 			NPCFlags |= NPCFlags.Gossip;
-	    	Model = m_entry.GetRandomModel();
+			Model = m_entry.GetRandomModel();
 			EntryId = m_entry.Id;
 
 			// speed must be > 0
@@ -53,6 +57,8 @@ namespace WCell.RealmServer.Editor.Figurines
 
 			IsEvading = true;
 		}
+
+		public MapEditor Editor { get; private set; }
 
 		public virtual float DefaultScale
 		{
@@ -100,6 +106,19 @@ namespace WCell.RealmServer.Editor.Figurines
 		{
 			get { return Faction != null ? Faction.Id : FactionId.None; }
 			set { }
+		}
+
+		/// <summary>
+		/// Editor is only visible to staff members
+		/// </summary>
+		public override VisibilityStatus DetermineVisibilityOf(WorldObject obj)
+		{
+			if (obj is Character && Editor.Team.Contains((Character)obj))
+			{
+				// only those who are currently editing the map can see the figurines
+				return VisibilityStatus.Visible;
+			}
+			return VisibilityStatus.Invisible;
 		}
 
 		public override void Dispose(bool disposing)

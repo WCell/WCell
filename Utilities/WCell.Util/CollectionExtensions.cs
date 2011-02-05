@@ -11,6 +11,16 @@ namespace WCell.Util
 	public static class CollectionExtensions
 	{
 		#region Dictionary Extensions
+		public static V GetOrCreate<K, V>(this IDictionary<K, V> map, K key) where V : new()
+		{
+			V val;
+			if (!map.TryGetValue(key, out val))
+			{
+				map.Add(key, val = new V());
+			}
+			return val;
+		}
+
 		public static List<V> GetOrCreate<K, V>(this IDictionary<K, List<V>> map, K key)
 		{
 			List<V> list;

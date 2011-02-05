@@ -1,1 +1,2 @@
-- fixed auras without timers
+- a little work on map editing
+- fixed the #spell g command to not require a target anymore

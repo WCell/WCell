@@ -8,7 +8,7 @@ namespace WCell.RealmServer.Editor.Figurines
 	/// <summary>
 	/// The visual component of a spawnpoint
 	/// </summary>
-	public class SpawnFigurine : Figurine
+	public class SpawnFigurine : EditorFigurine
 	{
 		/// <summary>
 		/// Scales the figurine in relation to its original version
@@ -24,8 +24,8 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		private readonly NPCSpawnPoint m_SpawnPoint;
 
-		public SpawnFigurine(NPCSpawnPoint spawnPoint)
-			: base(spawnPoint.SpawnEntry.Entry)
+		public SpawnFigurine(MapEditor editor, NPCSpawnPoint spawnPoint)
+			: base(editor, spawnPoint.SpawnEntry.Entry)
 		{
 			m_SpawnPoint = spawnPoint;
 			m_position = spawnPoint.SpawnEntry.Position;

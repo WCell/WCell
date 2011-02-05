@@ -196,6 +196,8 @@ namespace WCell.RealmServer.Commands
 				var mod = trigger.Text.NextModifiers();
 				var target = trigger.Args.Target;
 
+				if (target == null) return;
+
 				if (mod.Length > 0)
 				{
 					if (mod.Contains("c"))
@@ -304,6 +306,8 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var spells = SpellGetCommand.RetrieveSpells(trigger);
+				var target = trigger.Args.Target;
+				if (target == null) return;
 
 				if (spells.Length > 0)
 				{
@@ -311,16 +315,15 @@ namespace WCell.RealmServer.Commands
 					{
 						if (trigger.Args.Target.HasSpells)
 						{
-							var chr = trigger.Args.Target as Character;
-							if (spell.Talent != null && chr != null)
+							if (spell.Talent != null)
 							{
 								// talent
-								chr.Talents.Remove(spell.Talent.Id);
+								target.Talents.Remove(spell.Talent.Id);
 							}
 							else
 							{
 								// normal spell
-								trigger.Args.Target.Spells.Remove(spell);
+								target.Spells.Remove(spell);
 							}
 							trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 						}
@@ -347,10 +350,14 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				if (trigger.Args.Target.HasSpells)
+				var target = trigger.Args.Target;
+
+				if (target == null) return;
+
+				if (target.HasSpells)
 				{
-					trigger.Args.Target.Spells.Clear();
-					trigger.Args.Target.Spells.AddDefaultSpells();
+					target.Spells.Clear();
+					target.Spells.AddDefaultSpells();
 					trigger.Reply(RealmLangKey.CmdSpellPurgeResponse);
 				}
 				else
@@ -378,12 +385,14 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var spells = SpellGetCommand.RetrieveSpells(trigger);
+				var target = trigger.Args.Target;
+				if (target == null) return;
 
 				if (spells.Length > 0)
 				{
 					foreach (var spell in spells)
 					{
-						trigger.Args.Target.SpellCast.TriggerSelf(spell);
+						target.SpellCast.TriggerSelf(spell);
 						trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
 					}
 				}
@@ -394,11 +403,6 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 		#endregion
-
-		public override ObjectTypeCustom TargetTypes
-		{
-			get { return ObjectTypeCustom.Unit; }
-		}
 	}
 
 	public class TalentCommand : RealmServerCommand

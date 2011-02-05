@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Owner.Update.cs
  *   copyright		: (C) The WCell Team
@@ -347,7 +347,7 @@ namespace WCell.RealmServer.Entities
 			UpdateCount = 0;
 		}
 
-		public override UpdateFieldFlags GetVisibilityFor(Character chr)
+		public override UpdateFieldFlags GetUpdateFieldVisibilityFor(Character chr)
 		{
 			if (chr == this)
 			{
