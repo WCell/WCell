@@ -147,11 +147,6 @@ namespace WCell.RealmServer.Spells.Auras
 									Action = Apply
 								};
 				}
-				else
-				{
-					// purely modal -> Flick it on and, when removing, turn it off again
-					Apply();
-				}
 			}
 		}
 
@@ -631,6 +626,7 @@ namespace WCell.RealmServer.Spells.Auras
 				// only add proc if there is not a custom handler for it
 				m_auras.Owner.AddProcHandler(this);
 			}
+
 			if (m_spell.IsAreaAura && Owner.EntityId == CasterReference.EntityId)
 			{
 				// activate AreaAura
@@ -703,8 +699,8 @@ namespace WCell.RealmServer.Spells.Auras
 			if (m_IsActivated)
 			{
 				OnApply();
-
 				ApplyPeriodicEffects();
+
 				if (!IsAdded)
 				{
 					return;

@@ -156,24 +156,24 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get
 			{
-				if (spell.CanApplyMultipleTimes)
+				Aura aura;
+				if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
 				{
-					foreach (var aura in m_AuraArray)
-					{
-						if (aura.Spell == spell)
-						{
-							return aura;
-						}
-					}
+					aura = this[spell, true];
 				}
 				else
 				{
-					Aura aura;
-					m_auras.TryGetValue(new AuraIndexId(spell.AuraUID, !spell.HasHarmfulEffects), out aura);
-					if (aura != null && aura.Spell.Id == spell.Id)
-					{
-						return aura;
-					}
+					aura = null;
+				}
+
+				if (aura == null && spell.HasHarmfulEffects)
+				{
+					aura = this[spell, false];
+				}
+
+				if (aura != null && aura.Spell == spell)
+				{
+					return aura;
 				}
 				return null;
 			}
@@ -721,26 +721,43 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
+		/// Removes and cancels the first Aura of the given SpellLine
+		/// </summary>
+		public bool Remove(SpellLineId spellLine)
+		{
+			var aura = this[spellLine];
+
+			if (aura != null)
+			{
+				aura.Remove();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
+		/// Removes and cancels the first Aura of the given SpellLine
+		/// </summary>
+		public bool Remove(SpellLine spellLine)
+		{
+			var aura = this[spellLine];
+
+			if (aura != null)
+			{
+				aura.Remove();
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Removes and cancels the first Aura of the given Spell
 		/// </summary>
 		public bool Remove(Spell spell)
 		{
-			Aura aura;
-			if (spell.HarmType == HarmType.Beneficial || spell.HarmType == HarmType.Neutral)
-			{
-				aura = this[spell, true];
-			}
-			else
-			{
-				aura = null;
-			}
+			var aura = this[spell];
 
-			if (aura == null && spell.HasHarmfulEffects)
-			{
-				aura = this[spell, false];
-			}
-
-			if (aura != null && aura.Spell.Id == spell.Id)
+			if (aura != null)
 			{
 				aura.Remove();
 				return true;

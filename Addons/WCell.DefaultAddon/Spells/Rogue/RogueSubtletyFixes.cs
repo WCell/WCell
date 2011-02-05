@@ -8,28 +8,20 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Constants;
+using WCell.RealmServer.Spells.Auras.Handlers;
+using WCell.RealmServer.Spells.Effects;
 
 namespace WCell.Addons.Default.Spells.Rogue
 {
     public static class RogueSubtletyFixes
     {
-        public static readonly SpellId[] EffectVanishLine = new[]
-        {
-            SpellId.EffectVanishRank1,
-            SpellId.EffectVanishRank2,
-            SpellId.EffectVanishRank3
-        };
-
         [Initialization(InitializationPass.Second)]
         public static void FixRogue()
         {
-            SpellHandler.Apply(spell =>
-            {
-                spell.AddTriggerSpellEffect(SpellId.ClassSkillStealth);
-            }, EffectVanishLine);
-
             SpellLineId.RogueVanish.Apply(spell =>
-            {
+			{
+				spell.AddTriggerSpellEffect(SpellId.ClassSkillStealth);
+
                 var effect = spell.GetEffectsWhere(eff => (int)eff.TriggerSpellId == 18461).First();
                 spell.RemoveEffect(effect);
             });
@@ -37,7 +29,7 @@ namespace WCell.Addons.Default.Spells.Rogue
             SpellLineId.RogueStealth.Apply(spell =>
             {
                 var effect = spell.GetEffect(AuraType.ModStealth);
-                effect.AuraEffectHandlerCreator = () => new StealthHandler();
+                effect.AuraEffectHandlerCreator = () => new RogueStealthHandler();
             });
 
             SpellLineId.RogueCloakOfShadows.Apply(spell =>
@@ -130,17 +122,15 @@ namespace WCell.Addons.Default.Spells.Rogue
 #endregion
 
     #region StealthHandler
-    class StealthHandler : AuraEffectHandler
+	class RogueStealthHandler : ModStealthHandler
     {
         protected override void Remove(bool cancelled)
         {
+			base.Remove(cancelled);
             var chr = m_aura.Owner as Character;
             if(chr != null)
             {
-                foreach (var spell in RogueSubtletyFixes.EffectVanishLine)
-                {
-                    chr.Auras.RemoveFirstVisibleAura(aura => aura.Spell.Id == (uint)spell);
-                }
+            	chr.Auras.Remove(SpellLineId.RogueVanish);
             }
         }
     }
