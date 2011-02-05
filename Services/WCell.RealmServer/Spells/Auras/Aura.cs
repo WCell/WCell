@@ -127,6 +127,8 @@ namespace WCell.RealmServer.Spells.Auras
 			// figure out amplitude and duration
 			m_duration = record.MillisLeft;
 			SetupTimer();
+
+			// Start is called later
 		}
 
 		/// <summary>
@@ -134,13 +136,22 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		private void SetupTimer()
 		{
-			if (m_controller == null && (m_amplitude > 0 || m_duration > 0))
+			if (m_controller == null)
 			{
-				// Aura times itself
-				m_timer = new TimerEntry
+				// Aura controls itself
+				if ((m_amplitude > 0 || m_duration > 0))
 				{
-					Action = Apply
-				};
+					// aura has timer
+					m_timer = new TimerEntry
+								{
+									Action = Apply
+								};
+				}
+				else
+				{
+					// purely modal -> Flick it on and, when removing, turn it off again
+					Apply();
+				}
 			}
 		}
 
@@ -189,7 +200,7 @@ namespace WCell.RealmServer.Spells.Auras
 				var index = handler.SpellEffect.EffectIndex;
 				if (index >= 0)
 				{
-					m_auraFlags |= (AuraFlags) (1 << index);
+					m_auraFlags |= (AuraFlags)(1 << index);
 				}
 			}
 
@@ -437,7 +448,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public bool CanBeSaved
 		{
 			get;
-			internal set;
+			set;
 		}
 
 		/// <summary>
@@ -542,7 +553,6 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			SetupTimer();
-
 			Start();
 		}
 
@@ -563,10 +573,8 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			CanBeSaved = this != m_auras.GhostAura &&
-						 !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
-						 UsedItem == null &&
-						 (!HasTimeout || TimeLeft > 5000);
-
+			             !m_spell.AttributesExC.HasFlag(SpellAttributesExC.HonorlessTarget) &&
+			             UsedItem == null;
 
 			m_auras.OnAuraChange(this);
 

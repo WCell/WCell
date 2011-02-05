@@ -538,17 +538,9 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 
 		/// <summary>
-		/// Adds and starts an already created Aura
+		/// Adds an already created Aura and optionally starts it
 		/// </summary>
-		public void AddAura(Aura aura)
-		{
-			AddAura(aura, true);
-		}
-
-		/// <summary>
-		/// Adds an already created Aura
-		/// </summary>
-		public virtual void AddAura(Aura aura, bool start)
+		public virtual void AddAura(Aura aura, bool start = true)
 		{
 			var id = aura.Id;
 			if (m_auras.ContainsKey(aura.Id))
@@ -1104,7 +1096,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			foreach (var aura in m_visibleAuras)
 			{
-				if (aura != null && aura.CanBeSaved)
+				if (aura != null && aura.CanBeSaved && (!aura.HasTimeout || aura.TimeLeft > 5000))
 				{
 					aura.SaveNow();
 				}
