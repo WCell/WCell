@@ -122,7 +122,7 @@ namespace WCell.Tools.Domi
 			World.InitializeWorld();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 			ItemMgr.ForceInitialize();
 
 			WriteEnum("ItemId", " : uint", "Items", ItemMgr.Templates, false,
@@ -198,7 +198,7 @@ namespace WCell.Tools.Domi
 			RealmDBMgr.Initialize();
 			SpellHandler.LoadSpells();
 			FactionMgr.Initialize();
-			NPCMgr.ForceInitialize();
+			NPCMgr.LoadAll();
 
 			WriteEnum("NPCId", " : uint", "NPCs", NPCMgr.GetAllEntries(), false,
 					  (item) => { return item != null; },

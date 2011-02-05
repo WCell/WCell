@@ -201,7 +201,7 @@ namespace WCell.RealmServer.Spells
 
 			var ticks = millis / Owner.Map.UpdateDelay;
 			var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
-			Owner.CallPeriodically(action);
+			Owner.AddUpdateAction(action);
 			if (m_cooldowns == null)
 			{
 				m_cooldowns = new List<CooldownRemoveAction>();

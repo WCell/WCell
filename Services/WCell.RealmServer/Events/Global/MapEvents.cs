@@ -7,10 +7,6 @@ using WCell.RealmServer.Misc;
 
 namespace WCell.RealmServer.Global
 {
-	public partial class Map
-	{
-	}
-
 	public partial class MapTemplate
 	{
 		/// <summary>

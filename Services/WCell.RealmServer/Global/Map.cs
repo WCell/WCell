@@ -809,6 +809,12 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		public bool IsSpawning
+		{
+			get;
+			private set;
+		}
+
 		public bool NPCsSpawned
 		{
 			get { return m_npcsSpawned; }
@@ -838,7 +844,10 @@ namespace WCell.RealmServer.Global
 				m_npcSpawnPools.Add(pool.Template.PoolId, pool);
 				OnPoolAdded<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>(pool);
 			}
-			pool.IsActive = true;
+			if (SpawnPointsEnabled)
+			{
+				pool.IsActive = true;
+			}
 		}
 
 		public GOSpawnPool AddGOSpawnPool(GOSpawnPoolTemplate templ)
@@ -855,10 +864,14 @@ namespace WCell.RealmServer.Global
 				m_goSpawnPools.Add(pool.Template.PoolId, pool);
 				OnPoolAdded<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>(pool);
 			}
-			pool.IsActive = true;
+
+			if (SpawnPointsEnabled)
+			{
+				pool.IsActive = true;
+			}
 		}
 
-		static void OnPoolAdded<T, E, O, POINT, POOL>(POOL pool) 
+		static void OnPoolAdded<T, E, O, POINT, POOL>(POOL pool)
 			where T : SpawnPoolTemplate<T, E, O, POINT, POOL>
 			where E : SpawnEntry<T, E, O, POINT, POOL>
 			where O : WorldObject
@@ -980,6 +993,7 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		#region SpawnMap
 		/// <summary>
 		/// If not added already, this method adds all default GameObjects and NPC spawnpoints to this map.
 		/// </summary>
@@ -999,8 +1013,10 @@ namespace WCell.RealmServer.Global
 
 			if (!IsSpawned)
 			{
+				IsSpawning = true;
 				if (!m_MapTemplate.NotifySpawning(this))
 				{
+					IsSpawning = false;
 					return;
 				}
 
@@ -1034,6 +1050,8 @@ namespace WCell.RealmServer.Global
 						m_npcsSpawned = true;
 					}
 				}
+
+				IsSpawning = false;
 
 				if (IsSpawned)
 				{
@@ -1072,6 +1090,34 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		private bool m_SpawnPointsEnabled = true;
+
+		public bool SpawnPointsEnabled
+		{
+			get { return m_SpawnPointsEnabled; }
+			set
+			{
+				if (m_SpawnPointsEnabled == value) return;
+
+				m_SpawnPointsEnabled = value;
+				if (value)
+				{
+					// enable all spawn points
+					ForeachSpawnPool(pool => pool.IsActive = true);
+				}
+				else
+				{
+					// disable all spawn points
+					ForeachSpawnPool(pool =>
+					{
+						pool.Disable();
+					});
+				}
+			}
+		}
+
+		#endregion
+
 		public void ForeachSpawnPool(Action<NPCSpawnPool> func)
 		{
 			ForeachSpawnPool(Vector3.Zero, 0, func);
@@ -1082,7 +1128,7 @@ namespace WCell.RealmServer.Global
 			var radiusSq = radius * radius;
 			foreach (var pool in m_npcSpawnPools.Values)
 			{
-				if (pool.Template.Entries.Any(spawn => radius <= 0 || spawn.GetDistSq(pos) < radiusSq))
+				if (radius <= 0 || pool.Template.Entries.Any(spawn => spawn.GetDistSq(pos) < radiusSq))
 				{
 					func(pool);
 				}
@@ -2349,11 +2395,11 @@ namespace WCell.RealmServer.Global
 		}
 		#endregion
 
-        /// <summary>
-        /// Checks if the event is currently active
-        /// </summary>
-        /// <param name="eventId">Id of the event to check</param>
-        /// <returns></returns>
+		/// <summary>
+		/// Checks if the event is currently active
+		/// </summary>
+		/// <param name="eventId">Id of the event to check</param>
+		/// <returns></returns>
 		public bool IsEventActive(uint eventId)
 		{
 			return WorldEventMgr.IsEventActive(eventId);

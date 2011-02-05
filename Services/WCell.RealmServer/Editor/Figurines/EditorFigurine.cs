@@ -3,10 +3,13 @@ using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
 using WCell.Constants.Updates;
+using WCell.RealmServer.Editor.Menus;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Factions;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
+using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Variables;
 using WCell.Constants.Factions;
 
@@ -17,25 +20,36 @@ namespace WCell.RealmServer.Editor.Figurines
 	/// </summary>
 	public abstract class EditorFigurine : Unit
 	{
+		private static AuraCollection _sharedAuras;
+		
 		/// <summary>
 		/// Whether to also spawn a DO to make this Figurine appear clearer
 		/// </summary>
 		[NotVariable]
 		//public static bool AddDecoMarker = true;
 
-		protected readonly NPCEntry m_entry;
+		protected readonly NPCSpawnPoint m_SpawnPoint;
 
-		protected EditorFigurine(MapEditor editor, NPCEntry entry)
+		protected EditorFigurine(MapEditor editor, NPCSpawnPoint spawnPoint)
 		{
+			if (_sharedAuras == null)
+			{
+				_sharedAuras = new AuraCollection(this);
+			}
+
+			m_auras = _sharedAuras;
 			Editor = editor;
-			m_entry = entry;
-			GenerateId(m_entry.Id);
+			m_SpawnPoint = spawnPoint;
+
+			var entry = m_SpawnPoint.SpawnEntry.Entry;
+			GenerateId(entry.Id);
+
 			UnitFlags = UnitFlags.SelectableNotAttackable | UnitFlags.Possessed;
 			DynamicFlags = UnitDynamicFlags.TrackUnit;
 			EmoteState = EmoteType.StateDead;
 			NPCFlags |= NPCFlags.Gossip;
-			Model = m_entry.GetRandomModel();
-			EntryId = m_entry.Id;
+			Model = entry.GetRandomModel();
+			EntryId = entry.Id;
 
 			// speed must be > 0
 			// because of the way the client works
@@ -55,16 +69,42 @@ namespace WCell.RealmServer.Editor.Figurines
 			// just make a smaller version of the creature to be spawned
 			SetFloat(ObjectFields.SCALE_X, entry.Scale * DefaultScale);
 
-			IsEvading = true;
+			m_evades = true;
 		}
 
-		public MapEditor Editor { get; private set; }
-
-		public virtual float DefaultScale
+		public MapEditor Editor
 		{
-			get { return 1f; }
+			get;
+			private set;
 		}
 
+		public SpawnEditorMenu GetOrCreateEditorMenu()
+		{
+			if (!(GossipMenu is SpawnEditorMenu))
+			{
+				GossipMenu = CreateEditorMenu();
+			}
+			return (SpawnEditorMenu)GossipMenu;
+		}
+
+		public abstract SpawnEditorMenu CreateEditorMenu();
+
+		/// <summary>
+		/// Editor is only visible to staff members
+		/// </summary>
+		public override VisibilityStatus DetermineVisibilityFor(Unit observer)
+		{
+			if (observer is Character && Editor.Team.ContainsKey(observer.EntityId.Low)// && Editor.IsVisible
+				)
+			{
+				// only those who are currently editing the map can see the figurines
+				return VisibilityStatus.Visible;
+			}
+			return VisibilityStatus.Invisible;
+		}
+
+
+		#region Default Overrides
 		public override LinkedList<WaypointEntry> Waypoints
 		{
 			get { return WaypointEntry.EmptyList; }
@@ -75,9 +115,14 @@ namespace WCell.RealmServer.Editor.Figurines
 			get { return null; }
 		}
 
+		public virtual float DefaultScale
+		{
+			get { return 1f; }
+		}
+
 		public override string Name
 		{
-			get { return m_entry.DefaultName; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.DefaultName; }
 			set { /* cannot be set */ }
 		}
 
@@ -93,13 +138,13 @@ namespace WCell.RealmServer.Editor.Figurines
 
 		public override Faction Faction
 		{
-			get { return m_entry.Faction; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.Faction; }
 			set {/* cannot be set */}
 		}
 
 		public override Faction DefaultFaction
 		{
-			get { return m_entry.Faction; }
+			get { return m_SpawnPoint.SpawnEntry.Entry.Faction; }
 		}
 
 		public override FactionId FactionId
@@ -108,22 +153,10 @@ namespace WCell.RealmServer.Editor.Figurines
 			set { }
 		}
 
-		/// <summary>
-		/// Editor is only visible to staff members
-		/// </summary>
-		public override VisibilityStatus DetermineVisibilityOf(WorldObject obj)
-		{
-			if (obj is Character && Editor.Team.Contains((Character)obj))
-			{
-				// only those who are currently editing the map can see the figurines
-				return VisibilityStatus.Visible;
-			}
-			return VisibilityStatus.Invisible;
-		}
-
 		public override void Dispose(bool disposing)
 		{
 			m_Map = null;
 		}
+		#endregion
 	}
 }

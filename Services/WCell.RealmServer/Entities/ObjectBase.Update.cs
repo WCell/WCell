@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Entities
 			get;
 		}
 
-		public void ResetUpdateInfo()
+		internal void ResetUpdateInfo()
 		{
 			m_privateUpdateMask.Clear();
 			if (m_privateUpdateMask != m_publicUpdateMask)

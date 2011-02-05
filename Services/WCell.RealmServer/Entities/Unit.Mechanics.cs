@@ -1365,17 +1365,17 @@ namespace WCell.RealmServer.Entities
 		public bool TeleportTo(IWorldLocation location)
 		{
 			var pos = location.Position;
-			var rgn = location.Map;
-			if (rgn == null)
+			var map = location.Map;
+			if (map == null)
 			{
 				if (Map.Id != location.MapId)
 				{
 					return false;
 				}
-				rgn = Map;
+				map = Map;
 			}
 
-			TeleportTo(rgn, ref pos, m_orientation);
+			TeleportTo(map, ref pos, m_orientation);
 			Phase = location.Phase;
 
 			if (location is WorldObject)

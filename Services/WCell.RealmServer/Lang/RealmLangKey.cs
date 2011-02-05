@@ -14,7 +14,11 @@ namespace WCell.RealmServer.Lang
 		// Misc
 		None = 0,
 		Done,
+		PleaseWait,
+		GoBack,
 		Custom,
+		AreYouSure,
+
 		Addon,
 		Library,
 		NotConnectedToAuthServer,
@@ -145,6 +149,18 @@ namespace WCell.RealmServer.Lang
         InvalidClass,
 
 		// Other
-		Goodbye
+		Goodbye,
+
+		// ########################################################################
+		// Editor
+		EditorMapMenuLoadData,
+		EditorMapMenuSpawnMap,
+		EditorMapMenuClearMap,
+		EditorMapMenuShow,
+		EditorMapMenuHide,
+		EditorMapMenuEnableAllSpawnPoints,
+		EditorMapMenuDisableAllSpawnPoints,
+
+		EditorSpawnPointMenuMoveOverHere
 	}
 }

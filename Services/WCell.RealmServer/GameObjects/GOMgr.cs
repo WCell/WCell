@@ -123,10 +123,10 @@ namespace WCell.RealmServer.GameObjects
 
 		public static List<GOSpawnPoolTemplate> GetOrCreateSpawnPoolTemplatesByMap(MapId map)
 		{
-			var list = SpawnPoolTemplatesByMap.Get((uint) map);
+			var list = SpawnPoolTemplatesByMap.Get((uint)map);
 			if (list == null)
 			{
-				SpawnPoolTemplatesByMap[(uint) map] = list = new List<GOSpawnPoolTemplate>();
+				SpawnPoolTemplatesByMap[(uint)map] = list = new List<GOSpawnPoolTemplate>();
 			}
 			return list;
 		}
@@ -158,6 +158,11 @@ namespace WCell.RealmServer.GameObjects
 					}
 				}
 			}
+		}
+
+		public static void LoadAllLater()
+		{
+			RealmServer.Instance.AddMessage(() => LoadAll());
 		}
 
 		public static void LoadAll()

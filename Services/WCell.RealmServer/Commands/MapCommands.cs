@@ -27,9 +27,9 @@ namespace WCell.RealmServer.Commands
 		}
 
 		#region SpawnMap
-		public class SpawnMapCommand : SubCommand
+		public class MapSpawnCommand : SubCommand
 		{
-			protected SpawnMapCommand() { }
+			protected MapSpawnCommand() { }
 
 			/// <summary>
 			/// Spawns all active Maps

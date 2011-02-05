@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Editor.Commands
 		protected override void Initialize()
 		{
 			Init("Editor", "Edit");
-			EnglishDescription = "Allows Staff members to edit the map.";
+			EnglishDescription = "Allows Staff members to edit spawns, waypoints etc.";
 		}
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Editor.Commands
 				// start editing & open the editor menu
 				if (chr != null)
 				{
-					var editor = EditorMgr.StartEditing(chr.Map, chr);
+					var editor = MapEditorMgr.StartEditing(chr.Map, chr);
 					trigger.ShowMenu(editor.Menu);
 				}
 			}

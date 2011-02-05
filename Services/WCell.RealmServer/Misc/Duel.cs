@@ -236,7 +236,6 @@ namespace WCell.RealmServer.Misc
 			var pos = ((m_challenger.Position + m_rival.Position) / 2);
 
 			m_flag = GameObject.Create(GOEntryId.DuelFlag, new WorldLocationStruct(m_Map, pos));
-			m_flag.Phase = m_challenger.Phase;
 			if (m_flag == null)
 			{
 				ContentMgr.OnInvalidDBData("Cannot start Duel: DuelFlag-GameObject (ID: {0}) does not exist.", (int)GOEntryId.DuelFlag);
@@ -244,6 +243,8 @@ namespace WCell.RealmServer.Misc
 			}
 			else
 			{
+				m_flag.Phase = m_challenger.Phase;
+
 				((DuelFlagHandler)m_flag.Handler).Duel = this;
 				m_flag.CreatedBy = m_challenger.EntityId;
 				m_flag.Level = m_challenger.Level;

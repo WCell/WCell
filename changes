@@ -1,3 +1,4 @@
-- a little work on map editing
-- fixed the #spell g command to not require a target anymore
-- fixed aura applications
+- first version of the map/spawn editor system is out (still missing most stuff) - type: #edit
+- many small additions to the gossip system
+- added Character.ResetOwnWorld and InvalidateKnowledgeOf methods
+- GO's now get their owner's level

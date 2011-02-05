@@ -458,7 +458,15 @@ namespace WCell.RealmServer.NPCs
 #endif
 		}
 
-		public static void ForceInitialize()
+		public static void LoadAllLater()
+		{
+			RealmServer.Instance.AddMessage(() =>
+			{
+				LoadAll();
+			});
+		}
+
+		public static void LoadAll()
 		{
 			if (!Loaded)
 			{

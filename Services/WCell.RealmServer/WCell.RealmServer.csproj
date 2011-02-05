@@ -201,14 +201,36 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
-    <Compile Include="Editor\Commands\EditorCommand.cs" />
-    <Compile Include="Editor\MapEditorMenu.cs" />
-    <Compile Include="Editor\EditorMgr.cs" />
-    <Compile Include="Editor\Figurines\EditorFigurine.cs" />
-    <Compile Include="Editor\Figurines\SpawnFigurine.cs" />
-    <Compile Include="Editor\Figurines\WaypointFigurine.cs" />
-    <Compile Include="Editor\MapEditor.cs" />
-    <Compile Include="Editor\SpawnGossips.cs" />
+    <Compile Include="Editor\Commands\EditorCommand.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\EditorArchitectInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\EditorFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\SpawnPointFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Figurines\WaypointFigurine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\MapEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Menus\MapEditorMenu.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\MapEditorMgr.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Editor\Menus\SpawnEditorMenu.cs" />
+    <Compile Include="Editor\Menus\WaypointEditorMenu.cs" />
+    <Compile Include="Editor\NPCSpawnEditor.cs" />
+    <Compile Include="Editor\Menus\SpawnPointEditorMenu.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Handlers\WorldStateHandler.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />

@@ -10,7 +10,7 @@ using WCell.Util.Graphics;
 
 namespace WCell.RealmServer.Spawns
 {
-	interface ISpawnPoint
+	public interface ISpawnPoint
 	{
 		Map Map
 		{

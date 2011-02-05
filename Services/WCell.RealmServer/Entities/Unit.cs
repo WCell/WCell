@@ -1105,7 +1105,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// check for visibility overrides
-			var visibility = DetermineVisibilityOf(obj);
+			var visibility = obj.DetermineVisibilityFor(this);
 			if (visibility == VisibilityStatus.Invisible)
 			{
 				return false;

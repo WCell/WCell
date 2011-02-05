@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Entities
 			{
 				m_TaxiMovementTimer.Update(dt);
 			}
-
+			
 			foreach (var aura in m_auras)
 			{
 				aura.Update(dt);

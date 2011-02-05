@@ -11,10 +11,17 @@ using WCell.Util.Collections;
 
 namespace WCell.RealmServer.Editor
 {
-	public static class EditorMgr
+	public static class MapEditorMgr
 	{
+		/// <summary>
+		/// All active Editors
+		/// </summary>
 		public static readonly IDictionary<Map, MapEditor> EditorsByMap = new SynchronizedDictionary<Map, MapEditor>();
-		public static readonly IDictionary<Character, MapEditor> EditorsByCharacter = new SynchronizedDictionary<Character, MapEditor>();
+
+		/// <summary>
+		/// Everyone who is or was recently using the editor
+		/// </summary>
+		public static readonly IDictionary<Character, EditorArchitectInfo> Architects = new SynchronizedDictionary<Character, EditorArchitectInfo>();
 
 		public static MapEditor GetEditor(Map map)
 		{
@@ -23,11 +30,11 @@ namespace WCell.RealmServer.Editor
 			return editor;
 		}
 
-		public static MapEditor GetEditor(Character chr)
+		public static EditorArchitectInfo GetArchitectInfo(Character chr)
 		{
-			MapEditor editor;
-			EditorsByCharacter.TryGetValue(chr, out editor);
-			return editor;
+			EditorArchitectInfo info;
+			Architects.TryGetValue(chr, out info);
+			return info;
 		}
 
 		public static MapEditor GetOrCreateEditor(Map map)
@@ -38,6 +45,16 @@ namespace WCell.RealmServer.Editor
 				EditorsByMap.Add(map, editor = new MapEditor(map));
 			}
 			return editor;
+		}
+
+		public static EditorArchitectInfo GetOrCreateArchitectInfo(Character chr)
+		{
+			EditorArchitectInfo info;
+			if (!Architects.TryGetValue(chr, out info))
+			{
+				Architects.Add(chr, info = new EditorArchitectInfo(chr));
+			}
+			return info;
 		}
 
 		public static MapEditor StartEditing(Map map, Character chr = null)
@@ -52,10 +69,10 @@ namespace WCell.RealmServer.Editor
 
 		public static void StopEditing(Character chr)
 		{
-			var editor = GetEditor(chr);
-			if (editor != null)
+			var architect = GetArchitectInfo(chr);
+			if (architect != null)
 			{
-				editor.Leave(chr);
+				architect.Editor.Leave(chr);
 			}
 		}
 	}
