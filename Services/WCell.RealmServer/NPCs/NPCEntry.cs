@@ -289,9 +289,9 @@ namespace WCell.RealmServer.NPCs
 
 		public float OffhandMaxDamage;
 
-		public uint GetRandomHealth()
+		public int GetRandomHealth()
 		{
-			return Utility.Random(MinHealth, MaxHealth);
+			return (int)(Utility.Random(MinHealth, MaxHealth) * NPCMgr.DefaultNPCHealthFactor + 0.999999f);
 		}
 
 		public int GetRandomMana()

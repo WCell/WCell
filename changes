@@ -1,4 +1,1 @@
-- made get/set/call/mod commands now also available on static classes, using the namespace delimiter
-	-> Use: .g #wcell.realmserver.global.world#some.prop
-	-> Or(a prefixed . saves the "wcell.realmserver" part): .g #.global.world#some.prop
-- changed the default ghost aura to one that does not increase speed
+- added DefaultNPCDamageFactor and DefaultNPCHealthFactor to customize a server to give it more of a "diablo-feel" (many weak enemies instead of a few tough ones)

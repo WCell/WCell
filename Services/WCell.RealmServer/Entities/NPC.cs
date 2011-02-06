@@ -192,12 +192,12 @@ namespace WCell.RealmServer.Entities
 
 			// health + power
 			var health = entry.GetRandomHealth();
-			SetUInt32(UnitFields.MAXHEALTH, health);
-			SetUInt32(UnitFields.BASE_HEALTH, health);
+			SetInt32(UnitFields.MAXHEALTH, health);
+			SetInt32(UnitFields.BASE_HEALTH, health);
 
 			if (m_entry.IsDead || m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
 			{
-				SetUInt32(UnitFields.HEALTH, health);
+				SetInt32(UnitFields.HEALTH, health);
 			}
 			else if (m_entry.Regenerates)
 			{

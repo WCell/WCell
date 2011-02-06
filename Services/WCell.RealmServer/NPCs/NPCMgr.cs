@@ -61,6 +61,18 @@ namespace WCell.RealmServer.NPCs
 		/// </summary>
 		public static int DecayDelayEpicMillis = 3600000;
 
+		/// <summary>
+		/// Can be used to toughen up or soften down NPCs on servers with more of a "diablo feel"
+		/// or custom servers.
+		/// </summary>
+		public static float DefaultNPCHealthFactor = 1;
+
+		/// <summary>
+		/// Can be used to toughen up or soften down NPCs on servers with more of a "diablo feel"
+		/// or custom servers.
+		/// </summary>
+		public static float DefaultNPCDamageFactor = 1;
+
 		public static float DefaultNPCFlySpeed = 16;
 
 		public static float DefaultNPCRunSpeed = 8;
