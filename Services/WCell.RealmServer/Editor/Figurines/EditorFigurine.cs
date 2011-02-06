@@ -78,16 +78,18 @@ namespace WCell.RealmServer.Editor.Figurines
 			private set;
 		}
 
-		public SpawnEditorMenu GetOrCreateEditorMenu()
+		public abstract SpawnEditorMenu CreateEditorMenu();
+
+		protected internal override void OnEncounteredBy(Character chr)
 		{
-			if (!(GossipMenu is SpawnEditorMenu))
+			base.OnEncounteredBy(chr);
+
+			// make sure, the GossipMenu exists when there is a Character nearby who could use it
+			if (GossipMenu == null)
 			{
 				GossipMenu = CreateEditorMenu();
 			}
-			return (SpawnEditorMenu)GossipMenu;
 		}
-
-		public abstract SpawnEditorMenu CreateEditorMenu();
 
 		/// <summary>
 		/// Editor is only visible to staff members

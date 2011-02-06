@@ -265,7 +265,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (obj != this)
 			{
-				obj.AreaCharCount++;
+				obj.OnEncounteredBy(this);
 			}
 			KnownObjects.Add(obj);
 			SendUnknownState(obj);

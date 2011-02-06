@@ -11,6 +11,12 @@ namespace WCell.RealmServer.Editor.Menus
 {
 	public class WaypointEditorMenu : SpawnEditorMenu
 	{
+
+		public override string GetText(GossipConversation convo)
+		{
+			return "";
+		}
+
 		//private readonly NPCSpawnPoint m_point;
 
 		//public WaypointEditorMenu(NPCSpawnPoint point)

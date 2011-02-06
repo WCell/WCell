@@ -138,12 +138,12 @@ namespace WCell.RealmServer.Global
 				Array.Resize(ref updatePriorityMillis, (int)UpdatePriority.End);
 			}
 
-			SetDefaultUpdatePriorityTick(UpdatePriority.Inactive, 20);
-			SetDefaultUpdatePriorityTick(UpdatePriority.Background, 10);
-			SetDefaultUpdatePriorityTick(UpdatePriority.VeryLowPriority, 5);
-			SetDefaultUpdatePriorityTick(UpdatePriority.LowPriority, 3);
-			SetDefaultUpdatePriorityTick(UpdatePriority.Active, 2);
-			SetDefaultUpdatePriorityTick(UpdatePriority.HighPriority, 1);
+			SetDefaultUpdatePriorityTick(UpdatePriority.Inactive, 10000);
+			SetDefaultUpdatePriorityTick(UpdatePriority.Background, 3000);
+			SetDefaultUpdatePriorityTick(UpdatePriority.VeryLowPriority, 1000);
+			SetDefaultUpdatePriorityTick(UpdatePriority.LowPriority, 600);
+			SetDefaultUpdatePriorityTick(UpdatePriority.Active, 300);
+			SetDefaultUpdatePriorityTick(UpdatePriority.HighPriority, 0);
 		}
 
 		public static int GetTickCount(UpdatePriority priority)

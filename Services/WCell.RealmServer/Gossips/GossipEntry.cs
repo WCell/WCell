@@ -42,11 +42,11 @@ namespace WCell.RealmServer.Gossips
 			TextMale = TextFemale = text;
 		}
 
-		public override string GetTextMale(Character chr)
+		public override string GetTextMale(GossipConversation convo)
 		{
 			return TextMale;
 		}
-		public override string GetTextFemale(Character chr)
+		public override string GetTextFemale(GossipConversation convo)
 		{
 			return TextFemale;
 		}
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Gossips
 		}
 	}
 
-	public delegate string GossipStringFactory(Character chr);
+	public delegate string GossipStringFactory(GossipConversation convo);
 	public class DynamicGossipText : GossipTextBase
 	{
 		public DynamicGossipText(GossipStringFactory stringGetter, float probability = 1f, ChatLanguage lang = ChatLanguage.Universal)
@@ -72,14 +72,16 @@ namespace WCell.RealmServer.Gossips
 			set;
 		}
 
-		public override string GetTextMale(Character chr)
+		public override string GetTextMale(GossipConversation convo)
 		{
-			return GetTextFemale(chr);
+			if (convo == null) return "<invalid context>";
+			return GetTextFemale(convo);
 		}
 
-		public override string GetTextFemale(Character chr)
+		public override string GetTextFemale(GossipConversation convo)
 		{
-			return StringGetter(chr);
+			if (convo == null) return "<invalid context>";
+			return StringGetter(convo);
 		}
 	}
 
@@ -140,9 +142,9 @@ namespace WCell.RealmServer.Gossips
 			set { Emotes[5] = value; }
 		}
 
-		public abstract string GetTextMale(Character chr);
+		public abstract string GetTextMale(GossipConversation convo);
 
-		public abstract string GetTextFemale(Character chr);
+		public abstract string GetTextFemale(GossipConversation convo);
 	}
 	#endregion
 

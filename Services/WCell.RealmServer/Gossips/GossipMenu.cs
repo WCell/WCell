@@ -9,9 +9,26 @@ using WCell.RealmServer.Lang;
 
 namespace WCell.RealmServer.Gossips
 {
-	public class DynamicTextGossipMenu : GossipMenu
+	public abstract class DynamicTextGossipMenu : GossipMenu
 	{
-		
+		private static readonly DynamicGossipEntry SharedEntry = new DynamicGossipEntry(88993333, new DynamicGossipText(OnTextQuery));
+
+		private static string OnTextQuery(GossipConversation convo)
+		{
+			return ((DynamicTextGossipMenu)convo.CurrentMenu).GetText(convo);
+		}
+
+		protected DynamicTextGossipMenu()
+			: base(SharedEntry)
+		{
+		}
+
+		protected DynamicTextGossipMenu(params GossipMenuItemBase[] items)
+			: base(SharedEntry, items)
+		{
+		}
+
+		public abstract string GetText(GossipConversation convo);
 	}
 
 	/// <summary>
@@ -88,17 +105,6 @@ namespace WCell.RealmServer.Gossips
 			: this(text)
 		{
 			m_gossipItems = items;
-		}
-
-		public GossipMenu(IGossipEntry text, params GossipMenuItem[] items)
-			: this(text)
-		{
-			m_gossipItems = new List<GossipMenuItemBase>(items.Length);
-			foreach (var item in items)
-			{
-				CheckItem(item);
-				m_gossipItems.Add(item);
-			}
 		}
 
 		public GossipMenu(IGossipEntry text, params GossipMenuItemBase[] items)
@@ -240,14 +246,9 @@ namespace WCell.RealmServer.Gossips
 			AddItem(new QuitGossipMenuItem(msg, args));
 		}
 
-		public void AddQuitMenuItem(string text, GossipActionHandler callback)
+		public void AddQuitMenuItem(GossipActionHandler callback, RealmLangKey msg = RealmLangKey.Done, params object[] args)
 		{
-			var action = new NonNavigatingGossipAction(convo =>
-			{
-				callback(convo);
-				convo.Character.GossipConversation.StayOpen = false;
-			});
-			AddItem(new GossipMenuItem(text, action));
+			AddItem(new QuitGossipMenuItem(callback, msg, args));
 		}
 
 		public void AddGoBackItem()

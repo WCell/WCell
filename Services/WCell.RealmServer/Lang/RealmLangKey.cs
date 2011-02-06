@@ -153,6 +153,12 @@ namespace WCell.RealmServer.Lang
 
 		// ########################################################################
 		// Editor
+		EditorMapMenuText,
+		EditorMapMenuStatusNoData,
+		EditorMapMenuStatusDataLoading,
+		EditorMapMenuStatusNotSpawned,
+		EditorMapMenuStatusSpawning,
+
 		EditorMapMenuLoadData,
 		EditorMapMenuSpawnMap,
 		EditorMapMenuClearMap,

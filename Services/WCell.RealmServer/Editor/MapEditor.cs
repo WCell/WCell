@@ -164,12 +164,6 @@ namespace WCell.RealmServer.Editor
 					// selected new target
 				}
 			}
-
-			if (target != null && chr.GossipConversation == null)
-			{
-				// show the editing menu
-				chr.StartGossip(target.GetOrCreateEditorMenu());
-			}
 		}
 	}
 }

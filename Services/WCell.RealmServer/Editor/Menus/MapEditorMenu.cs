@@ -7,45 +7,88 @@ using WCell.RealmServer.NPCs;
 
 namespace WCell.RealmServer.Editor.Menus
 {
-	public class MapEditorMenu : GossipMenu
+	public class MapEditorMenu : DynamicTextGossipMenu
 	{
+		public override string GetText(GossipConversation convo)
+		{
+			var text = RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuText) + GossipTextHelper.Newline;
+
+			if (!GOMgr.Loaded || !NPCMgr.Loaded)
+			{
+				if (!convo.Speaker.HasUpdateAction(action => action is PeriodicLoadMapTimer))
+				{
+					// already loading
+					text += RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuStatusNoData);
+				}
+				else
+				{
+					// not loading yet
+					text += RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuStatusDataLoading);
+				}
+			}
+			else if (!Editor.Map.IsSpawned)
+			{
+				if (Editor.Map.IsSpawning)
+				{
+					// already spawning
+					text += RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuStatusSpawning);
+				}
+				else
+				{
+					// not spawning yet
+					text += RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuStatusNotSpawned);
+				}
+			}
+			return text;
+		}
+
 		public MapEditorMenu(MapEditor editor)
 		{
 			Editor = editor;
 			KeepOpen = true;
 
 			AddItem(new LocalizedGossipMenuItem(OnLoadClicked,
-												convo => (!GOMgr.Loaded || !NPCMgr.Loaded) &&		// timer not running yet
-														!convo.Speaker.HasUpdateAction(action => action is PeriodicLoadMapTimer),
-												RealmLangKey.EditorMapMenuLoadData));
+				convo => (!GOMgr.Loaded || !NPCMgr.Loaded) &&		// timer not running yet
+					!convo.Speaker.HasUpdateAction(action => action is PeriodicLoadMapTimer),
+				RealmLangKey.EditorMapMenuLoadData));
 
-			AddItem(new LocalizedGossipMenuItem(convo => Editor.Map.SpawnMap(),
-												convo => GOMgr.Loaded && NPCMgr.Loaded && !Editor.Map.IsSpawned,
-												RealmLangKey.EditorMapMenuSpawnMap));
+			AddItem(new LocalizedGossipMenuItem(convo =>
+				{
+					Editor.Map.SpawnMapLater();
+					convo.Character.AddMessage(convo.Invalidate);		// show menu again, when done spawning
+				},
+				convo => GOMgr.Loaded && NPCMgr.Loaded && !Editor.Map.IsSpawned && !Editor.Map.IsSpawning,
+				RealmLangKey.EditorMapMenuSpawnMap));
 
-			AddItem(new LocalizedGossipMenuItem(convo => Editor.Map.ClearLater(),
-												convo => Editor.Map.IsSpawned,
-												RealmLangKey.AreYouSure, 
-												RealmLangKey.EditorMapMenuClearMap));
+			AddItem(new LocalizedGossipMenuItem(convo =>
+				{
+					Editor.Map.ClearLater();
+					convo.Character.AddMessage(convo.Invalidate);		// show menu again, when done clearing
+				},
+				convo => Editor.Map.IsSpawned,
+				RealmLangKey.AreYouSure,
+				RealmLangKey.EditorMapMenuClearMap));
 
 			AddItem(new LocalizedGossipMenuItem(convo => Editor.IsVisible = true,
-												convo => Editor.Map.IsSpawned && !Editor.IsVisible,
-												RealmLangKey.EditorMapMenuShow));
+				convo => Editor.Map.IsSpawned && !Editor.IsVisible,
+				RealmLangKey.EditorMapMenuShow));
 
 			AddItem(new LocalizedGossipMenuItem(convo => Editor.IsVisible = false,
-												convo => Editor.Map.IsSpawned && Editor.IsVisible,
-												RealmLangKey.EditorMapMenuHide));
+				convo => Editor.Map.IsSpawned && Editor.IsVisible,
+				RealmLangKey.EditorMapMenuHide));
 
 			AddItem(new LocalizedGossipMenuItem(convo => Editor.Map.SpawnPointsEnabled = true,
-												convo => !Editor.Map.SpawnPointsEnabled,
-												RealmLangKey.EditorMapMenuEnableAllSpawnPoints));
+				convo => !Editor.Map.SpawnPointsEnabled,
+				RealmLangKey.EditorMapMenuEnableAllSpawnPoints));
 
 			AddItem(new LocalizedGossipMenuItem(convo => Editor.Map.SpawnPointsEnabled = false,
-												convo => Editor.Map.SpawnPointsEnabled,
-												RealmLangKey.AreYouSure,
-												RealmLangKey.EditorMapMenuDisableAllSpawnPoints));
+				convo => Editor.Map.SpawnPointsEnabled,
+				RealmLangKey.AreYouSure,
+				RealmLangKey.EditorMapMenuDisableAllSpawnPoints));
 
-			AddQuitMenuItem();
+
+			// leave the editor
+			AddQuitMenuItem(convo => Editor.Leave(convo.Character));
 		}
 
 		public MapEditor Editor { get; private set; }

@@ -356,6 +356,22 @@
     </Item>
   
 <!--Editor-->
+    <Item Key ="EditorMapMenuText">
+      <Value>Welcome to the Map Editor</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNoData">
+      <Value>Data not loaded yet</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusDataLoading">
+      <Value>Data is loading...</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNotSpawned">
+      <Value>Map is not spawned</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusSpawning">
+      <Value>Map Spawning...</Value>
+    </Item>
+
     <Item Key ="EditorMapMenuLoadData">
       <Value>Load Map Data</Value>
     </Item>

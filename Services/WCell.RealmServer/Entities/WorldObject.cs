@@ -126,6 +126,7 @@ namespace WCell.RealmServer.Entities
 		protected WorldObject()
 		{
 			CreationTime = Utility.GetSystemTime();
+			LastUpdateTime = DateTime.Now;
 		}
 
 		#region Misc Properties
@@ -256,6 +257,11 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_areaCharCount; }
 			internal set { m_areaCharCount = value; }
+		}
+
+		protected internal virtual void OnEncounteredBy(Character chr)
+		{
+			++AreaCharCount;
 		}
 
 		public virtual bool IsTrap

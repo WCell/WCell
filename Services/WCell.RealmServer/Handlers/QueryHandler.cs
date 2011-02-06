@@ -233,7 +233,7 @@ namespace WCell.RealmServer.Handlers
 					var entry = text.GossipTexts[i];
 					packet.WriteFloat(entry.Probability);
 
-					var maleText = entry.GetTextMale(character);
+					var maleText = entry.GetTextMale(character.GossipConversation);
 					string femaleText;
 					if (text.IsDynamic)
 					{
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Handlers
 					}
 					else
 					{
-						femaleText = entry.GetTextFemale(character);
+						femaleText = entry.GetTextFemale(character.GossipConversation);
 					}
 					packet.WriteCString(maleText);
 					packet.WriteCString(femaleText);

@@ -1,4 +1,3 @@
-- fixed periodic aura time display
-- removed level up animation from newly spawned creatures
-- fixed spell damage calculation (was always doubled for characters, and applied twice if spell was triggered)
-- got rid of the tick-based IUpdateObjectAction and replaced them with about equally efficient but much more precise timers
+- implemented the new DynamicTextGossipMenu
+- added new GossipTextHelper class for special characters and gossip variables, such as newline, character name, gender, conditional texts etc
+- here is an example on how to use them: https://github.com/WCell/WCell/blob/master/Services/WCell.RealmServer/Editor/Menus/MapEditorMenu.cs

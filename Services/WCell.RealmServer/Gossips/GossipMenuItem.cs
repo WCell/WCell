@@ -531,7 +531,7 @@ namespace WCell.RealmServer.Gossips
 			});
 		}
 
-		public QuitGossipMenuItem(GossipActionHandler callback, RealmLangKey msg, params object[] args) :
+		public QuitGossipMenuItem(GossipActionHandler callback, RealmLangKey msg = RealmLangKey.Done, params object[] args) :
 			base(msg, args)
 		{
 			Action = new NonNavigatingGossipAction((convo) =>
