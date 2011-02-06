@@ -1,3 +1,4 @@
-- fixed ModStatPercentHandler to update stats when a stat changed
-- implemented DispelResistance talent modifier
-- fixed resistance and stat debuffs to display correctly
+- made get/set/call/mod commands now also available on static classes, using the namespace delimiter
+	-> Use: .g #wcell.realmserver.global.world#some.prop
+	-> Or(a prefixed . saves the "wcell.realmserver" part): .g #.global.world#some.prop
+- changed the default ghost aura to one that does not increase speed

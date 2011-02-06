@@ -349,7 +349,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		void BecomeGhost()
 		{
-			SpellCast.Start(SpellHandler.Get(SpellId.Ghost), true, this);
+			SpellCast.Start(SpellHandler.Get(SpellId.Ghost_2), true, this);
 		}
 
 		/// <summary>

@@ -27,27 +27,43 @@ namespace WCell.Util.ReflectionUtil
 		public MemberInfo[] GetMembers(U user, object obj, string accessName, Type type, ref object memberHolder)
 		{
 			memberHolder = null;
-			var propChain = accessName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+			var hasNameSpaceDelimiter = accessName.StartsWith("#");
+			if (type == null && !hasNameSpaceDelimiter) return null;
+
 			var current = obj;
 			MemberInfo member = null;
 			MemberInfo[] members = null;
-			var isStatic = obj == null || accessName.StartsWith(".");
 			var i = 0;
-			if (isStatic)
+			string[] propChain;
+			if (hasNameSpaceDelimiter)
 			{
+				var parts = accessName.Split(new[] {'#'}, StringSplitOptions.RemoveEmptyEntries);
+				if (parts.Length != 2) return null;
+
+				var typeName = parts[0];
+				if (typeName.StartsWith("."))
+				{
+					// save a bit of typing, but it should be more general and less ugly
+					typeName = "WCell.RealmServer" + typeName;
+				}
+				accessName = parts[1];
+				propChain = accessName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
+
+
+				// TODO: Look up type correctly
+				foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+				{
+					type = asm.GetType(typeName, false, true);
+					if (type != null) break;
+				}
 				if (type == null)
 				{
-					if (propChain.Length < 2)
-					{
-						return null;
-					}
-					// TODO: Look up type correctly
-					type = GetType().Assembly.GetType("WCell.RealmServer.Global." + propChain[i++], false, true);
-					if (type == null)
-					{
-						return null;
-					}
+					return null;
 				}
+			}
+			else
+			{
+				propChain = accessName.Split(new[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			}
 
 			for (; i < propChain.Length; )
@@ -214,7 +230,7 @@ namespace WCell.Util.ReflectionUtil
 
 							// rule out non-simple arugments and try parsing
 							var paramType = paras[i].ParameterType;
-							
+
 							if (!paramType.IsSimpleType() || !Utility.Parse(args[i], paramType, ref arg))
 							{
 								// try the next overload
