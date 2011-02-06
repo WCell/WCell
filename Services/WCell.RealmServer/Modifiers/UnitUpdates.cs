@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Modifiers
 				{
 					for (var stat = StatType.Strength; stat < StatType.End; stat++)
 					{
-						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetTotalStatValue(stat) + 50) / 100;
 					}
 				}
 				chr.MeleeAttackPower = ap;
@@ -211,7 +211,7 @@ namespace WCell.RealmServer.Modifiers
 					// add bonuses through talents
 					for (var stat = StatType.Strength; stat < StatType.End; stat++)
 					{
-						ap += (chr.GetRangedAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+						ap += (chr.GetRangedAPModByStat(stat) * chr.GetTotalStatValue(stat) + 50) / 100;
 					}
 				}
 				chr.RangedAttackPower = ap;

@@ -17,7 +17,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
             var owner = m_aura.Auras.Owner as Character;
             if (owner != null)
             {
-                value = owner.GetStatValue((StatType)m_spellEffect.MiscValueB) / EffectValue;
+                value = owner.GetTotalStatValue((StatType)m_spellEffect.MiscValueB) / EffectValue;
                 owner.ModCombatRating((CombatRating)m_spellEffect.MiscValue, value);
             }
         }

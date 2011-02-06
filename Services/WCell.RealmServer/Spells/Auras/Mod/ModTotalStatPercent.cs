@@ -25,5 +25,9 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class ModTotalStatPercentHandler : ModStatPercentHandler
 	{
+		//protected override int GetStatValue(StatType stat)
+		//{
+			
+		//}
 	}
 };

@@ -572,7 +572,10 @@ namespace WCell.RealmServer.Entities
 			get { return m_baseStats; }
 		}
 
-		public int GetStatValue(StatType stat)
+		/// <summary>
+		/// Stat value, after modifiers
+		/// </summary>
+		public int GetTotalStatValue(StatType stat)
 		{
 			return GetInt32(UnitFields.STAT0 + (int)stat);
 		}
@@ -629,13 +632,12 @@ namespace WCell.RealmServer.Entities
 			if (delta > 0)
 			{
 				field = UnitFields.POSSTAT0;
-				SetInt32(field + (int)stat, GetInt32(field + (int)stat) + delta);
 			}
 			else
 			{
 				field = UnitFields.NEGSTAT0;
-				SetInt32(field + (int)stat, GetInt32(field + (int)stat) - delta);
 			}
+			SetInt32(field + (int)stat, GetInt32(field + (int)stat) + delta);
 
 			this.UpdateStat(stat);
 		}
@@ -665,13 +667,12 @@ namespace WCell.RealmServer.Entities
 			if (delta > 0)
 			{
 				field = UnitFields.POSSTAT0;
-				SetInt32(field + (int)stat, GetInt32(field + (int)stat) - delta);
 			}
 			else
 			{
 				field = UnitFields.NEGSTAT0;
-				SetInt32(field + (int)stat, GetInt32(field + (int)stat) + delta);
 			}
+			SetInt32(field + (int)stat, GetInt32(field + (int)stat) - delta);
 
 			this.UpdateStat(stat);
 		}
@@ -839,7 +840,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var value = GetBaseResistance(school);
 			value += GetInt32(UnitFields.RESISTANCEBUFFMODSPOSITIVE + (int)school);
-			value -= GetInt32(UnitFields.RESISTANCEBUFFMODSNEGATIVE + (int)school);
+			value += GetInt32(UnitFields.RESISTANCEBUFFMODSNEGATIVE + (int)school);
 			if (value < 0)
 			{
 				value = 0;
@@ -894,15 +895,14 @@ namespace WCell.RealmServer.Entities
 			if (delta > 0)
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
-				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
 				//ModBaseResistance(school, delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
-				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
 				//ModBaseResistance(school, -delta);
 			}
+			SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
 			OnResistanceChanged(school);
 		}
 
@@ -919,15 +919,13 @@ namespace WCell.RealmServer.Entities
 			if (delta > 0)
 			{
 				field = UnitFields.RESISTANCEBUFFMODSPOSITIVE;
-				SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
-				//ModBaseResistance(school, -delta);
 			}
 			else
 			{
 				field = UnitFields.RESISTANCEBUFFMODSNEGATIVE;
-				SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
 				//ModBaseResistance(school, delta);
 			}
+			SetInt32(field + (int)school, GetInt32(field + (int)school) - delta);
 			OnResistanceChanged(school);
 		}
 

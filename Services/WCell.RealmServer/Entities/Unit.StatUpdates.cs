@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Entities
 		#region Str, Sta, Agi, Int, Spi
 		protected internal virtual void UpdateStrength()
 		{
-			var str = GetBaseStatValue(StatType.Strength) + StrengthBuffPositive - StrengthBuffNegative;
+			var str = GetBaseStatValue(StatType.Strength) + StrengthBuffPositive + StrengthBuffNegative;
 			//str = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Strength], str);
 			SetInt32(UnitFields.STAT0, str);
 
@@ -42,8 +42,7 @@ namespace WCell.RealmServer.Entities
 
 		protected internal virtual void UpdateStamina()
 		{
-			var stam = StaminaBuffPositive - StaminaBuffNegative;
-			stam += GetBaseStatValue(StatType.Stamina);
+			var stam = GetBaseStatValue(StatType.Stamina) + StaminaBuffPositive + StaminaBuffNegative;
 
 			SetInt32(UnitFields.STAT2, stam);
 
@@ -53,7 +52,7 @@ namespace WCell.RealmServer.Entities
 		internal void UpdateAgility()
 		{
 			var oldAgil = Agility;
-			var agil = GetBaseStatValue(StatType.Agility) + AgilityBuffPositive - AgilityBuffNegative;
+			var agil = GetBaseStatValue(StatType.Agility) + AgilityBuffPositive + AgilityBuffNegative;
 			//agil = GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Agility], agil);
 			SetInt32(UnitFields.STAT1, agil);
 
@@ -66,7 +65,7 @@ namespace WCell.RealmServer.Entities
 
 		protected internal virtual void UpdateIntellect()
 		{
-			var intel = GetBaseStatValue(StatType.Intellect) + IntellectBuffPositive - IntellectBuffNegative;
+			var intel = GetBaseStatValue(StatType.Intellect) + IntellectBuffPositive + IntellectBuffNegative;
 			//intel = intel < 0 ? 0 : GetMultiMod(unit.MultiplierMods[(int)StatModifierFloat.Intellect], intel);
 			SetInt32(UnitFields.STAT3, intel);
 
@@ -75,7 +74,7 @@ namespace WCell.RealmServer.Entities
 
 		protected internal virtual void UpdateSpirit()
 		{
-			var spirit = GetBaseStatValue(StatType.Spirit) + SpiritBuffPositive - SpiritBuffNegative;
+			var spirit = GetBaseStatValue(StatType.Spirit) + SpiritBuffPositive + SpiritBuffNegative;
 
 			SetInt32(UnitFields.STAT4, spirit);
 

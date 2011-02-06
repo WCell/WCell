@@ -681,7 +681,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura != null && predicate(aura))
 				{
 					aura.Remove(false);
-					if (count >= max)
+					if (++count >= max)
 					{
 						break;
 					}

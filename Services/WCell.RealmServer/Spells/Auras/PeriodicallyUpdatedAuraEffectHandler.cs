@@ -7,7 +7,7 @@ namespace WCell.RealmServer.Spells.Auras
 {
 	/// <summary>
 	/// A kind of AuraEffectHandler that gets updated on every tick.
-	/// Can be used to re-evaluate effect values of depending Auras etc.
+	/// Can be used to re-evaluate effect values of depending Auras
 	/// </summary>
 	public abstract class PeriodicallyUpdatedAuraEffectHandler : AuraEffectHandler
 	{

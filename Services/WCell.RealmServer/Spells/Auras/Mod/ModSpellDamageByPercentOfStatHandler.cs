@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 		{
 			var stat = (StatType) SpellEffect.MiscValueB;
 
-			value = (Owner.GetStatValue(stat)*EffectValue + 50)/100;
+			value = (Owner.GetTotalStatValue(stat)*EffectValue + 50)/100;
 
 			// TODO: Update when stat changes
 			// TODO: Apply as white bonus, if aura is passive?
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Auras.Mod
 			if (m_aura.Auras.Owner is Character)
 			{
 				var stat = (StatType)SpellEffect.MiscValueB;
-				value = (Owner.GetStatValue(stat) * EffectValue + 50) / 100;
+				value = (Owner.GetTotalStatValue(stat) * EffectValue + 50) / 100;
 
 				// schools are ignored for this effect
 				((Character)m_aura.Auras.Owner).HealingDoneMod += value;

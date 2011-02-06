@@ -152,7 +152,7 @@
       <Value>&lt;spellid&gt;</Value>
     </Item>
     <Item Key="CmdSpellTriggerResponse">
-      <Value>Spell triggerred : </Value>
+      <Value>Spell triggerred: {0}</Value>
     </Item>
     <Item Key="CmdSpellTriggerError">
       <Value>Spell doesn't exist.</Value>

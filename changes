@@ -1,4 +1,3 @@
-- fixed: Aura.Refresh also refreshes Aura charges / issues in CheckSkill (thanks Chameleon)
-- fixed: Send enchant information to owner when receiving/looting enchanted item
-- SpellCast.*Item and Aura.UsedItem properties are now set to the Item to which an enchant belongs that casted the spell/aura
-- added PeriodicallyUpdatedAuraEffectHandler for modal Aura effects that can change over time (e.g. ModStatsPercent etc)
+- fixed ModStatPercentHandler to update stats when a stat changed
+- implemented DispelResistance talent modifier
+- fixed resistance and stat debuffs to display correctly
