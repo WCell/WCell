@@ -335,6 +335,36 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 			return null;
 		}
+		public int GetTotalAuraModifier(AuraType type)
+		{
+			int totalmods = 0;
+			foreach (var aura in this)
+			{
+				foreach (var effect in aura.Spell.Effects)
+				{
+					if (effect.AuraType == type)
+						totalmods += effect.CalcEffectValue();
+				}
+			}
+			return totalmods;
+		}
+		/// <summary>
+		/// Gets the total modifiers of an AuraType in this AuraCollection.
+		/// Takes only auras with a given miscvalue into account.
+		/// </summary>
+		public int GetTotalAuraModifier(AuraType type, int miscvalue)
+		{
+			int totalmods = 0;
+			foreach (var aura in this)
+			{
+				foreach (var effect in aura.Spell.Effects)
+				{
+					if (effect.AuraType == type && effect.MiscValue == miscvalue)
+						totalmods += effect.CalcEffectValue();
+				}
+			}
+			return totalmods;
+		}
 		#endregion
 
 		#region Contains
