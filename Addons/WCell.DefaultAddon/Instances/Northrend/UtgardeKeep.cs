@@ -417,7 +417,7 @@ namespace WCell.Addons.Default.Instances
 		public class VrykulSkeletonAttackAction : AIAttackAction
 		{
 			internal static Spell decrepify;
-			private IUpdateObjectAction decreptifyTimer;
+			private ObjectUpdateTimer decreptifyTimer;
 
 			[Initialization(InitializationPass.Second)]
 			public static void InitVrykulSkeleton()

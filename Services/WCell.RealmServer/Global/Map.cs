@@ -105,37 +105,37 @@ namespace WCell.RealmServer.Global
 		public static bool CanNPCsEvadeDefault = true;
 
 		// 
-		private static int[] updatePriorityTicks = new int[(int)UpdatePriority.End];
+		private static int[] updatePriorityMillis = new int[(int)UpdatePriority.End];
 
 		[NotVariable]
-		public static int[] UpdatePriorityTicks
+		public static int[] UpdatePriorityMillis
 		{
-			get { return updatePriorityTicks; }
+			get { return updatePriorityMillis; }
 			set
 			{
-				updatePriorityTicks = value;
+				updatePriorityMillis = value;
 				SetUpdatePriorityTicks();
 			}
 		}
 
 		static void SetDefaultUpdatePriorityTick(UpdatePriority priority, int ticks)
 		{
-			if (UpdatePriorityTicks[(int)priority] == 0)
+			if (UpdatePriorityMillis[(int)priority] == 0)
 			{
-				UpdatePriorityTicks[(int)priority] = ticks;
+				UpdatePriorityMillis[(int)priority] = ticks;
 			}
 		}
 
 		//[Initialization(InitializationPass.Tenth)]
 		static void SetUpdatePriorityTicks()
 		{
-			if (UpdatePriorityTicks == null)
+			if (UpdatePriorityMillis == null)
 			{
-				UpdatePriorityTicks = new int[(int)UpdatePriority.End];
+				UpdatePriorityMillis = new int[(int)UpdatePriority.End];
 			}
-			else if (UpdatePriorityTicks.Length != (int)UpdatePriority.End)
+			else if (UpdatePriorityMillis.Length != (int)UpdatePriority.End)
 			{
-				Array.Resize(ref updatePriorityTicks, (int)UpdatePriority.End);
+				Array.Resize(ref updatePriorityMillis, (int)UpdatePriority.End);
 			}
 
 			SetDefaultUpdatePriorityTick(UpdatePriority.Inactive, 20);
@@ -148,12 +148,12 @@ namespace WCell.RealmServer.Global
 
 		public static int GetTickCount(UpdatePriority priority)
 		{
-			return UpdatePriorityTicks[(int)priority];
+			return UpdatePriorityMillis[(int)priority];
 		}
 
 		public static void SetTickCount(UpdatePriority priority, int count)
 		{
-			UpdatePriorityTicks[(int)priority] = count;
+			UpdatePriorityMillis[(int)priority] = count;
 		}
 		#endregion
 
@@ -1281,27 +1281,6 @@ namespace WCell.RealmServer.Global
 					}
 				}
 
-				for (var i = m_characters.Count - 1; i >= 0; i--)
-				{
-					var chr = m_characters[i];
-
-					// process all the Character messages
-					IMessage msg;
-
-					while (chr.MessageQueue.TryDequeue(out msg))
-					{
-						try
-						{
-							msg.Execute();
-						}
-						catch (Exception e)
-						{
-							LogUtil.ErrorException(e, "Exception raised when processing Message for: {0}", chr);
-							chr.Client.Disconnect();
-						}
-					}
-				}
-
 				// check to see if it's time to run a map update yet again
 				//if (m_lastMapUpdate + DefaultUpdateDelay <= now)
 
@@ -1347,23 +1326,16 @@ namespace WCell.RealmServer.Global
 						priority = UpdatePriority.HighPriority;
 					}
 
-					var tickMatch = m_tickCount + obj.GetUInt32(ObjectFields.GUID_2);
-
 					try
 					{
 						// Update Object
-						var ticks = UpdatePriorityTicks[(int)priority];
-						if (tickMatch % ticks == 0)
+						var minObjUpdateDelta = UpdatePriorityMillis[(int)priority];
+						var objUpdateDelta = (updateStart - obj.LastUpdateTime).ToMilliSecondsInt();
+
+						if (objUpdateDelta >= minObjUpdateDelta)
 						{
-							if (ticks > 1)
-							{
-								// TODO: Fix exact amount of passed time
-								obj.Update(updateDelta + (((ticks - 1) * m_updateDelay)));
-							}
-							else
-							{
-								obj.Update(updateDelta);
-							}
+							obj.LastUpdateTime = updateStart;
+							obj.Update(objUpdateDelta);
 						}
 					}
 					catch (Exception e)

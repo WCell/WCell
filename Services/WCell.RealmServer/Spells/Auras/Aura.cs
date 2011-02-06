@@ -431,7 +431,6 @@ namespace WCell.RealmServer.Spells.Auras
 
 					m_ticks = 0;
 
-					m_duration = time;
 					m_timer.Start(time);
 				}
 			}

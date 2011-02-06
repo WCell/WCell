@@ -102,61 +102,29 @@ namespace WCell.RealmServer.Spells
 				// initialize targets
 				foreach (var handler in m_handlers)
 				{
+					var handlerTargets = handler.m_targets;
+					if (handlerTargets == null || handlerTargets.IsInitialized) continue;
+
 					if (m_initialTargets != null)
 					{
 						// initialize forced targets
-						for (var j = 0; j < m_initialTargets.Length; j++)
+						if ((failReason = handlerTargets.AddAll(m_initialTargets)) != SpellFailedReason.Ok)
 						{
-							var target = m_initialTargets[j];
-							if (target.IsInContext)
-							{
-								var err = handler.ValidateAndInitializeTarget(target);
-								if (err != SpellFailedReason.Ok)
-								{
-									LogManager.GetCurrentClassLogger().Warn(
-										"{0} tried to cast spell \"{1}\" with forced target {2} which is not valid: {3}",
-										CasterObject, Spell, target, err);
-									if (!IsAoE)
-									{
-										m_handlers = null;
-										return err;
-									}
-								}
-								else if (handler.m_targets != null)
-								{
-									handler.m_targets.Add(target);
-								}
-								m_targets.Add(target);
-							}
-							else if (target.IsInWorld)
-							{
-								LogManager.GetCurrentClassLogger().Warn(
-									"{0} tried to cast spell \"{1}\" with forced target {2} which is not in context",
-									CasterObject, Spell, target);
-							}
+							return failReason;
 						}
 					}
 					else
 					{
 						// Initialize standard Targets
-						if (handler.m_targets != null)
+						if ((failReason = handlerTargets.FindAllTargets()) != SpellFailedReason.Ok)
 						{
-							var handlerTargets = handler.m_targets;
-
-							if (!handlerTargets.IsInitialized)
-							{
-								// find all targets and initialize them
-								if ((failReason = handlerTargets.FindAllTargets()) != SpellFailedReason.Ok)
-								{
-									return failReason;
-								}
-							}
-
-							foreach (var target in handlerTargets)
-							{
-								m_targets.Add(target);
-							}
+							return failReason;
 						}
+					}
+
+					foreach (var target in handlerTargets)
+					{
+						m_targets.Add(target);
 					}
 				}
 			}

@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Battlegrounds
 	{
 		public readonly BattlegroundTeam Team;
 
-		internal OneShotUpdateObjectAction CancelTimer;
+		internal OneShotObjectUpdateTimer CancelTimer;
 
 		public BattlegroundInvitation(BattlegroundTeam team, int queueIndex)
 		{

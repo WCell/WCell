@@ -61,14 +61,14 @@ namespace WCell.RealmServer.Editor.Menus
 			convo.Character.AddUpdateAction(new PeriodicLoadMapTimer(convo));
 		}
 
-		class PeriodicLoadMapTimer : SimpleObjectUpdateAction
+		class PeriodicLoadMapTimer : ObjectUpdateTimer
 		{
 			private readonly GossipConversation m_Convo;
 
 			public PeriodicLoadMapTimer(GossipConversation convo)
 			{
 				m_Convo = convo;
-				Ticks = 10;
+				Delay = 1000;
 				Callback = OnTick;
 			}
 

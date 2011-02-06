@@ -133,6 +133,9 @@ namespace WCell.RealmServer.Editor
 		{
 			Team.Remove(chr.EntityId.Low);
 			chr.RemoveUpdateAction(UpdateCallback);
+
+			// hide all figurines
+			chr.ResetOwnWorld();
 		}
 
 		/// <summary>

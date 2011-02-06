@@ -244,15 +244,12 @@ namespace WCell.RealmServer.Entities
 			{
 				InitImmovable();
 			}
+			Level = entry.GetRandomLevel();
 
 			AddMessage(() =>
 			{
 				// Set Level/Scale after NPC is in world:
-				if (!HasPlayerMaster)
-				{
-					Level = entry.GetRandomLevel();
-				}
-				else
+				if (HasPlayerMaster)
 				{
 					Level = m_master.Level;
 				}

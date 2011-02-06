@@ -111,7 +111,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 		public GOCustomAreaEffectEntry()
 		{
 			Radius = 5;
-			UpdateTicks = 1;
+			UpdateDelayMillis = 500;
 		}
 
 		public float Radius
@@ -124,7 +124,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 			}
 		}
 
-		public int UpdateTicks
+		public int UpdateDelayMillis
 		{
 			get;
 			set;
@@ -145,7 +145,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 			go.SetUpdatePriority(UpdatePriority.VeryLowPriority);
 			if (m_AreaEffectHandler != null)
 			{
-				go.CallPeriodicallyTicks(UpdateTicks, ApplyEffectsToArea);
+				go.CallPeriodically(UpdateDelayMillis, ApplyEffectsToArea);
 			}
 		}
 

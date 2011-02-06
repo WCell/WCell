@@ -139,7 +139,7 @@ namespace WCell.RealmServer.Entities
 				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
 			}
 			dmg += GetDamageDoneMod(school);
-			dmg += (int)(GetDamageDoneFactor(school) * dmg + 0.5f);
+			dmg = (int)(GetDamageDoneFactor(school) * dmg + 0.5f);
 			return dmg;
 		}
 		#endregion

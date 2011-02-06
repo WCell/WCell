@@ -1,4 +1,4 @@
-- first version of the map/spawn editor system is out (still missing most stuff) - type: #edit
-- many small additions to the gossip system
-- added Character.ResetOwnWorld and InvalidateKnowledgeOf methods
-- GO's now get their owner's level
+- fixed periodic aura time display
+- removed level up animation from newly spawned creatures
+- fixed spell damage calculation (was always doubled for characters, and applied twice if spell was triggered)
+- got rid of the tick-based IUpdateObjectAction and replaced them with about equally efficient but much more precise timers

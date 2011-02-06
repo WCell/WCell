@@ -13,6 +13,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.AI.Actions.Combat;
 using System;
+using WCell.RealmServer.Spells.Targeting;
 using WCell.Util.Graphics;
 
 
@@ -20,13 +21,52 @@ namespace WCell.Addons.Default.Instances
 {
 	public class Deadmines : RaidInstance
 	{
+		static NPCEntry rhahkzorEntry;
+		static NPCEntry sneedEntry;
+		static NPCEntry sneedShredderEntry;
+		static NPCEntry gilnidEntry;
+		static NPCEntry smiteEntry;
+		static GOEntry defiasCannonEntry;
+
+		static Spell disarm;
+		static Spell terrify, distractingPain, ejectSneed;
+
 		#region Setup Content
-		private static NPCEntry rhahkzorEntry;
-		private static NPCEntry sneedEntry;
-		private static NPCEntry sneedShredderEntry;
-		private static NPCEntry gilnidEntry;
-		private static NPCEntry smiteEntry;
-		private static GOEntry defiasCannonEntry;
+		[Initialization(InitializationPass.Second)]
+		public static void InitSneedSpells()
+		{
+			disarm = SpellHandler.Get(SpellId.Disarm_2);  //disarm
+			disarm.AISettings.SetCooldown(10000);
+			disarm.OverrideAITargetDefinitions(DefaultTargetAdders.AddAreaSource,		// random hostile nearby character
+											   DefaultTargetEvaluators.RandomEvaluator,
+											   DefaultTargetFilters.IsPlayer, DefaultTargetFilters.IsHostile);
+
+
+			SpellHandler.Apply(spell => spell.CooldownTime = 20000, SpellId.MoltenMetal);
+			SpellHandler.Apply(spell => spell.CooldownTime = 25000, SpellId.MeltOre);
+
+
+			// Rhakzor's slam has a cooldown of about 12s
+			SpellHandler.Apply(spell => { spell.AISettings.SetCooldown(10000, 14000); }, SpellId.RhahkZorSlam);
+
+
+			SpellHandler.Apply(spell => spell.CooldownTime = 10000, SpellId.SmiteSlam);
+
+			// remember the Spells for later use
+			terrify = SpellHandler.Get(SpellId.Terrify);
+			terrify.AISettings.SetCooldown(21000);
+			terrify.OverrideAITargetDefinitions(DefaultTargetAdders.AddAreaSource,		// random hostile nearby character
+											   DefaultTargetEvaluators.RandomEvaluator,
+											   DefaultTargetFilters.IsPlayer, DefaultTargetFilters.IsHostile);
+
+			distractingPain = SpellHandler.Get(SpellId.DistractingPain);
+			distractingPain.AISettings.SetCooldown(12000);
+			distractingPain.OverrideAITargetDefinitions(DefaultTargetAdders.AddAreaSource,		// random hostile nearby character
+											   DefaultTargetEvaluators.RandomEvaluator,
+											   DefaultTargetFilters.IsPlayer, DefaultTargetFilters.IsHostile);
+
+			ejectSneed = SpellHandler.Get(SpellId.EjectSneed);
+		}
 
 		[Initialization]
 		[DependentInitialization(typeof(NPCMgr))]
@@ -38,28 +78,17 @@ namespace WCell.Addons.Default.Instances
 
 			rhahkzorEntry.AddSpell(SpellId.RhahkZorSlam);		// add Rhakzor's slam
 
-			// Rhakzor's slam has a cooldown of about 12s
-			SpellHandler.Apply(spell => { spell.CooldownTime = 12000; },
-				SpellId.RhahkZorSlam);
-
 
 			// Sneed
 			sneedShredderEntry = NPCMgr.GetEntry(NPCId.SneedsShredder);
-			sneedShredderEntry.Activated += sneedShredder =>
-			{
-				((BaseBrain)sneedShredder.Brain).DefaultCombatAction.Strategy = new SneedShredderAttackAction(sneedShredder);
-			};
 			sneedShredderEntry.Died += sneedShredder =>
 			{
 				// Cast the sneed ejection spell on the corpse after a short delay
-				sneedShredder.CallDelayed(2500, (delayed) => { sneedShredder.SpellCast.TriggerSelf(SneedShredderAttackAction.ejectSneed); });
+				sneedShredder.CallDelayed(2500, (delayed) => { sneedShredder.SpellCast.TriggerSelf(ejectSneed); });
 			};
 
 			sneedEntry = NPCMgr.GetEntry(NPCId.Sneed);
-			sneedEntry.Activated += sneed =>
-			{
-				((BaseBrain)sneed.Brain).DefaultCombatAction.Strategy = new SneedAttackAction(sneed);
-			};
+			sneedEntry.AddSpell(disarm);
 			sneedEntry.Died += sneed =>
 			{
 				var instance = sneed.Map as Deadmines;
@@ -80,9 +109,6 @@ namespace WCell.Addons.Default.Instances
 
 			gilnidEntry.AddSpell(SpellId.MoltenMetal);
 			gilnidEntry.AddSpell(SpellId.MeltOre);
-
-			SpellHandler.Apply(spell => spell.CooldownTime = 20000, SpellId.MoltenMetal);
-			SpellHandler.Apply(spell => spell.CooldownTime = 25000, SpellId.MeltOre);
 
 			gilnidEntry.Died += gilnid =>
 			{
@@ -112,7 +138,6 @@ namespace WCell.Addons.Default.Instances
 			{
 				((BaseBrain)smite.Brain).DefaultCombatAction.Strategy = new SmiteAttackAction(smite);
 			};
-            SpellHandler.Apply(spell => spell.CooldownTime = 10000, SpellId.SmiteSlam);
 		}
 
 		[Initialization]
@@ -149,7 +174,7 @@ namespace WCell.Addons.Default.Instances
 				};
 			}
 
-            GOEntry gilnidDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
+			GOEntry gilnidDoorEntry = GOMgr.GetEntry(GOEntryId.HeavyDoor);
 			var gilnidDoorCord = new Vector3(-168.514f, -579.861f, 19.3159f);
 			if (gilnidDoorEntry != null)
 			{
@@ -182,11 +207,9 @@ namespace WCell.Addons.Default.Instances
 		}
 		#endregion
 
-		#region Fields
 		public GameObject rhahkzorDoor;
 		public GameObject sneedDoor; //16400
 		public GameObject gilnidDoor; //16399
-		#endregion
 	}
 
 	#region Rahkzor
@@ -203,12 +226,13 @@ namespace WCell.Addons.Default.Instances
 		public override void OnEnterCombat()
 		{
 			//m_owner.PlayTextAndSoundByEnglishPrefix("Van");	// Van Cleef pay big...
-            m_owner.PlayTextAndSoundById(-22);
+			m_owner.PlayTextAndSoundById(-22);
 			base.OnEnterCombat();
 		}
 
 		public override void OnDeath()
 		{
+			// open door on death
 			var instance = m_owner.Map as Deadmines;
 
 			if (instance != null)
@@ -223,127 +247,6 @@ namespace WCell.Addons.Default.Instances
 			}
 			base.OnDeath();
 		}
-	}
-	#endregion
-
-	#region Sneed
-	public class SneedShredderAttackAction : AIAttackAction
-	{
-		internal static Spell terrify, distractingPain, ejectSneed;
-		private IUpdateObjectAction distractingPainTimer, terrifyTimer;
-
-		[Initialization(InitializationPass.Second)]
-		public static void InitSneed()
-		{
-			// remember the Spells for later use
-			terrify = SpellHandler.Get(SpellId.Terrify);
-			distractingPain = SpellHandler.Get(SpellId.DistractingPain);
-			ejectSneed = SpellHandler.Get(SpellId.EjectSneed);
-		}
-
-		public SneedShredderAttackAction(NPC sneed)
-			: base(sneed)
-		{
-		}
-
-		public override void Start()
-		{
-			distractingPainTimer = m_owner.CallPeriodically(12000, CastDistractingPain);
-			terrifyTimer = m_owner.CallPeriodically(21000, CastTerrify);
-
-			base.Start();
-		}
-
-		public override void Stop()
-		{
-			// remove spell cast timers
-			m_owner.RemoveUpdateAction(distractingPainTimer);
-			m_owner.RemoveUpdateAction(terrifyTimer);
-			base.Stop();
-		}
-
-		void CastDistractingPain(WorldObject owner)
-		{
-			Character chr = owner.GetNearbyRandomHostileCharacter();
-			if (chr != null)
-			{
-				owner.SpellCast.Start(distractingPain, false, chr);
-				m_owner.Idle(1000);	// idle a little after casting a spell
-			}
-		}
-
-		void CastTerrify(WorldObject owner)
-		{
-			Character chr = m_owner.GetNearbyRandomHostileCharacter();
-			if (chr != null)
-			{
-				m_owner.SpellCast.Start(terrify, false, chr);
-				m_owner.Idle(1000);	// idle a little after casting a spell
-			}
-		}
-	}
-
-	public class SneedAttackAction : AIAttackAction
-	{
-		private DateTime timeNow;
-		private DateTime timeSinceLastInterval;
-		private TimeSpan timeBetween;
-		private const int interVal = 1;
-		private int disarmTick;
-		private static Spell disarm;
-
-		[Initialization(InitializationPass.Second)]
-		public static void InitSneed()
-		{
-			disarm = SpellHandler.Get(SpellId.Disarm_2);  //disarm
-		}
-
-		public SneedAttackAction(NPC sneed)
-			: base(sneed)
-		{
-		}
-
-		public override void Start()
-		{
-			disarmTick = 0;
-			timeSinceLastInterval = DateTime.Now;
-			base.Start();
-		}
-
-		public override void Update()
-		{
-			timeNow = DateTime.Now;
-			timeBetween = timeNow - timeSinceLastInterval;
-
-			if (timeBetween.TotalSeconds >= interVal)
-			{
-				timeSinceLastInterval = DateTime.Now;
-				if (SpellCast())
-				{
-					return;
-				}
-			}
-
-			base.Update();
-		}
-
-		private bool SpellCast()
-		{
-			disarmTick++;
-
-			if (disarmTick >= 10)
-			{
-				disarmTick = 0;
-				var chr = m_owner.GetNearbyRandomHostileCharacter();
-				if (chr != null)
-				{
-					m_owner.SpellCast.Start(disarm, false, chr);
-					return true;
-				}
-			}
-			return false;
-		}
-
 	}
 	#endregion
 
@@ -368,14 +271,14 @@ namespace WCell.Addons.Default.Instances
 		public static Vector3 ChestLocation = new Vector3(1.100060f, -780.026367f, 9.811194f);
 		private static Spell smiteStomp;
 		private static Spell smiteBuff;
-        private static Spell smiteSlam;
+		private static Spell smiteSlam;
 
 		[Initialization(InitializationPass.Second)]
 		public static void InitSmite()
 		{
 			smiteStomp = SpellHandler.Get(SpellId.SmiteStomp);
 			smiteBuff = SpellHandler.Get(SpellId.SmitesHammer);
-            smiteSlam = SpellHandler.Get(SpellId.SmiteSlam);
+			smiteSlam = SpellHandler.Get(SpellId.SmiteSlam);
 
 		}
 
@@ -394,7 +297,7 @@ namespace WCell.Addons.Default.Instances
 				if (hpPct <= 33 && phase == 1)
 				{
 					// when below 33% health, do second special action
-                    m_owner.PlayTextAndSoundById(-176);
+					m_owner.PlayTextAndSoundById(-176);
 					m_owner.SpellCast.Trigger(smiteStomp);		// aoe spell finds targets automatically
 					m_owner.Auras.CreateSelf(smiteBuff, true);		// apply buff to self
 					MoveToChest();
@@ -404,7 +307,7 @@ namespace WCell.Addons.Default.Instances
 				else if (hpPct <= 66 && phase == 0)
 				{
 					// when below 66% health, do first special action
-                    m_owner.PlayTextAndSoundById(-175);
+					m_owner.PlayTextAndSoundById(-175);
 					m_owner.SpellCast.Trigger(smiteStomp);
 					MoveToChest();
 					phase = 1;
@@ -457,11 +360,11 @@ namespace WCell.Addons.Default.Instances
 		{
 		}
 
-        public override void OnEnterCombat()
-        {
-            m_owner.PlayTextAndSoundById(-174); // "We're under attack! Avast ya swabs! Repel the invaders!"
-            base.OnEnterCombat();
-        }
+		public override void OnEnterCombat()
+		{
+			m_owner.PlayTextAndSoundById(-174); // "We're under attack! Avast ya swabs! Repel the invaders!"
+			base.OnEnterCombat();
+		}
 	}
 	#endregion
 }

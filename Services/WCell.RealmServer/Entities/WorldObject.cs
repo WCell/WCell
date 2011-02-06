@@ -97,7 +97,7 @@ namespace WCell.RealmServer.Entities
 
 		public static float HighlightScale = 5f;
 
-		public static int HighlightTicks = 10;
+		public static int HighlightDelayMillis = 1500;
 		#endregion
 
 		protected Vector3 m_position;
@@ -366,14 +366,14 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		/// <summary>
-		/// Can be used to determine whether a periodic Action should be
-		/// executed on this Tick.
+		/// Can be used to slow down execution of methods that:
+		///		1. Should not be executed too often
+		///		2. Don't need to be timed precisely
+		/// For example: AI updates
 		/// </summary>
-		/// <param name="ticks"></param>
-		/// <returns></returns>
 		public bool CheckTicks(int ticks)
 		{
-			return ticks == 0 || ((m_ticks + EntityId.Low) % ticks) == 0;
+			return ticks == 0 || ((Map.TickCount + EntityId.Low) % ticks) == 0;
 		}
 
 		/// <summary>
@@ -1402,7 +1402,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var diff = ((HighlightScale - 1) * ScaleX);
 			ScaleX = HighlightScale * ScaleX;
-			CallDelayedTicks(HighlightTicks, obj => obj.ScaleX -= diff);
+			CallDelayed(HighlightDelayMillis, obj => obj.ScaleX -= diff);
 		}
 
 		public void PlaySound(uint sound)

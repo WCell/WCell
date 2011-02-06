@@ -213,12 +213,11 @@ namespace WCell.RealmServer.Entities
 			var spellList = new List<PetTalentSpellRecord>();
 			foreach (var spell in NPCSpells)
 			{
-				var cdTicks = NPCSpells.TicksUntilCooldown(spell);
-				var cdTime = DateTime.Now.AddMilliseconds(cdTicks * Map.UpdateDelay);
+				var cdMillis = NPCSpells.GetRemainingCooldownMillis(spell);
 				var spellRecord = new PetTalentSpellRecord
 				{
 					SpellId = spell.Id,
-					CooldownUntil = cdTime
+					CooldownUntil = DateTime.Now.AddMilliseconds(cdMillis)
 				};
 				spellList.Add(spellRecord);
 			}
@@ -284,15 +283,16 @@ namespace WCell.RealmServer.Entities
 
 		protected override void OnLevelChanged()
 		{
-			// scale size, if necessary
-			UpdateSize();
-
-			// add/remove spell ranks
-			UpdateSpellRanks();
-
 			if (HasPlayerMaster)
 			{
+				// scale size, if necessary
+				UpdateSize();
+
+				// add/remove spell ranks
+				UpdateSpellRanks();
 				var level = Level;
+
+				// update talents
 				if (level >= PetMgr.MinPetTalentLevel)
 				{
 					// make sure, pet has talent collection
@@ -300,16 +300,13 @@ namespace WCell.RealmServer.Entities
 					{
 						m_petTalents = new PetTalentCollection(this);
 					}
-				}
 
-				if (m_petTalents != null)
-				{
 					// update talent points
 					var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
 					if (freeTalentPoints < 0)
 					{
 						// Level was reduced: Remove talent points
-						if (!((Character)m_master).GodMode)
+						if (!((Character) m_master).GodMode)
 						{
 							Talents.RemoveTalents(-freeTalentPoints);
 						}
@@ -318,10 +315,10 @@ namespace WCell.RealmServer.Entities
 					FreeTalentPoints = freeTalentPoints;
 				}
 
+				// update pet stats
 				var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
 				if (levelStatInfo != null)
 				{
-					// update pet stats
 					ModPetStatsPerLevel(levelStatInfo);
 					m_auras.ReapplyAllAuras();
 				}

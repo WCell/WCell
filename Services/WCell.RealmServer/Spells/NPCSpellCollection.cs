@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		protected List<Spell> m_readySpells;
-		protected List<CooldownRemoveAction> m_cooldowns;
+		protected List<CooldownRemoveTimer> m_cooldowns;
 
 		#region Init & Cleanup
 		private NPCSpellCollection()
@@ -200,11 +200,11 @@ namespace WCell.RealmServer.Spells
 			m_readySpells.Remove(spell);
 
 			var ticks = millis / Owner.Map.UpdateDelay;
-			var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
+			var action = new CooldownRemoveTimer(ticks, spell, owner => m_readySpells.Add(spell));
 			Owner.AddUpdateAction(action);
 			if (m_cooldowns == null)
 			{
-				m_cooldowns = new List<CooldownRemoveAction>();
+				m_cooldowns = new List<CooldownRemoveTimer>();
 			}
 			m_cooldowns.Add(action);
 		}
@@ -247,7 +247,10 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		public int TicksUntilCooldown(Spell spell)
+		/// <summary>
+		/// Returns the delay until the given spell has cooled down in milliseconds
+		/// </summary>
+		public int GetRemainingCooldownMillis(Spell spell)
 		{
 			if (m_cooldowns == null) return 0;
 
@@ -256,14 +259,14 @@ namespace WCell.RealmServer.Spells
 				var cd = m_cooldowns[i];
 				if (cd.Spell.Id != spell.Id) continue;
 
-				return ((Owner.Map.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
+				return cd.GetDelayUntilNextExecution(Owner);
 			}
 			return 0;
 		}
 
-		protected class CooldownRemoveAction : OneShotUpdateObjectAction
+		protected class CooldownRemoveTimer : OneShotObjectUpdateTimer
 		{
-			public CooldownRemoveAction(int ticks, Spell spell, Action<WorldObject> action)
+			public CooldownRemoveTimer(int ticks, Spell spell, Action<WorldObject> action)
 				: base(ticks, action)
 			{
 				Spell = spell;

@@ -14,7 +14,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 	{
 		protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static int UpdatePositionTicks = 3;
+		public static int UpdatePositionTicks = 4;
 
 		public static float DefaultFollowDistanceMax = 5f;
 		//public static float DefaultFollowDistanceMin = 1f;

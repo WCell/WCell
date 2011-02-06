@@ -86,6 +86,40 @@ namespace WCell.RealmServer.Spells
 		}
 
 		#region Add
+		public SpellFailedReason AddAll(WorldObject[] forcedTargets)
+		{
+			IsInitialized = true;
+			for (var j = 0; j < forcedTargets.Length; j++)
+			{
+				var target = forcedTargets[j];
+				if (target.IsInContext)
+				{
+					var err = ValidateTargetForHandlers(target);
+					if (err != SpellFailedReason.Ok)
+					{
+						LogManager.GetCurrentClassLogger().Warn(
+							"{0} tried to cast spell \"{1}\" with forced target {2} which is not valid: {3}",
+							Cast.CasterObject, Cast.Spell, target, err);
+						if (!Cast.IsAoE)
+						{
+							return err;
+						}
+					}
+					else
+					{
+						Add(target);
+					}
+				}
+				else if (target.IsInWorld)
+				{
+					LogManager.GetCurrentClassLogger().Warn(
+						"{0} tried to cast spell \"{1}\" with forced target {2} which is not in context",
+						Cast.CasterObject, Cast.Spell, target);
+				}
+			}
+			return SpellFailedReason.Ok;
+		}
+
 		int EvaluateTarget(WorldObject target)
 		{
 			var handler = FirstHandler;
@@ -94,7 +128,7 @@ namespace WCell.RealmServer.Spells
 
 			if (cast.IsAICast)
 			{
-				// TODO: Make sure that AI prefers targets that do not already have an Aura
+				// TODO: Should AI prefer targets that do not already have an Aura?
 				if (cast.Spell.IsAura && target is Unit)
 				{
 					var unit = (Unit)target;
@@ -133,12 +167,11 @@ namespace WCell.RealmServer.Spells
 				else
 				{
 					// add new target, only if its a better choice than what we had before
-					var handler = FirstHandler;
 					var replacementValue = EvaluateTarget(target);
 					var replacementIndex = -1;
 
 					// Find target with greatest value and replace it
-					for (var i = Count-1; i >= 0; i--)
+					for (var i = Count - 1; i >= 0; i--)
 					{
 						var existingTarget = this[i];
 						var existingValue = EvaluateTarget(existingTarget);

@@ -62,7 +62,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		// TODO: check this. it's always null, so...?
 #pragma warning disable 0649
-		private OneShotUpdateObjectAction _debuffUpdate;
+		private OneShotObjectUpdateTimer m_DebuffObjectUpdate;
 #pragma warning restore 0649
 
 		#endregion
@@ -189,7 +189,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			// Shows the flag on the character. Does all kinds of stuff in the handler.
 			chr.Auras.CreateSelf(_flagSpell, true);
-			_debuffUpdate = chr.CallDelayed(_flagRespawnTime, obj => ApplyFlagCarrierDebuff());
+			m_DebuffObjectUpdate = chr.CallDelayed(_flagRespawnTime, obj => ApplyFlagCarrierDebuff());
 
 			if (_flag != null)
 			{
@@ -331,7 +331,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		/// </summary>
 		void OnFlagAuraRemoved(Character chr)
 		{
-			chr.RemoveUpdateAction(_debuffUpdate);
+			chr.RemoveUpdateAction(m_DebuffObjectUpdate);
 		}
 
 		private void ApplyFlagCarrierDebuff()
