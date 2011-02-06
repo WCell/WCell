@@ -1,3 +1,4 @@
-- implemented the new DynamicTextGossipMenu
-- added new GossipTextHelper class for special characters and gossip variables, such as newline, character name, gender, conditional texts etc
-- here is an example on how to use them: https://github.com/WCell/WCell/blob/master/Services/WCell.RealmServer/Editor/Menus/MapEditorMenu.cs
+- fixed: Aura.Refresh also refreshes Aura charges / issues in CheckSkill (thanks Chameleon)
+- fixed: Send enchant information to owner when receiving/looting enchanted item
+- SpellCast.*Item and Aura.UsedItem properties are now set to the Item to which an enchant belongs that casted the spell/aura
+- added PeriodicallyUpdatedAuraEffectHandler for modal Aura effects that can change over time (e.g. ModStatsPercent etc)

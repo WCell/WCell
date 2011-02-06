@@ -37,6 +37,7 @@ namespace WCell.RealmServer.Spells.Effects
 			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
 			{
 				failReason = SpellFailedReason.Lowlevel;
+				return;
 			}
 
 			enchantEntry = EnchantMgr.GetEnchantmentEntry((uint)Effect.MiscValue);

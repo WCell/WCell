@@ -562,12 +562,10 @@ namespace WCell.RealmServer.Items
 		/// <summary>
 		/// Called whenever the Player receives a new Item
 		/// </summary>
-		internal void OnAdd(Item item)
+		internal void OnNewStack(Item item)
 		{
 			item.m_owner = m_owner;
 			OnAddDontNotify(item);
-			// notify about new item
-
 		}
 
 		internal void OnAddDontNotify(Item item)

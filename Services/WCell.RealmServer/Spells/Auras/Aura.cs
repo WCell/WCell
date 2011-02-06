@@ -67,6 +67,8 @@ namespace WCell.RealmServer.Spells.Auras
 		protected AuraRecord m_record;
 
 		private Item m_UsedItem;
+
+		private bool m_hasPeriodicallyUpdatedEffectHandler;
 		#endregion
 
 		#region Creation & Init
@@ -95,14 +97,13 @@ namespace WCell.RealmServer.Spells.Auras
 			m_index = index;
 			m_auraLevel = (byte)casterReference.Level;
 
-			m_stackCount = (byte)m_spell.StackCount;
+			m_stackCount = (byte)m_spell.InitialStackCount;
 			if (m_stackCount > 0 && casterReference.UnitMaster != null)
 			{
 				m_stackCount = casterReference.UnitMaster.Auras.GetModifiedInt(SpellModifierType.Charges, m_spell, m_stackCount);
 			}
 
-			SetAmplitude();
-			DetermineFlags();
+			SetupValues();
 		}
 
 		internal Aura(AuraCollection auras, ObjectReference caster, AuraRecord record, List<AuraEffectHandler> handlers, byte index)
@@ -121,8 +122,7 @@ namespace WCell.RealmServer.Spells.Auras
 
 			m_stackCount = record.StackCount;
 
-			SetAmplitude();
-			DetermineFlags();
+			SetupValues();
 
 			// figure out amplitude and duration
 			m_duration = record.MillisLeft;
@@ -150,8 +150,11 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 
-		private void SetAmplitude()
+		private void SetupValues()
 		{
+			DetermineFlags();
+			m_hasPeriodicallyUpdatedEffectHandler = m_handlers.Any(handler => handler is PeriodicallyUpdatedAuraEffectHandler);
+
 			if (m_amplitude != 0)
 				return;
 
@@ -526,6 +529,11 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			get { return m_auraFlags; }
 		}
+
+		public bool HasPeriodicallyUpdatedEffectHandler
+		{
+			get { return m_hasPeriodicallyUpdatedEffectHandler; }
+		}
 		#endregion
 
 		#region Start
@@ -798,7 +806,12 @@ namespace WCell.RealmServer.Spells.Auras
 				RemoveNonPeriodicEffects();
 
 				m_CasterReference = caster;
-				if (m_stackCount < m_spell.MaxStackCount)
+
+				if (m_spell.InitialStackCount > 1)
+				{
+					m_stackCount = (byte)m_spell.InitialStackCount;
+				}
+				else if (m_stackCount < m_spell.MaxStackCount)
 				{
 					m_stackCount++;
 				}
@@ -1096,6 +1109,16 @@ namespace WCell.RealmServer.Spells.Auras
 
 		public void Update(int dt)
 		{
+			if (m_hasPeriodicallyUpdatedEffectHandler)
+			{
+				foreach (var handler in m_handlers)
+				{
+					if (handler is PeriodicallyUpdatedAuraEffectHandler)
+					{
+						((PeriodicallyUpdatedAuraEffectHandler)handler).Update();
+					}
+				}
+			}
 			if (m_timer != null)
 			{
 				m_timer.Update(dt);

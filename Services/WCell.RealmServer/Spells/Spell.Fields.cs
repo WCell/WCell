@@ -169,7 +169,9 @@ namespace WCell.RealmServer.Spells
 		/// Hunter ranged spells have this. It seems always to be 75
 		/// </summary>
 		public SpellId ModalNextSpell;//42
+
 		public int MaxStackCount;//43
+
 		[Persistent(2)]
 		public uint[] RequiredToolIds;//44 - 45
 		[Persistent(8)]

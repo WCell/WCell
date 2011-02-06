@@ -399,6 +399,16 @@ namespace WCell.RealmServer.Entities
 
 			// The container information was updated during the container's add function
 			m_owner = m_container.Owner;
+
+			// send enchant information to owner
+			for (var slot = (EnchantSlot)0; slot < EnchantSlot.End; slot++)
+			{
+				var enchant = GetEnchantment(slot);
+				if (enchant != null)
+				{
+					OnOwnerReceivedNewEnchant(enchant);
+				}
+			}
 		}
 
 		/// <summary>
@@ -513,7 +523,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private int GetEnchantSlot(EnchantSlot slot, EnchantInfoOffset offset)
+		private static int GetEnchantSlot(EnchantSlot slot, EnchantInfoOffset offset)
 		{
 			return (int)ItemFields.ENCHANTMENT_1_1 + ((int)slot * 3) + (int)offset;
 		}
@@ -652,17 +662,28 @@ namespace WCell.RealmServer.Entities
 				{
 					owner.Inventory.ModUniqueCount(enchant.Entry.GemTemplate, 1);
 				}
-				ItemHandler.SendEnchantLog(owner, (ItemId)EntryId, enchantEntry.Id);
-				if (duration != 0)
-				{
-					ItemHandler.SendEnchantTimeUpdate(owner, this, duration);
-				}
+				OnOwnerReceivedNewEnchant(enchant);
 
 				if (applyBoni && IsEquippedItem)
 				{
 					// render on Character and apply boni
 					SetEnchantEquipped(enchant);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Called when owner learns about new enchant:
+		/// When enchant gets added and when receiving an enchanted item
+		/// </summary>
+		private void OnOwnerReceivedNewEnchant(ItemEnchantment enchant)
+		{
+			var owner = OwningCharacter;
+			ItemHandler.SendEnchantLog(owner, (ItemId)EntryId, enchant.Entry.Id);
+
+			if (enchant.Duration != 0)
+			{
+				ItemHandler.SendEnchantTimeUpdate(owner, this, enchant.Duration);
 			}
 		}
 

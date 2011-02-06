@@ -883,7 +883,7 @@ namespace WCell.RealmServer.Items
 			this[slot] = item;
 			if (isNew)
 			{
-				OwnerInventory.OnAdd(item);
+				OwnerInventory.OnNewStack(item);
 			}
 			return item;
 		}
@@ -909,7 +909,7 @@ namespace WCell.RealmServer.Items
 			item.Amount += freeSpace;
 			if (isNew)
 			{
-				OwnerInventory.OnAdd(item);
+				OwnerInventory.OnNewStack(item);
 			}
 			return item;
 		}
@@ -926,7 +926,7 @@ namespace WCell.RealmServer.Items
 			this[slot] = item;
 			if (isNew)
 			{
-				OwnerInventory.OnAdd(item);
+				OwnerInventory.OnNewStack(item);
 			}
 			else
 			{

@@ -122,7 +122,13 @@ namespace WCell.RealmServer.Items.Enchanting
 		private static void ApplyEquipSpell(Item item, ItemEnchantmentEffect effect)
 		{
 			var owner = item.OwningCharacter;
-			owner.SpellCast.Trigger((SpellId)effect.Misc, owner);
+			var spell = SpellHandler.Get((SpellId)effect.Misc);
+			if (spell == null)
+			{
+				LogManager.GetCurrentClassLogger().Warn("{0} had invalid SpellId: {1}", effect, (SpellId)effect.Misc);
+				return;
+			}
+			SpellCast.ValidateAndTriggerNew(spell, owner, owner, null, item);
 		}
 
 		private static void ApplyResistance(Item item, ItemEnchantmentEffect effect)
