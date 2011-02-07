@@ -372,9 +372,9 @@ namespace WCell.RealmServer.Spells
 					chr.Inventory.Ensure(tool.Template, 1);
 				}
 			}
-			if (spell.RequiredTotemCategories != null)
+			if (spell.RequiredToolCategories != null)
 			{
-				foreach (var cat in spell.RequiredTotemCategories)
+				foreach (var cat in spell.RequiredToolCategories)
 				{
 					var tool = ItemMgr.GetFirstTotemCat(cat);
 					if (tool != null)
@@ -493,14 +493,14 @@ namespace WCell.RealmServer.Spells
 				cd = spell.GetCooldown(Owner);
 			}
 
-			var catCd = 0;
+			int catCd;
 			if (itemSpell)
 			{
 				catCd = casterItem.Template.UseSpell.CategoryCooldown;
 			}
-			if (catCd == 0)
+			else
 			{
-				catCd = spell.CategoryCooldownTime;
+				catCd = spell.GetModifiedCooldown(Owner, spell.CategoryCooldownTime);
 			}
 
 			if (cd > 0)

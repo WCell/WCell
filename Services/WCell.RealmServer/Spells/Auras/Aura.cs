@@ -410,7 +410,7 @@ namespace WCell.RealmServer.Spells.Auras
 						// periodic
 
 						// no timeout -> infinitely many ticks
-						if (value < 0)
+						if (value <= 0)
 						{
 							m_maxTicks = int.MaxValue;
 						}

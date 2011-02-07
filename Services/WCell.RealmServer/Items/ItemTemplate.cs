@@ -181,7 +181,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemBagFamilyMask BagFamily;
 
-		public TotemCategory TotemCategory;
+		public ToolCategory ToolCategory;
 
 		[Persistent(ItemConstants.MaxSocketCount)]
 		public SocketInfo[] Sockets;
@@ -492,10 +492,10 @@ namespace WCell.RealmServer.Items
 			IsTwoHandWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon;
 			SetIsWeapon();
 
-			if (TotemCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
+			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
 				)
 			{
-				ArrayUtil.Set(ref ItemMgr.FirstTotemsPerCat, (uint)TotemCategory, this);
+				ArrayUtil.Set(ref ItemMgr.FirstTotemsPerCat, (uint)ToolCategory, this);
 			}
 
 			if (GemPropertiesId != 0)
@@ -1065,9 +1065,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "BagFamily: " + BagFamily);
 			}
-			if ((int)TotemCategory != 0)
+			if ((int)ToolCategory != 0)
 			{
-				writer.WriteLine(indent + "TotemCategory: " + TotemCategory);
+				writer.WriteLine(indent + "TotemCategory: " + ToolCategory);
 			}
 
 			var sockets = new List<string>(3);

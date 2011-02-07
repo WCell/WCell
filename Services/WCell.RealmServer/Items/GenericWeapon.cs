@@ -77,6 +77,12 @@ namespace WCell.RealmServer.Items
 			set;
 		}
 
+		public int BonusDamage
+		{
+			get { return 0; }
+			set {  }
+		}
+
 		public SkillId Skill
 		{
 			get;

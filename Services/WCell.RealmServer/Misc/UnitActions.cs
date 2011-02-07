@@ -1277,7 +1277,7 @@ namespace WCell.RealmServer.Misc
 				if (!IsDot)
 				{
 					// does not add to dot
-					Damage = Attacker.GetTotalDamageDoneMod(UsedSchool, Damage, Spell);
+					Damage = Attacker.GetFinalDamage(UsedSchool, Damage, Spell);
 				}
 				else if (SpellEffect != null)
 				{

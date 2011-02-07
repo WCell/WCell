@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = this;
 			MoveControl.CanControl = true;
 
-			CanMelee = true;
+			IncMeleePermissionCounter();
 
 			SpeedFactor = DefaultSpeedFactor;
 

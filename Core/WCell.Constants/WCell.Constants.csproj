@@ -193,7 +193,7 @@
     <Compile Include="Items\ItemConstants.cs" />
     <Compile Include="Items\ItemModType.cs" />
     <Compile Include="Items\Professions.cs" />
-    <Compile Include="Items\TotemCategory.cs" />
+    <Compile Include="Items\ToolCategory.cs" />
     <Compile Include="Looting\LootEntryType.cs" />
     <Compile Include="Misc\CombatRatings.cs" />
     <Compile Include="Misc\Gossips.cs" />

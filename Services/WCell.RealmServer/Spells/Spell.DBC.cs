@@ -374,10 +374,10 @@ namespace WCell.RealmServer.Spells
 					spell.MinReputation = GetUInt32(rawData, currentIndex++);       // 143
 					spell.RequiredAuraVision = GetUInt32(rawData, currentIndex++);  // 144
 
-					spell.RequiredTotemCategories = new TotemCategory[2];       // 145-146
-					for (int i = 0; i < spell.RequiredTotemCategories.Length; i++)
+					spell.RequiredToolCategories = new ToolCategory[2];       // 145-146
+					for (int i = 0; i < spell.RequiredToolCategories.Length; i++)
 					{
-						spell.RequiredTotemCategories[i] = (TotemCategory)GetUInt32(rawData, currentIndex++);
+						spell.RequiredToolCategories[i] = (ToolCategory)GetUInt32(rawData, currentIndex++);
 					}
 
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);

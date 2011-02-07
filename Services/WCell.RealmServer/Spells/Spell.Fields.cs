@@ -294,8 +294,9 @@ namespace WCell.RealmServer.Spells
 		/// only one spellid:26869  has this flag = 1 
 		/// </summary>
 		public uint RequiredAuraVision;
-		[Persistent(2)]
-		public TotemCategory[] RequiredTotemCategories = new TotemCategory[2];// 209 - 210
+
+		[NotPersistent]
+		public ToolCategory[] RequiredToolCategories = new ToolCategory[2];// 209 - 210
 		/// <summary>
 		/// AreaGroup.dbc
 		/// </summary>

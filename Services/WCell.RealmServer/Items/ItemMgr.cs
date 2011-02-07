@@ -822,16 +822,16 @@ namespace WCell.RealmServer.Items
 
 		#region TotemCategories
 		[NotVariable]
-		public static ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)TotemCategory.End];
+		public static ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)ToolCategory.End];
 
-		public static ItemTemplate GetFirstTotemCat(TotemCategory totemCat)
+		public static ItemTemplate GetFirstTotemCat(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat];
+			return FirstTotemsPerCat[(int)toolCat];
 		}
 
-		public static EquipmentSlot[] GetTotemCatSlots(TotemCategory totemCat)
+		public static EquipmentSlot[] GetTotemCatSlots(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat].EquipmentSlots;
+			return FirstTotemsPerCat[(int)toolCat].EquipmentSlots;
 		}
 
 		public static Dictionary<int, TotemCategoryInfo> ReadTotemCategories()

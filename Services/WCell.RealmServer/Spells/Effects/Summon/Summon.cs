@@ -85,11 +85,7 @@ namespace WCell.RealmServer.Spells.Effects
 			int amount;
 			if (summonEntry.DetermineAmountBySpellEffect)
 			{
-				amount = effectValue;
-				if (amount < 1)
-				{
-					amount = 1;
-				}
+				amount = effectValue > 0 ? effectValue : 1;
 			}
 			else
 			{

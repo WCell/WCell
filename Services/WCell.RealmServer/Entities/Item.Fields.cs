@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-                if(!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
+				if (!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
 				{
 					Amount--;
 					return;
@@ -307,7 +307,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_record.ItemTextId; }
 			internal set
 			{
-			//TODO: Items don't have the Text ID field anymore
+				//TODO: Items don't have the Text ID field anymore
 				//SetUInt32(ItemFields.ITEM_TEXT_ID, value);
 				m_record.ItemTextId = value;
 			}
@@ -326,6 +326,12 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_template.Damages;
 			}
+		}
+
+		public int BonusDamage
+		{
+			get;
+			set;
 		}
 
 		public SkillId Skill

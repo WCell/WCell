@@ -160,32 +160,9 @@ namespace WCell.RealmServer.Entities
 		internal void LoadItem(ItemRecord record, Character owner, ItemTemplate template)
 		{
 			m_record = record;
-			EntityId = record.EntityId;
-
-			m_template = template;
-			EntryId = m_template.Id;
-
-			Type |= ObjectTypes.Item;
-
-			SetInt32(ItemFields.FLAGS, (int)record.Flags);
-			SetInt32(ItemFields.DURABILITY, record.Durability);
-			SetInt32(ItemFields.DURATION, record.Duration);
-			SetInt32(ItemFields.STACK_COUNT, record.Amount);
-			SetInt32(ItemFields.PROPERTY_SEED, record.RandomSuffix);
-			SetInt32(ItemFields.RANDOM_PROPERTIES_ID, record.RandomProperty);
-			SetEntityId(ItemFields.CREATOR, new EntityId((ulong)record.CreatorEntityId));
-			SetEntityId(ItemFields.GIFTCREATOR, new EntityId((ulong)record.GiftCreatorEntityId));
-
-			ItemText = record.ItemText;
-
-			if (m_template.UseSpell != null)
-			{
-				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
-			}
-			MaxDurability = m_template.MaxDurability;
-
 			OwningCharacter = owner;
-			OnLoad();
+
+			LoadItem(record, template);
 		}
 
 		/// <summary>
@@ -219,6 +196,24 @@ namespace WCell.RealmServer.Entities
 				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
 			}
 			MaxDurability = m_template.MaxDurability;
+
+			// add enchants
+			if (record.EnchantIds != null)
+			{
+				for (var enchSlot = 0; enchSlot < record.EnchantIds.Length; enchSlot++)
+				{
+					var enchant = record.EnchantIds[enchSlot];
+					if (enchSlot == (int)EnchantSlot.Temporary)
+					{
+						ApplyEnchant(enchant, (EnchantSlot)enchSlot, record.EnchantTempTime, 0, false);
+					}
+					else
+					{
+						ApplyEnchant(enchant, (EnchantSlot)enchSlot, 0, 0, false);
+					}
+				}
+				//item.CheckSocketColors();
+			}
 
 			OnLoad();
 		}
@@ -523,6 +518,18 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public IEnumerable<ItemEnchantment> GetAllEnchantments()
+		{
+			for (var slot = (EnchantSlot)0; slot < EnchantSlot.End; slot++)
+			{
+				var enchant = GetEnchantment(slot);
+				if (enchant != null)
+				{
+					yield return enchant;
+				}
+			}
+		}
+
 		private static int GetEnchantSlot(EnchantSlot slot, EnchantInfoOffset offset)
 		{
 			return (int)ItemFields.ENCHANTMENT_1_1 + ((int)slot * 3) + (int)offset;
@@ -596,7 +603,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (m_enchantments == null)
 			{
-				m_enchantments = new ItemEnchantment[ItemConstants.MaxEnchantsPerItem];
+				m_enchantments = new ItemEnchantment[(int)EnchantSlot.End];
 			}
 		}
 
@@ -635,7 +642,7 @@ namespace WCell.RealmServer.Entities
 			// TODO: Add charges
 			if (m_enchantments == null)
 			{
-				m_enchantments = new ItemEnchantment[ItemConstants.MaxEnchantsPerItem];
+				m_enchantments = new ItemEnchantment[(int)EnchantSlot.End];
 			}
 
 			if (m_enchantments[(int)enchantSlot] != null)
@@ -658,6 +665,8 @@ namespace WCell.RealmServer.Entities
 
 			if (owner != null)
 			{
+				EnchantMgr.ApplyEnchantToItem(this, enchant);
+
 				if (enchant.Entry.GemTemplate != null)
 				{
 					owner.Inventory.ModUniqueCount(enchant.Entry.GemTemplate, 1);
@@ -711,6 +720,7 @@ namespace WCell.RealmServer.Entities
 			var owner = OwningCharacter;
 			if (owner != null)
 			{
+				EnchantMgr.RemoveEnchantFromItem(this, enchant);
 				if (IsEquipped)
 				{
 					SetEnchantUnequipped(enchant);
@@ -916,10 +926,9 @@ namespace WCell.RealmServer.Entities
 						PlayerFields.VISIBLE_ITEM_1_ENCHANTMENT + (Slot * ItemConstants.PlayerFieldVisibleItemSize), (ushort)enchant.Entry.Id);
 			}
 
-			// TODO: Check for conditions
 			for (var i = 0; i < enchant.Entry.Effects.Length; i++)
 			{
-				EnchantMgr.ApplyEffect(this, enchant.Entry.Effects[i]);
+				EnchantMgr.ApplyEquippedEffect(this, enchant.Entry.Effects[i]);
 			}
 		}
 
@@ -1071,6 +1080,17 @@ namespace WCell.RealmServer.Entities
 				if (res > 0)
 				{
 					chr.ModBaseResistance((DamageSchool)i, res);
+				}
+			}
+			foreach (var enchant in GetAllEnchantments())
+			{
+				foreach (var effect in enchant.Entry.Effects)
+				{
+					if (effect.Type == ItemEnchantmentType.Resistance)
+					{
+						// add resistances
+						chr.ModBaseResistance((DamageSchool)effect.Misc, effect.MaxAmount);
+					}
 				}
 			}
 

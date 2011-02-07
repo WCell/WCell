@@ -6,7 +6,7 @@
 
 namespace WCell.Constants.Items
 {
-	public enum TotemCategory  : uint
+	public enum ToolCategory  : uint
 	{
 		None = 0,
 		SkinningKnifeOLD = 1,

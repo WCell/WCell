@@ -266,8 +266,10 @@ namespace WCell.RealmServer.Spells
 		{
 			var failedReason = SpellFailedReason.Ok;
 			var def = DefaultTargetDefinitions.GetTargetDefinition(targetType);
-			def.Collect(this, ref failedReason);
-
+			if (def != null)
+			{
+				def.Collect(this, ref failedReason);
+			}
 			return failedReason;
 		}
 

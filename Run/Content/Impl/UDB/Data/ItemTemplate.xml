@@ -98,7 +98,7 @@
     <Flat Name="ZoneId" Column="area" />
     <Flat Name="MapId" Column="Map" />
     <Flat Name="BagFamily" Column="BagFamily" />
-    <Flat Name="TotemCategory" Column="TotemCategory" />
+    <Flat Name="TotemCategory" Column="ToolCategory" />
     <NestedArray Name="Sockets">
       <Flat Name="Color" Pattern="socketColor_{#}" Offset="1" />
       <Flat Name="Content" Pattern="SocketContent_{#}" Offset="1" />

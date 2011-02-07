@@ -285,44 +285,48 @@ namespace WCell.RealmServer.Entities
 		{
 			if (HasPlayerMaster)
 			{
-				// scale size, if necessary
-				UpdateSize();
-
-				// add/remove spell ranks
-				UpdateSpellRanks();
-				var level = Level;
-
-				// update talents
-				if (level >= PetMgr.MinPetTalentLevel)
+				// make sure to execute in context
+				AddMessage(() =>
 				{
-					// make sure, pet has talent collection
-					if (m_petTalents == null)
-					{
-						m_petTalents = new PetTalentCollection(this);
-					}
+					// scale size, if necessary
+					UpdateSize();
 
-					// update talent points
-					var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
-					if (freeTalentPoints < 0)
+					// add/remove spell ranks
+					UpdateSpellRanks();
+					var level = Level;
+
+					// update talents
+					if (level >= PetMgr.MinPetTalentLevel)
 					{
-						// Level was reduced: Remove talent points
-						if (!((Character) m_master).GodMode)
+						// make sure, pet has talent collection
+						if (m_petTalents == null)
 						{
-							Talents.RemoveTalents(-freeTalentPoints);
+							m_petTalents = new PetTalentCollection(this);
 						}
-						freeTalentPoints = 0;
-					}
-					FreeTalentPoints = freeTalentPoints;
-				}
 
-				// update pet stats
-				var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
-				if (levelStatInfo != null)
-				{
-					ModPetStatsPerLevel(levelStatInfo);
-					m_auras.ReapplyAllAuras();
-				}
-				m_entry.NotifyLeveledChanged(this);
+						// update talent points
+						var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
+						if (freeTalentPoints < 0)
+						{
+							// Level was reduced: Remove talent points
+							if (!((Character)m_master).GodMode)
+							{
+								Talents.RemoveTalents(-freeTalentPoints);
+							}
+							freeTalentPoints = 0;
+						}
+						FreeTalentPoints = freeTalentPoints;
+					}
+
+					// update pet stats
+					var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
+					if (levelStatInfo != null)
+					{
+						ModPetStatsPerLevel(levelStatInfo);
+						m_auras.ReapplyAllAuras();
+					}
+					m_entry.NotifyLeveledChanged(this);
+				});
 			}
 		}
 

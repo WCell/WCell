@@ -1028,7 +1028,6 @@ namespace WCell.RealmServer.Entities
 			else
 			{
 				field = PlayerFields.MOD_DAMAGE_DONE_NEG;
-				delta = -delta;
 			}
 			SetInt32(field + (int)school, GetInt32(field + (int)school) + delta);
 		}
@@ -1050,7 +1049,6 @@ namespace WCell.RealmServer.Entities
 			else
 			{
 				field = PlayerFields.MOD_DAMAGE_DONE_NEG;
-				delta = -delta;
 			}
 			SetUInt32(field + (int)school, GetUInt32(field + (int)school) - (uint)delta);
 		}

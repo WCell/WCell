@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Spells
 				return (RequiredItemClass != 0 && RequiredItemClass != ItemClass.None) ||
 				  RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
 				  RequiredTools != null ||
-				  RequiredTotemCategories.Length > 0 ||
+				  RequiredToolCategories.Length > 0 ||
 				  EquipmentSlot != EquipmentSlot.End;
 			}
 		}
@@ -331,10 +331,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (RequiredTotemCategories.Length > 0)
+			if (RequiredToolCategories.Length > 0)
 			{
 				// Required totem category refers to tools that are required during the spell
-				if (!inv.CheckTotemCategories(RequiredTotemCategories))
+				if (!inv.CheckTotemCategories(RequiredToolCategories))
 				{
 					return SpellFailedReason.TotemCategory;
 				}
@@ -525,7 +525,7 @@ namespace WCell.RealmServer.Spells
 		public int GetCooldown(Unit unit)
 		{
 			int cd;
-			if (unit is NPC)
+			if (unit is NPC && AISettings.Cooldown.MaxDelay > 0)
 			{
 				cd = AISettings.Cooldown.GetRandomCooldown();
 			}
@@ -555,10 +555,15 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = GetModifiedCooldown(unit, cd);
 			}
 			//return Math.Max(cd - unit.Map.UpdateDelay, 0);
 			return cd;
+		}
+
+		public int GetModifiedCooldown(Unit unit, int cd)
+		{
+			return unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 		}
 		#endregion
 	}

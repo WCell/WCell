@@ -238,22 +238,16 @@ namespace WCell.RealmServer.Entities
 				AddAddonData(m_spawnPoint.SpawnEntry.AddonData);
 			}
 
-			CanMelee = m_mainWeapon != GenericWeapon.Peace;
+			if (m_mainWeapon != GenericWeapon.Peace)
+			{
+				IncMeleePermissionCounter();
+			}
 
 			if (IsImmovable)
 			{
 				InitImmovable();
 			}
 			Level = entry.GetRandomLevel();
-
-			AddMessage(() =>
-			{
-				// Set Level/Scale after NPC is in world:
-				if (HasPlayerMaster)
-				{
-					Level = m_master.Level;
-				}
-			});
 		}
 
 		/// <summary>

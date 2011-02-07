@@ -43,8 +43,14 @@ namespace WCell.RealmServer.Spells
 				minion.Phase = cast.Phase;
 				cast.Map.AddObject(minion);
 			}
+
+			if (caster is Character)
+			{
+				minion.Level = caster.Level;
+			}
 			minion.Summoner = caster;
 			minion.Creator = cast.CasterReference.EntityId;
+
 			return minion;
 		}
 	}
@@ -107,7 +113,6 @@ namespace WCell.RealmServer.Spells
 		public SpellSummonTotemHandler(uint index)
 		{
 			Index = index;
-
 		}
 
 		public uint Index

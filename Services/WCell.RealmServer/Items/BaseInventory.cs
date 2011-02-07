@@ -974,26 +974,7 @@ namespace WCell.RealmServer.Items
 				}
 
 				var owner = Owner;
-				var record = item.Record;
 				var inv = OwnerInventory;
-
-				// add enchants
-				if (record.EnchantIds != null)
-				{
-					for (var enchSlot = 0; enchSlot < record.EnchantIds.Length; enchSlot++)
-					{
-						var enchant = record.EnchantIds[enchSlot];
-						if (enchSlot == (int)EnchantSlot.Temporary)
-						{
-							item.ApplyEnchant(enchant, (EnchantSlot)enchSlot, record.EnchantTempTime, 0, false);
-						}
-						else
-						{
-							item.ApplyEnchant(enchant, (EnchantSlot)enchSlot, 0, 0, false);
-						}
-					}
-					//item.CheckSocketColors();
-				}
 
 				cont[slot] = item;
 
@@ -1371,7 +1352,7 @@ namespace WCell.RealmServer.Items
 
 		public override string ToString()
 		{
-			return string.Format("Inventory of {0}: {1}", Owner, this.ToArray().ToString(" / "));
+			return string.Format("Inventory of {0}: {1}", Owner, this.ToString(" / "));
 		}
 	}
 }

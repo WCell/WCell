@@ -62,13 +62,6 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public static uint MinStandStillDelay = 400;
 
-		/// <summary>
-		/// The delay between the last hostile activity and until
-		/// the Unit officially leaves Combat-mode in millis.
-		/// Mostly effects Characters.
-		/// </summary>
-		public static int CombatDeactivationDelay = 5000;
-
 		public static readonly UpdateFieldCollection UpdateFieldInfos = UpdateFieldMgr.Get(ObjectTypeId.Unit);
 
 		protected override UpdateFieldCollection _UpdateFieldInfos
@@ -1201,7 +1194,7 @@ namespace WCell.RealmServer.Entities
 				{
 					visibleDistance = 10.5f - (((float)unit.Stealthed) / 100.0f);
 					// -1.0f per level diff
-					visibleDistance += this.Level - unit.Level;
+					visibleDistance += Level - unit.Level;
 
 					//ModStealthLevel -> auras that increase his stealth
 					var stealthMod = Auras.GetTotalAuraModifier(AuraType.ModStealthLevel);

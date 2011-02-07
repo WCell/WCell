@@ -454,9 +454,9 @@ namespace WCell.RealmServer.Entities
 			return resilience / GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)Level - 1);
 		}
 
-		public override void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
+		public override void DealEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
 		{
-			base.DoEnvironmentalDamage(dmgType, amount);
+			base.DealEnvironmentalDamage(dmgType, amount);
 			if(!IsAlive)
 			{
 				Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.DeathsFrom, (uint)dmgType, 1);

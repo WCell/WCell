@@ -1,3 +1,4 @@
+using System;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Items;
@@ -15,15 +16,19 @@ namespace WCell.RealmServer.Items.Enchanting
 {
 	public static class EnchantMgr
 	{
-		private static Logger log = LogManager.GetCurrentClassLogger();
-
 		public delegate void EnchantHandler(Item item, ItemEnchantmentEffect effect);
 
 		[NotVariable]
-		public static readonly EnchantHandler[] ApplyEnchantHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
+		public static readonly EnchantHandler[] ApplyEnchantToItemHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
 
 		[NotVariable]
-		public static readonly EnchantHandler[] RemoveEnchantHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
+		public static readonly EnchantHandler[] RemoveEnchantFromItemHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
+
+		[NotVariable]
+		public static readonly EnchantHandler[] ApplyEquippedEnchantHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
+
+		[NotVariable]
+		public static readonly EnchantHandler[] RemoveEquippedEnchantHandlers = new EnchantHandler[(uint)ItemEnchantmentType.Count];
 
 		public static MappedDBCReader<ItemEnchantmentEntry, ItemEnchantmentConverter> EnchantmentEntryReader;
 		public static MappedDBCReader<ItemEnchantmentCondition, ItemEnchantmentConditionConverter> EnchantmentConditionReader;
@@ -34,28 +39,36 @@ namespace WCell.RealmServer.Items.Enchanting
 
 		internal static void Init()
 		{
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.CombatSpell] = ApplyCombatSpell;
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.Damage] = ApplyDamage;
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.EquipSpell] = ApplyEquipSpell;
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.Resistance] = ApplyResistance;
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.Stat] = ApplyStat;
-			ApplyEnchantHandlers[(uint)ItemEnchantmentType.Totem] = ApplyTotem;
+			ApplyEnchantToItemHandlers[(uint)ItemEnchantmentType.Damage] = ApplyDamageToItem;
+			RemoveEnchantFromItemHandlers[(uint)ItemEnchantmentType.Damage] = RemoveDamageFromItem;
 
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.CombatSpell] = RemoveCombatSpell;
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.Damage] = RemoveDamage;
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.EquipSpell] = RemoveEquipSpell;
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.Resistance] = RemoveResistance;
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.Stat] = RemoveStat;
-			RemoveEnchantHandlers[(uint)ItemEnchantmentType.Totem] = RemoveTotem;
+
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.Damage] = DoNothing;
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.Resistance] = DoNothing;
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.CombatSpell] = ApplyCombatSpell;
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.EquipSpell] = ApplyEquipSpell;
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.Stat] = ApplyStat;
+			ApplyEquippedEnchantHandlers[(uint)ItemEnchantmentType.Totem] = ApplyTotem;
+
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Damage] = DoNothing;
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Resistance] = DoNothing;
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.CombatSpell] = RemoveCombatSpell;
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.EquipSpell] = RemoveEquipSpell;
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Stat] = RemoveStat;
+			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Totem] = RemoveTotem;
 
 			EnchantmentConditionReader = new MappedDBCReader<ItemEnchantmentCondition, ItemEnchantmentConditionConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENTCONDITION));
+				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENTCONDITION));
 
 			EnchantmentEntryReader = new MappedDBCReader<ItemEnchantmentEntry, ItemEnchantmentConverter>(
 				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENT));
 
 			GemPropertiesReader = new MappedDBCReader<GemProperties, GemPropertiesConverter>(
 				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_GEMPROPERTIES));
+		}
+
+		private static void DoNothing(Item item, ItemEnchantmentEffect effect)
+		{
 		}
 
 		public static ItemEnchantmentEntry GetEnchantmentEntry(uint id)
@@ -84,9 +97,33 @@ namespace WCell.RealmServer.Items.Enchanting
 		/// </summary>
 		/// <param name="item"></param>
 		/// <param name="effect"></param>
-		internal static void ApplyEffect(Item item, ItemEnchantmentEffect effect)
+		internal static void ApplyEquippedEffect(Item item, ItemEnchantmentEffect effect)
 		{
-			ApplyEnchantHandlers[(uint)effect.Type](item, effect);
+			ApplyEquippedEnchantHandlers[(uint)effect.Type](item, effect);
+		}
+
+		internal static void ApplyEnchantToItem(Item item, ItemEnchantment enchant)
+		{
+			foreach (var effect in enchant.Entry.Effects)
+			{
+				var handler = ApplyEnchantToItemHandlers[(uint)effect.Type];
+				if (handler != null)
+				{
+					handler(item, effect);
+				}
+			}
+		}
+
+		internal static void RemoveEnchantFromItem(Item item, ItemEnchantment enchant)
+		{
+			foreach (var effect in enchant.Entry.Effects)
+			{
+				var handler = RemoveEnchantFromItemHandlers[(uint)effect.Type];
+				if (handler != null)
+				{
+					handler(item, effect);
+				}
+			}
 		}
 
 		/// <summary>
@@ -96,7 +133,7 @@ namespace WCell.RealmServer.Items.Enchanting
 		/// <param name="effect"></param>
 		internal static void RemoveEffect(Item item, ItemEnchantmentEffect effect)
 		{
-			RemoveEnchantHandlers[(uint)effect.Type](item, effect);
+			RemoveEquippedEnchantHandlers[(uint)effect.Type](item, effect);
 		}
 
 		#region Handlers
@@ -113,12 +150,6 @@ namespace WCell.RealmServer.Items.Enchanting
 			}
 		}
 
-		private static void ApplyDamage(Item item, ItemEnchantmentEffect effect)
-		{
-			var owner = item.OwningCharacter;
-			owner.AddDamageDoneMod(DamageSchool.Physical, effect.MaxAmount);
-		}
-
 		private static void ApplyEquipSpell(Item item, ItemEnchantmentEffect effect)
 		{
 			var owner = item.OwningCharacter;
@@ -129,11 +160,6 @@ namespace WCell.RealmServer.Items.Enchanting
 				return;
 			}
 			SpellCast.ValidateAndTriggerNew(spell, owner, owner, null, item);
-		}
-
-		private static void ApplyResistance(Item item, ItemEnchantmentEffect effect)
-		{
-			item.OwningCharacter.AddResistanceBuff((DamageSchool)effect.Misc, effect.MaxAmount);
 		}
 
 		private static void ApplyStat(Item item, ItemEnchantmentEffect effect)
@@ -152,21 +178,9 @@ namespace WCell.RealmServer.Items.Enchanting
 				handler.ProcSpell != null && handler.ProcSpell.Id == effect.Misc);
 		}
 
-		private static void RemoveDamage(Item item, ItemEnchantmentEffect effect)
-		{
-			var owner = item.OwningCharacter;
-			owner.RemoveDamageDoneMod(DamageSchool.Physical, effect.MaxAmount);
-			owner.UpdateAllDamages();
-		}
-
 		private static void RemoveEquipSpell(Item item, ItemEnchantmentEffect effect)
 		{
 			item.OwningCharacter.Auras.Remove((SpellId)effect.Misc);
-		}
-
-		private static void RemoveResistance(Item item, ItemEnchantmentEffect effect)
-		{
-			item.OwningCharacter.RemoveResistanceBuff((DamageSchool)effect.Misc, effect.MaxAmount);
 		}
 
 		private static void RemoveStat(Item item, ItemEnchantmentEffect effect)
@@ -177,6 +191,27 @@ namespace WCell.RealmServer.Items.Enchanting
 		private static void RemoveTotem(Item item, ItemEnchantmentEffect effect)
 		{
 
+		}
+
+
+		// effects that apply to item
+
+		private static void ApplyDamageToItem(Item item, ItemEnchantmentEffect effect)
+		{
+			item.BonusDamage += effect.MaxAmount;
+			if (item.IsEquippedItem)
+			{
+				item.Container.Owner.UpdateDamage((InventorySlot)item.Slot);
+			}
+		}
+
+		private static void RemoveDamageFromItem(Item item, ItemEnchantmentEffect effect)
+		{
+			item.BonusDamage -= effect.MaxAmount;
+			if (item.IsEquippedItem)
+			{
+				item.Container.Owner.UpdateDamage((InventorySlot)item.Slot);
+			}
 		}
 		#endregion
 

@@ -383,7 +383,7 @@ namespace WCell.RealmServer.AI.Brains
 			if ((owner.ThreatCollection.CurrentAggressor != null && owner.CanReachForCombat(owner.ThreatCollection.CurrentAggressor)) ||
 				 (m_IsAggressive && ScanAndAttack()))
 			{
-				owner.Brain.State = BrainState.Combat;
+				State = BrainState.Combat;
 				return true;
 			}
 

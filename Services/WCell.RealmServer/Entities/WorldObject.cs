@@ -352,7 +352,7 @@ namespace WCell.RealmServer.Entities
 			if (this is Unit)
 			{
 				range += ((Unit)this).CombatReach;
-				((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
+				range = ((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
 			}
 			return range;
 		}

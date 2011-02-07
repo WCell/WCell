@@ -262,6 +262,10 @@ namespace WCell.RealmServer.Spells.Targeting
 			DefaultTargetHandlers[(int)ImplicitSpellTargetType.Tranquility] = new TargetDefinition(
 					DefaultTargetAdders.AddAreaSource,
 					DefaultTargetFilters.IsAllied);
+
+			DefaultTargetHandlers[(int)ImplicitSpellTargetType.AllFriendlyInAura] = new TargetDefinition(
+					DefaultTargetAdders.AddAreaSource,
+					DefaultTargetFilters.IsAllied);
 		}
 		#endregion
 	}
