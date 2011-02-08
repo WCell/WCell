@@ -1318,7 +1318,7 @@ namespace WCell.RealmServer.Entities
 			m_owner.Inventory.OnAmountChanged(this, -Amount);
 			if (m_record != null)
 			{
-				RealmServer.Instance.AddMessage(() =>
+				RealmServer.IOQueue.AddMessage(() =>
 				{
 					if (!record.New)
 					{

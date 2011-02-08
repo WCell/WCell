@@ -236,7 +236,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				if (item != null)
 				{
 					//save new auction to database and add item to items container
-					RealmServer.Instance.AddMessage(new Util.Threading.Message(() =>
+					RealmServer.IOQueue.AddMessage(new Util.Threading.Message(() =>
 						{
 							ItemRecord record = item.Record;
 							record.IsAuctioned = true;

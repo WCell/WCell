@@ -259,7 +259,7 @@ namespace WCell.RealmServer.Tests.Entities
 				Setup.AllianceCharacterPool.Clear();
 
 				// enqueue IO-task, so that by the time, the task is executed, all Characters have been saved to DB (and fully logged out)
-				RealmServer.Instance.AddMessage(new Message(() => {
+				RealmServer.IOQueue.AddMessage(new Message(() => {
 					Setup.WriteRamUsage("Removed {0} Characters", num);
 					lock (this)
 					{

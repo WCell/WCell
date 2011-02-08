@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -134,7 +134,7 @@ namespace WCell.RealmServer.ArenaTeams
 			Members.Add(m_leader.Id, m_leader);
             m_leader.Create();
 			
-            RealmServer.Instance.AddMessage(Create);
+            RealmServer.IOQueue.AddMessage(Create);
             Register();
 		}
         #endregion
@@ -305,7 +305,7 @@ namespace WCell.RealmServer.ArenaTeams
                 //ArenaTeamHandler.SendEventToTeam(this, ArenaTeamEvents.LEAVED_SS, member);
             }
 
-            RealmServer.Instance.AddMessage(() =>
+            RealmServer.IOQueue.AddMessage(() =>
             {
                 member.Delete();
                 if (update)
@@ -463,7 +463,7 @@ namespace WCell.RealmServer.ArenaTeams
 				}
 
 				ArenaTeamMgr.UnregisterArenaTeam(this);
-				RealmServer.Instance.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 			finally
 			{
@@ -487,7 +487,7 @@ namespace WCell.RealmServer.ArenaTeams
 			Leader = newLeader;
             newLeader.Character.SetArenaTeamInfoField(Slot, ArenaTeamInfoType.ARENA_TEAM_MEMBER, 0);
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{

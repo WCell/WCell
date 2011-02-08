@@ -48,6 +48,15 @@ namespace WCell.RealmServer.Global
 	/// </summary>
 	public partial class World : IWorldSpace
 	{
+		public static int TaskQueueUpdateInterval
+		{
+			get { return _taskQueue.UpdateInterval; }
+			set
+			{
+				_taskQueue.UpdateInterval = value;
+			}
+		}
+
 		#region Fields
 		/// <summary>
 		/// Only used for implementing interfaces
@@ -73,9 +82,9 @@ namespace WCell.RealmServer.Global
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
 		private static readonly Dictionary<uint, INamedEntity> s_namedEntities = new Dictionary<uint, INamedEntity>();
 
-		private static bool m_paused;
-		private static int m_pauseThreadId;
-		private static bool m_saving;
+		private static bool _paused;
+		private static int _pauseThreadId;
+		private static bool _saving;
 
 		internal static MapTemplate[] s_MapTemplates = new MapTemplate[(int)MapId.End];
 		internal static Map[] s_Maps = new Map[(int)MapId.End];
@@ -83,6 +92,8 @@ namespace WCell.RealmServer.Global
         internal static WorldMapOverlayEntry[] s_WorldMapOverlayEntries = new WorldMapOverlayEntry[(int)WorldMapOverlayId.End];
 
 		private static int s_characterCount, s_hordePlayerCount, s_allyPlayerCount, s_staffMemberCount;
+
+		private static readonly SelfRunningTaskQueue _taskQueue = new SelfRunningTaskQueue(100, "World Task Queue", false);
 
 		#endregion
 
@@ -151,17 +162,24 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
+		/// <summary>
+		/// Task queue for global tasks and timers
+		/// </summary>
+		public static SelfRunningTaskQueue TaskQueue
+		{
+			get { return _taskQueue; }
+		}
 		#endregion
 
 		#region Pausing
 		public static int PauseThreadId
 		{
-			get { return m_pauseThreadId; }
+			get { return _pauseThreadId; }
 		}
 
 		public static bool IsInPauseContext
 		{
-			get { return Thread.CurrentThread.ManagedThreadId == m_pauseThreadId; }
+			get { return Thread.CurrentThread.ManagedThreadId == _pauseThreadId; }
 		}
 
 		/// <summary>
@@ -169,7 +187,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public static void ExecuteWhilePaused(Action onPause)
 		{
-			RealmServer.Instance.AddMessageAndWait(true, () =>
+			RealmServer.IOQueue.AddMessageAndWait(true, () =>
 			{
 				Paused = true;
 				onPause();
@@ -189,20 +207,20 @@ namespace WCell.RealmServer.Global
 		// [MethodImpl(MethodImplOptions.Synchronized)]
 		internal static bool Paused
 		{
-			get { return m_paused; }
+			get { return _paused; }
 			set
 			{
-				if (m_paused != value)
+				if (_paused != value)
 				{
 					// lock the pausing, so you cannot start resuming before everything has been paused
 					// also ensures that Maps don't start while other are still being paused
 					lock (PauseLock)
 					{
-						if (m_paused != value) // check again to make sure that we are not pausing/unpausing twice
+						if (_paused != value) // check again to make sure that we are not pausing/unpausing twice
 						{
 							lock (PauseObject)
 							{
-								m_paused = value;
+								_paused = value;
 							}
 
 							if (!value)
@@ -217,14 +235,14 @@ namespace WCell.RealmServer.Global
 							else
 							{
 								// pause
-								m_pauseThreadId = Thread.CurrentThread.ManagedThreadId;
+								_pauseThreadId = Thread.CurrentThread.ManagedThreadId;
 								var activeMaps = GetAllMaps().Where((map) => map != null && map.IsRunning);
 								var pauseCount = activeMaps.Count();
 								foreach (var map in activeMaps)
 								{
 									if (map.IsInContext)
 									{
-										if (!m_saving && !RealmServer.IsShuttingDown)
+										if (!_saving && !RealmServer.IsShuttingDown)
 										{
 											lock (PauseObject)
 											{
@@ -262,7 +280,7 @@ namespace WCell.RealmServer.Global
 							{
 								evt(value);
 							}
-							m_pauseThreadId = 0;
+							_pauseThreadId = 0;
 						}
 					}
 				}
@@ -283,6 +301,7 @@ namespace WCell.RealmServer.Global
 				LoadChatChannelsDBC();
 
 				TerrainMgr.InitTerrain();
+				_taskQueue.IsRunning = true;		// start global task queue
 			}
 		}
 		#endregion
@@ -294,7 +313,7 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public static bool IsSaving
 		{
-			get { return m_saving; }
+			get { return _saving; }
 		}
 
 		public static void Save()
@@ -309,19 +328,19 @@ namespace WCell.RealmServer.Global
 		public static void Save(bool beforeShutdown)
 		{
 			// only save if save was not already initialized (eg when trying to shutdown while saving)
-			var needsSave = !m_saving;
+			var needsSave = !_saving;
 			lock (PauseLock)
 			{
 				if (needsSave)
 				{
-					m_saving = true;
+					_saving = true;
 					// pause the world so nothing else can happen anymore
 					//Paused = true;
 
 					// save everything
 					var chars = GetAllCharacters();
 					var saveCount = chars.Count;
-					RealmServer.Instance.ExecuteInContext(() =>
+					RealmServer.IOQueue.ExecuteInContext(() =>
 					{
 						for (var i = 0; i < chars.Count; i++)
 						{
@@ -352,7 +371,7 @@ namespace WCell.RealmServer.Global
 						Thread.Sleep(50);
 					}
 
-					m_saving = false;
+					_saving = false;
 
 					var evt = Saved;
 					if (evt != null)

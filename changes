@@ -1,1 +1,4 @@
-- fixed several bugs in crit chance computations
+- moved ServerApp message and update handling to the new SelfRunningTaskQueue
+- the new SelfRunningTaskQueue also features a new more light-weight kind of timer which can be used through the CallDelayed and CallPeriodically methods
+- ServerApp (and thus, RealmServer and AuthenticationServer) now have the static IOQueue property for blocking tasks (but not for timers due to lack of precision)
+- World has the new TaskQueue property to allow for global (non-blocking) tasks and timers

@@ -160,7 +160,7 @@ namespace WCell.RealmServer.Network
 				}
 
 				// not a game packet, so process it on the global thread
-				return RealmServer.Instance;
+				return RealmServer.IOQueue;
 			}
 
 		    if (chr == null || acc == null)

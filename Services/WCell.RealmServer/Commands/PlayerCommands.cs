@@ -32,7 +32,7 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Saving...");
 			var chr = (Character)trigger.Args.Target;
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (chr == null)
 				{
@@ -81,7 +81,7 @@ namespace WCell.RealmServer.Commands
 			{
 				trigger.Reply("Setting mail address to " + email + "...");
 
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var chr = ((Character)trigger.Args.Target);
 
@@ -165,7 +165,7 @@ namespace WCell.RealmServer.Commands
 				//    log.Info("{0} is changing {1}'s Password.", trigger.Args.Character, trigger.Args.Target);
 				//}
 
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var chr = ((Character)trigger.Args.Target);
 

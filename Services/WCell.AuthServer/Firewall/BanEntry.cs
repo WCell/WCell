@@ -150,7 +150,7 @@ namespace WCell.AuthServer.Firewall
 			if (Expires != null && Expires.Value <= DateTime.Now)
 			{
 				// remove the expired bans
-				AuthenticationServer.Instance.AddMessage(new Message(DeleteAndFlush));
+				AuthenticationServer.IOQueue.AddMessage(new Message(DeleteAndFlush));
 				return false;
 			}
 			else

@@ -30,12 +30,12 @@ namespace WCell.AuthServer.Accounts
 		{
 			m_timer = new TimerEntry(AuthenticationStoreMillis, 0, dl => Remove());
 			m_timer.Start();
-			AuthenticationServer.Instance.RegisterUpdatable(m_timer);
+			AuthenticationServer.IOQueue.RegisterUpdatable(m_timer);
 		}
 
 		internal void StopTimer()
 		{
-			AuthenticationServer.Instance.UnregisterUpdatable(m_timer);
+			AuthenticationServer.IOQueue.UnregisterUpdatable(m_timer);
 		}
 
 		public void Remove()

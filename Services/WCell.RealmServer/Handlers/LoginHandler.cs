@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Handlers
 				Compression.DecompressZLib(compressedData, client.Addons);
 
 				var acctLoadTask = Message.Obtain(() => RealmAccount.InitializeAccount(client, accName));
-				client.Server.AddMessage(acctLoadTask);
+				RealmServer.IOQueue.AddMessage(acctLoadTask);
 			}
 		}
 
@@ -226,7 +226,7 @@ namespace WCell.RealmServer.Handlers
 							{
 								// Character was removed in the meantime -> Login again
 								// enqueue task in IO-Queue to sync with Character.Save()
-								RealmServer.Instance.AddMessage(
+								RealmServer.IOQueue.AddMessage(
 									new Message(() => LoginCharacter(client, charLowId)));
 							}
 							else

@@ -467,7 +467,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit<T>() where T : IDataHolder
 		{
 			var mapper = GetMapper(typeof(T));
-			RealmServer.Instance.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 
 		/// <summary>
@@ -478,7 +478,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit(Type t)
 		{
 			var mapper = GetMapper(t);
-			RealmServer.Instance.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 		#endregion
 

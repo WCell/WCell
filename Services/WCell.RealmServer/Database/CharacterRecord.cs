@@ -1041,7 +1041,7 @@ namespace WCell.RealmServer.Database
 		#region Delete
 		public void DeleteLater()
 		{
-			RealmServer.Instance.AddMessage(new Message(Delete));
+			RealmServer.IOQueue.AddMessage(new Message(Delete));
 		}
 
 		public override void Delete()
@@ -1067,7 +1067,7 @@ namespace WCell.RealmServer.Database
 
 		public static void DeleteChar(uint charId)
 		{
-			RealmServer.Instance.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				var chr = World.GetCharacter(charId);
 				uint guildId;

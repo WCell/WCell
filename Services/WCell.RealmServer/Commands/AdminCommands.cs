@@ -193,7 +193,7 @@ namespace WCell.RealmServer.Commands
 			trigger.Reply("Banning Account {0} ({1}) {2}...", chr.Account.Name, chr.Name,
 				timeStr);
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				var context = chr.ContextHandler;
 				var acc = chr.Account;
@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Commands
 
 				// Since setting the role is a task sent to the Auth-Server, this is a blocking call
 				// and thus must not be executed within the Map context (which is the default context for Commands)
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (chr.Account.SetRole(role))
 					{

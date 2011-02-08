@@ -92,22 +92,22 @@ namespace WCell.RealmServer.Database
 
 		public static void UpdateLater(this ActiveRecordBase record)
 		{
-			RealmServer.Instance.AddMessage(() => record.Update());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Update());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void SaveLater(this ActiveRecordBase record)
 		{
-			RealmServer.Instance.AddMessage(() => record.Save());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Save());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void CreateLater(this ActiveRecordBase record)
 		{
-			RealmServer.Instance.AddMessage(() => record.Create());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Create());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 
 		public static void DeleteLater(this ActiveRecordBase record)
 		{
-			RealmServer.Instance.AddMessage(() => record.Delete());			// leave it as a Lambda Expr to get a complete stacktrace
+			RealmServer.IOQueue.AddMessage(() => record.Delete());			// leave it as a Lambda Expr to get a complete stacktrace
 		}
 	}
 }

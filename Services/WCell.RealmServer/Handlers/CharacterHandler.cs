@@ -133,7 +133,7 @@ namespace WCell.RealmServer.Handlers
 					Parameter2 = record
 				};
 
-				client.Server.AddMessage(charCreateTask);
+				RealmServer.IOQueue.AddMessage(charCreateTask);
 			}
 			catch (Exception e)
 			{
@@ -231,7 +231,7 @@ namespace WCell.RealmServer.Handlers
 						if (context != null)
 						{
 							context.AddMessage(() =>
-							RealmServer.Instance.AddMessage(new Message(() =>
+							RealmServer.IOQueue.AddMessage(new Message(() =>
 							{
 								var returnCode = record.TryDelete();
 								SendCharDeleteReply(client, returnCode);
@@ -241,7 +241,7 @@ namespace WCell.RealmServer.Handlers
 					}
 				}
 
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var returnCode = record.TryDelete();
 					SendCharDeleteReply(client, returnCode);
@@ -280,7 +280,7 @@ namespace WCell.RealmServer.Handlers
 				return;
 
 			AccountDataHandler.SendAccountDataTimes(client, AccountDataHandler.CacheMask.GlobalCache);
-			RealmServer.Instance.AddMessage(() => SendCharEnum(client));
+			RealmServer.IOQueue.AddMessage(() => SendCharEnum(client));
 		}
 
 		/// <summary>
@@ -856,7 +856,7 @@ namespace WCell.RealmServer.Handlers
 							};
 
 						// only enqueue to IO Queue if we are in a map context?
-						client.Server.AddMessage(charRenameTask);
+						RealmServer.IOQueue.AddMessage(charRenameTask);
 					}
 				}
 			}

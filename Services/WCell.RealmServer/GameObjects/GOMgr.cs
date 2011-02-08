@@ -176,7 +176,7 @@ namespace WCell.RealmServer.GameObjects
 
 		public static void LoadAllLater()
 		{
-			RealmServer.Instance.AddMessage(() => LoadAll());
+			RealmServer.IOQueue.AddMessage(() => LoadAll());
 		}
 
 		public static void LoadAll()

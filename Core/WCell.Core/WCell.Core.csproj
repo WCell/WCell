@@ -215,6 +215,7 @@
     <Compile Include="Paths\Path.cs" />
     <Compile Include="Paths\PathQuery.cs" />
     <Compile Include="ReflectUtil.cs" />
+    <Compile Include="SelfRunningTaskQueue.cs" />
     <Compile Include="ServerApp.cs" />
     <Compile Include="Statistics.cs" />
     <Compile Include="Terrain\ITerrain.cs" />

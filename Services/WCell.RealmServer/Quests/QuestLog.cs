@@ -417,7 +417,7 @@ namespace WCell.RealmServer.Quests
 			}
 
 			// TODO: remove other Items that belong to this Quest
-			RealmServer.Instance.AddMessage(new Message(quest.Delete));
+			RealmServer.IOQueue.AddMessage(new Message(quest.Delete));
 
 			m_activeQuestCount--;
 			m_ActiveQuests[quest.Slot] = null;

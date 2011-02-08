@@ -4,9 +4,75 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using WCell.Util;
 
 namespace WCell.Core.Timers
 {
+	/// <summary>
+	/// New even more lightweight Timer class to replace the old TimerEntry class
+	/// </summary>
+	public class SimpleTimerEntry
+	{
+		/// <summary>
+		/// Whether this is a one-shot timer
+		/// </summary>
+		public readonly bool IsOneShot;
+		private long m_LastCallTime;
+		private Action m_Callback;
+		private int m_Delay;
+
+		internal SimpleTimerEntry(int delayMillis, Action callback, long time, bool isOneShot)
+		{
+			m_Callback = callback;
+			m_Delay = delayMillis;
+			m_LastCallTime = time;
+			IsOneShot = isOneShot;
+		}
+
+		public long LastCallTime
+		{
+			get { return m_LastCallTime; }
+			internal set { m_LastCallTime = value; }
+		}
+
+		public Action Callback
+		{
+			get { return m_Callback; }
+			internal set { m_Callback = value; }
+		}
+
+		public int Delay
+		{
+			get { return m_Delay; }
+			internal set { m_Delay = value; }
+		}
+
+		internal void Execute(SelfRunningTaskQueue queue)
+		{
+			Callback();
+			LastCallTime = queue.LastUpdateTime;
+			if (IsOneShot)
+			{
+				queue.CancelTimer(this);
+			}
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is SimpleTimerEntry && Callback == ((SimpleTimerEntry)obj).Callback;
+		}
+
+		public override int GetHashCode()
+		{
+			return Callback.GetHashCode();
+		}
+
+		public override string ToString()
+		{
+			return string.Format("{0} (Callback = {1}, Delay = {2})", GetType(), Callback, Delay);
+		}
+	}
+
 	/// <summary>
 	/// Lightweight timer object that supports one-shot or repeated firing.
 	/// </summary>

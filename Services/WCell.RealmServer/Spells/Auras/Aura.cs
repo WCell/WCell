@@ -1243,7 +1243,7 @@ namespace WCell.RealmServer.Spells.Auras
 		#region Persistance
 		public void Save()
 		{
-			RealmServer.Instance.AddMessage(SaveNow);
+			RealmServer.IOQueue.AddMessage(SaveNow);
 		}
 
 		internal void SaveNow()

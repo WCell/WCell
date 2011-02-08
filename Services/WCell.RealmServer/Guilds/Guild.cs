@@ -213,7 +213,7 @@ namespace WCell.RealmServer.Guilds
 
 			m_leader = AddMember(leader);
 		    
-			RealmServer.Instance.AddMessage(Create);
+			RealmServer.IOQueue.AddMessage(Create);
 		}
 		#endregion
 
@@ -393,7 +393,7 @@ namespace WCell.RealmServer.Guilds
 				GuildHandler.SendEventToGuild(this, GuildEvents.LEFT, member);
 			}
 
-			RealmServer.Instance.AddMessage(() =>
+			RealmServer.IOQueue.AddMessage(() =>
 			{
 				member.Delete();
 				if (update)
@@ -535,7 +535,7 @@ namespace WCell.RealmServer.Guilds
 
 				m_ranks.RemoveAt(lastRankId);
 
-				RealmServer.Instance.AddMessage(() => m_ranks[lastRankId].Delete());
+				RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
 			}
 			catch (Exception e)
 			{
@@ -677,7 +677,7 @@ namespace WCell.RealmServer.Guilds
 				}
 
 				GuildMgr.Instance.UnregisterGuild(this);
-				RealmServer.Instance.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 			finally
 			{
@@ -704,7 +704,7 @@ namespace WCell.RealmServer.Guilds
 			newLeader.RankId = 0;
 			Leader = newLeader;
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{

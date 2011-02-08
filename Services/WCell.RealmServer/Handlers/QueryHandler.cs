@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			else
 			{
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					var record = CharacterRecord.LoadRecordByEntityId(id.Low);
 					if (record == null)

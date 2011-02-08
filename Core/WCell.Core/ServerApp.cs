@@ -1,29 +1,22 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 using Cell.Core;
-using WCell.Util.Collections;
 using NLog;
 using WCell.Core.Database;
 using WCell.Core.Initialization;
 using WCell.Core.Localization;
-using WCell.Util.Threading;
 using WCell.Core.Timers;
 using WCell.Util;
 using WCell.Util.NLog;
 using WCell.Util.Variables;
-using WCell.Util.Threading.TaskParallel;
-using IMessage = WCell.Util.Threading.IMessage;
 using WCell.Core.Addons;
 
 namespace WCell.Core
 {
-	public abstract class ServerApp<T> : ServerBase, IContextHandler
+	public abstract class ServerApp<T> : ServerBase
 		where T : ServerBase, new()
 	{
 		[Variable]
@@ -48,13 +41,8 @@ namespace WCell.Core
 		protected static string s_entryLocation;
 		protected static readonly string[] EmptyStringArr = new string[0];
 
-		protected List<IUpdatable> m_updatables;
-		protected LockfreeQueue<IMessage> m_messageQueue;
+		private static readonly SelfRunningTaskQueue ioQueue = new SelfRunningTaskQueue(100, @"Server I\O - Queue", false);
 
-		protected Task _updateTask;
-		protected int _currentUpdateThreadId;
-		protected Stopwatch m_queueTimer;
-		protected long m_updateFrequency, m_lastUpdate;
 		protected TimerEntry m_shutdownTimer;
 		protected static InitMgr s_initMgr;
 
@@ -63,33 +51,17 @@ namespace WCell.Core
 			s_log.Debug(Resources.ServerStarting);
 
 			AppUtil.AddApplicationExitHandler(_OnShutdown);
-#if !DEBUG
+//#if !DEBUG
 			AppDomain.CurrentDomain.UnhandledException +=
 				(sender, args) => LogUtil.FatalException(args.ExceptionObject as Exception, Resources.FatalUnhandledException);
-#endif
+//#endif
 
 			LogUtil.SystemInfoLogger = LogSystemInfo;
-
-			m_updatables = new List<IUpdatable>();
-			m_messageQueue = new LockfreeQueue<IMessage>();
-			m_queueTimer = Stopwatch.StartNew();
-			m_updateFrequency = WCellDef.SERVER_UPDATE_INTERVAL;
-			m_lastUpdate = 0;
 		}
 
-		protected void UpdateTitle()
-		{
-			SetTitle(ToString());
-		}
-
-		public void SetTitle(string title)
-		{
-			if (ConsoleActive)
-			{
-				Console.Title = title;
-			}
-		}
-
+		/// <summary>
+		/// The singleton instance of the InitMgr that runs the default Startup routine.
+		/// </summary>
 		public static InitMgr InitMgr
 		{
 			get
@@ -151,6 +123,15 @@ namespace WCell.Core
 			}
 		}
 
+		/// <summary>
+		/// Used for general I/O tasks.
+		/// These tasks are usually blocking, so do not use this for precise timers
+		/// </summary>
+		public static SelfRunningTaskQueue IOQueue
+		{
+			get { return ioQueue; }
+		}
+
 		public override bool IsRunning
 		{
 			get { return _running; }
@@ -159,11 +140,7 @@ namespace WCell.Core
 				if (_running != value)
 				{
 					_running = value;
-					if (value)
-					{
-						// start message loop
-						_updateTask = Task.Factory.StartNewDelayed((int)m_updateFrequency, QueueUpdateCallback, this);
-					}
+					ioQueue.IsRunning = value;
 				}
 			}
 		}
@@ -195,6 +172,20 @@ namespace WCell.Core
 		{
 			get;
 		}
+
+		protected void UpdateTitle()
+		{
+			SetTitle(ToString());
+		}
+
+		public void SetTitle(string title)
+		{
+			if (ConsoleActive)
+			{
+				Console.Title = title;
+			}
+		}
+
 
 		private void LogSystemInfo(Action<string> logger)
 		{
@@ -229,248 +220,6 @@ namespace WCell.Core
 			}
 			return type;
 		}
-
-		#region Updatables
-
-		/// <summary>
-		/// Registers an updatable object in the server timer pool.
-		/// </summary>
-		/// <param name="updatable">the object to register</param>
-		public void RegisterUpdatable(IUpdatable updatable)
-		{
-			AddMessage(() => m_updatables.Add(updatable));
-		}
-
-		/// <summary>
-		/// Unregisters an updatable object from the server timer pool.
-		/// </summary>
-		/// <param name="updatable">the object to unregister</param>
-		public void UnregisterUpdatable(IUpdatable updatable)
-		{
-			AddMessage(() => m_updatables.Remove(updatable));
-		}
-
-
-		/// <summary>
-		/// Registers the given Updatable during the next Map Tick
-		/// </summary>
-		public void RegisterUpdatableLater(IUpdatable updatable)
-		{
-			m_messageQueue.Enqueue(new Message(() => RegisterUpdatable(updatable)));
-		}
-
-		/// <summary>
-		/// Unregisters the given Updatable during the next Map Update
-		/// </summary>
-		public void UnregisterUpdatableLater(IUpdatable updatable)
-		{
-			m_messageQueue.Enqueue(new Message(() => UnregisterUpdatable(updatable)));
-		}
-		#endregion
-
-		#region Task Pool
-
-		/// <summary>
-		/// Queues a task for execution in the server task pool.
-		/// </summary>
-		public void AddMessage(Action action)
-		{
-			m_messageQueue.Enqueue(new Message(action));
-		}
-
-		public bool ExecuteInContext(Action action)
-		{
-			if (!IsInContext)
-			{
-				AddMessage(new Message(action));
-				return false;
-			}
-			else
-			{
-				action();
-				return true;
-			}
-		}
-
-		public void EnsureContext()
-		{
-			if (Thread.CurrentThread.ManagedThreadId != _currentUpdateThreadId)
-			{
-				throw new InvalidOperationException("Not in context");
-			}
-		}
-
-		/// <summary>
-		/// Indicates whether the current Thread is the processor of the MessageQueue
-		/// </summary>
-		public bool IsInContext
-		{
-			get { return Thread.CurrentThread.ManagedThreadId == _currentUpdateThreadId; }
-		}
-
-		/// <summary>
-		/// Queues a task for execution in the server task pool.
-		/// </summary>
-		/// <param name="msg"></param>
-		public void AddMessage(IMessage msg)
-		{
-			m_messageQueue.Enqueue(msg);
-		}
-
-		protected void QueueUpdateCallback(object state)
-		{
-			if (!_running)
-			{
-				return;
-			}
-
-			if (Interlocked.CompareExchange(ref _currentUpdateThreadId, Thread.CurrentThread.ManagedThreadId, 0) == 0)
-			{
-				// get the time at the start of our task processing
-				var timerStart = m_queueTimer.ElapsedMilliseconds;
-				var updateDt = (int)(timerStart - m_lastUpdate);
-
-				// run timers!
-				foreach (var updatable in m_updatables)
-				{
-					try
-					{
-						updatable.Update(updateDt);
-					}
-					catch (Exception e)
-					{
-						LogUtil.ErrorException(e, "Failed to update: " + updatable);
-					}
-				}
-
-				m_lastUpdate = m_queueTimer.ElapsedMilliseconds;
-
-				// process messages
-				IMessage msg;
-
-				while (m_messageQueue.TryDequeue(out msg))
-				{
-					try
-					{
-						msg.Execute();
-					}
-					catch (Exception e)
-					{
-						LogUtil.ErrorException(e, "Failed to execute message: " + msg);
-					}
-					if (!_running)
-					{
-						return;
-					}
-				}
-
-				// get the end time
-				long timerStop = m_queueTimer.ElapsedMilliseconds;
-
-				bool updateLagged = timerStop - timerStart > m_updateFrequency;
-				long callbackTimeout = updateLagged ? 0 : ((timerStart + m_updateFrequency) - timerStop);
-
-				Interlocked.Exchange(ref _currentUpdateThreadId, 0);
-				if (_running)
-				{
-					// re-register the Update-callback
-					_updateTask = Task.Factory.StartNewDelayed((int)callbackTimeout, QueueUpdateCallback, this);
-				}
-			}
-		}
-
-		#region Waiting
-		/// <summary>
-		/// Ensures execution outside the Map-context.
-		/// </summary>
-		/// <exception cref="InvalidOperationException">thrown if the calling thread is the map thread</exception>
-		public void EnsureNoContext()
-		{
-			if (Thread.CurrentThread.ManagedThreadId == _currentUpdateThreadId)
-			{
-				throw new InvalidOperationException(string.Format("Application Queue context prohibited."));
-			}
-		}
-
-		/// <summary>
-		/// Adds the given message to the map's message queue and does not return 
-		/// until the message is processed.
-		/// </summary>
-		/// <remarks>Make sure that the map is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the map context.</remarks>
-		public void AddMessageAndWait(bool allowInstantExecution, Action action)
-		{
-			AddMessageAndWait(allowInstantExecution, new Message(action));
-		}
-
-		/// <summary>
-		/// Adds the given message to the map's message queue and does not return 
-		/// until the message is processed.
-		/// </summary>
-		/// <remarks>Make sure that the map is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the map context.</remarks>
-		public void AddMessageAndWait(bool allowInstantExecution, IMessage msg)
-		{
-			if (allowInstantExecution && IsInContext)
-			{
-				msg.Execute();
-			}
-			else
-			{
-				EnsureNoContext();
-
-				// to ensure that we are not exiting in the current message-loop, add an updatable
-				// which again registers the message
-				var updatable = new SimpleUpdatable();
-				updatable.Callback = () => AddMessage(new Message(() =>
-				{
-					msg.Execute();
-					lock (msg)
-					{
-						Monitor.PulseAll(msg);
-					}
-					UnregisterUpdatable(updatable);
-				}));
-
-				lock (msg)
-				{
-					RegisterUpdatableLater(updatable);
-					// int delay = this.GetWaitDelay();
-					Monitor.Wait(msg);
-					// Assert.IsTrue(added, string.Format(debugMsg, args));
-				}
-			}
-		}
-
-		/// <summary>
-		/// Waits for one map tick before returning.
-		/// </summary>
-		/// <remarks>Must not be called from the map context.</remarks>
-		public void WaitOneTick()
-		{
-			AddMessageAndWait(false, new Message(() =>
-			{
-				// do nothing
-			}));
-		}
-
-		/// <summary>
-		/// Waits for the given amount of ticks.
-		/// One tick might take 0 until Map.UpdateSpeed milliseconds.
-		/// </summary>
-		/// <remarks>Make sure that the map is running before calling this method.</remarks>
-		/// <remarks>Must not be called from the map context.</remarks>
-		public void WaitTicks(int ticks)
-		{
-			EnsureNoContext();
-
-			for (int i = 0; i < ticks; i++)
-			{
-				WaitOneTick();
-			}
-		}
-		#endregion
-		#endregion
 
 		#region Start
 
@@ -537,7 +286,7 @@ namespace WCell.Core
 			m_shutdownTimer.Start();
 			if (!IsPreparingShutdown)
 			{
-				RegisterUpdatable(m_shutdownTimer);
+				ioQueue.RegisterUpdatable(m_shutdownTimer);
 				IsPreparingShutdown = true;
 			}
 		}
@@ -546,7 +295,7 @@ namespace WCell.Core
 		{
 			if (IsPreparingShutdown)
 			{
-				UnregisterUpdatable(m_shutdownTimer);
+				ioQueue.UnregisterUpdatable(m_shutdownTimer);
 				m_shutdownTimer.Stop();
 				IsPreparingShutdown = false;
 			}
@@ -579,10 +328,6 @@ namespace WCell.Core
 		protected virtual void OnShutdown()
 		{
 		}
-
-		#endregion
-
-		#region Singleton
 
 		#endregion
 

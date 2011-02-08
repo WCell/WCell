@@ -472,7 +472,7 @@ namespace WCell.RealmServer.NPCs
 
 		public static void LoadAllLater()
 		{
-			RealmServer.Instance.AddMessage(() =>
+			RealmServer.IOQueue.AddMessage(() =>
 			{
 				LoadAll();
 			});

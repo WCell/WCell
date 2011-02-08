@@ -157,7 +157,7 @@ namespace WCell.RealmServer
 			set
 			{
 				m_HighestCharLevel = value;
-				RealmServer.Instance.AddMessage(new Message(() => {
+				RealmServer.IOQueue.AddMessage(new Message(() => {
 					if (RealmServer.Instance.AuthClient.IsRunning)
 					{
 						RealmServer.Instance.AuthClient.Channel.SetHighestLevel(AccountId,

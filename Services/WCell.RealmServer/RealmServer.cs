@@ -452,7 +452,7 @@ namespace WCell.RealmServer
 				else
 				{
 					acc.OnLogout();
-					AddMessage(new Message1<RealmAccount>(acc, UnregisterAccount));
+					IOQueue.AddMessage(new Message1<RealmAccount>(acc, UnregisterAccount));
 					m_authServiceClient.Channel.SetAccountLoggedOut(acc.Name);
 				}
 			}
@@ -578,7 +578,7 @@ namespace WCell.RealmServer
 			if (m_authServiceClient != null && m_authServiceClient.IsConnected)
 			{
 				// unset all accounts
-				AddMessageAndWait(true, () => m_authServiceClient.Channel.SetAllActiveAccounts(EmptyStringArr));
+				IOQueue.AddMessageAndWait(true, () => m_authServiceClient.Channel.SetAllActiveAccounts(EmptyStringArr));
 				Thread.Sleep(100);		// sleep for a short while to let the client send the msg to the AuthServer
 				m_authServiceClient.IsRunning = false;
 			}

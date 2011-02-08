@@ -19,6 +19,7 @@ namespace WCell.RealmServer.Entities
 		{
 			Callback = callback;
 			Delay = delayMillis;
+			LastCallTime = DateTime.Now;
 		}
 
 		public DateTime LastCallTime

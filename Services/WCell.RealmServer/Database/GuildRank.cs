@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Guilds
 
 		public void SaveLater()
 		{
-			RealmServer.Instance.AddMessage(new Message(Update));
+			RealmServer.IOQueue.AddMessage(new Message(Update));
 		}
 
 		public override void Create()
