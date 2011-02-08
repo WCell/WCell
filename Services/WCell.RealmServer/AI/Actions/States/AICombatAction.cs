@@ -5,6 +5,7 @@ using WCell.Constants.Updates;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.NPCs;
+using WCell.Util;
 
 namespace WCell.RealmServer.AI.Actions.States
 {
@@ -58,7 +59,7 @@ namespace WCell.RealmServer.AI.Actions.States
 					((NPC)m_owner).CanEvade &&
 					!m_owner.IsInRadiusSq(m_owner.Brain.SourcePoint, NPCMgr.DefaultMaxHomeDistanceInCombatSq) &&
 					   ((((NPC)m_owner).Entry.Rank >= CreatureRank.RareElite) ||
-						Environment.TickCount - m_owner.LastCombatTime > NPCMgr.GiveUpCombatDelay);
+						m_owner.MillisSinceLastCombatAction > NPCMgr.GiveUpCombatDelay);
 			}
 		}
 
@@ -139,7 +140,7 @@ namespace WCell.RealmServer.AI.Actions.States
 				if (owner.CanEvade)
 				{
 					// evade
-					if (Math.Abs(Environment.TickCount - owner.LastCombatTime) > NPCMgr.CombatEvadeDelay)
+					if (owner.MillisSinceLastCombatAction > NPCMgr.CombatEvadeDelay)
 					{
 						// check if something came up again
 						if (!m_owner.Brain.CheckCombat())

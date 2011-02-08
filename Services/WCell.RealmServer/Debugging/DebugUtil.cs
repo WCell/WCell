@@ -55,17 +55,9 @@ namespace WCell.RealmServer.Debugging
 			get { return dumps; }
 			set
 			{
-				if (dumps != value)
+				//if (dumps != value)
 				{
 					dumps = value;
-					if (value)
-					{
-						
-					}
-					else
-					{
-						
-					}
 				}
 			}
 		}

@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			SpellCommand.AddSpellCommand.Instance.Process(trigger);
+			SpellCommand.SpellAddCommand.Instance.Process(trigger);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -175,11 +175,11 @@ namespace WCell.RealmServer.Commands
 		}
 
 		#region Add
-		public class AddSpellCommand : SubCommand
+		public class SpellAddCommand : SubCommand
 		{
-			public static AddSpellCommand Instance { get; private set; }
+			public static SpellAddCommand Instance { get; private set; }
 
-			protected AddSpellCommand()
+			protected SpellAddCommand()
 			{
 				Instance = this;
 			}

@@ -839,10 +839,15 @@ namespace WCell.RealmServer.Global
 
 		public void AddNPCSpawnPoolNow(NPCSpawnPool pool)
 		{
-			if (!m_npcSpawnPools.ContainsKey(pool.Template.PoolId))
+			NPCSpawnPool existingPool;
+			if (!m_npcSpawnPools.TryGetValue(pool.Template.PoolId, out existingPool))
 			{
 				m_npcSpawnPools.Add(pool.Template.PoolId, pool);
 				OnPoolAdded<NPCSpawnPoolTemplate, NPCSpawnEntry, NPC, NPCSpawnPoint, NPCSpawnPool>(pool);
+			}
+			else
+			{
+				pool = existingPool;
 			}
 			if (SpawnPointsEnabled)
 			{
@@ -859,10 +864,15 @@ namespace WCell.RealmServer.Global
 
 		public void AddGOSpawnPool(GOSpawnPool pool)
 		{
-			if (!m_goSpawnPools.ContainsKey(pool.Template.PoolId))
+			GOSpawnPool existingPool;
+			if (!m_goSpawnPools.TryGetValue(pool.Template.PoolId, out existingPool))
 			{
 				m_goSpawnPools.Add(pool.Template.PoolId, pool);
 				OnPoolAdded<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>(pool);
+			}
+			else
+			{
+				pool = existingPool;
 			}
 
 			if (SpawnPointsEnabled)

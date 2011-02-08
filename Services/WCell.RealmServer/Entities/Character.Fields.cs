@@ -184,6 +184,8 @@ namespace WCell.RealmServer.Entities
 		private ExtraInfo m_ExtraInfo;
 
 		protected TradeWindow m_tradeWindow;
+
+		protected DateTime m_lastPvPUpdateTime;
 		#endregion
 
 		/// <summary>

@@ -30,6 +30,11 @@ namespace WCell.RealmServer.Entities
 		/// Used to determine ranged attack distance
 		/// </summary>
 		public static float DefaultRangedAttackRange = 40f;
+
+		/// <summary>
+		/// Time in milliseconds until a Player can leave combat
+		/// </summary>
+		public static int PvPDeactivationDelay = 6000;
 		#endregion
 
 		/// <summary>
@@ -46,7 +51,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected bool m_isFighting;
 
-		protected int m_lastCombatTime;
+		protected DateTime m_lastCombatTime, m_lastPvPUpdateTime;
 
 		protected DamageAction m_DamageAction;
 
@@ -62,10 +67,15 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The last time when this Unit was still actively Fighting
 		/// </summary>
-		public int LastCombatTime
+		public DateTime LastCombatTime
 		{
 			get { return m_lastCombatTime; }
 			set { m_lastCombatTime = value; }
+		}
+
+		public int MillisSinceLastCombatAction
+		{
+			get { return (DateTime.Now - m_lastCombatTime).ToMilliSecondsInt(); }
 		}
 
 		/// <summary>
@@ -73,7 +83,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void ResetSwingDelay()
 		{
-			m_lastCombatTime = Environment.TickCount;
+			m_lastCombatTime = m_lastUpdateTime;
 		}
 
 		public void CancelPendingAbility()
@@ -1085,7 +1095,7 @@ namespace WCell.RealmServer.Entities
 		{
 			SheathType = IsUsingRangedWeapon ? SheathType.Ranged : SheathType.Melee;
 			StandState = StandState.Stand;
-			m_lastCombatTime = Environment.TickCount;
+			m_lastCombatTime = m_lastUpdateTime;
 			if (m_brain != null)
 			{
 				m_brain.OnEnterCombat();
@@ -1160,7 +1170,7 @@ namespace WCell.RealmServer.Entities
 
 						// Remove damage-sensitive Auras
 						m_auras.RemoveByFlag(AuraInterruptFlags.OnDamage);
-						attacker.m_lastCombatTime = Environment.TickCount;
+						attacker.m_lastCombatTime = attacker.m_lastUpdateTime;
 
 						if (attacker is Character && weaponAttack)
 						{
@@ -1185,7 +1195,7 @@ namespace WCell.RealmServer.Entities
 
 							// aggro'd -> Enter combat mode and update combat-time
 							IsInCombat = true;
-							m_lastCombatTime = Environment.TickCount;
+							m_lastCombatTime = m_lastUpdateTime;
 
 							// during pvp one does not gain any weapon skill
 							if (this is Character)

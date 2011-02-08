@@ -170,7 +170,7 @@ namespace WCell.RealmServer.Spells
 				for (var j = 0; j < h; j++)
 				{
 					var handler2 = handlers[j];
-					if (handler.Effect.SharesTargets(handler2.Effect, IsAICast))
+					if (handler.Effect.SharesTargetsWith(handler2.Effect, IsAICast))
 					{
 						// same targets -> share target collection
 						targets = handler2.m_targets;

@@ -294,11 +294,11 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// Whether this effect can share targets with the given effect
 		/// </summary>
-		public bool SharesTargets(SpellEffect b, bool aiCast)
+		public bool SharesTargetsWith(SpellEffect b, bool aiCast)
 		{
 			// if a TargetDefinition is set, it overrides the default implicit targets
 			var targetDef = GetTargetDefinition(aiCast);
-			return (targetDef != null && targetDef == b.GetTargetDefinition(aiCast)) ||
+			return (targetDef != null && targetDef.Equals(b.GetTargetDefinition(aiCast))) ||
 				(ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB);
 		}
 

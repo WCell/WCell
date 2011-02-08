@@ -63,10 +63,9 @@ namespace WCell.RealmServer.Entities
 	///</summary>
 	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, ICharacterSet
 	{
-		private static new Logger log = LogManager.GetCurrentClassLogger();
-
 		public static new readonly List<Character> EmptyArray = new List<Character>();
-
+		
+		#region Globals
 		/// <summary>
 		/// The delay until a normal player may logout in millis.
 		/// </summary>
@@ -91,6 +90,7 @@ namespace WCell.RealmServer.Entities
 		/// The factor that is applied to the maximum distance before detecting someone as a SpeedHacker
 		/// </summary>
 		public static float SpeedHackToleranceFactor = 1.5f;
+		#endregion
 
 		/// <summary>
 		/// Clears all trade-related fields for the character.

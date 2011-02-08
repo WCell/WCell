@@ -38,8 +38,9 @@ namespace WCell.RealmServer.Spells
 				var spellHandler = m_handlers[i];
 				if (spellHandler.Effect.IsAuraEffect)
 				{
-					if (lastHandler != null && lastHandler.Effect.ImplicitTargetA == spellHandler.Effect.ImplicitTargetA)
+					if (lastHandler != null && lastHandler.Effect.SharesTargetsWith(spellHandler.Effect, IsAICast))
 					{
+						// same aura
 						continue;
 					}
 					lastHandler = spellHandler;

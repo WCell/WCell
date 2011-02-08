@@ -61,5 +61,20 @@ namespace WCell.RealmServer.Spells.Targeting
 				};
 			}
 		}
+
+		public override bool Equals(object obj)
+		{
+			if (obj is TargetDefinition)
+			{
+				var def2 = (TargetDefinition)obj;
+				return def2.Adder == Adder && def2.Filter == Filter;
+			}
+			return false;
+		}
+
+		public override int GetHashCode()
+		{
+			return Adder.GetHashCode() * Filter.GetHashCode();
+		}
 	}
 }
