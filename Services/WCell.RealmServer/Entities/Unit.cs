@@ -1454,7 +1454,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// All spells known to this unit.
 		/// Could be null for NPCs that are not spell-casters (check with <see cref="HasSpells"/>).
-		/// Use <see cref="NPC.NPCSpells"/> or <see cref="EnsureSpells"/> to enforce a SpellCollection.
+		/// Use <see cref="NPC.NPCSpells"/> to enforce a SpellCollection.
 		/// </summary>
 		public virtual SpellCollection Spells
 		{

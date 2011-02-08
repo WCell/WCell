@@ -158,6 +158,8 @@ namespace WCell.RealmServer.Spawns
 			set;
 		}
 
+        public short _eventId;
+
 		public uint EventId
 		{
 			get;

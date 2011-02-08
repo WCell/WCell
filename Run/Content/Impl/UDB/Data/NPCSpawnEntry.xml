@@ -28,7 +28,7 @@
       <Flat Name="MountModelId" Table="creature_addon" Column="mount" />
     </Nested>
 
-    <Flat Name="EventId" Table="game_event_creature" Column="event" />
+    <Flat Name="_eventId" Table="game_event_creature" Column="event" />
     
     <Flat Name="PoolId" Table="pool_creature" Column="pool_entry" />
     <Flat Name="PoolRespawnProbability" Table="pool_creature" Column="chance" />

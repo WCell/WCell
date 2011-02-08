@@ -55,6 +55,12 @@ namespace WCell.RealmServer.GameObjects
 			return SpawnPoolTemplates.Values.SelectMany(pool => pool.Entries).GetEnumerator();
 		}
 
+        [NotVariable]
+        /// <summary>
+        /// All GOSpawnEntries by their Id
+        /// </summary>
+        public static GOSpawnEntry[] SpawnEntries = new GOSpawnEntry[40000];
+
 		[NotVariable]
 		/// <summary>
 		/// All existing GOTemplates by MapId
@@ -86,6 +92,14 @@ namespace WCell.RealmServer.GameObjects
 			return entry;
 		}
 
+        public static GOSpawnEntry GetSpawnEntry(uint id)
+        {
+            if (id >= SpawnEntries.Length)
+            {
+                return null;
+            }
+            return SpawnEntries[id];
+        }
 
 		internal static GOSpawnPoolTemplate GetOrCreateSpawnPoolTemplate(uint poolId)
 		{

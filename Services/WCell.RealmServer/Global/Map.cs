@@ -825,6 +825,34 @@ namespace WCell.RealmServer.Global
 			get { return m_gosSpawned; }
 		}
 
+        public void RemoveNPCSpawnPoolLater(NPCSpawnPoolTemplate templ)
+        {
+            AddMessage(() => RemoveNPCSpawnPoolNow(templ));
+        }
+
+        public void RemoveNPCSpawnPoolNow(NPCSpawnPoolTemplate templ)
+        {
+            NPCSpawnPool existingPool;
+            if (m_npcSpawnPools.TryGetValue(templ.PoolId, out existingPool))
+            {
+                existingPool.RemovePoolNow();
+            }
+        }
+
+        public void RemoveGOSpawnPoolLater(GOSpawnPoolTemplate templ)
+        {
+            AddMessage(() => RemoveGOSpawnPoolNow(templ));
+        }
+
+        public void RemoveGOSpawnPoolNow(GOSpawnPoolTemplate templ)
+        {
+            GOSpawnPool existingPool;
+            if (m_goSpawnPools.TryGetValue(templ.PoolId, out existingPool))
+            {
+                existingPool.RemovePoolNow();
+            }
+        }
+
 		public void AddNPCSpawnPoolLater(NPCSpawnPoolTemplate templ)
 		{
 			AddMessage(() => AddNPCSpawnPoolNow(templ));
@@ -855,14 +883,19 @@ namespace WCell.RealmServer.Global
 			}
 		}
 
-		public GOSpawnPool AddGOSpawnPool(GOSpawnPoolTemplate templ)
+        public void AddGOSpawnPoolLater(GOSpawnPoolTemplate templ)
+        {
+            AddMessage(() => AddGOSpawnPoolNow(templ));
+        }
+
+		public GOSpawnPool AddGOSpawnPoolNow(GOSpawnPoolTemplate templ)
 		{
 			var pool = new GOSpawnPool(this, templ);
-			AddGOSpawnPool(pool);
+			AddGOSpawnPoolNow(pool);
 			return pool;
 		}
 
-		public void AddGOSpawnPool(GOSpawnPool pool)
+		public void AddGOSpawnPoolNow(GOSpawnPool pool)
 		{
 			GOSpawnPool existingPool;
 			if (!m_goSpawnPools.TryGetValue(pool.Template.PoolId, out existingPool))
@@ -1079,7 +1112,7 @@ namespace WCell.RealmServer.Global
 				{
 					if (templ.AutoSpawns && IsEventActive(templ.EventId))
 					{
-						AddGOSpawnPool(templ);
+						AddGOSpawnPoolNow(templ);
 					}
 				}
 			}

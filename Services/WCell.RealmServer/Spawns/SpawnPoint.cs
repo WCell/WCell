@@ -165,11 +165,11 @@ namespace WCell.RealmServer.Spawns
 		/// </summary>
 		public bool IsReadyToSpawn
 		{
-			get { return !IsActive && m_spawnEntry.AutoSpawns; }
+            get { return !IsActive && m_spawnEntry.AutoSpawns && WorldEventMgr.IsEventActive(m_spawnEntry.EventId); }
 		}
 
 		/// <summary>
-		/// Whether NPC is alread spawned or timer is running
+		/// Whether NPC is already spawned or timer is running
 		/// </summary>
 		public bool IsActive
 		{

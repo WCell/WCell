@@ -17,7 +17,7 @@ using WCell.Util.Graphics;
 namespace WCell.RealmServer.GameObjects.Spawns
 {
 	/// <summary>
-	/// Spawn-information for NPCs
+	/// Spawn-information for GameObjects
 	/// </summary>
 	[DataHolder]
 	public class GOSpawnEntry : SpawnEntry<GOSpawnPoolTemplate, GOSpawnEntry, GameObject, GOSpawnPoint, GOSpawnPool>, IDataHolder
@@ -110,9 +110,9 @@ namespace WCell.RealmServer.GameObjects.Spawns
 
 		#region FinalizeDataHolder
 		/// <summary>
-		/// Finalize this NPCSpawnEntry
+		/// Finalize this GOSpawnEntry
 		/// </summary>
-		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom GOSpawnEntry that share a pool)</param>
 		public void FinalizeDataHolder()
 		{
 			FinalizeDataHolder(true);
@@ -125,9 +125,9 @@ namespace WCell.RealmServer.GameObjects.Spawns
 		}
 
 		/// <summary>
-		/// Finalize this NPCSpawnEntry
+		/// Finalize this GOSpawnEntry
 		/// </summary>
-		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom NPCSpawnEntry that share a pool)</param>
+		/// <param name="addToPool">If set to false, will not try to add it to any pool (recommended for custom GOSpawnEntry that share a pool)</param>
 		public override void FinalizeDataHolder(bool addToPool)
 		{
 			// get Entry
@@ -171,12 +171,37 @@ namespace WCell.RealmServer.GameObjects.Spawns
 				// valid map
 				Entry.SpawnEntries.Add(this);
 
+                // add to list of GOSpawnEntries
+                ArrayUtil.Set(ref GOMgr.SpawnEntries, SpawnId, this);
+
 				if (addToPool)
 				{
 					// add to pool
 					AddToPoolTemplate();
 				}
 			}
+
+            // Is this GO associated with an event
+            if(_eventId != 0)
+            {
+                // The event id loaded can be negative if this
+                // entry is expected to despawn during an event
+                var eventId = (uint)Math.Abs(_eventId);
+
+                //Check if the event is valid
+                var worldEvent = WorldEventMgr.GetEvent(eventId);
+                if(worldEvent != null)
+                {
+                    // Add this GO to the list of related spawns
+                    // for the given world event
+                    var eventGO = new WorldEventGameObject()
+                                       {_eventId = _eventId, EventId = eventId, Guid = SpawnId, Spawn = _eventId > 0};
+                    
+                    worldEvent.GOSpawns.Add(eventGO);
+                }
+                EventId = eventId;
+
+            }
 		}
 		#endregion
 

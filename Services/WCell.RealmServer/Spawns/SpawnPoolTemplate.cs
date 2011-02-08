@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Spawns
 			get
 			{
 				// can assume that at least one Entry is present, else the pool would not be created
-				return Entries[0].EventId;
+				return (uint)Entries[0].EventId;
 			}
 		}
 
