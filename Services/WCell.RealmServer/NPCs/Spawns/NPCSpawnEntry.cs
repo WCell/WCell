@@ -143,6 +143,27 @@ namespace WCell.RealmServer.NPCs.Spawns
 				}
 			}
 
+            // Is this NPC associated with an event
+            if (_eventId != 0)
+            {
+                // The event id loaded can be negative if this
+                // entry is expected to despawn during an event
+                var eventId = (uint)Math.Abs(_eventId);
+
+                //Check if the event is valid
+                var worldEvent = WorldEventMgr.GetEvent(eventId);
+                if (worldEvent != null)
+                {
+                    // Add this NPC to the list of related spawns
+                    // for the given world event
+                    var eventNPC = new WorldEventNPC() { _eventId = _eventId, EventId = eventId, Guid = SpawnId, Spawn = _eventId > 0 };
+
+                    worldEvent.NPCSpawns.Add(eventNPC);
+                }
+                EventId = eventId;
+
+            }
+
 			// finished initializing, now call the hooks
 			foreach (var handler in Entry.SpawnTypeHandlers)
 			{

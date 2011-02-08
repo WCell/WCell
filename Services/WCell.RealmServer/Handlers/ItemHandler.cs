@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// "You created: "
 		/// </summary>
-		YouCreated = 1l << 32
+		YouCreated = 1L << 32
 	}
 
 	public static class ItemHandler
