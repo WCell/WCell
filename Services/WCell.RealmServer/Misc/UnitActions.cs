@@ -992,7 +992,7 @@ namespace WCell.RealmServer.Misc
 			{
 
 				var atk = Attacker as Character;
-				hitchance += IsRangedAttack ? (int)atk.RangedHitChance * 100 : (int)atk.HitChance * 100;
+				hitchance += (IsRangedAttack ? (int)atk.RangedHitChance : (int)atk.HitChance) * 100;
 				skillBonus -= (int)atk.Skills.GetValue(Weapon.Skill);
 			}
 			else
@@ -1095,8 +1095,11 @@ namespace WCell.RealmServer.Misc
 
 		/// <summary>
 		/// After we already know that we did not crit, we want to check
-		/// again against a bonus crit chance. We use basic laws of probability:
-		/// P(CritWithBonus | NoCrit) = P(CritWithBonus) / P(NoCrit) =
+		/// again against a bonus crit chance.
+		/// 
+		/// We use basic laws of probability:
+		/// P(CritWithBonus | NoCrit) = 
+		/// P(CritWithBonus) / P(NoCrit) =
 		/// critBonus / (1 - origCritChance)
 		/// </summary>
 		public void AddBonusCritChance(int critBonusPct)
@@ -1165,7 +1168,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			chance = (chance * attackerCritChance + 50) / 100;	// rounded
-			chance = (int)(chance - ((Victim.GetResiliencePct() + 50f) * 100)); //resilience
+			chance = (int)(chance - (Victim.GetResiliencePct() * 100)); //resilience
 
 			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
