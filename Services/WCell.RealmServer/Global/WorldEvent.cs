@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Lang;
@@ -216,13 +217,21 @@ namespace WCell.RealmServer.Global
         /// </summary>
         public uint Guid;
 
+        public NPCId EntryId;
+
+        [NotPersistent]
+        public NPCId OriginalEntryId;
+
         public uint ModelId;
 
         public uint EquipmentId;
 
-        public SpellId spell_start;
+        [NotPersistent]
+        public uint OriginalEquipmentId;
 
-        public SpellId spell_end;
+        public SpellId SpellIdToCastAtStart;
+
+        public SpellId SpellIdToCastAtEnd;
 
         /// <summary>
         /// ID of the world event relating to this entry

@@ -12,6 +12,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
+using WCell.RealmServer.Spells;
 using WCell.Util;
 using WCell.Util.Threading.TaskParallel;
 
@@ -74,7 +75,7 @@ namespace WCell.RealmServer.Global
                 // start updating
                 //TODO: Enable this
                 //Disabled for now, no point updating nothing!!!
-                //Task.Factory.StartNewDelayed(110000, Update);
+                Task.Factory.StartNewDelayed(110000, Update);
             }
             return true;
         }
@@ -161,6 +162,7 @@ namespace WCell.RealmServer.Global
             Log.Info("Starting event {0}: {1}", worldEvent.Id, worldEvent.Description);
             ArrayUtil.Set(ref ActiveEvents, worldEvent.Id, worldEvent);
             SpawnEvent(worldEvent);
+            ApplyEventNPCData(worldEvent);
         }
 
         public static bool StopEvent(uint id)
@@ -187,6 +189,7 @@ namespace WCell.RealmServer.Global
                 ClearActiveQuests(worldEvent.QuestIds);
 
             DeSpawnEvent(worldEvent);
+            ResetEventNPCData(worldEvent);
         }
 		#endregion
 
@@ -325,6 +328,99 @@ namespace WCell.RealmServer.Global
                     foreach (var point in spawnEntry.SpawnPoints.ToArray())
                     {
                         point.Respawn();
+                    }
+                }
+            }
+        }
+
+        private static void ApplyEventNPCData(WorldEvent worldEvent)
+        {
+
+            foreach (var eventNpcData in worldEvent.ModelEquips)
+            {
+                var spawnEntry = NPCMgr.GetSpawnEntry(eventNpcData.Guid);
+                if(spawnEntry == null)
+                {
+                    Log.Warn("Invalid Spawn Entry in World Event NPC Data, Entry: {0}", eventNpcData.Guid);
+                    continue;
+                }
+
+                if(eventNpcData.EntryId != 0)
+                {
+                    eventNpcData.OriginalEntryId = spawnEntry.EntryId;
+                    spawnEntry.EntryId = eventNpcData.EntryId;
+                }
+
+                if (eventNpcData.ModelId != 0)
+                {
+                    spawnEntry.DisplayIdOverride = eventNpcData.ModelId;
+                }
+
+                if(eventNpcData.EquipmentId != 0)
+                {
+                    eventNpcData.OriginalEquipmentId = spawnEntry.EquipmentId;
+                    spawnEntry.EquipmentId = eventNpcData.EquipmentId;
+                }
+
+                spawnEntry.FinalizeDataHolder(false);
+                
+                foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
+                {
+                    point.Respawn();
+                    if (eventNpcData.SpellIdToCastAtStart == 0)
+                        continue;
+                    
+                    Spell spell = SpellHandler.Get(eventNpcData.SpellIdToCastAtStart);
+                    if (spell == null)
+                        continue;
+
+                    SpellCast cast = point.ActiveSpawnling.SpellCast;
+                    cast.Start(spell);
+                }
+            }
+        }
+
+        private static void ResetEventNPCData(WorldEvent worldEvent)
+        {
+
+            foreach (var eventNpcData in worldEvent.ModelEquips)
+            {
+                var spawnEntry = NPCMgr.GetSpawnEntry(eventNpcData.Guid);
+                if (spawnEntry == null)
+                {
+                    Log.Warn("Invalid Spawn Entry in World Event NPC Data, Entry: {0}", eventNpcData.Guid);
+                    continue;
+                }
+
+                if (eventNpcData.EntryId != 0)
+                {
+                    spawnEntry.EntryId = eventNpcData.OriginalEntryId;
+                }
+
+                if (eventNpcData.ModelId != 0)
+                {
+                    spawnEntry.DisplayIdOverride = 0;
+                }
+
+                if (eventNpcData.EquipmentId != 0)
+                {
+                    spawnEntry.EquipmentId = eventNpcData.OriginalEquipmentId;
+                }
+
+                spawnEntry.FinalizeDataHolder(false);
+
+                foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
+                {
+                    point.Respawn();
+
+                    if (eventNpcData.SpellIdToCastAtEnd == 0)
+                        continue;
+
+                    Spell spell = SpellHandler.Get(eventNpcData.SpellIdToCastAtEnd);
+                    if (spell != null)
+                    {
+                        SpellCast cast = point.ActiveSpawnling.SpellCast;
+                        cast.Start(spell);
                     }
                 }
             }
