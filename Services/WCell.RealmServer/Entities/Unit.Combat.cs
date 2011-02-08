@@ -574,7 +574,7 @@ namespace WCell.RealmServer.Entities
 			return res;
 		}
 
-		public float CalcCritChance(Unit defender, DamageSchool dmgSchool, Spell spell, IWeapon weapon)
+		public float GetBaseCritChance(DamageSchool dmgSchool, Spell spell, IWeapon weapon)
 		{
 			float chance;
 			if (this is Character)
@@ -600,9 +600,6 @@ namespace WCell.RealmServer.Entities
 			{
 				chance = GetCritChance(dmgSchool);
 			}
-
-			//chance -= defender.GetResiliencePct(this);
-			chance -= defender.GetResiliencePct();
 			return chance;
 		}
 

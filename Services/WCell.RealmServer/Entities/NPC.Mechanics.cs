@@ -93,7 +93,7 @@ namespace WCell.RealmServer.Entities
 				var resilience = chr.GetCombatRating(CombatRating.MeleeResilience);
 				return resilience / GameTables.GetCRTable(CombatRating.MeleeResilience).GetMax((uint)Level - 1);
 			}
-			return 5;
+			return 0;
 		}
 	}
 }

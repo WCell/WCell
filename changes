@@ -1,5 +1,1 @@
-- fixed: login with enchanted items / PlayerInventory.GetEnumerator / display of damages in paperdoll / CanMelee logic
-- fixed: talent cooldown modifiers now also apply to category cds / talent range modifiers are now also properly applied
-- fixed: spell some incompatible spell targeting settings, causing some totems to fail
-- removed the combat deactivation delay
-- removed NPC level up animations when spawned by players
+- fixed several bugs in crit chance computations

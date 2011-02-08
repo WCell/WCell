@@ -9,6 +9,9 @@ namespace WCell.RealmServer.Editor.Menus
 {
 	public class MapEditorMenu : DynamicTextGossipMenu
 	{
+		/// <summary>
+		/// Generate the menu's text dynamically
+		/// </summary>
 		public override string GetText(GossipConversation convo)
 		{
 			var text = RealmLocalizer.Instance.Translate(convo.Character.Locale, RealmLangKey.EditorMapMenuText) + GossipTextHelper.Newline;

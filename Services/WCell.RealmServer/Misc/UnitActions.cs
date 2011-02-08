@@ -1124,7 +1124,7 @@ namespace WCell.RealmServer.Misc
 				return 0;
 			}
 
-			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, Spell, Weapon) * 100;
+			var chance = (int)Attacker.GetBaseCritChance(UsedSchool, Spell, Weapon) * 100;
 
 			if (Weapon != null)
 			{
@@ -1154,7 +1154,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// attackerCritChance is not shown in the tooltip but affects the crit chance against the Victim
-			int attackerCritChance = 1;
+			var attackerCritChance = 100;
 			if (UsedSchool == DamageSchool.Physical)
 			{
 				attackerCritChance += Victim.AttackerPhysicalCritChancePercentMod;
@@ -1165,7 +1165,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			chance = (chance * attackerCritChance + 50) / 100;	// rounded
-			chance -= (int)((Victim.GetResiliencePct() + 50f) * 100); //resilience
+			chance = (int)(chance - ((Victim.GetResiliencePct() + 50f) * 100)); //resilience
 
 			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
