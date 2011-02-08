@@ -283,6 +283,7 @@
     <Compile Include="Spawns\SpawnPoolTemplate.cs" />
     <Compile Include="Spawns\SpawnPool.cs" />
     <Compile Include="Spawns\SpawnPoolTemplateEntry.cs" />
+    <Compile Include="Spells\Auras\Mod\ModArmorByPercentOfIntellectHandler.cs" />
     <Compile Include="Spells\Auras\Misc\AddProcHandler.cs" />
     <Compile Include="Spells\Auras\Mod\ModAttackerSpellCritChanceHandler.cs" />
     <Compile Include="Spells\SpellCast.AI.cs" />
