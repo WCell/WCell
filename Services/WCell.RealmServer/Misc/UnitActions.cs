@@ -1168,7 +1168,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			chance = (chance * attackerCritChance + 50) / 100;	// rounded
-			chance = (int)(chance - (Victim.GetResiliencePct() * 100)); //resilience
+			chance -= (int)(Victim.GetResiliencePct() * 100); //resilience
 
 			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}

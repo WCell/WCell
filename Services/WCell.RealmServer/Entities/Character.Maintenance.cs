@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 
 			StandState = StandState.Sit;
 
-			Money = (uint) m_record.Money;
+			Money = (uint)m_record.Money;
 			Outfit = m_record.Outfit;
 			//ScaleX = m_archetype.Race.Scale;
 			ScaleX = 1;
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Entities
 			RestXp = m_record.RestXp;
 
 			SetInt32(UnitFields.LEVEL, m_record.Level);
-				// cannot use Level property, since it will trigger certain events that we don't want triggered
+			// cannot use Level property, since it will trigger certain events that we don't want triggered
 			NextLevelXP = XpGenerator.GetXpForlevel(m_record.Level + 1);
 			MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
 
@@ -108,9 +108,9 @@ namespace WCell.RealmServer.Entities
 			PvPRank = 1;
 			YieldsXpOrHonor = true;
 
-			foreach (var school in WCellDef.AllDamageSchools)
+			foreach (var school in SpellConstants.AllDamageSchools)
 			{
-				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int) school, 1);
+				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
 
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Entities
 
 			// factions
 			WatchedFaction = m_record.WatchedFaction;
-			Faction = FactionMgr.ByRace[(uint) record.Race];
+			Faction = FactionMgr.ByRace[(uint)record.Race];
 			m_reputations = new ReputationCollection(this);
 
 			// skills
@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Entities
 			if (m_record.JustCreated)
 			{
 				// newly created Character
-				SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+				SpecProfiles = new[] { SpecProfile.NewSpecProfile(this, 0) };
 
 				if (m_zone != null)
 				{
@@ -233,7 +233,7 @@ namespace WCell.RealmServer.Entities
 					if (SpecProfiles.Length == 0)
 					{
 						log.Warn("Character had no SpecProfiles: {0}", this);
-						SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+						SpecProfiles = new[] { SpecProfile.NewSpecProfile(this, 0) };
 					}
 					if (m_record.CurrentSpecIndex >= SpecProfiles.Length)
 					{
@@ -274,7 +274,7 @@ namespace WCell.RealmServer.Entities
 
 				// update RestState
 				if (m_record.RestTriggerId != 0 &&
-				    (m_restTrigger = AreaTriggerMgr.GetTrigger((uint) m_record.RestTriggerId)) != null)
+					(m_restTrigger = AreaTriggerMgr.GetTrigger((uint)m_record.RestTriggerId)) != null)
 				{
 					RestState = RestState.Resting;
 				}

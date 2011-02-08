@@ -759,7 +759,7 @@ namespace WCell.RealmServer.Entities
 		public uint BlockValue
 		{
 			get { return GetUInt32(PlayerFields.SHIELD_BLOCK); }
-			set { SetUInt32(PlayerFields.SHIELD_BLOCK, value); }
+			internal set { SetUInt32(PlayerFields.SHIELD_BLOCK, value); }
 		}
 
 		/// <summary>

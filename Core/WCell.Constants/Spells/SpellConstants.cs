@@ -133,6 +133,11 @@ namespace WCell.Constants.Spells
 		};
 		#endregion
 
+		public static readonly DamageSchool[] AllDamageSchools =
+			((DamageSchool[])Enum.GetValues(typeof(DamageSchool))).Except(new[] { DamageSchool.Count }).ToArray();
+
+		public static readonly uint[] AllDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.AllSchools);
+
 		public static readonly uint[] MagicDamageSchoolSet = Utility.GetSetIndices((uint)DamageSchoolMask.MagicSchools);
 	}
 }

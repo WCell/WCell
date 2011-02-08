@@ -1,6 +1,9 @@
+using System;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
+using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Items;
 
@@ -86,6 +89,24 @@ namespace WCell.RealmServer.Modifiers
 			RemoveHandlers[(int)ItemModType.ResilienceRating] = RemoveResilienceRating;
 			RemoveHandlers[(int)ItemModType.HasteRating] = RemoveHasteRating;
 			RemoveHandlers[(int)ItemModType.ExpertiseRating] = RemoveExpertiseRating;
+
+
+			// new modifiers
+			AddHandlers[(int)ItemModType.SpellDamageDone] = AddSpellDamageDone;
+			RemoveHandlers[(int)ItemModType.SpellDamageDone] = RemoveSpellDamageDone;
+			AddHandlers[(int)ItemModType.SpellHealingDone] = AddSpellHealingDone;
+			RemoveHandlers[(int)ItemModType.SpellHealingDone] = RemoveSpellHealingDone;
+			AddHandlers[(int)ItemModType.SpellPower] = AddSpellPower;
+			RemoveHandlers[(int)ItemModType.SpellPower] = RemoveSpellPower;
+
+			AddHandlers[(int)ItemModType.BlockValue] = AddBlockValue;
+			RemoveHandlers[(int)ItemModType.BlockValue] = RemoveBlockValue;
+
+
+			AddHandlers[(int)ItemModType.ManaRegeneration] = AddManaRegen;	// TODO: Depends on PowerType
+			RemoveHandlers[(int)ItemModType.ManaRegeneration] = RemoveManaRegen;
+			AddHandlers[(int)ItemModType.HealthRegenration] = AddHealthRegen;
+			RemoveHandlers[(int)ItemModType.HealthRegenration] = RemoveHealthRegen;
 		}
 
 
@@ -426,6 +447,77 @@ namespace WCell.RealmServer.Modifiers
 		{
 			owner.ModCombatRating(CombatRating.Expertise, -value);
 		}
+
 		#endregion
+
+
+		static void AddSpellPower(Character owner, int value)
+		{
+			AddSpellDamageDone(owner, value);
+			AddSpellHealingDone(owner, value);
+		}
+		static void RemoveSpellPower(Character owner, int value)
+		{
+			RemoveSpellDamageDone(owner, value);
+			RemoveSpellHealingDone(owner, value);
+		}
+
+		static void AddSpellDamageDone(Character owner, int value)
+		{
+			owner.AddDamageDoneMod(SpellConstants.AllDamageSchoolSet, value);
+		}
+		static void RemoveSpellDamageDone(Character owner, int value)
+		{
+			owner.RemoveDamageDoneMod(SpellConstants.AllDamageSchoolSet, value);
+		}
+
+		static void AddSpellHealingDone(Character owner, int value)
+		{
+			owner.HealingDoneMod += value;
+		}
+		static void RemoveSpellHealingDone(Character owner, int value)
+		{
+			owner.HealingDoneMod -= value;
+		}
+
+		private static void AddBlockValue(Character owner, int value)
+		{
+			owner.ChangeModifier(StatModifierFloat.BlockValue, value);
+		}
+		private static void RemoveBlockValue(Character owner, int value)
+		{
+			owner.ChangeModifier(StatModifierFloat.BlockValue, -value);
+		}
+
+
+		private static void AddManaRegen(Character owner, int value)
+		{
+			if (owner.PowerType == PowerType.Mana)
+			{
+				owner.ChangeModifier(StatModifierInt.PowerRegen, value);
+			}
+		}
+		private static void RemoveManaRegen(Character owner, int value)
+		{
+			if (owner.PowerType == PowerType.Mana)
+			{
+				owner.ChangeModifier(StatModifierInt.PowerRegen, -value);
+			}
+		}
+
+		private static void AddHealthRegen(Character owner, int value)
+		{
+			if (owner.PowerType == PowerType.Mana)
+			{
+				owner.ChangeModifier(StatModifierInt.HealthRegen, value);
+			}
+		}
+		private static void RemoveHealthRegen(Character owner, int value)
+		{
+			if (owner.PowerType == PowerType.Mana)
+			{
+				owner.ChangeModifier(StatModifierInt.HealthRegen, -value);
+			}
+		}
 	}
 }

@@ -259,6 +259,7 @@ namespace WCell.RealmServer.Modifiers
 
 			blockValue += chr.Strength / 2 - 10;
 			blockValue = GetMultiMod(chr.FloatMods[(int)StatModifierFloat.BlockValue], blockValue);
+
 			chr.BlockValue = (uint)blockValue;
 			chr.BlockChance = blockChance;
 		}

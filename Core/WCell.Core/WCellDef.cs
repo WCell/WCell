@@ -243,8 +243,5 @@ namespace WCell.Core
 			}
 			return id;
 		}
-
-		public static DamageSchool[] AllDamageSchools = ((DamageSchool[])Enum.GetValues(typeof(DamageSchool))).
-			Except(new[] { DamageSchool.Count }).ToArray();
 	}
 }
