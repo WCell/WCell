@@ -6,7 +6,7 @@ using WCell.Constants.Spells;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Misc;
-using WCell.RealmServer.Spells.Auras.Misc;
+using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
 
 namespace WCell.Addons.Default.Spells.Mage
