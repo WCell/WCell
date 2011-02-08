@@ -10,20 +10,6 @@
     <Flat Name="HolidayId" Column="holiday" />
     <Flat Name="Description" Column="description" />
   </DataHolder>
-
-  <!--
-  <DataHolder Name="WorldEventNPC">
-    <DefaultTable>game_event_creature</DefaultTable>
-    <Flat Name="Guid" Column="guid" />
-    <Flat Name="EventId" Column="event" />
-  </DataHolder>
-
-  <DataHolder Name="WorldEventGameObject">
-    <DefaultTable>game_event_gameobject</DefaultTable>
-    <Flat Name="Guid" Column="guid" />
-    <Flat Name="EventId" Column="event" />
-  </DataHolder>
-  -->
   
   <DataHolder Name="WorldEventQuest">
     <DefaultTable>game_event_quest</DefaultTable>
@@ -35,10 +21,11 @@
   <DataHolder Name="WorldEventNpcData">
     <DefaultTable>game_event_creature_data</DefaultTable>
     <Flat Name="Guid" Column="guid" />
+    <Flat Name="EntryId" Column="entry_id" />
     <Flat Name="ModelId" Column="modelid" />
     <Flat Name="EquipmentId" Column="equipment_id" />
-    <Flat Name="spell_start" Column="spell_start" />
-    <Flat Name="spell_end" Column="spell_end" />
+    <Flat Name="SpellIdToCastAtStart" Column="spell_start" />
+    <Flat Name="SpellIdToCastAtEnd" Column="spell_end" />
     <Flat Name="EventId" Column="event" />
   </DataHolder>
 </DataHolders>
