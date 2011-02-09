@@ -37,6 +37,12 @@
               </WarsongGulch>
             </WarsongGulch>
           </Battlegrounds>
+          <Events>
+            <DarkmoonFaire>
+              <CannonPrepId>CannonPrep_3</CannonPrepId>
+              <MagicWingsId>MagicWings_2</MagicWingsId>
+            </DarkmoonFaire>
+          </Events>
           <Samples>
             <AmbusherQuestSample>
               <MaxForgivenessDistance>100</MaxForgivenessDistance>
