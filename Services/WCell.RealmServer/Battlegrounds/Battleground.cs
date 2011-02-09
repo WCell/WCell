@@ -233,6 +233,14 @@ namespace WCell.RealmServer.Battlegrounds
 			get { return IsActive; }
 		}
 
+        /// <summary>
+        /// Whether to start the mode "Call To Arms" and change timers
+        /// </summary>
+        public virtual bool IsHolidayBG
+        {
+            get { return WorldEventMgr.IsHolidayActive(BattlegroundMgr.GetHolidayIdByBGId(Template.Id)); }
+        }
+
 		/// <summary>
 		/// Whether to start the Shutdown timer when <see cref="Map.PlayerCount"/> drops below the minimum
 		/// </summary>

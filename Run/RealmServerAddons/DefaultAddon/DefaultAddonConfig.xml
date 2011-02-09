@@ -11,12 +11,14 @@
               </ArathiBase>
               <ArathiBasin>
                 <ABHonorScoreTicks>330</ABHonorScoreTicks>
+				<ABHonorScoreTicksInCallToArms>200</ABHonorScoreTicksInCallToArms>
                 <ABMaxScore>1600</ABMaxScore>
                 <ABNearVictoryScore>1400</ABNearVictoryScore>
                 <ABPowerUpRespawnTime>90000</ABPowerUpRespawnTime>
                 <ABPrepTimeMillis>60000</ABPrepTimeMillis>
                 <ABReputationScore>10</ABReputationScore>
                 <ABReputationScoreTicks>200</ABReputationScoreTicks>
+				<ABReputationScoreTicksInCallToArms>150</ABReputationScoreTicksInCallToArms>
                 <ABUpdateDelay>1000</ABUpdateDelay>
               </ArathiBasin>
             </ArathiBasin>

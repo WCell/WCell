@@ -126,4 +126,15 @@ namespace WCell.Constants
         HordeWins = 8454,
         AllianceWins = 8455
     }
+
+    public enum BattlegroundHolidays
+    {
+        None = 0,
+        CallToArmsAV = 283,
+        CallToArmsWS = 284,
+        CallToArmsAB = 285,
+        CallToArmsEY = 353,
+        CallToArmsSA = 400,
+        CallToArmsIsleOfConquest = 420
+    }
 }

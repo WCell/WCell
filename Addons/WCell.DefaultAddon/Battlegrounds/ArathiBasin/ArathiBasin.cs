@@ -57,8 +57,14 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
         [Variable("ABReputationScoreTicks")]
         public static int ReputationScoreTicks = 200;
 
+        [Variable("ABReputationScoreTicksInCallToArms")]
+        public static int ReputationScoreTicksInCallToArms = 150;
+
         [Variable("ABHonorScoreTicks")]
         public static int HonorScoreTicks = 330;
+
+        [Variable("ABHonorScoreTicksInCallToArms")]
+        public static int HonorScoreTicksInCallToArms = 200;
 
         [Variable("ABReputationScore")]
         public static int ReputationScore = 10;
@@ -81,6 +87,9 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
 
         public bool isInformatedNearVictory;
         public TimerEntry timerUpdate;
+
+        public int ReputationScoreTick;
+        public int HonorScoreTick;
         #endregion
 
 	    #region Props
@@ -150,6 +159,8 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
             Bases = new ArathiBase[(int)ArathiBases.End];
             scoreTicks = new int[6]{ 0, 10, 10 ,10 ,10, 30};
             tickLengths = new int[6]{ 0, 12000, 9000, 6000, 3000, 1000};
+            ReputationScoreTick = IsHolidayBG ? ReputationScoreTicksInCallToArms : ReputationScoreTicks;
+            HonorScoreTick = IsHolidayBG ? HonorScoreTicksInCallToArms : HonorScoreTicks;
         }
 
         #region Overrides
@@ -317,13 +328,13 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                      HordeScore += scoreTicks[bases];
                      _hordeScoreLastTick = 0;
 
-                    if (_hordeReputationlastTick >= ReputationScoreTicks)
+                    if (_hordeReputationlastTick >= ReputationScoreTick)
                     {
                         CallOnAllCharacters(chr => chr.Reputations.GainReputation(FactionId.TheDefilers, ReputationScore));
                         _hordeReputationlastTick = 0;
                     }
 
-                    if (_hordeHonorLastTick >= HonorScoreTicks)
+                    if (_hordeHonorLastTick >= HonorScoreTick)
                     {
                         // TODO : Honor Formula
                         _hordeHonorLastTick = 0;
@@ -334,12 +345,12 @@ namespace WCell.Addons.Default.Battlegrounds.ArathiBasin
                     AllianceScore += scoreTicks[bases];
                     _allianceScoreLastTick = 0;
 
-                    if (_allianceHonorLastTick >= ReputationScoreTicks)
+                    if (_allianceHonorLastTick >= ReputationScoreTick)
                     {
                         CallOnAllCharacters(chr => chr.Reputations.GainReputation(FactionId.TheLeagueOfArathor, ReputationScore));
                         _allianceHonorLastTick = 0;
                     }
-                    if (_allianceReputationLastTick >= HonorScoreTicks)
+                    if (_allianceReputationLastTick >= HonorScoreTick)
                     {
                         // TODO : Honor Formula
                         _allianceReputationLastTick = 0;

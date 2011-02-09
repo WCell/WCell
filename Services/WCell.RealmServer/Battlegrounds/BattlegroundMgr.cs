@@ -273,6 +273,27 @@ namespace WCell.RealmServer.Battlegrounds
 				}
 			}
 		}
+
+        public static uint GetHolidayIdByBGId(BattlegroundId bgId)
+        {
+            switch (bgId)
+            {
+                case BattlegroundId.AlteracValley:
+                    return (uint)BattlegroundHolidays.CallToArmsAV;
+                case BattlegroundId.WarsongGulch:
+                    return (uint)BattlegroundHolidays.CallToArmsWS;
+                case BattlegroundId.ArathiBasin:
+                    return (uint)BattlegroundHolidays.CallToArmsAB;
+                case BattlegroundId.EyeOfTheStorm:
+                    return (uint)BattlegroundHolidays.CallToArmsEY;
+                case BattlegroundId.StrandOfTheAncients:
+                    return (uint)BattlegroundHolidays.CallToArmsSA;
+                case BattlegroundId.IsleOfConquest:
+                    return (uint)BattlegroundHolidays.CallToArmsIsleOfConquest;
+                default:
+                    return (uint)BattlegroundHolidays.None;
+            }
+        }
 		#endregion
 
 		#region Helper Methods
