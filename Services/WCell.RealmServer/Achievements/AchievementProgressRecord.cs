@@ -9,6 +9,7 @@ using WCell.Constants.Achievements;
 using WCell.Core.Database;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
+using WCell.Util;
 
 namespace WCell.RealmServer.Achievements
 {
@@ -62,7 +63,7 @@ namespace WCell.RealmServer.Achievements
 		{
 			get
 			{
-				return _characterGuid | ((long)_achievementCriteriaId << 32);
+				return Utility.MakeLong(_characterGuid, _achievementCriteriaId);
 			}
 			set
 			{

@@ -116,7 +116,7 @@ namespace WCell.RealmServer.Talents
 		{
 			get
 			{
-				return _characterGuid | ((long)SpecIndex << 32);
+				return Utility.MakeLong(_characterGuid, SpecIndex);
 			}
 			set
 			{

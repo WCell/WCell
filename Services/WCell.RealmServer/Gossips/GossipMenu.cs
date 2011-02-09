@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Gossips
 		/// <summary>
 		/// Constructor initializing menu with body text ID
 		/// </summary>
-		/// <param name="bodyTextID"><see cref="BodyTextId"/></param>
+		/// <param name="bodyTextID">GossipEntry Id</param>
 		public GossipMenu(uint bodyTextID)
 		{
 			m_textEntry = GossipMgr.GetEntry(bodyTextID);

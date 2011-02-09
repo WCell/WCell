@@ -72,10 +72,8 @@ namespace WCell.RealmServer.Global
 
                 Log.Debug("{0} World Events loaded.", _eventCount);
                 
-                // start updating
-                //TODO: Enable this
-                //Disabled for now, no point updating nothing!!!
-                Task.Factory.StartNewDelayed(110000, Update);
+                // Add the Update method to the world task queue
+                World.TaskQueue.CallPeriodically(10000, Update);
             }
             return true;
         }
@@ -104,7 +102,6 @@ namespace WCell.RealmServer.Global
         {
             if (!Loaded || !QuestMgr.Loaded || !NPCMgr.Loaded || !GOMgr.Loaded)
             {
-                Task.Factory.StartNewDelayed(10000, Update);
                 return;
             }
 
@@ -121,8 +118,6 @@ namespace WCell.RealmServer.Global
                 else if (worldEvent.TimeUntilNextStart <= TimeSpan.Zero)
                     StartEvent(worldEvent);
             }
-
-            Task.Factory.StartNewDelayed(1000, Update);
         }
 
 	    #endregion

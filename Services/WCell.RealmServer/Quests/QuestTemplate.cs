@@ -436,11 +436,13 @@ namespace WCell.RealmServer.Quests
 
 		/// <summary>
 		/// 
-		/// </summary>
-		public bool ShouldBeConnectedInGraph
+        /// </summary>
+#pragma warning disable 0675
+        public bool ShouldBeConnectedInGraph
 		{
 			get { return (PreviousQuestId | NextQuestId | ExclusiveGroup | FollowupQuestId) != 0; }
 		}
+#pragma warning restore
 
 		/// <summary>
 		/// Quests that may must all be active in order to get this Quest
