@@ -34,9 +34,15 @@ namespace WCell.RealmServer.Spells.Effects
 
 		public override void Initialize(ref SpellFailedReason failReason)
 		{
+			if (m_cast.TargetItem == null)
+			{
+				failReason = SpellFailedReason.ItemGone;
+				return;
+			}
+
 			if (m_cast.TargetItem.Template.Level < Effect.Spell.BaseLevel)
 			{
-				failReason = SpellFailedReason.Lowlevel;
+				failReason = SpellFailedReason.TargetLowlevel;
 				return;
 			}
 

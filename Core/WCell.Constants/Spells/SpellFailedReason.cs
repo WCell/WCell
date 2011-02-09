@@ -56,7 +56,11 @@ namespace WCell.Constants.Spells
 		ItemNotReady = 45,
 		LevelRequirement = 46,
 		LineOfSight = 47,
-		Lowlevel = 48,
+
+		/// <summary>
+		/// Target is too low level
+		/// </summary>
+		TargetLowlevel = 48,
 		LowCastlevel = 49,
 		MainhandEmpty = 50,
 		Moving = 51,

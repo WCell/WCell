@@ -17,35 +17,20 @@ namespace WCell.Core.Timers
 		/// Whether this is a one-shot timer
 		/// </summary>
 		public readonly bool IsOneShot;
-		private long m_LastCallTime;
-		private Action m_Callback;
-		private int m_Delay;
 
 		internal SimpleTimerEntry(int delayMillis, Action callback, long time, bool isOneShot)
 		{
-			m_Callback = callback;
-			m_Delay = delayMillis;
-			m_LastCallTime = time;
+			Callback = callback;
+			Delay = delayMillis;
+			LastCallTime = time;
 			IsOneShot = isOneShot;
 		}
 
-		public long LastCallTime
-		{
-			get { return m_LastCallTime; }
-			internal set { m_LastCallTime = value; }
-		}
+		public long LastCallTime { get; private set; }
 
-		public Action Callback
-		{
-			get { return m_Callback; }
-			internal set { m_Callback = value; }
-		}
+		public Action Callback { get; set; }
 
-		public int Delay
-		{
-			get { return m_Delay; }
-			internal set { m_Delay = value; }
-		}
+		public int Delay { get; set; }
 
 		internal void Execute(SelfRunningTaskQueue queue)
 		{
