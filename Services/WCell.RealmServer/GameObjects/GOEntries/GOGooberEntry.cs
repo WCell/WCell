@@ -133,7 +133,7 @@ namespace WCell.RealmServer.GameObjects.GOEntries
 			get { return Fields[18]; }
 		}
 
-		public uint GossipId
+		public override uint GossipId
 		{
 			get { return (uint)Fields[19]; }
 		}

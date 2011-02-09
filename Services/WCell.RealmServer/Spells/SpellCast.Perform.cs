@@ -243,14 +243,10 @@ namespace WCell.RealmServer.Spells
 						return SpellFailedReason.Immune;
 					}
 				}
-			}
 
-			// toggle autoshot
-			if (CasterUnit != null)
-			{
+				// toggle autoshot
 				if (m_spell.AttributesExB.HasFlag(SpellAttributesExB.AutoRepeat))
 				{
-					// autoshot
 					if (CasterUnit.Target == null)
 					{
 						CasterUnit.Target = Selected as Unit;
@@ -260,6 +256,7 @@ namespace WCell.RealmServer.Spells
 						}
 					}
 
+					CasterUnit.IsFighting = true;
 					if (CasterUnit.AutorepeatSpell == m_spell)
 					{
 						// deactivate
@@ -282,7 +279,8 @@ namespace WCell.RealmServer.Spells
 					CasterUnit.IsFighting = false;
 				}
 			}
-			else if (m_spell.IsChanneled)
+
+			if (CasterUnit == null && m_spell.IsChanneled)
 			{
 				// Channel requires CasterUnit
 				return SpellFailedReason.CasterAurastate;

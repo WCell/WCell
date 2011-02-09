@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public bool IsAICast
 		{
-			get { return !isPlayerCast && CasterObject is Unit && !IsPassive; }
+			get { return !isPlayerCast && !IsPassive && (CasterUnit == null || !CasterUnit.IsPlayer); }
 		}
 
 		public bool UsesRunes
@@ -682,8 +682,8 @@ namespace WCell.RealmServer.Spells
 				TargetItem = ((Character)CasterObject).Inventory.GetItem(uid);
 				if (TargetItem == null || !TargetItem.CanBeUsed)
 				{
-					Cancel(SpellFailedReason.BadTargets);
-					return SpellFailedReason.BadTargets;
+					Cancel(SpellFailedReason.ItemGone);
+					return SpellFailedReason.ItemGone;
 				}
 			}
 			// 0x20

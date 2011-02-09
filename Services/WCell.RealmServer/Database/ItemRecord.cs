@@ -304,6 +304,10 @@ namespace WCell.RealmServer.Database
 				EnchantIds = new int[(int)EnchantSlot.End];
 			}
 			EnchantIds[(int)slot] = id;
+			if (slot == EnchantSlot.Temporary)
+			{
+				EnchantTempTime = timeLeft;
+			}
 			//switch (slot)
 			//{
 			//    case EnchantSlot.Permanent:
