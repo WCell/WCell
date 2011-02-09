@@ -201,6 +201,7 @@
     <Compile Include="Achievements\AchievementProgressRecord.cs" />
     <Compile Include="Achievements\AchievementCriteriaRequirement.cs" />
     <Compile Include="Achievements\AchievementReward.cs" />
+    <Compile Include="Commands\WorldEventCommands.cs" />
     <Compile Include="Content\IModDataHolder.cs" />
     <Compile Include="Editor\Commands\EditorCommand.cs">
       <SubType>Code</SubType>

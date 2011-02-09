@@ -88,38 +88,48 @@ namespace WCell.RealmServer.Global
             Occurence = TimeSpan.FromMinutes(_Occurence);
             Duration = TimeSpan.FromMinutes(_Length);
 
-            var time = DateTime.Now;
-
-            //Only work out start times for events that will ever be able to start
-            if (time < Until)
-            {
-                //If the first time this event can start is in the
-                //future then this is easy
-                if (From > time)
-                    TimeUntilNextStart = From - time;
-                else
-                {
-                    //If the first time this event started was in the
-                    //past work out which cycle of the event we are up
-                    //to
-                    DateTime timeToCheck = From;
-                    while (timeToCheck < time)
-                    {
-                        //if we are in the middle of a cycle
-                        if ((timeToCheck + Duration) > time && (timeToCheck + Duration) < (timeToCheck + Occurence))
-                            break;
-
-                        timeToCheck += Occurence;
-                    }
-                    TimeUntilNextStart = timeToCheck - time;
-                }
-                
-                TimeUntilEnd = TimeUntilNextStart + Duration;
-            }
+            CalculateEventDelays(this);
 
             WorldEventMgr.AddEvent(this);
         }
-    }
+
+	    public static void CalculateEventDelays(WorldEvent worldEvent)
+	    {
+	        var time = DateTime.Now;
+
+	        //Only work out start times for events that will ever be able to start
+            if (time < worldEvent.Until)
+	        {
+	            //If the first time this event can start is in the
+	            //future then this is easy
+                if (worldEvent.From > time)
+                    worldEvent.TimeUntilNextStart = worldEvent.From - time;
+	            else
+	            {
+	                //If the first time this event started was in the
+	                //past work out which cycle of the event we are up
+	                //to
+                    DateTime timeToCheck = worldEvent.From;
+	                while (timeToCheck < time)
+	                {
+	                    //if we are in the middle of a cycle
+                        if ((timeToCheck + worldEvent.Duration) > time && (timeToCheck + worldEvent.Duration) < (timeToCheck + worldEvent.Occurence))
+	                        break;
+
+                        timeToCheck += worldEvent.Occurence;
+	                }
+                    worldEvent.TimeUntilNextStart = timeToCheck - time;
+	            }
+
+                worldEvent.TimeUntilEnd = worldEvent.TimeUntilNextStart + worldEvent.Duration;
+	        }
+            else
+            {
+                worldEvent.TimeUntilNextStart = null;
+                worldEvent.TimeUntilEnd = null;
+            }
+	    }
+	}
 
     /// <summary>
 	/// Holds all information regarding a spawn
