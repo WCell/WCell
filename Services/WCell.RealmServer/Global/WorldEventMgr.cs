@@ -349,6 +349,14 @@ namespace WCell.RealmServer.Global
                 {
                     eventNpcData.OriginalEntryId = spawnEntry.EntryId;
                     spawnEntry.EntryId = eventNpcData.EntryId;
+
+                    spawnEntry.Entry = NPCMgr.GetEntry(spawnEntry.EntryId);
+                    if (spawnEntry.Entry == null)
+                    {
+                        Log.Warn("{0} had an invalid World Event EntryId.", spawnEntry);
+                        spawnEntry.EntryId = eventNpcData.OriginalEntryId;
+                        spawnEntry.Entry = NPCMgr.GetEntry(spawnEntry.EntryId);
+                    }
                 }
 
                 if (eventNpcData.ModelId != 0)
@@ -360,9 +368,9 @@ namespace WCell.RealmServer.Global
                 {
                     eventNpcData.OriginalEquipmentId = spawnEntry.EquipmentId;
                     spawnEntry.EquipmentId = eventNpcData.EquipmentId;
-                }
 
-                spawnEntry.FinalizeDataHolder(false);
+                    spawnEntry.Equipment = NPCMgr.GetEquipment(spawnEntry.EquipmentId);
+                }
                 
                 foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
                 {
@@ -395,6 +403,7 @@ namespace WCell.RealmServer.Global
                 if (eventNpcData.EntryId != 0)
                 {
                     spawnEntry.EntryId = eventNpcData.OriginalEntryId;
+                    spawnEntry.Entry = NPCMgr.GetEntry(spawnEntry.EntryId);
                 }
 
                 if (eventNpcData.ModelId != 0)
@@ -405,10 +414,10 @@ namespace WCell.RealmServer.Global
                 if (eventNpcData.EquipmentId != 0)
                 {
                     spawnEntry.EquipmentId = eventNpcData.OriginalEquipmentId;
+
+                    spawnEntry.Equipment = NPCMgr.GetEquipment(spawnEntry.EquipmentId);
                 }
-
-                spawnEntry.FinalizeDataHolder(false);
-
+                
                 foreach (var point in spawnEntry.SpawnPoints.ToArray().Where(point => point.IsActive))
                 {
                     point.Respawn();

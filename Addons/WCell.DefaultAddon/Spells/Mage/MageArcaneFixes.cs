@@ -8,7 +8,6 @@ using WCell.RealmServer.Spells;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Spells.Auras;
 
 namespace WCell.Addons.Default.Spells.Mage
 {
