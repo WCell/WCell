@@ -495,7 +495,7 @@ namespace WCell.RealmServer.Items
 			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
 				)
 			{
-				ArrayUtil.Set(ref ItemMgr.FirstTotemsPerCat, (uint)ToolCategory, this);
+				ItemMgr.FirstTotemsPerCat[(uint)ToolCategory] = this;
 			}
 
 			if (GemPropertiesId != 0)

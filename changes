@@ -1,2 +1,2 @@
-- fixed shooting ranged weapons / heuristics for SpellCast.IsAICast
-- saved temporary enchantment duration correctly (still need to add the timer)
+- fixed a bug with spells that have tool requirements (Mana Spring Totem amonst others)
+- fixed the situation where an exception was raised if a target got teleported while being under the influence of an AreaAura (far-teleport-related bugs)

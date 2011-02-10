@@ -216,7 +216,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (m_params != null)
 				{
 					m_timer = new TimerEntry(m_params.StartDelay,
-					                         m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
+											 m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
 				}
 				else
 				{
@@ -374,7 +374,20 @@ namespace WCell.RealmServer.Spells.Auras
 						var auras = target.Key.Auras;
 						if (auras != null)
 						{
-							target.Value.Remove(false);
+							if (!target.Key.IsInContext && target.Key.IsInWorld)
+							{
+								// target has been teleported away
+								var aura = target.Value;
+								target.Key.AddMessage(() =>
+								{
+									if (aura.IsAdded)
+										aura.Remove(false);
+								});
+							}
+							else
+							{
+								target.Value.Remove(false);
+							}
 						}
 					}
 					m_targets.Remove(target.Key);

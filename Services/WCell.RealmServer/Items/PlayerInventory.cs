@@ -2397,7 +2397,7 @@ namespace WCell.RealmServer.Items
 			for (var i = 0; i < cats.Length; i++)
 			{
 				var cat = cats[i];
-				var slots = ItemMgr.GetTotemCatSlots(cat);
+				var slots = ItemMgr.GetToolCategorySlots(cat);
 				var found = false;
 				if (slots != null)
 				{

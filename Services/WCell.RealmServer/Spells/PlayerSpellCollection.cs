@@ -376,7 +376,7 @@ namespace WCell.RealmServer.Spells
 			{
 				foreach (var cat in spell.RequiredToolCategories)
 				{
-					var tool = ItemMgr.GetFirstTotemCat(cat);
+					var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
 					if (tool != null)
 					{
 						chr.Inventory.Ensure(tool, 1);
