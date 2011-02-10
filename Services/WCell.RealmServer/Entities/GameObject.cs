@@ -245,13 +245,7 @@ namespace WCell.RealmServer.Entities
 				return false;
 			}
 
-			if (Entry.Type == GameObjectType.Chest && !Flags.HasFlag(GameObjectFlags.ConditionalInteraction))
-			{
-				// conditional chests are chests that are related to at least one quest
-				// other chests must be opened through a spell
-				return false;
-			}
-			return CanBeUsedBy(chr);
+			return Lock == null && CanBeUsedBy(chr);
 		}
 
 		/// <summary>
