@@ -156,7 +156,13 @@ namespace WCell.RealmServer.Spells.Effects
 			}
 
 			// open lock
-			LockEntry.Handle(m_cast.CasterChar, lockable, method != null ? method.InteractionType : LockInteractionType.None);
+			var chr = m_cast.CasterChar;
+			chr.AddMessage(() =>
+			{
+				if (lockable is ObjectBase && !((ObjectBase)lockable).IsInWorld) return;
+
+				LockEntry.Handle(chr, lockable, method != null ? method.InteractionType : LockInteractionType.None);
+			});
 		}
 
 		protected override void Apply(WorldObject target)

@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected bool m_isFighting;
 
-		protected DateTime m_lastCombatTime, m_lastPvPUpdateTime;
+		protected DateTime m_lastCombatTime;
 
 		protected DamageAction m_DamageAction;
 
