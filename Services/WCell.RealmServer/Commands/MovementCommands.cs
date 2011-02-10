@@ -198,8 +198,46 @@ namespace WCell.RealmServer.Commands
 	}
 	#endregion
 
-	#region Teleport
-	public class TeleportCommand : RealmServerCommand
+    #region Stunned
+    public class StunnededCommand : RealmServerCommand
+	{
+		protected StunnededCommand() { }
+
+		protected override void Initialize()
+		{
+			Init("Stunned", "Stun");
+			EnglishParamInfo = "[0/1]";
+			EnglishDescription = "Toggles whether the Unit is stunned or not";
+		}
+
+		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+		{
+			var newState = (trigger.Text.HasNext && trigger.Text.NextBool()) ||
+				(!trigger.Text.HasNext && trigger.Args.Target.CanMove);
+
+			if (newState)
+			{
+				trigger.Args.Target.IncMechanicCount(SpellMechanic.Stunned);
+			}
+			else
+			{
+				trigger.Args.Target.DecMechanicCount(SpellMechanic.Stunned);
+			}
+			trigger.Reply((newState ? "S" : "Uns") + "tunned ");
+		}
+
+        public override ObjectTypeCustom TargetTypes
+        {
+            get
+            {
+                return ObjectTypeCustom.All;
+            }
+        }
+    }
+    #endregion
+
+    #region Teleport
+    public class TeleportCommand : RealmServerCommand
 	{
 		protected TeleportCommand() { }
 

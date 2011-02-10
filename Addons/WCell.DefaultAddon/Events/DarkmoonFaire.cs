@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using WCell.Constants.GameObjects;
+﻿using WCell.Constants.GameObjects;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
-using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
-using WCell.RealmServer.Global;
+using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Events
 {
-    class DarkmoonFaire
+    class DarkmoonFaireBlastenheimer
     {
         public const GOEntryId Blastenheimer5000ElwynnId = GOEntryId.Blastenheimer5000UltraCannon;
         public const GOEntryId Blastenheimer5000TerokkarId = GOEntryId.Blastenheimer5000UltraCannon_2;
@@ -22,12 +18,12 @@ namespace WCell.Addons.Default.Events
         public static SpellId MagicWingsId = SpellId.MagicWings_2;
         public static SpellId CannonPrepId = SpellId.CannonPrep_3;
 
-        public static Vector3 ElwynnTelePosition = new Vector3(-9569.15f, -14.75f, 68.05f);
-        public const float ElwynnTeleOrientation = 4.87f;
-        public static Vector3 TerokkarTelePosition = new Vector3(-1742.64f, 5454.71f, -7.92f);
-        public const float TerokkarTeleOrientation = 4.60f;
-        public static Vector3 MulgoreTelePosition = new Vector3(-1326.71f, 86.30f, 133.09f);
-        public const float MulgoreTeleOrientation = 3.51f;
+        public static Vector3 ElwynnTelePosition = new Vector3(-9571.3f, -18.8353f, 70.05f);
+        public static float ElwynnTeleOrientation = 4.90124f;
+        public static Vector3 TerokkarTelePosition = new Vector3(-1742.18f, 5457.85f, -7.92f);
+        public static float TerokkarTeleOrientation = -1.71042f;
+        public static Vector3 MulgoreTelePosition = new Vector3(-1325.26f, 86.7761f, 133.09f);
+        public static float MulgoreTeleOrientation = 3.48324f;
 
         [Initialization]
         [DependentInitialization(typeof(GOMgr))]
@@ -47,65 +43,119 @@ namespace WCell.Addons.Default.Events
             var cast = user.SpellCast;
             cast.Start(CannonPrepId);
             user.IncMechanicCount(SpellMechanic.Rooted);
-            go.PlaySound(8476);
-            
-
-            //Everything beyond this should really happen after around two seconds
-            //see FireCannon method
-
-            switch(go.EntryId)
+            switch (go.EntryId)
             {
                 case (uint)Blastenheimer5000ElwynnId:
                     {
                         user.TeleportTo(ElwynnTelePosition, ElwynnTeleOrientation);
-                    }break;
+                    } break;
                 case (uint)Blastenheimer5000TerokkarId:
                     {
                         user.TeleportTo(TerokkarTelePosition, TerokkarTeleOrientation);
-                    }break;
+                    } break;
                 case (uint)Blastenheimer5000MulgoreId:
                     {
                         user.TeleportTo(MulgoreTelePosition, MulgoreTeleOrientation);
-                    }break;
+                    } break;
                 default:
                     {
-                        user.TeleportTo(go);
-                    }break;
+                        user.DecMechanicCount(SpellMechanic.Rooted);
+                        return false;
+                    } break;
             }
-
-            user.DecMechanicCount(SpellMechanic.Rooted);
-            cast = user.SpellCast;
-            cast.Start(MagicWingsId);
+            go.PlaySound(8476);
+            
+            user.CallDelayed(2000, obj => FireCannon(user));
             return true;
         }
 
-        public static void FireCannon(GameObject go, Character user)
+        public static void FireCannon(Character user)
         {
-            /*
-            switch(go.EntryId)
+            user.DecMechanicCount(SpellMechanic.Rooted);
+            var cast = user.SpellCast;
+            if (cast != null)
+                cast.TriggerSelf(MagicWingsId);
+        }
+    }
+
+    class DarkmoonFaireSteamTonks
+    {
+        public static GOEntryId TonkControlConsoleGOEntryId = GOEntryId.TonkControlConsole;
+        public static NPCId SteamTonkNPCId = NPCId.DarkmoonSteamTonk;
+        public static SpellId SummonTonkSpellId = SpellId.SummonRCTonk;
+        public static SpellId UseTonkSpellId = SpellId.UsingSteamTonkController;
+
+        [Initialization]
+        [DependentInitialization(typeof(GOMgr))]
+        public static void RegisterEvents()
+        {
+            var consoleEntry = GOMgr.GetEntry(TonkControlConsoleGOEntryId);
+            if (consoleEntry == null) return;
+            consoleEntry.Used += TonkConsoleUsed;
+            consoleEntry.Activated += TonkConsoleActivated;
+        }
+
+        private static void TonkConsoleActivated(GameObject obj)
+        {
+            obj.State = GameObjectState.Enabled;
+        }
+
+        private static bool TonkConsoleUsed(GameObject go, Character user)
+        {
+            go.State = GameObjectState.Disabled;
+
+            var tonkEntry = NPCMgr.GetEntry(SteamTonkNPCId);
+            var tonk = tonkEntry.SpawnAt(user);
+            tonk.Summoner = user;
+
+            var cast = user.SpellCast;
+            if (cast == null)
+                return false;
+
+            if(cast.Start(UseTonkSpellId, false, user, tonk) != SpellFailedReason.Ok)
             {
-                case (uint)Blastenheimer5000ElwynnId:
-                    {
-                        user.TeleportTo(ElwynnTelePosition, ElwynnTeleOrientation);
-                    }break;
-                case (uint)Blastenheimer5000TerokkarId:
-                    {
-                        user.TeleportTo(TerokkarTelePosition, TerokkarTeleOrientation);
-                    }break;
-                case (uint)Blastenheimer5000MulgoreId:
-                    {
-                        user.TeleportTo(MulgoreTelePosition, MulgoreTeleOrientation);
-                    }break;
-                default:
-                    {
-                        user.TeleportTo(go);
-                    }break;
+                go.State = GameObjectState.Enabled;
+                return false;
+            }
+            return true;
+        }
+
+        [Initialization]
+        [DependentInitialization(typeof(NPCMgr))]
+        public static void InitNPCs()
+        {
+            var tonkEntry = NPCMgr.GetEntry(SteamTonkNPCId);
+            if (tonkEntry == null) return;
+            tonkEntry.Died += ResetTonk;
+        }
+
+        private static void ResetTonk(NPC npc)
+        {
+            if (npc.IsAlive)
+            {
+                //kill it and return since this should
+                //fire the event again
+                npc.Kill();
+                return;
             }
 
-            user.DecMechanicCount(SpellMechanic.Rooted);
-            cast = user.SpellCast;
-            cast.Start(MagicWingsId);
-            */
+            var user = npc.Summoner;
+            if (user != null && user.IsInWorld)
+            {
+                var cast = user.SpellCast;
+                if(cast != null)
+                    cast.TriggerSelf(SpellId.Stun_2);
+
+                var go = user.Map.GetNearestGameObject(user.Position, TonkControlConsoleGOEntryId);
+                if (go != null)
+                {
+                    go.State = GameObjectState.Enabled;
+                }
+            }
+
+            
+            npc.RemoveFromMap();
+
         }
     }
 }

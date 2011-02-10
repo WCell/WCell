@@ -40,10 +40,19 @@
             </WarsongGulch>
           </Battlegrounds>
           <Events>
-            <DarkmoonFaire>
+            <DarkmoonFaireBlastenheimer>
               <CannonPrepId>CannonPrep_3</CannonPrepId>
+              <ElwynnTeleOrientation>4.90124</ElwynnTeleOrientation>
               <MagicWingsId>MagicWings_2</MagicWingsId>
-            </DarkmoonFaire>
+              <MulgoreTeleOrientation>3.48324</MulgoreTeleOrientation>
+              <TerokkarTeleOrientation>-1.71042</TerokkarTeleOrientation>
+            </DarkmoonFaireBlastenheimer>
+            <DarkmoonFaireSteamTonks>
+              <SteamTonkNPCId>DarkmoonSteamTonk</SteamTonkNPCId>
+              <SummonTonkSpellId>SummonRCTonk</SummonTonkSpellId>
+              <TonkControlConsoleGOEntryId>TonkControlConsole</TonkControlConsoleGOEntryId>
+              <UseTonkSpellId>UsingSteamTonkController</UseTonkSpellId>
+            </DarkmoonFaireSteamTonks>
           </Events>
           <Samples>
             <AmbusherQuestSample>
