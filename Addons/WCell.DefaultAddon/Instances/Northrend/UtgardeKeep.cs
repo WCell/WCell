@@ -405,7 +405,7 @@ namespace WCell.Addons.Default.Instances
 					if (mob != null)
 					{
 						// resurrect skeleton
-						m_owner.SpellCast.Trigger(SpellId.SoulstoneResurrection_7, mob);
+						m_owner.SpellCast.Trigger(SpellId.ScourgeResurrection, mob);
 						mob.HealthPct = 100;
 					}
 				}
@@ -432,7 +432,6 @@ namespace WCell.Addons.Default.Instances
 
 			public override void Start()
 			{
-
 				decreptifyTimer = m_owner.CallPeriodically(Utility.Random(5000, 10000), CastDecrepify);
 				base.Start();
 			}

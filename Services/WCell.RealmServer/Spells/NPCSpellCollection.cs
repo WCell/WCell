@@ -31,13 +31,13 @@ namespace WCell.RealmServer.Spells
 			return spells;
 		}
 
-		protected List<Spell> m_readySpells;
+		protected HashSet<Spell> m_readySpells;
 		protected List<CooldownRemoveTimer> m_cooldowns;
 
 		#region Init & Cleanup
 		private NPCSpellCollection()
 		{
-			m_readySpells = new List<Spell>(5);
+			m_readySpells = new HashSet<Spell>();
 		}
 
 		protected internal override void Recycle()
@@ -88,9 +88,8 @@ namespace WCell.RealmServer.Spells
 
 		public Spell GetReadySpell(SpellId spellId)
 		{
-			for (int i = 0; i < m_readySpells.Count; i++)
+			foreach (var spell in m_readySpells)
 			{
-				var spell = m_readySpells[i];
 				if (spell.SpellId == spellId)
 				{
 					return spell;
@@ -199,8 +198,7 @@ namespace WCell.RealmServer.Spells
 			if (millis <= 0) return;
 			m_readySpells.Remove(spell);
 
-			var ticks = millis / Owner.Map.UpdateDelay;
-			var action = new CooldownRemoveTimer(ticks, spell, owner => m_readySpells.Add(spell));
+			var action = new CooldownRemoveTimer(millis, spell);
 			Owner.AddUpdateAction(action);
 			if (m_cooldowns == null)
 			{
@@ -266,16 +264,21 @@ namespace WCell.RealmServer.Spells
 
 		protected class CooldownRemoveTimer : OneShotObjectUpdateTimer
 		{
-			public CooldownRemoveTimer(int ticks, Spell spell, Action<WorldObject> action)
-				: base(ticks, action)
+			public CooldownRemoveTimer(int millis, Spell spell) : base(millis, null)
 			{
 				Spell = spell;
+				Callback = DoRemoveCooldown;
 			}
 
 			public Spell Spell
 			{
 				get;
 				set;
+			}
+
+			void DoRemoveCooldown(WorldObject owner)
+			{
+				((NPCSpellCollection)((NPC)owner).Spells).AddReadySpell(Spell);
 			}
 		}
 		#endregion
