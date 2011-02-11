@@ -52,7 +52,7 @@ namespace WCell.Constants.Pets
 	}
 
 	[Flags]
-	public enum PetSpellState : byte
+	public enum PetSpellState : ushort
 	{
 		None,
 		Passive = 1,
