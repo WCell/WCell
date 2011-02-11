@@ -317,7 +317,8 @@ namespace WCell.RealmServer.Handlers
 				{
 					if (!spell.IsPassive)
 					{
-						packet.Write(spell.Id | ((uint)PetSpellState.Enabled << 24));
+						packet.Write((ushort)spell.Id);
+                        packet.Write((ushort)PetSpellState.Enabled);
 						++spellCount;
 					}
 				}

@@ -465,7 +465,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Actions
-		public uint[] BuidPetActionBar()
+		public uint[] BuildPetActionBar()
 		{
 			var bar = new uint[PetConstants.PetActionCount];
 
@@ -489,7 +489,7 @@ namespace WCell.RealmServer.Entities
 				Type = PetActionType.SetAction
 			}.Raw;
 
-			var spells = m_spells.GetEnumerator();
+		    var spells = Entry.Spells.GetEnumerator();
 			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
 			{
 				if (!spells.MoveNext())
@@ -503,7 +503,7 @@ namespace WCell.RealmServer.Entities
 				{
 					var spell = spells.Current;
 					var actionEntry = new PetActionEntry();
-					actionEntry.SetSpell(spell.SpellId, PetActionType.DefaultSpellSetting);
+					actionEntry.SetSpell(spell.Key, PetActionType.DefaultSpellSetting);
 					bar[i++] = actionEntry.Raw;
 				}
 			}

@@ -30,7 +30,6 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon>wcell_icon.ico</ApplicationIcon>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>

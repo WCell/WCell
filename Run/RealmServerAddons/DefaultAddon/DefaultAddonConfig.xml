@@ -48,6 +48,17 @@
               <TerokkarTeleOrientation>-1.71042</TerokkarTeleOrientation>
             </DarkmoonFaireBlastenheimer>
             <DarkmoonFaireSteamTonks>
+              <NormalTonkSpells>
+                <Item>Cannon</Item>
+                <Item>Mortar</Item>
+                <Item>NitrousBoost</Item>
+              </NormalTonkSpells>
+              <SpecialTonkSpells>
+                <Item>DropMine</Item>
+                <Item>ActivateMGTurret</Item>
+                <Item>Flamethrower</Item>
+                <Item>ShieldGenerator</Item>
+              </SpecialTonkSpells>
               <SteamTonkNPCId>DarkmoonSteamTonk</SteamTonkNPCId>
               <SummonTonkSpellId>SummonRCTonk</SummonTonkSpellId>
               <TonkControlConsoleGOEntryId>TonkControlConsole</TonkControlConsoleGOEntryId>
