@@ -654,12 +654,6 @@ namespace WCell.RealmServer.Spells
 
 			var caster = CasterUnit;
 
-			// consume combopoints
-			if (m_spell.IsFinishingMove)
-			{
-				caster.ModComboState(null, 0);
-			}
-
 			if (caster.IsAlive)
 			{
 				// sit while eating/drinking
@@ -844,6 +838,12 @@ namespace WCell.RealmServer.Spells
 			if (!m_casting)
 			{
 				return; // should not happen (but might)
+			}
+
+			// consume combopoints
+			if (m_spell.IsFinishingMove)
+			{
+				caster.ModComboState(null, 0);
 			}
 
 			// consumes spell modifiers (if required)
