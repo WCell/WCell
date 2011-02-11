@@ -235,6 +235,7 @@
     </Compile>
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModPossessAuraHandler.cs" />
     <Compile Include="Spells\Auras\PeriodicallyUpdatedAuraEffectHandler.cs" />
     <Compile Include="Spells\Targeting\AISpellTargetCollection.cs" />
     <Compile Include="ArenaTeams\ArenaTeam.cs" />

@@ -58,6 +58,7 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			EffectHandlers[(int)AuraType.None] = () => new AuraVoidHandler();
 			EffectHandlers[(int)AuraType.PeriodicDamage] = () => new PeriodicDamageHandler();
+            EffectHandlers[(int)AuraType.ModPossess] = () => new ModPossessAuraHandler();
 			EffectHandlers[(int)AuraType.Dummy] = () => new DummyHandler();
 			EffectHandlers[(int)AuraType.PeriodicHeal] = () => new PeriodicHealHandler();
 			EffectHandlers[(int)AuraType.ModAttackSpeed] = () => new ModAttackSpeedHandler();
