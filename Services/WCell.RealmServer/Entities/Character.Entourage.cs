@@ -85,7 +85,7 @@ namespace WCell.RealmServer.Entities
 
 					if (m_activePet.PetRecord.ActionButtons == null)
 					{
-						m_activePet.PetRecord.ActionButtons = m_activePet.BuidPetActionBar();
+						m_activePet.PetRecord.ActionButtons = m_activePet.BuildPetActionBar();
 					}
 
 					AddPostUpdateMessage(() =>
