@@ -41,7 +41,7 @@ namespace WCell.Constants.Pets
 
         IsAutoCastEnabled = 0x40,
         IsAutoCastAllowed = 0x80,
-		DefaultSpellSetting = CastSpell | IsAutoCastEnabled | IsAutoCastEnabled
+        DefaultSpellSetting = CastSpell | IsAutoCastEnabled | IsAutoCastAllowed
 	}
 
 	public enum PetAttackMode : byte
