@@ -493,7 +493,7 @@ namespace WCell.Tools.Domi
 		public static void WriteRangeEnum()
 		{
 			var ranges = new MappedDBCReader<DistanceEntry, DistanceConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRANGE));
 
 			WriteEnum("Range", " : uint", "Spells", ranges.Entries.Values,
 					  (entry) => { return entry.Distance == (int)entry.Distance; },

@@ -153,9 +153,9 @@ namespace WCell.RealmServer.Quests
 		{
 			if (!Loaded)
 			{
-                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTXP));
-                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_QUESTFACTIONREWARD));
-                new DBCReader<QuestHonorInfoConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TEAMCONTRIBUTIONPOINTS));
+                new DBCReader<QuestXpConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_QUESTXP));
+                new DBCReader<QuestRewRepConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_QUESTFACTIONREWARD));
+                new DBCReader<QuestHonorInfoConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TEAMCONTRIBUTIONPOINTS));
 				Templates = new QuestTemplate[30000];
 
 				ContentMgr.Load<QuestTemplate>();

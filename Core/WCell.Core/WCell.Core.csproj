@@ -228,7 +228,7 @@
     <Compile Include="Variables\WCellVariableAttribute.cs" />
     <Compile Include="Variables\WCellVariableDefinition.cs" />
     <Compile Include="WCellConfig.cs" />
-    <Compile Include="WCellDef.cs" />
+    <Compile Include="WCellConstants.cs" />
     <Compile Include="Cryptography\Authenticator.cs" />
     <Compile Include="Cryptography\BigInteger.cs" />
     <Compile Include="Cryptography\HashUtilities.cs" />

@@ -24,7 +24,7 @@ using System.Text;
 
 namespace WCell.Core
 {
-	public static class WCellDef
+	public static class WCellConstants
 	{
 		public static ClientLocale DefaultLocale = ClientLocale.English;
 

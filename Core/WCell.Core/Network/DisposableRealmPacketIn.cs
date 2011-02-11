@@ -85,7 +85,7 @@ namespace WCell.Core.Network
 			}
 #endif
 
-			int headerSize = (contentLength > WCellDef.HEADER_CHANGE_THRESHOLD ? LARGE_PACKET_HEADER_SIZE : HEADER_SIZE);
+			int headerSize = (contentLength > WCellConstants.HEADER_CHANGE_THRESHOLD ? LARGE_PACKET_HEADER_SIZE : HEADER_SIZE);
 
 			var totalLength = contentLength + headerSize;
 

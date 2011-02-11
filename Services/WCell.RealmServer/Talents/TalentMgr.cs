@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Talents
 		internal static void Initialize()
 		{
 			var treeReader = new MappedDBCReader<TalentTree, TalentTreeConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TALENTTREES));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTTREES));
 
 			foreach (var tree in treeReader.Entries.Values)
 			{
@@ -104,7 +104,7 @@ namespace WCell.RealmServer.Talents
 
 
 			var talentReader = new ListDBCReader<TalentEntry, TalentConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TALENTS));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTS));
 
 			foreach (var talent in talentReader.EntryList)
 			{

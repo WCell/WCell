@@ -325,7 +325,7 @@ namespace WCell.RealmServer.Spells
 				SpellEffect.InitMiscValueTypes();
 				loaded = true;
 				Spell.InitDbcs();
-				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELL));
+				new DBCReader<Spell.SpellDBCConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELL));
 
 				ContentMgr.Load<SpellLearnRelation>();
 				InitSummonHandlers();

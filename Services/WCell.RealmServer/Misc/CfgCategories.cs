@@ -8,7 +8,7 @@ namespace WCell.RealmServer.Misc
 	{
 		public static Dictionary<int, string> ReadCategories()
 		{
-			var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CFGCATEGORIES));
+			var reader = new MappedDBCReader<string, DBCCtfCategoriesConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CFGCATEGORIES));
 			return reader.Entries;
 		}
 	}

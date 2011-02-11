@@ -56,7 +56,7 @@ namespace WCell.RealmServer.UpdateFields
 		/// <returns></returns>
 		public void SendTo(IRealmClient client)
 		{
-			if (TotalLength <= WCellDef.MAX_UNCOMPRESSED_UPDATE_PACKET)
+			if (TotalLength <= WCellConstants.MAX_UNCOMPRESSED_UPDATE_PACKET)
 			{
 				client.Send(GetFinalizedPacket());
 			}

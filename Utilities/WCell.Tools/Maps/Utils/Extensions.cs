@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using WCell.Core;
 using WCell.Tools.Maps.Structures;
 using WCell.Util.Graphics;
 
@@ -187,11 +188,11 @@ namespace WCell.Tools.Maps.Utils
             {
                 if (bytes[i] == 0)
                 {
-                    return Encoding.ASCII.GetString(bytes, 0, i);
+					return WCellConstants.DefaultEncoding.GetString(bytes, 0, i);
                 }
             }
 
-            return Encoding.ASCII.GetString(bytes);
+			return WCellConstants.DefaultEncoding.GetString(bytes);
         }
 
         public static bool HasData(this BinaryReader br)

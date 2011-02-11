@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Talents
 				tree.Name = GetString(rawData, 1);
 
 				var classMask = (ClassMask)GetUInt32(rawData, 20);
-				tree.Class = WCellDef.ClassTypesByMask[classMask];
+				tree.Class = WCellConstants.ClassTypesByMask[classMask];
 
 				tree.PetTabIndex = GetUInt32(rawData, 21);
 				tree.TabIndex = GetUInt32(rawData, 22);

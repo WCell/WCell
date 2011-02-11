@@ -95,7 +95,7 @@ namespace WCell.RealmServer.RacesClasses
 			var races = ArchetypeMgr.Archetypes[(uint)ClassId];
 			if (races == null)
 			{
-				ArchetypeMgr.Archetypes[(uint)ClassId] = races = new Archetype[WCellDef.RaceTypeLength];
+				ArchetypeMgr.Archetypes[(uint)ClassId] = races = new Archetype[WCellConstants.RaceTypeLength];
 			}
 
 			StartLocation = new WorldZoneLocation(StartMapId, StartPosition, StartZoneId);

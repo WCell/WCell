@@ -58,13 +58,13 @@ namespace WCell.RealmServer.Items.Enchanting
 			RemoveEquippedEnchantHandlers[(uint)ItemEnchantmentType.Totem] = RemoveTotem;
 
 			EnchantmentConditionReader = new MappedDBCReader<ItemEnchantmentCondition, ItemEnchantmentConditionConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENTCONDITION));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLITEMENCHANTMENTCONDITION));
 
 			EnchantmentEntryReader = new MappedDBCReader<ItemEnchantmentEntry, ItemEnchantmentConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLITEMENCHANTMENT));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLITEMENCHANTMENT));
 
 			GemPropertiesReader = new MappedDBCReader<GemProperties, GemPropertiesConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_GEMPROPERTIES));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_GEMPROPERTIES));
 		}
 
 		private static void DoNothing(Item item, ItemEnchantmentEffect effect)

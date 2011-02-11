@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: TalentOutput.cs
  *   copyright		: (C) The WCell Team
@@ -33,7 +33,7 @@ namespace WCell.Tools.Domi.Output
 		{
 			using (StreamWriter writer = new StreamWriter(ToolConfig.OutputDir + "/Talents.txt", false))
 			{
-				foreach (var clssType in WCellDef.AllClassIds)
+				foreach (var clssType in WCellConstants.AllClassIds)
 				{
 					if (clssType == ClassId.End)
 					{

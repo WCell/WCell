@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Factions
 		private static void InitFactionDBC()
 		{
 			var dbcRdr =
-				new MappedDBCReader<FactionEntry, FactionConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_FACTIONS));
+				new MappedDBCReader<FactionEntry, FactionConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_FACTIONS));
 
 			foreach (var entry in dbcRdr.Entries.Values)
 			{
@@ -78,7 +78,7 @@ namespace WCell.RealmServer.Factions
 		{
 			var dbcRdr =
 				new MappedDBCReader<FactionTemplateEntry, FactionTemplateConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_FACTION_TEMPLATES));
+					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_FACTION_TEMPLATES));
 
 			foreach (var templ in dbcRdr.Entries.Values)
 			{

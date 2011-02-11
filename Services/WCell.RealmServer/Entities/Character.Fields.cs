@@ -360,7 +360,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Totally smashed
+		/// 100 Totally smashed
 		/// 60 Drunk
 		/// 30 Tipsy
 		/// </summary>

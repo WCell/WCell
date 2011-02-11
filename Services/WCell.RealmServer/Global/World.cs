@@ -389,8 +389,8 @@ namespace WCell.RealmServer.Global
 		{
 			Instance.WorldStates = new WorldStateCollection(Instance, Constants.World.WorldStates.GlobalStates);
 
-			new DBCReader<MapConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
-            new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPDIFFICULTY));
+			new DBCReader<MapConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_MAPS));
+            new DBCReader<MapDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_MAPDIFFICULTY));
 
 			// add existing MapTemplate objects to mapper
 			var mapper = ContentMgr.GetMapper<MapTemplate>();
@@ -435,7 +435,7 @@ namespace WCell.RealmServer.Global
 
 		private static void LoadZoneInfos()
 		{
-			var atDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_AREATABLE);
+			var atDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_AREATABLE);
 			var dbcRdr = new MappedDBCReader<ZoneTemplate, AreaTableConverter>(atDbcPath);
 
 			foreach (var zone in dbcRdr.Entries.Values)
@@ -467,12 +467,12 @@ namespace WCell.RealmServer.Global
 				}
 			}
 
-            new DBCReader<WorldMapOverlayConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_WORLDMAPOVERLAY));
+            new DBCReader<WorldMapOverlayConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_WORLDMAPOVERLAY));
 		}
 
 		private static void LoadChatChannelsDBC()
 		{
-			var ccDbcPath = RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CHATCHANNELS);
+			var ccDbcPath = RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHATCHANNELS);
 			var reader = new MappedDBCReader<ChatChannelEntry, ChatChannelConverter>(ccDbcPath);
 			foreach (var entry in reader.Entries.Values)
 			{

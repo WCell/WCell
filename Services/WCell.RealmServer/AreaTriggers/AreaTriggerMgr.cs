@@ -154,7 +154,7 @@ namespace WCell.RealmServer.AreaTriggers
 		[Initialization(InitializationPass.Fourth, "Initialize AreaTriggers")]
 		public static void Initialize()
 		{
-            var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_AREATRIGGER));
+            var reader = new MappedDBCReader<AreaTrigger, ATConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_AREATRIGGER));
 
 			foreach (var at in reader.Entries)
 			{

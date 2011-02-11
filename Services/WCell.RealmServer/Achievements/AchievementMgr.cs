@@ -132,9 +132,9 @@ namespace WCell.RealmServer.Achievements
 
 		static void LoadDBCs()
 		{
-			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENTS));
-			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CATEGORIES));
-			new DBCReader<AchievementCriteriaConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ACHIEVEMENT_CRITERIAS));
+			new DBCReader<AchievementEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENTS));
+			new DBCReader<AchievementCategoryEntryConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENT_CATEGORIES));
+			new DBCReader<AchievementCriteriaConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ACHIEVEMENT_CRITERIAS));
 		}
 		#endregion
 

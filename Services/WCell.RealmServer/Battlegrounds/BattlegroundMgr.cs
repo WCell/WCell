@@ -128,9 +128,9 @@ namespace WCell.RealmServer.Battlegrounds
 		[Initialization(InitializationPass.Eighth, "Initialize Battlegrounds")]
 		public static void InitializeBGs()
 		{
-            BattlemasterListReader = new MappedDBCReader<BattlemasterList, BattlemasterConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BATTLEMASTERLIST));
+            BattlemasterListReader = new MappedDBCReader<BattlemasterList, BattlemasterConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BATTLEMASTERLIST));
 
-            PVPDifficultyReader = new MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_PVPDIFFICULTY));
+            PVPDifficultyReader = new MappedDBCReader<PvPDifficultyEntry, PvPDifficultyConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_PVPDIFFICULTY));
 
 			ContentMgr.Load<BattlegroundTemplate>();
 
@@ -157,7 +157,7 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			var reader =
 				new MappedDBCReader<WorldSafeLocation, DBCWorldSafeLocationConverter>(
-                    RealmServerConfiguration.GetDBCFile(WCellDef.DBC_WORLDSAFELOCATION));
+                    RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_WORLDSAFELOCATION));
 			WorldSafeLocs = reader.Entries;
 		}
 

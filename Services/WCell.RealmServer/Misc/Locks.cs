@@ -153,7 +153,7 @@ namespace WCell.RealmServer.Misc
 		private static void LoadLocks()
 		{
 			new MappedDBCReader<LockEntry, LockConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_LOCKS));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_LOCKS));
 		}
 
 		class LockConverter : AdvancedDBCRecordConverter<LockEntry>

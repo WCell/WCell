@@ -1,2 +1,3 @@
-- fixed a bug with spells that have tool requirements (Mana Spring Totem amonst others)
-- fixed the situation where an exception was raised if a target got teleported while being under the influence of an AreaAura (far-teleport-related bugs)
+- changed all occurences of Encoding.ASCII to WCellConstants.DefaultEncoding 
+-> this might require some people to flush their account DB
+-> also should fix several issues with non-western clients

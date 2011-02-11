@@ -490,7 +490,7 @@ namespace WCell.RealmServer.NPCs
 		public static void InitDefault()
 		{
 			var npcSpells = new MappedDBCReader<Spell[], DBCCreatureSpellConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CREATURESPELLDATA)).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CREATURESPELLDATA)).Entries;
 
 			PetSpells = new Spell[10000][];
 			foreach (var pair in npcSpells)
@@ -500,21 +500,21 @@ namespace WCell.RealmServer.NPCs
 			ArrayUtil.Prune(ref PetSpells);
 
 			CreatureFamilies = new MappedDBCReader<CreatureFamily, DBCCreatureFamilyConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CREATUREFAMILIES)).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CREATUREFAMILIES)).Entries;
 
 			BankBagSlotPrices = new ListDBCReader<uint, DBCBankBagSlotConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BANKBAGSLOTPRICES)).EntryList.ToArray();
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BANKBAGSLOTPRICES)).EntryList.ToArray();
 
 			DefaultFaction = FactionMgr.ById[(uint)FactionId.Creature];
 
 			VehicleSeatEntries = new MappedDBCReader<VehicleSeatEntry, DBCVehicleSeatConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_VEHICLESEATS)).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_VEHICLESEATS)).Entries;
 
 			VehicleEntries = new MappedDBCReader<VehicleEntry, DBCVehicleConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_VEHICLES)).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_VEHICLES)).Entries;
 
 			BarberShopStyles = new MappedDBCReader<BarberShopStyleEntry, BarberShopStyleConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_BARBERSHOPSTYLE)).Entries;
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_BARBERSHOPSTYLE)).Entries;
 
 			InitTypeHandlers();
 		}
@@ -808,7 +808,7 @@ namespace WCell.RealmServer.NPCs
 		static void LoadItemExtendedCostEntries()
 		{
 			var reader = new MappedDBCReader<ItemExtendedCostEntry, DBCItemExtendedCostConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMEXTENDEDCOST));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ITEMEXTENDEDCOST));
 
 			ItemExtendedCostEntries = reader.Entries;
 			ItemExtendedCostEntries.Add(0, ItemExtendedCostEntry.NullEntry);

@@ -206,7 +206,7 @@ namespace WCell.RealmServer.Network
 					var bytes = new byte[headerSize];
 					Array.Copy(recvBuffer, offset, bytes, 0, headerSize);
 
-					var str = Encoding.ASCII.GetString(bytes);
+					var str = Encoding.UTF8.GetString(bytes);
 					if (str.Equals("GET HT", StringComparison.InvariantCultureIgnoreCase))
 					{
 						log.Warn("HTTP crawler bot connected from {0} and has been disconnected.", this);

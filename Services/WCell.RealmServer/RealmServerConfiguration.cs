@@ -96,7 +96,7 @@ namespace WCell.RealmServer
 			set
 			{
 				defaultLocale = value;
-				WCellDef.DefaultLocale = value;
+				WCellConstants.DefaultLocale = value;
 			}
 		}
 

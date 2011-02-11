@@ -56,7 +56,7 @@ namespace WCell.Core
 				var localeStr = packet.ReadReversedPascalString(4);
 				if (!ClientLocales.Lookup(localeStr, out m_Locale))
 				{
-					m_Locale = WCellDef.DefaultLocale;
+					m_Locale = WCellConstants.DefaultLocale;
 				}
 
 				TimeZone = BitConverter.ToUInt32(packet.ReadBytes(4), 0);

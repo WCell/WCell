@@ -14,7 +14,7 @@ namespace WCell.RealmServer.RacesClasses
 	public static class ArchetypeMgr
 	{
 		#region Fields
-		static readonly Func<BaseClass>[] ClassCreators = new Func<BaseClass>[WCellDef.ClassTypeLength];
+		static readonly Func<BaseClass>[] ClassCreators = new Func<BaseClass>[WCellConstants.ClassTypeLength];
 
 		internal static BaseClass CreateClass(ClassId id)
 		{
@@ -24,18 +24,18 @@ namespace WCell.RealmServer.RacesClasses
 		/// <summary>
 		/// Use Archetypes for any customizations.
 		/// </summary>
-		internal static readonly BaseClass[] BaseClasses = new BaseClass[WCellDef.ClassTypeLength + 20];
+		internal static readonly BaseClass[] BaseClasses = new BaseClass[WCellConstants.ClassTypeLength + 20];
 
 		/// <summary>
 		/// Use Archetypes for any customizations.
 		/// </summary>
-		internal static readonly BaseRace[] BaseRaces = new BaseRace[WCellDef.RaceTypeLength + 20];
+		internal static readonly BaseRace[] BaseRaces = new BaseRace[WCellConstants.RaceTypeLength + 20];
 
 		/// <summary>
 		/// Use Archetype objects to customize basic settings.
 		/// Index: [class][race]
 		/// </summary>
-		public static readonly Archetype[][] Archetypes = new Archetype[WCellDef.ClassTypeLength][];
+		public static readonly Archetype[][] Archetypes = new Archetype[WCellConstants.ClassTypeLength][];
 		#endregion
 
 		#region Getters
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.RacesClasses
 		public static Archetype GetArchetypeNotNull(RaceId race, ClassId clss)
 		{
 			Archetype type;
-			if ((uint)clss >= WCellDef.ClassTypeLength || (uint)race >= WCellDef.RaceTypeLength ||
+			if ((uint)clss >= WCellConstants.ClassTypeLength || (uint)race >= WCellConstants.RaceTypeLength ||
 				((type = Archetypes[(uint)clss][(uint)race]) == null))
 			{
 				throw new ArgumentException(string.Format("Archetype \"{0} {1}\" does not exist.", race, clss));
@@ -72,7 +72,7 @@ namespace WCell.RealmServer.RacesClasses
 
 		public static Archetype GetArchetype(RaceId race, ClassId clssId)
 		{
-			if ((uint)clssId >= WCellDef.ClassTypeLength || (uint)race >= WCellDef.RaceTypeLength)
+			if ((uint)clssId >= WCellConstants.ClassTypeLength || (uint)race >= WCellConstants.RaceTypeLength)
 			{
 				return null;
 			}
@@ -87,7 +87,7 @@ namespace WCell.RealmServer.RacesClasses
 		/// <returns></returns>
 		public static List<Archetype> GetArchetypes(RaceId race, ClassId clss)
 		{
-			if ((uint)clss >= WCellDef.ClassTypeLength || (uint)race >= WCellDef.RaceTypeLength)
+			if ((uint)clss >= WCellConstants.ClassTypeLength || (uint)race >= WCellConstants.RaceTypeLength)
 			{
 				return null;
 			}
@@ -157,7 +157,7 @@ namespace WCell.RealmServer.RacesClasses
 		{
 			for (var c = 0; c < Archetypes.Length; c++)
 			{
-				Archetypes[c] = new Archetype[WCellDef.RaceTypeLength];
+				Archetypes[c] = new Archetype[WCellConstants.RaceTypeLength];
 			}
 		}
 
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.RacesClasses
 		private static void InitRaces()
 		{
 			//ContentHandler.Load<BaseRace>();
-			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CHRRACES));
+			var reader = new ListDBCReader<BaseRace, DBCRaceConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHRRACES));
 			foreach (var race in reader.EntryList)
 			{
 				race.FinalizeAfterLoad();
@@ -249,7 +249,7 @@ namespace WCell.RealmServer.RacesClasses
 			// ContentHandler.Load<PlayerItemEntry>();
 			//var reader = 
 			new DBCReader<DBCStartOutfitConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_CHARSTARTOUTFIT));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_CHARSTARTOUTFIT));
 		}
 		#endregion
 	}

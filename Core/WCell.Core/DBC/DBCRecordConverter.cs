@@ -133,7 +133,7 @@ namespace WCell.Core.DBC
 
         public string GetString(byte[] data, int stringOffset)
         {
-        	return GetString(data, WCellDef.DefaultLocale, stringOffset);
+        	return GetString(data, WCellConstants.DefaultLocale, stringOffset);
 		}
 
 		public string[] GetStrings(byte[] data, int stringOffset)
@@ -162,7 +162,7 @@ namespace WCell.Core.DBC
 			{
 			}
 
-			return WCellDef.DefaultEncoding.GetString(m_stringTable, startOffset, len-1) ?? "";
+			return WCellConstants.DefaultEncoding.GetString(m_stringTable, startOffset, len-1) ?? "";
 		}
 
         public void Dispose()

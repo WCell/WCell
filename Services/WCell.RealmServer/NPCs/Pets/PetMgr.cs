@@ -103,7 +103,7 @@ namespace WCell.RealmServer.NPCs.Pets
 			// Read in the prices for Stable Slots from the dbc
 			var stableSlotPriceReader =
 				new ListDBCReader<uint, DBCStableSlotPriceConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_STABLESLOTPRICES));
+					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_STABLESLOTPRICES));
 			StableSlotPrices = stableSlotPriceReader.EntryList.ToArray();
 			MaxStableSlots = StableSlotPrices.Length;
 		}

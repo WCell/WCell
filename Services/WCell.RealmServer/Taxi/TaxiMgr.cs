@@ -95,13 +95,13 @@ namespace WCell.RealmServer.Taxi
 		{
 			init = true;
 			var taxiNodeReader = new MappedDBCReader<PathNode, DBCTaxiNodeConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TAXINODES));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXINODES));
 
 			var taxiPathReader = new MappedDBCReader<TaxiPath, DBCTaxiPathConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TAXIPATHES));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHES));
 
 			TaxiVertexReader = new MappedDBCReader<PathVertex, DBCTaxiPathNodeConverter>(
-				RealmServerConfiguration.GetDBCFile(WCellDef.DBC_TAXIPATHNODES));
+				RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TAXIPATHNODES));
 
 			foreach (var node in taxiNodeReader.Entries.Values)
 			{

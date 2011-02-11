@@ -33,9 +33,9 @@ namespace WCell.AuthServer
     /// </summary>
     public class RealmEntry
     {
-        private static readonly int MaintenanceInterval = (int)(WCellDef.RealmServerUpdateInterval.TotalMilliseconds);
-        private static readonly TimeSpan MaxUpdateOfflineDelay = TimeSpan.FromSeconds(WCellDef.RealmServerUpdateInterval.TotalSeconds * 1.5);
-        private static readonly TimeSpan MaxUpdateDeadDelay = TimeSpan.FromSeconds(WCellDef.RealmServerUpdateInterval.TotalSeconds * 10);
+        private static readonly int MaintenanceInterval = (int)(WCellConstants.RealmServerUpdateInterval.TotalMilliseconds);
+        private static readonly TimeSpan MaxUpdateOfflineDelay = TimeSpan.FromSeconds(WCellConstants.RealmServerUpdateInterval.TotalSeconds * 1.5);
+        private static readonly TimeSpan MaxUpdateDeadDelay = TimeSpan.FromSeconds(WCellConstants.RealmServerUpdateInterval.TotalSeconds * 10);
         //private readonly Timer m_maintenanceTimer;
 
         public RealmEntry()
