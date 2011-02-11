@@ -1,4 +1,6 @@
-﻿using WCell.Constants.GameObjects;
+﻿using System;
+using System.Linq;
+using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
@@ -84,6 +86,8 @@ namespace WCell.Addons.Default.Events
         public static NPCId SteamTonkNPCId = NPCId.DarkmoonSteamTonk;
         public static SpellId SummonTonkSpellId = SpellId.SummonRCTonk;
         public static SpellId UseTonkSpellId = SpellId.UsingSteamTonkController;
+        public static SpellId[] NormalTonkSpells = { SpellId.Cannon, SpellId.Mortar, SpellId.NitrousBoost };
+        public static SpellId[] SpecialTonkSpells = {SpellId.DropMine, SpellId.ActivateMGTurret, SpellId.Flamethrower, SpellId.ShieldGenerator};
 
         [Initialization]
         [DependentInitialization(typeof(GOMgr))]
@@ -107,12 +111,21 @@ namespace WCell.Addons.Default.Events
             var tonkEntry = NPCMgr.GetEntry(SteamTonkNPCId);
             var tonk = tonkEntry.SpawnAt(user);
             tonk.Summoner = user;
+            
+            //Remove any of the special abilities from the tonk entry
+            //and add a random one
+            foreach (var tonkSpell in SpecialTonkSpells.Where(tonkSpell => tonkEntry.Spells.ContainsKey(tonkSpell)))
+            {
+                tonkEntry.Spells.Remove(tonkSpell);
+            }
+            var rand = new Random();
+            tonkEntry.AddSpell(SpecialTonkSpells[rand.Next(0,3)]);
 
             var cast = user.SpellCast;
             if (cast == null)
                 return false;
 
-            if(cast.Start(UseTonkSpellId, false, user, tonk) != SpellFailedReason.Ok)
+            if(cast.Start(UseTonkSpellId, false, tonk, user) != SpellFailedReason.Ok)
             {
                 go.State = GameObjectState.Enabled;
                 return false;
@@ -127,6 +140,7 @@ namespace WCell.Addons.Default.Events
             var tonkEntry = NPCMgr.GetEntry(SteamTonkNPCId);
             if (tonkEntry == null) return;
             tonkEntry.Died += ResetTonk;
+            tonkEntry.AddSpells(NormalTonkSpells);
         }
 
         private static void ResetTonk(NPC npc)
