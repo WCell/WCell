@@ -326,6 +326,7 @@ namespace WCell.RealmServer.Spells
 
 				auras.Clear();
 				SpellCast.AuraListPool.Recycle(auras);
+				m_auras = null;
 			}
 
 			m_channelHandlers.Clear();

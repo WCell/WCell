@@ -303,6 +303,7 @@ namespace WCell.RealmServer.Spells.Auras
 					{
 						aura.Remove(false);
 					}
+					toRemove.Clear();
 					SpellCast.AuraListPool.Recycle(toRemove);
 				}
 			}

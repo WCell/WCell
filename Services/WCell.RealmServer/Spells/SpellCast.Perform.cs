@@ -614,6 +614,7 @@ namespace WCell.RealmServer.Spells
 				{
 					auras.Clear();
 					AuraListPool.Recycle(auras);
+					auras = null;
 				}
 			}
 
