@@ -329,13 +329,13 @@ namespace WCell.RealmServer.Spells
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;
 				}
-				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
-				{
-					EquipmentSlot = EquipmentSlot.ExtraWeapon;
-				}
 				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon))
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
+				{
+					EquipmentSlot = EquipmentSlot.ExtraWeapon;
 				}
 				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon))
 				{
@@ -347,7 +347,7 @@ namespace WCell.RealmServer.Spells
 					{
 						EquipmentSlot = EquipmentSlot.MainHand;
 					}
-					else if (RequiredItemSubClassMask == ItemSubClassMask.AnyRangedWeapon)
+					else if (RequiredItemSubClassMask.HasAnyFlag(ItemSubClassMask.AnyRangedAndThrownWeapon))
 					{
 						EquipmentSlot = EquipmentSlot.ExtraWeapon;
 					}

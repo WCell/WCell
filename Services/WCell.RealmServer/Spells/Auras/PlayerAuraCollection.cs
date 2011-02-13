@@ -253,41 +253,50 @@ namespace WCell.RealmServer.Spells.Auras
 			var spell = cast.Spell;
 			if (ModifierWithChargesCount > 0)
 			{
-				var toRemove = new List<Aura>(3);
-				for (var i = 0; i < SpellModifiersFlat.Count; i++)
+				List<IAura> toRemove = null;
+				foreach (var modifier in SpellModifiersFlat)
 				{
-					var modifier = SpellModifiersFlat[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
+					if (modifier.SpellEffect.MatchesSpell(spell) && cast.Spell != modifier.SpellEffect.Spell)
 					{
 						if (modifier.Charges > 0)
 						{
 							modifier.Charges--;
 							if (modifier.Charges < 1)
 							{
+								if (toRemove == null)
+								{
+									toRemove = SpellCast.AuraListPool.Obtain();
+								}
 								toRemove.Add(modifier.Aura);
 							}
 						}
 					}
 				}
-				for (var i = 0; i < SpellModifiersPct.Count; i++)
+				foreach (var modifier in SpellModifiersPct)
 				{
-					var modifier = SpellModifiersPct[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
+					if (modifier.SpellEffect.MatchesSpell(spell) && cast.Spell != modifier.SpellEffect.Spell)
 					{
 						if (modifier.Charges > 0)
 						{
 							modifier.Charges--;
 							if (modifier.Charges < 1)
 							{
+								if (toRemove == null)
+								{
+									toRemove = SpellCast.AuraListPool.Obtain();
+								}
 								toRemove.Add(modifier.Aura);
 							}
 						}
 					}
 				}
 
-				foreach (var aura in toRemove)
+				if (toRemove != null)
 				{
-					aura.Remove(false);
+					foreach (var aura in toRemove)
+					{
+						aura.Remove(false);
+					}
 				}
 			}
 		}
