@@ -256,7 +256,10 @@ namespace WCell.RealmServer.Spells.Auras
 				List<IAura> toRemove = null;
 				foreach (var modifier in SpellModifiersFlat)
 				{
-					if (modifier.SpellEffect.MatchesSpell(spell) && cast.Spell != modifier.SpellEffect.Spell)
+					var effect = modifier.SpellEffect;
+					if (effect.MatchesSpell(spell) && 
+						cast.Spell != effect.Spell &&
+						(cast.TriggerEffect == null || cast.TriggerEffect.Spell != effect.Spell))
 					{
 						if (modifier.Charges > 0)
 						{
@@ -274,7 +277,10 @@ namespace WCell.RealmServer.Spells.Auras
 				}
 				foreach (var modifier in SpellModifiersPct)
 				{
-					if (modifier.SpellEffect.MatchesSpell(spell) && cast.Spell != modifier.SpellEffect.Spell)
+					var effect = modifier.SpellEffect;
+					if (effect.MatchesSpell(spell) &&
+						cast.Spell != effect.Spell &&
+						(cast.TriggerEffect == null || cast.TriggerEffect.Spell != effect.Spell))
 					{
 						if (modifier.Charges > 0)
 						{
@@ -297,6 +303,7 @@ namespace WCell.RealmServer.Spells.Auras
 					{
 						aura.Remove(false);
 					}
+					SpellCast.AuraListPool.Recycle(toRemove);
 				}
 			}
 		}
