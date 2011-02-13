@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Database
 				var itemRecord = new ItemRecord
 				{
 					Guid = (uint)_idGenerator.Next(),
-					New = true
+					State = RecordState.New
 				};
 
 				//s_log.Debug("creating new item with EntityId {0}", itemRecord.EntityId);

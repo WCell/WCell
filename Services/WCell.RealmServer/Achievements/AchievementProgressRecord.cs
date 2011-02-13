@@ -41,7 +41,7 @@ namespace WCell.RealmServer.Achievements
 					_achievementCriteriaId = (int)achievementCriteriaId,
 					_counter = (int)counter,
 					StartOrUpdateTime = DateTime.Now,
-					New = true
+					State = RecordState.New
 				};
 			}
 			catch (Exception ex)

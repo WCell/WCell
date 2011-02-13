@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Achievements
 					_achievementEntryId = (int)achievementEntryId,
 					_characterGuid = (int)chr.EntityId.Low,
 					CompleteDate = DateTime.Now,
-					New = true
+					State = RecordState.New
 				};
 			}
 			catch (Exception ex)

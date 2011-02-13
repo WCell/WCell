@@ -1316,16 +1316,10 @@ namespace WCell.RealmServer.Entities
 		{
 			var record = m_record;
 			m_owner.Inventory.OnAmountChanged(this, -Amount);
-			if (m_record != null)
+			if (record != null)
 			{
-				RealmServer.IOQueue.AddMessage(() =>
-				{
-					if (!record.New)
-					{
-						record.Delete();
-					}
-				});
-				m_record.OwnerId = 0;
+				record.OwnerId = 0;
+				record.DeleteLater();
 				m_record = null;
 
 				Dispose();

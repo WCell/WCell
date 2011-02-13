@@ -306,7 +306,7 @@ namespace WCell.RealmServer.Spells
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
-			IsPhysicalAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
+			IsPhysicalAbility = (IsRangedAbility || IsOnNextStrike || IsStrikeSpell) && !HasEffect(SpellEffectType.SchoolDamage);
 
 			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 

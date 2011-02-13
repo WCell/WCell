@@ -1,3 +1,2 @@
-- changed all occurences of Encoding.ASCII to WCellConstants.DefaultEncoding 
--> this might require some people to flush their account DB
--> also should fix several issues with non-western clients
+- added RecordState to WCellRecord to avoid deleting of already deleted records
+- fixed double shots of physical abilities that apply School damage

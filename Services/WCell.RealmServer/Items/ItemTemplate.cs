@@ -856,7 +856,7 @@ namespace WCell.RealmServer.Items
 		{
 			if (IsCharter)
 			{
-				if (!record.New)
+				if (!record.IsNew)
 				{
 					// this is executed in the IO-context
 					PetitionRecord.LoadRecord(record.OwnerId);

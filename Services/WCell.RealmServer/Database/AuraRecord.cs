@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Database
 		public static AuraRecord ObtainAuraRecord(Aura aura)
 		{
 			var record = AuraRecordPool.Obtain();
-			record.New = true;
+			record.State = RecordState.New;
 			record.RecordId = NextId();
 			record.SyncData(aura);
 
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Database
 
 		public AuraRecord(Aura aura)
 		{
-			New = true;
+			State = RecordState.New;
 			RecordId = NextId();
 
 			SyncData(aura);

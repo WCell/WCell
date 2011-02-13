@@ -73,7 +73,7 @@ namespace WCell.RealmServer.Instances
 
 		public GlobalInstanceTimer(MapId id)
 		{
-			New = true;
+			State = RecordState.New;
 			MapId = id;
 			LastResets = new DateTime[InstanceMgr.MaxInstanceDifficulties];
 		}

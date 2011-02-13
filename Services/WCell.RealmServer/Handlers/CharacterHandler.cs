@@ -427,7 +427,7 @@ namespace WCell.RealmServer.Handlers
 									   "Could not create Char-Enum " +
 									   "for Character \"{0}\" (Race: {1}, Class: {2}, Level: {3}, Map: {4}{5}).",
 									   curRecord, curRecord.Race, curRecord.Class, curRecord.Level, curRecord.MapId,
-									   curRecord.New ? ", [New]" : "");
+									   curRecord.IsNew ? ", [New]" : "");
 			}
 		}
 		#endregion

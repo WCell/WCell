@@ -9,6 +9,7 @@ using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.Core.Database;
 using WCell.RealmServer.Talents;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
@@ -27,12 +28,10 @@ namespace WCell.RealmServer.Tests.Misc
 	{
 		public static CharacterRecord PrepareRecord(TestAccount acc, CharacterRecord record, Archetype archetype, bool isNew)
 		{
-			var race = archetype.Race;
-
+			record.State = isNew ? RecordState.New : RecordState.Ok;
 			record.Name = "TestChar" + record.EntityLowId;
 			record.AccountId = acc.AccountId;
 			record.Created = DateTime.Now;
-			record.New = isNew;
 			record.TotalPlayTime = 0;
 			record.LevelPlayTime = 0;
 			record.TutorialFlags = new byte[32];

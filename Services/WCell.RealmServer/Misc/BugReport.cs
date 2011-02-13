@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,7 +28,7 @@ namespace WCell.RealmServer.Misc
                 _type = type,
                 _content = content,
                 _reportDate = DateTime.Now,
-                New = true,
+                State = RecordState.New
             };
 
             return report;

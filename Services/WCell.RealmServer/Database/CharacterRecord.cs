@@ -199,7 +199,7 @@ namespace WCell.RealmServer.Database
 		public CharacterRecord(long accountId)
 			: this()
 		{
-			New = true;
+			State = RecordState.New;
 			JustCreated = true;
 
 			AccountId = accountId;

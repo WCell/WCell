@@ -49,10 +49,10 @@ namespace WCell.RealmServer.Database
 
 		public CharacterRelationRecord(uint charId, uint relatedCharId, CharacterRelationType type)
 		{
+			State = RecordState.New;
 			CharacterId = charId;
 			RelatedCharacterId = relatedCharId;
 			RelationType = type;
-			New = true;
 			CharacterRelationGuid = NextId();
 		}
 

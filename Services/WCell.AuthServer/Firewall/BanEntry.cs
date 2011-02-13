@@ -51,7 +51,7 @@ namespace WCell.AuthServer.Firewall
 			Expires = expires;
 			BanMask = banmask;
 			Reason = reason;
-			New = true;
+			State = RecordState.New;
 		}
 
 		public BanEntry()

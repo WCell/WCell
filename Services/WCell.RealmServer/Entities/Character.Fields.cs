@@ -1151,7 +1151,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void BindActionButton(uint btnIndex, uint action, byte type, bool update = true)
 		{
-			CurrentSpecProfile.IsDirty = true;
+			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
 			var actions = CurrentSpecProfile.ActionButtons;
 			btnIndex = btnIndex * 4;
 			if (action == 0)
@@ -1191,7 +1191,7 @@ namespace WCell.RealmServer.Entities
 		public void BindActionButton(ActionButton btn, bool update = true)
 		{
 			btn.Set(CurrentSpecProfile.ActionButtons);
-			CurrentSpecProfile.IsDirty = true;
+			CurrentSpecProfile.State = Core.Database.RecordState.Dirty;
 			if (update)
 			{
 				CharacterHandler.SendActionButtons(this);
