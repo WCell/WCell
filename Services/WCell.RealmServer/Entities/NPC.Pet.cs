@@ -489,26 +489,40 @@ namespace WCell.RealmServer.Entities
 				Type = PetActionType.SetAction
 			}.Raw;
 
-		    var spells = Entry.Spells.GetEnumerator();
-			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
-			{
-				if (!spells.MoveNext())
-				{
-					bar[i++] = new PetActionEntry
-					{
-						Type = PetActionType.CastSpell2 + j
-					}.Raw;
-				}
-				else
-				{
-					var spell = spells.Current;
-					var actionEntry = new PetActionEntry();
-					actionEntry.SetSpell(spell.Key, PetActionType.DefaultSpellSetting);
-					bar[i++] = actionEntry.Raw;
-				}
-			}
+            if (Entry.Spells != null)
+            {
+                var spells = Entry.Spells.GetEnumerator();
 
-			bar[i++] = new PetActionEntry
+                for (byte j = 0; j < PetConstants.PetSpellCount; j++)
+                {
+                    if (!spells.MoveNext())
+                    {
+                        bar[i++] = new PetActionEntry
+                                       {
+                                           Type = PetActionType.CastSpell2 + j
+                                       }.Raw;
+                    }
+                    else
+                    {
+                        var spell = spells.Current;
+                        var actionEntry = new PetActionEntry();
+                        actionEntry.SetSpell(spell.Key, PetActionType.DefaultSpellSetting);
+                        bar[i++] = actionEntry.Raw;
+                    }
+                }
+            }
+		    else
+            {
+                for (byte j = 0; j < PetConstants.PetSpellCount; j++)
+                {
+                    bar[i++] = new PetActionEntry
+                                   {
+                                       Type = PetActionType.CastSpell2 + j
+                                   }.Raw;
+                }
+            }
+
+		    bar[i++] = new PetActionEntry
 			{
 				AttackMode = PetAttackMode.Aggressive,
 				Type = PetActionType.SetMode
