@@ -288,11 +288,12 @@ namespace WCell.RealmServer.Entities
 				// make sure to execute in context
 				AddMessage(() =>
 				{
+					// add/remove spell ranks
+					UpdateSpellRanks();
+
 					// scale size, if necessary
 					UpdateSize();
 
-					// add/remove spell ranks
-					UpdateSpellRanks();
 					var level = Level;
 
 					// update talents
@@ -325,9 +326,9 @@ namespace WCell.RealmServer.Entities
 						ModPetStatsPerLevel(levelStatInfo);
 						m_auras.ReapplyAllAuras();
 					}
-					m_entry.NotifyLeveledChanged(this);
 				});
 			}
+			m_entry.NotifyLeveledChanged(this);
 		}
 
 		internal void ModPetStatsPerLevel(PetLevelStatInfo levelStatInfo)

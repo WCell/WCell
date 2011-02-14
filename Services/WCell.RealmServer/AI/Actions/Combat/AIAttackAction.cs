@@ -103,9 +103,15 @@ namespace WCell.RealmServer.AI.Actions.Combat
 
 			foreach (var spell in owner.NPCSpells.ReadySpells)
 			{
-				if (spell.CanCast(owner))
+				var err = spell.CheckCasterConstraints(owner);
+				if (err == SpellFailedReason.Ok)
 				{
 					return m_owner.SpellCast.Start(spell) == SpellFailedReason.Ok;
+				}
+				else if (err == SpellFailedReason.NoPower)
+				{
+					// add this for now -> need to think of a smarter way to handle this
+					owner.Say("Not enough " + owner.PowerType);
 				}
 			}
 			return false;

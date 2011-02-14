@@ -248,6 +248,8 @@ namespace WCell.RealmServer.Entities
 				InitImmovable();
 			}
 			Level = entry.GetRandomLevel();
+
+			AddMessage(UpdateSpellRanks);
 		}
 
 		/// <summary>

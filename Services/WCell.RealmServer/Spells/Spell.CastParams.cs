@@ -100,12 +100,6 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.NoComboPoints;
 			}
 
-			// spell focus			
-			if (!CheckSpellFocus(caster))
-			{
-				return SpellFailedReason.RequiresSpellFocus;
-			}
-
 			// AuraStates
 			if (RequiredCasterAuraState != 0 || ExcludeCasterAuraState != 0)
 			{
