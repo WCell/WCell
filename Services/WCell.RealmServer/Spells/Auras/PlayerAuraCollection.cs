@@ -458,7 +458,7 @@ namespace WCell.RealmServer.Spells.Auras
 		private bool MayActivate(Aura aura, bool inclItemCheck)
 		{
 			// ShapeShiftMask & Items & AuraState
-			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
+			if (aura.Spell.RequiredShapeshiftMask != 0 && !aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
 				return false;
 			}
@@ -466,7 +466,7 @@ namespace WCell.RealmServer.Spells.Auras
 			{
 				return false;
 			}
-			if (m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
+			if (aura.Spell.RequiredCasterAuraState != 0 && m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
 			{
 				return true;
 			}

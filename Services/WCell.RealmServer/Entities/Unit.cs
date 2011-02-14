@@ -167,8 +167,8 @@ namespace WCell.RealmServer.Entities
 			{
 				return
 					m_FirstAttacker != null &&
-					IsOwnedByPlayer &&
-					m_FirstAttacker.IsOwnedByPlayer;
+					IsPlayerOwned &&
+					m_FirstAttacker.IsPlayerOwned;
 			}
 		}
 
@@ -1837,7 +1837,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected virtual void OnAffinityChanged()
 		{
-			if (m_auras != null)
+			if (IsPlayerOwned)
 			{
 				// whenever we change affinity: Remove Auras of everyone but ourselves
 				m_auras.RemoveOthersAuras();

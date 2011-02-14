@@ -26,12 +26,42 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	{
 		protected override void Apply()
 		{
-			Owner.ModCritMod(DamageSchool.Physical, EffectValue);
+			ModValues(EffectValue);
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			Owner.ModCritMod(DamageSchool.Physical, -EffectValue);
+			ModValues(-EffectValue);
+		}
+
+		void ModValues(int delta)
+		{
+			if (SpellEffect.Spell.HasItemRequirements)
+			{
+				if (SpellEffect.Spell.EquipmentSlot == Constants.Items.EquipmentSlot.ExtraWeapon)
+				{
+					Owner.ChangeModifier(StatModifierInt.RangedCritChance, delta);
+				}
+				else
+				{
+					Owner.ModCritMod(DamageSchool.Physical, delta);
+				}
+			}
+			else
+			{
+				// all crit chances
+				if (SpellEffect.Spell.SchoolMask == DamageSchoolMask.Physical)
+				{
+					// all physical
+					Owner.ModCritMod(DamageSchool.Physical, delta);
+					Owner.ChangeModifier(StatModifierInt.RangedCritChance, delta);
+				}
+				else
+				{
+					// given school
+					Owner.ModCritMod(SpellEffect.Spell.Schools, delta);
+				}
+			}
 		}
 	}
 };

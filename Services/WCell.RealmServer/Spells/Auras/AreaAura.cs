@@ -295,7 +295,7 @@ namespace WCell.RealmServer.Spells.Auras
 				obj =>
 				{
 					if (obj != m_holder &&
-						((exclMobs && obj.IsOwnedByPlayer) || (!exclMobs && obj is Unit)) &&
+						((exclMobs && obj.IsPlayerOwned) || (!exclMobs && obj is Unit)) &&
 						(m_spell.HasHarmfulEffects == m_holder.MayAttack(obj)) &&
 						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{

@@ -1468,7 +1468,7 @@ namespace WCell.RealmServer.Entities
 
 		public override int GetBasePowerRegen()
 		{
-			if (IsOwnedByPlayer)
+			if (IsPlayerOwned)
 			{
 				return RegenerationFormulas.GetPowerRegen(this);
 			}
