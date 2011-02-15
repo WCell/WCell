@@ -457,18 +457,19 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		private bool MayActivate(Aura aura, bool inclItemCheck)
 		{
+			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
+			{
+				return false;
+			}
+
 			// ShapeShiftMask & Items & AuraState
 			if (aura.Spell.RequiredShapeshiftMask != 0 && !aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
 				return false;
 			}
-			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
+			if (aura.Spell.RequiredCasterAuraState != 0 && !m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
 			{
 				return false;
-			}
-			if (aura.Spell.RequiredCasterAuraState != 0 && m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
-			{
-				return true;
 			}
 			return true;
 		}
