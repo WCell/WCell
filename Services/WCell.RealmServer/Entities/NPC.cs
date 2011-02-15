@@ -202,7 +202,7 @@ namespace WCell.RealmServer.Entities
 			else if (m_entry.Regenerates)
 			{
 				Regenerates = true;
-				HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
+				HealthRegenPerTickNoCombat = Math.Max(m_entry.MaxHealth / 10, 1);
 			}
 
 			var mana = entry.GetRandomMana();
@@ -217,6 +217,7 @@ namespace WCell.RealmServer.Entities
 				SetInt32(UnitFields.BASE_MANA, mana);
 			}
 			SetInt32(UnitFields.POWER1, mana);
+			internalPower = mana;
 
 			HoverHeight = entry.HoverHeight;
 
