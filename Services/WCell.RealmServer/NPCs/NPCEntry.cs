@@ -255,9 +255,9 @@ namespace WCell.RealmServer.NPCs
 
 		public int MinLevel;
 
-		public uint MinHealth;
+		public int MinHealth;
 
-		public uint MaxHealth;
+		public int MaxHealth;
 
 		public int MinMana;
 
@@ -289,9 +289,38 @@ namespace WCell.RealmServer.NPCs
 
 		public float OffhandMaxDamage;
 
+		public int GetRandomLevel()
+		{
+			return Utility.Random(MinLevel, MaxLevel);
+		}
+
+		public void SetLevel(int value)
+		{
+			MinLevel = value;
+			MaxLevel = value;
+		}
+
+		public void SetLevel(int minLevel, int maxLevel)
+		{
+			MinLevel = minLevel;
+			MaxLevel = maxLevel;
+		}
+
 		public int GetRandomHealth()
 		{
 			return (int)(Utility.Random(MinHealth, MaxHealth) * NPCMgr.DefaultNPCHealthFactor + 0.999999f);
+		}
+
+		public void SetHealth(int value)
+		{
+			MinHealth = value;
+			MaxHealth = value;
+		}
+
+		public void SetHealth(int minHealth, int maxHealth)
+		{
+			MinHealth = minHealth;
+			MaxHealth = maxHealth;
 		}
 
 		public int GetRandomMana()
@@ -299,9 +328,16 @@ namespace WCell.RealmServer.NPCs
 			return Utility.Random(MinMana, MaxMana);
 		}
 
-		public int GetRandomLevel()
+		public void SetMana(int mana)
 		{
-			return Utility.Random(MinLevel, MaxLevel);
+			MinMana = mana;
+			MaxMana = mana;
+		}
+
+		public void SetMana(int minMana, int maxMana)
+		{
+			MinMana = minMana;
+			MaxMana = maxMana;
 		}
 
 		[Persistent(ItemConstants.MaxResCount)]
