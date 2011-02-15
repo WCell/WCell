@@ -206,8 +206,16 @@ namespace WCell.RealmServer.Entities
 			}
 
 			var mana = entry.GetRandomMana();
-			SetInt32(UnitFields.MAXPOWER1, mana);
-			SetInt32(UnitFields.BASE_MANA, mana);
+			if (mana == 0)
+			{
+				SetInt32(UnitFields.MAXPOWER1, 1);
+				SetInt32(UnitFields.BASE_MANA, 1);
+			}
+			else
+			{
+				SetInt32(UnitFields.MAXPOWER1, mana);
+				SetInt32(UnitFields.BASE_MANA, mana);
+			}
 			SetInt32(UnitFields.POWER1, mana);
 
 			HoverHeight = entry.HoverHeight;
