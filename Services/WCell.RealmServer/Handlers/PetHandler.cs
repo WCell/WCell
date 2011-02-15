@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using NLog;
 using WCell.Constants;
+using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
 using WCell.Constants.Talents;
@@ -293,17 +294,27 @@ namespace WCell.RealmServer.Handlers
 		{
 			// TODO: Cooldowns
 			var record = pet.PetRecord;
-			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (pet.Spells.Count) + 1 + (0)))
+            var mode = pet.Entry.Type == CreatureType.NonCombatPet ? PetAttackMode.Passive : PetAttackMode.Defensive;
+		    var flags = PetFlags.None;
+		    uint[] actions = null;
+            if(record != null)
+            {
+                mode = record.AttackMode;
+                flags = record.Flags;
+                actions = record.ActionButtons;
+            }
+            if (actions == null)
+                actions = pet.BuildPetActionBar();
+
+		    using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (pet.Spells.Count) + 1 + (0)))
 			{
 				packet.Write(pet.EntityId);
 				packet.Write((ushort)pet.Entry.FamilyId);
-				//packet.Write((ushort)0);
 				packet.Write(pet.RemainingDecayDelayMillis);			// duration
-				packet.Write((byte)record.AttackMode);
+				packet.Write((byte)mode);
 				packet.Write((byte)currentAction);
-				packet.Write((ushort)record.Flags);
+				packet.Write((ushort)flags);
 
-				var actions = record.ActionButtons;
 				for (var i = 0; i < PetConstants.PetActionCount; i++)
 				{
 					var action = actions[i];

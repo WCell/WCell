@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Constants.Pets;
 using WCell.Core;
 using WCell.RealmServer.Entities;
 using WCell.Constants.Spells;
@@ -64,10 +65,11 @@ namespace WCell.RealmServer.Spells.Auras.Misc
             {
                 if (target is NPC)
                 {
-                    chr.MakePet((NPC) target, duration);
+                    chr.Enslave((NPC) target, duration);
+                    PetHandler.SendSpells(chr, (NPC)target, PetAction.Stay);
                 }
+                chr.SetMover(target, false);
                 chr.FarSight = target.EntityId;
-                chr.SetMover(target, true);
             }
         }
 
@@ -80,12 +82,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
             var chr = caster as Character;
             if (chr != null)
             {
-                chr.SetMover(null, true);
+                chr.SetMover(chr, true);
+                chr.ResetMover();
                 chr.FarSight = EntityId.Zero;
-                if (chr.ActivePet == m_aura.Auras.Owner)
-                {
-                    chr.ActivePet = null;
-                }
+                PetHandler.SendEmptySpells(chr);
+                if(target is NPC)
+                    ((NPC) target).RemainingDecayDelayMillis = 1;
             }
         }
     }

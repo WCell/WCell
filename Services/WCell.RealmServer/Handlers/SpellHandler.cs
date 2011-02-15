@@ -750,6 +750,12 @@ namespace WCell.RealmServer.Spells
 			uint spellId = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
+            var mover = chr.MoveControl.Mover;
+
+            //If the player is controlling another unit, ignore this
+            if (mover != chr)
+                return;
+
 			SpellCast cast = chr.SpellCast;
 			if (cast != null /* && cast.Spell.Id == spellId*/)
 			{

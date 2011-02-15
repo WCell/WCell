@@ -239,7 +239,7 @@ namespace WCell.RealmServer.Entities
 
 		public void SetMover(WorldObject mover, bool canControl)
 		{
-			MoveControl.Mover = mover;
+			MoveControl.Mover = mover ?? this;
 			MoveControl.CanControl = canControl;
 
 			if (mover == null)
