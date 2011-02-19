@@ -67,8 +67,14 @@ namespace WCell.RealmServer.Spells.Auras.Misc
                 {
                     chr.Enslave((NPC) target, duration);
                     PetHandler.SendSpells(chr, (NPC)target, PetAction.Stay);
+                    chr.SetMover(target, true);
                 }
-                chr.SetMover(target, false);
+                else if(target is Character)
+                {
+                    PetHandler.SendPlayerPossessedPetSpells(chr, (Character)target);
+                    chr.SetMover(target, false);
+                }
+                
                 chr.FarSight = target.EntityId;
             }
         }

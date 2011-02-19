@@ -343,6 +343,43 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
+        public static void SendPlayerPossessedPetSpells(Character owner, Character possessed)
+        {
+
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 20 + (PetConstants.PetActionCount * 4) + 1 + (0) + 1 + (0)))
+            {
+                packet.Write(possessed.EntityId);
+                packet.Write((ushort) CreatureFamilyId.None);
+                packet.Write(0); // duration
+                packet.Write((byte) PetAttackMode.Passive);
+                packet.Write((byte) PetAction.Stay);
+                packet.Write((ushort) PetFlags.None);
+
+                var action = new PetActionEntry
+                                 {
+                                     Action = PetAction.Attack,
+                                     Type = PetActionType.SetAction
+                                 }.Raw;
+
+                packet.Write(action);
+
+                for (var i = 1; i < PetConstants.PetActionCount; i++)
+                {
+                    action = new PetActionEntry
+                                 {
+                                     Type = PetActionType.SetAction
+                                 }.Raw;
+                    packet.Write(action);
+                }
+
+                packet.Write((byte) 0); // No Spells
+
+                packet.Write((byte) 0); // No Cooldowns
+
+                owner.Send(packet);
+            }
+        }
+
 		public static void SendEmptySpells(IPacketReceiver receiver)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PET_SPELLS, 8))
