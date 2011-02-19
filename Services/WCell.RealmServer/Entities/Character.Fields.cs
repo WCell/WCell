@@ -1317,7 +1317,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (value != null)
 					{
-						if (m_Map != null && value.ParentZoneId == 0)
+						if (m_Map != null)
 						{
 							value.EnterZone(this, m_zone);
 						}

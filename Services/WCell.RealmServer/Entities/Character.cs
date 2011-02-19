@@ -1556,7 +1556,10 @@ namespace WCell.RealmServer.Entities
 
 		#region PvP Flag
 
-		public DateTime PvPEndTime = DateTime.Now;
+	    /// <summary>
+	    /// Auto removes PvP flag after expiring
+	    /// </summary>
+	    protected TimerEntry PvPEndTime;
 
 		public void TogglePvPFlag()
 		{
@@ -1566,13 +1569,12 @@ namespace WCell.RealmServer.Entities
 		public void SetPvPFlag(bool state)
 		{
 			IsPvPFlagSet = state;
-			IsPvPTimerActive = !state;
 
 			// If the PvP Flag is up and the character is not pvp-ing
 			// or the pvp timer is set, override the pvp state to on
 			if (state)
 			{
-				if (PvPState.HasFlag(PvPState.PVP) || PvPEndTime > DateTime.Now)
+                if (PvPState.HasFlag(PvPState.PVP) || (PvPEndTime != null && PvPEndTime.IsRunning))
 				{
 					UpdatePvPState(true, true);
 				}
@@ -1601,7 +1603,7 @@ namespace WCell.RealmServer.Entities
 
 			// Flag is up. Check for running reset timer.
 			// If running, reset it.
-			if (PvPEndTime > DateTime.Now)
+			if (PvPEndTime != null && PvPEndTime.IsRunning)
 			{
 				SetPvPResetTimer();
 				return;
@@ -1613,12 +1615,18 @@ namespace WCell.RealmServer.Entities
 
 		private void SetPvPResetTimer()
 		{
-			PvPEndTime = DateTime.Now.AddSeconds(300);
+            if(PvPEndTime == null)
+			    PvPEndTime = new TimerEntry(dt => SetPvPState(false));
+            else
+                PvPEndTime.Stop();
+
+            PvPEndTime.Start(300000);
 		}
 
 		private void ClearPvPResetTimer()
 		{
-			PvPEndTime = DateTime.Now;
+            if(PvPEndTime != null)
+                PvPEndTime.Stop();
 		}
 
 		private void SetPvPState(bool state)

@@ -434,12 +434,9 @@ namespace WCell.RealmServer.Entities
 			{
 				m_corpseReleaseTimer.Update(dt);
 			}
-			if (PvPState.HasFlag(PvPState.PVP))
+			if (PvPEndTime != null)
 			{
-				if (DateTime.Now >= PvPEndTime)
-				{
-					UpdatePvPState(false, false);
-				}
+				PvPEndTime.Update(dt);
 			}
 			if (PlayerSpells.Runes != null)
 			{
