@@ -72,6 +72,7 @@ namespace WCell.RealmServer.ArenaTeams
             set { m_slot = value; }
         }
 
+        /// <summary>
         /// Arena team leader's ArenaTeamMember
         /// Setting it does not send event to the team. Use ArenaTeam.SendEvent
         /// </summary>

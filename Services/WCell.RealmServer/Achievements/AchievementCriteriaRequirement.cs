@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Achievements
     {
         public override bool Meets(Character chr, Unit target, uint miscValue)
         {
-            if (target == null || !(target is Unit))
+            if (target == null)
                 return false;
             else return (Value1 == target.EntryId);
         }

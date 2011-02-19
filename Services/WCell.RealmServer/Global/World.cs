@@ -344,7 +344,7 @@ namespace WCell.RealmServer.Global
 					{
 						for (var i = 0; i < chars.Count; i++)
 						{
-							var chr = chars[i]; ;
+							var chr = chars[i];
 							if (chr.IsInWorld)
 							{
 								if (beforeShutdown)
