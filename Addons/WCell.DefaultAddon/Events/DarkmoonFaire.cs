@@ -3,10 +3,12 @@ using System.Linq;
 using WCell.Constants.GameObjects;
 using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
+using WCell.Core;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
 
@@ -123,7 +125,10 @@ namespace WCell.Addons.Default.Events
 
             var cast = user.SpellCast;
             if (cast == null)
+            {
+                go.State = GameObjectState.Enabled;
                 return false;
+            }
 
             if(cast.Start(UseTonkSpellId, false, tonk, user) != SpellFailedReason.Ok)
             {
