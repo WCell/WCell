@@ -140,12 +140,21 @@ namespace WCell.RealmServer.Global
 		/// <returns>Whether or not to set the PvP flag.</returns>
 		public bool IsHostileTo(Character chr)
 		{
-		    return ((IsArena) ||
-		            (IsPvP) ||
-		            (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) &&
-		             Ownership == FactionGroupMask.None ||
-		             (chr.FactionGroup == FactionGroup.Alliance && Ownership == FactionGroupMask.Horde) ||
-		             (chr.FactionGroup == FactionGroup.Horde && Ownership == FactionGroupMask.Alliance)));
+		    var ownership = Ownership;
+            if (Ownership == FactionGroupMask.None && ParentZoneId != 0 && ParentZone.Ownership != FactionGroupMask.None)
+                ownership = ParentZone.Ownership;
+
+            switch (ownership)
+            {
+                case FactionGroupMask.Alliance:
+                    return chr.FactionGroup != FactionGroup.Alliance && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity);
+                case FactionGroupMask.Horde:
+                    return chr.FactionGroup != FactionGroup.Horde && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity);
+                case FactionGroupMask.None:
+                    return RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP);
+                default:
+                    return false;
+            }
 		}
 
 		#region Events

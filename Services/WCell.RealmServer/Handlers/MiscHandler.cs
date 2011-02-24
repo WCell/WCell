@@ -60,6 +60,7 @@ namespace WCell.RealmServer.Handlers
 			{
 				var pvpFlagState = packet.ReadBoolean();
 				chr.SetPvPFlag(pvpFlagState);
+			    //chr.IsPvPTimerActive = !pvpFlagState;
 				return;
 			}
 			chr.TogglePvPFlag();

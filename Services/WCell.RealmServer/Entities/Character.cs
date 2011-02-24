@@ -1563,25 +1563,21 @@ namespace WCell.RealmServer.Entities
 
 		public void TogglePvPFlag()
 		{
-			SetPvPFlag(!IsPvPFlagSet);
+			SetPvPFlag(!PlayerFlags.HasFlag(PlayerFlags.PVP));
 		}
 
 		public void SetPvPFlag(bool state)
 		{
-			IsPvPFlagSet = state;
-
-			// If the PvP Flag is up and the character is not pvp-ing
-			// or the pvp timer is set, override the pvp state to on
+			
 			if (state)
 			{
-                if (PvPState.HasFlag(PvPState.PVP) || (PvPEndTime != null && PvPEndTime.IsRunning))
-				{
-					UpdatePvPState(true, true);
-				}
+                // if the pvp timer is set, override the pvp state to on
+                UpdatePvPState(true, (PvPEndTime != null && PvPEndTime.IsRunning));
+                PlayerFlags |= PlayerFlags.PVP;
 				return;
 			}
 
-			// The flag is down and the character is pvp-ing in a non-hostile area
+			// The flag is down and the character has been pvp-ing in a non-hostile area
 			// Set the timer to turn things off
 			if (Zone != null)
 			{
@@ -1592,7 +1588,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void UpdatePvPState(bool state, bool overridden)
+		public void UpdatePvPState(bool state, bool overridden = false)
 		{
 			if (!state || overridden)
 			{
@@ -1605,7 +1601,7 @@ namespace WCell.RealmServer.Entities
 			// If running, reset it.
 			if (PvPEndTime != null && PvPEndTime.IsRunning)
 			{
-				SetPvPResetTimer();
+				SetPvPResetTimer(true);
 				return;
 			}
 
@@ -1613,21 +1609,31 @@ namespace WCell.RealmServer.Entities
 			SetPvPState(true);
 		}
 
-		private void SetPvPResetTimer()
+		private void SetPvPResetTimer(bool overridden = false)
 		{
-            if(PvPEndTime == null)
-			    PvPEndTime = new TimerEntry(dt => SetPvPState(false));
-            else
-                PvPEndTime.Stop();
+            if (PvPEndTime == null)
+                PvPEndTime = new TimerEntry(dt => OnPvPTimerEnded());
+            
+            if (!PvPEndTime.IsRunning || overridden)
+                PvPEndTime.Start(300000);
 
-            PvPEndTime.Start(300000);
+            IsPvPTimerActive = true;
 		}
 
 		private void ClearPvPResetTimer()
 		{
             if(PvPEndTime != null)
                 PvPEndTime.Stop();
+
+            IsPvPTimerActive = false;
 		}
+
+        private void OnPvPTimerEnded()
+        {
+            PlayerFlags &= ~PlayerFlags.PVP;
+            IsPvPTimerActive = false;
+            SetPvPState(false);
+        }
 
 		private void SetPvPState(bool state)
 		{
@@ -1637,8 +1643,8 @@ namespace WCell.RealmServer.Entities
 			{
 				if (state)
 				{
-					PvPState |= PvPState.PVP;
-					ActivePet.PvPState |= PvPState.PVP;
+					PvPState = PvPState.PVP;
+					ActivePet.PvPState = PvPState.PVP;
 				}
 				else
 				{
@@ -1650,7 +1656,7 @@ namespace WCell.RealmServer.Entities
 
 			if (state)
 			{
-				PvPState |= PvPState.PVP;
+				PvPState = PvPState.PVP;
 				return;
 			}
 

@@ -158,13 +158,7 @@ namespace WCell.RealmServer.Global
 			var isBg = Map.IsBattleground;
 			if (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || isBg)
 			{
-                if(Template.IsArena)
-                {
-                    chr.PvPState = PvPState.FFAPVP;
-                    chr.PlayerFlags |= PlayerFlags.FreeForAllPVP;
-                    chr.PlayerFlags &= ~(PlayerFlags.PVP | PlayerFlags.InPvPSanctuary);
-                }
-				else if (isBg || Template.IsHostileTo(chr))
+				if (isBg || Template.IsHostileTo(chr))
 				{
 				    chr.UpdatePvPState(true, true);
 					chr.PlayerFlags |= PlayerFlags.PVP;
@@ -178,9 +172,16 @@ namespace WCell.RealmServer.Global
 				}
 				else
 				{
-                    chr.UpdatePvPState(false, false);
+                    chr.UpdatePvPState(false);
                     chr.PlayerFlags &= ~(PlayerFlags.PVP | PlayerFlags.InPvPSanctuary | PlayerFlags.FreeForAllPVP);
 				}
+
+                if (Template.IsArena)
+                {
+                    chr.PvPState = PvPState.FFAPVP;
+                    chr.PlayerFlags |= PlayerFlags.FreeForAllPVP;
+                    chr.PlayerFlags &= ~(PlayerFlags.InPvPSanctuary);
+                }
 			}
 
 			Template.OnPlayerEntered(chr, oldZone);
