@@ -7,14 +7,14 @@ namespace WCell.RealmServer.Titles
     {
         public TitleId TitleId;         // 0
         // public uint Unk1;            // 1
-        public string[] Name;           // 2-17
+        public string[] Names;           // 2-17
         // public string[] Names2;      // 19-34
         // public string Flags;         // 35 string unused.
         public TitleBitId BitIndex;     // 36
 
         public CharacterTitleEntry()
         {
-            Name = new string[16];
+            Names = new string[16];
         }
     }
 
@@ -24,8 +24,7 @@ namespace WCell.RealmServer.Titles
         {
             var characterTitleEntry = new CharacterTitleEntry();
             characterTitleEntry.TitleId = (TitleId) GetUInt32(rawData, 0);
-            for (var i = 0; i < 16; i++)
-				characterTitleEntry.Name[i] = GetString(rawData, i + 2);
+			characterTitleEntry.Names = GetStrings(rawData, 2);
             characterTitleEntry.BitIndex = (TitleBitId) GetUInt32(rawData, 36);
 
 
