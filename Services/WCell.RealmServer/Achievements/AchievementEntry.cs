@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Achievements
 		public int FactionFlag;                                  // 1 -1=all, 0=horde, 1=alliance
         public MapId MapID;                                        // 2 -1=none
         //public uint ParentAchievement;                             // 3 its Achievement parent (can`t start while parent uncomplete, use its Criteria if don`t have own, use its progress on begin)
-        public string[] Name;                                         // 4-19
+        public string[] Names;                                         // 4-19
         //public uint NameFlags;                                    // 20
         //public string Description[16];                                // 21-36
         //public uint DescFlags;                                    // 37
@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Achievements
 
 		public override string ToString()
 		{
-			return Name.LocalizeWithDefaultLocale();
+			return Names.LocalizeWithDefaultLocale();
 		}
     }
 }

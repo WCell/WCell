@@ -28,12 +28,10 @@ namespace WCell.RealmServer.Achievements
 		public override void Convert(byte[] rawData)
 		{
 			var achievementEntry = new AchievementEntry();
-			achievementEntry.ID = (uint)GetUInt32(rawData, 0);
+			achievementEntry.ID = GetUInt32(rawData, 0);
 			achievementEntry.FactionFlag = GetInt32(rawData, 1);
 			achievementEntry.MapID = (MapId)GetUInt32(rawData, 2);
-			achievementEntry.Name = new string[16];
-			for (int i = 0; i < 16; i++)
-				achievementEntry.Name[i] = GetString(rawData, i + 4);
+			achievementEntry.Names = GetStrings(rawData, 4);
 			
 			var category = (AchievementCategoryEntryId)GetUInt32(rawData, 38);		// set category
 			achievementEntry.Category = AchievementMgr.GetCategoryEntry(category);

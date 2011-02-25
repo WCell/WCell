@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Commands
 				if (achivementEntry != null)
 				{
 					AddAchievement((Character) trigger.Args.Target, achievementId);
-					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
+					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Names);
 				}
 				else
 				{
