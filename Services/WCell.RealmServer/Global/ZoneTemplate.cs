@@ -147,9 +147,9 @@ namespace WCell.RealmServer.Global
             switch (ownership)
             {
                 case FactionGroupMask.Alliance:
-                    return chr.FactionGroup != FactionGroup.Alliance && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity);
+                    return chr.FactionGroup != FactionGroup.Alliance && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity || IsArena);
                 case FactionGroupMask.Horde:
-                    return chr.FactionGroup != FactionGroup.Horde && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity);
+                    return chr.FactionGroup != FactionGroup.Horde && (RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP) || IsCity || IsArena);
                 case FactionGroupMask.None:
                     return RealmServerConfiguration.ServerType.HasAnyFlag(RealmServerType.PVP | RealmServerType.RPPVP);
                 default:
