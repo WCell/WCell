@@ -254,6 +254,7 @@
     <Compile Include="Maps\ZoneGridWriter.cs" />
     <Compile Include="Misc\LineConverter.cs" />
     <Compile Include="Mokrago\CombatRatingsOutput.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Spells\SpellEffectCreator.cs" />
     <Compile Include="Domi\Output\SkillOutput.cs" />
     <Compile Include="Domi\Output\SpellOutput.cs" />
