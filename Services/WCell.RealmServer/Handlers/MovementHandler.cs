@@ -66,12 +66,13 @@ namespace WCell.RealmServer.Handlers
 		[ClientPacketHandler(RealmServerOpCode.MSG_MOVE_STOP_ASCEND)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_CHNG_TRANSPORT)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_FALL_RESET)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)]
 		public static void HandleMovement(IRealmClient client, RealmPacketIn packet)
 		{
 			var chr = client.ActiveCharacter;
             var mover = chr.MoveControl.Mover as Unit;
 
-			if (mover == null ||
+		    if (mover == null ||
 				!mover.UnitFlags.HasFlag(UnitFlags.PlayerControlled) ||
 				mover.UnitFlags.HasFlag(UnitFlags.Influenced))
 			{
@@ -82,6 +83,13 @@ namespace WCell.RealmServer.Handlers
 			mover.CancelEmote();
 
 			var guid = packet.ReadPackedEntityId();
+
+            if (packet.PacketId.RawId == (uint)RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)
+            {
+                mover = client.ActiveCharacter.Map.GetObject(guid) as Unit;
+                if (mover == null)
+                    return;
+            }
 			var moveFlags = (MovementFlags)packet.ReadInt32();
 			//var moveFlags2 = (MovementFlags2)packet.ReadInt32();
 			var moveFlags2 = (MovementFlags2)packet.ReadInt16();
@@ -223,7 +231,7 @@ namespace WCell.RealmServer.Handlers
 					}
 				}
 
-				var clients = mover.GetNearbyClients(false);
+				var clients = chr.GetNearbyClients(false);
 				if (clients.Count > 0)
 				{
 					using (var outPacket = new RealmPacketOut(packet.PacketId))

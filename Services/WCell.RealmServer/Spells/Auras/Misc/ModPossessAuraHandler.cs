@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Pets;
 using WCell.Core;
+using WCell.RealmServer.AI;
 using WCell.RealmServer.Entities;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Handlers;
@@ -66,13 +67,15 @@ namespace WCell.RealmServer.Spells.Auras.Misc
                 if (target is NPC)
                 {
                     chr.Enslave((NPC) target, duration);
+                    target.Brain.State = BrainState.Idle;
                     PetHandler.SendSpells(chr, (NPC)target, PetAction.Stay);
                     chr.SetMover(target, true);
+                    target.UnitFlags |= UnitFlags.Possessed;
                 }
                 else if(target is Character)
                 {
                     PetHandler.SendPlayerPossessedPetSpells(chr, (Character)target);
-                    chr.SetMover(target, false);
+                    chr.SetMover(target, true);
                 }
                 
                 chr.FarSight = target.EntityId;
@@ -92,8 +95,12 @@ namespace WCell.RealmServer.Spells.Auras.Misc
                 chr.ResetMover();
                 chr.FarSight = EntityId.Zero;
                 PetHandler.SendEmptySpells(chr);
-                if(target is NPC)
+                target.UnitFlags &= ~UnitFlags.Possessed;
+                if (target is NPC)
+                {
+                    target.Brain.EnterDefaultState();
                     ((NPC) target).RemainingDecayDelayMillis = 1;
+                }
             }
         }
     }
