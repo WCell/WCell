@@ -1488,6 +1488,8 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendGuildBankLog(Character chr, GuildBankLog log, byte tabId)
 		{
+            if (log == null)
+                return;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_GUILD_BANK_LOG_QUERY))
 			{
 				var entries = log.GetBankLogEntries(tabId);
