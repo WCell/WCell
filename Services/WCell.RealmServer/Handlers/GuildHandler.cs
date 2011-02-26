@@ -1399,6 +1399,11 @@ namespace WCell.RealmServer.Handlers
 				}
 
 				var bankTab = gBank[tabId];
+                if (bankTab == null)
+                {
+                    chr.Client.Send(packet);
+                    return;
+                }
 				for (var slot = 0; slot < GuildMgr.MAX_BANK_TAB_SLOTS; ++slot)
 				{
 					var item = (slot < bankTab.ItemRecords.Count) ? bankTab.ItemRecords[slot] : null;

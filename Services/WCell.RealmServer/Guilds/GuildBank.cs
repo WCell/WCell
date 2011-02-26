@@ -535,6 +535,7 @@ namespace WCell.RealmServer.Guilds
 			if (guild.Leader.Character != chr) return;
 
 			if (tabId < 0 || tabId > Guild.PurchasedBankTabCount) return;
+            if (tabId > BankTabs.Count - 1) return;
 
 			var tab = BankTabs[tabId];
 			if (tab == null) return;
@@ -550,8 +551,9 @@ namespace WCell.RealmServer.Guilds
 
 		public void GetBankTabText(Character chr, byte tabId)
 		{
-			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
-			if (tabId > Guild.PurchasedBankTabCount) return;
+            if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
+            if (tabId > Guild.PurchasedBankTabCount) return;
+            if (tabId > BankTabs.Count - 1) return;
 
 			var tab = BankTabs[tabId];
 			if (tab == null) return;
@@ -580,6 +582,7 @@ namespace WCell.RealmServer.Guilds
 		{
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return;
 			if (tabId > Guild.PurchasedBankTabCount) return;
+            if (tabId > BankTabs.Count - 1) return;
 
 			var tab = BankTabs[tabId];
 			if (tab == null) return;
@@ -599,7 +602,7 @@ namespace WCell.RealmServer.Guilds
 		private bool AddNewBankTab(int tabId)
 		{
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return false;
-			if (BankTabs[tabId] != null) return false;
+			if (tabId <= BankTabs.Count - 1 && BankTabs[tabId] != null) return false;
 
 			Guild.PurchasedBankTabCount++;
 			var tab = new GuildBankTab
@@ -617,6 +620,7 @@ namespace WCell.RealmServer.Guilds
 		public GuildBank(Guild guild, bool isNew)
 		{
 			Guild = guild;
+            BankLog = new GuildBankLog();
 			BankTabs = new ImmutableList<GuildBankTab>(5);
 			if (isNew)
 			{
