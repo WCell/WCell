@@ -24,7 +24,16 @@ namespace WCell.RealmServer.Guilds
 
 		public GuildBank()
 		{
-			BankTabs = new List<GuildBankTab>();
+            BankTabs = new ImmutableList<GuildBankTab>(5);
+            var tab = new GuildBankTab(this)
+            {
+                BankSlot = 0,
+                Icon = "",
+                Name = "Slot 0",
+                Text = ""
+            };
+            BankTabs.Add(tab);
+
 			BankLog = new GuildBankLog();
 		}
 
@@ -602,15 +611,18 @@ namespace WCell.RealmServer.Guilds
 		private bool AddNewBankTab(int tabId)
 		{
 			if (tabId < 0 || tabId >= GuildMgr.MAX_BANK_TABS) return false;
-			if (tabId <= BankTabs.Count - 1 && BankTabs[tabId] != null) return false;
+			if (tabId < BankTabs.Count - 1 && BankTabs[tabId] != null) return false;
 
 			Guild.PurchasedBankTabCount++;
 			var tab = new GuildBankTab
 			{
 				Bank = this,
-				BankSlot = tabId
+				BankSlot = tabId,
+                Icon = "",
+                Name = "Slot " + tabId,
+                Text = ""
 			};
-			BankTabs[tabId] = tab;
+			BankTabs.Add(tab);
 
 			tab.CreateLater();
 
