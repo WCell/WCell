@@ -212,6 +212,8 @@ namespace WCell.RealmServer.Guilds
 			Register();
 
 			m_leader = AddMember(leader);
+            //Set the leader as guild master rank
+		    m_leader.RankId = 0;
 		    
 			RealmServer.IOQueue.AddMessage(Create);
 		}
