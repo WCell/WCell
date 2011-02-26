@@ -114,6 +114,10 @@ namespace WCell.RealmServer.Formulas
 
 		public static int CalcOutlandXp(int targetLevel, NPC npc)
 		{
+			if(targetLevel < 55)
+			{
+				return CalcDefaultXp(targetLevel, npc);
+			}
 			return CalcXp(npc.Level, targetLevel, DefaultXpLevelFactor, DefaultXpBaseValueOutland);
 			// TODO: Extra calcs
 		}
