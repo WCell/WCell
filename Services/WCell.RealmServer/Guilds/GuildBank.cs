@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Guilds
 
 		public GuildBank()
 		{
-            BankTabs = new ImmutableList<GuildBankTab>(5);
+            BankTabs = new SynchronizedList<GuildBankTab>(5);
             var tab = new GuildBankTab(this)
             {
                 BankSlot = 0,
@@ -533,6 +533,9 @@ namespace WCell.RealmServer.Guilds
 
 			if (AddNewBankTab(tabId))
 			{
+			    chr.GuildMember.Rank.BankTabRights[tabId].Privileges = GuildBankTabPrivileges.Full;
+			    chr.GuildMember.Rank.BankTabRights[tabId].WithdrawlAllowance = 0xFFFFFFFF;
+                GuildHandler.SendGuildRosterToGuildMembers(Guild);
 				GuildHandler.SendGuildBankTabNames(chr, bank);
 			}
 		}
@@ -633,7 +636,7 @@ namespace WCell.RealmServer.Guilds
 		{
 			Guild = guild;
             BankLog = new GuildBankLog();
-			BankTabs = new ImmutableList<GuildBankTab>(5);
+			BankTabs = new SynchronizedList<GuildBankTab>(5);
 			if (isNew)
 			{
 				var tab = new GuildBankTab(this)

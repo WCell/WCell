@@ -677,13 +677,35 @@ namespace WCell.RealmServer.Handlers
 			int rankId = packet.ReadInt32();
 			var newPrivileges = (GuildPrivileges)packet.ReadUInt32();
 			string newName = packet.ReadCString();
+		    var chr = client.ActiveCharacter;
 
 			// TODO: needs lots of additional checks, such as staff checks and in case of demoting even more
-			var guild = Guild.CheckPrivs(client.ActiveCharacter, GuildCommandId.PROMOTE, GuildPrivileges.PROMOTE | newPrivileges);
-			if (guild != null)
-			{
-				guild.ChangeRank(rankId, newName, newPrivileges, true);
-			}
+			var guild = Guild.CheckPrivs(chr, GuildCommandId.PROMOTE, GuildPrivileges.PROMOTE | newPrivileges);
+            if (guild != null)
+            {
+                chr.GuildMember.Rank.DailyBankMoneyAllowance = packet.ReadUInt32();
+                if (rankId == 0)
+                    chr.GuildMember.Rank.DailyBankMoneyAllowance = uint.MaxValue;
+
+                for (var i = 0; i < GuildMgr.MAX_BANK_TABS; ++i)
+                {
+                    uint bankPriveleges = packet.ReadUInt32();
+                    uint bankSlotWithdrawlAllowance = packet.ReadUInt32();
+
+                    if (rankId == 0)
+                    {
+                        chr.GuildMember.Rank.BankTabRights[i].Privileges = GuildBankTabPrivileges.Full;
+                        chr.GuildMember.Rank.BankTabRights[i].WithdrawlAllowance = uint.MaxValue;
+                    }
+                    else
+                    {
+                        chr.GuildMember.Rank.BankTabRights[i].Privileges = (GuildBankTabPrivileges) bankPriveleges;
+                        chr.GuildMember.Rank.BankTabRights[i].WithdrawlAllowance = bankSlotWithdrawlAllowance;
+                    }
+                }
+
+                guild.ChangeRank(rankId, newName, newPrivileges, true);
+            }
 		}
 
 		/// <summary>
