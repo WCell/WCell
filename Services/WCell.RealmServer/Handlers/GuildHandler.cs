@@ -468,7 +468,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleGuildBankSwapItems(IRealmClient client, RealmPacketIn packet)
 		{
 			var bankEntityId = packet.ReadEntityId();
-			var isBankToBank = packet.ReadByte() > 0 ? true : false;
+			var isBankToBank = packet.ReadBoolean();
 
 			var toBankTab = (byte)1;
 			var toTabSlot = (byte)1;
@@ -484,42 +484,40 @@ namespace WCell.RealmServer.Handlers
 			var isBankToChar = true;
 			var amount = (byte)0;
 
-			if (!isBankToBank)
+			if (isBankToBank)
 			{
-				fromBankTab = packet.ReadByte();
-				fromTabSlot = packet.ReadByte();
-				itemEntryId = packet.ReadUInt32();
-				isAutoStore = packet.ReadByte() > 0 ? true : false;
-				autoStoreCount = (byte)0;
-				if (isAutoStore)
-				{
-					autoStoreCount = packet.ReadByte();
-				}
+                toBankTab = packet.ReadByte();
+                toTabSlot = packet.ReadByte();
+                unknown1 = packet.ReadUInt32();
+                fromBankTab = packet.ReadByte();
+                fromTabSlot = packet.ReadByte();
+                itemEntryId = packet.ReadUInt32();
+                unknown2 = packet.ReadByte();
+                amount = packet.ReadByte();
 
-				bagSlot = packet.ReadByte();
-				slot = packet.ReadByte();
-
-				if (!isAutoStore)
-				{
-					isBankToChar = packet.ReadByte() > 0 ? true : false;
-					amount = packet.ReadByte();
-				}
-
-				if ((fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) && fromTabSlot != 0xFF) return;
+                if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
+                if ((toBankTab == fromBankTab) && (toTabSlot == fromTabSlot)) return;
 			}
 			else
 			{
-				toBankTab = packet.ReadByte();
-				toTabSlot = packet.ReadByte();
-				unknown1 = packet.ReadUInt32();
-				fromBankTab = packet.ReadByte();
-				fromTabSlot = packet.ReadByte();
-				itemEntryId = packet.ReadUInt32();
-				unknown2 = packet.ReadByte();
-				amount = packet.ReadByte();
+                fromBankTab = packet.ReadByte();
+                fromTabSlot = packet.ReadByte();
+                itemEntryId = packet.ReadUInt32();
+                isAutoStore = packet.ReadBoolean();
+                autoStoreCount = (byte)0;
+                if (isAutoStore)
+                {
+                    autoStoreCount = packet.ReadByte();
+                    packet.SkipBytes(5);
+                }
+                else
 
-				if (toTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) return;
-				if ((toBankTab == fromBankTab) && (toTabSlot == fromTabSlot)) return;
+                bagSlot = packet.ReadByte();
+                slot = packet.ReadByte();
+                isBankToChar = packet.ReadBoolean();
+                amount = packet.ReadByte();
+
+                if ((fromTabSlot >= GuildMgr.MAX_BANK_TAB_SLOTS) && fromTabSlot != 0xFF) return;
 			}
 
 			var chr = client.ActiveCharacter;

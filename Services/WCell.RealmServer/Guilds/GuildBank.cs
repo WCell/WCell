@@ -285,7 +285,7 @@ namespace WCell.RealmServer.Guilds
 			var fromItem = fromBankTab[fromTabSlot];
 			if (fromItem == null) return;
 
-			if (fromItem.EntryId != itemEntryId) return; // Cheater!
+			//if (fromItem.EntryId != itemEntryId) return; // Cheater!
 			if (fromItem.Amount < amount) return; // Cheater!
 			if (amount == 0)
 			{
@@ -450,7 +450,7 @@ namespace WCell.RealmServer.Guilds
 
 			var bagItem = bag[slot];
 			if (bagItem == null) return;
-			if (bagItem.EntryId != itemEntryId) return; // Cheater!
+			//if (bagItem.EntryId != itemEntryId) return; // Cheater!
 			if (bagItem.Amount < amount) return; // Cheater!
 			if (amount == 0)
 			{
