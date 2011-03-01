@@ -65,7 +65,7 @@ namespace WCell.Addons.Default.Events
                     {
                         user.DecMechanicCount(SpellMechanic.Rooted);
                         return false;
-                    } break;
+                    }
             }
             go.PlaySound(8476);
             

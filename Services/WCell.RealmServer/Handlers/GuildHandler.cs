@@ -195,13 +195,15 @@ namespace WCell.RealmServer.Handlers
 			{
 				SendResult(client, GuildCommandId.QUIT, GuildResult.PLAYER_NOT_IN_GUILD);
 			}
-			else
-			{
-				if (guildMember.Rank.RankIndex != 0)
-				{
-					guildMember.LeaveGuild();
-				}
-			}
+            else if (guildMember.IsLeader && guildMember.Guild.MemberCount > 1)
+            {
+                SendResult(client, GuildCommandId.QUIT, GuildResult.LEADER_LEAVE);
+            }
+            else
+            {
+                guildMember.LeaveGuild();
+                SendResult(client, GuildCommandId.QUIT, GuildResult.SUCCESS);
+            }
 		}
 
 		/// <summary>
