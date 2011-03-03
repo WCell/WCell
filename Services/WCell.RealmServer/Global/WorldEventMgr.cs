@@ -14,7 +14,6 @@ using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.Util;
-using WCell.Util.Threading.TaskParallel;
 
 namespace WCell.RealmServer.Global
 {	

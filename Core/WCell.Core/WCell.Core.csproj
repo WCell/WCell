@@ -165,6 +165,9 @@
       <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ParallelExtensionsExtras">
+      <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
+    </Reference>
     <Reference Include="Remotion.Data.Linq">
       <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Remotion.Data.Linq.dll</HintPath>
     </Reference>

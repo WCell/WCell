@@ -16,7 +16,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,14 +31,12 @@ using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
-using WCell.Core.Initialization;
 using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Battlegrounds.Arenas;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
-using WCell.Util.Threading.TaskParallel;
 using WCell.Core.Timers;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
