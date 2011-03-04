@@ -1325,14 +1325,22 @@ namespace WCell.RealmServer.Handlers
 						if (slot2 != -1)
 						{
 							list.Add(slot2);
+                            list.Sort();
 						}
 
 						packet.WriteByte((byte)list.Count);
 						foreach (var slot in list)
 						{
-							packet.Write(slot);
+                            packet.Write((byte)slot);
 							var item = member.Guild.Bank[tabId][slot];
+
+                            if (item == null)
+                            {
+                                packet.Write(0);
+                                continue;
+                            }
 							packet.Write(item.EntryId);
+                            packet.Write((uint)0);
 
 							var randomPropId = item.RandomProperty;
 							packet.Write(randomPropId);
@@ -1351,22 +1359,17 @@ namespace WCell.RealmServer.Handlers
 								continue;
 							}
 
-							var count = 0;
-							var enchantments = new int[3];
-							for (var i = 0; i < 3; ++i)
-							{
-								if (item.EnchantIds[i] == 0) continue;
-								count++;
-								enchantments[i] = item.EnchantIds[i];
-							}
+                            var pos = packet.Position;
+                            var count = 0;
+                            for (var i = 0; i < 3; ++i)
+                            {
+                                if (item.EnchantIds[i] == 0) continue;
+                                packet.Write((byte)i);
+                                packet.Write(item.EnchantIds[i]);
+                                count++;
+                            }
+                            packet.InsertByteAt((byte)count, pos, true);
 
-							packet.Write((byte)count);
-							for (var i = 0; i < 3; ++i)
-							{
-								if (enchantments[i] == 0) continue;
-								packet.Write((byte)i);
-								packet.Write(list[i]);
-							}
 						} // end foreach
 
 						member.Character.Client.Send(packet);
@@ -1398,22 +1401,19 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(guild.Money);
 				packet.Write(tabId);
 				packet.Write(chr.GuildMember.Rank.BankTabRights[tabId].WithdrawlAllowance);
-				packet.Write(hasTabNames);
+			    var sendHasTabNames = tabId == 0 ? hasTabNames : false;
+                packet.Write(sendHasTabNames);
 
-				if (hasTabNames)
+                if (sendHasTabNames)
 				{
-					if (tabId == 0)
-					{
-						packet.Write((byte)guild.PurchasedBankTabCount);
-						for (var i = 0; i < guild.PurchasedBankTabCount; ++i)
-						{
-							packet.Write(gBank[i].Name);
-							packet.Write(gBank[i].Icon);
-						}
-					}
+                    packet.Write((byte)guild.PurchasedBankTabCount);
+                    for (var i = 0; i < guild.PurchasedBankTabCount; ++i)
+                    {
+                        packet.Write(gBank[i].Name);
+                        packet.Write(gBank[i].Icon);
+                    }
 				}
 
-				packet.Write(hasItemInfo);
 				if (!hasItemInfo)
 				{
 					chr.Client.Send(packet);
@@ -1421,57 +1421,46 @@ namespace WCell.RealmServer.Handlers
 				}
 
 				var bankTab = gBank[tabId];
-                if (bankTab == null)
+
+			    var bankTabItemCount = bankTab.ItemRecords.Where(record => record != null).Count();
+                packet.Write((byte)bankTabItemCount);
+
+                foreach(var item in bankTab.ItemRecords.Where(record => record != null))
                 {
-                    chr.Client.Send(packet);
-                    return;
+                    packet.Write((byte)item.Slot);
+                    
+                    packet.Write(item.EntryId);
+
+                    packet.Write((uint)0);                  // 3.3.0 (0x8000, 0x8020)
+                    var randPropId = item.RandomProperty;
+                    packet.Write(randPropId);
+                    if (randPropId > 0)
+                    {
+                        packet.Write(item.RandomSuffix);
+                    }
+
+                    packet.Write(item.Amount);
+                    packet.Write((uint)0);
+                    packet.Write((byte)0);
+
+                    if (item.EnchantIds == null)
+                    {
+                        packet.Write((byte)0);
+                        continue;
+                    }
+
+                    var pos = packet.Position;
+                    var count = 0;
+                    for (var i = 0; i < 3; ++i)
+                    {
+                        if (item.EnchantIds[i] == 0) continue;
+                        packet.Write((byte)i);
+                        packet.Write(item.EnchantIds[i]);
+                        count++;
+                    }
+                    packet.InsertByteAt((byte)count, pos, true);
+
                 }
-				for (var slot = 0; slot < GuildMgr.MAX_BANK_TAB_SLOTS; ++slot)
-				{
-					var item = (slot < bankTab.ItemRecords.Count) ? bankTab.ItemRecords[slot] : null;
-
-					packet.Write((byte)slot);
-					if (item == null)
-					{
-						packet.Write((uint)0);
-						continue;
-					}
-
-					packet.Write(item.EntryId);
-					var randPropId = item.RandomProperty;
-					packet.Write(randPropId);
-					if (randPropId > 0)
-					{
-						packet.Write(item.RandomSuffix);
-					}
-
-					packet.Write(item.Amount);
-					packet.Write((uint)0);
-					packet.Write((byte)0);
-
-					if (item.EnchantIds == null)
-					{
-						packet.Write((byte)0);
-						continue;
-					}
-
-					var count = 0;
-					var list = new int[3];
-					for (var i = 0; i < 3; ++i)
-					{
-						if (item.EnchantIds[i] == 0) continue;
-						count++;
-						list[i] = item.EnchantIds[i];
-					}
-
-					packet.Write((byte)count);
-					for (var i = 0; i < 3; ++i)
-					{
-						if (list[i] == 0) continue;
-						packet.Write((byte)i);
-						packet.Write(list[i]);
-					}
-				}
 
 				chr.Client.Send(packet);
 			}

@@ -25,6 +25,15 @@ namespace WCell.RealmServer.Guilds
                 if (slot > GuildMgr.MAX_BANK_TAB_SLOTS)
                     return;
 
+                if(value == null)
+                {
+                    Items[slot] = null;
+                    ItemRecords[slot] = null;
+                    return;
+                }
+
+                value.Slot = slot;
+
                 Items[slot] = new GuildBankTabItemMapping {
                     Guid = value.Guid,
                     TabSlot = (byte)slot
