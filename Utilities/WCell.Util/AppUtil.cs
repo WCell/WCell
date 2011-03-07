@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-#if MONO
+#if LINUX
 using Mono.Unix;
 using System.Threading;
 #endif
@@ -53,7 +53,7 @@ namespace WCell.Util
         #endregion
 
         #region Application Exit Handling
-#if !MONO
+#if !LINUX
         /// <summary>
         /// see: http://geekswithblogs.net/mrnat/archive/2004/09/23/11594.aspx
         /// </summary>
@@ -91,7 +91,7 @@ namespace WCell.Util
         /// </summary>
         public static void UnhookAll()
         {
-#if !MONO
+#if !LINUX
             foreach (var hook in ctrlHandlers)
             {
                 SetConsoleCtrlHandler(hook, false);
@@ -119,7 +119,7 @@ namespace WCell.Util
 
             AppDomain.CurrentDomain.ProcessExit += evtHandler;
 
-#if MONO
+#if LINUX
 		    SignalHandler unixSignalHandler = obj => action();
             SetupSignalHandlers(unixSignalHandler);
             SignalHandlers.Add(unixSignalHandler)
@@ -138,7 +138,7 @@ namespace WCell.Util
 
         }
 
-#if MONO
+#if LINUX
 	    private static volatile bool _shutdownRequested;
 
         public delegate void SignalHandler();

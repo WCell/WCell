@@ -86,10 +86,10 @@ namespace Cell.Core
 			}
 		}
 
-#if MONO
+#if LINUX
         private static void StallThread()
         {
-            //Linux doesn't support SwitchToThread()
+            //Mono doesn't support SwitchToThread()
             Thread.SpinWait(1);
         }
 #else
