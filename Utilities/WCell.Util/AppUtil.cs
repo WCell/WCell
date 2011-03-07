@@ -145,7 +145,7 @@ namespace WCell.Util
             AppDomain.CurrentDomain.ProcessExit += evtHandler;
 
 #if __MonoCS__
-		    SignalHandler unixSignalHandler = obj => action();
+		    SignalHandler unixSignalHandler = () => action();
             SetupSignalHandlers(unixSignalHandler);
             SignalHandlers.Add(unixSignalHandler);
 			
@@ -166,40 +166,39 @@ namespace WCell.Util
 #if __MonoCS__
 	    private static volatile bool _shutdownRequested;
 
-        public delegate void SignalHandler(int signal);
+        public delegate void SignalHandler();
 
         static readonly List<SignalHandler> SignalHandlers = new List<SignalHandler>();
 
-        public static void SetupSignalHandlers(SignalHandler signal_handler)
+        public static void SetupSignalHandlers(SignalHandler signalHandler)
         {
             UnixSignal[] signals = new UnixSignal[] {
 				new UnixSignal (Mono.Unix.Native.Signum.SIGINT),
 				new UnixSignal (Mono.Unix.Native.Signum.SIGTERM),
 				new UnixSignal (Mono.Unix.Native.Signum.SIGHUP),
 			};
-
             // Ignore SIGPIPE
             Mono.Unix.Native.Stdlib.SetSignalAction(Mono.Unix.Native.Signum.SIGPIPE, Mono.Unix.Native.SignalAction.Ignore);
 
-            Thread signal_thread = new Thread(delegate()
+            var signalThread = new Thread(delegate()
             {
-                int signalHandlerTimeout = -1;
+                var signalHandlerTimeout = -1;
                 while (!_shutdownRequested)
                 {
-                    int index = UnixSignal.WaitAny(signals, -1);
+                    var index = 0;// UnixSignal.WaitAny(signals, -1);
 
                     if (index > 2)
                         continue;
 
-                    if (signal_handler == null)
+                    if (signalHandler == null)
                         continue;
 
                     _shutdownRequested = true;
-                    signal_handler((int)signal);
+                    signalHandler();
                 }
             });
 
-            signal_thread.Start();
+            signalThread.Start();
         }
 #endif
 
