@@ -86,7 +86,7 @@ namespace Cell.Core
 			}
 		}
 
-#if LINUX
+#if MONO
         private static void StallThread()
         {
             //Linux doesn't support SwitchToThread()
