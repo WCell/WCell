@@ -185,7 +185,7 @@ namespace WCell.Util
                 var signalHandlerTimeout = -1;
                 while (!_shutdownRequested)
                 {
-                    var index = 0;// UnixSignal.WaitAny(signals, -1);
+                    var index = UnixSignal.WaitAny(signals, -1);
 
                     if (index > 2)
                         continue;
