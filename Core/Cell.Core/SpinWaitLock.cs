@@ -86,14 +86,14 @@ namespace Cell.Core
 			}
 		}
 
-#if LINUX
+#if __MonoCS__
         private static void StallThread()
         {
             //Mono doesn't support SwitchToThread()
             Thread.SpinWait(1);
         }
 #else
-		private static void StallThread()
+        private static void StallThread()
 		{
 			// On a single-CPU system, spinning does no good
 			if (IsSingleCpuMachine)
