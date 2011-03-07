@@ -40,7 +40,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 
-			if (chr.Region.IsInstance)
+			if (chr.Map.IsInstance)
 			{
 				// Cannot change difficulty while in instance
 				return;
@@ -140,7 +140,7 @@ namespace WCell.RealmServer.Handlers
 						if (timeLeft.Ticks > 0)
 						{
 							count++;
-							packet.Write((uint)binding.RegionId);
+							packet.Write((uint)binding.MapId);
                             packet.Write(binding.DifficultyIndex);
 							packet.Write(binding.InstanceId);
                             packet.WriteByte(0x1); // expired = 0

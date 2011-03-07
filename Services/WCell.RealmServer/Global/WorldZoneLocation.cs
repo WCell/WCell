@@ -27,6 +27,11 @@ namespace WCell.RealmServer.Global
 			set { m_Names = value; }
 		}
 
+		public uint Phase
+		{
+			get { return WorldObject.DefaultPhase; }
+		}
+
 		public WorldZoneLocation()
 		{
 		}
@@ -45,7 +50,7 @@ namespace WCell.RealmServer.Global
 
 		private WorldZoneLocation(MapId mapId, Vector3 pos)
 		{
-			RegionId = mapId;
+			MapId = mapId;
 			Position = pos;
 		}
 
@@ -61,15 +66,15 @@ namespace WCell.RealmServer.Global
 			set { Names[(int)ClientLocale.English] = value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(RegionId); }
+			get { return World.GetNonInstancedMap(MapId); }
 		}
 
 		public Vector3 Position
@@ -144,7 +149,7 @@ namespace WCell.RealmServer.Global
 						((WorldZoneLocation)obj).Position.X == Position.X &&
 						((WorldZoneLocation)obj).Position.Y == Position.Y &&
 						((WorldZoneLocation)obj).Position.Z == Position.Z &&
-						((WorldZoneLocation)obj).RegionId == RegionId
+						((WorldZoneLocation)obj).MapId == MapId
 					   );
 			}
 			return false;
@@ -153,7 +158,7 @@ namespace WCell.RealmServer.Global
 		// Get a unique id for current world location
 		public override int GetHashCode()
 		{
-			return (int)((int)RegionId * (Position.X * Position.Y * Position.Z));
+			return (int)((int)MapId * (Position.X * Position.Y * Position.Z));
 		}
 
 		/// <summary>

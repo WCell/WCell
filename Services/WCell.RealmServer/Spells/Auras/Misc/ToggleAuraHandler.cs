@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			activeToggleAura = Owner.Auras[ToggleAuraSpell];
 			if (activeToggleAura == null)
 			{
-				activeToggleAura = Owner.Auras.CreateAura(m_aura.CasterReference, ToggleAuraSpell, true);
+				activeToggleAura = Owner.Auras.CreateAndStartAura(m_aura.CasterReference, ToggleAuraSpell, true);
 				activeToggleAura.CanBeSaved = false;
 			}
 			else

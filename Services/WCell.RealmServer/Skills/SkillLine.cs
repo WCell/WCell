@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.Skills;
@@ -54,46 +55,10 @@ namespace WCell.RealmServer.Skills
 
 		public List<SkillAbility> InitialAbilities = new List<SkillAbility>(5);
 
-		public Spell ApprenticeSpell
-		{
-			get
-			{
-				foreach (var spell in TeachingSpells)
-				{
-					if (spell.GetEffect(SpellEffectType.Skill).BasePoints == 0)
-					{
-						return spell;
-					}
-				}
-				return null;
-			}
-		}
-
 		/// <summary>
 		/// The Spells that give the different tiers of this Skill
 		/// </summary>
 		public List<Spell> TeachingSpells = new List<Spell>(1);
-
-		public bool HasTier(SkillTierId tier)
-		{
-			return Tiers.MaxValues != null && (int)tier < Tiers.MaxValues.Length;
-		}
-
-		public SkillTierId GetTier(int value)
-		{
-			if (Tiers.MaxValues != null)
-			{
-				for (var t = 0; t < Tiers.MaxValues.Length; t++)
-				{
-					var max = Tiers.MaxValues[t];
-					if (value < max)
-					{
-						return (SkillTierId)t;
-					}
-				}
-			}
-			return SkillTierId.End;
-		}
 
 		/// <summary>
 		/// The initial value of this skill, when it has just been learnt
@@ -139,7 +104,7 @@ namespace WCell.RealmServer.Skills
 					return Math.Max(1, Tiers.MaxValues[Tiers.MaxValues.Length - 1]);
 				}
 
-				if(Category == SkillCategory.WeaponProficiency)
+				if (Category == SkillCategory.WeaponProficiency)
 				{
 					return 400;
 				}
@@ -147,6 +112,38 @@ namespace WCell.RealmServer.Skills
 			}
 		}
 
+
+		public bool HasTier(SkillTierId tier)
+		{
+			return Tiers.MaxValues != null && (int)tier < Tiers.MaxValues.Length;
+		}
+
+		public SkillTierId GetTierForLevel(int value)
+		{
+			if (Tiers.MaxValues != null)
+			{
+				for (var t = 0; t < Tiers.MaxValues.Length; t++)
+				{
+					var max = Tiers.MaxValues[t];
+					if (value < max)
+					{
+						return (SkillTierId)t;
+					}
+				}
+			}
+			return SkillTierId.End;
+		}
+
+		public Spell GetSpellForLevel(int skillLevel)
+		{
+			var tier = GetTierForLevel(skillLevel);
+			return GetSpellForTier(tier);
+		}
+
+		public Spell GetSpellForTier(SkillTierId tier)
+		{
+			return TeachingSpells.FirstOrDefault(spell => spell.GetEffect(SpellEffectType.Skill).BasePoints == (int)tier);
+		}
 
 		public override string ToString()
 		{

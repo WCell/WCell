@@ -14,6 +14,7 @@
  *
  *************************************************************************/
 
+using System;
 using NLog;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
@@ -40,9 +41,13 @@ namespace WCell.RealmServer.Spells.Effects
 				log.Warn("Tried to cast Spell \"{0}\" which has invalid TriggerSpellId {1}", Effect.Spell, Effect.TriggerSpellId);
 				return;
 			}
-			//m_cast.Trigger(Effect.TriggerSpell, Targets != null ? Targets.ToArray() : null);
-			//m_cast.Trigger(Effect.TriggerSpell, Effect);
-			m_cast.Trigger(Effect.TriggerSpell, Effect, (Effect.TriggerSpell.Effects.Length == 1 && m_targets != null) ? m_targets.ToArray() : null);
+
+			TriggerSpell(Effect.TriggerSpell);
+		}
+
+		protected void TriggerSpell(Spell triggerSpell)
+		{
+			m_cast.Trigger(triggerSpell, Effect, (triggerSpell.Effects.Length == 1 && m_targets != null) ? m_targets.ToArray() : null);
 		}
 
 		protected override void Apply(WorldObject target)

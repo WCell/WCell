@@ -20,25 +20,21 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class StunHandler : AuraEffectHandler
 	{
-		SpellMechanic mechanic;
 
 		protected override void Apply()
 		{
-			mechanic = SpellEffect.Mechanic;
-			if (mechanic == SpellMechanic.None)
-			{
-				mechanic = m_aura.Spell.Mechanic;
-				if (mechanic == SpellMechanic.None || mechanic == SpellMechanic.Invulnerable || mechanic == SpellMechanic.Invulnerable_2)
-				{
-					mechanic = SpellMechanic.Stunned;
-				}
-			}
-			m_aura.Auras.Owner.IncMechanicCount(mechanic);
+			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
+
+			m_aura.Auras.Owner.Stunned++;
 		}
 
 		protected override void Remove(bool cancelled)
 		{
-			m_aura.Auras.Owner.DecMechanicCount(mechanic);
+			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
+				m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
+
+			m_aura.Auras.Owner.Stunned--;
 		}
 
 		public override bool IsPositive

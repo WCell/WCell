@@ -650,7 +650,7 @@ namespace WCell.Core.Cryptography
 		{
 			// Account-names are always upper case
 			var buf = SRPParameters.Hash.ComputeHash(
-				Encoding.ASCII.GetBytes(string.Format("{0}:{1}", username.ToUpper(), password.ToUpper())));
+				WCellConstants.DefaultEncoding.GetBytes(string.Format("{0}:{1}", username.ToUpper(), password.ToUpper())));
 
 			if (buf.Length > 20)
 			{

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using WCell.Util.DB;
 
@@ -154,6 +155,19 @@ namespace WCell.Util.Data
 		public MemberInfo MappedMember
 		{
 			get { return m_mappedMember; }
+		}
+
+		public Type ActualMemberType
+		{
+			get
+			{
+				var attr = (PersistentAttribute)m_mappedMember.GetCustomAttributes(typeof (PersistentAttribute), true).FirstOrDefault();
+				if (attr != null && attr.ActualType != null)
+				{
+					return attr.ActualType;
+				}
+				return m_mappedMember.GetActualType();
+			}
 		}
 
 		public abstract DataFieldType DataFieldType { get; }

@@ -12,7 +12,7 @@ namespace WCell.RealmServer.Database
 		[Field("CurrentValue", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private short _value;
 
-		[Field("MaxValue", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		[Field("MaxVal", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private short _max;
 
 	    [PrimaryKey(PrimaryKeyType.Increment, "EntityLowId")]

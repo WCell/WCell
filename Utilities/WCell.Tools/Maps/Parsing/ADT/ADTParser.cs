@@ -364,8 +364,8 @@ namespace WCell.Tools.Maps.Parsing.ADT
 
             fileReader.BaseStream.Position = waterSegmentBase + header.ofsInfo;
 
-            water.Header.Flags = (MH2OFlags)fileReader.ReadUInt16();
             water.Header.Type = (FluidType)fileReader.ReadUInt16();
+            water.Header.Flags = (MH2OFlags)fileReader.ReadUInt16();
             water.Header.HeightLevel1 = fileReader.ReadSingle();
             water.Header.HeightLevel2 = fileReader.ReadSingle();
             water.Header.YOffset = fileReader.ReadByte();

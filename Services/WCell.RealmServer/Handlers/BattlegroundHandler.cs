@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Handlers
             var bmId = packet.ReadEntityId();
 
             var chr = client.ActiveCharacter;
-            var bm = chr.Region.GetObject(bmId) as NPC;
+            var bm = chr.Map.GetObject(bmId) as NPC;
 
             if (bm != null &&
                 bm.NPCFlags.HasFlag(NPCFlags.BattleMaster)
@@ -161,10 +161,10 @@ namespace WCell.RealmServer.Handlers
 					{
 						SendStatusEnqueued(chr, i, relation, relation.Queue.ParentQueue);
 					}
-					else if (chr.Region is Battleground && 
-						relation.BattlegroundId == ((Battleground)chr.Region).Template.Id)
+					else if (chr.Map is Battleground && 
+						relation.BattlegroundId == ((Battleground)chr.Map).Template.Id)
 					{
-						SendStatusActive(chr, (Battleground)chr.Region, i);
+						SendStatusActive(chr, (Battleground)chr.Map, i);
 					}
 				}
             }
@@ -398,11 +398,11 @@ namespace WCell.RealmServer.Handlers
                 }
 
 				var chrs = bg.Characters;
+                List<BattlegroundStats> listStats = new List<BattlegroundStats>(chrs.Count);
+                chrs.ForEach(chr => listStats.Add(chr.Battlegrounds.Stats));
+                packet.Write(listStats.Count);
 
-				var chrCount = 0;
-            	var chrCountPos = packet.Position;
-            	packet.Position += 4;
-                for (var i = 0; i < chrCount; i++)
+                for (var i = 0; i < listStats.Count; i++)
                 {
                 	var chr = chrs[i];
 					if (!chr.IsInBattleground)
@@ -412,7 +412,6 @@ namespace WCell.RealmServer.Handlers
 
                 	var stats = chr.Battlegrounds.Stats;
 
-                	++chrCount;
                     packet.Write(chr.EntityId); // player guid
 					packet.Write(stats.KillingBlows);
 
@@ -434,9 +433,6 @@ namespace WCell.RealmServer.Handlers
 
                 	stats.WriteSpecialStats(packet);
                 }
-
-            	packet.Position = chrCountPos;
-            	packet.Write(chrCount);
 
                 reciever.Send(packet);
             }

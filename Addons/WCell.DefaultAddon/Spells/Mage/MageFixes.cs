@@ -9,7 +9,9 @@ using WCell.Core.Initialization;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Auras.Misc;
 using WCell.RealmServer.Spells.Effects;
+using WCell.RealmServer.Misc;
 using WCell.Util.Graphics;
 
 namespace WCell.Addons.Default.Spells.Mage
@@ -72,7 +74,7 @@ namespace WCell.Addons.Default.Spells.Mage
 			}, SpellId.ClassSkillLivingBombRank3);
 
 			// These spells cancel eachother
-			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageMageArmor);
+			AuraHandler.AddAuraGroup(SpellLineId.MageFrostArmor, SpellLineId.MageIceArmor, SpellLineId.MageMageArmor, SpellLineId.MageMoltenArmor);
 
 			// Mana gems don't have a limit
 			SpellHandler.Apply(spell =>

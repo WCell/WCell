@@ -107,7 +107,8 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Ensures, new value won't exceed UniqueCount.
+		/// Modifies the amount of this item (size of this stack).
+		/// Ensures that new value won't exceed UniqueCount.
 		/// Returns how many items actually got added. 
 		/// </summary>
 		/// <param name="value"></param>
@@ -118,24 +119,21 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_owner != null)
 				{
-					int uniqueCount;
 					if (value > 0 && m_template.UniqueCount > 0)
 					{
-						uniqueCount = m_owner.Inventory.GetUniqueCount(m_template.ItemId);
-					}
-					else
-					{
-						uniqueCount = int.MaxValue;
-					}
+						var uniqueCount = m_owner.Inventory.GetUniqueCount(m_template.ItemId);
 
-					if (value > uniqueCount)
-					{
-						value = uniqueCount;
+						if (value > uniqueCount)
+						{
+							value = uniqueCount;
+						}
 					}
 
 					m_owner.Inventory.OnAmountChanged(this, value);
 				}
+
 				m_record.Amount += value;
+				SetInt32(ItemFields.STACK_COUNT, m_record.Amount);
 				return value;
 			}
 			return 0;
@@ -193,7 +191,7 @@ namespace WCell.RealmServer.Entities
 			}
 			set
 			{
-                if(!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
+				if (!m_template.UseSpell.HasCharges || ((m_template.UseSpell.HasCharges) && (value <= 0)))
 				{
 					Amount--;
 					return;
@@ -309,7 +307,7 @@ namespace WCell.RealmServer.Entities
 			get { return m_record.ItemTextId; }
 			internal set
 			{
-			//TODO: Items don't have the Text ID field anymore
+				//TODO: Items don't have the Text ID field anymore
 				//SetUInt32(ItemFields.ITEM_TEXT_ID, value);
 				m_record.ItemTextId = value;
 			}
@@ -328,6 +326,12 @@ namespace WCell.RealmServer.Entities
 			{
 				return m_template.Damages;
 			}
+		}
+
+		public int BonusDamage
+		{
+			get;
+			set;
 		}
 
 		public SkillId Skill

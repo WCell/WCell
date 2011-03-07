@@ -25,6 +25,10 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public const int MaxItemsPerMail = 12;
 
+		public const int MaxMailSubjectLength = 128;	// based on ingame limitations
+
+		public const int MaxMailBodyLength = 512;	// based on ingame limitations
+
 		/// <summary>
 		/// Whether or not to delivery mail instantly for any type of mail.
 		/// </summary>
@@ -214,7 +218,7 @@ namespace WCell.RealmServer.Mail
 			// Make a new TextItem that contains the body of the message
 
 			letter.ExpireTime = letter.DeliveryTime.AddDays(letter.CashOnDelivery > 0 ? MaxCODExpiryDelay : MailExpiryDelay);
-			RealmServer.Instance.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				letter.Save();
 

@@ -25,7 +25,7 @@ using WCell.Util.Graphics;
 namespace WCell.RealmServer.Global
 {
 	/// <summary>
-	/// Represents a division of region space (a node in any Region's quadtree).
+	/// Represents a division of map space (a node in any Map's quadtree).
 	/// </summary>
 	public class ZoneSpacePartitionNode
 	{
@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Global
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
-		/// The max depth of the QuadTrees used for space partitioning within Regions
+		/// The max depth of the QuadTrees used for space partitioning within Maps
 		/// </summary>
 		public static int DefaultPartitionThreshold = 6;
 
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Global
 		///// </summary>
 		//public void PartitionSpace()
 		//{
-		//    // Start partitioning the region space
+		//    // Start partitioning the map space
 		//    m_root.PartitionSpace(ZoneSpacePartitionNode.DefaultPartitionThreshold, 0, 0, 0, 1);
 		//}
 
@@ -820,7 +820,7 @@ namespace WCell.RealmServer.Global
 				if (m_objects.ContainsKey(obj.EntityId))
 				{
 					throw new ArgumentException(string.Format(
-						"Tried to add Object \"{0}\" with duplicate EntityId {1} to Region.", obj, obj.EntityId));
+						"Tried to add Object \"{0}\" with duplicate EntityId {1} to Map.", obj, obj.EntityId));
 				}
 
 				//if (obj is Character)

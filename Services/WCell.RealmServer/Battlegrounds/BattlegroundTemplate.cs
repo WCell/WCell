@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundId Id;
 
 		[NotPersistent]
-		public MapId RegionId;
+		public MapId MapId;
 
 		public int MinPlayersPerTeam, MaxPlayersPerTeam;
 
@@ -40,13 +40,13 @@ namespace WCell.RealmServer.Battlegrounds
 		public BattlegroundCreator Creator;
 
 		[NotPersistent]
-		public RegionTemplate RegionTemplate;
+		public MapTemplate MapTemplate;
 
 		[NotPersistent]
 		public GlobalBattlegroundQueue[] Queues;
 
-        [NotPersistent]
-        public PvPDifficultyEntry[] Difficulties;
+		[NotPersistent]
+		public PvPDifficultyEntry[] Difficulties;
 
 		public int MinPlayerCount
 		{
@@ -55,9 +55,9 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public uint GetId()
 		{
-			return (uint) Id;
+			return (uint)Id;
 		}
-        
+
 		public DataHolderState DataHolderState
 		{
 			get;
@@ -66,13 +66,13 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public void FinalizeDataHolder()
 		{
-			RegionId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
+			MapId = BattlegroundMgr.BattlemasterListReader.Entries[(int)Id].MapId;
 
-			RegionTemplate = World.GetRegionTemplate(RegionId);
-			if (RegionTemplate == null)
+			MapTemplate = World.GetMapTemplate(MapId);
+			if (MapTemplate == null)
 			{
-				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid RegionId: {0} (#{1})",
-					RegionId, (int)RegionId);
+				ContentMgr.OnInvalidDBData("BattlegroundTemplate had invalid MapId: {0} (#{1})",
+					MapId, (int)MapId);
 				return;
 			}
 
@@ -82,27 +82,26 @@ namespace WCell.RealmServer.Battlegrounds
 					Id, (int)Id);
 				return;
 			}
+			MapTemplate.BattlegroundTemplate = this;
 
-            Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == RegionId))];
+			Difficulties = new PvPDifficultyEntry[BattlegroundMgr.PVPDifficultyReader.Entries.Values.Count(entry => (entry.mapId == MapId))];
 
-            foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values)
-            {
-                if (entry.mapId == RegionId)
-                    Difficulties[entry.bracketId] = entry;
-            }
+			foreach (var entry in BattlegroundMgr.PVPDifficultyReader.Entries.Values.Where(entry => (entry.mapId == MapId)))
+			{
+				Difficulties[entry.bracketId] = entry;
+			}
 
-            RegionTemplate.MinLevel = Math.Max(1, MinLevel);
-            RegionTemplate.MaxLevel = Math.Max(MinLevel, MaxLevel);
-
+			MinLevel = MapTemplate.MinLevel = Difficulties.First().minLevel;
+			MaxLevel = MapTemplate.MaxLevel = Difficulties.Last().maxLevel;
 			BattlegroundMgr.Templates[(int)Id] = this;
 
 			CreateQueues();
-            SetStartPos();
+			SetStartPos();
 		}
 
-        public int GetBracketIdForLevel(int level)
-        {
-            var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
+		public int GetBracketIdForLevel(int level)
+		{
+			var diff = Difficulties.FirstOrDefault(entry => (level >= entry.minLevel && level <= entry.maxLevel));
 			if (diff != null)
 			{
 				return diff.bracketId;
@@ -111,23 +110,23 @@ namespace WCell.RealmServer.Battlegrounds
 			{
 				return -1;
 			}
-        }
+		}
 
 		private void CreateQueues()
 		{
-            Queues = new GlobalBattlegroundQueue[Difficulties.Length];
-            foreach (var entry in Difficulties)
-            {
+			Queues = new GlobalBattlegroundQueue[Difficulties.Length];
+			foreach (var entry in Difficulties)
+			{
 				if (entry != null)
 				{
 					AddQueue(new GlobalBattlegroundQueue(this, entry.bracketId, entry.minLevel, entry.maxLevel));
 				}
-            }
+			}
 		}
 
 		void AddQueue(GlobalBattlegroundQueue queue)
 		{
-				Queues[queue.BracketId] = queue;
+			Queues[queue.BracketId] = queue;
 		}
 
 		/// <summary>
@@ -147,7 +146,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <returns>the appropriate queue for the given character level</returns>
 		public GlobalBattlegroundQueue GetQueue(int level)
 		{
-            return Queues.Get((uint)GetBracketIdForLevel(level));
+			return Queues.Get((uint)GetBracketIdForLevel(level));
 		}
 
 		#region Enqueue
@@ -223,32 +222,32 @@ namespace WCell.RealmServer.Battlegrounds
 		{
 			return GetType().Name +
 				string.Format(" (Id: {0} (#{1}), Map: {2} (#{3})",
-				Id, (int)Id, RegionId, (int)RegionId);
+				Id, (int)Id, MapId, (int)MapId);
 		}
 
-        public void SetStartPos()
-        {
-            WorldSafeLocation allianceStartPos;
-            BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
-            if (allianceStartPos != null)
-            {
-                var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
+		public void SetStartPos()
+		{
+			WorldSafeLocation allianceStartPos;
+			BattlegroundMgr.WorldSafeLocs.TryGetValue(AllianceStartPosIndex, out allianceStartPos);
+			if (allianceStartPos != null)
+			{
+				var allianceStartPosVector = new Vector3(allianceStartPos.X, allianceStartPos.Y, allianceStartPos.Z);
 
-                if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
-                    AllianceStartPosition = allianceStartPosVector;
+				if (allianceStartPosVector.X != 0.0f && allianceStartPosVector.Y != 0.0f && allianceStartPosVector.Z != 0.0f)
+					AllianceStartPosition = allianceStartPosVector;
 
-            }
+			}
 
-            WorldSafeLocation hordeStartPos;
-            BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
-            if(hordeStartPos != null)
-            {
-                var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
+			WorldSafeLocation hordeStartPos;
+			BattlegroundMgr.WorldSafeLocs.TryGetValue(HordeStartPosIndex, out hordeStartPos);
+			if (hordeStartPos != null)
+			{
+				var hordeStartPosVector = new Vector3(hordeStartPos.X, hordeStartPos.Y, hordeStartPos.Z);
 
-                if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
-                    HordeStartPosition = hordeStartPosVector;
-            }
-        }
+				if (hordeStartPosVector.X != 0.0f && hordeStartPosVector.Y != 0.0f && hordeStartPosVector.Z != 0.0f)
+					HordeStartPosition = hordeStartPosVector;
+			}
+		}
 	}
 }
 

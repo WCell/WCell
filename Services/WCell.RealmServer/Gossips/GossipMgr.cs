@@ -1,6 +1,7 @@
 using System;
 using NLog;
 using WCell.Core;
+using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Lang;
@@ -30,14 +31,31 @@ namespace WCell.RealmServer.Gossips
 		//private SynchronizedDictionary<WorldObject, GossipMenu> m_gossipMenus;
 		//private SynchronizedDictionary<Character, GossipConversation> m_gossipConversations;
 
-		internal static IDictionary<uint, IGossipEntry> NPCTexts = new Dictionary<uint, IGossipEntry>(5000);
+		internal static IDictionary<uint, IGossipEntry> GossipEntries = new Dictionary<uint, IGossipEntry>(5000);
 
-		internal static int gossipCount;
+		public static IGossipEntry GetEntry(uint id)
+		{
+			IGossipEntry entry;
+			GossipEntries.TryGetValue(id, out entry);
+			return entry;
+		}
 
-		[Variable(false)]
-		public static uint DefaultTextId = 91800;
-		public static string DefaultTitleMale = "Hello there!";
-		public static string DefaultTitleFemale = "Hello there!";
+		public static readonly uint DefaultTextId = 91800;		// random number
+		public static readonly StaticGossipEntry DefaultGossipEntry = new StaticGossipEntry(DefaultTextId, "Hello there!");
+
+		public static readonly uint DynamicTextId = 91801;		// use this for dynamic text entries
+
+		public static string DefaultGossipGreetingMale
+		{
+			get { return DefaultGossipEntry.GetText(0).TextMale; }
+			set { DefaultGossipEntry.GetText(0).TextMale = value; }
+		}
+
+		public static string DefaultGossipGreetingFemale
+		{
+			get { return DefaultGossipEntry.GetText(0).TextFemale; }
+			set { DefaultGossipEntry.GetText(0).TextFemale = value; }
+		}
 
 		#endregion
 
@@ -108,18 +126,27 @@ namespace WCell.RealmServer.Gossips
 
 		#region Initializing and Loading
 
-		public static bool Loaded
+		public static void LoadAll()
 		{
-			get;
-			private set;
+			LoadEntries();
+			LoadNPCRelations();
 		}
 
-		static void LoadAll()
+		[Initialization(InitializationPass.Third)]
+		public static void LoadEntries()
 		{
-			Loaded = true;
+			ContentMgr.Load<StaticGossipEntry>();
+		}
 
-			ContentMgr.Load<GossipEntry>();
-			AddDefaultGossipOptions();
+		/// <summary>
+		/// Automatically called after NPCs are initialized
+		/// </summary>
+		internal static void LoadNPCRelations()
+		{
+			if (ContentMgr.Load<NPCGossipRelation>())
+			{
+				AddDefaultGossipOptions();
+			}
 		}
 
 		/// <summary>
@@ -139,26 +166,22 @@ namespace WCell.RealmServer.Gossips
 						{
 							entry.DefaultGossip = menu = new GossipMenu();
 						}
-						else
-						{
-							if (menu.GossipItems.Count > 0)
-							{
-								// Talk option
-								entry.DefaultGossip = menu = new GossipMenu(menu.BodyTextId,
-									new GossipMenuItem
-									{
-										SubMenu = menu
-									});
-							}
-						}
+						//else if (menu.GossipItems.Count > 0)
+						//{
+						//    // Talk option -> Should it be in a sub menu?
+						//    entry.DefaultGossip = menu = new GossipMenu(menu.GossipEntry, new GossipMenuItem("Talk")
+						//    {
+						//        SubMenu = menu
+						//    });
+						//}
 
 						// NPC professions
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.Banker))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bank, RealmLangKey.GossipOptionBanker, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bank, convo =>
 							{
 								convo.Character.OpenBank(convo.Speaker);
-							}));
+							}, RealmLangKey.GossipOptionBanker));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.BattleMaster))
 						{
@@ -172,10 +195,10 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.InnKeeper))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bind, RealmLangKey.GossipOptionInnKeeper, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Bind, convo =>
 							{
 								convo.Character.BindTo((NPC)convo.Speaker);
-							}));
+							}, RealmLangKey.GossipOptionInnKeeper));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.GuildBanker))
 						{
@@ -186,10 +209,10 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.SpiritHealer))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Resurrect, RealmLangKey.GossipOptionSpiritHealer, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Resurrect, convo =>
 							{
 								convo.Character.ResurrectWithConsequences();
-							}));
+							}, RealmLangKey.GossipOptionSpiritHealer));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.Petitioner))
 						{
@@ -200,73 +223,62 @@ namespace WCell.RealmServer.Gossips
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.TabardDesigner))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Tabard, RealmLangKey.GossipOptionTabardDesigner, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Tabard, convo =>
 							{
 								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
-							}));
+							}, RealmLangKey.GossipOptionTabardDesigner));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.FlightMaster))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Taxi, RealmLangKey.GossipOptionFlightMaster, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Taxi, convo =>
 							{
 								((NPC)convo.Speaker).TalkToFM(convo.Character);
-							}));
+							}, RealmLangKey.GossipOptionFlightMaster));
 						}
-                        if (entry.NPCFlags.HasAnyFlag(NPCFlags.StableMaster))
-                        {
-                            menu.AddItem(new LocalizedGossipMenuItem(RealmLangKey.GossipOptionStableMaster, convo =>
-                            {
-                                convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
-                            }));
-                        }
+						if (entry.NPCFlags.HasAnyFlag(NPCFlags.StableMaster))
+						{
+							menu.AddItem(new LocalizedGossipMenuItem(convo =>
+							{
+								convo.Character.SendSystemMessage(RealmLangKey.FeatureNotYetImplemented);
+							}, RealmLangKey.GossipOptionStableMaster));
+						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyTrainer))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, RealmLangKey.GossipOptionTrainer, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Train, convo =>
 							{
 								((NPC)convo.Speaker).TalkToTrainer(convo.Character);
-							}));
+							}, RealmLangKey.GossipOptionTrainer));
 						}
 						if (entry.NPCFlags.HasAnyFlag(NPCFlags.AnyVendor))
 						{
-							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Trade, RealmLangKey.GossipOptionVendor, convo =>
+							menu.AddItem(new LocalizedGossipMenuItem(GossipMenuIcon.Trade, convo =>
 							{
 								if (((NPC)convo.Speaker).VendorEntry != null)
 								{
 									((NPC)convo.Speaker).VendorEntry.UseVendor(convo.Character);
 								}
-							}));
+							}, RealmLangKey.GossipOptionVendor));
 						}
 					}
 				}
 			}
 		}
 
-		/// <summary>
-		/// Automatically called after NPCs are initialized
-		/// </summary>
-		internal static void EnsureInitialized()
-		{
-			if (!Loaded)
-			{
-				LoadAll();
-			}
-		}
-
 		#endregion
 
 		#region Methods
-		public static void AddEntry(GossipEntry entry)
+		public static void AddEntry(StaticGossipEntry entry)
 		{
-			NPCTexts[entry.GossipId] = entry;
+			GossipEntries[entry.GossipId] = entry;
 		}
 
-		public static void AddText(uint id, params GossipText[] entries)
+		public static void AddText(uint id, params StaticGossipText[] entries)
 		{
-			NPCTexts[id] =
-				new GossipEntry
+			GossipEntries[id] =
+				new StaticGossipEntry
 				{
 					GossipId = id,
-					GossipEntries = entries
+					GossipTexts = entries
 				};
 		}
 		#endregion

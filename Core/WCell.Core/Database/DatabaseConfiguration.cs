@@ -28,13 +28,14 @@ namespace WCell.Core.Database
 
         public static TextReader GetARConfiguration(string dbType, string connString)
         {
-            if (!s_configurationMappings.ContainsKey(dbType.ToLower()))
+            var dbTypeLowerCase = dbType.ToLower();
+            if (!s_configurationMappings.ContainsKey(dbTypeLowerCase))
             {
                 return null;
             }
 
             Stream configStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(
-                typeof(DatabaseConfiguration), s_configurationMappings[dbType.ToLower()]);
+                typeof(DatabaseConfiguration), s_configurationMappings[dbTypeLowerCase]);
 
             if(configStream == null)
             {
@@ -44,6 +45,13 @@ namespace WCell.Core.Database
             StreamReader rdr = new StreamReader(configStream);
 
             string config = rdr.ReadToEnd();
+
+            // Workaround for:
+            // MySQL's unique "feature" of allowing invalid dates in a DATE field,
+            // especially using 0000-00-00 as a default value for DATE NOT NULL columns.
+            // When such a date is encountered, it throws an exception when converting itself to a DateTime
+            if ((dbTypeLowerCase == "mysql" || dbTypeLowerCase == "mysql5") && !connString.ToLower().Contains("convert zero datetime"))
+                connString += "Convert Zero DateTime=true;";
 
             config = config.Replace("{0}", connString);
 

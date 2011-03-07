@@ -14,7 +14,7 @@ namespace WCell.RealmServer.AI.Actions.Movement
 	{
 		protected static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		public static int UpdatePositionTicks = 3;
+		public static int UpdatePositionTicks = 4;
 
 		public static float DefaultFollowDistanceMax = 5f;
 		//public static float DefaultFollowDistanceMin = 1f;
@@ -63,12 +63,14 @@ namespace WCell.RealmServer.AI.Actions.Movement
 				{
 					log.Error("Started " + GetType().Name + " without Target set: " + m_owner);
 					m_owner.Brain.EnterDefaultState();
+					return;
 				}
 				else
 				{
 					m_target = m_owner.Target;
 				}
 			}
+			Update();
 		}
 
 		public override void Update()

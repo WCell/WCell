@@ -1,10 +1,15 @@
 using System.Collections.Generic;
 using WCell.Constants.GameObjects;
+using WCell.Constants.Looting;
 using WCell.Constants.World;
+using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects.GOEntries;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.RealmServer.Global;
+using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.Util;
@@ -61,24 +66,12 @@ namespace WCell.RealmServer.GameObjects
 	[DependingProducer(GameObjectType.TrapDoor, typeof(GOTrapDoorEntry))]
 
 	[DependingProducer(GameObjectType.Custom, typeof(GOCustomEntry))]
-	public abstract partial class GOEntry : IQuestHolderEntry, IDataHolder
+	public abstract partial class GOEntry : ObjectTemplate, IDataHolder
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
-		/// <summary>
-		/// Entry Id
-		/// </summary>
-		public uint Id
-		{
-			get;
-			set;
-		}
-
 		public uint DisplayId;
 		public FactionTemplateId FactionId;
 		public GameObjectFlags Flags;
 		public GameObjectType Type;
-		public float DefaultScale = 1;
 
 		[NotPersistent]
 		public GOEntryId GOId;
@@ -107,44 +100,25 @@ namespace WCell.RealmServer.GameObjects
 		/// All Templates that use this GOEntry
 		/// </summary>
 		[NotPersistent]
-		public readonly List<GOSpawn> Templates = new List<GOSpawn>();
+		public readonly List<GOSpawnEntry> SpawnEntries = new List<GOSpawnEntry>();
 
-		public GOSpawn FirstSpawn
+		public GOSpawnEntry FirstSpawnEntry
 		{
-			get { return Templates.Count > 0 ? Templates[0] : null; }
+			get { return SpawnEntries.Count > 0 ? SpawnEntries[0] : null; }
 		}
 
-		public void AddTemplate(GOSpawn spawn)
+		public override IWorldLocation[] GetInWorldTemplates()
 		{
-			Templates.Add(spawn);
-		}
-
-		public GOSpawn AddTemplate(MapId region, Vector3 pos)
-		{
-			return AddTemplate(region, pos, true);
-		}
-
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="map"></param>
-		/// <param name="pos"></param>
-		/// <param name="autoSpawn">Whether to always spawn this Template when the Region starts</param>
-		public GOSpawn AddTemplate(MapId region, Vector3 pos, bool autoSpawn)
-		{
-			var go = new GOSpawn { MapId = region, Pos = pos, AutoSpawn = autoSpawn };
-			Templates.Add(go);
-			return go;
-		}
-
-		public IWorldLocation[] GetInWorldTemplates()
-		{
-			return Templates.ToArray();
+			return SpawnEntries.ToArray();
 		}
 
 		#region Custom Fields
 		[NotPersistent]
-		public Faction Faction;
+		public Faction Faction
+		{
+			get;
+			set;
+		}
 
 		/// <summary>
 		/// Whether this GO vanishes after using
@@ -201,18 +175,41 @@ namespace WCell.RealmServer.GameObjects
 		{
 			get { return false; }
 		}
+
+		public override ResolvedLootItemList GetLootEntries()
+		{
+			if (this is IGOLootableEntry)
+			{
+				return LootMgr.GetEntries(LootEntryType.GameObject, ((IGOLootableEntry)this).LootId);
+			}
+			return null;
+		}
 		#endregion
 
-		#region Quests
 		/// <summary>
-		/// The QuestHolderEntry of this NPCEntry, if this is a QuestGiver
+		/// Some GOs have a QuestId
 		/// </summary>
-		[NotPersistent]
-		public QuestHolderInfo QuestHolderInfo
+		public virtual uint QuestId
 		{
-			get;
-			set;
+			get { return 0; }
 		}
+
+		/// <summary>
+		/// Some GOs have a PageId
+		/// </summary>
+		public virtual uint PageId
+		{
+			get { return 0; }
+		}
+
+		public virtual uint GossipId
+		{
+			get { return 0; }
+		}
+
+		#region Quests
+		[NotPersistent]
+		public readonly List<QuestTemplate> RequiredQuests = new List<QuestTemplate>(3);
 
 		/// <summary>
 		/// Whether only users of the same Party as the owner
@@ -258,9 +255,30 @@ namespace WCell.RealmServer.GameObjects
 
 			InitEntry();
 
+			// create GossipMenu
+			if (GossipId != 0 && DefaultGossip == null)
+			{
+				var gossipEntry = GossipMgr.GetEntry(GossipId);
+				if (gossipEntry == null)
+				{
+					ContentMgr.OnInvalidDBData("GOEntry {0} has missing GossipId: {1}", this, GossipId);
+					DefaultGossip = new GossipMenu();
+				}
+				else
+				{
+					DefaultGossip = new GossipMenu(GossipId);
+				}
+			}
+			else if (QuestHolderInfo != null)
+			{
+				// Make sure, there is a gossip menu, so quests can be started/completed
+				DefaultGossip = new GossipMenu();
+			}
+
+			// set HandlerCreator
 			if (HandlerCreator == null)
 			{
-				HandlerCreator = GOMgr.Handlers[(int) Type];
+				HandlerCreator = GOMgr.Handlers[(int)Type];
 			}
 
 			if (GOCreator == null)
@@ -283,33 +301,20 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		#region Create & Spawn
-		public GameObject Create()
-		{
-			return Create(null);
-		}
-
-		public GameObject Create(Unit owner)
-		{
-			var go = GameObject.Create(this, FirstSpawn);
-			go.Owner = owner;
-			return go;
-		}
-
 		public GameObject Spawn(IWorldLocation location)
 		{
 			return Spawn(location, location as Unit);
 		}
 
-		public GameObject Spawn(IWorldLocation location, Unit owner)
+		public GameObject Spawn(IWorldLocation where, Unit owner)
 		{
-			var go = Create(owner);
-			go.Position = location.Position;
-			location.Region.AddObject(go);
+			var go = GameObject.Create(this, where, FirstSpawnEntry);
+			go.Owner = owner;
 			return go;
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
@@ -319,81 +324,50 @@ namespace WCell.RealmServer.GameObjects
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
 		public GameObject Spawn(MapId map, Vector3 pos, Unit owner)
 		{
-			return Spawn(World.GetRegion(map), pos, owner);
+			return Spawn(World.GetNonInstancedMap(map), pos, owner);
 		}
 
 		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
+		/// Spawns and returns a new GameObject from this template into the given map
 		/// </summary>
 		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
 		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region rgn, Vector3 pos)
+		public GameObject Spawn(Map map, Vector3 pos, Unit owner = null)
 		{
-			return Spawn(rgn, pos, null);
-		}
+			if (map == null) throw new ArgumentNullException("map");
 
-		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
-		/// </summary>
-		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
-		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region rgn, Vector3 pos, Unit owner)
-		{
-			return Spawn(rgn, ref pos, owner);
-		}
-
-		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
-		/// </summary>
-		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
-		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region rgn, ref Vector3 pos)
-		{
-			return Spawn(rgn, ref pos, null);
-		}
-
-		/// <summary>
-		/// Spawns and returns a new GameObject from this template into the given region
-		/// </summary>
-		/// <param name="owner">Can be null, if the GO is not owned by anyone</param>
-		/// <returns>The newly spawned GameObject or null, if the Template has no Entry associated with it.</returns>
-		public GameObject Spawn(Region rgn, ref Vector3 pos, Unit owner)
-		{
-			var go = Create(owner);
-			go.Position = pos;
-			rgn.AddObject(go);
-			return go;
+			return Spawn(new WorldLocation(map, pos), owner);
 		}
 		#endregion
 
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOSpawn GetClosestTemplate(IWorldLocation pos)
+		public GOSpawnEntry GetClosestTemplate(IWorldLocation pos)
 		{
-			return Templates.GetClosestTemplate(pos);
+			return SpawnEntries.GetClosestEntry(pos);
 		}
 
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOSpawn GetClosestTemplate(MapId rgn, Vector3 pos)
+		public GOSpawnEntry GetClosestTemplate(MapId rgn, Vector3 pos)
 		{
-			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
+			return SpawnEntries.GetClosestEntry(new WorldLocationStruct(rgn, pos));
 		}
 
 		/// <summary>
 		/// Returns the GOTemplate of this entry that is closest to the given location
 		/// </summary>
-		public GOSpawn GetClosestTemplate(Region rgn, Vector3 pos)
+		public GOSpawnEntry GetClosestTemplate(Map rgn, Vector3 pos)
 		{
-			return Templates.GetClosestTemplate(new WorldLocation(rgn, pos));
+			return SpawnEntries.GetClosestEntry(new WorldLocationStruct(rgn, pos));
 		}
 
 		#region Events
@@ -404,7 +378,7 @@ namespace WCell.RealmServer.GameObjects
 			{
 				return evt(go, user);
 			}
-			return false;
+			return true;
 		}
 
 		internal void NotifyActivated(GameObject go)

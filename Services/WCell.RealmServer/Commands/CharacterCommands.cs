@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Commands
 			var chr = ((Character)trigger.Args.Target);
 			var xp = trigger.Text.NextInt(1);
 
-			chr.GainXp(xp, false);
+			chr.GainXp(xp);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -50,8 +50,8 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			var chr = ((Character)trigger.Args.Target);
-			chr.Level = trigger.Text.NextInt(chr.Level);
+			var unit = trigger.Args.Target;
+			unit.Level = trigger.Text.NextInt(unit.Level);
 		}
 
 		public override ObjectTypeCustom TargetTypes

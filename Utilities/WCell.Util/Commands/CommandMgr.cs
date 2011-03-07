@@ -45,6 +45,8 @@ namespace WCell.Util.Commands
 
 		protected static Logger log = LogManager.GetCurrentClassLogger();
 
+		public const char VariableCharacter = '$';
+
 		/// <summary>
 		/// Is triggered whenever an unknown command has been used
 		/// </summary>
@@ -352,14 +354,20 @@ namespace WCell.Util.Commands
 			//// map by type
 			//commandMapByType[type] = cmd;
 			cmd.DoInit();
+
 			commandsByName.Add(cmd.Name, cmd);
 
 			// Add to table, mapped by aliases
 			foreach (var alias in cmd.Aliases)
 			{
+				if (alias.Contains(VariableCharacter))
+				{
+					log.Error("Command alias \"{0}\" contained invalid character (Command: {1})", alias, cmd);
+					continue;
+				}
 				if (commandsByAlias.ContainsKey(alias))
 				{
-					log.Warn("Command alias \"{0}\" was used by more than 1 Command: {1} and {2}", alias, commandsByAlias[alias], cmd);
+					log.Warn("Overriding alias \"{0}\" because it was used by more than 1 Command: \"{1}\" and \"{2}\"", alias, commandsByAlias[alias], cmd);
 				}
 				commandsByAlias[alias] = cmd;
 			}
@@ -480,7 +488,8 @@ namespace WCell.Util.Commands
 		public bool MayDisplay(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool ignoreRestrictions)
 		{
 			return cmd.Enabled &&
-				   (ignoreRestrictions || cmd.RootCmd.MayTrigger(trigger, cmd, true));
+				   (ignoreRestrictions ||
+						(cmd.RootCmd.MayTrigger(trigger, cmd, true) && TriggerValidator(trigger, cmd, true)));
 		}
 
 		public BaseCommand<C> SelectCommand(string cmdString)
@@ -719,7 +728,7 @@ namespace WCell.Util.Commands
 
 			protected override void Initialize()
 			{
-				Init("Call", "C", "@", "$");
+				Init("Call", "C", "@");
 				EnglishParamInfo = "(-l [<wildmatch>]|-<i>)|<methodname>[ <arg0> [<arg1> [...]]]";
 				EnglishDescription = "Calls any static method or custom function with the given arguments. Either use the name or the index of the function.";
 			}

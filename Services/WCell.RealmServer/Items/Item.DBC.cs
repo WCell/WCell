@@ -146,4 +146,64 @@ namespace WCell.RealmServer.Items
 			return condition;
 		}
 	}
+
+    public class ScalingStatDistributionConverter : AdvancedDBCRecordConverter<ScalingStatDistributionEntry>
+    {
+        public override ScalingStatDistributionEntry ConvertTo(byte[] rawData, ref int id)
+        {
+            var ssd = new ScalingStatDistributionEntry();
+
+            int currentIndex = 0;
+            ssd.Id = (uint)(id = GetInt32(rawData, currentIndex++));
+            for(var i = 0; i < 10; i++)
+            {
+                ssd.StatMod[i] = GetInt32(rawData, currentIndex++);
+            }
+            for(var i = 0; i < 10; i++)
+            {
+                ssd.Modifier[i] = GetUInt32(rawData, currentIndex++);
+            }
+            ssd.MaxLevel = GetUInt32(rawData, currentIndex++);
+            return ssd;
+        }
+    }
+
+    public class ScalingStatValuesConverter : AdvancedDBCRecordConverter<ScalingStatValues>
+    {
+        public override ScalingStatValues ConvertTo(byte[] rawData, ref int id)
+        {
+            var ssv = new ScalingStatValues();
+
+            int currentIndex = 0;
+            ssv.Id = (uint)(id = GetInt32(rawData, currentIndex++));
+            ssv.Level = GetUInt32(rawData, currentIndex++);
+            
+            var ssdMultiplier = 0;
+            for(; ssdMultiplier < 4; ssdMultiplier++)
+            {
+                ssv.SsdMultiplier[ssdMultiplier] = GetUInt32(rawData, currentIndex++);
+            }
+            
+            var armorMod = 0;
+            for(; armorMod < 5; armorMod++)
+            {
+                ssv.ArmorMod[armorMod] = GetUInt32(rawData, currentIndex++);
+            }
+            
+            for(var i = 0; i < 6; i++)
+            {
+                ssv.DpsMod[i] = GetUInt32(rawData, currentIndex++);
+            }
+            
+            ssv.SpellBonus = GetUInt32(rawData, currentIndex++);
+            
+            for(; ssdMultiplier < 6; ssdMultiplier++)
+                ssv.SsdMultiplier[ssdMultiplier] = GetUInt32(rawData, currentIndex++);
+            
+            for(; armorMod < 8; armorMod++)
+                ssv.ArmorMod[armorMod] = GetUInt32(rawData, currentIndex++);
+
+            return ssv;
+        }
+    }
 }

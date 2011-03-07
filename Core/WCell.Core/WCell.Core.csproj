@@ -133,22 +133,12 @@
   <ItemGroup>
     <Reference Include="Castle.ActiveRecord, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.ActiveRecord.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.ActiveRecord.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Castle.Components.Validator, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.Components.Validator.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Castle.Core, Version=1.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.Core.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Castle.DynamicProxy, Version=2.0.3.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Castle.DynamicProxy.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.Components.Validator.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.5.452, Culture=neutral, processorArchitecture=MSIL">
@@ -156,20 +146,30 @@
       <HintPath>..\..\Libraries\Binaries\Release\ICSharpCode\ICSharpCode.SharpZipLib.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.0.3, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\Iesi.Collections.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\Castle\bin\log4net.dll</HintPath>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=2.1.2.4000, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="NHibernate.ByteCode.Castle, Version=2.1.2.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.ByteCode.Castle.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=8d6613fba43e5033, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ParallelExtensionsExtras">
+      <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
+    </Reference>
+    <Reference Include="Remotion.Data.Linq">
+      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Remotion.Data.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -208,7 +208,7 @@
     <Compile Include="Initialization\GlobalMgrAttribute.cs" />
     <Compile Include="Initialization\GlobalMgrInfo.cs" />
     <Compile Include="Initialization\IInitializationInfo.cs" />
-    <Compile Include="Initialization\InitializationDependency.cs" />
+    <Compile Include="Initialization\DependentInitializationStep.cs" />
     <Compile Include="Initialization\InitializationException.cs" />
     <Compile Include="Network\IOExtensions.cs" />
     <Compile Include="Network\NetworkStatistics.cs" />
@@ -218,6 +218,7 @@
     <Compile Include="Paths\Path.cs" />
     <Compile Include="Paths\PathQuery.cs" />
     <Compile Include="ReflectUtil.cs" />
+    <Compile Include="SelfRunningTaskQueue.cs" />
     <Compile Include="ServerApp.cs" />
     <Compile Include="Statistics.cs" />
     <Compile Include="Terrain\ITerrain.cs" />
@@ -230,7 +231,7 @@
     <Compile Include="Variables\WCellVariableAttribute.cs" />
     <Compile Include="Variables\WCellVariableDefinition.cs" />
     <Compile Include="WCellConfig.cs" />
-    <Compile Include="WCellDef.cs" />
+    <Compile Include="WCellConstants.cs" />
     <Compile Include="Cryptography\Authenticator.cs" />
     <Compile Include="Cryptography\BigInteger.cs" />
     <Compile Include="Cryptography\HashUtilities.cs" />
@@ -293,15 +294,13 @@
     <EmbeddedResource Include="Database\Configurations\FireBirdConfiguration.arconfig" />
     <EmbeddedResource Include="Database\Configurations\DB2Configuration.arconfig" />
     <EmbeddedResource Include="Database\Configurations\SQLLiteConfiguration.arconfig" />
-    <EmbeddedResource Include="Database\Configurations\MySQL5Configuration.arconfig" />
+    <EmbeddedResource Include="Database\Configurations\MySQL5Configuration.arconfig">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Database\Configurations\OracleConfiguration.arconfig" />
     <EmbeddedResource Include="Database\Configurations\PostgreSQLConfiguration.arconfig" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Libraries\Source\NHibernate\NHibernate-3.5.csproj">
-      <Project>{5909BFE7-93CF-4E5F-BE22-6293368AF01D}</Project>
-      <Name>NHibernate-3.5</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\WCell.Util\WCell.Util.csproj">
       <Project>{F753AF28-A251-4C12-9335-07E8236184F2}</Project>
       <Name>WCell.Util</Name>

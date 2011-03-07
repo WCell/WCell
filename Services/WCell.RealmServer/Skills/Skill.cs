@@ -177,7 +177,7 @@ namespace WCell.RealmServer.Skills
 					return CurrentTierSpell.SkillTier;
 				}
 				// added skill without a spell (means that a GM or Dev was playing around)
-				return SkillLine.GetTier(CurrentValue);
+				return SkillLine.GetTierForLevel(CurrentValue);
 			}
 		}
 

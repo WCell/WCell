@@ -119,7 +119,7 @@ namespace WCell.RealmServer.Mail
 			set { _senderId = (int)value.Low; }
 		}
 
-		[Property(NotNull = true)]
+		[Property(NotNull = true, Length = 512)]
 		public string Subject
 		{
 			get;
@@ -129,7 +129,7 @@ namespace WCell.RealmServer.Mail
 		/// <summary>
 		/// The body of the message
 		/// </summary>
-		[Property(NotNull = true)]
+		[Property(NotNull = true, Length = 1024*8)]
 		public string Body
 		{
 			get;
@@ -166,6 +166,11 @@ namespace WCell.RealmServer.Mail
 		public int RemainingDeliveryMillis
 		{
 			get { return (int)(DeliveryTime - DateTime.Now).TotalMilliseconds; }
+		}
+
+		public bool WasRead
+		{
+			get { return ReadTime != null; }
 		}
 
 		[Property]
@@ -395,7 +400,7 @@ namespace WCell.RealmServer.Mail
 		/// </summary>
 		public void ReturnToSender()
 		{
-			RealmServer.Instance.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				if (!CharacterRecord.Exists(SenderId))
 				{

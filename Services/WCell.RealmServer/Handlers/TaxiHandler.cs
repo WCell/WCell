@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleEnable(IRealmClient client, RealmPacketIn packet)
 		{
 			var vendorId = packet.ReadEntityId();
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 
 			if (vendor != null)
 			{
@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleAvailableNodesQuery(IRealmClient client, RealmPacketIn packet)
 		{
 			var vendorId = packet.ReadEntityId();
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 
 			if (vendor != null)
 			{
@@ -57,7 +57,7 @@ namespace WCell.RealmServer.Handlers
 			var from = packet.ReadUInt32();
 			var to = packet.ReadUInt32();
 
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 
 			var destinations = new PathNode[2];
 			destinations[0] = TaxiMgr.PathNodesById.Get(from);
@@ -82,7 +82,7 @@ namespace WCell.RealmServer.Handlers
 				destinations[i] = TaxiMgr.PathNodesById.Get(packet.ReadUInt32());
 			}
 
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 			TaxiMgr.TryFly(client.ActiveCharacter, vendor, destinations);
 		}
 
@@ -94,7 +94,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var vendorId = packet.ReadEntityId();
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorId) as NPC;
+			var vendor = chr.Map.GetObject(vendorId) as NPC;
 			if (vendor == null)
 			{
 				return;

@@ -7,6 +7,7 @@ using WCell.RealmServer.AI;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util;
 using WCell.RealmServer.AI.Actions;
 using WCell.Constants.Spells;
@@ -28,7 +29,7 @@ namespace WCell.RealmServer.Entities
 
 		public abstract LinkedList<WaypointEntry> Waypoints { get; }
 
-		public abstract SpawnPoint SpawnPoint { get; }
+		public abstract NPCSpawnPoint SpawnPoint { get; }
 
 		public bool CanBeAggroedBy(Unit target)
 		{
@@ -281,7 +282,7 @@ namespace WCell.RealmServer.Entities
 		/// Also will unset the current Target and stop fighting.
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
-		public void IdleThenExecute(uint millis, Action action)
+		public void IdleThenExecute(int millis, Action action)
 		{
 			IdleThenExecute(millis, action, ProcTriggerFlags.None);
 		}
@@ -292,7 +293,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		/// <param name="interruptFlags">What can interrupt the action.</param>
 		/// <remarks>Requires Brain</remarks>
-		public void IdleThenExecute(uint millis, Action action, ProcTriggerFlags interruptFlags)
+		public void IdleThenExecute(int millis, Action action, ProcTriggerFlags interruptFlags)
 		{
 			if (CheckBrain())
 			{
@@ -310,7 +311,7 @@ namespace WCell.RealmServer.Entities
 		/// Also will unset the current Target and stop fighting.
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
-		public void Idle(uint millis)
+		public void Idle(int millis)
 		{
 			Idle(millis, ProcTriggerFlags.None);
 		}
@@ -322,7 +323,7 @@ namespace WCell.RealmServer.Entities
 		/// <remarks>Requires Brain</remarks>
 		public void Idle(ProcTriggerFlags interruptFlags)
 		{
-			Idle(uint.MaxValue, interruptFlags);
+			Idle(int.MaxValue, interruptFlags);
 		}
 
 		/// <summary>
@@ -330,7 +331,7 @@ namespace WCell.RealmServer.Entities
 		/// Also will unset the current Target and stop fighting.
 		/// </summary>
 		/// <remarks>Requires Brain</remarks>
-		public void Idle(uint millis, ProcTriggerFlags interruptFlags)
+		public void Idle(int millis, ProcTriggerFlags interruptFlags)
 		{
 			if (CheckBrain())
 			{

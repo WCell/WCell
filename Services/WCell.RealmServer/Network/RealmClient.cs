@@ -205,14 +205,22 @@ namespace WCell.RealmServer.Network
 					// packet is just too big
 					var bytes = new byte[headerSize];
 					Array.Copy(recvBuffer, offset, bytes, 0, headerSize);
-					LogUtil.ErrorException("Client {0} sent corrupted packet (ID: {1}) with size {2} bytes, which exceeds maximum: " +
-						"{3} (packet #{4}, segment #{5}, LargePacket: {6}, Remaining: {7}, Header: {8} ({9}))",
-							  this, opcode, packetLength, BufferSize, i, segment.Number,
-							  isLargePacket,
-							  _remainingLength,
-							  bytes.ToString(" ", b => string.Format("{0:X2}", b)),
-								Encoding.ASCII.GetString(bytes));
 
+					var str = Encoding.UTF8.GetString(bytes);
+					if (str.Equals("GET HT", StringComparison.InvariantCultureIgnoreCase))
+					{
+						log.Warn("HTTP crawler bot connected from {0} and has been disconnected.", this);
+					}
+					else
+					{
+						LogUtil.ErrorException("Client {0} sent corrupted packet (ID: {1}) with size {2} bytes, which exceeds maximum: " +
+						                       "{3} (packet #{4}, segment #{5}, LargePacket: {6}, Remaining: {7}, Header: {8} ({9}))",
+						                       this, opcode, packetLength, BufferSize, i, segment.Number,
+						                       isLargePacket,
+						                       _remainingLength,
+						                       bytes.ToString(" ", b => string.Format("{0:X2}", b)),
+						                       str);
+					}
 					Disconnect();
 
 					return false;

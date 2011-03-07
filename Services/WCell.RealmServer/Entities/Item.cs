@@ -160,32 +160,9 @@ namespace WCell.RealmServer.Entities
 		internal void LoadItem(ItemRecord record, Character owner, ItemTemplate template)
 		{
 			m_record = record;
-			EntityId = record.EntityId;
-
-			m_template = template;
-			EntryId = m_template.Id;
-
-			Type |= ObjectTypes.Item;
-
-			SetInt32(ItemFields.FLAGS, (int)record.Flags);
-			SetInt32(ItemFields.DURABILITY, record.Durability);
-			SetInt32(ItemFields.DURATION, record.Duration);
-			SetInt32(ItemFields.STACK_COUNT, record.Amount);
-			SetInt32(ItemFields.PROPERTY_SEED, record.RandomSuffix);
-			SetInt32(ItemFields.RANDOM_PROPERTIES_ID, record.RandomProperty);
-			SetEntityId(ItemFields.CREATOR, new EntityId((ulong)record.CreatorEntityId));
-			SetEntityId(ItemFields.GIFTCREATOR, new EntityId((ulong)record.GiftCreatorEntityId));
-
-			ItemText = record.ItemText;
-
-			if (m_template.UseSpell != null)
-			{
-				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
-			}
-			MaxDurability = m_template.MaxDurability;
-
 			OwningCharacter = owner;
-			OnLoad();
+
+			LoadItem(record, template);
 		}
 
 		/// <summary>
@@ -219,6 +196,24 @@ namespace WCell.RealmServer.Entities
 				SetSpellCharges(m_template.UseSpell.Index, (uint)record.Charges);
 			}
 			MaxDurability = m_template.MaxDurability;
+
+			// add enchants
+			if (record.EnchantIds != null)
+			{
+				for (var enchSlot = 0; enchSlot < record.EnchantIds.Length; enchSlot++)
+				{
+					var enchant = record.EnchantIds[enchSlot];
+					if (enchSlot == (int)EnchantSlot.Temporary)
+					{
+						ApplyEnchant(enchant, (EnchantSlot)enchSlot, record.EnchantTempTime, 0, false);
+					}
+					else
+					{
+						ApplyEnchant(enchant, (EnchantSlot)enchSlot, 0, 0, false);
+					}
+				}
+				//item.CheckSocketColors();
+			}
 
 			OnLoad();
 		}
@@ -399,6 +394,16 @@ namespace WCell.RealmServer.Entities
 
 			// The container information was updated during the container's add function
 			m_owner = m_container.Owner;
+
+			// send enchant information to owner
+			for (var slot = (EnchantSlot)0; slot < EnchantSlot.End; slot++)
+			{
+				var enchant = GetEnchantment(slot);
+				if (enchant != null)
+				{
+					OnOwnerReceivedNewEnchant(enchant);
+				}
+			}
 		}
 
 		/// <summary>
@@ -513,7 +518,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		private int GetEnchantSlot(EnchantSlot slot, EnchantInfoOffset offset)
+		public IEnumerable<ItemEnchantment> GetAllEnchantments()
+		{
+			for (var slot = (EnchantSlot)0; slot < EnchantSlot.End; slot++)
+			{
+				var enchant = GetEnchantment(slot);
+				if (enchant != null)
+				{
+					yield return enchant;
+				}
+			}
+		}
+
+		private static int GetEnchantSlot(EnchantSlot slot, EnchantInfoOffset offset)
 		{
 			return (int)ItemFields.ENCHANTMENT_1_1 + ((int)slot * 3) + (int)offset;
 		}
@@ -586,7 +603,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (m_enchantments == null)
 			{
-				m_enchantments = new ItemEnchantment[ItemConstants.MaxEnchantsPerItem];
+				m_enchantments = new ItemEnchantment[(int)EnchantSlot.End];
 			}
 		}
 
@@ -625,7 +642,7 @@ namespace WCell.RealmServer.Entities
 			// TODO: Add charges
 			if (m_enchantments == null)
 			{
-				m_enchantments = new ItemEnchantment[ItemConstants.MaxEnchantsPerItem];
+				m_enchantments = new ItemEnchantment[(int)EnchantSlot.End];
 			}
 
 			if (m_enchantments[(int)enchantSlot] != null)
@@ -648,21 +665,34 @@ namespace WCell.RealmServer.Entities
 
 			if (owner != null)
 			{
+				EnchantMgr.ApplyEnchantToItem(this, enchant);
+
 				if (enchant.Entry.GemTemplate != null)
 				{
 					owner.Inventory.ModUniqueCount(enchant.Entry.GemTemplate, 1);
 				}
-				ItemHandler.SendEnchantLog(owner, (ItemId)EntryId, enchantEntry.Id);
-				if (duration != 0)
-				{
-					ItemHandler.SendEnchantTimeUpdate(owner, this, duration);
-				}
+				OnOwnerReceivedNewEnchant(enchant);
 
 				if (applyBoni && IsEquippedItem)
 				{
 					// render on Character and apply boni
 					SetEnchantEquipped(enchant);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Called when owner learns about new enchant:
+		/// When enchant gets added and when receiving an enchanted item
+		/// </summary>
+		private void OnOwnerReceivedNewEnchant(ItemEnchantment enchant)
+		{
+			var owner = OwningCharacter;
+			ItemHandler.SendEnchantLog(owner, (ItemId)EntryId, enchant.Entry.Id);
+
+			if (enchant.Duration != 0)
+			{
+				ItemHandler.SendEnchantTimeUpdate(owner, this, enchant.Duration);
 			}
 		}
 
@@ -690,6 +720,7 @@ namespace WCell.RealmServer.Entities
 			var owner = OwningCharacter;
 			if (owner != null)
 			{
+				EnchantMgr.RemoveEnchantFromItem(this, enchant);
 				if (IsEquipped)
 				{
 					SetEnchantUnequipped(enchant);
@@ -895,10 +926,9 @@ namespace WCell.RealmServer.Entities
 						PlayerFields.VISIBLE_ITEM_1_ENCHANTMENT + (Slot * ItemConstants.PlayerFieldVisibleItemSize), (ushort)enchant.Entry.Id);
 			}
 
-			// TODO: Check for conditions
 			for (var i = 0; i < enchant.Entry.Effects.Length; i++)
 			{
-				EnchantMgr.ApplyEffect(this, enchant.Entry.Effects[i]);
+				EnchantMgr.ApplyEquippedEffect(this, enchant.Entry.Effects[i]);
 			}
 		}
 
@@ -1015,7 +1045,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets equipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnEquip()
 		{
@@ -1050,6 +1080,17 @@ namespace WCell.RealmServer.Entities
 				if (res > 0)
 				{
 					chr.ModBaseResistance((DamageSchool)i, res);
+				}
+			}
+			foreach (var enchant in GetAllEnchantments())
+			{
+				foreach (var effect in enchant.Entry.Effects)
+				{
+					if (effect.Type == ItemEnchantmentType.Resistance)
+					{
+						// add resistances
+						chr.ModBaseResistance((DamageSchool)effect.Misc, effect.MaxAmount);
+					}
 				}
 			}
 
@@ -1118,7 +1159,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Called when this Item gets unequipped.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void OnUnEquip(InventorySlot slot)
 		{
@@ -1138,7 +1179,7 @@ namespace WCell.RealmServer.Entities
 				{
 					if (spell.IsAura)
 					{
-						m_owner.Auras.Cancel(spell);
+						m_owner.Auras.Remove(spell);
 					}
 				}
 			}
@@ -1274,16 +1315,11 @@ namespace WCell.RealmServer.Entities
 		protected internal virtual void DoDestroy()
 		{
 			var record = m_record;
-			if (m_record != null)
+			m_owner.Inventory.OnAmountChanged(this, -Amount);
+			if (record != null)
 			{
-				RealmServer.Instance.AddMessage(() =>
-				{
-					if (!record.New)
-					{
-						record.Delete();
-					}
-				});
-				m_record.OwnerId = 0;
+				record.OwnerId = 0;
+				record.DeleteLater();
 				m_record = null;
 
 				Dispose();
@@ -1317,6 +1353,11 @@ namespace WCell.RealmServer.Entities
 		{
 			return m_owner == chr;
 		}
+
+		public void OnQuestGiverStatusQuery(Character chr)
+		{
+			// do nothing
+		}
 		#endregion
 
 		public override void Dispose(bool disposing)
@@ -1328,7 +1369,8 @@ namespace WCell.RealmServer.Entities
 
 		public override string ToString()
 		{
-			return string.Format("{0}{1} (Templ: {2}, Id: {3})", Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId);
+			return string.Format("{0}{1} in Slot {4} (Templ: {2}, Id: {3})", 
+				Amount != 1 ? Amount + "x " : "", Template.DefaultName, m_template.Id, EntityId, Slot);
 		}
 
 		public bool IsInContext

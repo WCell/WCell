@@ -392,6 +392,9 @@ namespace WCell.RealmServer.Misc
 			set;
 		}
 
+		/// <summary>
+		/// White damage or strike ability (Heroic Strike, Ranged, Throw etc)
+		/// </summary>
 		public bool IsWeaponAttack
 		{
 			get
@@ -399,6 +402,22 @@ namespace WCell.RealmServer.Misc
 				return Weapon != null &&
 					   (SpellEffect == null || SpellEffect.Spell.IsPhysicalAbility);
 			}
+		}
+
+		/// <summary>
+		/// Any attack that involves a spell
+		/// </summary>
+		public bool IsSpellCast
+		{
+			get { return SpellEffect != null; }
+		}
+
+		/// <summary>
+		/// Pure spell attack, no weapon involved
+		/// </summary>
+		public bool IsMagic
+		{
+			get { return !IsWeaponAttack && SpellEffect != null; }
 		}
 
 		public bool IsRangedAttack
@@ -973,7 +992,7 @@ namespace WCell.RealmServer.Misc
 			{
 
 				var atk = Attacker as Character;
-				hitchance += IsRangedAttack ? (int)atk.RangedHitChance * 100 : (int)atk.HitChance * 100;
+				hitchance += (IsRangedAttack ? (int)atk.RangedHitChance : (int)atk.HitChance) * 100;
 				skillBonus -= (int)atk.Skills.GetValue(Weapon.Skill);
 			}
 			else
@@ -1076,8 +1095,11 @@ namespace WCell.RealmServer.Misc
 
 		/// <summary>
 		/// After we already know that we did not crit, we want to check
-		/// again against a bonus crit chance. We use basic laws of probability:
-		/// P(CritWithBonus | NoCrit) = P(CritWithBonus) / P(NoCrit) =
+		/// again against a bonus crit chance.
+		/// 
+		/// We use basic laws of probability:
+		/// P(CritWithBonus | NoCrit) = 
+		/// P(CritWithBonus) / P(NoCrit) =
 		/// critBonus / (1 - origCritChance)
 		/// </summary>
 		public void AddBonusCritChance(int critBonusPct)
@@ -1105,7 +1127,7 @@ namespace WCell.RealmServer.Misc
 				return 0;
 			}
 
-			var chance = (int)Attacker.CalcCritChance(Victim, UsedSchool, Spell, Weapon) * 100;
+			var chance = (int)Attacker.GetBaseCritChance(UsedSchool, Spell, Weapon) * 100;
 
 			if (Weapon != null)
 			{
@@ -1135,7 +1157,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			// attackerCritChance is not shown in the tooltip but affects the crit chance against the Victim
-			int attackerCritChance = 1;
+			var attackerCritChance = 100;
 			if (UsedSchool == DamageSchool.Physical)
 			{
 				attackerCritChance += Victim.AttackerPhysicalCritChancePercentMod;
@@ -1146,7 +1168,7 @@ namespace WCell.RealmServer.Misc
 			}
 
 			chance = (chance * attackerCritChance + 50) / 100;	// rounded
-			chance -= (int)((Victim.GetResiliencePct() + 50f) * 100); //resilience
+			chance -= (int)(Victim.GetResiliencePct() * 100); //resilience
 
 			return MathUtil.ClampMinMax(chance, 0, 10000);
 		}
@@ -1258,7 +1280,7 @@ namespace WCell.RealmServer.Misc
 				if (!IsDot)
 				{
 					// does not add to dot
-					Damage = Attacker.GetTotalDamageDoneMod(UsedSchool, Damage, Spell);
+					Damage = Attacker.GetFinalDamage(UsedSchool, Damage, Spell);
 				}
 				else if (SpellEffect != null)
 				{

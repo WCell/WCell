@@ -51,7 +51,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 					if (caster != null && (caster = caster.Master as Character) != null)
 					{
 						var amount = Math.Max(1, EffectValue);
-						((Character)caster).Inventory.TryAdd(item, ref amount, true);
+						((Character)caster).Inventory.TryAdd(item, ref amount);
 					}
 				}
 			}

@@ -15,5 +15,8 @@
       <add
         key="connection.isolation"
         value="ReadCommitted" />
+      <add
+        key="proxyfactory.factory_class"
+        value="NHibernate.ByteCode.Castle.ProxyFactoryFactory, NHibernate.ByteCode.Castle" />
     </config>
 </activerecord> 

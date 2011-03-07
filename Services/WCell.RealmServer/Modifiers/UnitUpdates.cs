@@ -53,7 +53,7 @@ namespace WCell.RealmServer.Modifiers
 
 		static UnitUpdates()
 		{
-			FlatIntModHandlers[(int) StatModifierInt.Power] = unit => unit.UpdateMaxPower();
+			FlatIntModHandlers[(int)StatModifierInt.Power] = unit => unit.UpdateMaxPower();
 			FlatIntModHandlers[(int)StatModifierInt.PowerPct] = unit => unit.UpdateMaxPower();
 
 			FlatIntModHandlers[(int)StatModifierInt.HealthRegen] = UpdateHealthRegen;
@@ -96,7 +96,7 @@ namespace WCell.RealmServer.Modifiers
 			int regen;
 			if (unit is Character)
 			{
-				regen = ((Character)unit).Archetype.Class.CalculateHealthRegen(unit.Level, unit.Spirit);
+				regen = ((Character)unit).Archetype.Class.CalculateHealthRegen(unit);
 			}
 			else
 			{
@@ -164,7 +164,7 @@ namespace WCell.RealmServer.Modifiers
 				{
 					for (var stat = StatType.Strength; stat < StatType.End; stat++)
 					{
-						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+						ap += (chr.GetMeleeAPModByStat(stat) * chr.GetTotalStatValue(stat) + 50) / 100;
 					}
 				}
 				chr.MeleeAttackPower = ap;
@@ -211,7 +211,7 @@ namespace WCell.RealmServer.Modifiers
 					// add bonuses through talents
 					for (var stat = StatType.Strength; stat < StatType.End; stat++)
 					{
-						ap += (chr.GetRangedAPModByStat(stat) * chr.GetStatValue(stat) + 50) / 100;
+						ap += (chr.GetRangedAPModByStat(stat) * chr.GetTotalStatValue(stat) + 50) / 100;
 					}
 				}
 				chr.RangedAttackPower = ap;
@@ -259,6 +259,7 @@ namespace WCell.RealmServer.Modifiers
 
 			blockValue += chr.Strength / 2 - 10;
 			blockValue = GetMultiMod(chr.FloatMods[(int)StatModifierFloat.BlockValue], blockValue);
+
 			chr.BlockValue = (uint)blockValue;
 			chr.BlockChance = blockChance;
 		}
@@ -340,14 +341,22 @@ namespace WCell.RealmServer.Modifiers
 			float minDam = 0;
 			float maxDam = 0;
 			var weapon = unit.MainWeapon;
-			foreach (var dmg in weapon.Damages)
+			for (DamageSchool school = 0; school < (DamageSchool)weapon.Damages.Length; school++)
 			{
-				minDam += dmg.Minimum;
-				maxDam += dmg.Maximum;
+				var dmg = weapon.Damages[(int)school];
+
+				minDam += GetModifiedDamage(unit, dmg.Minimum);
+				maxDam += GetModifiedDamage(unit, dmg.Maximum);
 			}
 
-			unit.MinDamage = minDam + apBonus;
-			unit.MaxDamage = maxDam + apBonus;
+			unit.MinDamage = minDam + apBonus + weapon.BonusDamage;
+			unit.MaxDamage = maxDam + apBonus + weapon.BonusDamage;
+		}
+
+		static float GetModifiedDamage(Unit unit, float dmg)
+		{
+			dmg += unit.GetDamageDoneMod(DamageSchool.Physical);
+			return unit.GetDamageDoneFactor(DamageSchool.Physical) * dmg;
 		}
 
 		/// <summary>
@@ -359,16 +368,26 @@ namespace WCell.RealmServer.Modifiers
 			if (unit.OffHandWeapon != null)
 			{
 				var apBonus = (unit.TotalMeleeAP * unit.OffHandAttackTime + 7000) / 14000;	// rounded
-				var min = (unit.OffHandWeapon.Damages.TotalMin() + apBonus) / 2;
-				var max = (unit.OffHandWeapon.Damages.TotalMax() + apBonus) / 2;
+				var weapon = unit.OffHandWeapon;
+
+				var min = 0f;
+				var max = 0f;
+				for (DamageSchool school = 0; school < (DamageSchool)weapon.Damages.Length; school++)
+				{
+					var dmg = weapon.Damages[(int)school];
+
+					min += GetModifiedDamage(unit, dmg.Minimum);
+					max += GetModifiedDamage(unit, dmg.Maximum);
+				}
+
 				if (unit is Character)
 				{
 					var bonus = ((Character)unit).OffhandDmgPctMod;
-					min += ((min * bonus) + 50) / 100; // rounded
-					max += ((max * bonus) + 50) / 100; // rounded
+					min += min * bonus;
+					max += max * bonus;
 				}
-				unit.MinOffHandDamage = min;
-				unit.MaxOffHandDamage = max;
+				unit.MinOffHandDamage = (min + apBonus + weapon.BonusDamage) / 2;
+				unit.MaxOffHandDamage = (max + apBonus + weapon.BonusDamage) / 2;
 			}
 			else
 			{
@@ -393,8 +412,19 @@ namespace WCell.RealmServer.Modifiers
 				{
 					ammo = null;
 				}
-				unit.MinRangedDamage = weapon.Damages.TotalMin() + apBonus + (ammo != null ? ammo.Damages.TotalMin() : 0);
-				unit.MaxRangedDamage = weapon.Damages.TotalMax() + apBonus + (ammo != null ? ammo.Damages.TotalMax() : 0);
+
+				var min = 0f;
+				var max = 0f;
+				for (DamageSchool school = 0; school < (DamageSchool)weapon.Damages.Length; school++)
+				{
+					var dmg = weapon.Damages[(int)school];
+
+					min += GetModifiedDamage(unit, dmg.Minimum + (ammo != null ? ammo.Damages[(int)school].Minimum : 0));
+					max += GetModifiedDamage(unit, dmg.Maximum + (ammo != null ? ammo.Damages[(int)school].Maximum : 0));
+				}
+
+				unit.MinRangedDamage = min + weapon.BonusDamage + apBonus;
+				unit.MaxRangedDamage = max + weapon.BonusDamage + apBonus;
 			}
 			else
 			{

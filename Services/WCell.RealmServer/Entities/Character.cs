@@ -3,7 +3,7 @@
  *   file		: Character.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿½, 20 feb 2010) $
+ *   last changed	: $LastChangedDate: 2010-02-20 06:16:32 +0100 (lï¿? 20 feb 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1257 $
  *
@@ -25,7 +25,7 @@ using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Commands;
 using WCell.RealmServer.Factions;
@@ -43,6 +43,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.Quests;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Talents;
@@ -62,10 +63,9 @@ namespace WCell.RealmServer.Entities
 	///</summary>
 	public partial class Character : Unit, IUser, IContainer, ITicketHandler, IInstanceHolderSet, ICharacterSet
 	{
-		private static new Logger log = LogManager.GetCurrentClassLogger();
-
 		public static new readonly List<Character> EmptyArray = new List<Character>();
-
+		
+		#region Globals
 		/// <summary>
 		/// The delay until a normal player may logout in millis.
 		/// </summary>
@@ -90,6 +90,7 @@ namespace WCell.RealmServer.Entities
 		/// The factor that is applied to the maximum distance before detecting someone as a SpeedHacker
 		/// </summary>
 		public static float SpeedHackToleranceFactor = 1.5f;
+		#endregion
 
 		/// <summary>
 		/// Clears all trade-related fields for the character.
@@ -116,7 +117,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_region != null && m_region.IsInstance;
+				return m_Map != null && m_Map.IsInstance;
 			}
 		}
 
@@ -157,7 +158,7 @@ namespace WCell.RealmServer.Entities
 				var group = Group;
 				if (group != null)
 				{
-					return group.GetActiveInstance(m_region.RegionTemplate) != null;
+					return group.GetActiveInstance(m_Map.MapTemplate) != null;
 				}
 				return false;
 			}
@@ -258,7 +259,7 @@ namespace WCell.RealmServer.Entities
 				Health = 1;
 			}
 
-			if (!m_region.RegionTemplate.NotifyPlayerBeforeDeath(this))
+			if (!m_Map.MapTemplate.NotifyPlayerBeforeDeath(this))
 			{
 				return false;
 			}
@@ -295,9 +296,9 @@ namespace WCell.RealmServer.Entities
 
 			CharacterHandler.SendCorpseReclaimDelay(m_client, Corpse.MinReclaimDelay);
 
-			if (m_region != null)
+			if (m_Map != null)
 			{
-				m_region.RegionTemplate.NotifyPlayerResurrected(this);
+				m_Map.MapTemplate.NotifyPlayerResurrected(this);
 			}
 		}
 
@@ -336,7 +337,7 @@ namespace WCell.RealmServer.Entities
 			CorpseReleaseFlags |= CorpseReleaseFlags.ShowCorpseAutoReleaseTimer;
 			IncMechanicCount(SpellMechanic.Rooted);
 
-			var healer = m_region.GetNearestSpiritHealer(ref m_position);
+			var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 			if (healer != null)
 			{
 				CharacterHandler.SendHealerPosition(m_client, healer);
@@ -348,7 +349,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		void BecomeGhost()
 		{
-			SpellCast.Start(SpellHandler.Get(SpellId.Ghost), true, this);
+			SpellCast.Start(SpellHandler.Get(SpellId.Ghost_2), true, this);
 		}
 
 		/// <summary>
@@ -418,7 +419,7 @@ namespace WCell.RealmServer.Entities
 				m_inventory.ApplyDurabilityLoss(PlayerInventory.DeathDurabilityLossPct);
 			}
 
-			m_region.RegionTemplate.NotifyPlayerDied(action);
+			m_Map.MapTemplate.NotifyPlayerDied(action);
 		}
 
 		/// <summary>
@@ -479,13 +480,13 @@ namespace WCell.RealmServer.Entities
 			m_record.CorpseY = m_corpse.Position.Y;
 			m_record.CorpseZ = m_corpse.Position.Z;
 			m_record.CorpseO = m_corpse.Orientation;
-			m_record.CorpseRegion = m_region.Id;		// we are spawning the corpse in the same region
+			m_record.CorpseMap = m_Map.Id;		// we are spawning the corpse in the same map
 			m_corpseReleaseTimer.Stop();
 
 			// we need health to walk again
 			SetUInt32(UnitFields.HEALTH, 1);
 
-			m_region.OnSpawnedCorpse(this);
+			m_Map.OnSpawnedCorpse(this);
 		}
 
 		/// <summary>
@@ -496,7 +497,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public Corpse SpawnCorpse(bool bones, bool lootable)
 		{
-			return SpawnCorpse(bones, lootable, m_region, m_position, m_orientation);
+			return SpawnCorpse(bones, lootable, m_Map, m_position, m_orientation);
 		}
 
 		/// <summary>
@@ -505,7 +506,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="bones"></param>
 		/// <param name="lootable"></param>
 		/// <returns></returns>
-		public Corpse SpawnCorpse(bool bones, bool lootable, Region region, Vector3 pos, float o)
+		public Corpse SpawnCorpse(bool bones, bool lootable, Map map, Vector3 pos, float o)
 		{
 			var corpse = new Corpse(this, pos, o, DisplayId, Facial, Skin,
 				HairStyle, HairColor, FacialHair, GuildId, Gender, Race,
@@ -521,7 +522,7 @@ namespace WCell.RealmServer.Entities
 			}
 
 			corpse.Position = pos;
-			region.AddObjectLater(corpse);
+			map.AddObjectLater(corpse);
 			return corpse;
 		}
 
@@ -540,11 +541,11 @@ namespace WCell.RealmServer.Entities
 		/// 
 		/// TODO: Graveyards
 		/// </summary>
-		public void TeleportToNearestGraveyard(bool allowSameRegion)
+		public void TeleportToNearestGraveyard(bool allowSameMap)
 		{
-			if (allowSameRegion)
+			if (allowSameMap)
 			{
-				var healer = m_region.GetNearestSpiritHealer(ref m_position);
+				var healer = m_Map.GetNearestSpiritHealer(ref m_position);
 				if (healer != null)
 				{
 					TeleportTo(healer);
@@ -552,9 +553,9 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
-			if (m_region.RegionTemplate.RepopRegion != null)
+			if (m_Map.MapTemplate.RepopMap != null)
 			{
-				TeleportTo(m_region.RegionTemplate.RepopRegion, m_region.RegionTemplate.RepopPosition);
+				TeleportTo(m_Map.MapTemplate.RepopMap, m_Map.MapTemplate.RepopPosition);
 			}
 			else
 			{
@@ -948,11 +949,6 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_questLog; }
 		}
-
-		public bool CanGiveQuestTo(Character chr)
-		{
-			return chr.IsAlliedWith(this); // since 3.0 you can share quests within any range
-		}
 		#endregion
 
 		#region Combat
@@ -995,7 +991,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1011,15 +1007,14 @@ namespace WCell.RealmServer.Entities
 
 		public override bool MayAttack(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
 
 			if (opponent is Character)
 			{
-				var chr = (Character)opponent;
-				return CanPvP(chr);
+				return CanPvP((Character)opponent);
 			}
 
 			return m_reputations.CanAttack(opponent.Faction);
@@ -1027,11 +1022,8 @@ namespace WCell.RealmServer.Entities
 
 		public bool CanPvP(Character chr)
 		{
-			var state = PvPState;
-			if (chr.PvPState < state)
-			{
-				state = chr.PvPState;
-			}
+			var state = chr.PvPState < PvPState ? chr.PvPState : PvPState;
+
 			if (state == PvPState.FFAPVP)
 			{
 				return true;
@@ -1050,7 +1042,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public override bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if (ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1081,7 +1073,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInSameDivision(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if (ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
@@ -1134,7 +1126,6 @@ namespace WCell.RealmServer.Entities
 			{
 				if (NPCAttackerCount == 0 &&
 					(m_activePet == null || m_activePet.NPCAttackerCount == 0) &&
-					(Environment.TickCount - m_lastCombatTime) >= CombatDeactivationDelay &&
 					!m_auras.HasHarmfulAura())
 				{
 					if (m_minions != null)
@@ -1261,7 +1252,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		public void StartSummon(ISummoner summoner)
 		{
@@ -1269,7 +1260,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// May be executed from outside of this Character's region's context
+		/// May be executed from outside of this Character's map's context
 		/// </summary>
 		/// <param name="summoner"></param>
 		/// <param name="timeoutSeconds"></param>
@@ -1280,11 +1271,11 @@ namespace WCell.RealmServer.Entities
 				ExpiryTime = DateTime.Now.AddSeconds(timeoutSeconds),
 				TargetPos = summoner.Position,
 				TargetZone = summoner.Zone,
-				TargetRegion = summoner.Region
+				TargetMap = summoner.Map
 			};
 
-			// make sure the Region was set or else the summoner was disposed before the Request completed
-			if (m_summonRequest.TargetRegion != null)
+			// make sure the Map was set or else the summoner was disposed before the Request completed
+			if (m_summonRequest.TargetMap != null)
 			{
 				var client = m_client;
 				if (client != null)
@@ -1296,7 +1287,7 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				//log.Warn("Tried to teleport {0} to a Summoner without a Region: {1}", this, summoner);
+				//log.Warn("Tried to teleport {0} to a Summoner without a Map: {1}", this, summoner);
 			}
 		}
 
@@ -1323,7 +1314,7 @@ namespace WCell.RealmServer.Entities
 
 		public override int GetBasePowerRegen()
 		{
-			return PowerFormulas.GetPowerRegen(this);
+			return RegenerationFormulas.GetPowerRegen(this);
 		}
 
 		public void ActivateAllTaxiNodes()
@@ -1344,7 +1335,7 @@ namespace WCell.RealmServer.Entities
 			base.SetZone(newZone);
 			if (newZone != null)
 			{
-				m_region.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
+				m_Map.CallDelayed(CharacterHandler.ZoneUpdateDelayMillis, () =>
 				{
 					if (IsInWorld && Zone == newZone)
 					{
@@ -1385,7 +1376,7 @@ namespace WCell.RealmServer.Entities
 		#region Talent Specs
 		public SpecProfile CurrentSpecProfile
 		{
-			get{return SpecProfiles[m_talents.CurrentSpecIndex];}
+			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
 		}
 
 		/// <summary>
@@ -1446,15 +1437,15 @@ namespace WCell.RealmServer.Entities
 			callback(Instances);
 		}
 
-		public BaseInstance GetActiveInstance(RegionTemplate regionTemplate)
+		public BaseInstance GetActiveInstance(MapTemplate mapTemplate)
 		{
-			var region = m_region;
-			if (region != null && region.Id == region.Id)
+			var map = m_Map;
+			if (map != null && map.Id == map.Id)
 			{
-				return region as BaseInstance;
+				return map as BaseInstance;
 			}
 			var instances = m_InstanceCollection;
-			return instances != null ? instances.GetActiveInstance(regionTemplate) : null;
+			return instances != null ? instances.GetActiveInstance(mapTemplate) : null;
 		}
 		#endregion
 
@@ -1565,30 +1556,28 @@ namespace WCell.RealmServer.Entities
 
 		#region PvP Flag
 
-		public DateTime PvPEndTime = DateTime.Now;
+	    /// <summary>
+	    /// Auto removes PvP flag after expiring
+	    /// </summary>
+	    protected TimerEntry PvPEndTime;
 
 		public void TogglePvPFlag()
 		{
-			SetPvPFlag(!IsPvPFlagSet);
+			SetPvPFlag(!PlayerFlags.HasFlag(PlayerFlags.PVP));
 		}
 
 		public void SetPvPFlag(bool state)
 		{
-			IsPvPFlagSet = state;
-			IsPvPTimerActive = !state;
-
-			// If the PvP Flag is up and the character is not pvp-ing
-			// or the pvp timer is set, override the pvp state to on
+			
 			if (state)
 			{
-				if (PvPState.HasFlag(PvPState.PVP) || PvPEndTime > DateTime.Now)
-				{
-					UpdatePvPState(true, true);
-				}
+                // if the pvp timer is set, override the pvp state to on
+                UpdatePvPState(true, (PvPEndTime != null && PvPEndTime.IsRunning));
+                PlayerFlags |= PlayerFlags.PVP;
 				return;
 			}
 
-			// The flag is down and the character is pvp-ing in a non-hostile area
+			// The flag is down and the character has been pvp-ing in a non-hostile area
 			// Set the timer to turn things off
 			if (Zone != null)
 			{
@@ -1599,7 +1588,7 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
-		public void UpdatePvPState(bool state, bool overridden)
+		public void UpdatePvPState(bool state, bool overridden = false)
 		{
 			if (!state || overridden)
 			{
@@ -1610,9 +1599,9 @@ namespace WCell.RealmServer.Entities
 
 			// Flag is up. Check for running reset timer.
 			// If running, reset it.
-			if (PvPEndTime > DateTime.Now)
+			if (PvPEndTime != null && PvPEndTime.IsRunning)
 			{
-				SetPvPResetTimer();
+				SetPvPResetTimer(true);
 				return;
 			}
 
@@ -1620,15 +1609,31 @@ namespace WCell.RealmServer.Entities
 			SetPvPState(true);
 		}
 
-		private void SetPvPResetTimer()
+		private void SetPvPResetTimer(bool overridden = false)
 		{
-			PvPEndTime = DateTime.Now.AddSeconds(300);
+            if (PvPEndTime == null)
+                PvPEndTime = new TimerEntry(dt => OnPvPTimerEnded());
+            
+            if (!PvPEndTime.IsRunning || overridden)
+                PvPEndTime.Start(300000);
+
+            IsPvPTimerActive = true;
 		}
 
 		private void ClearPvPResetTimer()
 		{
-			PvPEndTime = DateTime.Now;
+            if(PvPEndTime != null)
+                PvPEndTime.Stop();
+
+            IsPvPTimerActive = false;
 		}
+
+        private void OnPvPTimerEnded()
+        {
+            PlayerFlags &= ~PlayerFlags.PVP;
+            IsPvPTimerActive = false;
+            SetPvPState(false);
+        }
 
 		private void SetPvPState(bool state)
 		{
@@ -1638,8 +1643,8 @@ namespace WCell.RealmServer.Entities
 			{
 				if (state)
 				{
-					PvPState |= PvPState.PVP;
-					ActivePet.PvPState |= PvPState.PVP;
+					PvPState = PvPState.PVP;
+					ActivePet.PvPState = PvPState.PVP;
 				}
 				else
 				{
@@ -1651,7 +1656,7 @@ namespace WCell.RealmServer.Entities
 
 			if (state)
 			{
-				PvPState |= PvPState.PVP;
+				PvPState = PvPState.PVP;
 				return;
 			}
 
@@ -1735,7 +1740,7 @@ namespace WCell.RealmServer.Entities
 			get { return null; }
 		}
 
-		public override SpawnPoint SpawnPoint
+		public override NPCSpawnPoint SpawnPoint
 		{
 			get { return null; }
 		}
@@ -1774,7 +1779,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region ICharacterSet
-		public int Count
+		public int CharacterCount
 		{
 			get { return 1; }
 		}
@@ -1784,7 +1789,7 @@ namespace WCell.RealmServer.Entities
 			callback(this);
 		}
 
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			return new[] { this };
 		}

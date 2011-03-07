@@ -15,13 +15,19 @@ namespace WCell.RealmServer.Global
 	public class PathNode : IWorldLocation
 	{
 		public uint Id;
-		public MapId MapId;
+		public MapId mapId;
 
 		public Vector3 Position
 		{
 			get;
 			set;
 		}
+
+		public uint Phase
+		{
+			get { return WorldObject.AllPhases; }
+		}
+
 		public string Name;
 
 		public NPCId HordeMountId;
@@ -32,14 +38,14 @@ namespace WCell.RealmServer.Global
 		/// </summary>
 		public readonly List<TaxiPath> Paths = new List<TaxiPath>();
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return Region != null ? Region.Id : MapId.End; }
+			get { return mapId; }
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(MapId); }
+			get { return World.GetNonInstancedMap(mapId); }
 		}
 
 		public void AddPath(TaxiPath path)
@@ -70,13 +76,13 @@ namespace WCell.RealmServer.Global
 			var node = new PathNode();
 
 			int currentIndex = 0;
-            id = (int)(node.Id = GetUInt32(rawData, currentIndex++));// col 0
-            node.MapId = (MapId)GetUInt32(rawData, currentIndex++);// col 1
-            node.Position = rawData.GetLocation((uint)currentIndex);// col 2, 3, 4
+			id = (int)(node.Id = GetUInt32(rawData, currentIndex++));// col 0
+			node.mapId = (MapId)GetUInt32(rawData, currentIndex++);// col 1
+			node.Position = rawData.GetLocation((uint)currentIndex);// col 2, 3, 4
 			currentIndex += 3;// 3 floats for location
 			node.Name = GetString(rawData, ref currentIndex); // col 5 - 21
-            node.HordeMountId = (NPCId)GetUInt32(rawData, currentIndex++);// col 22
-            node.AllianceMountId = (NPCId)GetUInt32(rawData, currentIndex);// col 23
+			node.HordeMountId = (NPCId)GetUInt32(rawData, currentIndex++);// col 22
+			node.AllianceMountId = (NPCId)GetUInt32(rawData, currentIndex);// col 23
 
 			return node;
 		}

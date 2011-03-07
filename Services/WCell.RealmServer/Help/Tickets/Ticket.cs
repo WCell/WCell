@@ -19,8 +19,7 @@ namespace WCell.RealmServer.Help.Tickets
 		private Character m_owner;
 		private string m_ownerName;
 		private TicketType m_Type;
-		private Region m_region;
-		private Vector3 m_position;
+		private Map m_Map;
 		private string m_Message;
 		private DateTime m_Timestamp;
 
@@ -34,19 +33,22 @@ namespace WCell.RealmServer.Help.Tickets
 			m_ownerName = chr.Name;
 			m_charId = chr.EntityId.Low;
 			m_Message = message;
-			m_region = chr.Region;
-			m_position = chr.Position;
+
+			m_Map = chr.Map;
+			Position = chr.Position;
+			Phase = chr.Phase;
+
 			m_Timestamp = DateTime.Now;
 			m_Type = type;
 		}
 
-		//public Ticket(Character chr, TicketType type, Region region, float positionX, float positionY, float positionZ, string message)
+		//public Ticket(Character chr, TicketType type, Map map, float positionX, float positionY, float positionZ, string message)
 		//{
 		//    m_owner = chr;
 		//    m_ownerName = chr.Name;
 		//    m_charId = chr.EntityId.Low;
 		//    m_Message = message;
-		//    m_region = region;
+		//    m_map = map;
 		//    m_position.X = positionX;
 		//    m_position.Y = positionY;
 		//    m_position.Z = positionZ;
@@ -54,12 +56,12 @@ namespace WCell.RealmServer.Help.Tickets
 		//    m_Timestamp = DateTime.Now;
 		//}
 
-		//public Ticket(uint lowCharId, string ownerName, TicketType type, Region region, float positionX, float positionY, float positionZ, string message, DateTime timestamp)
+		//public Ticket(uint lowCharId, string ownerName, TicketType type, Map map, float positionX, float positionY, float positionZ, string message, DateTime timestamp)
 		//{
 		//    m_charId = lowCharId;
 		//    m_ownerName = ownerName;
 		//    m_Message = message;
-		//    m_region = region;
+		//    m_map = map;
 		//    m_position.X = positionX;
 		//    m_position.Y = positionY;
 		//    m_position.Z = positionZ;
@@ -108,18 +110,18 @@ namespace WCell.RealmServer.Help.Tickets
 			set { m_Type = value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return m_region.Id; }
+			get { return m_Map.Id; }
 		}
 
 		/// <summary>
-		/// The Region where this Ticket was submitted or the Owner last logged out.
+		/// The Map where this Ticket was submitted or the Owner last logged out.
 		/// </summary>
-		public Region Region
+		public Map Map
 		{
-			get { return m_region; }
-			set { m_region = value; }
+			get { return m_Map; }
+			set { m_Map = value; }
 		}
 
 		/// <summary>
@@ -127,26 +129,14 @@ namespace WCell.RealmServer.Help.Tickets
 		/// </summary>
 		public Vector3 Position
 		{
-			get { return m_position; }
-			set { m_position = value; }
+			get;
+			set;
 		}
 
-		public float PositionX
+		public uint Phase
 		{
-			get { return m_position.X; }
-			set { m_position.X = value; }
-		}
-
-		public float PositionY
-		{
-			get { return m_position.Y; }
-			set { m_position.Y = value; }
-		}
-
-		public float PositionZ
-		{
-			get { return m_position.Z; }
-			set { m_position.Z = value; }
+			get;
+			set;
 		}
 
 		public string Message
@@ -273,7 +263,7 @@ namespace WCell.RealmServer.Help.Tickets
 		public void Display(ITriggerer triggerer, string info)
 		{
 			triggerer.Reply("-------------");
-			triggerer.Reply("| " + info + Type + " in " + m_region.Name + " |");
+			triggerer.Reply("| " + info + Type + " in " + m_Map.Name + " |");
 			triggerer.Reply("-------------------------------------------------------------------");
 			triggerer.Reply("| by " + m_ownerName + (m_owner == null ? " (Offline)" : "") + ", " + Age + " ago.");
 			triggerer.Reply("-------------------------------------------------------------------");
@@ -284,7 +274,7 @@ namespace WCell.RealmServer.Help.Tickets
 		public void DisplayFormat(ITriggerer triggerer, string info)
 		{
 			triggerer.ReplyFormat("-------------");
-			triggerer.ReplyFormat("| " + info + Type + " in " + m_region.Name + " |");
+			triggerer.ReplyFormat("| " + info + Type + " in " + m_Map.Name + " |");
 			triggerer.ReplyFormat("-------------------------------------------------------------------");
 			triggerer.ReplyFormat("| by " + m_ownerName + (m_owner == null ? ChatUtility.Colorize(" (Offline)", Color.Red, true) : "") + ", " + Age + " ago.");
 			triggerer.ReplyFormat("-------------------------------------------------------------------");
@@ -314,12 +304,15 @@ namespace WCell.RealmServer.Help.Tickets
 			TicketMgr.Instance.lck.EnterWriteLock();
 			try
 			{
-				m_position = m_owner.Position;
-				m_region = m_owner.Region;
+				Position = m_owner.Position;
+				m_Map = m_owner.Map;
+				Phase = m_owner.Phase;
+
 				m_owner = null;
-				if (m_handler != null)
+				var handler = m_handler;
+				if (handler != null)
 				{
-					m_handler.SendMessage("Owner of the Ticket you are handling went -{0}-.", ChatUtility.Colorize("offline", Color.Red));
+					handler.SendMessage("Owner of the Ticket you are handling went -{0}-.", ChatUtility.Colorize("offline", Color.Red));
 				}
 			}
 			finally

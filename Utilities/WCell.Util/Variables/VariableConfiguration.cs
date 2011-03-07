@@ -386,7 +386,7 @@ namespace WCell.Util.Variables
 				{
 					throw new Exception(string.Format(
 						"public static member \"{0}\" has VariableAttribute but invalid type.",
-						member.GetMemberName()));
+						member.GetFullMemberName()));
 				}
 			}
 		}

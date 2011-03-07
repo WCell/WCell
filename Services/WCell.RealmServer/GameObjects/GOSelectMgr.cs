@@ -49,16 +49,18 @@ namespace WCell.RealmServer.GameObjects
 		{
 			var gos = chr.GetObjectsInRadius(MaxSearchRadius, ObjectTypes.GameObject, true, 0);
 
-			var sqDist = float.MaxValue;
+			var distSq = float.MaxValue;
 			GameObject sel = null;
 			foreach (GameObject go in gos)
 			{
 				// TODO: Go by angle instead of distance
 				//var angle = chr.GetAngleTowards(go);
+				var thisDistSq = chr.GetDistanceSq(go);
 				if (sel == null ||
-					(go.IsInFrontOf(chr) && chr.GetDistanceSq(go) < sqDist))
+					(go.IsInFrontOf(chr) && thisDistSq < distSq))
 				{
 					sel = go;
+					distSq = thisDistSq;
 				}
 			}
 
@@ -86,8 +88,17 @@ namespace WCell.RealmServer.GameObjects
 					var selection = new GOSelection(value);
 					if (MarkerId != SpellId.None)
 					{
-						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Region, value.Position);
+						var marker = new DynamicObject(chr, MarkerId, MarkerRadius, value.Map, value.Position);
 						selection.Marker = marker;
+
+						// also delete marker
+						marker.CallPeriodically(2000, obj =>
+													{
+														if (!chr.IsInWorld || chr.Map != obj.Map || !selection.GO.IsInWorld)
+														{
+															marker.Delete();
+														}
+													});
 					}
 					info.m_goSelection = selection;
 				}
@@ -110,7 +121,6 @@ namespace WCell.RealmServer.GameObjects
 
 	public class GOSelection : IDisposable
 	{
-
 		private GameObject m_GO;
 
 		private DynamicObject m_Marker;
@@ -151,9 +161,11 @@ namespace WCell.RealmServer.GameObjects
 		public void Dispose()
 		{
 			GO = null;
-			if (Marker != null)
+
+			var marker = Marker;
+			if (marker != null)
 			{
-				Marker.Delete();
+				marker.Delete();
 				Marker = null;
 			}
 		}

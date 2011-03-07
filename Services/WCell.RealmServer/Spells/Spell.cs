@@ -19,24 +19,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Entities;
-using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
-using WCell.RealmServer.Skills;
 using WCell.RealmServer.Spells.Auras;
-using WCell.RealmServer.Talents;
+using WCell.RealmServer.Spells.Targeting;
 using WCell.Util;
 using WCell.Util.Data;
 using System.Text.RegularExpressions;
 using WCell.Util.Graphics;
-using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Spells
 {
@@ -63,6 +59,11 @@ namespace WCell.RealmServer.Spells
 		private static readonly Regex numberRegex = new Regex(@"\d+");
 
 		public static readonly Spell[] EmptyArray = new Spell[0];
+
+		public Spell()
+		{
+			AISettings = new AISpellSettings(this);
+		}
 
 		#region Harmful SpellEffects
 		//public static readonly HashSet<SpellEffectType> HarmfulSpellEffects = new Func<HashSet<SpellEffectType>>(() => {
@@ -182,6 +183,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		internal void Initialize()
 		{
+			if (Id == 11986)
+				ToString();
+
 			init1 = true;
 			var learnSpellEffect = GetEffect(SpellEffectType.LearnSpell);
 			if (learnSpellEffect == null)
@@ -247,17 +251,18 @@ namespace WCell.RealmServer.Spells
 			{
 				return;
 			}
+
 			init2 = true;
 
 			IsPassive = (Attributes.HasFlag(SpellAttributes.Passive)) ||
-				// tracking spells are also passive		     
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-						HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+			            // tracking spells are also passive		     
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
+			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
 
 			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
-				// don't use Enum.HasFlag!
-						  ChannelInterruptFlags > 0;
+			              // don't use Enum.HasFlag!
+			              ChannelInterruptFlags > 0;
 
 			foreach (var effect in Effects)
 			{
@@ -295,13 +300,13 @@ namespace WCell.RealmServer.Spells
 			// don't use Enum.HasFlag!
 
 			IsRanged = (Attributes.HasAnyFlag(SpellAttributes.Ranged) ||
-						AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
+			            AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon));
 
 			IsRangedAbility = IsRanged && !IsTriggeredSpell;
 
 			IsStrikeSpell = HasEffectWith(effect => effect.IsStrikeEffect);
 
-			IsPhysicalAbility = IsRangedAbility || IsOnNextStrike || IsStrikeSpell;
+			IsPhysicalAbility = (IsRangedAbility || IsOnNextStrike || IsStrikeSpell) && !HasEffect(SpellEffectType.SchoolDamage);
 
 			DamageIncreasedByAP = DamageIncreasedByAP || (PowerType == PowerType.Rage && SchoolMask == DamageSchoolMask.Physical);
 
@@ -312,8 +317,8 @@ namespace WCell.RealmServer.Spells
 				HasEffectWith(effect => effect.PointsPerComboPoint > 0 && effect.EffectType != SpellEffectType.Dummy);
 
 			TotemEffect = GetFirstEffectWith(effect => effect.HasTarget(
-				ImplicitTargetType.TotemAir, ImplicitTargetType.TotemEarth, ImplicitTargetType.TotemFire,
-				ImplicitTargetType.TotemWater));
+				ImplicitSpellTargetType.TotemAir, ImplicitSpellTargetType.TotemEarth, ImplicitSpellTargetType.TotemFire,
+				ImplicitSpellTargetType.TotemWater));
 
 			IsEnchantment = HasEffectWith(effect => effect.IsEnchantmentEffect);
 
@@ -324,13 +329,13 @@ namespace WCell.RealmServer.Spells
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;
 				}
-				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
-				{
-					EquipmentSlot = EquipmentSlot.ExtraWeapon;
-				}
 				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresOffHandWeapon))
 				{
 					EquipmentSlot = EquipmentSlot.OffHand;
+				}
+				else if ((IsRangedAbility || AttributesExC.HasFlag(SpellAttributesExC.RequiresWand)))
+				{
+					EquipmentSlot = EquipmentSlot.ExtraWeapon;
 				}
 				else if (AttributesExC.HasFlag(SpellAttributesExC.RequiresMainHandWeapon))
 				{
@@ -342,7 +347,7 @@ namespace WCell.RealmServer.Spells
 					{
 						EquipmentSlot = EquipmentSlot.MainHand;
 					}
-					else if (RequiredItemSubClassMask == ItemSubClassMask.AnyRangedWeapon)
+					else if (RequiredItemSubClassMask.HasAnyFlag(ItemSubClassMask.AnyRangedAndThrownWeapon))
 					{
 						EquipmentSlot = EquipmentSlot.ExtraWeapon;
 					}
@@ -355,7 +360,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			HasIndividualCooldown = CooldownTime > 0 ||
-									(IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
+			                        (IsPhysicalAbility && !IsOnNextStrike && EquipmentSlot != EquipmentSlot.End);
 
 			HasCooldown = HasIndividualCooldown || CategoryCooldownTime > 0;
 
@@ -375,7 +380,7 @@ namespace WCell.RealmServer.Spells
 
 			IsProfession = !IsRangedAbility && Ability != null && Ability.Skill.Category == SkillCategory.Profession;
 			IsEnhancer = HasEffectWith(effect => effect.IsEnhancer);
-			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.SelfFishing));
+			IsFishing = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.SelfFishing));
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
@@ -399,8 +404,8 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			RequiresDeadTarget =
-				TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
+			RequiresDeadTarget = HasEffect(SpellEffectType.Resurrect) || HasEffect(SpellEffectType.ResurrectFlat) || HasEffect(SpellEffectType.SelfResurrect);
+				// unreliable: TargetFlags.HasAnyFlag(SpellTargetFlags.Corpse | SpellTargetFlags.PvPCorpse | SpellTargetFlags.UnitCorpse);
 
 			CostsPower = PowerCost > 0 || PowerCostPercentage > 0;
 
@@ -408,49 +413,50 @@ namespace WCell.RealmServer.Spells
 
 			HasTargets = HasEffectWith(effect => effect.HasTargets);
 
-			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.Self));
+			CasterIsTarget = HasTargets && HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.Self));
 
 			//HasSingleNotSelfTarget = 
 
 			IsAreaSpell = HasEffectWith(effect => effect.IsAreaEffect);
 
 			IsDamageSpell = HasHarmfulEffects && !HasBeneficialEffects && HasEffectWith(effect =>
-																						effect.EffectType ==
-																						SpellEffectType.Attack ||
-																						effect.EffectType ==
-																						SpellEffectType.EnvironmentalDamage ||
-																						effect.EffectType ==
-																						SpellEffectType.InstantKill ||
-																						effect.EffectType ==
-																						SpellEffectType.SchoolDamage ||
-																						effect.IsStrikeEffect);
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.Attack ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.EnvironmentalDamage ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.InstantKill ||
+			                                                                            effect.EffectType ==
+			                                                                            SpellEffectType.SchoolDamage ||
+			                                                                            effect.IsStrikeEffect);
 
 			if (DamageMultipliers[0] <= 0)
 			{
 				DamageMultipliers[0] = 1;
 			}
 
-			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitTargetType.HeartstoneLocation));
+			IsHearthStoneSpell = HasEffectWith(effect => effect.HasTarget(ImplicitSpellTargetType.HeartstoneLocation));
 
 			// ResurrectFlat usually has no target type set
 			ForeachEffect(effect =>
-			{
-				if (effect.ImplicitTargetA == ImplicitTargetType.None && effect.EffectType == SpellEffectType.ResurrectFlat)
-				{
-					effect.ImplicitTargetA = ImplicitTargetType.SingleFriend;
-				}
-			});
+			              	{
+			              		if (effect.ImplicitTargetA == ImplicitSpellTargetType.None &&
+			              		    effect.EffectType == SpellEffectType.ResurrectFlat)
+			              		{
+			              			effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+			              		}
+			              	});
 
-			Schools = Utility.GetSetIndices<DamageSchool>((uint)SchoolMask);
+			Schools = Utility.GetSetIndices<DamageSchool>((uint) SchoolMask);
 			if (Schools.Length == 0)
 			{
-				Schools = new[] { DamageSchool.Physical };
+				Schools = new[] {DamageSchool.Physical};
 			}
 
 			RequiresCasterOutOfCombat = !HasHarmfulEffects && CastDelay > 0 &&
-										(Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
-										 AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
-										 AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
+			                            (Attributes.HasFlag(SpellAttributes.CannotBeCastInCombat) ||
+			                             AttributesEx.HasFlag(SpellAttributesEx.RemainOutOfCombat) ||
+			                             AuraInterruptFlags.HasFlag(AuraInterruptFlags.OnStartAttack));
 
 			if (RequiresCasterOutOfCombat)
 			{
@@ -459,12 +465,12 @@ namespace WCell.RealmServer.Spells
 			}
 
 			IsThrow = AttributesExC.HasFlag(SpellAttributesExC.ShootRangedWeapon) &&
-					  Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
+			          Attributes.HasFlag(SpellAttributes.Ranged) && Ability != null && Ability.Skill.Id == SkillId.Thrown;
 
 			HasModifierEffects = HasModifierEffects ||
-								 HasEffectWith(
-									effect =>
-									effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
+			                     HasEffectWith(
+			                     	effect =>
+			                     	effect.AuraType == AuraType.AddModifierFlat || effect.AuraType == AuraType.AddModifierPercent);
 
 			// cannot taunt players
 			CanCastOnPlayer = CanCastOnPlayer && !HasEffect(AuraType.ModTaunt);
@@ -472,12 +478,12 @@ namespace WCell.RealmServer.Spells
 			HasAuraDependentEffects = HasEffectWith(effect => effect.IsDependentOnOtherAuras);
 
 			ForeachEffect(effect =>
-							{
-								for (var i = 0; i < 3; i++)
-								{
-									AllAffectingMasks[i] |= effect.AffectMask[i];
-								}
-							});
+			              	{
+			              		for (var i = 0; i < 3; i++)
+			              		{
+			              			AllAffectingMasks[i] |= effect.AffectMask[i];
+			              		}
+			              	});
 
 			if (Range.MaxDist == 0)
 			{
@@ -498,33 +504,108 @@ namespace WCell.RealmServer.Spells
 			}
 
 			var skillEffect = GetFirstEffectWith(effect =>
-												 effect.EffectType == SpellEffectType.SkillStep ||
-												 effect.EffectType == SpellEffectType.Skill);
+			                                     effect.EffectType == SpellEffectType.SkillStep ||
+			                                     effect.EffectType == SpellEffectType.Skill);
 			if (skillEffect != null)
 			{
-				SkillTier = (SkillTierId)skillEffect.BasePoints;
+				SkillTier = (SkillTierId) skillEffect.BasePoints;
 			}
 			else
 			{
 				SkillTier = SkillTierId.End;
 			}
 
-			ArrayUtil.PruneVals(ref RequiredTotemCategories);
+			ArrayUtil.PruneVals(ref RequiredToolCategories);
 
 			ForeachEffect(effect =>
-							{
-								if (effect.SpellEffectHandlerCreator != null)
-								{
-									EffectHandlerCount++;
-								}
-							});
+			              	{
+			              		if (effect.SpellEffectHandlerCreator != null)
+			              		{
+			              			EffectHandlerCount++;
+			              		}
+			              	});
 			//IsHealSpell = HasEffectWith((effect) => effect.IsHealEffect);
-
 
 			if (GetEffect(SpellEffectType.QuestComplete) != null)
 			{
 				SpellHandler.QuestCompletors.Add(this);
 			}
+
+			AISettings.InitializeAfterLoad();
+		}
+		#endregion
+
+		#region Targeting
+		/// <summary>
+		/// Sets the AITargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideCustomTargetDefinitions(TargetAdder adder, params TargetFilter[] filters)
+		{
+			OverrideCustomTargetDefinitions(new TargetDefinition(adder, filters));
+		}
+
+		/// <summary>
+		/// Sets the CustomTargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideCustomTargetDefinitions(TargetAdder adder, TargetEvaluator evaluator = null, 
+			params TargetFilter[] filters)
+		{
+			OverrideCustomTargetDefinitions(new TargetDefinition(adder, filters), evaluator);
+		}
+
+		public void OverrideCustomTargetDefinitions(TargetDefinition def, TargetEvaluator evaluator = null)
+		{
+			ForeachEffect(
+				effect => effect.CustomTargetHandlerDefintion = def);
+			if (evaluator != null)
+			{
+				OverrideCustomTargetEvaluators(evaluator);
+			}
+		}
+
+		/// <summary>
+		/// Sets the AITargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideAITargetDefinitions(TargetAdder adder, params TargetFilter[] filters)
+		{
+			OverrideAITargetDefinitions(new TargetDefinition(adder, filters));
+		}
+
+		/// <summary>
+		/// Sets the AITargetHandlerDefintion of all effects
+		/// </summary>
+		public void OverrideAITargetDefinitions(TargetAdder adder, TargetEvaluator evaluator = null,
+			params TargetFilter[] filters)
+		{
+			OverrideAITargetDefinitions(new TargetDefinition(adder, filters), evaluator);
+		}
+
+		public void OverrideAITargetDefinitions(TargetDefinition def, TargetEvaluator evaluator = null)
+		{
+			ForeachEffect(
+				effect => effect.AITargetHandlerDefintion = def);
+			if (evaluator != null)
+			{
+				OverrideCustomTargetEvaluators(evaluator);
+			}
+		}
+
+		/// <summary>
+		/// Sets the CustomTargetEvaluator of all effects
+		/// </summary>
+		public void OverrideCustomTargetEvaluators(TargetEvaluator eval)
+		{
+			ForeachEffect(
+				effect => effect.CustomTargetEvaluator = eval);
+		}
+
+		/// <summary>
+		/// Sets the AITargetEvaluator of all effects
+		/// </summary>
+		public void OverrideAITargetEvaluators(TargetEvaluator eval)
+		{
+			ForeachEffect(
+				effect => effect.AITargetEvaluator = eval);
 		}
 
 		#endregion
@@ -673,7 +754,7 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitTargetType target)
+		public SpellEffect AddEffect(SpellEffectHandlerCreator creator, ImplicitSpellTargetType target)
 		{
 			var effect = AddEffect(SpellEffectType.Dummy, target);
 			effect.SpellEffectHandlerCreator = creator;
@@ -685,9 +766,9 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public SpellEffect AddEffect(SpellEffectType type, ImplicitTargetType target)
+		public SpellEffect AddEffect(SpellEffectType type, ImplicitSpellTargetType target)
 		{
-			var effect = new SpellEffect(this, Effects.Length > 0 ? Effects[Effects.Length - 1].EffectIndex : 0) { EffectType = type };
+			var effect = new SpellEffect(this, -1) { EffectType = type };
 			var effects = new SpellEffect[Effects.Length + 1];
 			Array.Copy(Effects, effects, Effects.Length);
 			Effects = effects;
@@ -702,13 +783,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell)
 		{
-			return AddTriggerSpellEffect(triggerSpell, ImplicitTargetType.Self);
+			return AddTriggerSpellEffect(triggerSpell, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will trigger the given Spell on the given type of target
 		/// </summary>
-		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
+		public SpellEffect AddTriggerSpellEffect(SpellId triggerSpell, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.TriggerSpell, targetType);
 			effect.TriggerSpellId = triggerSpell;
@@ -720,13 +801,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell)
 		{
-			return AddPeriodicTriggerSpellEffect(triggerSpell, ImplicitTargetType.Self);
+			return AddPeriodicTriggerSpellEffect(triggerSpell, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will trigger the given Spell on the given type of target
 		/// </summary>
-		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell, ImplicitTargetType targetType)
+		public SpellEffect AddPeriodicTriggerSpellEffect(SpellId triggerSpell, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddAuraEffect(AuraType.PeriodicTriggerSpell);
 			effect.TriggerSpellId = triggerSpell;
@@ -739,13 +820,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraType type)
 		{
-			return AddAuraEffect(type, ImplicitTargetType.Self);
+			return AddAuraEffect(type, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will be applied to an Aura to be casted on the given type of target
 		/// </summary>
-		public SpellEffect AddAuraEffect(AuraType type, ImplicitTargetType targetType)
+		public SpellEffect AddAuraEffect(AuraType type, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = type;
@@ -757,13 +838,13 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator)
 		{
-			return AddAuraEffect(creator, ImplicitTargetType.Self);
+			return AddAuraEffect(creator, ImplicitSpellTargetType.Self);
 		}
 
 		/// <summary>
 		/// Adds a SpellEffect that will be applied to an Aura to be casted on the given type of target
 		/// </summary>
-		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitTargetType targetType)
+		public SpellEffect AddAuraEffect(AuraEffectHandlerCreator creator, ImplicitSpellTargetType targetType)
 		{
 			var effect = AddEffect(SpellEffectType.ApplyAura, targetType);
 			effect.AuraType = AuraType.Dummy;
@@ -1294,10 +1375,10 @@ namespace WCell.RealmServer.Spells
 				writer.WriteLine(indent + "DamageMultipliers: " + DamageMultipliers.ToString(", "));
 			}
 
-			for (int i = 0; i < RequiredTotemCategories.Length; i++)
+			for (int i = 0; i < RequiredToolCategories.Length; i++)
 			{
-				if (RequiredTotemCategories[i] != 0)
-					writer.WriteLine(indent + "RequiredTotemCategoryId[" + i + "]: " + RequiredTotemCategories[i]);
+				if (RequiredToolCategories[i] != 0)
+					writer.WriteLine(indent + "RequiredTotemCategoryId[" + i + "]: " + RequiredToolCategories[i]);
 			}
 
 			if ((int)AreaGroupId != 0)

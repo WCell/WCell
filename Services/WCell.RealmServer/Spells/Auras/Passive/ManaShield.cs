@@ -15,6 +15,8 @@
  *************************************************************************/
 
 using System;
+using WCell.Constants.Spells;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells.Auras.Misc;
 
@@ -22,12 +24,13 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	public class ManaShieldHandler : AttackEventEffectHandler
 	{
-		private float factor;
+		private float factor, factorInverse;
 		private int remaining;
 
 		protected override void Apply()
 		{
-			factor = SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1;
+			factor = (SpellEffect.ProcValue != 0 ? SpellEffect.ProcValue : 1);
+			factorInverse = 1 / factor;
 			remaining = EffectValue;
 
 			base.Apply();
@@ -39,20 +42,29 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			var power = defender.Power;
 			var damage = action.Damage;
 
-			var amount = Math.Min(damage, (int)(power / factor));	// figure out how much to drain
-			if (remaining < amount)
+			var drainAmount = Math.Min(damage, (int)(power * factorInverse));	// figure out how much to drain
+			if (remaining < drainAmount)
 			{
 				// shield is used up
-				amount = remaining;
+				drainAmount = remaining;
 				remaining = 0;
 				m_aura.Remove(false);
 			}
 			else
 			{
-				remaining -= amount;
+				remaining -= drainAmount;
 			}
-			defender.Power = power - (int)(amount * factor);	// drain power
-			damage -= amount;									// reduce damage
+
+			drainAmount = (int)(drainAmount * factor);
+
+			var caster = Aura.CasterUnit;
+			if (caster != null)
+			{
+				// see MageArcaneArcaneShielding
+				drainAmount = caster.Auras.GetModifiedInt(SpellModifierType.HealingOrPowerGain, m_spellEffect.Spell, drainAmount);
+			}
+			defender.Power = power - drainAmount;					// drain power
+			damage -= drainAmount;									// reduce damage
 
 			action.Damage = damage;
 		}

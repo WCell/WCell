@@ -72,7 +72,7 @@ namespace WCell.AuthServer.Network
 				{
 					var pktMessage = new AuthPacketMessage(handlerDesc.Handler, client, packet);
 
-					client.Server.AddMessage(pktMessage);
+					AuthenticationServer.IOQueue.AddMessage(pktMessage);
 					dispose = false;
 					return false;
 				}

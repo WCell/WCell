@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Content
 				}
 				catch (Exception e)
 				{
-					throw new ContentException(e, "Unable to validate version of database content - Reqired " + dbVersion);
+					throw new ContentException(e, "Unable to validate version of database content - Required " + dbVersion);
 				}
 
 				//var minVersion = dbVersion.MinVersion;
@@ -314,9 +314,9 @@ namespace WCell.RealmServer.Content
 		/// Ensures that the DataHolder of the given type and those that are connected with it, are loaded.
 		/// 
 		/// </summary>
-		public static void Load<T>() where T : IDataHolder
+		public static bool Load<T>() where T : IDataHolder
 		{
-			Load<T>(false);
+			return Load<T>(false);
 		}
 
 		/// <summary>
@@ -324,7 +324,7 @@ namespace WCell.RealmServer.Content
 		/// 
 		/// </summary>
 		/// <param name="force">Whether to re-load if already loaded.</param>
-		public static void Load<T>(bool force) where T : IDataHolder
+		public static bool Load<T>(bool force) where T : IDataHolder
 		{
 			EnsureInitialized();
 
@@ -333,7 +333,9 @@ namespace WCell.RealmServer.Content
 			if (force || !mapper.Fetched)
 			{
 				Load(mapper);
+				return true;
 			}
+			return false;
 		}
 
 		public static void Load(LightDBMapper mapper)
@@ -465,7 +467,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit<T>() where T : IDataHolder
 		{
 			var mapper = GetMapper(typeof(T));
-			RealmServer.Instance.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 
 		/// <summary>
@@ -476,7 +478,7 @@ namespace WCell.RealmServer.Content
 		public static void FlushCommit(Type t)
 		{
 			var mapper = GetMapper(t);
-			RealmServer.Instance.ExecuteInContext(() => mapper.Flush());
+			RealmServer.IOQueue.ExecuteInContext(() => mapper.Flush());
 		}
 		#endregion
 

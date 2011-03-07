@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using WCell.Constants.Misc;
 using WCell.RealmServer.Content;
 using WCell.Core.Paths;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.Util.Data;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Entities;
@@ -59,7 +60,7 @@ namespace WCell.RealmServer.NPCs
 		public uint ArriveDisplayId, LeaveDisplayId;
 
 		[NotPersistent]
-		public SpawnEntry SpawnEntry;
+		public NPCSpawnEntry SpawnEntry;
 
 		[NotPersistent]
 		public LinkedListNode<WaypointEntry> Node;

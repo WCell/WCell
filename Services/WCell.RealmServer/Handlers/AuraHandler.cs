@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras
 				var chr = client.ActiveCharacter;
 				var aura = chr.Auras[spell, true];
 
-				if (aura != null && aura.CanBeCancelled)
+				if (aura != null && aura.CanBeRemoved)
 				{
 					aura.TryRemove(true);
 				}

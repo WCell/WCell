@@ -69,9 +69,9 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Add
-		public class AddItemCommand : SubCommand
+		public class ItemAddCommand : SubCommand
 		{
-			protected AddItemCommand() { }
+			protected ItemAddCommand() { }
 
 			protected override void Initialize()
 			{
@@ -108,8 +108,7 @@ namespace WCell.RealmServer.Commands
 				//trigger.Reply("{0}/{1} stacks of {2} created{3}", x, stacks, templ, err == InventoryError.OK ? "." : ": " + err);
 			}
 
-			public static bool AddItem(Character chr, ItemTemplate templ, int amount,
-				bool autoEquip, bool ensureOnly)
+			public static bool AddItem(Character chr, ItemTemplate templ, int amount, bool autoEquip, bool ensureOnly)
 			{
 				var actualAmount = amount;
 				var inv = chr.Inventory;

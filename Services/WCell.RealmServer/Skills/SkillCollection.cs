@@ -195,13 +195,14 @@ namespace WCell.RealmServer.Skills
 		/// </summary>
 		public bool CheckSkill(SkillId skillId, int amount)
 		{
+			if (skillId == SkillId.None) return true;
+
 			var skill = this[skillId];
 			if (skill == null)
 			{
 				return false;
 			}
-
-			if (amount > 0 && skill.ActualValue < amount)
+			else if (amount > 0 && skill.ActualValue < amount)
 			{
 				return false;
 			}

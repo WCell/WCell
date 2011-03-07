@@ -46,11 +46,10 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class QuestGiverHandler : GameObjectHandler
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
-			var entry = m_go.Entry as GOQuestGiverEntry;
+			var entry = (GOQuestGiverEntry)m_go.Entry;
+			// usually there is nothing to do, since quests are resolved through the GO's GossipMenu
 			return true;
 		}
 	}
@@ -107,7 +106,7 @@ namespace WCell.RealmServer.GameObjects.Handlers
 			if (UserAmount < entry.MaxCount)
 			{
 				UserAmount++;
-				user.Region.MoveObject(user, m_go.Position);
+				user.Map.MoveObject(user, m_go.Position);
 				user.Orientation = m_go.Orientation;
 				user.StandState = entry.SitState;
 				MovementHandler.SendHeartbeat(user, m_go.Position, m_go.Orientation);
@@ -149,11 +148,9 @@ namespace WCell.RealmServer.GameObjects.Handlers
 	/// </summary>
 	public class GooberHandler : GameObjectHandler
 	{
-		private static readonly Logger log = LogManager.GetCurrentClassLogger();
-
 		public override bool Use(Character user)
 		{
-			var entry = m_go.Entry as GOGooberEntry;
+			var entry = (GOGooberEntry)m_go.Entry;
 			return true;
 		}
 	}

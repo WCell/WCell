@@ -216,7 +216,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (m_params != null)
 				{
 					m_timer = new TimerEntry(m_params.StartDelay,
-					                         m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
+											 m_params.Amplitude != 0 ? m_params.Amplitude : DefaultAmplitude, RevalidateTargetsAndApply);
 				}
 				else
 				{
@@ -295,7 +295,7 @@ namespace WCell.RealmServer.Spells.Auras
 				obj =>
 				{
 					if (obj != m_holder &&
-						((exclMobs && obj.IsOwnedByPlayer) || (!exclMobs && obj is Unit)) &&
+						((exclMobs && obj.IsPlayerOwned) || (!exclMobs && obj is Unit)) &&
 						(m_spell.HasHarmfulEffects == m_holder.MayAttack(obj)) &&
 						m_spell.CheckValidTarget(m_holder, obj) == SpellFailedReason.Ok)
 					{
@@ -374,7 +374,20 @@ namespace WCell.RealmServer.Spells.Auras
 						var auras = target.Key.Auras;
 						if (auras != null)
 						{
-							target.Value.Remove(false);
+							if (!target.Key.IsInContext && target.Key.IsInWorld)
+							{
+								// target has been teleported away
+								var aura = target.Value;
+								target.Key.AddMessage(() =>
+								{
+									if (aura.IsAdded)
+										aura.Remove(false);
+								});
+							}
+							else
+							{
+								target.Value.Remove(false);
+							}
 						}
 					}
 					m_targets.Remove(target.Key);
@@ -398,9 +411,10 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 
 			// try to stack/apply aura
-			var aura = target.Auras.CreateAura(m_CasterReference, m_spell, false);
+			var aura = target.Auras.CreateAura(m_CasterReference, m_spell);
 			if (aura != null)
 			{
+				aura.Start(m_controller, false);
 				m_targets.Add(target, aura);
 			}
 		}

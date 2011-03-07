@@ -55,13 +55,15 @@ namespace WCell.RealmServer.Items
 
 		public ItemSubClass SubClass;
 
+		public int Unk0;
+
 		public uint DisplayId;
 
 		public ItemQuality Quality;
 
 		public ItemFlags Flags;
 
-		public FactionId Faction;
+		public ItemFlags2 Flags2;
 
 		public uint BuyPrice;
 
@@ -92,6 +94,14 @@ namespace WCell.RealmServer.Items
 		public StandingLevel RequiredFactionStanding;
 
 		public int UniqueCount;
+
+		public uint ScalingStatDistributionId;
+
+		public uint ScalingStatValueFlags;
+
+		public uint ItemLimitCategoryId;
+
+		public uint HolidayId;
 
 		/// <summary>
 		/// The size of a stack of this item.
@@ -145,8 +155,7 @@ namespace WCell.RealmServer.Items
 		public PageMaterial PageMaterial;
 
 		/// <summary>
-		/// The Id of the Quest that will be started
-		/// when this Item is used.
+		/// The Id of the Quest that will be started when this Item is used
 		/// </summary>
 		public uint QuestId;
 
@@ -172,7 +181,7 @@ namespace WCell.RealmServer.Items
 
 		public ItemBagFamilyMask BagFamily;
 
-		public TotemCategory TotemCategory;
+		public ToolCategory ToolCategory;
 
 		[Persistent(ItemConstants.MaxSocketCount)]
 		public SocketInfo[] Sockets;
@@ -232,7 +241,7 @@ namespace WCell.RealmServer.Items
 
 		public int GetResistance(DamageSchool school)
 		{
-			return Resistances[(int) school];
+			return Resistances[(int)school];
 		}
 		#endregion
 
@@ -392,15 +401,14 @@ namespace WCell.RealmServer.Items
 
 		[NotPersistent]
 		/// <summary>
-		/// The Quest for which this Item needs to be collected
+		/// The Quests for which this Item needs to be collected
 		/// </summary>
 		public QuestTemplate[] CollectQuests;
 
-		/// <summary>
-		/// The Quest that will be started by this Item
-		/// </summary>
-		[NotPersistent]
-		public QuestTemplate StartQuest;
+		public bool HasQuestRequirements
+		{
+			get { return QuestHolderInfo == null && CollectQuests == null; }
+		}
 
 		[NotPersistent]
 		/// <summary>
@@ -484,10 +492,10 @@ namespace WCell.RealmServer.Items
 			IsTwoHandWeapon = InventorySlotType == InventorySlotType.TwoHandWeapon;
 			SetIsWeapon();
 
-			if (TotemCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
+			if (ToolCategory != 0// && TotemCategory != TotemCategory.SkinningKnife)
 				)
 			{
-				ArrayUtil.Set(ref ItemMgr.FirstTotemsPerCat, (uint)TotemCategory, this);
+				ItemMgr.FirstTotemsPerCat[(uint)ToolCategory] = this;
 			}
 
 			if (GemPropertiesId != 0)
@@ -542,7 +550,7 @@ namespace WCell.RealmServer.Items
 			if (Spells != null)
 			{
 				ArrayUtil.Prune(ref Spells);
-				for (int i = 0; i < 5; i++ )
+				for (int i = 0; i < 5; i++)
 				{
 					Spells[i].Index = (uint)i;
 					Spells[i].FinalizeAfterLoad();
@@ -636,34 +644,50 @@ namespace WCell.RealmServer.Items
 
 		#region Checks
 		/// <summary>
-		/// 
+		/// Returns false if the looter may not take one of these items.
+		/// E.g. due to quest requirements, if this is a quest item and the looter does not need it (yet, or anymore).
 		/// </summary>
 		/// <param name="looter">Can be null</param>
-		/// <returns></returns>
-		public bool CheckLootRequirements(Character looter)
+		public bool CheckLootConstraints(Character looter)
 		{
-			if (CollectQuests != null)
+			return CheckQuestConstraints(looter);
+		}
+
+		public bool CheckQuestConstraints(Character looter)
+		{
+			if (HasQuestRequirements)			// no quest requirements
+				return true;
+
+			if (looter == null)
 			{
-				if (looter == null)
+				// cannot determine quest constraints if looter is offline
+				return false;
+			}
+
+			if (QuestHolderInfo != null)
+			{
+				// starts a quest
+				if (QuestHolderInfo.QuestStarts.Any(quest => looter.QuestLog.HasActiveQuest(quest)))
 				{
 					return false;
 				}
+			}
 
+			if (CollectQuests != null)
+			{
+				// is collectable for one or more quests
 				// check whether the looter has any of the required quests
-				var count = 0;
 				for (var i = 0; i < CollectQuests.Length; i++)
 				{
 					var q = CollectQuests[i];
 					if (q != null)
 					{
-						count++;
 						if (looter.QuestLog.HasActiveQuest(q.Id))
 						{
-							return true;
+							return false;
 						}
 					}
 				}
-				return count == 0;
 			}
 			return true;
 		}
@@ -808,6 +832,9 @@ namespace WCell.RealmServer.Items
 			return ItemMgr.Templates;
 		}
 
+		/// <summary>
+		/// Contains the quests that this item can start (items usually can only start one)
+		/// </summary>
 		public QuestHolderInfo QuestHolderInfo
 		{
 			get;
@@ -829,11 +856,10 @@ namespace WCell.RealmServer.Items
 		{
 			if (IsCharter)
 			{
-				PetitionRecord charter;
-				if (!record.New)
+				if (!record.IsNew)
 				{
 					// this is executed in the IO-context
-					charter = PetitionRecord.LoadRecord(record.OwnerId);
+					PetitionRecord.LoadRecord(record.OwnerId);
 				}
 			}
 		}
@@ -875,9 +901,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "Flags: " + Flags);
 			}
-			if ((int)Faction != 0)
+			if ((int)Flags2 != 0)
 			{
-				writer.WriteLine(indent + "Faction: " + Faction);
+				writer.WriteLine(indent + "Flags2: " + Flags2);
 			}
 			if ((int)BuyPrice != 0)
 			{
@@ -994,10 +1020,6 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "PageCount: " + PageCount);
 			}
-			if ((int)QuestId != 0)
-			{
-				writer.WriteLine(indent + "Quest: " + QuestId);
-			}
 			if ((int)LockId != 0)
 			{
 				writer.WriteLine(indent + "Lock: " + LockId);
@@ -1043,9 +1065,9 @@ namespace WCell.RealmServer.Items
 			{
 				writer.WriteLine(indent + "BagFamily: " + BagFamily);
 			}
-			if ((int)TotemCategory != 0)
+			if ((int)ToolCategory != 0)
 			{
-				writer.WriteLine(indent + "TotemCategory: " + TotemCategory);
+				writer.WriteLine(indent + "TotemCategory: " + ToolCategory);
 			}
 
 			var sockets = new List<string>(3);
@@ -1109,6 +1131,21 @@ namespace WCell.RealmServer.Items
 			if (RequiredFactionId != FactionId.None)
 			{
 				writer.WriteLine(indent + "Faction: " + RequiredFactionId + " (" + RequiredFactionStanding + ")");
+			}
+			if ((int)QuestId != 0)
+			{
+				writer.WriteLine(indent + "Quest: " + QuestId);
+			}
+			if (QuestHolderInfo != null)
+			{
+				if (QuestHolderInfo.QuestStarts.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestStarts: " + QuestHolderInfo.QuestStarts.ToString(", "));
+				}
+				if (QuestHolderInfo.QuestEnds.Count > 0)
+				{
+					writer.WriteLine(indent + "QuestEnds: " + QuestHolderInfo.QuestEnds.ToString(", "));
+				}
 			}
 		}
 		#endregion

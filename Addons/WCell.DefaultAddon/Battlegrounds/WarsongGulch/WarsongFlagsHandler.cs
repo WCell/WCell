@@ -25,7 +25,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			}
 			else
 			{
-				Instance = target.Region as WarsongGulch;
+				Instance = target.Map as WarsongGulch;
 				if (Instance == null)
 				{
 					failReason = SpellFailedReason.IncorrectArea;

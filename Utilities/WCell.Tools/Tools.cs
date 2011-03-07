@@ -313,10 +313,10 @@ namespace WCell.Tools
 					QuestMgr.LoadAll();
 				});
 
-				Region.AutoSpawn = true;
-				var easternKD = World.GetRegion(MapId.EasternKingdoms);
-				var kalimdor = World.GetRegion(MapId.Kalimdor);
-				var outlands = World.GetRegion(MapId.Outland);
+				Map.AutoSpawnMaps = true;
+				var easternKD = World.GetNonInstancedMap(MapId.EasternKingdoms);
+				var kalimdor = World.GetNonInstancedMap(MapId.Kalimdor);
+				var outlands = World.GetNonInstancedMap(MapId.Outland);
 				Utility.Measure("Spawning Main Maps", 1, () =>
 				{
 					//easternKD.Start();

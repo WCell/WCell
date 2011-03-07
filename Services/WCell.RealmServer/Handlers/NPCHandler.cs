@@ -33,7 +33,7 @@ namespace WCell.RealmServer.Handlers
 
 			var chr = client.ActiveCharacter;
 
-			var banker = chr.Region.GetObject(bankerId) as NPC;
+			var banker = chr.Map.GetObject(bankerId) as NPC;
 			if (banker != null && banker.IsBanker && banker.CheckVendorInteraction(chr))
 			{
 				chr.OpenBank(banker);
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandlePetitionerShowList(IRealmClient client, RealmPacketIn packet)
 		{
 			var vendorId = packet.ReadEntityId();
-			var npc = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var npc = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
             if (npc != null && npc.NPCFlags.HasFlag(NPCFlags.Petitioner))
 			{
 				npc.SendPetitionList(client.ActiveCharacter);
@@ -143,31 +143,22 @@ namespace WCell.RealmServer.Handlers
 				else if (petitioner.IsArenaPetitioner)
 				{
 					// Arena petitioner
-					chr.SendSystemMessage("Building arena packet.");
-					//packet.Write(3);
-
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition2v2Entry.RequiredSignatures);
 
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition3v3Entry.RequiredSignatures);
 
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.Index);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.ItemId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.DisplayId);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.Cost);
-					//packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
-					//packet.Write(0);
 					packet.Write((uint)PetitionerEntry.ArenaPetition5v5Entry.RequiredSignatures);
 				}
 				chr.Client.Send(packet);
@@ -179,7 +170,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 
 			var petitionerId = packet.ReadEntityId();
-			var petitioner = chr.Region.GetObject(petitionerId) as NPC;
+			var petitioner = chr.Map.GetObject(petitionerId) as NPC;
 
 			//var petitionId = packet.ReadInt32();
 			//var petitionCreator = packet.ReadEntityId();
@@ -362,8 +353,9 @@ namespace WCell.RealmServer.Handlers
 		public static void HandlePetitionDecline(IRealmClient client, RealmPacketIn packet)
 		{
 			var petitionGuid = packet.ReadEntityId();
+            var petitionRecord = PetitionRecord.LoadRecordByItemId(petitionGuid.Low);
 
-            //SendPetitionDecline(client, petition);
+            SendPetitionDecline(client, client.ActiveCharacter, petitionRecord);
 		}
 
 		[PacketHandler(RealmServerOpCode.CMSG_OFFER_PETITION)]
@@ -520,13 +512,17 @@ namespace WCell.RealmServer.Handlers
 			}
 		}
 
-		public static void SendPetitionDecline(IPacketReceiver client, PetitionRecord record)
+		public static void SendPetitionDecline(IPacketReceiver client, Character chr, PetitionRecord record)
 		{
-			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE))
+			using (var packet = new RealmPacketOut(RealmServerOpCode.MSG_PETITION_DECLINE, 8))
 			{
-                
-				// TODO
-				client.Send(packet);
+                var character = World.GetCharacter(record.OwnerId);
+                if(character != null)
+                {
+				    packet.WriteULong(chr.EntityId.Full);
+
+				    character.Client.Send(packet);
+                }
 			}
 		}
 
@@ -554,7 +550,7 @@ namespace WCell.RealmServer.Handlers
 		public static void SendPetitionQueryResponse(IPacketReceiver client, PetitionCharter charter)
 		{
             string name = charter.Petition.Name;
-            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE))
+            using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_QUERY_RESPONSE, 4 + 8 + name.Length + 1 + 1 + 4 * 12 + 2 + 10))
 			{
                 packet.WriteUInt(charter.EntityId.Low);
                 packet.WriteULong(charter.Owner.EntityId.Full);
@@ -603,7 +599,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleVendorListInventory(IRealmClient client, RealmPacketIn packet)
 		{
 			var vendorId = packet.ReadEntityId();
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 			if (vendor != null && vendor.IsVendor)
 			{
 				vendor.VendorEntry.UseVendor(client.ActiveCharacter);
@@ -618,7 +614,7 @@ namespace WCell.RealmServer.Handlers
 			var numToSell = packet.ReadByte();
 
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorId) as NPC;
+			var vendor = chr.Map.GetObject(vendorId) as NPC;
 
 			if (vendor != null && vendor.IsVendor)
 			{
@@ -644,7 +640,7 @@ namespace WCell.RealmServer.Handlers
 			var vendorId = packet.ReadEntityId();
 			var slot = packet.ReadInt32();
 
-			var vendor = client.ActiveCharacter.Region.GetObject(vendorId) as NPC;
+			var vendor = client.ActiveCharacter.Map.GetObject(vendorId) as NPC;
 			if (vendor != null && vendor.IsVendor)
 			{
 				//client.ActiveCharacter.SendMessage("Buyback is temporarily disabled.");
@@ -663,7 +659,7 @@ namespace WCell.RealmServer.Handlers
             var amount = packet.ReadInt32();
 
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorId) as NPC;
+			var vendor = chr.Map.GetObject(vendorId) as NPC;
 			if (vendor != null && vendor.IsVendor)
 			{
 				BaseInventory inv;
@@ -699,7 +695,7 @@ namespace WCell.RealmServer.Handlers
 			var amount = packet.ReadInt32();
 
 			var chr = client.ActiveCharacter;
-			var vendor = chr.Region.GetObject(vendorId) as NPC;
+			var vendor = chr.Map.GetObject(vendorId) as NPC;
 			if (vendor != null && vendor.IsVendor)
 			{
 				vendor.VendorEntry.BuyItem(chr, itemEntryId, chr.Inventory, amount, BaseInventory.INVALID_SLOT);
@@ -816,7 +812,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var trainerId = packet.ReadEntityId();
 
-			var trainer = client.ActiveCharacter.Region.GetObject(trainerId) as NPC;
+			var trainer = client.ActiveCharacter.Map.GetObject(trainerId) as NPC;
 			if (trainer != null)
 			{
 				trainer.TalkToTrainer(client.ActiveCharacter);
@@ -829,7 +825,7 @@ namespace WCell.RealmServer.Handlers
 			var trainerId = packet.ReadEntityId();
 			var spellEntryId = (SpellId)packet.ReadUInt32();
 
-			var trainer = client.ActiveCharacter.Region.GetObject(trainerId) as NPC;
+			var trainer = client.ActiveCharacter.Map.GetObject(trainerId) as NPC;
 			if (trainer != null)
 			{
 				trainer.BuySpell(client.ActiveCharacter, spellEntryId);
@@ -920,7 +916,7 @@ namespace WCell.RealmServer.Handlers
 			var itemId = packet.ReadEntityId();
 			var useGuildFunds = packet.ReadBoolean();
 
-			var armorer = client.ActiveCharacter.Region.GetObject(armorerId) as NPC;
+			var armorer = client.ActiveCharacter.Map.GetObject(armorerId) as NPC;
 			ArmorerMgr.RepairItem(client, armorer, itemId, useGuildFunds);
 		}
 
@@ -932,7 +928,7 @@ namespace WCell.RealmServer.Handlers
 		public static void HandleBinderActivate(IRealmClient client, RealmPacketIn packet)
 		{
 			var binderId = packet.ReadEntityId();
-			var binder = client.ActiveCharacter.Region.GetObject(binderId) as NPC;
+			var binder = client.ActiveCharacter.Map.GetObject(binderId) as NPC;
 
 			if (binder != null)
 			{

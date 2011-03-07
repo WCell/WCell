@@ -38,37 +38,28 @@ namespace WCell.RealmServer.Spells
 				var spellHandler = m_handlers[i];
 				if (spellHandler.Effect.IsAuraEffect)
 				{
-					if (lastHandler != null && lastHandler.Effect.ImplicitTargetA == spellHandler.Effect.ImplicitTargetA)
+					if (lastHandler != null && lastHandler.Effect.SharesTargetsWith(spellHandler.Effect, IsAICast))
 					{
+						// same aura
 						continue;
 					}
 					lastHandler = spellHandler;
 
-					var doubleTarget = false;
 					if (spellHandler.m_targets != null)
 					{
 						foreach (var target in spellHandler.m_targets)
 						{
 							if (target is Unit)
 							{
-								foreach (var info in m_auraApplicationInfos)
+								if (m_auraApplicationInfos.Any(info => info.Target == target))
 								{
-									if (info.Target == target)
-									{
-										doubleTarget = true;
-										break;
-									}
-								}
-
-								if (doubleTarget)
-								{
-									doubleTarget = false;
+									// target was already added
 									continue;
 								}
 
 								var id = m_spell.GetAuraUID(CasterReference, target);
 								var failReason = SpellFailedReason.Ok;
-								if (((Unit)target).Auras.CheckStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
+								if (((Unit)target).Auras.PrepareStackOrOverride(CasterReference, id, m_spell, ref failReason, this))
 								{
 									m_auraApplicationInfos.Add(new AuraApplicationInfo((Unit)target));
 								}
@@ -172,14 +163,18 @@ namespace WCell.RealmServer.Spells
 				else
 				{
 					// create aura
-					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, UsedItem, !m_spell.IsPreventionDebuff && !hostile);
+					var newAura = target.Auras.CreateAura(CasterReference, m_spell, info.Handlers, TargetItem, !m_spell.IsPreventionDebuff && !hostile);
 					if (newAura != null)
 					{
-						// check for debuff
-						if (!m_spell.IsPreventionDebuff && hostile && target.IsInWorld && target.IsAlive)
+						// check for debuff and if the spell causes no threat we aren't put in combat
+						if (!m_spell.IsPreventionDebuff && !((m_spell.AttributesExC & SpellAttributesExC.NoInitialAggro) != 0) && hostile && target.IsInWorld && target.IsAlive)
 						{
 							// force combat mode
 							target.IsInCombat = true;
+							if (target is NPC && CasterUnit != null)
+							{
+								((NPC)target).ThreatCollection.AddNewIfNotExisted(CasterUnit);
+							}
 						}
 						// add Aura now
 						auras.Add(newAura);

@@ -190,7 +190,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// Death Strike heals for each disease on the target
 			SpellLineId.DeathKnightDeathStrike.Apply(spell =>
 			{
-				spell.AddEffect((cast, effct) => new DeathStrikeHealHandler(cast, effct), ImplicitTargetType.SingleEnemy);
+				spell.AddEffect((cast, effct) => new DeathStrikeHealHandler(cast, effct), ImplicitSpellTargetType.SingleEnemy);
 			});
 		}
 
@@ -368,6 +368,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			{
 				// absorb EffectValue % from the damage
 				var absorbed = Math.Min(action.GetDamagePercent(EffectValue), RemainingValue);
+
+				// RemainingValue corresponds to AMZ's health, when it reaches 0, AMZ will be destroyed
 				RemainingValue = action.Absorb(absorbed, (DamageSchoolMask)m_spellEffect.MiscValue);
 			}
 		}

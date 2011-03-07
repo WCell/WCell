@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using WCell.Constants.Achievements;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.Util.Commands;
 
@@ -31,12 +31,12 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var achievementId = trigger.Text.NextEnum(AchievementEntryId.None);
+				var achievementId = trigger.Text.NextUInt(0u);
 				var achivementEntry = AchievementMgr.GetAchievementEntry(achievementId);
 				if (achivementEntry != null)
 				{
 					AddAchievement((Character) trigger.Args.Target, achievementId);
-					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Name);
+					trigger.Reply("Achievement \"{0}\" added sucessfully.", achivementEntry.Names);
 				}
 				else
 				{
@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Commands
 				}
 			}
 
-			public static bool AddAchievement(Character character, AchievementEntryId achievementEntryId)
+			public static bool AddAchievement(Character character, uint achievementEntryId)
 			{
 				character.Achievements.EarnAchievement(achievementEntryId);
 				return true;

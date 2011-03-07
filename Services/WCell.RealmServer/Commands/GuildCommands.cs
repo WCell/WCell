@@ -45,7 +45,7 @@ namespace WCell.RealmServer.Commands
 
 				if (leaderName.Length > 0)
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						var leaderRecord = CharacterRecord.GetRecordByName(leaderName);
 						if (leaderRecord == null)
@@ -117,7 +117,7 @@ namespace WCell.RealmServer.Commands
 
 				if (memberName.Length > 0)
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						var record = CharacterRecord.GetRecordByName(memberName);
 						if (record == null)
@@ -142,6 +142,40 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 		#endregion
+
+        #region Promote
+        public class GuildPromoteCommand : SubCommand
+        {
+            protected override void Initialize()
+            {
+                Init("Promote", "P");
+                EnglishParamInfo = "<guild name>";
+                EnglishDescription = "Promotes a member of a guild with the given name to the next rank.";
+            }
+
+            public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+            {
+                var name = trigger.Text.NextWord().Trim();
+                var guild = GuildMgr.GetGuild(name);
+
+                if (guild == null)
+                {
+                    trigger.Reply("Guild does not exist: " + name);
+                    return;
+                }
+
+                var chr = trigger.Args.Target as Character;
+                    if (chr == null)
+                    {
+                        trigger.Reply("You did not select a valid member.");
+                        return;
+                    }
+
+                    if(chr.GuildMember.RankId > 0)
+                        chr.GuildMember.RankId--;
+            }
+        }
+        #endregion
 
 		#region Leave
 		public class LeaveGuildCommand : SubCommand

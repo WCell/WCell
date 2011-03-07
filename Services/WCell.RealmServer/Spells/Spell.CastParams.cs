@@ -100,12 +100,6 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.NoComboPoints;
 			}
 
-			// spell focus			
-			if (!CheckSpellFocus(caster))
-			{
-				return SpellFailedReason.RequiresSpellFocus;
-			}
-
 			// AuraStates
 			if (RequiredCasterAuraState != 0 || ExcludeCasterAuraState != 0)
 			{
@@ -193,7 +187,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var range = caster.GetSpellMaxRange(this);
 			return RequiredSpellFocus == SpellFocus.None ||
-				   caster.Region.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
+				   caster.Map.GetGOWithSpellFocus(caster.Position, RequiredSpellFocus, range > 0 ? (range) : 5f, caster.Phase) != null;
 		}
 
 		/// <summary>
@@ -206,7 +200,7 @@ namespace WCell.RealmServer.Spells
 				return (RequiredItemClass != 0 && RequiredItemClass != ItemClass.None) ||
 				  RequiredItemInventorySlotMask != InventorySlotTypeMask.None ||
 				  RequiredTools != null ||
-				  RequiredTotemCategories.Length > 0 ||
+				  RequiredToolCategories.Length > 0 ||
 				  EquipmentSlot != EquipmentSlot.End;
 			}
 		}
@@ -331,10 +325,10 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			if (RequiredTotemCategories.Length > 0)
+			if (RequiredToolCategories.Length > 0)
 			{
 				// Required totem category refers to tools that are required during the spell
-				if (!inv.CheckTotemCategories(RequiredTotemCategories))
+				if (!inv.CheckTotemCategories(RequiredToolCategories))
 				{
 					return SpellFailedReason.TotemCategory;
 				}
@@ -468,7 +462,6 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-
 		#region Check Proc
 		public bool CanProcBeTriggeredBy(Unit owner, IUnitAction action, bool active)
 		{
@@ -522,14 +515,13 @@ namespace WCell.RealmServer.Spells
 		}
 		#endregion
 
-
 		#region Cooldown
 		public int GetCooldown(Unit unit)
 		{
 			int cd;
-			if (AISpellCastSettings != null)
+			if (unit is NPC && AISettings.Cooldown.MaxDelay > 0)
 			{
-				cd = Utility.Random(AISpellCastSettings.CooldownMin, AISpellCastSettings.CooldownMax);
+				cd = AISettings.Cooldown.GetRandomCooldown();
 			}
 			else
 			{
@@ -557,10 +549,15 @@ namespace WCell.RealmServer.Spells
 			}
 			else
 			{
-				cd = unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
+				cd = GetModifiedCooldown(unit, cd);
 			}
-			//return Math.Max(cd - unit.Region.UpdateDelay, 0);
+			//return Math.Max(cd - unit.Map.UpdateDelay, 0);
 			return cd;
+		}
+
+		public int GetModifiedCooldown(Unit unit, int cd)
+		{
+			return unit.Auras.GetModifiedInt(SpellModifierType.CooldownTime, this, cd);
 		}
 		#endregion
 	}

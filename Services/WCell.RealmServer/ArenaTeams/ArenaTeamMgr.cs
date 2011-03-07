@@ -122,7 +122,7 @@ namespace WCell.RealmServer.ArenaTeams
         #endregion
 
         /// <summary>
-        /// New or loaded Arena Team
+        /// New or loaded arena team
         /// </summary>
         /// <param name="guild"></param>
         public static void RegisterArenaTeam(ArenaTeam team)
@@ -180,9 +180,10 @@ namespace WCell.RealmServer.ArenaTeams
                 case (uint)ArenaTeamTypes.ARENA_TEAM_5v5:
                     return ArenaTeamSlot.FIVE_VS_FIVE;
                 default:
-                    throw new Exception("Invalid Type of arena team !");
+                    throw new Exception("Invalid Type of arena team: " + type);
             }
         }
+
         #region Checks
         public static bool CanUseName(string name)
         {

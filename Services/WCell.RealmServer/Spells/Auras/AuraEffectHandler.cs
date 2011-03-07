@@ -35,8 +35,8 @@ namespace WCell.RealmServer.Spells.Auras
 
 		/// <summary>
 		/// The value of the underlying SpellEffect that was calculated when
-		/// this Aura was last applied or refreshed (see <see cref="SpellEffect.CalcEffectValue(Unit)"/>).
-		/// The value is multiplied by the StackCount of the Aura (<see cref="Aura.StackCount"/>).
+		/// this Aura was last applied or refreshed (see <see cref="WCell.RealmServer.Spells.SpellEffect.CalcEffectValue(Unit)"/>).
+		/// The value is multiplied by the StackCount of the Aura (<see cref="WCell.RealmServer.Spells.Auras.Aura.StackCount"/>).
 		/// </summary>
 		public int EffectValue
 		{

@@ -65,8 +65,7 @@ namespace WCell.Core.Cryptography
             /// <returns>a HashDataBroker object representing the original data</returns>
             public static implicit operator HashDataBroker(string str)
             {
-                Encoding encoding = new ASCIIEncoding();
-                return new HashDataBroker(encoding.GetBytes(str));
+                return new HashDataBroker(WCellConstants.DefaultEncoding.GetBytes(str));
             }
 
             /// <summary>

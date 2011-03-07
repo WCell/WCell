@@ -264,7 +264,7 @@ namespace WCell.RealmServer.Spells
 			{
 				if (spell.IsPassive)
 				{
-					Owner.Auras.Cancel(spell);
+					Owner.Auras.Remove(spell);
 				}
 			}
 			m_byId.Clear();
@@ -292,7 +292,7 @@ namespace WCell.RealmServer.Spells
 			{
 				if (oldSpell.IsPassive)
 				{
-					Owner.Auras.Cancel(oldSpell);
+					Owner.Auras.Remove(oldSpell);
 				}
 				if (newSpell != null)
 				{

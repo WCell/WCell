@@ -214,7 +214,7 @@ namespace WCell.RealmServer.Network
 			}
 			if (wait)
 			{
-				ActiveCharacter.Region.WaitTicks(2);
+				ActiveCharacter.Map.WaitTicks(2);
 			}
 		}
 		#endregion
@@ -254,7 +254,7 @@ namespace WCell.RealmServer.Network
 			if (!HandleSMSG(inPacket))
 			{
 				// delayed
-				ActiveCharacter.Region.WaitOneTick();
+				ActiveCharacter.Map.WaitOneTick();
 			}
 			if (dispose)
 			{

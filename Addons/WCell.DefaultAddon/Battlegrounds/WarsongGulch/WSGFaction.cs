@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using WCell.Addons.Default.Lang;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
@@ -61,7 +62,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 		// TODO: check this. it's always null, so...?
 #pragma warning disable 0649
-		private OneShotUpdateObjectAction _debuffUpdate;
+		private OneShotObjectUpdateTimer m_DebuffObjectUpdate;
 #pragma warning restore 0649
 
 		#endregion
@@ -159,7 +160,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			if (_flag == null)
 			{
-				_flag = FlagStandEntry.FirstSpawn.Spawn(Instance);
+				_flag = FlagStandEntry.FirstSpawnEntry.Spawn(Instance);
 
 				_isFlagHome = true;
 
@@ -188,7 +189,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			// Shows the flag on the character. Does all kinds of stuff in the handler.
 			chr.Auras.CreateSelf(_flagSpell, true);
-			_debuffUpdate = chr.CallDelayed(_flagRespawnTime, obj => ApplyFlagCarrierDebuff());
+			m_DebuffObjectUpdate = chr.CallDelayed(_flagRespawnTime, obj => ApplyFlagCarrierDebuff());
 
 			if (_flag != null)
 			{
@@ -200,8 +201,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 			_flagPickUpTime = DateTime.Now;
 			_isFlagHome = false;
 
-			Instance.Characters.SendSystemMessage("{0} has picked up the {1} flag!", chr.Name, Name);
-
+			Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSPickupFlag), 
+                                                                                                                        Name, chr.Name);
 			var evt = FlagPickedUp;
 			if (evt != null)
 			{
@@ -216,8 +217,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		{
 			IsFlagCap = true;
 
-			var msg = capturer.Name + " has captured the " + Name + " flag!";
-			ChatMgr.SendSystemMessage(Instance.Characters, msg);
+			Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSCaptureFlag), 
+                                                                                                                      capturer.Name, Name);
 
 			Opponent.Score++;
 
@@ -229,7 +230,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				FlagCaptured(FlagCarrier);
 			}
 
-			if (FlagCarrier.Auras.Cancel(_flagSpell.SpellId))
+			if (FlagCarrier.Auras.Remove(_flagSpell.SpellId))
 			{
 				Instance.CallDelayed(_flagRespawnTime, () => RespawnFlag()); //Respawn the flag in X seconds
 
@@ -255,8 +256,8 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 				FlagCarrier.SpellCast.Trigger(_flagDropSpell);
 				FlagCarrier.Auras.CreateSelf(_flagDropDebuff, false); // confirmed from logs
 
-				var msg = FlagCarrier.Name + " has dropped the " + Name + " flag!";
-				ChatMgr.SendSystemMessage(Instance.Characters, msg);
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSDropFlag), 
+                                                                                                                    Name, FlagCarrier.Name);
 
 				OnFlagAuraRemoved(FlagCarrier);
 
@@ -307,15 +308,15 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 
 			if (returner != null)
 			{
-				var msg = returner.Name + " has returned the " + Name + " flag!";
-				ChatMgr.SendSystemMessage(Instance.Characters, msg);
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlagByPlayer), 
+                                                                                                                    Name, returner.Name);
 				var stats = (WSGStats)returner.Battlegrounds.Stats;
 				stats.FlagReturns++;
 			}
 			else
 			{
-				var msg = "The " + Name + " flag has been returned to base!";
-				ChatMgr.SendSystemMessage(Instance.Characters, msg);
+				Instance.Characters.SendSystemMessage(DefaultAddonLocalizer.Instance.GetTranslations(AddonMsgKey.WSReturnFlag), 
+                                                                                                                                 Name);
 			}
 
 			var evt = FlagReturned;
@@ -330,7 +331,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		/// </summary>
 		void OnFlagAuraRemoved(Character chr)
 		{
-			chr.RemoveUpdateAction(_debuffUpdate);
+			chr.RemoveUpdateAction(m_DebuffObjectUpdate);
 		}
 
 		private void ApplyFlagCarrierDebuff()

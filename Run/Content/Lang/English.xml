@@ -4,11 +4,21 @@
     <Item Key="Done">
       <Value>Done.</Value>
     </Item>
-    <Item Key="Addon">
-      <Value>Addon</Value>
+    <Item Key="PleaseWait">
+      <Value>Please wait...</Value>
+    </Item>
+    <Item Key="GoBack">
+      <Value>Go back...</Value>
+    </Item>
+    <Item Key="AreYouSure">
+      <Value>Are you sure?</Value>
     </Item>
     <Item Key="Custom">
       <Value>Custom</Value>
+    </Item>
+
+    <Item Key="Addon">
+      <Value>Addon</Value>
     </Item>
     <Item Key="Library">
       <Value>Library</Value>
@@ -142,7 +152,7 @@
       <Value>&lt;spellid&gt;</Value>
     </Item>
     <Item Key="CmdSpellTriggerResponse">
-      <Value>Spell triggerred : </Value>
+      <Value>Spell triggerred: {0}</Value>
     </Item>
     <Item Key="CmdSpellTriggerError">
       <Value>Spell doesn't exist.</Value>
@@ -235,76 +245,76 @@
     </Item>
     <!-- End of Skill Commands   -->
 
-    <!-- 	Region Commands		-->
-    <Item Key="CmdRegionDescription">
-      <Value>Provides Commands to manipulate Regions and their content.</Value>
+    <!-- 	Map Commands		-->
+    <Item Key="CmdMapDescription">
+      <Value>Provides Commands to manipulate Maps and their content.</Value>
     </Item>
 
-    <Item Key="CmdRegionSpawnParamInfo">
+    <Item Key="CmdMapSpawnParamInfo">
       <Value>[-a|&lt;name&gt;]</Value>
     </Item>
-    <Item Key="CmdRegionSpawnDescription">
+    <Item Key="CmdMapSpawnDescription">
       <Value>
-        Spawns GOs and NPCs in the current (or specified) region.
-        -a switch spawns all active Regions.
-        (Only used for development purposes where the regions arent spawned automatically.)
+        Spawns GOs and NPCs in the current (or specified) map.
+        -a switch spawns all active Maps.
+        (Only used for development purposes where the maps arent spawned automatically.)
       </Value>
     </Item>
-    <Item Key="CmdRegionSpawnResponse">
-      <Value>Spawned region </Value>
+    <Item Key="CmdMapSpawnResponse">
+      <Value>Spawned map </Value>
     </Item>
-    <Item Key="CmdRegionSpawnResponse1">
-      <Value>All regions spawned.</Value>
+    <Item Key="CmdMapSpawnResponse1">
+      <Value>All maps spawned.</Value>
     </Item>
-    <Item Key="CmdRegionSpawnError1">
-      <Value>Invalid Region.</Value>
+    <Item Key="CmdMapSpawnError1">
+      <Value>Invalid Map.</Value>
     </Item>
-    <Item Key="CmdRegionSpawnError2">
-      <Value>You did not specify the Region to be spawned.</Value>
+    <Item Key="CmdMapSpawnError2">
+      <Value>You did not specify the Map to be spawned.</Value>
     </Item>
-    <Item Key="CmdRegionSpawnError3">
-      <Value>Region is already spawned.</Value>
+    <Item Key="CmdMapSpawnError3">
+      <Value>Map is already spawned.</Value>
     </Item>
-    <Item Key="CmdRegionSpawnResponse2">
+    <Item Key="CmdMapSpawnResponse2">
       <Value>Spawning {0}...</Value>
     </Item>
-    <Item Key="CmdRegionSpawnError4">
+    <Item Key="CmdMapSpawnError4">
       <Value>No GOs will be spawned (Use 'Load GOs' before spawning)</Value>
     </Item>
-    <Item Key="CmdRegionSpawnError5">
+    <Item Key="CmdMapSpawnError5">
       <Value>No NPCs will be spawned (Use 'Load NPCs' before spawning)</Value>
     </Item>
-    <Item Key="CmdRegionSpawnResponse3">
-      <Value>Spawned region </Value>
+    <Item Key="CmdMapSpawnResponse3">
+      <Value>Spawned map </Value>
     </Item>
 
-    <Item Key="CmdRegionClearParamInfo">
+    <Item Key="CmdMapClearParamInfo">
       <Value>[&lt;name&gt;]</Value>
     </Item>
-    <Item Key="CmdRegionClearDescription">
-      <Value>Removes all objects from the current or given Region.</Value>
+    <Item Key="CmdMapClearDescription">
+      <Value>Removes all objects from the current or given Map.</Value>
     </Item>
-    <Item Key="CmdRegionClearError1">
-      <Value>Invalid Region.</Value>
+    <Item Key="CmdMapClearError1">
+      <Value>Invalid Map.</Value>
     </Item>
-    <Item Key="CmdRegionClearError2">
-      <Value>You did not specify a Region to be cleared.</Value>
+    <Item Key="CmdMapClearError2">
+      <Value>You did not specify a Map to be cleared.</Value>
     </Item>
-    <Item Key="CmdRegionClearResponse">
-      <Value>Cleared Region </Value>
-    </Item>
-
-    <Item Key="CmdRegionUpdateDescription">
-      <Value>Toggles region updates in all Regions on or off</Value>
+    <Item Key="CmdMapClearResponse">
+      <Value>Cleared Map </Value>
     </Item>
 
-    <!-- End of Region Commands -->
-
-    <Item Key="CmdRegionListDescription">
-      <Value>Lists active regions</Value>
+    <Item Key="CmdMapUpdateDescription">
+      <Value>Toggles map updates in all Maps on or off</Value>
     </Item>
-    <Item Key="CmdRegionListResponse">
-      <Value>Active Regions: </Value>
+
+    <!-- End of Map Commands -->
+
+    <Item Key="CmdMapListDescription">
+      <Value>Lists active maps</Value>
+    </Item>
+    <Item Key="CmdMapListResponse">
+      <Value>Active Maps: </Value>
     </Item>
     <Item Key="GossipOptionTrainer">
       <Value>Train me...</Value>
@@ -341,5 +351,52 @@
     <Item Key="InvalidClass">
       <Value>Invalid Class.</Value>
     </Item>
+    <Item Key ="Goodbye">
+      <Value>Goodbye!</Value>
+    </Item>
+  
+<!--Editor-->
+    <Item Key ="EditorMapMenuText">
+      <Value>Welcome to the Map Editor</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNoData">
+      <Value>Data not loaded yet</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusDataLoading">
+      <Value>Data is loading...</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusNotSpawned">
+      <Value>Map is not spawned</Value>
+    </Item>
+    <Item Key ="EditorMapMenuStatusSpawning">
+      <Value>Map Spawning...</Value>
+    </Item>
+
+    <Item Key ="EditorMapMenuLoadData">
+      <Value>Load Map Data</Value>
+    </Item>
+    <Item Key ="EditorMapMenuSpawnMap">
+      <Value>Spawn Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuClearMap">
+      <Value>Clear Map</Value>
+    </Item>
+    <Item Key ="EditorMapMenuShow">
+      <Value>Show all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuHide">
+      <Value>Hide all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuEnableAllSpawnPoints">
+      <Value>Enable all Spawnpoints</Value>
+    </Item>
+    <Item Key ="EditorMapMenuDisableAllSpawnPoints">
+      <Value>Disable all Spawnpoints</Value>
+    </Item>
+
+    <Item Key ="EditorSpawnPointMenuMoveOverHere">
+      <Value>Move over here</Value>
+    </Item>
+    
   </Items>
 </Translation>

@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Commands
 			var radius = trigger.Text.NextFloat(5);
 			var scale = trigger.Text.NextFloat(1);
 			var dynObj = new DynamicObject(trigger.Args.Character, spellId, radius,
-				trigger.Args.Target.Region, trigger.Args.Target.Position)
+				trigger.Args.Target.Map, trigger.Args.Target.Position)
 				{
 					ScaleX = scale
 				};

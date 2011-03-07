@@ -14,9 +14,6 @@
  *
  *************************************************************************/
 
-using WCell.RealmServer.Entities;
-using WCell.RealmServer.Formulas;
-
 namespace WCell.RealmServer.Spells.Auras.Handlers
 {
 	/// <summary>

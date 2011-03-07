@@ -22,35 +22,24 @@ namespace WCell.RealmServer.Handlers
 			var targetEntityId = packet.ReadEntityId();
 
 			var chr = client.ActiveCharacter;
-			var target = chr.Region.GetObject(targetEntityId) as Unit;
+			var target = chr.Map.GetObject(targetEntityId) as Unit;
 
 			if (target == null)
 				return;
-
-			if (chr.GossipConversation != null)
-			{
-				chr.GossipConversation = null;
-			}
+			
+			chr.GossipConversation = null;
 
 			var menu = target.GossipMenu;
 			if (menu == null)
 				return;
 
-			if (target is NPC)
-			{
-				if (!((NPC)target).CheckVendorInteraction(chr))
-				{
-					return;
-				}
-			}
-			else if (!chr.Role.IsStaff)
+			if (target is NPC && !((NPC) target).CheckVendorInteraction(chr) && !chr.Role.IsStaff)
 			{
 				return;
 			}
+
 			chr.OnInteract(target);
-			var conversation = new GossipConversation(menu, chr, target, menu.KeepOpen);
-			client.ActiveCharacter.GossipConversation = conversation;
-			conversation.DisplayCurrentMenu();
+			chr.StartGossip(menu, target);
 		}
 
 		/// <summary>
@@ -72,7 +61,7 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			var chr = client.ActiveCharacter;
-			var worldObject = chr.Region.GetObject(targetEntityId);
+			var worldObject = chr.Map.GetObject(targetEntityId);
 
 			if (worldObject == null)
 				return;
@@ -91,23 +80,27 @@ namespace WCell.RealmServer.Handlers
 		/// </summary>
 		/// <param name="chr">recieving character</param>
 		/// <param name="owner">EntityID of sender</param>
-		public static void SendPageToCharacter(GossipConversation convo, uint bodyTextID,
-											   IList<GossipMenuItemBase> gossipItems,
+		public static void SendPageToCharacter(GossipConversation convo,
 											   IList<QuestMenuItem> questItems)
 		{
-			var owner = convo.Speaker;
+			var speaker = convo.Speaker;
 			var chr = convo.Character;
 
-			if (bodyTextID == 0)
+			var menu = convo.CurrentMenu;
+			var gossipItems = menu.GossipItems;
+			var gossipEntry = menu.GossipEntry;
+
+			if (gossipEntry.IsDynamic)
 			{
-				// Client won't display the gossip if text id is 0
-				bodyTextID = 1;
+				// not cached
+				QueryHandler.SendNPCTextUpdate(chr, gossipEntry);
 			}
+
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_MESSAGE))
 			{
-				packet.Write(owner.EntityId);
+				packet.Write(speaker.EntityId);
 				packet.Write(0);				// new Flag field since 2.4.0 - menu id
-				packet.Write(bodyTextID);
+				packet.Write(gossipEntry.GossipId);
 
 				var countPos = packet.Position;
 				packet.Position += 4;
@@ -117,7 +110,7 @@ namespace WCell.RealmServer.Handlers
 					for (var i = 0; i < gossipItems.Count; i++)
 					{
 						var item = gossipItems[i];
-						if (item.Action != null && !item.Action.CanUse(chr))
+						if (item.Action != null && !item.Action.CanUse(convo))
 						{
 							continue;
 						}
@@ -171,16 +164,16 @@ namespace WCell.RealmServer.Handlers
 		/// <summary>
 		/// Send Point of interest which will then appear on the minimap
 		/// </summary>
-		public static void SendGossipPOI(IPacketReceiver rcv, GossipPOIFlags flags, float x, float y, int extra, string name)
+        public static void SendGossipPOI(IPacketReceiver rcv, GossipPOIFlags Flags, float X, float Y, int Data, int Icon, string Name)
 		{
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GOSSIP_POI))
 			{
-				packet.Write((uint)flags);
-				packet.Write(x);
-				packet.Write(y);
-				packet.Write(extra);
-				packet.Write(0);
-				packet.WriteCString(name);
+				packet.Write((uint)Flags);
+				packet.Write(X);
+				packet.Write(Y);
+				packet.Write(Data);
+				packet.Write(Icon);
+				packet.WriteCString(Name);
 				rcv.Send(packet);
 			}
 		}

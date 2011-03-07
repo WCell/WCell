@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Translation xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Items>
+    <Item Key="Sample">
+      <Value>This is a localizable sample entry</Value>
+    </Item>
+    <Item Key="Trade">
+      <Value>Trade</Value>
+    </Item>
+	
+	<!-- Arathi Basin -->
+	<Item Key="ABOnStart">
+	  <Value>The battle for Arathi Basin has begun!</Value>
+	</Item>
+	<Item Key="ABOnFinish">
+	  <Value>The {0} wins!</Value>
+	</Item>
+	<Item Key="ABOnPrepareHalfTime">
+	  <Value>The battle for Arathi Basin begins in {0} seconds.  Prepare yourselves!</Value>
+	</Item>
+    <Item Key="ABOnPrepare">
+	  <Value>The battle for Arathi Basin begins in {0}.</Value>
+	</Item>
+	<Item Key="ABOnLeave">
+	  <Value>{0} has left the battle!</Value>
+	</Item>
+	<Item Key="ABOnEnter">
+	  <Value>{0} has entered the battle!</Value>
+	</Item>
+	<Item Key="ABNearVictory">
+	  <Value>The {0} has gathered {1} resources, and is near victory!</Value>
+	</Item>
+	<Item Key="ABBaseTaken">
+	  <Value>The {0} has taken the {1}</Value>
+	</Item>
+	<Item Key="ABBaseDefended">
+	  <Value>{0} has defended the {1}</Value>
+	</Item>
+	<Item Key="ABBaseAssaulted">
+	  <Value>{0} has assaulted the {1}</Value>
+	</Item>
+	<Item Key="ABBaseClaimed">
+	  <Value>{0} claims the {1}! If left unchallenged, the {2} will control it in {3}!</Value>
+	</Item>
+	<Item Key="ABStables">
+	  <Value>stables</Value>
+	</Item>
+	<Item Key="ABBlacksmith">
+	  <Value>blacksmith</Value>
+	</Item>
+	<Item Key="ABLumberMill">
+	  <Value>lumber mill</Value>
+	</Item>
+	<Item Key="ABFarm">
+	  <Value>farm</Value>
+	</Item>
+	<Item Key="ABGoldMine">
+	  <Value>gold mine</Value>
+	</Item>
+	
+	<!-- Warsong Gulch -->
+	<Item Key="WSOnStart">
+	  <Value>Let the battle for Warsong Gulch begin!</Value>
+	</Item>
+	<Item Key="WSOnFinish">
+	  <Value>The {0} wins!</Value>
+	</Item>
+	<Item Key="WSOnPrepareHalfTime">
+	  <Value>The battle for Warsong Gulch begins in {0} seconds. Prepare yourselves!</Value>
+	</Item>
+	<Item Key="WSOnPrepare">
+	  <Value>The battle for Warsong Gulch begins in {0}.</Value>
+	</Item>
+	<Item Key="WSOnLeave">
+	  <Value>{0} has left the battle!</Value>
+	</Item>
+	<Item Key="WSOnEnter">
+	  <Value>{0} has entered the battle!</Value>
+	</Item>
+	<Item Key="WSPickupFlag">
+	  <Value>The {0} Flag was picked up by {1}!</Value>
+	</Item>
+	<Item Key="WSCaptureFlag">
+	  <Value>{0} captured the {1} flag!</Value>
+	</Item>
+	<Item Key="WSDropFlag">
+	  <Value>The {0} flag was dropped by {1}!</Value>
+	</Item>
+	<Item Key="WSReturnFlag">
+	  <Value>The {0} flag is now placed at its base.</Value>
+	</Item>
+	<Item Key="WSReturnFlagByPlayer">
+	  <Value>The {0} flag was returned to its base by {1}!</Value>
+	</Item>
+	
+	<!-- Guard Gossip -->
+	<Item Key="GuardBank">
+      <Value>The Bank</Value>
+	</Item>
+	<Item Key="GuardIronforge">
+      <Value>Bank of Ironforge</Value>
+	</Item>
+	<Item Key="GuardStormwind">
+      <Value>Bank of Stormwind</Value>
+	</Item>
+	<Item Key="GuardTram">
+      <Value>Deeprun Tram</Value>
+	</Item>
+	<Item Key="GuardGuild">
+      <Value>The Guild Master</Value>
+	</Item>
+	<Item Key="GuardInn">
+      <Value>The Inn</Value>
+	</Item>
+	<Item Key="GuardClass">
+	  <Value>A Class Trainer</Value>
+	</Item>
+	<Item Key="GuardProfession">
+      <Value>A Profession Trainer</Value>
+	</Item>
+	<Item Key="GuardWindRider">
+      <Value>The Wind Rider Master</Value>
+	</Item>
+	<Item Key="GuardBat">
+      <Value>The Bat Handler</Value>
+	</Item>
+	<Item Key="GuardHippogryph">
+      <Value>Hippogryph Master</Value>
+	</Item>
+	<Item Key="GuardGryphon">
+      <Value>Gryphon Master</Value>
+	</Item>
+  <Item Key="GuardFerry">
+    <Value>Rut'Theran Ferry</Value>
+  </Item>
+	<Item Key="GuardHarbor">
+      <Value>Stormwind Harbor</Value>
+	</Item>
+	<Item Key="GuardLock">
+      <Value>Locksmith</Value>
+	</Item>
+	<Item Key="GuardMail">
+      <Value>A Mailbox</Value>
+	</Item>
+	<Item Key="GuardAuction">
+      <Value>The Auction House</Value>
+	</Item>
+	<Item Key="GuardZepplin">
+      <Value>The Zeppelin Master</Value>
+	</Item>
+	<Item Key="GuardWeapon">
+      <Value>The Weapon Master</Value>
+	</Item>
+	<Item Key="GuardStable">
+      <Value>Stable Master</Value>
+	</Item>
+	<Item Key="GuardOfficer">
+      <Value>The Officers' Lounge</Value>
+	</Item>
+	<Item Key="GuardBattle">
+      <Value>Battlemasters</Value>
+	</Item>
+	<Item Key="GuardArena">
+      <Value>Arena Battlemasters</Value>
+	</Item>
+	<Item Key="GuardHBattle">
+      <Value>Horde Battlemasters</Value>
+	</Item>
+	<Item Key="GuardABattle">
+      <Value>Alliance Battlemasters</Value>
+	</Item>
+	<Item Key="GuardBarber">
+      <Value>Barber</Value>
+	</Item>
+	<Item Key="GuardWest">
+      <Value>The West</Value>
+	</Item>
+	<Item Key="GuardEast">
+      <Value>The East</Value>
+	</Item>
+	<Item Key="GuardDragonhawk">
+      <Value>Dragonhawk Master</Value>
+	</Item>
+	<Item Key="GuardSilvermoonInn">
+      <Value>The Silvermoon City Inn</Value>
+	</Item>
+	<Item Key="GuardWayfarer">
+      <Value>The Wayfarer's Rest Tavern</Value>
+	</Item>
+	<Item Key="GuardManaLoom">
+      <Value>Mana Loom</Value>
+	</Item>
+	<Item Key="GuardLexicon">
+      <Value>Lexicon of Power</Value>
+	</Item>
+	<Item Key="GuardTavern">
+      <Value>World's End Tavern</Value>
+	</Item>
+	<Item Key ="GuardABank">
+      <Value>Aldor Bank</Value>
+	</Item>
+	<Item Key="GuardSBank">
+      <Value>Scryers Bank</Value>
+	</Item>
+	<Item Key="GuardAInn">
+      <Value>Aldor Inn</Value>
+	</Item>
+	<Item Key="GuardSInn">
+      <Value>Scryers Inn</Value>
+	</Item>
+	<Item Key="GuardFMaster">
+      <Value>The Flight Master</Value>
+	</Item>
+	<Item Key="GuardAStable">
+      <Value>Aldor Stable</Value>
+	</Item>
+	<Item Key="GuardSStable">
+      <Value>Scryers Stable</Value>
+	</Item>
+	<Item Key="GuardALab">
+      <Value>Alchemy Lab</Value>
+	</Item>
+	<Item Key="GuardGem">
+      <Value>Gem Merchant</Value>
+	</Item>
+	<Item Key="GuardAGem">
+      <Value>Aldor Gem Merchant</Value>
+	</Item>
+	<Item Key="GuardSGem">
+      <Value>Scryers Gem Merchant</Value>
+	</Item>
+	<Item Key="TrainDruid">
+      <Value>Druid</Value>
+	</Item>
+	<Item Key="TrainHunter">
+      <Value>Hunter</Value>
+	</Item>
+	<Item Key="TrainMage">
+      <Value>Mage</Value>
+	</Item>
+	<Item Key="TrainPaladin">
+      <Value>Paladin</Value>
+	</Item>
+	<Item Key="TrainPriest">
+      <Value>Priest</Value>
+	</Item>
+	<Item Key="TrainRogue">
+      <Value>Rogue</Value>
+	</Item>
+	<Item Key="TrainShaman">
+      <Value>Shaman</Value>
+	</Item>
+	<Item Key="TrainWarlock">
+      <Value>Warlock</Value>
+	</Item>
+	<Item Key="TrainWarrior">
+      <Value>Warrior</Value>
+	</Item>
+	<Item Key="ProfAlchemy">
+      <Value>Alchemy</Value>
+	</Item>
+	<Item Key="ProfBlacksmithing">
+      <Value>Blacksmithing</Value>
+	</Item>
+	<Item Key="ProfCooking">
+      <Value>Cooking</Value>
+	</Item>
+	<Item Key="ProfEnchanting">
+      <Value>Enchanting</Value>
+	</Item>
+	<Item Key="ProfEngineering">
+      <Value>Engineering</Value>
+	</Item>
+	<Item Key="ProfFirstAid">
+      <Value>First Aid</Value>
+	</Item>
+	<Item Key="ProfFishing">
+      <Value>Fishing</Value>
+	</Item>
+	<Item Key="ProfHerbalism">
+      <Value>Herbalism</Value>
+	</Item>
+	<Item Key="ProfInscription">
+      <Value>Inscription</Value>
+	</Item>
+	<Item Key="ProfJewelcrafting">
+      <Value>Jewelcrafting</Value>
+	</Item>
+	<Item Key="ProfLeatherworking">
+      <Value>Leatherworking</Value>
+	</Item>
+	<Item Key="ProfMining">
+      <Value>Mining</Value>
+	</Item>
+	<Item Key="ProfSkinning">
+      <Value>Skinning</Value>
+	</Item>
+	<Item Key="ProfTailoring">
+      <Value>Tailoring</Value>
+	</Item>
+  <Item Key="NPCTiare">
+    <Value>Teleport me to Amber Ledge!</Value>
+  </Item>
+  <Item Key="NPCCurgle1">
+    <Value>Please tell me more about the Hippogryphs</Value>
+  </Item>
+  <Item Key="NPCCurgle2">
+    <Value>Please tell me more about the Gordunni Ogres</Value>
+  </Item>
+  <Item Key="NPCTrenton">
+    <Value>Tell me more, Trenton</Value>
+  </Item>
+    
+  </Items>
+</Translation>

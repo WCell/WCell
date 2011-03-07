@@ -16,6 +16,12 @@ namespace WCell.RealmServer.Items
 			get;
 		}
 
+		int BonusDamage
+		{
+			get;
+			set;
+		}
+
 		/// <summary>
 		/// The Skill that this weapon requires
 		/// </summary>

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,21 +23,21 @@ namespace WCell.Addons.Default.Spells.Priest
             SpellLineId.PriestShadowMagicShadowWeaving.Apply(spell =>
             {
                 var effect = spell.GetEffect(AuraType.AddTargetTrigger);
-                effect.ImplicitTargetA = ImplicitTargetType.Self;
+                effect.ImplicitTargetA = ImplicitSpellTargetType.Self;
                 effect.AddAffectingSpells(SpellLineId.PriestShadowMagicMindFlay);
             });
 
             // Mind Flay: Assault the target's mind with Shadow energy, causing ${$m3*3} Shadow damage over $d and slowing their movement speed by $s2%.
 			SpellLineId.PriestShadowMagicMindFlay.Apply(spell =>
             {
-                var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitTargetType.SingleEnemy);
+                var effect = spell.AddAuraEffect(AuraType.PeriodicDamage, ImplicitSpellTargetType.SingleEnemy);
                 effect.Amplitude = spell.Effects[2].Amplitude;
             });
 
             // Dispersion also regenerates Mana
             SpellLineId.PriestShadowMagicDispersion.Apply(spell =>
             {
-                var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitTargetType.Self);
+                var effect = spell.AddPeriodicTriggerSpellEffect(SpellId.Dispersion_2, ImplicitSpellTargetType.Self);
                 effect.Amplitude = 1000;
             });
 
@@ -86,7 +86,7 @@ namespace WCell.Addons.Default.Spells.Priest
                     var group = chr.Group;
                     if (group != null)
                     {
-                        // heal all group members in same context (ie same Region in current implementation)
+                        // heal all group members in same context (ie same Map in current implementation)
                         group.CallOnAllInSameContext(chr.ContextHandler, (member) =>
                         {
                             member.Heal(healPartyAmount, owner, SpellEffect);

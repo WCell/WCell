@@ -1,23 +1,8 @@
-/*************************************************************************
- *
- *   file		: Dispel.cs
- *   copyright		: (C) The WCell Team
- *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-14 13:00:53 +0100 (to, 14 jan 2010) $
- *   last author	: $LastChangedBy: dominikseifert $
- *   revision		: $Rev: 1192 $
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *************************************************************************/
-
 using System;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
+using WCell.Util;
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -37,7 +22,38 @@ namespace WCell.RealmServer.Spells.Effects
 				throw new Exception("Invalid DispelType None in Spell: " + Effect.Spell);
 			}
 
-			((Unit)target).Auras.RemoveWhere(aura => aura.Spell.DispelType == dispelType, CalcEffectValue());
+			var caster = Cast.CasterUnit;
+			var max = CalcEffectValue();
+
+			foreach (var aura in ((Unit)target).Auras)
+			{
+				if (aura.Spell.DispelType == dispelType)
+				{
+					// Check dispel resistance
+					var auraCaster = aura.CasterUnit;
+					if (caster != null && auraCaster != null && caster.MayAttack(auraCaster))
+					{
+						// trying to remove buff from enemy or debuff from friend
+
+						var dispelResistance = auraCaster.Auras.GetModifiedInt(SpellModifierType.DispelResistance, aura.Spell, 1);	// base chance of 1%
+
+						// "Reduces the chance [auras] will be dispelled by x%"
+						if (dispelResistance > Utility.Random(100))
+						{
+							if (--max == 0)		// one less to dispel
+							{
+								break;
+							}
+							continue;
+						}
+					}
+					aura.Remove();
+					if (--max == 0)
+					{
+						break;
+					}
+				}
+			}
 		}
 
 		public override ObjectTypes TargetType

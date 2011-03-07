@@ -143,7 +143,7 @@ namespace WCell.Core.Cryptography
             //byte[20] sha1 hash of md5 from above and byte[20] (all zero)
             byte[] shaHash2 = packet.ReadBytes(20);
 
-            byte[] username = Encoding.ASCII.GetBytes(m_srp.Username);
+			byte[] username = WCellConstants.DefaultEncoding.GetBytes(m_srp.Username);
 
             var sha = new SHA1Managed();
             sha.TransformBlock(username, 0, username.Length, username, 0);

@@ -14,13 +14,22 @@ namespace WCell.RealmServer.Guilds
 
         public ItemRecord this[int slot]
         {
-            get { return slot < GuildMgr.MAX_BANK_TAB_SLOTS ? ItemRecords[slot] : null; }
+            get
+            {
+                if (slot > GuildMgr.MAX_BANK_TAB_SLOTS)
+                    return null;
+                return slot < ItemRecords.Count - 1 ? ItemRecords[slot] : null;
+            }
             set
             {
-                Items[slot] = new GuildBankTabItemMapping() {
+                if (slot > GuildMgr.MAX_BANK_TAB_SLOTS)
+                    return;
+
+                Items[slot] = new GuildBankTabItemMapping {
                     Guid = value.Guid,
                     TabSlot = (byte)slot
                 };
+
                 ItemRecords[slot] = value;
             }
         }

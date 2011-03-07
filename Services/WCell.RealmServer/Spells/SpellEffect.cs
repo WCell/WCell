@@ -40,16 +40,16 @@ namespace WCell.RealmServer.Spells
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private static readonly ImplicitTargetType[] NoTargetTypes = new[] {
-			ImplicitTargetType.None,
-			ImplicitTargetType.CaliriEggs,
-			ImplicitTargetType.DynamicObject,
-			ImplicitTargetType.GameObject,
-			ImplicitTargetType.GameObjectOrItem,
-			ImplicitTargetType.HeartstoneLocation,
-			ImplicitTargetType.ScriptedGameObject,
-			ImplicitTargetType.ScriptedLocation,
-			ImplicitTargetType.ScriptedObjectLocation
+		private static readonly ImplicitSpellTargetType[] NoTargetTypes = new[] {
+			ImplicitSpellTargetType.None,
+			ImplicitSpellTargetType.CaliriEggs,
+			ImplicitSpellTargetType.DynamicObject,
+			ImplicitSpellTargetType.GameObject,
+			ImplicitSpellTargetType.GameObjectOrItem,
+			ImplicitSpellTargetType.HeartstoneLocation,
+			ImplicitSpellTargetType.ScriptedGameObject,
+			ImplicitSpellTargetType.ScriptedLocation,
+			ImplicitSpellTargetType.ScriptedObjectLocation
 		};
 
 		public static HashSet<AuraType> ProcAuraTypes = new HashSet<AuraType> {
@@ -109,15 +109,15 @@ namespace WCell.RealmServer.Spells
 			if (AreaEffects.Contains(ImplicitTargetA))
 			{
 				IsAreaEffect = true;
-				if (ImplicitTargetB != ImplicitTargetType.None && AreaEffects.Contains(ImplicitTargetB))
+				if (ImplicitTargetB != ImplicitSpellTargetType.None && AreaEffects.Contains(ImplicitTargetB))
 				{
-					ImplicitTargetB = ImplicitTargetType.None;
+					ImplicitTargetB = ImplicitSpellTargetType.None;
 				}
 			}
-			else if (ImplicitTargetB != ImplicitTargetType.None && AreaEffects.Contains(ImplicitTargetB))
+			else if (ImplicitTargetB != ImplicitSpellTargetType.None && AreaEffects.Contains(ImplicitTargetB))
 			{
 				IsAreaEffect = true;
-				ImplicitTargetA = ImplicitTargetType.None;
+				ImplicitTargetA = ImplicitSpellTargetType.None;
 			}
 
 			if (IsPeriodic = Amplitude > 0)
@@ -137,34 +137,34 @@ namespace WCell.RealmServer.Spells
 				// proc effect etc
 				HarmType = HarmType.Beneficial;
 			}
-			else if ((HasTarget(ImplicitTargetType.AllEnemiesAroundCaster,
-								ImplicitTargetType.AllEnemiesInArea,
-								ImplicitTargetType.AllEnemiesInAreaChanneled,
-								ImplicitTargetType.AllEnemiesInAreaInstant,
-								ImplicitTargetType.CurrentSelection) ||
-					  HasTarget(ImplicitTargetType.InFrontOfCaster,
-								ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
-								ImplicitTargetType.LocationInFrontCaster,
-								ImplicitTargetType.NetherDrakeSummonLocation,
-								ImplicitTargetType.SelectedEnemyChanneled,
-								ImplicitTargetType.SelectedEnemyDeadlyPoison,
-								ImplicitTargetType.SingleEnemy,
-								ImplicitTargetType.SpreadableDesease,
-								ImplicitTargetType.TargetAtOrientationOfCaster)) &&
+			else if ((HasTarget(ImplicitSpellTargetType.AllEnemiesAroundCaster,
+								ImplicitSpellTargetType.AllEnemiesInArea,
+								ImplicitSpellTargetType.AllEnemiesInAreaChanneled,
+								ImplicitSpellTargetType.AllEnemiesInAreaInstant,
+								ImplicitSpellTargetType.CurrentSelection) ||
+					  HasTarget(ImplicitSpellTargetType.InFrontOfCaster,
+								ImplicitSpellTargetType.InvisibleOrHiddenEnemiesAtLocationRadius,
+								ImplicitSpellTargetType.LocationInFrontCaster,
+								ImplicitSpellTargetType.NetherDrakeSummonLocation,
+								ImplicitSpellTargetType.SelectedEnemyChanneled,
+								ImplicitSpellTargetType.SelectedEnemyDeadlyPoison,
+								ImplicitSpellTargetType.SingleEnemy,
+								ImplicitSpellTargetType.SpreadableDesease,
+								ImplicitSpellTargetType.TargetAtOrientationOfCaster)) &&
 					 (!HasTarget(
-						ImplicitTargetType.Self,
-						ImplicitTargetType.AllFriendlyInAura,
-						ImplicitTargetType.AllParty,
-						ImplicitTargetType.AllPartyAroundCaster,
-						ImplicitTargetType.AllPartyInArea,
-						ImplicitTargetType.PartyAroundCaster,
-						ImplicitTargetType.AllPartyInAreaChanneled) ||
+						ImplicitSpellTargetType.Self,
+						ImplicitSpellTargetType.AllFriendlyInAura,
+						ImplicitSpellTargetType.AllParty,
+						ImplicitSpellTargetType.AllPartyAroundCaster,
+						ImplicitSpellTargetType.AllPartyInArea,
+						ImplicitSpellTargetType.PartyAroundCaster,
+						ImplicitSpellTargetType.AllPartyInAreaChanneled) ||
 					  Spell.Mechanic.IsNegative()))
 			{
 				HarmType = HarmType.Harmful;
 			}
-			else if (!HasTarget(ImplicitTargetType.Duel) &&
-					 (ImplicitTargetA != ImplicitTargetType.None || ImplicitTargetB != ImplicitTargetType.None))
+			else if (!HasTarget(ImplicitSpellTargetType.Duel) &&
+					 (ImplicitTargetA != ImplicitSpellTargetType.None || ImplicitTargetB != ImplicitSpellTargetType.None))
 			{
 				HarmType = HarmType.Beneficial;
 			}
@@ -174,6 +174,13 @@ namespace WCell.RealmServer.Spells
 			{
 				// 5000 ms if not specified otherwise
 				Amplitude = ModManaRegenHandler.DefaultAmplitude;
+			}
+
+			if (HasTarget(ImplicitSpellTargetType.AllFriendlyInAura))
+			{
+				// whenever it's used, its used together with AllEnemiesAroundCaster in a beneficial spell)
+				ImplicitTargetA = ImplicitSpellTargetType.AllFriendlyInAura;
+				ImplicitTargetB = ImplicitSpellTargetType.None;
 			}
 
 			HasTargets = !NoTargetTypes.Contains(ImplicitTargetA) || !NoTargetTypes.Contains(ImplicitTargetB);
@@ -188,11 +195,11 @@ namespace WCell.RealmServer.Spells
 			{
 				if (Radius > 0)
 				{
-					ImplicitTargetA = ImplicitTargetType.AllPartyInArea;
+					ImplicitTargetA = ImplicitSpellTargetType.AllPartyInArea;
 				}
 				else
 				{
-					ImplicitTargetA = ImplicitTargetType.AllParty;
+					ImplicitTargetA = ImplicitSpellTargetType.AllParty;
 				}
 			}
 
@@ -221,10 +228,10 @@ namespace WCell.RealmServer.Spells
 
 			IsStrikeEffectPct = EffectType == SpellEffectType.WeaponPercentDamage;
 
-			IsTotem = HasTarget(ImplicitTargetType.TotemAir) ||
-					  HasTarget(ImplicitTargetType.TotemEarth) ||
-					  HasTarget(ImplicitTargetType.TotemFire) ||
-					  HasTarget(ImplicitTargetType.TotemWater);
+			IsTotem = HasTarget(ImplicitSpellTargetType.TotemAir) ||
+					  HasTarget(ImplicitSpellTargetType.TotemEarth) ||
+					  HasTarget(ImplicitSpellTargetType.TotemFire) ||
+					  HasTarget(ImplicitSpellTargetType.TotemWater);
 
 			IsProc = IsProc || ProcAuraTypes.Contains(AuraType);
 
@@ -236,16 +243,11 @@ namespace WCell.RealmServer.Spells
 						   AuraType == AuraType.PeriodicHeal ||
 						   (TriggerSpell != null && TriggerSpell.IsHealSpell);
 
+			IsDamageEffect = EffectType == SpellEffectType.SchoolDamage || IsStrikeEffect;
+
 			IsModifierEffect = AuraType == AuraType.AddModifierFlat || AuraType == AuraType.AddModifierPercent;
 
-			foreach (var mask in AffectMask)
-			{
-				if (mask != 0)
-				{
-					HasAffectMask = true;
-					break;
-				}
-			}
+			HasAffectMask = AffectMask.Any(mask => mask != 0);
 
 			if (HasAffectMask)
 			{
@@ -270,6 +272,8 @@ namespace WCell.RealmServer.Spells
 			IsEnchantmentEffect = EffectType == SpellEffectType.EnchantHeldItem ||
 				EffectType == SpellEffectType.EnchantItem ||
 				EffectType == SpellEffectType.EnchantItemTemporary;
+
+			AISpellUtil.DecideDefaultTargetHandlerDefintion(this);
 		}
 
 		/// <summary>
@@ -278,29 +282,32 @@ namespace WCell.RealmServer.Spells
 		private void RepairBrokenTargetPairs()
 		{
 			// Used on some beam visuals
-			if (ImplicitTargetA == ImplicitTargetType.Self && ImplicitTargetB == ImplicitTargetType.Duel)
+			if (ImplicitTargetA == ImplicitSpellTargetType.Self && ImplicitTargetB == ImplicitSpellTargetType.Duel)
 			{
 				// Duel and Self doesn't make sense -> Remove Self
-				ImplicitTargetA = ImplicitTargetType.None;
+				ImplicitTargetA = ImplicitSpellTargetType.None;
 			}
 		}
 
 		#endregion
 
 		/// <summary>
-		/// Whether b has the same targets as this effect
+		/// Whether this effect can share targets with the given effect
 		/// </summary>
-		public bool TargetsEqual(SpellEffect b)
+		public bool SharesTargetsWith(SpellEffect b, bool aiCast)
 		{
-			return ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB;
+			// if a TargetDefinition is set, it overrides the default implicit targets
+			var targetDef = GetTargetDefinition(aiCast);
+			return (targetDef != null && targetDef.Equals(b.GetTargetDefinition(aiCast))) ||
+				(ImplicitTargetA == b.ImplicitTargetA && ImplicitTargetB == b.ImplicitTargetB);
 		}
 
-		public bool HasTarget(ImplicitTargetType target)
+		public bool HasTarget(ImplicitSpellTargetType target)
 		{
 			return ImplicitTargetA == target || ImplicitTargetB == target;
 		}
 
-		public bool HasTarget(params ImplicitTargetType[] targets)
+		public bool HasTarget(params ImplicitSpellTargetType[] targets)
 		{
 			return targets.FirstOrDefault(HasTarget) != 0;
 		}
@@ -436,7 +443,7 @@ namespace WCell.RealmServer.Spells
 			{
 				if (SpellPowerValuePct != 0)
 				{
-					value += (SpellPowerValuePct * ((Character)caster).GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
+					value += (SpellPowerValuePct * caster.GetDamageDoneMod(Spell.Schools[0]) + 50) / 100;
 				}
 			}
 			if (EffectIndex <= 2)
@@ -497,7 +504,7 @@ namespace WCell.RealmServer.Spells
 
 		public int GetMultipliedValue(Unit caster, int val, int currentTargetNo)
 		{
-			if (EffectIndex >= Spell.DamageMultipliers.Length || currentTargetNo == 0)
+			if (EffectIndex >= Spell.DamageMultipliers.Length || EffectIndex < 0 || currentTargetNo == 0)
 			{
 				return val;
 			}
@@ -666,6 +673,13 @@ namespace WCell.RealmServer.Spells
 			SetAffectMask(exclusiveTriggers);
 			AuraEffectHandlerCreator = creator;
 		}
+
+		public bool CanProcBeTriggeredBy(Spell spell)
+		{
+			return spell == null ||
+					!HasAffectingSpells ||
+					MatchesSpell(spell);
+		}
 		#endregion
 
 		#region Dump
@@ -676,11 +690,11 @@ namespace WCell.RealmServer.Spells
 			indent += "\t";
 
 			//writer.WriteLine("Effect {0}", EffectIndex);
-			if (ImplicitTargetA != ImplicitTargetType.None)
+			if (ImplicitTargetA != ImplicitSpellTargetType.None)
 			{
 				writer.WriteLine(indent + "ImplicitTargetA: {0}", ImplicitTargetA);
 			}
-			if (ImplicitTargetB != ImplicitTargetType.None)
+			if (ImplicitTargetB != ImplicitSpellTargetType.None)
 			{
 				writer.WriteLine(indent + "ImplicitTargetB: {0}", ImplicitTargetB);
 			}
@@ -790,12 +804,12 @@ namespace WCell.RealmServer.Spells
 			int targetCount = 0;
 			var targets = new List<string>(2);
 
-			if (ImplicitTargetA != ImplicitTargetType.None)
+			if (ImplicitTargetA != ImplicitSpellTargetType.None)
 			{
 				targetCount++;
 				targets.Add("A: " + ImplicitTargetA);
 			}
-			if (ImplicitTargetB != ImplicitTargetType.None)
+			if (ImplicitTargetB != ImplicitSpellTargetType.None)
 			{
 				targetCount++;
 				targets.Add("B: " + ImplicitTargetB);
@@ -857,8 +871,8 @@ namespace WCell.RealmServer.Spells
 
 		private static readonly Type[] SpellEffectMiscValueBTypes = new Type[(int)SpellEffectType.End];
 		private static readonly Type[] AuraEffectMiscValueBTypes = new Type[(int)AuraType.End];
-		private static readonly HashSet<ImplicitTargetType> TargetAreaEffects = new HashSet<ImplicitTargetType>(),
-			AreaEffects = new HashSet<ImplicitTargetType>();
+		private static readonly HashSet<ImplicitSpellTargetType> TargetAreaEffects = new HashSet<ImplicitSpellTargetType>(),
+			AreaEffects = new HashSet<ImplicitSpellTargetType>();
 
 		public static Type GetSpellEffectEffectMiscValueBType(SpellEffectType type)
 		{
@@ -942,27 +956,27 @@ namespace WCell.RealmServer.Spells
 
 			SetSpellEffectEffectMiscValueBType(SpellEffectType.Summon, typeof(SummonType));
 
-			TargetAreaEffects.AddRange(new[] {ImplicitTargetType.AllAroundLocation,
-			          ImplicitTargetType.AllEnemiesInArea,
-			          ImplicitTargetType.AllEnemiesInAreaChanneled,
-			          ImplicitTargetType.AllEnemiesInAreaInstant,
-			          ImplicitTargetType.AllPartyInArea,
-			          ImplicitTargetType.AllPartyInAreaChanneled,
-			          ImplicitTargetType.InvisibleOrHiddenEnemiesAtLocationRadius});
+			TargetAreaEffects.AddRange(new[] {ImplicitSpellTargetType.AllAroundLocation,
+			          ImplicitSpellTargetType.AllEnemiesInArea,
+			          ImplicitSpellTargetType.AllEnemiesInAreaChanneled,
+			          ImplicitSpellTargetType.AllEnemiesInAreaInstant,
+			          ImplicitSpellTargetType.AllPartyInArea,
+			          ImplicitSpellTargetType.AllPartyInAreaChanneled,
+			          ImplicitSpellTargetType.InvisibleOrHiddenEnemiesAtLocationRadius});
 
 			AreaEffects.AddRange(TargetAreaEffects);
 			AreaEffects.AddRange(new[] {
-						ImplicitTargetType.AllEnemiesAroundCaster,
-						ImplicitTargetType.AllPartyAroundCaster,
-						ImplicitTargetType.AllTargetableAroundLocationInRadiusOverTime,
-						ImplicitTargetType.BehindTargetLocation,
-						ImplicitTargetType.LocationInFrontCaster,
-						ImplicitTargetType.LocationInFrontCasterAtRange,
-						ImplicitTargetType.ConeInFrontOfCaster,
-						ImplicitTargetType.AreaEffectPartyAndClass,
-						ImplicitTargetType.NatureSummonLocation,
-						ImplicitTargetType.TargetAtOrientationOfCaster,
-						ImplicitTargetType.Tranquility});
+						ImplicitSpellTargetType.AllEnemiesAroundCaster,
+						ImplicitSpellTargetType.AllPartyAroundCaster,
+						ImplicitSpellTargetType.AllTargetableAroundLocationInRadiusOverTime,
+						ImplicitSpellTargetType.BehindTargetLocation,
+						ImplicitSpellTargetType.LocationInFrontCaster,
+						ImplicitSpellTargetType.LocationInFrontCasterAtRange,
+						ImplicitSpellTargetType.ConeInFrontOfCaster,
+						ImplicitSpellTargetType.AreaEffectPartyAndClass,
+						ImplicitSpellTargetType.NatureSummonLocation,
+						ImplicitSpellTargetType.TargetAtOrientationOfCaster,
+						ImplicitSpellTargetType.Tranquility});
 		}
 		#endregion
 

@@ -22,6 +22,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;
+using WCell.Constants.World;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
 using WCell.Core.Timers;
@@ -40,7 +41,7 @@ namespace WCell.RealmServer.Spells
 	/// <summary>
 	/// Represents the progress of any Spell-casting
 	/// </summary>
-	public partial class SpellCast : IUpdatable
+	public partial class SpellCast : IUpdatable, IWorldLocation
 	{
 		public static int PushbackDelay = 500;
 		public static int ChannelPushbackFraction = 4;
@@ -82,7 +83,7 @@ namespace WCell.RealmServer.Spells
 			return cast;
 		}
 
-		public static SpellCast ObtainPooledCast(ObjectReference caster, Region map, uint phase, ref Vector3 sourceLoc)
+		public static SpellCast ObtainPooledCast(ObjectReference caster, Map map, uint phase, ref Vector3 sourceLoc)
 		{
 			var cast = SpellCastPool.Obtain();
 			cast.SetCaster(caster, map, phase, sourceLoc);
@@ -121,7 +122,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The map where the SpellCast happens
 		/// </summary>
-		public Region Map
+		public Map Map
 		{
 			get;
 			internal set;
@@ -131,6 +132,22 @@ namespace WCell.RealmServer.Spells
 		{
 			get;
 			internal set;
+		}
+
+		/// <summary>
+		/// Needed for IWorldLocation interface
+		/// </summary>
+		public Vector3 Position
+		{
+			get { return SourceLoc; }
+		}
+
+		/// <summary>
+		/// Needed for IWorldLocation interface
+		/// </summary>
+		public MapId MapId
+		{
+			get { return Map.MapId; }
 		}
 
 		/// <summary>
@@ -144,7 +161,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// An Item that this Spell is being used on
 		/// </summary>
-		public Item UsedItem;
+		public Item TargetItem;
 
 		/// <summary>
 		/// Any kind of item that was used to trigger this cast
@@ -162,14 +179,14 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public Vector3 TargetLoc;
 
-		public Region TargetMap
+		public Map TargetMap
 		{
 			get
 			{
-				Region rgn;
+				Map rgn;
 				if (m_spell.TargetLocation != null)
 				{
-					rgn = m_spell.TargetLocation.Region ?? Map;
+					rgn = m_spell.TargetLocation.Map ?? Map;
 				}
 				else
 				{
@@ -193,6 +210,7 @@ namespace WCell.RealmServer.Spells
 		/// The source location for a spell which has been sent by the player
 		/// </summary>
 		public Vector3 SourceLoc;
+
 
 		public string StringTarget;
 
@@ -263,9 +281,13 @@ namespace WCell.RealmServer.Spells
 			m_castTimer = new TimerEntry(Perform);
 		}
 
-		void SetCaster(ObjectReference caster, Region map, uint phase, Vector3 sourceLoc)
+		void SetCaster(ObjectReference caster, Map map, uint phase, Vector3 sourceLoc)
 		{
 			CasterReference = caster;
+			if (caster == null)
+			{
+				throw new ArgumentNullException("caster");
+			}
 			CasterObject = caster.Object;
 			CasterUnit = caster.UnitMaster;
 			Map = map;
@@ -278,7 +300,7 @@ namespace WCell.RealmServer.Spells
 			CasterReference = caster.SharedReference;
 			CasterObject = caster;
 			CasterUnit = caster.UnitMaster;
-			Map = caster.Region;
+			Map = caster.Map;
 			Phase = caster.Phase;
 		}
 
@@ -305,6 +327,14 @@ namespace WCell.RealmServer.Spells
 		public bool IsPlayerCast
 		{
 			get { return isPlayerCast; }
+		}
+
+		/// <summary>
+		/// Whether the SpellCast was started by an AI-controlled Unit
+		/// </summary>
+		public bool IsAICast
+		{
+			get { return !isPlayerCast && !IsPassive && (CasterUnit == null || !CasterUnit.IsPlayer); }
 		}
 
 		public bool UsesRunes
@@ -599,7 +629,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			Map = CasterObject.Region;
+			Map = CasterObject.Map;
 			Phase = CasterObject.Phase;
 
 			m_casting = true;
@@ -649,11 +679,11 @@ namespace WCell.RealmServer.Spells
 			if (CasterObject is Character && TargetFlags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
 				var uid = packet.ReadPackedEntityId();
-				UsedItem = ((Character)CasterObject).Inventory.GetItem(uid);
-				if (UsedItem == null || !UsedItem.CanBeUsed)
+				TargetItem = ((Character)CasterObject).Inventory.GetItem(uid);
+				if (TargetItem == null || !TargetItem.CanBeUsed)
 				{
-					Cancel(SpellFailedReason.BadTargets);
-					return SpellFailedReason.BadTargets;
+					Cancel(SpellFailedReason.ItemGone);
+					return SpellFailedReason.ItemGone;
 				}
 			}
 			// 0x20
@@ -707,7 +737,7 @@ namespace WCell.RealmServer.Spells
 						var chr = CasterObject as Character;
 						var sqDistance = CasterObject.GetDistanceSq(ref TargetLoc);
 						if (!Utility.IsInRange(sqDistance, chr.GetSpellMaxRange(spell, selected)) ||
-							(selected != null && selected.Region != CasterObject.Region))
+							(selected != null && selected.Map != CasterObject.Map))
 						{
 							Cancel(SpellFailedReason.OutOfRange);
 							return SpellFailedReason.OutOfRange;
@@ -775,6 +805,26 @@ namespace WCell.RealmServer.Spells
 		/// if <code>GodMode</code> is set or the spell is not delayed.
 		/// Returns whether, under the given circumstances, this spell may be casted.
 		/// </summary>
+		public SpellFailedReason Start(Spell spell)
+		{
+			return Start(spell, false, WorldObject.EmptyArray);
+		}
+
+		/// <summary>
+		/// Starts casting the given spell.
+		/// if <code>GodMode</code> is set or the spell is not delayed.
+		/// Returns whether, under the given circumstances, this spell may be casted.
+		/// </summary>
+		public SpellFailedReason Start(SpellId spell)
+		{
+			return Start(spell, false, WorldObject.EmptyArray);
+		}
+
+		/// <summary>
+		/// Starts casting the given spell.
+		/// if <code>GodMode</code> is set or the spell is not delayed.
+		/// Returns whether, under the given circumstances, this spell may be casted.
+		/// </summary>
 		/// <param name="passiveCast">whether the Spell is a simple spell-application or an actual spell-cast</param>
 		/// <param name="initialTargets">A collection of initial targets or null.</param>
 		public SpellFailedReason Start(Spell spell, bool passiveCast, params WorldObject[] initialTargets)
@@ -788,7 +838,14 @@ namespace WCell.RealmServer.Spells
 
 			m_spell = spell;
 			m_passiveCast = passiveCast;
-			m_initialTargets = initialTargets;
+			if (initialTargets == null || initialTargets.Length == 0)
+			{
+				m_initialTargets = null;
+			}
+			else
+			{
+				m_initialTargets = initialTargets;
+			}
 
 			var reason = Prepare();
 			if (reason == SpellFailedReason.Ok)
@@ -799,8 +856,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		/// <summary>
-		/// Use this method to change the SpellCast object
-		/// after it has been prepared.
+		/// Use this method to change the SpellCast object after it has been prepared.
 		/// If no changes are necessary, simply use <see cref="Start(Spell, bool, WorldObject[])"/>
 		/// </summary>
 		public SpellFailedReason Prepare(Spell spell, bool passiveCast, params WorldObject[] initialTargets)
@@ -839,6 +895,17 @@ namespace WCell.RealmServer.Spells
 
 			try
 			{
+				// Let AI caster prepare targets and only cast, if valid targets were found
+				if (IsAICast)
+				{
+					var err = PrepareAI();
+					if (err != SpellFailedReason.Ok)
+					{
+						Cancel(err);
+						return err;
+					}
+				}
+
 				//var stopwatch = Stopwatch.StartNew();
 				if (Selected == null && CasterUnit != null)
 				{
@@ -877,10 +944,10 @@ namespace WCell.RealmServer.Spells
 							Cancel(failReason);
 							return failReason;
 						}
-
-						// remove certain Auras
-						CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
 					}
+
+					// remove certain Auras
+					CasterUnit.Auras.RemoveByFlag(AuraInterruptFlags.OnCast);
 				}
 
 				m_startTime = Environment.TickCount;
@@ -982,7 +1049,9 @@ namespace WCell.RealmServer.Spells
 				missedTargets = null;
 			}
 
-			if (m_spell.ShouldShowToClient() && !m_spell.IsPassive)
+			if (!m_spell.IsPassive && !m_spell.Attributes.HasAnyFlag(SpellAttributes.InvisibleAura) &&
+				!m_spell.HasEffectWith(effect => effect.EffectType == SpellEffectType.OpenLock) &&
+				m_spell.ShouldShowToClient())
 			{
 				// send the packet (so client sees the actual cast) if its not a passive spell
 				var caster2 = CasterItem ?? (IEntity)CasterReference;
@@ -1081,7 +1150,7 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// Item restrictions			
-			return m_spell.CheckItemRestrictions(UsedItem, caster.Inventory);
+			return m_spell.CheckItemRestrictions(TargetItem, caster.Inventory);
 		}
 
 		List<CastMiss> CheckHit(Spell spell)
@@ -1225,7 +1294,7 @@ namespace WCell.RealmServer.Spells
 			var reagents = m_spell.Reagents;
 			if (reagents != null && CasterUnit is Character)
 			{
-				if (!((Character)CasterUnit).Inventory.Consume(false, reagents))
+				if (!((Character)CasterUnit).Inventory.Consume(reagents, false))
 				{
 					Cancel(SpellFailedReason.Reagents);
 					return false;
@@ -1408,27 +1477,28 @@ namespace WCell.RealmServer.Spells
 		/// </summary>
 		public void TriggerAll(WorldObject singleTarget, params Spell[] spells)
 		{
-			var passiveCast = InheritSpellCast();
-
 			if (CasterObject is Character && !CasterObject.IsInWorld)
 			{
 				CasterChar.AddMessage(new Message(() =>
 				{
-					foreach (var spell in spells)
-					{
-						passiveCast.Start(spell, true, singleTarget);
-					}
-					//passiveCast.Dispose();
+					TriggerAllSpells(singleTarget, spells);
 				}));
 			}
 			else
 			{
-				foreach (var spell in spells)
-				{
-					passiveCast.Start(spell, true, singleTarget);
-				}
-				//passiveCast.Dispose();
+				TriggerAllSpells(singleTarget, spells);
 			}
+		}
+
+		private void TriggerAllSpells(WorldObject singleTarget, params Spell[] spells)
+		{
+			var passiveCast = SpellCastPool.Obtain();
+			foreach (var spell in spells)
+			{
+				SetupInheritedCast(passiveCast);
+				passiveCast.Start(spell, true, singleTarget);
+			}
+			//passiveCast.Dispose();
 		}
 
 		/// <summary>
@@ -1518,11 +1588,16 @@ namespace WCell.RealmServer.Spells
 		SpellCast InheritSpellCast()
 		{
 			var cast = SpellCastPool.Obtain();
+			SetupInheritedCast(cast);
+			return cast;
+		}
+
+		void SetupInheritedCast(SpellCast cast)
+		{
 			cast.SetCaster(CasterReference, Map, Phase, SourceLoc);
 			cast.TargetLoc = TargetLoc;
 			cast.Selected = Selected;
 			cast.CasterItem = CasterItem;
-			return cast;
 		}
 
 		/// <summary>
@@ -1541,7 +1616,7 @@ namespace WCell.RealmServer.Spells
 			SpellChannel usedChannel = null, Item usedItem = null, IUnitAction action = null, SpellEffect triggerEffect = null)
 		{
 			var cast = SpellCastPool.Obtain();
-			cast.SetCaster(caster, target.Region, target.Phase, triggerOwner.Position);
+			cast.SetCaster(caster, target.Map, target.Phase, triggerOwner.Position);
 			cast.Selected = target;
 			if (usedChannel != null && usedChannel.Cast.CasterUnit == triggerOwner)
 			{
@@ -1551,7 +1626,7 @@ namespace WCell.RealmServer.Spells
 			{
 				cast.TargetLoc = target.Position;
 			}
-			cast.UsedItem = cast.CasterItem = usedItem;
+			cast.TargetItem = cast.CasterItem = usedItem;
 
 			cast.ValidateAndTrigger(spell, triggerOwner, target, action, triggerEffect);
 		}
@@ -1710,7 +1785,7 @@ namespace WCell.RealmServer.Spells
 				((NPC)Selected).CurrentTamer = null;
 			}
 
-			UsedItem = null;
+			TargetItem = null;
 			CasterItem = null;
 			m_castTimer.Stop();
 			m_initialTargets = null;

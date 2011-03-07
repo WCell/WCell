@@ -99,6 +99,10 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect[] AuraConditionalEffects;
 		#endregion
 
+		#region AI Spell Casting
+		public AISpellSettings AISettings;
+		#endregion
+
 		#region Auto generated Spell Fields (will be overridden on initialization)
 		/// <summary>
 		/// Whether this is a Combat ability that will be triggered on next weapon strike (like Heroic Strike etc)
@@ -413,27 +417,6 @@ namespace WCell.RealmServer.Spells
 		{
 		}
 		#endregion
-
-		#region AI Spell casting
-		public AISpellCastSettings AISpellCastSettings;
-
-		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillis, AISpellCastTarget target = AISpellCastTarget.Default)
-		{
-			return AISpellCastSettings = new AISpellCastSettings { Target = target, CooldownMin = cooldownMillis, CooldownMax = cooldownMillis };
-		}
-
-		public AISpellCastSettings SetAISpellCastSettings(int cooldownMillisMin, int cooldownMillisMax, int idleTimeAfterCastMillis = 10000,
-			AISpellCastTarget target = AISpellCastTarget.Default)
-		{
-			return AISpellCastSettings = new AISpellCastSettings
-			{
-				Target = target,
-				CooldownMin = cooldownMillisMin,
-				CooldownMax = cooldownMillisMax,
-				IdleTimeAfterCastMillis = idleTimeAfterCastMillis
-			};
-		}
-		#endregion
 	}
 
 	public enum RequiredSpellTargetType
@@ -444,19 +427,23 @@ namespace WCell.RealmServer.Spells
 		NPCDead
 	}
 
+	#region SpellTargetLocation
 	public class SpellTargetLocation : IWorldLocation
 	{
 		private Vector3 m_Position;
 
 		public SpellTargetLocation()
 		{
+			Phase = WorldObject.DefaultPhase;
 		}
 
-		public SpellTargetLocation(MapId region, Vector3 pos)
+		public SpellTargetLocation(MapId map, Vector3 pos, uint phase = WorldObject.DefaultPhase)
 		{
 			Position = pos;
-			RegionId = region;
+			MapId = map;
+			Phase = phase;
 		}
+
 		public Vector3 Position
 		{
 			get { return m_Position; }
@@ -464,7 +451,7 @@ namespace WCell.RealmServer.Spells
 		}
 
 		[Persistent]
-		public MapId RegionId
+		public MapId MapId
 		{
 			get;
 			set;
@@ -491,9 +478,16 @@ namespace WCell.RealmServer.Spells
 			set { m_Position.Z = value; }
 		}
 
-		public Region Region
+		public Map Map
 		{
-			get { return World.GetRegion(RegionId); }
+			get { return World.GetNonInstancedMap(MapId); }
+		}
+
+		public uint Phase
+		{
+			get;
+			set;
 		}
 	}
+	#endregion
 }

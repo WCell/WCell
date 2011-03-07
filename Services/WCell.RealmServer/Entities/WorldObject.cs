@@ -18,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using WCell.RealmServer.Lang;
+using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
 using NLog;
@@ -46,8 +47,17 @@ using Cell.Core;
 namespace WCell.RealmServer.Entities
 {
 	/// <summary>
-	/// TODO: Orientation (and position) should be easily updatable through setting the corresponding Props (needs to send movement packets)
-	/// TODO: Check if Object is visible to Owner before sending certain packets to it?
+	/// Used to override visibility of objects
+	/// </summary>
+	public enum VisibilityStatus
+	{
+		Default,
+		Visible,
+		Invisible
+	}
+
+	/// <summary>
+	/// 
 	/// </summary>
 	public abstract partial class WorldObject : ObjectBase, IFactionMember, IWorldLocation, INamedEntity, IContextHandler
 	{
@@ -55,6 +65,16 @@ namespace WCell.RealmServer.Entities
 
 		public static readonly ObjectPool<HashSet<WorldObject>> WorldObjectSetPool = ObjectPoolMgr.CreatePool(() => new HashSet<WorldObject>());
 		public static readonly ObjectPool<List<WorldObject>> WorldObjectListPool = ObjectPoolMgr.CreatePool(() => new List<WorldObject>());
+
+		/// <summary>
+		/// Default phase (the one that existed long before phasing was added)
+		/// </summary>
+		public const uint DefaultPhase = 1;
+
+		/// <summary>
+		/// All phases
+		/// </summary>
+		public const uint AllPhases = uint.MaxValue;
 
 		#region Variables
 		/// <summary>
@@ -70,14 +90,14 @@ namespace WCell.RealmServer.Entities
 
 		public const float BehindAngleMax = 4f * MathUtil.PI / 3f;
 
-		public static readonly List<WorldObject> EmptyArray = new List<WorldObject>();
+		public static readonly WorldObject[] EmptyArray = new WorldObject[0];
 		public static readonly List<WorldObject> EmptyList = new List<WorldObject>();
 
 		public static UpdatePriority DefaultObjectUpdatePriority = UpdatePriority.LowPriority;
 
 		public static float HighlightScale = 5f;
 
-		public static int HighlightTicks = 10;
+		public static int HighlightDelayMillis = 1500;
 		#endregion
 
 		protected Vector3 m_position;
@@ -85,7 +105,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// never null
 		/// </summary>
-		protected Region m_region;
+		protected Map m_Map;
 		internal ZoneSpacePartitionNode Node;
 		protected bool HasNode { get { return Node != null; } }
 		protected Zone m_zone;
@@ -106,9 +126,15 @@ namespace WCell.RealmServer.Entities
 		protected WorldObject()
 		{
 			CreationTime = Utility.GetSystemTime();
+			LastUpdateTime = DateTime.Now;
 		}
 
 		#region Misc Properties
+		public virtual ObjectTemplate Template
+		{
+			get { return null; }
+		}
+
 		/// <summary>
 		/// Time in seconds since creation
 		/// </summary>
@@ -160,18 +186,18 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// The current region of the object.
-		/// Region must (and will) never be null.
+		/// The current map of the object.
+		/// Map must (and will) never be null.
 		/// </summary>
-		public virtual Region Region
+		public virtual Map Map
 		{
-			get { return m_region; }
-			internal set { m_region = value; }
+			get { return m_Map; }
+			internal set { m_Map = value; }
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return m_region != null ? m_region.Id : MapId.End; }
+			get { return m_Map != null ? m_Map.Id : MapId.End; }
 		}
 
 		/// <summary>
@@ -185,7 +211,7 @@ namespace WCell.RealmServer.Entities
 
 		public override bool IsInWorld
 		{
-			get { return m_region != null; }
+			get { return m_Map != null; }
 		}
 
 		public abstract string Name
@@ -231,6 +257,11 @@ namespace WCell.RealmServer.Entities
 		{
 			get { return m_areaCharCount; }
 			internal set { m_areaCharCount = value; }
+		}
+
+		protected internal virtual void OnEncounteredBy(Character chr)
+		{
+			++AreaCharCount;
 		}
 
 		public virtual bool IsTrap
@@ -321,7 +352,7 @@ namespace WCell.RealmServer.Entities
 			if (this is Unit)
 			{
 				range += ((Unit)this).CombatReach;
-				((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
+				range = ((Unit)this).Auras.GetModifiedFloat(SpellModifierType.Range, spell, range);
 			}
 			return range;
 		}
@@ -341,14 +372,14 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		/// <summary>
-		/// Can be used to determine whether a periodic Action should be
-		/// executed on this Tick.
+		/// Can be used to slow down execution of methods that:
+		///		1. Should not be executed too often
+		///		2. Don't need to be timed precisely
+		/// For example: AI updates
 		/// </summary>
-		/// <param name="ticks"></param>
-		/// <returns></returns>
 		public bool CheckTicks(int ticks)
 		{
-			return ticks == 0 || ((m_ticks + EntityId.Low) % ticks) == 0;
+			return ticks == 0 || ((Map.TickCount + EntityId.Low) % ticks) == 0;
 		}
 
 		/// <summary>
@@ -385,12 +416,12 @@ namespace WCell.RealmServer.Entities
 
 		public bool SetPosition(Vector3 pt)
 		{
-			return m_region.MoveObject(this, ref pt);
+			return m_Map.MoveObject(this, ref pt);
 		}
 
 		public bool SetPosition(Vector3 pt, float orientation)
 		{
-			if (m_region.MoveObject(this, ref pt))
+			if (m_Map.MoveObject(this, ref pt))
 			{
 				m_orientation = orientation;
 				return true;
@@ -479,353 +510,13 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Nearby objects/clients
-		/// <summary>
-		/// Iterates over all objects within the given radius around this object.
-		/// </summary>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateEnvironment(float radius, Func<WorldObject, bool> predicate)
-		{
-			return m_region.IterateObjects(ref m_position, radius, m_Phase, predicate);
-		}
-		/// <summary>
-		/// Iterates over all objects of the given Type within the given radius around this object.
-		/// </summary>
-		/// <param name="radius"></param>
-		/// <param name="predicate">Returns whether to continue iteration.</param>
-		/// <returns>True, if iteration should continue (usually indicating that we did not find what we were looking for).</returns>
-		public bool IterateEnvironment<O>(float radius, Func<O, bool> predicate)
-			where O : WorldObject
-		{
-			return m_region.IterateObjects(ref m_position, radius, m_Phase, obj => !(obj is O) || predicate((O)obj));
-		}
-
-		/// <summary>
-		/// Returns all objects in radius
-		/// </summary>
-		public IList<WorldObject> GetObjectsInRadius(float radius, ObjectTypes filter, bool checkVisible, int limit)
-		{
-			if (m_region != null)
-			{
-				IList<WorldObject> objects;
-
-				if (checkVisible)
-				{
-					Func<WorldObject, bool> visCheck = obj => obj.CheckObjType(filter) && CanSee(obj);
-
-					objects = Region.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, limit);
-				}
-				else
-				{
-					objects = Region.GetObjectsInRadius(ref m_position, radius, filter, m_Phase, limit);
-				}
-
-				return objects;
-			}
-
-			return EmptyArray;
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInRadius(float radius, ObjectTypes filter, int limit)
-		{
-			return GetObjectsInRadius(radius, filter, true, limit);
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInRadius(float radius, Func<WorldObject, bool> filter, int limit)
-		{
-			if (m_region != null)
-			{
-				Func<WorldObject, bool> visCheck = obj => filter(obj) && CanSee(obj);
-
-				return Region.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, limit);
-			}
-
-			return EmptyArray;
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInUpdateRadius(ObjectTypes filter)
-		{
-			return GetVisibleObjectsInRadius(BroadcastRange, filter, 0);
-		}
-
-		public IList<WorldObject> GetVisibleObjectsInUpdateRadius(Func<WorldObject, bool> filter)
-		{
-			return GetVisibleObjectsInRadius(BroadcastRange, filter, 0);
-		}
-
-		/// <summary>
-		/// Gets all clients in update-radius that can see this object
-		/// </summary>
-		public ICollection<IRealmClient> GetNearbyClients(bool includeSelf)
-		{
-			return GetNearbyClients(BroadcastRange, includeSelf);
-		}
-
-		/// <summary>
-		/// Gets all clients that can see this object
-		/// </summary>
-		public ICollection<IRealmClient> GetNearbyClients(float radius, bool includeSelf)
-		{
-			if (m_region != null && IsAreaActive)
-			{
-				Func<Character, bool> visCheck = obj => obj.CanSee(this) && (includeSelf || obj != this);
-
-				var entities = m_region.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, 0);
-
-				return entities.TransformList(chr => chr.Client);
-			}
-
-			return RealmClient.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters()
-		{
-			return GetNearbyCharacters(BroadcastRange);
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(bool includeSelf)
-		{
-			return GetNearbyCharacters(BroadcastRange, includeSelf);
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(float radius)
-		{
-			if (m_region != null)
-			{
-				return m_region.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.CanSee(this), m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all characters that can see this object
-		/// </summary>
-		public ICollection<Character> GetNearbyCharacters(float radius, bool includeSelf)
-		{
-			if (m_region != null && AreaCharCount > 0)
-			{
-				Func<Character, bool> visCheck =
-					obj => obj.CanSee(this) && (obj != this || includeSelf || !(this is Character));
-
-				return m_region.GetObjectsInRadius(ref m_position, radius, visCheck, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all Horde players in the given radius.
-		/// </summary>
-		public ICollection<Character> GetNearbyHorde(float radius)
-		{
-			if (m_region != null)
-			{
-				return m_region.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.FactionGroup == FactionGroup.Horde, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		/// <summary>
-		/// Gets all alliance players in the given radius.
-		/// </summary>
-		public ICollection<Character> GetNearbyAlliance(float radius)
-		{
-			if (m_region != null)
-			{
-				return m_region.GetObjectsInRadius<Character>(ref m_position, radius, obj => obj.FactionGroup == FactionGroup.Alliance, m_Phase, 0);
-			}
-
-			return Character.EmptyArray;
-		}
-
-		public GameObject GetNearbyGO(GOEntryId id)
-		{
-			return GetNearbyGO(id, BroadcastRange);
-		}
-
-		public GameObject GetNearbyGO(GOEntryId id, float radius)
-		{
-			GameObject go = null;
-			IterateEnvironment(radius, obj =>
-			{
-				if (obj.IsInPhase(this) && obj is GameObject && ((GameObject)obj).Entry.GOId == id)
-				{
-					go = (GameObject)obj;
-					return false;
-				}
-				return true;
-			});
-			return go;
-		}
-
-		public NPC GetNearbyNPC(NPCId id)
-		{
-			return GetNearbyNPC(id, BroadcastRange);
-		}
-
-		public NPC GetNearbyNPC(NPCId id, float radius)
-		{
-			NPC npc = null;
-			IterateEnvironment(radius, obj =>
-			{
-				if (obj.IsInPhase(this) && obj is NPC && ((NPC)obj).Entry.NPCId == id)
-				{
-					npc = (NPC)obj;
-					return false;
-				}
-				return true;
-			});
-			return npc;
-		}
-
-		/// <summary>
-		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
-		/// </summary>
-		public Character GetNearbyRandomHostileCharacter()
-		{
-			return GetNearbyRandomHostileCharacter(BroadcastRange);
-		}
-
-		/// <summary>
-		/// Gets a random nearby Character in BroadcastRange who is alive and visible.
-		/// TODO: Add LoS check
-		/// </summary>
-		public Character GetNearbyRandomHostileCharacter(float radius)
-		{
-			if (AreaCharCount == 0)
-			{
-				return null;
-			}
-
-			if (radius > BroadcastRange)
-			{
-				// TODO: This won't quite work
-			}
-
-			Character chr = null;
-			var r = 1 + Utility.Random(0, AreaCharCount);
-			var i = 0;
-			var radiusSq = radius*radius;
-			IterateEnvironment(BroadcastRange, obj =>
-			{
-				if (obj is Character)
-				{
-					if (!CanSee(obj) || 
-						!((Character)obj).IsAlive ||
-						!IsHostileWith(obj) ||
-						!IsInRadiusSq(obj, radiusSq))
-					{
-						// does not count
-						r--;
-						return true;
-					}
-					chr = (Character)obj;
-				}
-				return ++i != r;
-			});
-			return chr;
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object
-		/// </summary>
-		public Unit GetNearestUnit(float radius)
-		{
-			Unit unit = null;
-			var sqDist = float.MaxValue;
-			IterateEnvironment<Unit>(radius, obj =>
-			{
-				var curSqDist = GetDistanceSq(obj);
-				if (curSqDist < sqDist)
-				{
-					sqDist = curSqDist;
-					unit = obj;
-				}
-				return true;
-			}
-			);
-			return unit;
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
-		/// </summary>
-		public Unit GetNearestUnit(Func<Unit, bool> filter)
-		{
-			return GetNearestUnit(BroadcastRange, filter);
-		}
-
-		/// <summary>
-		/// Returns the Unit that is closest within the given Radius around this Object and passes the filter
-		/// </summary>
-		public Unit GetNearestUnit(float radius, Func<Unit, bool> filter)
-		{
-			Unit target = null;
-			var sqDist = float.MaxValue;
-			IterateEnvironment<Unit>(radius, unit =>
-			{
-				if (filter(unit))
-				{
-					var curSqDist = GetDistanceSq(unit);
-					if (curSqDist < sqDist)
-					{
-						sqDist = curSqDist;
-						target = unit;
-					}
-				}
-				return true;
-			}
-			);
-			return target;
-		}
-
-		public Unit GetRandomUnit(float radius, bool checkVisible)
-		{
-			return (Unit)GetObjectsInRadius(radius, ObjectTypes.Unit, checkVisible, 0).GetRandom();
-		}
-
-		public Unit GetRandomUnit(float radius, Func<Unit, bool> filter)
-		{
-			return (Unit)GetVisibleObjectsInRadius(radius, obj => obj is Unit && filter((Unit)obj), 0).GetRandom();
-		}
-
-		public Unit GetRandomAlliedUnit()
-		{
-			return GetRandomAlliedUnit(BroadcastRange);
-		}
-
-		public Unit GetRandomAlliedUnit(float radius)
-		{
-			return GetRandomUnit(radius, IsAlliedWith);
-		}
-
-		public Unit GetRandomHostileUnit(float radius)
-		{
-			return GetRandomUnit(radius, MayAttack);
-		}
-		#endregion
-
 		#region Positions & Distances
 		/// <summary>
 		/// The Terrain height at this object's current location
 		/// </summary>
 		public float TerrainHeight
 		{
-			get { return Region.Terrain.QueryTerrainHeight(m_position); }
+			get { return Map.Terrain.QueryTerrainHeight(m_position); }
 		}
 
 		/// <summary>
@@ -879,11 +570,6 @@ namespace WCell.RealmServer.Entities
 		public bool IsInRadiusSq(ref Vector3 pt, float sqDistance)
 		{
 			return GetDistanceSq(ref pt) <= sqDistance;
-		}
-
-		public bool IsInRadiusSq(WorldObject obj, float sqDistance)
-		{
-			return GetDistanceSq(obj) <= sqDistance;
 		}
 
 		public bool IsInRadiusSq(Vector3 pos, float sqDistance)
@@ -1002,15 +688,16 @@ namespace WCell.RealmServer.Entities
 		{
 			var pos = m_position;
 			pos.Z += 2;
-			m_region.TransferObjectLater(obj, pos);
+			m_Map.TransferObjectLater(obj, pos);
 		}
 
 		public void PlaceInFront(WorldObject obj)
 		{
 			var pos = m_position;
-			//pos.Z += 1;
-			m_position.GetPointYX(m_orientation, 5, out pos);
-			m_region.TransferObjectLater(obj, pos);
+			pos.Z += 1;
+			//m_position.GetPointYX(m_orientation, 5, out pos);
+			m_Map.TransferObjectLater(obj, pos);
+			obj.Orientation = obj.GetAngleTowards(this);
 		}
 		#endregion
 
@@ -1233,7 +920,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsAreaActive)
 			{
-				IterateEnvironment(BroadcastRange, obj =>
+				this.IterateEnvironment(BroadcastRange, obj =>
 				{
 					if (obj is Character)
 					{
@@ -1254,7 +941,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (radius > 0)
 			{
-				IterateEnvironment(radius, obj =>
+				this.IterateEnvironment(radius, obj =>
 				{
 					if (obj is Character)
 					{
@@ -1265,9 +952,9 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				for (var i = m_region.Characters.Count - 1; i >= 0; i--)
+				for (var i = m_Map.Characters.Count - 1; i >= 0; i--)
 				{
-					m_region.Characters[i].Send(packet.GetFinalizedPacket());
+					m_Map.Characters[i].Send(packet.GetFinalizedPacket());
 				}
 			}
 		}
@@ -1281,7 +968,7 @@ namespace WCell.RealmServer.Entities
 		{
 			if (IsAreaActive)
 			{
-				IterateEnvironment(BroadcastRange, obj =>
+				this.IterateEnvironment(BroadcastRange, obj =>
 				{
 					if (obj is Character)
 					{
@@ -1342,8 +1029,8 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		/// <summary>
-		/// Ensures that the given action is always executed in region context of this Character - which
-		/// might be right now or after the Character is added to a region or during the next Region update.
+		/// Ensures that the given action is always executed in map context of this Character - which
+		/// might be right now or after the Character is added to a map or during the next Map update.
 		/// </summary>
 		/// <returns>Whether the Action has been executed immediately (or enqueued)</returns>
 		public bool ExecuteInContext(Action action)
@@ -1361,7 +1048,7 @@ namespace WCell.RealmServer.Entities
 		public void AddMessage(IMessage msg)
 		{
 			//var handler = ContextHandler;
-			//if (m_region != null)
+			//if (m_map != null)
 			//{
 			//    handler.AddMessage(msg);
 			//}
@@ -1440,7 +1127,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsFriendlyWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return true;
 			}
@@ -1467,7 +1154,7 @@ namespace WCell.RealmServer.Entities
 		/// <returns></returns>
 		public virtual bool IsHostileWith(IFactionMember opponent)
 		{
-			if (opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if ( object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1493,7 +1180,7 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool MayAttack(IFactionMember opponent)
 		{
-			if (!opponent.IsInWorld || opponent == this || (opponent is Unit && ((Unit)opponent).Master == this))
+			if (!opponent.IsInWorld ||  ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
 			{
 				return false;
 			}
@@ -1527,9 +1214,9 @@ namespace WCell.RealmServer.Entities
 
 		public virtual bool IsAlliedWith(IFactionMember opponent)
 		{
-			if (opponent == this ||
+			if ( object.ReferenceEquals(opponent, this) ||
 				(opponent is Unit && ((Unit)opponent).Master == this) ||
-				Master == opponent)
+				 object.ReferenceEquals(Master, opponent) )
 			{
 				return true;
 			}
@@ -1648,7 +1335,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (this is Unit)
 				{
-					((Unit)this).Auras.Cancel(aura.Spell);
+					((Unit)this).Auras.Remove(aura.Spell);
 				}
 				else if (m_areaAuras.Count == 0 && (IsTrap || this is DynamicObject))
 				{
@@ -1670,6 +1357,15 @@ namespace WCell.RealmServer.Entities
 			return IsInPhase(obj);
 		}
 
+		/// <summary>
+		/// Visibility of this object in the eyes of the given observer.
+		/// Can be used to override default visibility checks
+		/// </summary>
+		public virtual VisibilityStatus DetermineVisibilityFor(Unit observer)
+		{
+			return VisibilityStatus.Default;
+		}
+
 		public virtual bool IsPlayer
 		{
 			get { return false; }
@@ -1678,7 +1374,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Whether this or it's master is a player
 		/// </summary>
-		public bool IsOwnedByPlayer
+		public bool IsPlayerOwned
 		{
 			get { return IsPlayer || (m_master != null && m_master.IsPlayer); }
 		}
@@ -1712,7 +1408,7 @@ namespace WCell.RealmServer.Entities
 		{
 			var diff = ((HighlightScale - 1) * ScaleX);
 			ScaleX = HighlightScale * ScaleX;
-			CallDelayedTicks(HighlightTicks, obj => obj.ScaleX -= diff);
+			CallDelayed(HighlightDelayMillis, obj => obj.ScaleX -= diff);
 		}
 
 		public void PlaySound(uint sound)
@@ -1732,6 +1428,19 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+        /// <summary>
+        /// Play a text and sound identify by the id
+        /// </summary>
+        /// <param name="id">Id of the text in creature_ai_texts</param>
+        public void PlayTextAndSoundById(int id)
+        {
+            var text = NPCAiTextMgr.GetFirstTextById(id);
+            if (text != null)
+            {
+                PlayTextAndSound(text);
+            }
+        }
+
 		public void PlayTextAndSound(NPCAiText text)
 		{
 			PlaySound((uint)text.Sound);
@@ -1739,7 +1448,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Deletion & Disposal
-		private bool m_Deleted;
+		protected bool m_Deleted;
 
 		/// <summary>
 		/// Deleted objects must never be used again!
@@ -1750,13 +1459,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Enqueues a message to remove this WorldObject from it's Region
+		/// Enqueues a message to remove this WorldObject from it's Map
 		/// </summary>
-		public void RemoveFromRegion()
+		public void RemoveFromMap()
 		{
 			if (IsInWorld)
 			{
-				m_region.RemoveObjectLater(this);
+				m_Map.RemoveObjectLater(this);
 			}
 		}
 
@@ -1771,9 +1480,9 @@ namespace WCell.RealmServer.Entities
 			}
 
 			m_Deleted = true;
-			if (m_region != null)
+			if (m_Map != null)
 			{
-				m_region.AddMessage(() => DeleteNow()); // use lambda for now to generate the full stacktrace
+				m_Map.AddMessage(() => DeleteNow()); // use lambda for now to generate the full stacktrace
 			}
 			else
 			{
@@ -1785,7 +1494,7 @@ namespace WCell.RealmServer.Entities
 		/// Removes this Object from the World and disposes it.
 		/// </summary>
 		/// <see cref="Delete"/>
-		/// <remarks>Requires region context</remarks>
+		/// <remarks>Requires map context</remarks>
 		protected internal virtual void DeleteNow()
 		{
 			try
@@ -1805,7 +1514,7 @@ namespace WCell.RealmServer.Entities
 		{
 			m_updateActions = null;
 
-			if (m_region != null)
+			if (m_Map != null)
 			{
 				if (m_areaAuras != null)
 				{
@@ -1814,14 +1523,14 @@ namespace WCell.RealmServer.Entities
 						aura.Remove(true);
 					}
 				}
-				m_region.RemoveObjectNow(this);
+				m_Map.RemoveObjectNow(this);
 			}
 		}
 
 		public override void Dispose(bool disposing)
 		{
 			SpellCast = null;
-			m_region = null;
+			m_Map = null;
 		}
 		#endregion
 

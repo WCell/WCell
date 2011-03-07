@@ -14,7 +14,7 @@ namespace WCell.RealmServer.Chat
         [Initialization(InitializationPass.First, null)]
         public static void LoadEmotes()
         {
-            EmoteRelationReader = new MappedDBCReader<EmoteType, EmoteRelationConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_EMOTESTEXT));
+            EmoteRelationReader = new MappedDBCReader<EmoteType, EmoteRelationConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_EMOTESTEXT));
         }
 
         /// <summary>

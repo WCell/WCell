@@ -61,10 +61,10 @@ namespace WCell.Constants.Misc
 		RaidBossEmote = 41,
 		RaidBossWhisper = 42,
 
-		Filtered = 0x2B,
+		Filtered = 43,
 		Battleground = 44,
-		BattlegroundLeader = 0x2D,
-		Restricted = 0x2E,
+		BattlegroundLeader = 45,
+		Restricted = 46,
 
 		Battlenet = 47,
 		Achievment = 48,
@@ -371,6 +371,7 @@ namespace WCell.Constants.Misc
 		SimpleCustomspell08 = 409,
 		SimpleCustomspell09 = 410,
 		SimpleCustomspell10 = 411,
-		StateExclaim = 412
+		StateExclaim = 412,
+        PullingString = 416
 	}
 }

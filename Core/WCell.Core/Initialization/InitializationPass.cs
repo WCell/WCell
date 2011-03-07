@@ -59,6 +59,7 @@ namespace WCell.Core.Initialization
         /// Initializes Update Packets
         /// </summary>
 		Tenth,
-		Last
+		Last,
+		Any
 	}
 }

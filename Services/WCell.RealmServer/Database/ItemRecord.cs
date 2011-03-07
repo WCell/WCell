@@ -49,7 +49,7 @@ namespace WCell.RealmServer.Database
 				var itemRecord = new ItemRecord
 				{
 					Guid = (uint)_idGenerator.Next(),
-					New = true
+					State = RecordState.New
 				};
 
 				//s_log.Debug("creating new item with EntityId {0}", itemRecord.EntityId);
@@ -66,7 +66,7 @@ namespace WCell.RealmServer.Database
 
 		void InitItemRecord()
 		{
-			var cfg = ActiveRecordBase.Holder.GetConfiguration(typeof(ActiveRecordBase));
+			var cfg = ActiveRecordMediator.GetSessionFactoryHolder().GetConfiguration(typeof(ActiveRecordBase));
 			// cfg.SetListener(MyIPostLoadEventListener);
 		}
 
@@ -304,6 +304,10 @@ namespace WCell.RealmServer.Database
 				EnchantIds = new int[(int)EnchantSlot.End];
 			}
 			EnchantIds[(int)slot] = id;
+			if (slot == EnchantSlot.Temporary)
+			{
+				EnchantTempTime = timeLeft;
+			}
 			//switch (slot)
 			//{
 			//    case EnchantSlot.Permanent:

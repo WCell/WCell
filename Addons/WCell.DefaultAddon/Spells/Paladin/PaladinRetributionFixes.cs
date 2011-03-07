@@ -37,11 +37,11 @@ namespace WCell.Addons.Default.Spells.Paladin
 				spell.ProcTriggerFlags = ProcTriggerFlags.SpellCast;
 				spell.MaxTargets = 10;
 
-				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.PartyAroundCaster);
+				var effect1 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitSpellTargetType.PartyAroundCaster);
 				effect1.TriggerSpellId = SpellId.EffectReplenishment;
 				effect1.AddToAffectMask(SealsAndJudgements.AllJudgements);
 
-				var effect2 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.Self);
+				var effect2 = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitSpellTargetType.Self);
 				effect2.TriggerSpellId = SpellId.JudgementsOfTheWise;
 				effect2.AddToAffectMask(SealsAndJudgements.AllJudgements);
 			});

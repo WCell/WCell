@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Handlers
             var emote = (TextEmote)packet.ReadUInt32();
             packet.SkipBytes(4);
             var targetId = packet.ReadEntityId();
-            var target = chr.Region.GetObject(targetId) as INamed;
+            var target = chr.Map.GetObject(targetId) as INamed;
             if (target != null)
             {
                 SendTextEmote(chr, emote, target);

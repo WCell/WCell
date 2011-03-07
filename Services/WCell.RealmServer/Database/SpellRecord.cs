@@ -42,7 +42,7 @@ namespace WCell.RealmServer.Database
 			OwnerId = ownerId;
 			SpecIndex = specIndex;
 			RecordId = NextId();
-			New = true;
+			State = RecordState.New;
 		}
 
 		[PrimaryKey(PrimaryKeyType.Assigned, "SpellRecordId")]

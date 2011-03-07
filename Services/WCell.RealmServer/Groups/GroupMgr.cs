@@ -56,6 +56,7 @@ namespace WCell.RealmServer.Groups
 			return true;
 		}
 
+		#region Login/Logout
 		/// <summary>
 		/// Removes an offline Character with the given Id
 		/// from his/her Group
@@ -117,7 +118,7 @@ namespace WCell.RealmServer.Groups
 			var group = member.Group;
 
 			member.Position = member.Character.Position;
-			member.Region = member.Character.Region;
+			member.Map = member.Character.Map;
 			member.Character.GroupUpdateFlags |= GroupUpdateFlags.Status;
 			member.Character = null;
 
@@ -125,7 +126,9 @@ namespace WCell.RealmServer.Groups
 
 			group.SendUpdate();
 		}
+		#endregion
 
+		#region Checks
 		private static bool CheckIsLeader(GroupMember member)
 		{
 			if (!member.IsLeader)
@@ -163,11 +166,24 @@ namespace WCell.RealmServer.Groups
 			}
 			return true;
 		}
+		#endregion
 
 		[Initialization(InitializationPass.Fifth, "Start group manager")]
 		public static bool StartGroupMgr()
 		{
 			return Instance.Start();
 		}
+	}
+
+	public static class GroupUtil
+	{
+		#region Staff Management
+		public static void EnsurePureStaffGroup(this Character chr)
+		{
+			var group = chr.Group;
+			if (group == null) return;
+			group.EnsurePureStaffGroup();
+		}
+		#endregion
 	}
 }

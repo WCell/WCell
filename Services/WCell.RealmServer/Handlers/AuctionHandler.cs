@@ -22,7 +22,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionHello(chr, auctioneer);
 		}
 
@@ -36,7 +36,7 @@ namespace WCell.RealmServer.Handlers
 			var buyout = packet.ReadUInt32();
 			var time = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time);
 		}
 
@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Handlers
 			var auctionId = packet.ReadUInt32();
 			var bid = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionPlaceBid(chr, auctioneer, auctionId, bid);
 		}
 
@@ -59,7 +59,7 @@ namespace WCell.RealmServer.Handlers
 			var auctioneerId = packet.ReadEntityId();
 			var auctionId = packet.ReadUInt32();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.CancelAuction(chr, auctioneer, auctionId);
 		}
 
@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListOwnerItems(chr, auctioneer);
 		}
 
@@ -79,7 +79,7 @@ namespace WCell.RealmServer.Handlers
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
 
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 			AuctionMgr.Instance.AuctionListBidderItems(chr, auctioneer);
 		}
 
@@ -88,7 +88,7 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
-			var auctioneer = chr.Region.GetObject(auctioneerId) as NPC;
+			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
 
 			var searcher = new AuctionSearch()
 			{

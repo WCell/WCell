@@ -71,7 +71,7 @@ namespace WCell.RealmServer.Skills
 		/// All lists of all Race/Class-specific skillinfos: Use RaceClassInfos[race][class]
 		/// </summary>
 		public static readonly Dictionary<SkillId, SkillRaceClassInfo>[][] RaceClassInfos =
-			new Dictionary<SkillId, SkillRaceClassInfo>[WCellDef.RaceTypeLength][];
+			new Dictionary<SkillId, SkillRaceClassInfo>[WCellConstants.RaceTypeLength][];
 
 		/// <summary>
 		/// All SkillAbility-lists, indexed by their SkillId
@@ -90,10 +90,10 @@ namespace WCell.RealmServer.Skills
 
 		internal static void Initialize()
 		{
-            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLTIERS));
+            TierReader = new MappedDBCReader<SkillTiers, SkillTierConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLTIERS));
 
 			var lineReader =
-				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLLINE));
+				new MappedDBCReader<SkillLine, SkillLineConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINE));
 
 			// make sure that all these skill types have correct tiers
 			foreach (var line in lineReader.Entries.Values)
@@ -120,12 +120,12 @@ namespace WCell.RealmServer.Skills
 			}
 
 			RaceClassReader = new MappedDBCReader<SkillRaceClassInfo, SkillRaceClassInfoConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLRACECLASSINFO));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLRACECLASSINFO));
 
 
 		    var abilityReader =
 		        new MappedDBCReader<SkillAbility, SkillAbilityConverter>(
-		            RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SKILLLINEABILITY));
+		            RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SKILLLINEABILITY));
 
 			var abilityLists = new List<SkillAbility>[MaxSkillId];
 			foreach (var ability in abilityReader.Entries.Values)
@@ -223,7 +223,7 @@ namespace WCell.RealmServer.Skills
 							ability.Spell.BaseLevel == 0 &&
 							ability.Spell.Rank == 0)
 						{
-							var spell = ability.Skill.ApprenticeSpell;
+							var spell = ability.Skill.GetSpellForTier(SkillTierId.Apprentice);
 							if (spell != null)
 							{
 								spell.AdditionallyTaughtSpells.Add(ability.Spell);

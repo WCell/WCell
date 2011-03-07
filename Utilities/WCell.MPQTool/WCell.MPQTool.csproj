@@ -171,6 +171,7 @@
     <Compile Include="DBC\CellReaders.cs" />
     <Compile Include="DBC\CellType.cs" />
     <Compile Include="DBC\DBCReader.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SCSharp.Mpq\BitStream.cs" />
     <Compile Include="SCSharp.Mpq\Mpq.cs" />
     <Compile Include="SCSharp.Mpq\MpqArchive.cs" />

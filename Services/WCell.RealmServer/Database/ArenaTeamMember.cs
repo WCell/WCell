@@ -8,7 +8,7 @@ namespace WCell.RealmServer.ArenaTeams
 	public partial class ArenaTeamMember : WCellRecord<ArenaTeamMember>
 	{
 		[PrimaryKey(PrimaryKeyType.Assigned)]
-		public long CharacterLowId
+		public int CharacterLowId
 		{
 			get;
 			private set;
@@ -64,6 +64,7 @@ namespace WCell.RealmServer.ArenaTeams
             _winsWeek = 0;
             _gamesSeason = 0;
             _winsSeason = 0;
+            _personalRating = 1500;
 		}
    }
 }

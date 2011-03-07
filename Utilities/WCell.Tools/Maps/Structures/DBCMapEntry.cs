@@ -18,7 +18,7 @@ namespace WCell.Tools.Maps.Structures
 			if (reader == null)
 			{
 				reader = new ListDBCReader<DBCMapEntry, DBCMapConverter>(
-					RealmServerConfiguration.GetDBCFile(WCellDef.DBC_MAPS));
+					RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_MAPS));
 			}
 
 			return reader.EntryList;

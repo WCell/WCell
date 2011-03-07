@@ -140,7 +140,7 @@ namespace WCell.Util
 
 		public static int ToMilliSecondsInt(this TimeSpan time)
 		{
-			return (int)(time.Ticks) / TicksPerSecond;
+			return (int)(time.Ticks / TicksPerSecond);
 		}
 
 		public static int ToMilliSecondsInt(int ticks)
@@ -730,6 +730,11 @@ namespace WCell.Util
 			return indices.ToArray();
 		}
 
+		public static uint Sum(this IEnumerable<uint> arr)
+		{
+			return arr.Aggregate(0u, (current, n) => current + n);
+		}
+
 		/// <summary>
 		/// Creates and returns an array of all indices that are set within the given flag field.
 		/// eg. 11000011 would result into an array containing: 0,1,6,7
@@ -1209,6 +1214,13 @@ namespace WCell.Util
 			if (val is TimeSpan)
 			{
 				return ((TimeSpan)val).Format();
+			}
+			var valType = val.GetType();
+			if (valType.IsEnum)
+			{
+				var underlyingType = Enum.GetUnderlyingType(valType);
+				var underVal = Convert.ChangeType(val, underlyingType);
+				return val + " (" + underVal + ")";
 			}
 			return val.ToString();
 		}

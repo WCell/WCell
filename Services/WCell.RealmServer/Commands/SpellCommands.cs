@@ -74,7 +74,7 @@ namespace WCell.RealmServer.Commands
 
 		public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 		{
-			SpellCommand.AddSpellCommand.Instance.Process(trigger);
+			SpellCommand.SpellAddCommand.Instance.Process(trigger);
 		}
 
 		public override ObjectTypeCustom TargetTypes
@@ -175,11 +175,11 @@ namespace WCell.RealmServer.Commands
 		}
 
 		#region Add
-		public class AddSpellCommand : SubCommand
+		public class SpellAddCommand : SubCommand
 		{
-			public static AddSpellCommand Instance { get; private set; }
+			public static SpellAddCommand Instance { get; private set; }
 
-			protected AddSpellCommand()
+			protected SpellAddCommand()
 			{
 				Instance = this;
 			}
@@ -195,6 +195,8 @@ namespace WCell.RealmServer.Commands
 			{
 				var mod = trigger.Text.NextModifiers();
 				var target = trigger.Args.Target;
+
+				if (target == null) return;
 
 				if (mod.Length > 0)
 				{
@@ -304,6 +306,8 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var spells = SpellGetCommand.RetrieveSpells(trigger);
+				var target = trigger.Args.Target;
+				if (target == null) return;
 
 				if (spells.Length > 0)
 				{
@@ -311,16 +315,15 @@ namespace WCell.RealmServer.Commands
 					{
 						if (trigger.Args.Target.HasSpells)
 						{
-							var chr = trigger.Args.Target as Character;
-							if (spell.Talent != null && chr != null)
+							if (spell.Talent != null)
 							{
 								// talent
-								chr.Talents.Remove(spell.Talent.Id);
+								target.Talents.Remove(spell.Talent.Id);
 							}
 							else
 							{
 								// normal spell
-								trigger.Args.Target.Spells.Remove(spell);
+								target.Spells.Remove(spell);
 							}
 							trigger.Reply(RealmLangKey.CmdSpellRemoveResponse, spell);
 						}
@@ -341,16 +344,20 @@ namespace WCell.RealmServer.Commands
 
 			protected override void Initialize()
 			{
-				Init("Purge");
+				Init("Clear", "Purge");
 				Description = new TranslatableItem(RealmLangKey.CmdSpellPurgeDescription);
 			}
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				if (trigger.Args.Target.HasSpells)
+				var target = trigger.Args.Target;
+
+				if (target == null) return;
+
+				if (target.HasSpells)
 				{
-					trigger.Args.Target.Spells.Clear();
-					trigger.Args.Target.Spells.AddDefaultSpells();
+					target.Spells.Clear();
+					target.Spells.AddDefaultSpells();
 					trigger.Reply(RealmLangKey.CmdSpellPurgeResponse);
 				}
 				else
@@ -362,9 +369,9 @@ namespace WCell.RealmServer.Commands
 		#endregion
 
 		#region Trigger
-		public class TriggerSpellCommand : SubCommand
+		public class SpellTriggerCommand : SubCommand
 		{
-			protected TriggerSpellCommand()
+			protected SpellTriggerCommand()
 			{
 			}
 
@@ -378,12 +385,14 @@ namespace WCell.RealmServer.Commands
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
 				var spells = SpellGetCommand.RetrieveSpells(trigger);
+				var target = trigger.Args.Target;
+				if (target == null) return;
 
 				if (spells.Length > 0)
 				{
 					foreach (var spell in spells)
 					{
-						trigger.Args.Target.SpellCast.TriggerSelf(spell);
+						target.SpellCast.TriggerSelf(spell);
 						trigger.Reply(RealmLangKey.CmdSpellTriggerResponse, spell);
 					}
 				}
@@ -394,10 +403,35 @@ namespace WCell.RealmServer.Commands
 			}
 		}
 		#endregion
+	}
 
-		public override ObjectTypeCustom TargetTypes
+	public class TalentCommand : RealmServerCommand
+	{
+		protected override void Initialize()
 		{
-			get { return ObjectTypeCustom.Unit; }
+			Init("Talents");
+		}
+
+		public class TalentsClearCommand : SubCommand
+		{
+			protected override void Initialize()
+			{
+				Init("Reset");
+				EnglishDescription = "Resets all talents for free";
+			}
+
+			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
+			{
+				var target = trigger.Args.Target;
+				if (target == null || target.Talents == null)
+				{
+					trigger.Reply(RealmLangKey.NoValidTarget);
+				}
+				else
+				{
+					target.Talents.ResetAllForFree();
+				}
+			}
 		}
 	}
 

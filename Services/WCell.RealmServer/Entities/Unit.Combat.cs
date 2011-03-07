@@ -8,6 +8,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Modifiers;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
@@ -20,47 +21,6 @@ namespace WCell.RealmServer.Entities
 	public partial class Unit
 	{
 		#region Global Variables
-		// <summary>
-		// This is added to the CombatReach of all Units
-		// </summary>
-		//public static float BaseAttackReach = 1f;
-
-		/// <summary>
-		/// Default base-range in which a mob will aggro (in yards).
-		/// Also see <see cref="AggroRangePerLevel"/>
-		/// </summary>
-		public static float AggroBaseRangeDefault = 20;
-
-		/// <summary>
-		/// Amount of yards to add to the <see cref="AggroBaseRangeDefault"/> per level difference.
-		/// </summary>
-		public static float AggroRangePerLevel = 1;
-
-		/// <summary>
-		/// Mobs with a distance >= this will not start aggressive actions
-		/// </summary>
-		public static float AggroMaxRangeDefault = 45;
-
-		private static float aggroMinRangeDefault = 5;
-
-		/// <summary>
-		/// Mobs within this range will *definitely* aggro
-		/// </summary>
-		public static float AggroMinRangeDefault
-		{
-			get { return aggroMinRangeDefault; }
-			set
-			{
-				aggroMinRangeDefault = value;
-				AggroMinRangeSq = value * value;
-			}
-		}
-
-		public static float AggroRangeNPCs = 10f;
-
-		[NotVariable]
-		public static float AggroMinRangeSq = aggroMinRangeDefault * aggroMinRangeDefault;
-
 		/// <summary>
 		/// Used to determine melee distance
 		/// </summary>
@@ -70,6 +30,11 @@ namespace WCell.RealmServer.Entities
 		/// Used to determine ranged attack distance
 		/// </summary>
 		public static float DefaultRangedAttackRange = 40f;
+
+		/// <summary>
+		/// Time in milliseconds until a Player can leave combat
+		/// </summary>
+		public static int PvPDeactivationDelay = 6000;
 		#endregion
 
 		/// <summary>
@@ -86,7 +51,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		protected bool m_isFighting;
 
-		protected int m_lastCombatTime;
+		protected DateTime m_lastCombatTime;
 
 		protected DamageAction m_DamageAction;
 
@@ -102,10 +67,15 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// The last time when this Unit was still actively Fighting
 		/// </summary>
-		public int LastCombatTime
+		public DateTime LastCombatTime
 		{
 			get { return m_lastCombatTime; }
 			set { m_lastCombatTime = value; }
+		}
+
+		public int MillisSinceLastCombatAction
+		{
+			get { return (DateTime.Now - m_lastCombatTime).ToMilliSecondsInt(); }
 		}
 
 		/// <summary>
@@ -113,7 +83,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void ResetSwingDelay()
 		{
-			m_lastCombatTime = Environment.TickCount;
+			m_lastCombatTime = m_lastUpdateTime;
 		}
 
 		public void CancelPendingAbility()
@@ -208,6 +178,9 @@ namespace WCell.RealmServer.Entities
 			return m_DamageAction;
 		}
 
+		/// <summary>
+		/// Whether this unit has an ability pending for the given weapon (Heroic Strike for melee, Poison Dart for throwing, Stun Shot for ranged weapons etc)
+		/// </summary>
 		public bool UsesPendingAbility(IWeapon weapon)
 		{
 			return m_spellCast != null && m_spellCast.IsPending && m_spellCast.GetWeapon() == weapon;
@@ -273,6 +246,7 @@ namespace WCell.RealmServer.Entities
 		/// <param name="action"></param>
 		public void Strike(IWeapon weapon, DamageAction action, Unit target)
 		{
+			IsInCombat = true;
 			if (UsesPendingAbility(weapon))
 			{
 				m_spellCast.Perform();
@@ -393,6 +367,11 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			if (this is NPC)
+			{
+				damage = (int)(damage * NPCMgr.DefaultNPCDamageFactor + 0.999999f);
+			}
+
 			if (usedAbility != null && usedAbility.IsCasting)
 			{
 				// get damage modifiers from spell
@@ -447,6 +426,10 @@ namespace WCell.RealmServer.Entities
 			if (attacker != null && !attacker.IsInContext)
 			{
 				attacker = null;
+			}
+			if (attacker is NPC)
+			{
+				dmg = (int)(dmg * NPCMgr.DefaultNPCDamageFactor + 0.999999f);
 			}
 
 			DamageSchool school;
@@ -591,7 +574,7 @@ namespace WCell.RealmServer.Entities
 			return res;
 		}
 
-		public float CalcCritChance(Unit defender, DamageSchool dmgSchool, Spell spell, IWeapon weapon)
+		public float GetBaseCritChance(DamageSchool dmgSchool, Spell spell, IWeapon weapon)
 		{
 			float chance;
 			if (this is Character)
@@ -617,9 +600,6 @@ namespace WCell.RealmServer.Entities
 			{
 				chance = GetCritChance(dmgSchool);
 			}
-
-			//chance -= defender.GetResiliencePct(this);
-			chance -= defender.GetResiliencePct();
 			return chance;
 		}
 
@@ -816,9 +796,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Indicates whether this Unit is currently trying to swing at its target.
-		/// If <c>IsInCombat</c> is set but Unit is not fighting,
-		/// it will leave Combat mode after <c>CombatDeactivationDelay</c> without combat
-		/// activity.
+		/// If <c>IsInCombat</c> is set but Unit is not fighting, it will leave Combat mode after <c>CombatDeactivationDelay</c> without combat activity.
 		/// </summary>
 		public bool IsFighting
 		{
@@ -927,11 +905,12 @@ namespace WCell.RealmServer.Entities
 					var distanceSq = GetDistanceSq(target);
 					if (strikeReady)
 					{
-						var weapon = isRanged ? m_RangedWeapon : m_mainWeapon;
-						if (weapon != null)
+						var mainWeapon = isRanged ? m_RangedWeapon : m_mainWeapon;
+						if (mainWeapon != null)
 						{
-							if (IsInAttackRangeSq(weapon, target, distanceSq))
+							if (IsInAttackRangeSq(mainWeapon, target, distanceSq))
 							{
+								// close enough
 								if (m_AutorepeatSpell != null)
 								{
 									// Auto-shot (only when not running)
@@ -946,7 +925,7 @@ namespace WCell.RealmServer.Entities
 								}
 								else
 								{
-									Strike(weapon);
+									Strike(mainWeapon);
 									m_lastStrike = now;
 									mainHandDelay += MainHandAttackTime;
 								}
@@ -954,6 +933,13 @@ namespace WCell.RealmServer.Entities
 							else
 							{
 								// too far away
+								if (UsesPendingAbility(mainWeapon))
+								{
+									// ability is pending -> Need to cancel
+									m_spellCast.Cancel(SpellFailedReason.OutOfRange);
+								}
+
+								// no pending ability
 								if (this is Character)
 								{
 									CombatHandler.SendAttackSwingNotInRange(this as Character);
@@ -970,9 +956,19 @@ namespace WCell.RealmServer.Entities
 					{
 						if (IsInAttackRangeSq(m_offhandWeapon, target, distanceSq))
 						{
+							// in range for a strike
 							Strike(m_offhandWeapon);
 							m_lastOffhandStrike = now;
 							offhandDelay += OffHandAttackTime;
+						}
+						else
+						{
+							// too far away
+							if (UsesPendingAbility(m_offhandWeapon))
+							{
+								// ability is pending -> Need to cancel
+								m_spellCast.Cancel(SpellFailedReason.OutOfRange);
+							}
 						}
 					}
 				}
@@ -1027,7 +1023,6 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Checks whether the Unit can attack.
 		/// Also deactivates combat mode, if unit has left combat for long enough.
-		/// TODO: Cannot leave combat state if Pet is attacking
 		/// </summary>
 		protected virtual bool CheckCombatState()
 		{
@@ -1097,7 +1092,7 @@ namespace WCell.RealmServer.Entities
 		{
 			SheathType = IsUsingRangedWeapon ? SheathType.Ranged : SheathType.Melee;
 			StandState = StandState.Stand;
-			m_lastCombatTime = Environment.TickCount;
+			m_lastCombatTime = m_lastUpdateTime;
 			if (m_brain != null)
 			{
 				m_brain.OnEnterCombat();
@@ -1172,7 +1167,7 @@ namespace WCell.RealmServer.Entities
 
 						// Remove damage-sensitive Auras
 						m_auras.RemoveByFlag(AuraInterruptFlags.OnDamage);
-						attacker.m_lastCombatTime = Environment.TickCount;
+						attacker.m_lastCombatTime = attacker.m_lastUpdateTime;
 
 						if (attacker is Character && weaponAttack)
 						{
@@ -1197,7 +1192,7 @@ namespace WCell.RealmServer.Entities
 
 							// aggro'd -> Enter combat mode and update combat-time
 							IsInCombat = true;
-							m_lastCombatTime = Environment.TickCount;
+							m_lastCombatTime = m_lastUpdateTime;
 
 							// during pvp one does not gain any weapon skill
 							if (this is Character)
@@ -1373,15 +1368,14 @@ namespace WCell.RealmServer.Entities
 					 (range.MinDist < 1 || distSq >= range.MinDist * range.MinDist));
 		}
 
-		public float AggroBaseRange
+		public virtual float AggroBaseRange
 		{
-			get { return AggroBaseRangeDefault /*+ CombatReach*/ + BoundingRadius; }
+			get { return NPCEntry.AggroBaseRangeDefault /*+ CombatReach*/ + BoundingRadius; }
 		}
 
-		public float GetAggroRange(Unit victim)
+		public virtual float GetAggroRange(Unit victim)
 		{
-
-			return Math.Max(AggroBaseRange + ((Level - victim.Level) * AggroRangePerLevel), AggroMinRangeDefault);
+			return Math.Max(AggroBaseRange + ((Level - victim.Level) * NPCEntry.AggroRangePerLevel), NPCEntry.AggroRangeMinDefault);
 		}
 
 		public float GetAggroRangeSq(Unit victim)

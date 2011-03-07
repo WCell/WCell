@@ -26,13 +26,14 @@ namespace WCell.RealmServer.Debugging
 		[Variable("DumpDirectory")]
 		public static string DumpDirName = "./Dumps/";
 
-		public static string[] IgnoredOpcodes = new[] { 
+		public static string[] IgnoredOpcodeStrings = new[] { 
 			// ignore movement packets
 			"CMSG_PING", 
 			"SMSG_PONG",
 			"SMSG_POWER_UPDATE", 
 			"CMSG_SET_ACTIVE_VOICE_CHANNEL",
-			"_MOVE"
+			"_MOVE",
+			"WORLD_STATE_UI_TIMER_UPDATE"
 		};
 
 		/// <summary>
@@ -54,17 +55,9 @@ namespace WCell.RealmServer.Debugging
 			get { return dumps; }
 			set
 			{
-				if (dumps != value)
+				//if (dumps != value)
 				{
 					dumps = value;
-					if (value)
-					{
-						
-					}
-					else
-					{
-						
-					}
 				}
 			}
 		}
@@ -244,7 +237,7 @@ namespace WCell.RealmServer.Debugging
 		private static bool CanDump(PacketId id)
 		{
 			return Dumps &&
-				   IgnoredOpcodes.Where(filter =>
+				   IgnoredOpcodeStrings.Where(filter =>
 					   id.ToString().IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1).Count() == 0;
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using NLog;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Constants.Items;
@@ -14,6 +15,8 @@ namespace WCell.RealmServer.Spells
 {
 	public static partial class SpellHandler
 	{
+		private static Logger log = LogManager.GetCurrentClassLogger();
+
 		#region OUT Packets
 		/// <summary>
 		/// Sends initially all spells and item cooldowns to the character
@@ -278,9 +281,9 @@ namespace WCell.RealmServer.Spells
 			// 0x1010
 			if (flags.HasAnyFlag(SpellTargetFlags.TradeItem | SpellTargetFlags.Item))
 			{
-				if (cast.UsedItem != null)
+				if (cast.TargetItem != null)
 				{
-					cast.UsedItem.EntityId.WritePacked(packet);
+					cast.TargetItem.EntityId.WritePacked(packet);
 				}
 			}
 			// 0x20
@@ -453,7 +456,7 @@ namespace WCell.RealmServer.Spells
 
 		private static void WriteCaster(SpellCast cast, RealmPacketOut packet)
 		{
-			if (cast.UsedItem != null)
+			if (cast.TargetItem != null)
 			{
 				//packet.Write(cast.UsedItem.EntityId);
 				cast.CasterItem.EntityId.WritePacked(packet);
@@ -747,6 +750,12 @@ namespace WCell.RealmServer.Spells
 			uint spellId = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
+            var mover = chr.MoveControl.Mover;
+
+            //If the player is controlling another unit, ignore this
+            if (mover != chr)
+                return;
+
 			SpellCast cast = chr.SpellCast;
 			if (cast != null /* && cast.Spell.Id == spellId*/)
 			{
@@ -776,7 +785,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var chr = client.ActiveCharacter;
 			var guid = packet.ReadEntityId();
-			var mob = chr.Region.GetObject(guid) as NPC;
+			var mob = chr.Map.GetObject(guid) as NPC;
 			SpellTriggerInfo spellInfo;
 
 			if (mob != null && (spellInfo = mob.Entry.SpellTriggerInfo) != null)

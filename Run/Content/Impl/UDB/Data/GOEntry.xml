@@ -17,8 +17,9 @@
       <Column Name="name_loc7" Table="locales_gameobject" />
       <!--<Column Name="name_loc8" Table="locales_gameobject" />-->
     </FlatArray>
-    <Flat Name="DefaultScale" Column="size" />
+    <Flat Name="Scale" Column="size" />
     <Flat Name="Flags" Column="flags" />
+    <Flat Name="FactionId" Column="faction" />
     <FlatArray Name="Fields" Pattern="data{#}" Offset="0" />
 <!--extra in UDB
     mingold
@@ -26,7 +27,6 @@
     IconName
     castBarCaption
     unk1 (string)
-    faction
     questItem1
     questItem2
     questItem3

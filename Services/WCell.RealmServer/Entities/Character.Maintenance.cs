@@ -5,7 +5,7 @@ using WCell.Constants.Login;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.RealmServer.Achievement;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Spells.Auras;
 using WCell.Util.Graphics;
@@ -60,7 +60,7 @@ namespace WCell.RealmServer.Entities
 			acc.ActiveCharacter = this;
 
 			Type |= ObjectTypes.Player;
-			ChatChannels = new List<ChatChannel>();
+			ChatChannels = new List<ChatChannel>(5);
 
 			m_logoutTimer = new TimerEntry(0, DefaultLogoutDelayMillis, totalTime => FinishLogout());
 
@@ -77,7 +77,7 @@ namespace WCell.RealmServer.Entities
 
 			StandState = StandState.Sit;
 
-			Money = (uint) m_record.Money;
+			Money = (uint)m_record.Money;
 			Outfit = m_record.Outfit;
 			//ScaleX = m_archetype.Race.Scale;
 			ScaleX = 1;
@@ -92,7 +92,7 @@ namespace WCell.RealmServer.Entities
 			RestXp = m_record.RestXp;
 
 			SetInt32(UnitFields.LEVEL, m_record.Level);
-				// cannot use Level property, since it will trigger certain events that we don't want triggered
+			// cannot use Level property, since it will trigger certain events that we don't want triggered
 			NextLevelXP = XpGenerator.GetXpForlevel(m_record.Level + 1);
 			MaxLevel = RealmServerConfiguration.MaxCharacterLevel;
 
@@ -100,17 +100,17 @@ namespace WCell.RealmServer.Entities
 
 			Orientation = m_record.Orientation;
 
-			m_bindLocation = new ZoneWorldLocation(
-				m_record.BindRegion,
+			m_bindLocation = new WorldZoneLocation(
+				m_record.BindMap,
 				new Vector3(m_record.BindX, m_record.BindY, m_record.BindZ),
 				m_record.BindZone);
 
 			PvPRank = 1;
 			YieldsXpOrHonor = true;
 
-			foreach (var school in WCellDef.AllDamageSchools)
+			foreach (var school in SpellConstants.AllDamageSchools)
 			{
-				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int) school, 1);
+				SetFloat(PlayerFields.MOD_DAMAGE_DONE_PCT + (int)school, 1);
 			}
 			SetFloat(PlayerFields.DODGE_PERCENTAGE, 1.0f);
 
@@ -122,7 +122,7 @@ namespace WCell.RealmServer.Entities
 
 			// factions
 			WatchedFaction = m_record.WatchedFaction;
-			Faction = FactionMgr.ByRace[(uint) record.Race];
+			Faction = FactionMgr.ByRace[(uint)record.Race];
 			m_reputations = new ReputationCollection(this);
 
 			// skills
@@ -157,13 +157,15 @@ namespace WCell.RealmServer.Entities
 			MoveControl.Mover = this;
 			MoveControl.CanControl = true;
 
-			CanMelee = true;
+			IncMeleePermissionCounter();
+
+			SpeedFactor = DefaultSpeedFactor;
 
 			// basic setup
 			if (record.JustCreated)
 			{
 				ModStatsForLevel(m_record.Level);
-				BasePower = PowerFormulas.GetPowerForLevel(this);
+				BasePower = RegenerationFormulas.GetPowerForLevel(this);
 			}
 			else
 			{
@@ -204,7 +206,7 @@ namespace WCell.RealmServer.Entities
 			if (m_record.JustCreated)
 			{
 				// newly created Character
-				SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+				SpecProfiles = new[] { SpecProfile.NewSpecProfile(this, 0) };
 
 				if (m_zone != null)
 				{
@@ -231,7 +233,7 @@ namespace WCell.RealmServer.Entities
 					if (SpecProfiles.Length == 0)
 					{
 						log.Warn("Character had no SpecProfiles: {0}", this);
-						SpecProfiles = new[] {SpecProfile.NewSpecProfile(this, 0)};
+						SpecProfiles = new[] { SpecProfile.NewSpecProfile(this, 0) };
 					}
 					if (m_record.CurrentSpecIndex >= SpecProfiles.Length)
 					{
@@ -241,7 +243,7 @@ namespace WCell.RealmServer.Entities
 
 					// load all the rest
 					m_achievements.Load();
-					((PlayerSpellCollection)m_spells).LoadSpells();
+					((PlayerSpellCollection)m_spells).LoadSpellsAndTalents();
 					((PlayerSpellCollection)m_spells).LoadCooldowns();
 					m_skills.Load();
 					m_mailAccount.Load();
@@ -251,7 +253,7 @@ namespace WCell.RealmServer.Entities
 
 					if (QuestMgr.Loaded)
 					{
-						InitQuests();
+						LoadQuests();
 					}
 
 					if (m_record.FinishedQuests != null)
@@ -265,19 +267,14 @@ namespace WCell.RealmServer.Entities
 					throw new Exception(string.Format("Failed to load Character \"{0}\" for Client: {1}", this, Client), e);
 				}
 
-				if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize*4)
-				{
-					var zones = m_record.ExploredZones;
-					Array.Resize(ref zones, (int) UpdateFieldMgr.ExplorationZoneFieldSize*4);
-					m_record.ExploredZones = zones;
-				}
+				SetExploredZones();
 
 				// calculate amount of spent talent points per tree
 				m_talents.CalcSpentTalentPoints();
 
 				// update RestState
 				if (m_record.RestTriggerId != 0 &&
-				    (m_restTrigger = AreaTriggerMgr.GetTrigger((uint) m_record.RestTriggerId)) != null)
+					(m_restTrigger = AreaTriggerMgr.GetTrigger((uint)m_record.RestTriggerId)) != null)
 				{
 					RestState = RestState.Resting;
 				}
@@ -322,7 +319,30 @@ namespace WCell.RealmServer.Entities
 			ResetUpdateInfo();
 		}
 
-		internal void InitQuests()
+		/// <summary>
+		/// Ensure correct size of array of explored zones and  copy explored zones to UpdateValues array
+		/// </summary>
+		private unsafe void SetExploredZones()
+		{
+			if (m_record.ExploredZones.Length != UpdateFieldMgr.ExplorationZoneFieldSize * 4)
+			{
+				var zones = m_record.ExploredZones;
+				Array.Resize(ref zones, UpdateFieldMgr.ExplorationZoneFieldSize * 4);
+				m_record.ExploredZones = zones;
+			}
+
+			fixed (byte* ptr = m_record.ExploredZones)
+			{
+				int index = 0;
+				for (var field = PlayerFields.EXPLORED_ZONES_1; field < PlayerFields.EXPLORED_ZONES_1 + UpdateFieldMgr.ExplorationZoneFieldSize; field++)
+				{
+					SetUInt32(field, *(uint*)(&ptr[index]));
+					index += 4;
+				}
+			}
+		}
+
+		internal void LoadQuests()
 		{
 			m_questLog.Load();
 		}
@@ -344,10 +364,10 @@ namespace WCell.RealmServer.Entities
 			if (m_record.CorpseX != null)
 			{
 				// we were dead and released the corpse
-				var region = World.GetRegion(m_record.CorpseRegion);
-				if (region != null)
+				var map = World.GetNonInstancedMap(m_record.CorpseMap);
+				if (map != null)
 				{
-					m_corpse = SpawnCorpse(false, false, region,
+					m_corpse = SpawnCorpse(false, false, map,
 										   new Vector3(m_record.CorpseX.Value, m_record.CorpseY, m_record.CorpseZ), m_record.CorpseO);
 					BecomeGhost();
 				}
@@ -356,7 +376,7 @@ namespace WCell.RealmServer.Entities
 					// can't spawn corpse -> revive
 					if (log.IsWarnEnabled)
 					{
-						log.Warn("Player {0}'s Corpse was spawned in invalid region: {1}", this, m_record.CorpseRegion);
+						log.Warn("Player {0}'s Corpse was spawned in invalid map: {1}", this, m_record.CorpseMap);
 					}
 				}
 			}
@@ -388,16 +408,18 @@ namespace WCell.RealmServer.Entities
 
 		#region Login / Init
 		/// <summary>
-		/// Loads and adds the Character to its Region.
+		/// Loads and adds the Character to its Map.
 		/// </summary>
 		/// <remarks>Called initially from the IO-Context</remarks>
 		internal void LoadAndLogin()
 		{
-			// set Zone *before* Region
+			// set Zone *before* Map
 			// TODO: Also retrieve Battlegrounds
-			m_region = World.GetRegion(m_record);
+			m_Map = World.GetMap(m_record);
 
 			InstanceMgr.RetrieveInstances(this);
+
+			AreaCharCount++;		// Characters are always in active regions
 
 			if (!Role.IsStaff)
 			{
@@ -405,32 +427,37 @@ namespace WCell.RealmServer.Entities
 			}
 
 			var isStaff = Role.IsStaff;
-			if (m_region == null)
+			if (m_Map == null && (!isStaff || (m_Map = InstanceMgr.CreateInstance(this, m_record.MapId)) == null))
 			{
-				TeleportToBindLocation();
+				// map does not exist anymore
 				Load();
+				TeleportToBindLocation();
+				AddMessage(InitializeCharacter);
+				return;
 			}
 			else
 			{
 				Load();
-				if (m_region.IsDisposed ||
-					(m_region.IsInstance && (m_region.CreationTime > m_record.LastLogout ||
-											 (!m_region.CanEnter(this) && !isStaff))))
+				if (m_Map.IsDisposed ||
+					(m_Map.IsInstance && !isStaff && (m_Map.CreationTime > m_record.LastLogout || !m_Map.CanEnter(this))))
 				{
-					// invalid Region or not allowed back in (might be an Instance)
-					m_region.TeleportOutside(this);
+					// invalid Map or not allowed back in (might be an Instance)
+					m_Map.TeleportOutside(this);
 
 					AddMessage(InitializeCharacter);
 				}
 				else
 				{
-					m_region.AddMessage(() =>
+					m_Map.AddMessage(() =>
 					{
-						if (m_region is Battleground)
+						// add to map
+						if (m_Map is Battleground)
 						{
-							var bg = (Battleground)m_region;
+							var bg = (Battleground)m_Map;
 							if (!bg.LogBackIn(this))
 							{
+								// teleport out of BG
+								AddMessage(InitializeCharacter);
 								return;
 							}
 						}
@@ -439,7 +466,7 @@ namespace WCell.RealmServer.Entities
 												 m_record.PositionY,
 												 m_record.PositionZ);
 
-						m_zone = m_region.GetZone(m_record.Zone);
+						m_zone = m_Map.GetZone(m_record.Zone);
 
 						if (m_zone != null && m_record.JustCreated)
 						{
@@ -447,9 +474,9 @@ namespace WCell.RealmServer.Entities
 							SetZoneExplored(m_zone.Id, false);
 						}
 
-						// during the next Region-wide Character-update, the Character is going to be added to the region 
+						// during the next Map-wide Character-update, the Character is going to be added to the map 
 						// and created/initialized immediately afterwards
-						m_region.AddObjectNow(this);
+						m_Map.AddObjectNow(this);
 
 						InitializeCharacter();
 					});
@@ -459,7 +486,7 @@ namespace WCell.RealmServer.Entities
 
 
 		/// <summary>
-		/// Is called after Character has been added to a region the first time and 
+		/// Is called after Character has been added to a map the first time and 
 		/// before it receives the first Update packet
 		/// </summary>
 		internal protected void InitializeCharacter()
@@ -473,12 +500,6 @@ namespace WCell.RealmServer.Entities
 				((PlayerSpellCollection)m_spells).PlayerInitialize();
 
 				OnLogin();
-
-#if DEV
-				// do this check in case that we did not load Items yet
-				if (ItemMgr.Loaded)
-#endif
-					InitItems();
 
 				if (m_record.JustCreated)
 				{
@@ -512,6 +533,14 @@ namespace WCell.RealmServer.Entities
 					LoadEquipmentState();
 				}
 
+				// load items
+#if DEV
+				// do this check in case that we did not load Items yet
+				if (ItemMgr.Loaded)
+#endif
+					InitItems();
+
+				// load ticket information
 				var ticket = TicketMgr.Instance.GetTicket(EntityId.Low);
 				if (ticket != null)
 				{
@@ -519,13 +548,16 @@ namespace WCell.RealmServer.Entities
 					Ticket.OnOwnerLogin(this);
 				}
 
+				// initialize sub systems
 				GroupMgr.Instance.OnCharacterLogin(this);
 				GuildMgr.Instance.OnCharacterLogin(this);
 				RelationMgr.Instance.OnCharacterLogin(this);
 
+				// set login date
 				LastLogin = DateTime.Now;
 				var isNew = m_record.JustCreated;
 
+				// perform some stuff ingame
 				AddMessage(() =>
 				{
 					if (LastLogout == null)
@@ -547,7 +579,7 @@ namespace WCell.RealmServer.Entities
 						// we are on a Taxi
 						var vertex = TaxiMgr.GetVertex(m_record.NextTaxiVertexId);
 						if (vertex != null &&
-							vertex.MapId == m_region.Id &&
+							vertex.MapId == m_Map.Id &&
 							vertex.ListEntry.Next != null &&
 							IsInRadius(vertex.Pos, vertex.ListEntry.Next.Value.DistFromPrevious))
 						{
@@ -590,14 +622,14 @@ namespace WCell.RealmServer.Entities
 					}
 				});
 
-				if (m_record.JustCreated)
+				if (isNew)
 				{
 					SaveLater();
 					m_record.JustCreated = false;
 				}
 				else
 				{
-					RealmServer.Instance.AddMessage(() =>
+					RealmServer.IOQueue.AddMessage(() =>
 					{
 						try
 						{
@@ -649,7 +681,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Called within Region Context.
+		/// Called within Map Context.
 		/// Sends initial packets
 		/// </summary>
 		private void OnLogin()
@@ -678,7 +710,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Reconnects a client to a character that was logging out.
 		/// Resends required initial packets.
-		/// Called from within the region context.
+		/// Called from within the map context.
 		/// </summary>
 		/// <param name="newClient"></param>
 		internal void ReconnectCharacter(IRealmClient newClient)
@@ -717,7 +749,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void SaveLater()
 		{
-			RealmServer.Instance.AddMessage(new Message(() => SaveNow()));
+			RealmServer.IOQueue.AddMessage(new Message(() => SaveNow()));
 		}
 
 		/// <summary>
@@ -760,22 +792,22 @@ namespace WCell.RealmServer.Entities
 				m_record.Outfit = Outfit;
 				m_record.Name = Name;
 				m_record.Level = Level;
-				if (m_region != null)
+				if (m_Map != null)
 				{
 					// only save position information if we are in world
 					m_record.PositionX = Position.X;
 					m_record.PositionY = Position.Y;
 					m_record.PositionZ = Position.Z;
 					m_record.Orientation = Orientation;
-					m_record.RegionId = m_region.Id;
-					m_record.InstanceId = m_region.InstanceId;
+					m_record.MapId = m_Map.Id;
+					m_record.InstanceId = m_Map.InstanceId;
 					m_record.Zone = ZoneId;
 				}
 				m_record.DisplayId = DisplayId;
 				m_record.BindX = m_bindLocation.Position.X;
 				m_record.BindY = m_bindLocation.Position.Y;
 				m_record.BindZ = m_bindLocation.Position.Z;
-				m_record.BindRegion = m_bindLocation.RegionId;
+				m_record.BindMap = m_bindLocation.MapId;
 				m_record.BindZone = m_bindLocation.ZoneId;
 
 				m_record.Health = Health;
@@ -886,7 +918,7 @@ namespace WCell.RealmServer.Entities
 				if (DebugUtil.Dumps)
 				{
 					var writer = DebugUtil.GetTextWriter(m_client.Account);
-					writer.WriteLine("Saved {0} (Region: {1}).", Name, m_record.RegionId);
+					writer.WriteLine("Saved {0} (Map: {1}).", Name, m_record.MapId);
 				}
 
 				return true;
@@ -952,7 +984,7 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Enqueues logout of this player to the Region's queue
+		/// Enqueues logout of this player to the Map's queue
 		/// </summary>
 		/// <param name="forced">whether the Character is forced to logout (as oppose to initializeing logout oneself)</param>
 		public void LogoutLater(bool forced)
@@ -963,7 +995,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Starts the logout process with the default delay (or instantly if
 		/// in city or staff)
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="forced"></param>
 		public void Logout(bool forced)
@@ -974,7 +1006,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Starts the logout process.
 		/// Disconnects the Client after the given delay in seconds, if not in combat (or instantly if delay = 0)
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="forced">whether the Character is forced to logout (as opposed to initializing logout oneself)</param>
 		/// <param name="delay">The delay until the client will be disconnected in seconds</param>
@@ -1049,7 +1081,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Cancels logout of this Character.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void CancelLogout()
 		{
@@ -1066,7 +1098,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Cancels logout of this Character.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="sendCancelReply">whether to send the Cancel-reply (if client did not disconnect in the meantime)</param>
 		public void CancelLogout(bool sendCancelReply)
@@ -1097,10 +1129,10 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Saves and then removes Character
 		/// </summary>
-		/// <remarks>Requires region context for synchronization.</remarks>
+		/// <remarks>Requires map context for synchronization.</remarks>
 		internal void FinishLogout()
 		{
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				SaveNow();
 
@@ -1178,7 +1210,7 @@ namespace WCell.RealmServer.Entities
 			CancelAllActions();
 			m_auras.CleanupAuras();
 
-			m_region.RemoveObjectNow(this);
+			m_Map.RemoveObjectNow(this);
 
 			//if (!IsPlayerLogout)
 			if (!Account.IsActive)
@@ -1253,7 +1285,7 @@ namespace WCell.RealmServer.Entities
 		/// Kicks this Character with the given msg instantly.
 		/// </summary>
 		/// <remarks>
-		/// Requires region context.
+		/// Requires map context.
 		/// </remarks>
 		public void Kick(string msg)
 		{
@@ -1262,7 +1294,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Kicks this Character with the given msg after the given delay in seconds.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		/// <param name="delay">The delay until the Client should be disconnected in seconds</param>
 		public void Kick(string reason, float delay)
@@ -1272,7 +1304,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Broadcasts a kick message and then kicks this Character after the default delay.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void Kick(Character kicker, string reason)
 		{
@@ -1281,7 +1313,7 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Broadcasts a kick message and then kicks this Character after the default delay.
-		/// Requires region context.
+		/// Requires map context.
 		/// </summary>
 		public void Kick(INamed kicker, string reason, int delay)
 		{

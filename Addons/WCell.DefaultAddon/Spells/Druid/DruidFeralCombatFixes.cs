@@ -163,10 +163,10 @@ namespace WCell.Addons.Default.Spells.Druid
 
 				// only proc the trigger spell on dodge
 				var triggerSpellEffect = spell.RemoveEffect(AuraType.ProcTriggerSpell);
-				spell.AddProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(triggerSpellEffect.TriggerSpellId),
 					ProcTriggerFlags.MeleeHit | ProcTriggerFlags.RangedHit,
-					ProcHandler.DodgeValidator,
-					SpellHandler.Get(triggerSpellEffect.TriggerSpellId)
+					ProcHandler.DodgeValidator
 					));
 
 			});
@@ -216,7 +216,7 @@ namespace WCell.Addons.Default.Spells.Druid
 			// Bash "interrupts non-player spellcasting for $32747d."
 			SpellLineId.DruidBash.Apply(spell =>
 			{
-				spell.AddTriggerSpellEffect(SpellId.InterruptRank1, ImplicitTargetType.SingleEnemy);
+				spell.AddTriggerSpellEffect(SpellId.InterruptRank1, ImplicitSpellTargetType.SingleEnemy);
 			});
 
 			// FR: "Converts up to 10 rage per second into health for $d.  Each point of rage is converted into ${$m2/10}.1% of max health."
@@ -234,7 +234,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 
 				// set correct target type
-				spell.GetEffect(SpellEffectType.Dummy).ImplicitTargetA = ImplicitTargetType.Self;
+				spell.GetEffect(SpellEffectType.Dummy).ImplicitTargetA = ImplicitSpellTargetType.Self;
 
 				// aura increases dmg done %
 				spell.GetEffect(AuraType.Dummy).AuraType = AuraType.ModDamageDonePercent;
@@ -336,6 +336,12 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				spell.AddAuraEffect(() => new ToggleAuraHandler(SpellId.FlightFormPassivePassive));
 			});
+
+			//Wrong Facing Requirement
+			SpellLineId.DruidPounce.Apply(spell =>
+				{
+					spell.AttributesExB = SpellAttributesExB.None;
+				});
 
 			FixBloodFrenzy();
 		}

@@ -15,6 +15,7 @@
  *************************************************************************/
 
 using System.Collections.Generic;
+using WCell.RealmServer.GameObjects.Spawns;
 using WCell.Util.Collections;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Spells;
@@ -66,54 +67,39 @@ namespace WCell.RealmServer.Commands
 				var mod = trigger.Text.NextModifiers();
 				var id = trigger.Text.NextEnum(GOEntryId.End);
 
-				var target = trigger.Args.Target;
-				var region = target != null ? target.Region : World.Kalimdor;
+				var entry = GOMgr.GetEntry(id, false);
 
-				var entry = GOMgr.GetEntry(id);
+				var target = trigger.Args.Target;
+				var map = target != null ? target.Map : World.Kalimdor;
 
 				if (mod == "c")
 				{
-					ICollection<GOSpawn> templates;
-					if (entry != null)
-					{
-						templates = entry.Templates;
-					}
-					else
-					{
-						templates = GOMgr.GetTemplates(region.Id);
-					}
-
-					if (templates == null || templates.Count == 0)
-					{
-						trigger.Reply("No valid templates found ({0})", entry);
-						return;
-					}
-
 					// spawn closest
-					GOSpawn closest;
+					GOSpawnEntry closest;
 
 					if (entry != null)
 					{
 						// Entry specified
-						closest = entry.GetClosestTemplate(target);
+						closest = entry.SpawnEntries.GetClosestEntry(target);
 					}
 					else
 					{
 						// no entry, just spawn any nearby Template
-						closest = templates.GetClosestTemplate(target);
+						var templates = GOMgr.GetSpawnPoolTemplatesByMap(map.Id);
+						closest = templates == null ? null : templates.GetClosestEntry(target);
 					}
 
 					if (closest == null)
 					{
-						trigger.Reply("Could not find any Template nearby.");
+						trigger.Reply("No valid SpawnEntries found (Entry: {0})", entry);
 					}
 					else
 					{
-						closest.Spawn(region);
+						closest.Spawn(map);
 						trigger.Reply("Spawned: " + closest.Entry);
 						if (target != null)
 						{
-							target.TeleportTo(closest);
+							target.TeleportTo(map, closest.Position);
 						}
 					}
 				}
@@ -122,9 +108,8 @@ namespace WCell.RealmServer.Commands
 					if (entry != null)
 					{
 						// spawn a new GO
-						var go = entry.Create(trigger.Args.Target);
-						trigger.Args.Target.PlaceOnTop(go);
-						trigger.Reply("Successfully spawned a new {0}.", go.Name);
+						var go = entry.Spawn(trigger.Args.Target, trigger.Args.Target);
+						trigger.Reply("Successfully spawned new GO: {0}.", go.Name);
 					}
 					else
 					{
@@ -396,11 +381,11 @@ namespace WCell.RealmServer.Commands
 				var gos = caster.GetObjectsInRadius(50f, ObjectTypes.GameObject, false, 0);
 				foreach (GameObject go in gos)
 				{
-					var region = go.Region;
+					var map = go.Map;
 					var pos = go.Position;
 					pos.Z += 7 * go.ScaleX;						// make it appear above the object
 
-					var dO = new DynamicObject(caster, SpellId.ABOUTTOSPAWN, 5, region, pos);
+					var dO = new DynamicObject(caster, SpellId.ABOUTTOSPAWN, 5, map, pos);
 					highlighters.Add(dO, go);
 				}
 				trigger.Reply("Highlighting {0} GameObjects", highlighters.Count);
@@ -478,7 +463,7 @@ namespace WCell.RealmServer.Commands
 		void CreatePortal(WorldObject at, IWorldLocation target)
 		{
 			// create portal
-			var portal = Portal.Create(target);
+			var portal = Portal.Create(at, target);
 			at.PlaceInFront(portal);
 		}
 

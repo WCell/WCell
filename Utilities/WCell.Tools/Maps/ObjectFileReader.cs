@@ -21,11 +21,11 @@ namespace WCell.Tools.Maps
 
 	    #region Read
 		[Tool]
-		public static void ViewRegionBuildings()
+		public static void ViewMapBuildings()
 		{
             // Debug constraints here
-			var regionBuildings = ReadRegionBuildings(MapId.EasternKingdoms);
-			var buildings = regionBuildings.ObjectsByTile[36, 49];
+			var mapBuildings = ReadMapBuildings(MapId.EasternKingdoms);
+			var buildings = mapBuildings.ObjectsByTile[36, 49];
 
 			var highestVec = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 			WMO highestWMO = null;
@@ -59,7 +59,7 @@ namespace WCell.Tools.Maps
 			Console.WriteLine(String.Format("X: {0}, Y: {1}, Z: {2}", worldVec.X, worldVec.Y, worldVec.Z));
 		}
 
-		public static RegionWMOs ReadRegionBuildings(MapId id)
+		public static MapWmOs ReadMapBuildings(MapId id)
 		{
 			var filePath = Path.Combine(ToolConfig.WMODir, ((int)id).ToString());
 			if (!Directory.Exists(filePath))
@@ -67,7 +67,7 @@ namespace WCell.Tools.Maps
 				throw new DirectoryNotFoundException(filePath);
 			}
 
-			var regionBuildings = new RegionWMOs();
+			var mapBuildings = new MapWmOs();
 
 			var count = 0;
 			var max = TerrainConstants.TilesPerMapSide;
@@ -87,15 +87,15 @@ namespace WCell.Tools.Maps
 
 					var tileBuildings = ReadTileBuildings(reader);
 
-					regionBuildings.ObjectsByTile[tileX, tileY] = tileBuildings;
+					mapBuildings.ObjectsByTile[tileX, tileY] = tileBuildings;
 					count++;
 
 					file.Close();
 				}
 			}
-			if (count > 1) regionBuildings.HasTiles = true;
+			if (count > 1) mapBuildings.HasTiles = true;
 
-			return regionBuildings;
+			return mapBuildings;
 		}
 
 		public static TileObjects<WMO> ReadTileBuildings(BinaryReader reader)

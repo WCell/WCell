@@ -41,6 +41,7 @@ using WCell.RealmServer.Network;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.NPCs.Auctioneer;
 using WCell.RealmServer.NPCs.Pets;
+using WCell.RealmServer.NPCs.Spawns;
 using WCell.RealmServer.NPCs.Trainers;
 using WCell.RealmServer.NPCs.Vendors;
 using WCell.RealmServer.Quests;
@@ -51,6 +52,8 @@ using WCell.RealmServer.Taxi;
 using WCell.Util;
 using WCell.RealmServer.AI.Groups;
 using WCell.Util.Graphics;
+
+
 
 namespace WCell.RealmServer.Entities
 {
@@ -66,7 +69,7 @@ namespace WCell.RealmServer.Entities
 			return NPCMgr.GetEntry(id).Create();
 		}
 
-		protected internal SpawnPoint m_spawnPoint;
+		protected internal NPCSpawnPoint m_spawnPoint;
 		protected NPCEntry m_entry;
 		protected TimerEntry m_decayTimer;
 		private string m_name;
@@ -86,15 +89,15 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Creation & Init
-		protected internal virtual void SetupNPC(NPCEntry entry, SpawnPoint spawnPoint)
+		protected internal virtual void SetupNPC(NPCEntry entry, NPCSpawnPoint spawnPoint)
 		{
-			SpawnEntry spawnEntry;
+			NPCSpawnEntry spawnEntry;
 			if (spawnPoint != null)
 			{
 				// Spawn-specific information
 				spawnEntry = spawnPoint.SpawnEntry;
 				m_spawnPoint = spawnPoint;
-				Phase = spawnEntry.PhaseMask;
+				Phase = spawnEntry.Phase;
 				m_orientation = spawnEntry.Orientation;
 
 				if (spawnEntry.DisplayIdOverride != 0)
@@ -189,24 +192,32 @@ namespace WCell.RealmServer.Entities
 
 			// health + power
 			var health = entry.GetRandomHealth();
-			SetUInt32(UnitFields.MAXHEALTH, health);
-			SetUInt32(UnitFields.BASE_HEALTH, health);
+			SetInt32(UnitFields.MAXHEALTH, health);
+			SetInt32(UnitFields.BASE_HEALTH, health);
 
-			if (m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
+			if (m_entry.IsDead || m_spawnPoint == null || !m_spawnPoint.SpawnEntry.IsDead)
 			{
-				SetUInt32(UnitFields.HEALTH, health);
+				SetInt32(UnitFields.HEALTH, health);
 			}
-
-			if (m_entry.Regenerates)
+			else if (m_entry.Regenerates)
 			{
 				Regenerates = true;
-				HealthRegenPerTickNoCombat = Math.Max((int)m_entry.MaxHealth / 10, 1);
+				HealthRegenPerTickNoCombat = Math.Max(m_entry.MaxHealth / 10, 1);
 			}
 
 			var mana = entry.GetRandomMana();
-			SetInt32(UnitFields.MAXPOWER1, mana);
-			SetInt32(UnitFields.BASE_MANA, mana);
+			if (mana == 0)
+			{
+				SetInt32(UnitFields.MAXPOWER1, 1);
+				SetInt32(UnitFields.BASE_MANA, 1);
+			}
+			else
+			{
+				SetInt32(UnitFields.MAXPOWER1, mana);
+				SetInt32(UnitFields.BASE_MANA, mana);
+			}
 			SetInt32(UnitFields.POWER1, mana);
+			internalPower = mana;
 
 			HoverHeight = entry.HoverHeight;
 
@@ -216,8 +227,6 @@ namespace WCell.RealmServer.Entities
 			{
 				ManaRegenPerTickInterruptedPct = 20;
 			}
-
-			HealthRegenPerTickNoCombat = BaseHealth / 5;
 
 			UpdateUnitState();
 
@@ -238,25 +247,18 @@ namespace WCell.RealmServer.Entities
 				AddAddonData(m_spawnPoint.SpawnEntry.AddonData);
 			}
 
-			CanMelee = m_mainWeapon != GenericWeapon.Peace;
+			if (m_mainWeapon != GenericWeapon.Peace)
+			{
+				IncMeleePermissionCounter();
+			}
 
 			if (IsImmovable)
 			{
 				InitImmovable();
 			}
+			Level = entry.GetRandomLevel();
 
-			AddMessage(() =>
-			{
-				// Set Level/Scale after NPC is in world:
-				if (!HasPlayerMaster)
-				{
-					Level = entry.GetRandomLevel();
-				}
-				else
-				{
-					Level = m_master.Level;
-				}
-			});
+			AddMessage(UpdateSpellRanks);
 		}
 
 		/// <summary>
@@ -299,7 +301,7 @@ namespace WCell.RealmServer.Entities
 				}
 				if (flags.HasFlag(UnitFlags.Passive))
 				{
-					HasOwnerPermissionToMove = false;
+					HasPermissionToMove = false;
 				}
 			}
 		}
@@ -366,6 +368,11 @@ namespace WCell.RealmServer.Entities
 			}
 		}
 
+		public override ObjectTemplate Template
+		{
+			get { return Entry; }
+		}
+
 		public override string Name
 		{
 			get { return m_name; }
@@ -389,7 +396,7 @@ namespace WCell.RealmServer.Entities
 		{
 			get
 			{
-				return m_region.CanNPCsEvade &&
+				return m_Map.CanNPCsEvade &&
 					m_spawnPoint != null &&
 					(m_master == this || m_master == null);
 			}
@@ -473,9 +480,14 @@ namespace WCell.RealmServer.Entities
 			get { return m_spells; }
 		}
 
-		public override SpawnPoint SpawnPoint
+		public override NPCSpawnPoint SpawnPoint
 		{
 			get { return m_spawnPoint; }
+		}
+
+		public NPCSpawnEntry SpawnEntry
+		{
+			get { return m_spawnPoint != null ? m_spawnPoint.SpawnEntry : null; }
 		}
 
 		public override LinkedList<WaypointEntry> Waypoints
@@ -527,7 +539,7 @@ namespace WCell.RealmServer.Entities
 		/// Remaining time until the NPC decay (or 0 if already decayed or decaying did not start yet).
 		/// Deactivates the timer if set to a value smaller or equal to 0
 		/// </summary>
-		/// <remarks>Requires region-context</remarks>
+		/// <remarks>Requires map-context</remarks>
 		public int RemainingDecayDelayMillis
 		{
 			get
@@ -738,7 +750,11 @@ namespace WCell.RealmServer.Entities
 		public override NPC SpawnMinion(NPCEntry entry, ref Vector3 position, int durationMillis)
 		{
 			var minion = base.SpawnMinion(entry, ref position, durationMillis);
-			minion.Group = Group;
+			if (Group == null)
+			{
+				Group = new AIGroup(this);
+			}
+			Group.Add(minion);
 			return minion;
 		}
 
@@ -761,14 +777,17 @@ namespace WCell.RealmServer.Entities
 		{
 			m_brain.IsRunning = false;
 
-			// reset spawn timer
-			if (m_spawnPoint != null)
-			{
-				m_spawnPoint.SignalSpawnlingDied(this);
-			}
-
 			// hand out experience
-			m_region.OnNPCDied(this);
+			bool heroic;
+			if (m_Map != null)
+			{
+				m_Map.OnNPCDied(this);
+				heroic = m_Map.IsHeroic;
+			}
+			else
+			{
+				heroic = false;
+			}
 
 			var looter = m_FirstAttacker;
 
@@ -776,7 +795,7 @@ namespace WCell.RealmServer.Entities
 			{
 				var playerLooter = looter != null ? looter.PlayerOwner : null;
 				if (playerLooter != null &&
-					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, m_region.IsHeroic) != null)
+					LootMgr.GetOrCreateLoot(this, playerLooter, LootEntryType.NPCCorpse, heroic) != null)
 				{
 					// NPCs don't have Corpse objects -> Spawning NPC Corpses will cause client to crash
 					//RemainingDecayDelay = m_entry.DefaultDecayDelay * 10;
@@ -801,6 +820,12 @@ namespace WCell.RealmServer.Entities
 				CurrentTamer.SpellCast.Cancel(SpellFailedReason.Ok);
 			}
 
+			// reset spawn timer
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
+
 			if (m_master != null)
 			{
 				// notify master
@@ -823,6 +848,12 @@ namespace WCell.RealmServer.Entities
 			UnitFlags &= ~UnitFlags.SelectableNotAttackable;
 			MarkUpdate(UnitFields.DYNAMIC_FLAGS);
 
+			if (m_spawnPoint != null)
+			{
+				// add back to pool's AIGroup
+				m_spawnPoint.Pool.SpawnedObjects.Add(this);
+			}
+
 			m_brain.IsRunning = true;
 			m_brain.EnterDefaultState();
 			m_brain.OnActivate();
@@ -840,9 +871,15 @@ namespace WCell.RealmServer.Entities
 		}
 
 		#region Movement / Transport
-		protected internal override void OnEnterRegion()
+		protected internal override void OnEnterMap()
 		{
-			base.OnEnterRegion();
+			base.OnEnterMap();
+
+			// add to set of spawned objects of SpawnPoint
+			if (m_spawnPoint != null)
+			{
+				m_spawnPoint.SignalSpawnlingActivated(this);
+			}
 
 			if (m_auras.Count == 0)
 			{
@@ -864,6 +901,7 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// initialize type-specific things
 			foreach (var handler in m_entry.InstanceTypeHandlers)
 			{
 				if (handler != null)
@@ -872,9 +910,9 @@ namespace WCell.RealmServer.Entities
 				}
 			}
 
+			// trigger events
 			if (m_brain != null)
 			{
-				//spawn.Brain.MovementAI.SetSpawnPoint(pos);
 				m_brain.OnActivate();
 			}
 			m_entry.NotifyActivated(this);
@@ -888,17 +926,18 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_master.IsInWorld)
 				{
-					m_master.OnMinionEnteredRegion(this);
+					m_master.OnMinionEnteredMap(this);
 				}
 				else
 				{
 					// master already gone
 					Delete();
+					return;
 				}
 			}
 		}
 
-		protected internal override void OnLeavingRegion()
+		protected internal override void OnLeavingMap()
 		{
 			if (IsAlive)
 			{
@@ -913,7 +952,7 @@ namespace WCell.RealmServer.Entities
 			{
 				if (m_master.IsInWorld)
 				{
-					m_master.OnMinionLeftRegion(this);
+					m_master.OnMinionLeftMap(this);
 				}
 				else
 				{
@@ -926,7 +965,7 @@ namespace WCell.RealmServer.Entities
 
 		#region Decay & Dispose
 		/// <summary>
-		/// Marks this NPC lootable (usually when dead)
+		/// Marks this NPC lootable (after NPC died)
 		/// </summary>
 		private void EnterLootableState()
 		{
@@ -936,13 +975,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Marks this NPC lootable (usually when dead)
+		/// Marks this NPC non-lootable (after NPC was looted)
 		/// </summary>
 		private void EnterFinalState()
 		{
 			FirstAttacker = null;
 			RemainingDecayDelayMillis = m_entry.DefaultDecayDelayMillis;
-			if (m_entry.SkinningLoot != null)
+			if (m_entry.GetSkinningLoot() != null)
 			{
 				UnitFlags |= UnitFlags.Skinnable;
 			}
@@ -974,6 +1013,15 @@ namespace WCell.RealmServer.Entities
 
 		protected internal override void DeleteNow()
 		{
+			// make sure IsDeleted = true
+			m_Deleted = true;
+			m_entry.NotifyDeleted(this);
+
+			if (m_spawnPoint != null && m_spawnPoint.ActiveSpawnling == this)
+			{
+				// remove if NPC was for some reason still considered active in pool
+				m_spawnPoint.SignalSpawnlingDied(this);
+			}
 			m_auras.ClearWithoutCleanup();
 			base.DeleteNow();
 		}
@@ -1018,6 +1066,14 @@ namespace WCell.RealmServer.Entities
 		{
 			base.OnLeaveCombat();
 		}
+
+		public override float AggroBaseRange
+		{
+			get
+			{
+				return m_entry.AggroBaseRange;
+			}
+		}
 		#endregion
 
 		/// <summary>
@@ -1025,7 +1081,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		internal bool CheckVendorInteraction(Character chr)
 		{
-			if (chr.Region != m_region ||
+			if (chr.Map != m_Map ||
 				!IsInRadiusSq(chr, NPCMgr.DefaultInteractionDistanceSq) ||
 				!chr.CanSee(this))
 			{
@@ -1088,16 +1144,16 @@ namespace WCell.RealmServer.Entities
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, message, radius);
 		}
 
-		public void Emote(float radius, string[] localizedMsgs)
+		public override void Emote(float radius, string[] localizedMsgs)
 		{
 			ChatMgr.SendMonsterMessage(this, ChatMsgType.MonsterEmote, SpokenLanguage, localizedMsgs, radius);
 		}
 
 		/// <summary>
-		/// Yells to everyone within the region to hear
+		/// Yells to everyone within the map to hear
 		/// </summary>
 		/// <param name="message"></param>
-		public void YellToRegion(string[] messages)
+		public void YellToMap(string[] messages)
 		{
 			Yell(-1, messages);
 		}
@@ -1304,6 +1360,11 @@ namespace WCell.RealmServer.Entities
 		{
 			return CheckVendorInteraction(chr);
 		}
+
+		public void OnQuestGiverStatusQuery(Character chr)
+		{
+			// do nothing
+		}
 		#endregion
 
 		#region Trainer
@@ -1418,9 +1479,9 @@ namespace WCell.RealmServer.Entities
 
 		public override int GetBasePowerRegen()
 		{
-			if (IsOwnedByPlayer)
+			if (IsPlayerOwned)
 			{
-				return PowerFormulas.GetPowerRegen(this);
+				return RegenerationFormulas.GetPowerRegen(this);
 			}
 			else
 			{
@@ -1447,10 +1508,10 @@ namespace WCell.RealmServer.Entities
 
 		public override void Dispose(bool disposing)
 		{
-			if (m_region != null)
+			if (m_Map != null)
 			{
 				m_currentTamer = null;
-				m_region.UnregisterUpdatableLater(m_decayTimer);
+				m_Map.UnregisterUpdatableLater(m_decayTimer);
 				base.Dispose(disposing);
 			}
 		}

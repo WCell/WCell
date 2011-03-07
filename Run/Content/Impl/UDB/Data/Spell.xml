@@ -8,7 +8,7 @@
     <Flat Name="TargetOrientation" Column="target_orientation" Table="spell_target_position" />
 
     <Nested Name="TargetLocation">
-      <Flat Name="RegionId" Column="target_map" Table="spell_target_position" />
+      <Flat Name="MapId" Column="target_map" Table="spell_target_position" />
       <Flat Name="X" Column="target_position_x" Table="spell_target_position" />
       <Flat Name="Y" Column="target_position_y" Table="spell_target_position" />
       <Flat Name="Z" Column="target_position_z" Table="spell_target_position" />

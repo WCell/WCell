@@ -189,22 +189,22 @@ namespace WCell.RealmServer.Skills
 				info.SkillLine = ById.Get((uint)skillId);
 				if (info.SkillLine != null)
 				{
-					foreach (var classId in WCellDef.AllClassIds)
+					foreach (var classId in WCellConstants.AllClassIds)
 					{
 						if (classId >= ClassId.End)
 						{
 							continue;
 						}
 						var classMask = classId.ToMask();
-						foreach (var raceMask in WCellDef.RaceTypesByMask.Keys)
+						foreach (var raceMask in WCellConstants.RaceTypesByMask.Keys)
 						{
-							RaceId raceId = WCellDef.GetRaceType(raceMask);
+							RaceId raceId = WCellConstants.GetRaceType(raceMask);
 							if (info.RaceMask.HasAnyFlag(raceMask) && info.ClassMask.HasAnyFlag(classMask))
 							{
 								Dictionary<SkillId, SkillRaceClassInfo>[] byClass = RaceClassInfos[(int)raceId];
 								if (byClass == null)
 								{
-									RaceClassInfos[(int)raceId] = byClass = new Dictionary<SkillId, SkillRaceClassInfo>[WCellDef.ClassTypeLength];
+									RaceClassInfos[(int)raceId] = byClass = new Dictionary<SkillId, SkillRaceClassInfo>[WCellConstants.ClassTypeLength];
 								}
 
 								Dictionary<SkillId, SkillRaceClassInfo> infos = byClass[(int)classId];

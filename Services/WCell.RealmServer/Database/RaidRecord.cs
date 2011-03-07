@@ -6,7 +6,7 @@ using WCell.RealmServer.Global;
 namespace WCell.RealmServer.Database
 {
     [ActiveRecord(Access = PropertyAccess.Property)]
-    public class RaidRecord : ActiveRecordBase<RaidRecord>,  IRegionId
+    public class RaidRecord : ActiveRecordBase<RaidRecord>,  IMapId
 	{
 		[Field("CharLowId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int _characterLow;
@@ -15,7 +15,7 @@ namespace WCell.RealmServer.Database
 		private int _instanceId;
 
 		[Field("MapId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_RegionId;
+		private int m_MapId;
 
         [PrimaryKey(PrimaryKeyType.Native, "InstanceRelationId")]
         public long RecordId
@@ -48,10 +48,10 @@ namespace WCell.RealmServer.Database
 			}
 		}
 
-		public MapId RegionId
+		public MapId MapId
     	{
-    		get { return (MapId) m_RegionId; }
-    		set { m_RegionId = (int) value; }
+    		get { return (MapId) m_MapId; }
+    		set { m_MapId = (int) value; }
     	}
 
     	[Property(NotNull = true)]

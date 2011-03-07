@@ -63,10 +63,10 @@ namespace WCell.RealmServer.Spells.Effects
 			else
 			{
 				// teleport to given target location
-				var region = m_cast.TargetMap;
+				var map = m_cast.TargetMap;
 				var pos = m_cast.TargetLoc;
 				var ori = m_cast.TargetOrientation;
-				target.AddMessage(() => ((Unit)target).TeleportTo(region, pos, ori));
+				target.AddMessage(() => ((Unit)target).TeleportTo(map, pos, ori));
 			}
 		}
 

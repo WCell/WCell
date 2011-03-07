@@ -382,11 +382,11 @@ namespace WCell.Tools.Ralek
 
 		#region ImplicitTargetType Methods
 
-		public static ImplicitTargetType FindHighestImplicitTargetType()
+		public static ImplicitSpellTargetType FindHighestImplicitTargetType()
 		{
 			var spells = GetSpells();
 
-			var highest = ImplicitTargetType.None;
+			var highest = ImplicitSpellTargetType.None;
 
 			foreach (var spell in spells)
 			{
@@ -409,7 +409,7 @@ namespace WCell.Tools.Ralek
 			var highest = FindHighestImplicitTargetType();
 			var spells = GetSpells();
 
-			var allAuras = new HashSet<ImplicitTargetType>();
+			var allAuras = new HashSet<ImplicitSpellTargetType>();
 
 			foreach (var spell in spells)
 			{
@@ -421,7 +421,7 @@ namespace WCell.Tools.Ralek
 			}
 
 			Console.WriteLine("Unused Effects");
-			for (var effect = ImplicitTargetType.None; effect < highest; effect++)
+			for (var effect = ImplicitSpellTargetType.None; effect < highest; effect++)
 			{
 				if (!allAuras.Contains(effect))
 				{

@@ -3,7 +3,7 @@
  *   file		: Summon.cs
  *   copyright		: (C) The WCell Team
  *   email		: info@wcell.org
- *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (sø, 17 jan 2010) $
+ *   last changed	: $LastChangedDate: 2010-01-17 17:38:11 +0100 (s? 17 jan 2010) $
  *   last author	: $LastChangedBy: dominikseifert $
  *   revision		: $Rev: 1198 $
  *
@@ -24,6 +24,7 @@ using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
 using NLog;
+
 
 namespace WCell.RealmServer.Spells.Effects
 {
@@ -84,11 +85,7 @@ namespace WCell.RealmServer.Spells.Effects
 			int amount;
 			if (summonEntry.DetermineAmountBySpellEffect)
 			{
-				amount = effectValue;
-				if (amount < 1)
-				{
-					amount = 1;
-				}
+				amount = effectValue > 0 ? effectValue : 1;
 			}
 			else
 			{

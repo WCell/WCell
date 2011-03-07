@@ -15,7 +15,9 @@
  *************************************************************************/
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NLog;
 using WCell.Constants;
@@ -43,7 +45,7 @@ namespace WCell.RealmServer.Groups
 	/// Base group class for every group type.
 	/// Don't forget to lock the SyncRoot while iterating over a Group.
 	/// </summary>
-	public abstract partial class Group : IInstanceHolderSet, ICharacterSet
+	public abstract partial class Group : IInstanceHolderSet, ICharacterSet, IEnumerable<GroupMember>
 	{
 		private static Logger log = LogManager.GetCurrentClassLogger();
 
@@ -148,7 +150,7 @@ namespace WCell.RealmServer.Groups
 					m_DungeonDifficulty = value;
 					if (!IsBattleGroup)
 					{
-						foreach (var member in GetCharacters())
+						foreach (var member in GetAllCharacters())
 						{
 							if (Flags.HasFlag(GroupFlags.Raid))
 							{
@@ -307,9 +309,18 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void ForeachCharacter(Action<Character> callback)
 		{
-			foreach (var chr in GetCharacters())
+			m_syncLock.EnterReadLock();
+
+			try
 			{
-				callback(chr);
+				foreach (var chr in GetAllCharacters())
+				{
+					callback(chr);
+				}
+			}
+			finally
+			{
+				m_syncLock.ExitReadLock();
 			}
 		}
 
@@ -321,7 +332,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void CallOnAllInContext(Action<Character> callback)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				var c = chr;
 				chr.ExecuteInContext(() =>
@@ -341,7 +352,7 @@ namespace WCell.RealmServer.Groups
 		public void CallOnAllInSameContext(IContextHandler context, Action<Character> callback)
 		{
 			context.EnsureContext();
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				if (chr.ContextHandler == context)
 				{
@@ -353,7 +364,7 @@ namespace WCell.RealmServer.Groups
 		/// <summary>
 		/// The amount of Members in this Group
 		/// </summary>
-		public int Count
+		public int CharacterCount
 		{
 			get { return m_Count; }
 		}
@@ -399,7 +410,7 @@ namespace WCell.RealmServer.Groups
 		{
 			get
 			{
-				return (byte)(MaxMemberCount - Count);
+				return (byte)(MaxMemberCount - CharacterCount);
 			}
 		}
 
@@ -479,7 +490,7 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public virtual void RemoveMember(GroupMember member)
 		{
-			if (Count <= MinGroupMemberCount)
+			if (CharacterCount <= MinGroupMemberCount)
 			{
 				Disband();
 			}
@@ -661,15 +672,15 @@ namespace WCell.RealmServer.Groups
 				member.Character = null;
 
 				// Teleport out of group-owned instances within 1 minute
-				if (chr.Region is BaseInstance)
+				if (chr.Map is BaseInstance)
 				{
-					var instance = (BaseInstance)chr.Region;
-					chr.Region.CallDelayed(GroupInstanceKickDelayMillis, () =>
+					var instance = (BaseInstance)chr.Map;
+					chr.Map.CallDelayed(GroupInstanceKickDelayMillis, () =>
 					{
-						if (chr.IsInWorld && chr.Region == instance && !instance.CanEnter(chr))
+						if (chr.IsInWorld && chr.Map == instance && !instance.CanEnter(chr))
 						{
 							// chr is still inside and not allowed
-							//chr.Region.TeleportOutside(chr);
+							//chr.Map.TeleportOutside(chr);
 							chr.TeleportToNearestGraveyard();
 						}
 					});
@@ -928,7 +939,7 @@ namespace WCell.RealmServer.Groups
 				{
 					foreach (var member in groupUnit.Members)
 					{
-						var maxLen = 35 + ((11 + CharacterHandler.MaxCharNameLength) * (Count - 1));
+						var maxLen = 35 + ((11 + CharacterHandler.MaxCharNameLength) * (CharacterCount - 1));
 						using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_GROUP_LIST, maxLen))
 						{
 							if ((chr = member.Character) == null)
@@ -945,7 +956,7 @@ namespace WCell.RealmServer.Groups
 							}
 							packet.Write(0x50000000FFFFFFFEul);
 							packet.Write(0);                        // since 3.3: Some kind of sequence id
-							packet.Write(Count - 1);
+							packet.Write(CharacterCount - 1);
 
 							foreach (var memberSubGroup in m_subGroups)
 							{
@@ -1309,7 +1320,7 @@ namespace WCell.RealmServer.Groups
 		/// All online characters. 
 		/// Don't forget to lock the SyncRoot while iterating over a Group.
 		/// </summary>
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			var chrs = new Character[m_Count];
 			var c = 0;
@@ -1378,13 +1389,14 @@ namespace WCell.RealmServer.Groups
 		/// </summary>
 		public void Send(RealmPacketOut packet)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				chr.Client.Send(packet);
 			}
 		}
 		#endregion
 
+		#region Find certain members
 		/// <summary>
 		/// Selects and returns the next online Member whose turn it is in RoundRobin.
 		/// </summary>
@@ -1441,6 +1453,7 @@ namespace WCell.RealmServer.Groups
 				}
 			}
 		}
+		#endregion
 
 		/// <summary>
 		/// Sets the given Looting-parameters and updates the Group.
@@ -1477,7 +1490,7 @@ namespace WCell.RealmServer.Groups
 			if (member.Group != this)
 				return;
 
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				if (chr != member.Character && chr != null
 					&& !chr.IsInUpdateRange(member.Character)
@@ -1488,6 +1501,12 @@ namespace WCell.RealmServer.Groups
 				}
 			}
 			member.Character.GroupUpdateFlags = GroupUpdateFlags.None;
+		}
+
+
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
 		}
 
 		/// <summary>
@@ -1547,7 +1566,7 @@ namespace WCell.RealmServer.Groups
 
 		public void ForeachInstanceHolder(Action<InstanceCollection> callback)
 		{
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
 				var log = chr.Instances;
 				if (log != null)
@@ -1558,10 +1577,10 @@ namespace WCell.RealmServer.Groups
 		}
 
 		/// <summary>
-		/// Gets the Instance of the given Region of either the Leader or any member
+		/// Gets the Instance of the given Map of either the Leader or any member
 		/// if anyone is already in it.
 		/// </summary>
-		public BaseInstance GetActiveInstance(RegionTemplate region)
+		public BaseInstance GetActiveInstance(MapTemplate map)
 		{
 			// Need to be careful, since we are quite probably not in the corresponding Character's context:
 			var leader = m_leader;
@@ -1573,7 +1592,7 @@ namespace WCell.RealmServer.Groups
 					var instances = leaderChr.Instances;
 					if (instances != null)
 					{
-						var instance = instances.GetActiveInstance(region);
+						var instance = instances.GetActiveInstance(map);
 						if (instance != null)
 						{
 							return instance;
@@ -1583,9 +1602,9 @@ namespace WCell.RealmServer.Groups
 			}
 
 			// check all other members
-			foreach (var chr in GetCharacters())
+			foreach (var chr in GetAllCharacters())
 			{
-				var instance = chr.GetActiveInstance(region);
+				var instance = chr.GetActiveInstance(map);
 				if (instance != null)
 				{
 					return instance;
@@ -1596,10 +1615,11 @@ namespace WCell.RealmServer.Groups
 
 		#endregion
 
+		#region Kills & Honor
 		public void DistributeGroupHonor(Character earner, Character victim, uint honorPoints)
 		{
-			if (Count < 1) return;
-			var bonus = honorPoints / (uint)Count;
+			if (CharacterCount < 1) return;
+			var bonus = honorPoints / (uint)CharacterCount;
 
 			ForeachCharacter((chr) =>
 			{
@@ -1615,16 +1635,46 @@ namespace WCell.RealmServer.Groups
 
 		public void OnKill(Character killer, NPC victim)
 		{
-			if (Count < 1) return;
+			if (CharacterCount < 1) return;
 
 			ForeachCharacter((chr) =>
 			{
-				if (chr.Region == victim.Region && chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), killer))
+				if (chr.Map == victim.Map && chr.IsInRange(new SimpleRange(0.0f, MaxKillRewardDistance), killer))
 				{
 					chr.QuestLog.OnNPCInteraction(victim);
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.KillCreature, victim.EntryId, 1);
 				}
 			});
 		}
+		#endregion
+
+		#region Staff Management
+		/// <summary>
+		/// Kick every non-staff member
+		/// </summary>
+		public void EnsurePureStaffGroup()
+		{
+			m_syncLock.EnterReadLock();
+			try
+			{
+				foreach (var member in this.ToArray())
+				{
+					var chr = member.Character;
+					if (chr == null || !chr.Role.IsStaff)
+					{
+						member.LeaveGroup();
+						if (chr != null)
+						{
+							chr.AddMessage(() => chr.SendSystemMessage("You have been kicked from the group since you are not a staff member."));
+						}
+					}
+				}
+			}
+			finally
+			{
+				m_syncLock.ExitReadLock();
+			}
+		}
+		#endregion
 	}
 }

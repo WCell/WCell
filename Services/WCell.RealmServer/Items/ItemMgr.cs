@@ -53,6 +53,12 @@ namespace WCell.RealmServer.Items
 		[NotVariable]
 		public static MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter> RandomSuffixReader;
 
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter> ScalingStatDistributionReader;
+
+        [NotVariable]
+        public static MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter> ScalingStatValuesReader;
+
 		/// <summary>
 		/// All partial inventory types by InventorySlot
 		/// </summary>
@@ -178,7 +184,7 @@ namespace WCell.RealmServer.Items
 			slots[(int)InventorySlotType.Wrist] = new[] { EquipmentSlot.Wrist };
 
 			// special treatment
-			slots[(int)InventorySlotType.Ammo] = null;
+			slots[(int)InventorySlotType.Ammo] = null; // new[] { EquipmentSlot.Invalid };
 			return slots;
 		}
 
@@ -619,17 +625,23 @@ namespace WCell.RealmServer.Items
 		private static void LoadDBCs()
 		{
 			RandomPropPointReader = new MappedDBCReader<ItemLevelInfo, ItemRandPropPointConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_RANDPROPPOINTS));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_RANDPROPPOINTS));
 
 			EnchantMgr.Init();
 
 			RandomPropertiesReader =
 				new MappedDBCReader<ItemRandomPropertyEntry, ItemRandomPropertiesConverter>(RealmServerConfiguration.GetDBCFile(
-																						WCellDef.DBC_ITEMRANDOMPROPERTIES));
+																						WCellConstants.DBC_ITEMRANDOMPROPERTIES));
 
 			RandomSuffixReader =
 				new MappedDBCReader<ItemRandomSuffixEntry, ItemRandomSuffixConverter>(RealmServerConfiguration.GetDBCFile(
-																					WCellDef.DBC_ITEMRANDOMSUFFIX));
+																					WCellConstants.DBC_ITEMRANDOMSUFFIX));
+
+            ScalingStatDistributionReader = new MappedDBCReader<ScalingStatDistributionEntry, ScalingStatDistributionConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellConstants.DBC_SCALINGSTATDISTRIBUTION));
+
+            ScalingStatValuesReader = new MappedDBCReader<ScalingStatValues, ScalingStatValuesConverter>(RealmServerConfiguration.GetDBCFile(
+                                                                                    WCellConstants.DBC_SCALINGSTATVALUES));
 		}
 
 		public static bool Loaded { get; private set; }
@@ -664,6 +676,11 @@ namespace WCell.RealmServer.Items
 
 				AuctionMgr.Instance.LoadItems();
 
+				if (QuestMgr.Loaded)
+				{
+					EnsureItemQuestRelations();
+				}
+
 				RealmServer.InitMgr.SignalGlobalMgrReady(typeof(ItemMgr));
 				Loaded = true;
 			}
@@ -688,10 +705,7 @@ namespace WCell.RealmServer.Items
 			}
 		}
 
-		[Initialization]
-		[DependentInitialization(typeof(QuestMgr))]
-		[DependentInitialization(typeof(ItemMgr))]
-		public static void EnsureQuestRelations()
+		internal static void EnsureItemQuestRelations()
 		{
 			// Collect quests
 			foreach (var quest in QuestMgr.Templates)
@@ -723,7 +737,6 @@ namespace WCell.RealmServer.Items
 						{
 							ArrayUtil.AddOnlyOne(ref item.CollectQuests, quest);
 						}
-						break;
 					}
 				}
 			}
@@ -750,7 +763,7 @@ namespace WCell.RealmServer.Items
 		public static void LoadSets()
 		{
 			var reader = new MappedDBCReader<ItemSet, ItemSet.ItemSetDBCConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_ITEMSET));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_ITEMSET));
 
 			foreach (var set in reader.Entries.Values)
 			{
@@ -809,22 +822,25 @@ namespace WCell.RealmServer.Items
 
 		#region TotemCategories
 		[NotVariable]
-		public static ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)TotemCategory.End];
+		public static readonly ItemTemplate[] FirstTotemsPerCat = new ItemTemplate[(uint)ToolCategory.End + 100];
 
-		public static ItemTemplate GetFirstTotemCat(TotemCategory totemCat)
+		public static ItemTemplate GetFirstItemOfToolCategory(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat];
+			return FirstTotemsPerCat[(int)toolCat];
 		}
 
-		public static EquipmentSlot[] GetTotemCatSlots(TotemCategory totemCat)
+		public static EquipmentSlot[] GetToolCategorySlots(ToolCategory toolCat)
 		{
-			return FirstTotemsPerCat[(int)totemCat].EquipmentSlots;
+			var templ = FirstTotemsPerCat[(int) toolCat];
+			if (templ == null) return null;
+
+			return templ.EquipmentSlots;
 		}
 
 		public static Dictionary<int, TotemCategoryInfo> ReadTotemCategories()
 		{
 			var reader = new MappedDBCReader<TotemCategoryInfo, TotemCatConverter>(RealmServerConfiguration.GetDBCFile(
-                                                                                    WCellDef.DBC_TOTEMCATEGORY));
+                                                                                    WCellConstants.DBC_TOTEMCATEGORY));
 			return reader.Entries;
 		}
 
@@ -862,7 +878,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomPropertyEntry GetRandomPropertyEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomPropertiesReader == null)
 			{
 				LoadDBCs();
 			}
@@ -873,7 +889,7 @@ namespace WCell.RealmServer.Items
 
 		public static ItemRandomSuffixEntry GetRandomSuffixEntry(uint id)
 		{
-			if (RandomPropPointReader == null)
+            if (RandomSuffixReader == null)
 			{
 				LoadDBCs();
 			}
@@ -881,6 +897,28 @@ namespace WCell.RealmServer.Items
 			RandomSuffixReader.Entries.TryGetValue((int)id, out entry);
 			return entry;
 		}
+
+        public static ScalingStatDistributionEntry GetScalingStatDistributionEntry(uint id)
+        {
+            if (ScalingStatDistributionReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatDistributionEntry entry;
+            ScalingStatDistributionReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
+
+        public static ScalingStatValues GetScalingStatValue(uint id)
+        {
+            if (ScalingStatValuesReader == null)
+            {
+                LoadDBCs();
+            }
+            ScalingStatValues entry;
+            ScalingStatValuesReader.Entries.TryGetValue((int)id, out entry);
+            return entry;
+        }
 
 		#region Apply changes when loading
 		private static readonly List<KeyValuePair<ItemId, Action<ItemTemplate>>> loadHooks = new List<KeyValuePair<ItemId, Action<ItemTemplate>>>();

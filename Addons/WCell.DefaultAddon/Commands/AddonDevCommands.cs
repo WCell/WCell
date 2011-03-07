@@ -82,7 +82,7 @@ namespace WCell.Addons.Default.Commands
 					var mods = trigger.Text.NextModifiers();
 					var amount = trigger.Text.NextInt(1);
 
-					InventoryCommand.AddItemCommand.AddItem(chr, templ, amount, mods.Contains("a"), mods.Contains("e"));
+					InventoryCommand.ItemAddCommand.AddItem(chr, templ, amount, mods.Contains("a"), mods.Contains("e"));
 				}
 			}
 		}

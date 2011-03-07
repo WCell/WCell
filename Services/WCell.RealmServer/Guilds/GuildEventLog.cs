@@ -55,7 +55,7 @@ namespace WCell.RealmServer.Guilds
 			if (m_entries.Count > MAX_ENTRIES_COUNT)
 			{
 				var entry = m_entries.Dequeue();
-				RealmServer.Instance.AddMessage(new Message(entry.Delete));
+				RealmServer.IOQueue.AddMessage(new Message(entry.Delete));
 			}
 		}
 

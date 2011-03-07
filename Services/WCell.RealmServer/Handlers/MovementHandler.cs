@@ -66,22 +66,30 @@ namespace WCell.RealmServer.Handlers
 		[ClientPacketHandler(RealmServerOpCode.MSG_MOVE_STOP_ASCEND)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_CHNG_TRANSPORT)]
 		[ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_FALL_RESET)]
+        [ClientPacketHandler(RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)]
 		public static void HandleMovement(IRealmClient client, RealmPacketIn packet)
 		{
 			var chr = client.ActiveCharacter;
-			var mover = chr.MoveControl.Mover;
+            var mover = chr.MoveControl.Mover as Unit;
 
-			if (!(mover is Unit) ||
-				!chr.UnitFlags.HasFlag(UnitFlags.PlayerControlled) ||
-				chr.UnitFlags.HasFlag(UnitFlags.Influenced))
+		    if (mover == null ||
+				!mover.UnitFlags.HasFlag(UnitFlags.PlayerControlled) ||
+				mover.UnitFlags.HasFlag(UnitFlags.Influenced))
 			{
 				// don't accept Player input while not under the Player's control
 				return;
 			}
 
-			chr.CancelEmote();
+			mover.CancelEmote();
 
 			var guid = packet.ReadPackedEntityId();
+
+            if (packet.PacketId.RawId == (uint)RealmServerOpCode.CMSG_MOVE_NOT_ACTIVE_MOVER)
+            {
+                mover = client.ActiveCharacter.Map.GetObject(guid) as Unit;
+                if (mover == null)
+                    return;
+            }
 			var moveFlags = (MovementFlags)packet.ReadInt32();
 			//var moveFlags2 = (MovementFlags2)packet.ReadInt32();
 			var moveFlags2 = (MovementFlags2)packet.ReadInt16();
@@ -101,24 +109,24 @@ namespace WCell.RealmServer.Handlers
 				var transportTime = packet.ReadUInt32();
 				var transportSeat = packet.ReadByte();
 
-				var transport = chr.Region.GetObject(transportId) as ITransportInfo;
+				var transport = mover.Map.GetObject(transportId) as ITransportInfo;
 				var isVehicle = transport is Vehicle;
 				//if (transport == null || !transport.IsInRadius(chr, 100f))
 				if (transport == null)
 				{
-					if (chr.Transport != null)
+					if (mover.Transport != null)
 					{
-						chr.Transport.RemovePassenger(chr);
+						mover.Transport.RemovePassenger(mover);
 					}
 					//client.ActiveCharacter.Kick("Invalid Transport flag");
 					return;
 				}
 
-				if (chr.TransportInfo != transport)
+				if (mover.TransportInfo != transport)
 				{
 					if (!isVehicle)
 					{
-						((Transport)transport).AddPassenger(chr);
+						((Transport)transport).AddPassenger(mover);
 					}
 					else
 					{
@@ -128,14 +136,14 @@ namespace WCell.RealmServer.Handlers
 
 				if (!isVehicle)
 				{
-					chr.TransportPosition = transportPosition;
-					chr.TransportOrientation = transportOrientation;
-					chr.TransportTime = transportTime;
+					mover.TransportPosition = transportPosition;
+					mover.TransportOrientation = transportOrientation;
+					mover.TransportTime = transportTime;
 				}
 			}
-			else if (chr.Transport != null)
+			else if (mover.Transport != null)
 			{
-				chr.Transport.RemovePassenger(chr);
+				mover.Transport.RemovePassenger(mover);
 			}
 
 			if (moveFlags.HasFlag(MovementFlags.Swimming | MovementFlags.Flying) ||
@@ -149,7 +157,8 @@ namespace WCell.RealmServer.Handlers
 				// pitch, ranges from -1.55 to 1.55
 				var pitch = packet.ReadFloat();
 
-				chr.MovePitch(pitch);
+                if(chr == mover)
+				    chr.MovePitch(pitch);
 			}
 
 			var airTime = packet.ReadUInt32();
@@ -168,16 +177,16 @@ namespace WCell.RealmServer.Handlers
 				//chr.OnFalling(airTime, jumpXYSpeed);
 			}
 
-			if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND)
+            if (packet.PacketId.RawId == (uint)RealmServerOpCode.MSG_MOVE_FALL_LAND && chr == mover)
 			{
 				chr.OnFalling();
 			}
 
-			if (moveFlags.HasFlag(MovementFlags.Swimming))
+            if (moveFlags.HasFlag(MovementFlags.Swimming) && chr == mover)
 			{
 				chr.OnSwim();
 			}
-			else if (chr.IsSwimming)
+            else if (chr.IsSwimming && chr == mover)
 			{
 				chr.OnStopSwimming();
 			}
@@ -188,9 +197,9 @@ namespace WCell.RealmServer.Handlers
 			}
 
 			// it is only orientation if it is none of the packets below, and has no flags but orientation flags
-			var onlyOrientation = newPosition == chr.Position;
+			var onlyOrientation = newPosition == mover.Position;
 
-			if (!onlyOrientation && !chr.SetPosition(newPosition, orientation))
+			if (!onlyOrientation && !mover.SetPosition(newPosition, orientation))
 			{
 				// rather unrealistic case
 			}
@@ -198,23 +207,23 @@ namespace WCell.RealmServer.Handlers
 			{
 				if (onlyOrientation)
 				{
-					chr.Orientation = orientation;
+					mover.Orientation = orientation;
 				}
 				else
 				{
-					chr.OnMove();
+					mover.OnMove();
 				}
 
-				chr.MovementFlags = moveFlags;
-				chr.MovementFlags2 = moveFlags2;
+				mover.MovementFlags = moveFlags;
+				mover.MovementFlags2 = moveFlags2;
 
 				if (onlyOrientation)
 				{
-					chr.Orientation = orientation;
+					mover.Orientation = orientation;
 				}
 				else
 				{
-					if (!chr.CanMove)
+					if (!mover.CanMove)
 					{
 						// cannot kick, since sometimes packets simply have bad timing
 						//chr.Kick("Illegal movement.");
@@ -285,16 +294,16 @@ namespace WCell.RealmServer.Handlers
 			client.TickCount = 0;
 
 			var chr = client.ActiveCharacter;
-			if (chr != null && chr.Region != null)
+			if (chr != null && chr.Map != null)
 			{
-				var zone = chr.Region.GetZone(chr.Position.X, chr.Position.Y);
+				var zone = chr.Map.GetZone(chr.Position.X, chr.Position.Y);
 				if (zone != null)
 				{
 					chr.SetZone(zone);
 				}
 				else
 				{
-					chr.SetZone(chr.Region.DefaultZone);
+					chr.SetZone(chr.Map.DefaultZone);
 				}
 
 				// resend some initial packets
@@ -339,7 +348,7 @@ namespace WCell.RealmServer.Handlers
 			var time = packet.ReadUInt32();
 
 			var chr = client.ActiveCharacter;
-			var teleportee = chr.Region.GetObject(teleporteeId) as Character;
+			var teleportee = chr.Map.GetObject(teleporteeId) as Character;
 
 			// TODO: find something to do with this information.
 		}
@@ -778,7 +787,7 @@ namespace WCell.RealmServer.Handlers
 				if (trans != null)
 				{
 					packet.Write((uint)trans.Entry.Id);
-					packet.Write((uint)chr.RegionId);
+					packet.Write((uint)chr.MapId);
 				}
 
 				client.Send(packet);

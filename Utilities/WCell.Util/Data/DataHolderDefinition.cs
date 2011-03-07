@@ -152,18 +152,18 @@ namespace WCell.Util.Data
 					{
 						if (!m_cacheGetter.IsStatic)
 						{
-							throw new DataHolderException("Getter {0} must be static.", m_cacheGetter.GetMemberName());
+							throw new DataHolderException("Getter {0} must be static.", m_cacheGetter.GetFullMemberName());
 						}
 
 						var type = m_cacheGetter.ReturnType;
 						var interfce = type.GetInterfaces().FirstOrDefault();
 						var genArg1 = type.GetGenericArguments().FirstOrDefault();
-						if (Type != genArg1 || 
-							interfce == null || 
+						if (Type != genArg1 ||
+							interfce == null ||
 							!interfce.Name.StartsWith("IEnumerable"))
 						{
 							throw new DataHolderException("Getter {0} has wrong Type \"{1}\" - Expected: IEnumerable<{2}>",
-														  m_cacheGetter.GetMemberName(), type.FullName, Type.Name);
+														  m_cacheGetter.GetFullMemberName(), type.FullName, Type.Name);
 						}
 					}
 				}
@@ -270,50 +270,69 @@ namespace WCell.Util.Data
 				}
 
 				var dbAttrs = member.GetCustomAttributes<DBAttribute>();
-				if (dbAttrs.Length == 0 && m_Attribute.RequirePersistantAttr)
+				var persistentAttribute = dbAttrs.Where(attribute => attribute is PersistentAttribute).FirstOrDefault() as PersistentAttribute;
+				if (persistentAttribute == null && m_Attribute.RequirePersistantAttr)
 				{
+					// DataHolder only maps fields/properties with PersistantAttribute
 					continue;
 				}
 
 				var rawType = member.GetVariableType();
 				var isArr = rawType.IsArray;
-				var memberType = member.GetActualType();
 
+				string varName;
+				IGetterSetter accessor;
+				IFieldReader reader;
+				Type memberType;
+				if (persistentAttribute != null)
+				{
+					// persistent attribute
+					memberType = persistentAttribute.ActualType ?? member.GetActualType();
+					varName = persistentAttribute.Name ?? member.Name;
+					if (persistentAttribute.AccessorType != null)
+					{
+						var accessorObj = Activator.CreateInstance(persistentAttribute.AccessorType);
+						if (!(accessorObj is IGetterSetter))
+						{
+							throw new DataHolderException("Accessor for Persistent members must be of type IGetterSetter - "
+								+ "Found accessor of type {0} for member {1}", accessorObj.GetType(), member.GetFullMemberName());
+						}
+						accessor = (IGetterSetter)accessorObj;
+					}
+					else
+					{
+						accessor = accessors != null ? accessors[member] : new DefaultVariableAccessor(member);
+					}
+					reader = Converters.GetReader(persistentAttribute.ReadType ?? memberType);
+				}
+				else
+				{
+					memberType = member.GetActualType();
+					varName = member.Name;
+					//accessor = new DefaultVariableAccessor(member);
+					accessor = (accessors != null ? accessors[member] : new DefaultVariableAccessor(member));
+					reader = Converters.GetReader(memberType);
+				}
+
+				// check array constraints
 				if (isArr)
 				{
 					if (rawType.GetArrayRank() > 1 || memberType.IsArray)
 					{
 						throw new DataHolderException("Cannot define Type {0} of {1} because its a multi-dimensional Array.", rawType,
-													  member.GetMemberName());
+													  member.GetFullMemberName());
 					}
 				}
-
-				string varName;
-				IGetterSetter accessor;
-				var attr = dbAttrs.Where(attribute => attribute is PersistentAttribute).FirstOrDefault() as PersistentAttribute;
-				if (attr != null)
-				{
-					// persistent attribute
-					varName = attr.Name ?? member.Name;
-					accessor = attr.Accessor ?? (accessors != null ? accessors[member] : new DefaultVariableAccessor(member));
-				}
-				else
-				{
-					varName = member.Name;
-					//accessor = new DefaultVariableAccessor(member);
-					accessor = (accessors != null ? accessors[member] : new DefaultVariableAccessor(member));
-				}
-
-				var reader = Converters.GetReader(memberType);
 
 				IDataField field;
 				if (reader == null)
 				{
+					// create reader
 					if (type.IsAbstract)
 					{
 						throw new DataHolderException(
 							"Cannot define member \"{0}\" of DataHolder \"{1}\" because it's Type ({2}) is abstract.",
-							member.GetMemberName(), this, memberType.FullName);
+							member.GetFullMemberName(), this, memberType.FullName);
 					}
 
 					IProducer producer;
@@ -330,7 +349,7 @@ namespace WCell.Util.Data
 					if (isArr)
 					{
 						// complex (nested) type
-						var length = GetArrayLengthByAttr(attr, member);
+						var length = GetArrayLengthByAttr(persistentAttribute, member);
 						var nestedField = new NestedArrayDataField(this, varName, accessor, member,
 																   producer, CreateArrayProducer(memberType, length), length, parent);
 
@@ -359,7 +378,7 @@ namespace WCell.Util.Data
 						GetDataFields(memberType, nestedField.InnerFields, nestedField);
 						if (nestedField.InnerFields.Count == 0)
 						{
-							throw new DataHolderException("Cannot define " + member.GetMemberName() +
+							throw new DataHolderException("Cannot define " + member.GetFullMemberName() +
 														  " as Nested because it does not have any inner fields.");
 						}
 						else
@@ -373,7 +392,7 @@ namespace WCell.Util.Data
 					if (isArr)
 					{
 						//var nestedField = new (this, varName, accessor, member, producer, parent);
-						var length = GetArrayLengthByAttr(attr, member);
+						var length = GetArrayLengthByAttr(persistentAttribute, member);
 						field = new FlatArrayDataField(this, varName, accessor,
 							member, length,
 							CreateArrayProducer(memberType, length),

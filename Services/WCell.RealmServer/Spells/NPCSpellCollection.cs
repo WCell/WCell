@@ -31,13 +31,13 @@ namespace WCell.RealmServer.Spells
 			return spells;
 		}
 
-		protected List<Spell> m_readySpells;
-		protected List<CooldownRemoveAction> m_cooldowns;
-		
+		protected HashSet<Spell> m_readySpells;
+		protected List<CooldownRemoveTimer> m_cooldowns;
+
 		#region Init & Cleanup
 		private NPCSpellCollection()
 		{
-			m_readySpells = new List<Spell>(5);
+			m_readySpells = new HashSet<Spell>();
 		}
 
 		protected internal override void Recycle()
@@ -88,9 +88,8 @@ namespace WCell.RealmServer.Spells
 
 		public Spell GetReadySpell(SpellId spellId)
 		{
-			for (int i = 0; i < m_readySpells.Count; i++)
+			foreach (var spell in m_readySpells)
 			{
-				var spell = m_readySpells[i];
 				if (spell.SpellId == spellId)
 				{
 					return spell;
@@ -177,34 +176,33 @@ namespace WCell.RealmServer.Spells
 				{
 					// no cooldown, no cast delay, no duration: Add default cooldown
 					millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, DefaultNPCSpellCooldownMillis);
-					ProcessCooldown(spell, millis);
+					AddCooldown(spell, millis);
 				}
 			}
 			else
 			{
 				// add existing cooldown
 				millis = Owner.Auras.GetModifiedInt(SpellModifierType.CooldownTime, spell, millis);
-				ProcessCooldown(spell, millis);
+				AddCooldown(spell, millis);
 			}
 		}
 
-		public void RestoreCooldown(Spell spell, DateTime cdTime)
+		public void AddCooldown(Spell spell, DateTime cdTime)
 		{
 			var millis = (cdTime - DateTime.Now).ToMilliSecondsInt();
-			ProcessCooldown(spell, millis);
+			AddCooldown(spell, millis);
 		}
 
-		private void ProcessCooldown(Spell spell, int millis)
+		private void AddCooldown(Spell spell, int millis)
 		{
 			if (millis <= 0) return;
 			m_readySpells.Remove(spell);
 
-			var ticks = millis / Owner.Region.UpdateDelay;
-			var action = new CooldownRemoveAction(ticks, spell, owner => m_readySpells.Add(spell));
-			Owner.CallPeriodically(action);
+			var action = new CooldownRemoveTimer(millis, spell);
+			Owner.AddUpdateAction(action);
 			if (m_cooldowns == null)
 			{
-				m_cooldowns = new List<CooldownRemoveAction>();
+				m_cooldowns = new List<CooldownRemoveTimer>();
 			}
 			m_cooldowns.Add(action);
 		}
@@ -213,18 +211,17 @@ namespace WCell.RealmServer.Spells
 		{
 			var context = Owner.ContextHandler;
 			if (context != null)
+			{
 				context.AddMessage(() =>
 				{
-					if (m_cooldowns != null)
+					if (m_cooldowns == null) return;
+					foreach (var cd in m_cooldowns)
 					{
-						for (var i = 0; i < m_cooldowns.Count; i++)
-						{
-							var cd = m_cooldowns[i];
-							Owner.RemoveUpdateAction(cd);
-							AddReadySpell(cd.Spell);
-						}
+						Owner.RemoveUpdateAction(cd);
+						AddReadySpell(cd.Spell);
 					}
 				});
+			}
 		}
 
 		public override bool IsReady(Spell spell)
@@ -239,17 +236,19 @@ namespace WCell.RealmServer.Spells
 				for (var i = 0; i < m_cooldowns.Count; i++)
 				{
 					var cd = m_cooldowns[i];
-					if (cd.Spell.Id == spell.Id)
-					{
-						m_cooldowns.Remove(cd);
-						AddReadySpell(cd.Spell);
-						break;
-					}
+					if (cd.Spell.Id != spell.Id) continue;
+
+					m_cooldowns.Remove(cd);
+					AddReadySpell(cd.Spell);
+					break;
 				}
 			}
 		}
 
-		public int TicksUntilCooldown(Spell spell)
+		/// <summary>
+		/// Returns the delay until the given spell has cooled down in milliseconds
+		/// </summary>
+		public int GetRemainingCooldownMillis(Spell spell)
 		{
 			if (m_cooldowns == null) return 0;
 
@@ -258,23 +257,28 @@ namespace WCell.RealmServer.Spells
 				var cd = m_cooldowns[i];
 				if (cd.Spell.Id != spell.Id) continue;
 
-				return ((Owner.Region.TickCount + (int)Owner.EntityId.Low) % cd.Ticks);
+				return cd.GetDelayUntilNextExecution(Owner);
 			}
 			return 0;
 		}
 
-		protected class CooldownRemoveAction : OneShotUpdateObjectAction
+		protected class CooldownRemoveTimer : OneShotObjectUpdateTimer
 		{
-			public CooldownRemoveAction(int ticks, Spell spell, Action<WorldObject> action)
-				: base(ticks, action)
+			public CooldownRemoveTimer(int millis, Spell spell) : base(millis, null)
 			{
 				Spell = spell;
+				Callback = DoRemoveCooldown;
 			}
 
 			public Spell Spell
 			{
 				get;
 				set;
+			}
+
+			void DoRemoveCooldown(WorldObject owner)
+			{
+				((NPCSpellCollection)((NPC)owner).Spells).AddReadySpell(Spell);
 			}
 		}
 		#endregion

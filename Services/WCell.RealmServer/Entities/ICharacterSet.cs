@@ -9,16 +9,25 @@ namespace WCell.RealmServer.Entities
 {
 	public interface ICharacterSet : IPacketReceiver
 	{
-		int Count { get; }
+		/// <summary>
+		/// Amount of Characters in this set
+		/// </summary>
+		int CharacterCount { get; }
 
+		/// <summary>
+		/// FactionGroup or 0 if this is not a biased group
+		/// </summary>
 		FactionGroup FactionGroup { get; }
 
+		/// <summary>
+		/// Calls the given callback within each Character's context
+		/// </summary>
 		void ForeachCharacter(Action<Character> callback);
 
 		/// <summary>
 		/// Creates a Copy of the set
 		/// </summary>
-		Character[] GetCharacters();
+		Character[] GetAllCharacters();
 	}
 
 	public interface ICharacterCollection : ICharacterSet

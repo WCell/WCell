@@ -114,7 +114,7 @@ namespace WCell.RealmServer.Tests.Spells
 			chr.EnsureFacing(enemy);
 
 			// triggered spells are instant and cannot miss
-			chr.Region.AddMessageAndWait(() => {
+			chr.Map.AddMessageAndWait(() => {
 				var failReason = chr.SpellCast.Start(spell, true, enemy);
 				Assert.AreEqual(SpellFailedReason.Ok, failReason);
 
@@ -143,8 +143,8 @@ namespace WCell.RealmServer.Tests.Spells
 
 			Assert.AreEqual(0, chr.Auras.Count);
 
-			// important: Execute this in the Region's thread
-			chr.Region.AddMessageAndWait(new Message(() => {
+			// important: Execute this in the Map's thread
+			chr.Map.AddMessageAndWait(new Message(() => {
 				chr.SpellCast.TriggerSelf(spell);
 
 				var failure =
@@ -189,7 +189,7 @@ namespace WCell.RealmServer.Tests.Spells
 			Assert.IsNotNull(spell);
 			Asser.GreaterThan(spell.CastDelay, 0u);
 
-			npc.Region.AddMessageAndWait(new Message(() => {
+			npc.Map.AddMessageAndWait(new Message(() => {
 				var cast = npc.SpellCast;
 				var err = cast.Start(spell, false, npc);
 

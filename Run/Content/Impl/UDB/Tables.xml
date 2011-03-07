@@ -2,6 +2,11 @@
 <Tables>
   <DBVersion Table="db_version" Column="version" MinVersion="1" MaxVersion="1" />
 
+  <Table Name="achievement_criteria_requirement" MainDataHolder="AchievementCriteriaRequirement">
+	<PrimaryColumn Name="criteria_id" TypeName="UInt32"/>
+	<PrimaryColumn Name="type" TypeName="UInt32"/>
+  </Table>
+  
   <Table Name="achievement_reward" MainDataHolder="AchievementReward">
     <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>
@@ -26,12 +31,21 @@
   <Table Name="battlemaster_entry">
     <PrimaryColumn Name="entry"/>
   </Table>
+  
+<!-- NPC Spawns -->
+  <Table Name="pool_template" MainDataHolder="SpawnPoolTemplateEntry">
+    <PrimaryColumn Name="entry"/>
+  </Table>
 
-  <Table Name="creature" MainDataHolder="SpawnEntry">
+  <Table Name="creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid"/>
   </Table>
 
-  <Table Name="creature_addon" MainDataHolder="SpawnEntry">
+  <Table Name="pool_creature" MainDataHolder="NPCSpawnEntry">
+    <PrimaryColumn Name="guid" TypeName="UInt32"/>
+  </Table>
+
+  <Table Name="creature_addon" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
@@ -125,27 +139,34 @@
     <PrimaryColumn Name="entry"/>
   </Table>
 
-  <Table Name="game_event">
-    <PrimaryColumn Name="entry"/>
+  <Table Name="game_event" MainDataHolder="WorldEvent">
+    <PrimaryColumn Name="entry" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_creature" MainDataHolder="SpawnEntry">
+  <Table Name="game_event_creature" MainDataHolder="NPCSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_creature_quest">
-    <PrimaryColumn Name="id"/>
-    <PrimaryColumn Name="quest"/>
+  <Table Name="game_event_quest" MainDataHolder="WorldEventQuest">
+    <PrimaryColumn Name="quest" TypeName="UInt32"/>
+    <PrimaryColumn Name="event" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_gameobject" MainDataHolder="GOSpawn">
+  <Table Name="game_event_gameobject" MainDataHolder="GOSpawnEntry">
     <PrimaryColumn Name="guid" TypeName="UInt32"/>
   </Table>
 
-  <Table Name="game_event_model_equip">
-    <PrimaryColumn Name="guid"/>
+  <Table Name="game_event_creature_data" MainDataHolder="WorldEventNpcData">
+    <PrimaryColumn Name="guid" TypeName="UInt32"/>
+    <PrimaryColumn Name="event" TypeName="UInt32"/>
   </Table>
-
+  
+  <Table Name="game_event_mail">
+	<PrimaryColumn Name="event"/>
+	<PrimaryColumn Name="raceMask"/>
+	<PrimaryColumn Name="quest"/>
+  </Table>
+  
   <Table Name="game_event_pool">
     <PrimaryColumn Name="pool_entry"/>
   </Table>
@@ -326,9 +347,6 @@
     <PrimaryColumn Name="pool_id" />
     <PrimaryColumn Name="mother_pool" />
   </Table>
-  <Table Name="pool_template">
-    <PrimaryColumn Name="entry" />
-  </Table>
   <Table Name="prospecting_loot_template">
     <PrimaryColumn Name="entry" />
     <PrimaryColumn Name="item" />
@@ -340,6 +358,14 @@
   </Table>
   <Table Name="quest_template">
     <PrimaryColumn Name="entry" />
+  </Table>
+  <Table Name="quest_poi" MainDataHolder="QuestPOI">
+    <PrimaryColumn Name="questId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
+  </Table>
+  <Table Name="quest_poi_points" MainDataHolder="QuestPOIPoints">
+    <PrimaryColumn Name="questId" TypeName = "UInt32"/>
+    <PrimaryColumn Name="poiId" TypeName = "UInt32"/>
   </Table>
   <Table Name="reference_loot_template">
     <PrimaryColumn Name="entry" />

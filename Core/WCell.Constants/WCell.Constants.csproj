@@ -142,6 +142,7 @@
     <Compile Include="Achievements\AchievementCriteriaCompletionFlags.cs" />
     <Compile Include="Achievements\AchievementCriteriaGroupFlags.cs" />
     <Compile Include="Achievements\AchievementCriteriaId.cs" />
+    <Compile Include="Achievements\AchievementCriteriaRequirementType.cs" />
     <Compile Include="Achievements\AchievementEntryId.cs" />
     <Compile Include="Achievements\AchievementFactionGroup.cs" />
     <Compile Include="Achievements\AchievementFlags.cs" />
@@ -149,12 +150,15 @@
     <Compile Include="AreaTriggerId.cs" />
     <Compile Include="ArenaTeams.cs" />
     <Compile Include="Battlegrounds.cs" />
+    <Compile Include="Battlegrounds\ArathiBasin.cs" />
     <Compile Include="Battlegrounds\WarsongGulch.cs" />
     <Compile Include="Calendars.cs" />
     <Compile Include="Characters.cs" />
     <Compile Include="Chat\TextEmote.cs" />
     <Compile Include="Externals.cs" />
     <Compile Include="Factions\Extensions.cs" />
+    <Compile Include="GameObjects\GOConstantsExtensions.cs" />
+    <Compile Include="GameObjects\GODynamicFlags.cs" />
     <Compile Include="GameObjects\GOMisc.cs" />
     <Compile Include="Groups.cs" />
     <Compile Include="Guilds\Extensions.cs" />
@@ -189,7 +193,7 @@
     <Compile Include="Items\ItemConstants.cs" />
     <Compile Include="Items\ItemModType.cs" />
     <Compile Include="Items\Professions.cs" />
-    <Compile Include="Items\TotemCategory.cs" />
+    <Compile Include="Items\ToolCategory.cs" />
     <Compile Include="Looting\LootEntryType.cs" />
     <Compile Include="Misc\CombatRatings.cs" />
     <Compile Include="Misc\Gossips.cs" />
@@ -224,8 +228,8 @@
     <Compile Include="Pets\PetMood.cs" />
     <Compile Include="Pets\PetNameInvalidReason.cs" />
     <Compile Include="Pets\TameFailReason.cs" />
-    <Compile Include="Quests\Constants.Quests.cs" />
     <Compile Include="Quests\QuestConstants.cs" />
+    <Compile Include="Quests\QuestEnums.cs" />
     <Compile Include="Quests\QuestGiverRelationType.cs" />
     <Compile Include="Quests\QuestSort.cs" />
     <Compile Include="Realm\RealmCategory.cs" />
@@ -235,6 +239,7 @@
     <Compile Include="Skills\SkillTierId.cs" />
     <Compile Include="Spells\AuraType.cs" />
     <Compile Include="Spells\Constants.Spells.cs" />
+    <Compile Include="Spells\ImplicitSpellTargetType.cs" />
     <Compile Include="Spells\SpellConstantsExtensions.cs" />
     <Compile Include="Spells\ProcTriggerFlags.cs" />
     <Compile Include="Spells\Range.cs" />
@@ -264,7 +269,7 @@
     <Compile Include="Updates\UpdatePriority.cs" />
     <Compile Include="WCellInfo.cs" />
     <Compile Include="World\MapId.cs" />
-    <Compile Include="World\RegionBoundaries.cs" />
+    <Compile Include="World\MapBoundaries.cs" />
     <Compile Include="World\ZoneBoundaries.cs" />
     <Compile Include="World\WorldState.cs" />
     <Compile Include="World\WorldStateId.cs" />

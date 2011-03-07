@@ -182,19 +182,19 @@ namespace WCell.RealmServer.Entities
 
 		/// <summary>
 		/// Whether the physical state of this Unit allows it to move.
-		/// To stop a char from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
-		/// Use MayMove to also take Movement-controlling (eg by AI etc) into consideration.
+		/// To stop a character from moving, use IncMechanicCount to increase Rooted or any other movement-effecting Mechanic-school.
+		/// Use HasPermissionToMove to also take Movement-controlling (eg by AI etc) into consideration.
 		/// </summary>
 		public bool CanMove
 		{
-			get { return m_canMove && HasOwnerPermissionToMove; }
+			get { return m_canMove && HasPermissionToMove; }
 		}
 
 		/// <summary>
 		/// Whether the owner or controlling AI allows this unit to move.
 		/// Always returns true for uncontrolled players.
 		/// </summary>
-		public bool HasOwnerPermissionToMove
+		public bool HasPermissionToMove
 		{
 			get { return m_Movement == null || m_Movement.MayMove; }
 			set
@@ -412,6 +412,9 @@ namespace WCell.RealmServer.Entities
 					case SpellMechanic.Frozen:
 						AuraState |= AuraStateMask.Frozen;
 						break;
+					case SpellMechanic.Bleeding:
+						AuraState |= AuraStateMask.Bleeding;
+						break;
 					case SpellMechanic.Mounted:
 						UnitFlags |= UnitFlags.Mounted;
 						SpeedFactor += MountSpeedMod;
@@ -495,6 +498,9 @@ namespace WCell.RealmServer.Entities
 					{
 						case SpellMechanic.Frozen:
 							AuraState ^= AuraStateMask.Frozen;
+							break;
+						case SpellMechanic.Bleeding:
+							AuraState ^= AuraStateMask.Bleeding;
 							break;
 						case SpellMechanic.Mounted:
 							UnitFlags &= ~UnitFlags.Mounted;
@@ -1231,7 +1237,7 @@ namespace WCell.RealmServer.Entities
 			{
 				return dmg;
 			}
-			return dmg + ((dmg * m_threatMods[(int)school]) / 100);
+			return Math.Max(0, dmg + ((dmg * m_threatMods[(int)school]) / 100));
 		}
 		#endregion
 
@@ -1276,79 +1282,79 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(Vector3 pos)
 		{
-			TeleportTo(m_region, ref pos, null);
+			TeleportTo(m_Map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(ref Vector3 pos)
 		{
-			TeleportTo(m_region, ref pos, null);
+			TeleportTo(m_Map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(ref Vector3 pos, float? orientation)
 		{
-			TeleportTo(m_region, ref pos, orientation);
+			TeleportTo(m_Map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the current region.
+		/// Teleports the owner to the given position in the current map.
 		/// </summary>
 		/// <returns>Whether the Zone had a globally unique Site.</returns>
 		public void TeleportTo(Vector3 pos, float? orientation)
 		{
-			TeleportTo(m_region, ref pos, orientation);
+			TeleportTo(m_Map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(MapId region, ref Vector3 pos)
+		public void TeleportTo(MapId map, ref Vector3 pos)
 		{
-			TeleportTo(World.GetRegion(region), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(MapId region, Vector3 pos)
+		public void TeleportTo(MapId map, Vector3 pos)
 		{
-			TeleportTo(World.GetRegion(region), ref pos, null);
+			TeleportTo(World.GetNonInstancedMap(map), ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(Region region, ref Vector3 pos)
+		public void TeleportTo(Map map, ref Vector3 pos)
 		{
-			TeleportTo(region, ref pos, null);
+			TeleportTo(map, ref pos, null);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
-		public void TeleportTo(Region region, Vector3 pos)
+		public void TeleportTo(Map map, Vector3 pos)
 		{
-			TeleportTo(region, ref pos, null);
+			TeleportTo(map, ref pos, null);
 		}
 
 		/// <summary>
@@ -1359,17 +1365,19 @@ namespace WCell.RealmServer.Entities
 		public bool TeleportTo(IWorldLocation location)
 		{
 			var pos = location.Position;
-			var rgn = location.Region;
-			if (rgn == null)
+			var map = location.Map;
+			if (map == null)
 			{
-				if (Region.Id != location.RegionId)
+				if (Map.Id != location.MapId)
 				{
 					return false;
 				}
-				rgn = Region;
+				map = Map;
 			}
 
-			TeleportTo(rgn, ref pos, m_orientation);
+			TeleportTo(map, ref pos, m_orientation);
+			Phase = location.Phase;
+
 			if (location is WorldObject)
 			{
 				Zone = ((WorldObject)location).Zone;
@@ -1378,26 +1386,26 @@ namespace WCell.RealmServer.Entities
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		/// <param name="orientation">the target orientation</param>
-		public void TeleportTo(Region region, Vector3 pos, float? orientation)
+		public void TeleportTo(Map map, Vector3 pos, float? orientation)
 		{
-			TeleportTo(region, ref pos, orientation);
+			TeleportTo(map, ref pos, orientation);
 		}
 
 		/// <summary>
-		/// Teleports the owner to the given position in the given region.
+		/// Teleports the owner to the given position in the given map.
 		/// </summary>
-		/// <param name="region">the target <see cref="Region" /></param>
+		/// <param name="map">the target <see cref="Map" /></param>
 		/// <param name="pos">the target <see cref="Vector3">position</see></param>
 		/// <param name="orientation">the target orientation</param>
-		public void TeleportTo(Region region, ref Vector3 pos, float? orientation)
+		public void TeleportTo(Map map, ref Vector3 pos, float? orientation)
 		{
-			var ownerRegion = m_region;
-			if (region.IsDisposed)
+			var ownerMap = m_Map;
+			if (map.IsDisposed)
 				return;
 
 			// must not be moving or logging out when being teleported
@@ -1408,9 +1416,9 @@ namespace WCell.RealmServer.Entities
 				((Character)this).CancelLogout();
 			}
 
-			if (ownerRegion == region)
+			if (ownerMap == map)
 			{
-				if (Region.MoveObject(this, ref pos))
+				if (Map.MoveObject(this, ref pos))
 				{
 					if (orientation.HasValue)
 						Orientation = orientation.Value;
@@ -1426,12 +1434,12 @@ namespace WCell.RealmServer.Entities
 			}
 			else
 			{
-				if (ownerRegion != null && !ownerRegion.IsInContext)
+				if (ownerMap != null && !ownerMap.IsInContext)
 				{
 					var position = pos;
-					ownerRegion.AddMessage(new Message(() => TeleportTo(region, ref position, orientation)));
+					ownerMap.AddMessage(new Message(() => TeleportTo(map, ref position, orientation)));
 				}
-				else if (region.TransferObjectLater(this, pos))
+				else if (map.TransferObjectLater(this, pos))
 				{
 					if (orientation.HasValue)
 					{
@@ -1443,15 +1451,15 @@ namespace WCell.RealmServer.Entities
 						var chr = ((Character)this);
 						chr.LastPosition = pos;
 
-						MovementHandler.SendNewWorld(chr.Client, region.Id, ref pos, Orientation);
+						MovementHandler.SendNewWorld(chr.Client, map.Id, ref pos, Orientation);
 					}
 				}
 				else
 				{
-					// apparently, the target region has a colliding entity ID. this should NEVER 
+					// apparently, the target map has a colliding entity ID. this should NEVER 
 					// happen for any kind of Unit
 
-					log.Error("ERROR: Tried to teleport object, but failed to add player to the new region - " + this);
+					log.Error("ERROR: Tried to teleport object, but failed to add player to the new map - " + this);
 				}
 			}
 		}

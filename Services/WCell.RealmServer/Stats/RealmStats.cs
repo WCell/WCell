@@ -69,7 +69,7 @@ namespace WCell.RealmServer.Stats
 			list.Add(string.Format("+ Players Online: {0} (Horde: {1}, Alliance: {2})",
 				World.CharacterCount, World.HordeCharCount, World.AllianceCharCount));
 			base.GetStats(list);
-			list.Add("+ Region Load Average: " + Region.LoadAvgStr);
+			list.Add("+ Map Load Average: " + Map.LoadAvgStr);
 		}
 
     	public override long TotalBytesSent

@@ -1,30 +1,43 @@
+using System;
 using WCell.Constants;
 
 namespace WCell.RealmServer.Spells.Auras
 {
-	public class ModStatPercentHandler : AuraEffectHandler
+	public class ModStatPercentHandler : PeriodicallyUpdatedAuraEffectHandler
 	{
-		int[] vals;
-		private int val;
+		protected int[] m_vals;
+		protected int m_singleVal;
+
+		protected int GetModifiedValue(int value)
+		{
+			return (value * EffectValue + 50) / 100;
+		}
+
+		protected virtual int GetStatValue(StatType stat)
+		{
+			//return Owner.GetUnmodifiedBaseStatValue(stat);
+			return Owner.GetBaseStatValue(stat);
+		}
 
 		protected override void Apply()
 		{
 			if (SpellEffect.MiscValue == -1)
 			{
 				// all stats
-				vals = new int[(int)StatType.End];
+				m_vals = new int[(int)StatType.End];
 				for (var stat = StatType.Strength; stat < StatType.End; stat++)
 				{
-					val = (Owner.GetUnmodifiedBaseStatValue(stat) * EffectValue + 50) / 100;
-					vals[(int)stat] = val;
-					Owner.AddStatMod(stat, val, m_aura.Spell.IsPassive);
+					var val = GetStatValue(stat);
+					m_vals[(int)stat] = val;
+					Owner.AddStatMod(stat, GetModifiedValue(val), false);
 				}
 			}
 			else
 			{
 				var stat = (StatType)SpellEffect.MiscValue;
-				val = (Owner.GetUnmodifiedBaseStatValue(stat) * EffectValue + 50) / 100;
-				Owner.AddStatMod(stat, val, m_aura.Spell.IsPassive);
+
+				m_singleVal = GetStatValue(stat);
+				Owner.AddStatMod(stat, GetModifiedValue(m_singleVal), false);
 			}
 		}
 
@@ -35,12 +48,43 @@ namespace WCell.RealmServer.Spells.Auras
 				// all stats
 				for (var stat = StatType.Strength; stat <= StatType.Spirit; stat++)
 				{
-					Owner.RemoveStatMod(stat, vals[(int)stat], m_aura.Spell.IsPassive);
+					Owner.RemoveStatMod(stat, GetModifiedValue(m_vals[(int)stat]), m_aura.Spell.IsPassive);
 				}
 			}
 			else
 			{
-				Owner.RemoveStatMod((StatType)SpellEffect.MiscValue, val, m_aura.Spell.IsPassive);
+				Owner.RemoveStatMod((StatType)SpellEffect.MiscValue, GetModifiedValue(m_singleVal), m_aura.Spell.IsPassive);
+			}
+		}
+
+		/// <summary>
+		/// Re-evaluate effect value, if stats changed
+		/// </summary>
+		public override void Update()
+		{
+			if (SpellEffect.MiscValue == -1)
+			{
+				// all stats
+				for (var stat = StatType.Strength; stat <= StatType.Spirit; stat++)
+				{
+					if (GetStatValue(stat) != m_vals[(int)stat])
+					{
+						// re-apply
+						Remove(false);
+						Apply();
+						break;
+					}
+				}
+			}
+			else
+			{
+				var stat = (StatType) SpellEffect.MiscValue;
+				if (GetStatValue(stat) != m_singleVal)
+				{
+					// re-apply
+					Remove(false);
+					Apply();
+				}
 			}
 		}
 	}

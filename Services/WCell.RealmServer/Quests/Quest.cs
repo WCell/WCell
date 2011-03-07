@@ -1,4 +1,4 @@
-/*************************************************************************
+﻿/*************************************************************************
  *
  *   file		: Quest.cs
  *   copyright		: (C) The WCell Team
@@ -18,6 +18,7 @@ using System;
 using WCell.Constants.Achievements;
 using WCell.Constants.NPCs;
 using WCell.Constants.Quests;
+using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
@@ -59,18 +60,9 @@ namespace WCell.RealmServer.Quests
 		internal Quest(QuestLog log, QuestTemplate template, int slot)
 			: this(log, template, new QuestRecord(template.Id, log.Owner.EntityId.Low))
 		{
-
-			if (template.GOInteractions != null)
+			if (template.HasObjectOrSpellInteractions)
 			{
-				UsedGOs = new uint[template.GOInteractions.Length];
-			}
-			if (template.NPCInteractions != null)
-			{
-				KilledNPCs = new uint[template.NPCInteractions.Length];
-			}
-			if (template.SpellCastObjectives != null)
-			{
-				CastedSpells = new int[template.SpellCastObjectives.Length];
+				Interactions = new uint[template.ObjectOrSpellInteractions.Length];
 			}
 			if (template.AreaTriggerObjectives.Length > 0)
 			{
@@ -81,7 +73,7 @@ namespace WCell.RealmServer.Quests
 		}
 
 		/// <summary>
-		/// Recreate existing Quest-progress
+		/// Load Quest progress
 		/// </summary>
 		internal Quest(QuestLog log, QuestRecord record, QuestTemplate template)
 			: this(log, template, record)
@@ -90,30 +82,19 @@ namespace WCell.RealmServer.Quests
 
 			// reset initial state
 
-			if (template.GOInteractions != null)
+			if (template.HasObjectOrSpellInteractions)
 			{
-				if (UsedGOs == null)
+				if (Interactions == null)
 				{
-					UsedGOs = new uint[template.NPCInteractions.Length];
+					Interactions = new uint[template.ObjectOrSpellInteractions.Length];
 				}
 
-				for (var i = 0; i < Template.NPCInteractions.Length; i++)
+				for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
 				{
-					var interaction = Template.NPCInteractions[i];
-					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)UsedGOs[i]);
-				}
-			}
-			if (Template.NPCInteractions != null)
-			{
-				if (KilledNPCs == null)
-				{
-					KilledNPCs = new uint[template.NPCInteractions.Length];
-				}
+					var interaction = Template.ObjectOrSpellInteractions[i];
+					if (interaction == null || !interaction.IsValid) continue;
 
-				for (var i = 0; i < Template.NPCInteractions.Length; i++)
-				{
-					var interaction = Template.NPCInteractions[i];
-					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)KilledNPCs[i]);
+					log.Owner.SetQuestCount(Slot, interaction.Index, (byte)Interactions[i]);
 				}
 			}
 			UpdateStatus();
@@ -138,30 +119,12 @@ namespace WCell.RealmServer.Quests
 		public readonly int[] CollectedItems;
 
 		/// <summary>
-		/// Amounts of killed NPCs
+		/// Amounts interactions
 		/// </summary>
-		public uint[] KilledNPCs
+		public uint[] Interactions
 		{
-			get { return m_record.KilledNPCs; }
-			private set { m_record.KilledNPCs = value; }
-		}
-
-		/// <summary>
-		/// Amounts of interacted GameObjects
-		/// </summary>
-		public uint[] UsedGOs
-		{
-			get { return m_record.UsedGOs; }
-			private set { m_record.UsedGOs = value; }
-		}
-
-		/// <summary>
-		/// Spells casted
-		/// </summary>
-		public int[] CastedSpells
-		{
-			get { return m_record.CastedSpells; }
-			private set { m_record.CastedSpells = value; }
+			get { return m_record.Interactions; }
+			private set { m_record.Interactions = value; }
 		}
 
 		/// <summary>
@@ -241,35 +204,17 @@ namespace WCell.RealmServer.Quests
 				}
 			}
 
-			if (Template.GOInteractions != null)
+			if (Template.HasObjectOrSpellInteractions)
 			{
-				for (var i = 0; i < Template.GOInteractions.Length; i++)
+				for (var i = 0; i < Template.ObjectOrSpellInteractions.Length; i++)
 				{
-					if (UsedGOs[i] < Template.GOInteractions[i].Amount)
-					{
-						return false;
-					}
-				}
-			}
+					var templ = Template.ObjectOrSpellInteractions[i];
+					if (templ == null || !templ.IsValid) continue;
 
-			if (Template.NPCInteractions != null)
-			{
-				for (var i = 0; i < Template.NPCInteractions.Length; i++)
-				{
-					if (KilledNPCs[i] < Template.NPCInteractions[i].Amount)
-					{
-						return false;
-					}
-				}
-			}
-
-			if (CastedSpells != null)
-			{
-				for (var i = 0; i < CastedSpells.Length; i++)
-				{
-					//if (CastedSpells[i] < Template.SpellCastObjectives[i])
-					// TODO: Allow to require more than one spellcast
-					if (CastedSpells[i] < 1)
+					var count = Interactions[i];
+					var reqAmount = templ.ObjectType != ObjectTypeId.None || templ.Amount == 0;
+					if ((!reqAmount && count == 0) ||
+						(reqAmount && count < Template.ObjectOrSpellInteractions[i].Amount))
 					{
 						return false;
 					}
@@ -286,25 +231,6 @@ namespace WCell.RealmServer.Quests
 			//    return false;
 			//}
 			return true;
-		}
-
-		public void SignalSpellCasted(SpellId casted)
-		{
-			if (CastedSpells == null)
-			{
-				return;
-			}
-
-			for (var i = 0; i < Template.SpellCastObjectives.Length; i++)
-			{
-				var spell = Template.SpellCastObjectives[i];
-				if (spell == casted)
-				{
-					CastedSpells[i]++;
-					UpdateStatus();
-					break;
-				}
-			}
 		}
 
 		public void SignalATVisited(uint id)
@@ -363,12 +289,16 @@ namespace WCell.RealmServer.Quests
                             chr.QuestLog.TryAddQuest(nq, qHolder);
 					}
 				}
+
 				if(!Template.Repeatable)
 				{
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestCount, 1);
-					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
-					(uint)Template.ZoneTemplate.Id);
 					chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuest, Entry);
+					if (Template.ZoneTemplate != null)
+					{
+						chr.Achievements.CheckPossibleAchievementUpdates(AchievementCriteriaType.CompleteQuestsInZone,
+																		 (uint)Template.ZoneTemplate.Id);
+					}
 				}
 
 				if(Template.IsDaily)
@@ -406,11 +336,6 @@ namespace WCell.RealmServer.Quests
 		{
 			Template.NotifyCancelled(this, failed);
 			m_Log.RemoveQuest(this);
-		}
-
-		internal uint GetPacketStatus()
-		{
-			return CompleteStatus == QuestCompleteStatus.Completed ? 4 : (uint)Template.GetAvailability(m_Log.Owner);
 		}
 
 		public void UpdateStatus()

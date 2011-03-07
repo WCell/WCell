@@ -72,7 +72,7 @@ namespace WCell.RealmServer.Spells
 		/// <summary>
 		/// The amount of initial Aura-Applications
 		/// </summary>
-		public int StackCount;
+		public int InitialStackCount;
 
 		/// <summary>
 		/// Only has Aura effects
@@ -225,12 +225,12 @@ namespace WCell.RealmServer.Spells
 			if (ProcCharges > 0)
 			{
 				// applications will be used up by procs
-				StackCount = ProcCharges;
+				InitialStackCount = ProcCharges;
 			}
 			else
 			{
 				// applications can be added by re-applying
-				StackCount = 1;
+				InitialStackCount = 1;
 			}
 
 			IsGhost = HasEffectWith(effect => effect.AuraType == AuraType.Ghost);

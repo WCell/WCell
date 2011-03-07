@@ -58,13 +58,14 @@ namespace WCell.RealmServer.Spells.Auras
 		{
 			EffectHandlers[(int)AuraType.None] = () => new AuraVoidHandler();
 			EffectHandlers[(int)AuraType.PeriodicDamage] = () => new PeriodicDamageHandler();
+            EffectHandlers[(int)AuraType.ModPossess] = () => new ModPossessAuraHandler();
 			EffectHandlers[(int)AuraType.Dummy] = () => new DummyHandler();
 			EffectHandlers[(int)AuraType.PeriodicHeal] = () => new PeriodicHealHandler();
 			EffectHandlers[(int)AuraType.ModAttackSpeed] = () => new ModAttackSpeedHandler();
 			EffectHandlers[(int)AuraType.ModThreat] = () => new ModThreatHandler();
 			EffectHandlers[(int)AuraType.ModStun] = () => new StunHandler();
 			EffectHandlers[(int)AuraType.ModDamageDone] = () => new ModDamageDoneHandler();
-			EffectHandlers[(int)AuraType.ModStealth] = () => new StealthHandler();
+			EffectHandlers[(int)AuraType.ModStealth] = () => new ModStealthHandler();
 			EffectHandlers[(int)AuraType.ModInvisibility] = () => new ModInvisibilityHandler();
 			EffectHandlers[(int)AuraType.RegenPercentOfTotalHealth] = () => new RegenPercentOfTotalHealthHandler();
 			EffectHandlers[(int)AuraType.RegenPercentOfTotalMana] = () => new RegenPercentOfTotalManaHandler();
@@ -216,6 +217,7 @@ namespace WCell.RealmServer.Spells.Auras
 			EffectHandlers[(int)AuraType.IncreaseBleedEffectPct] = () => new AuraVoidHandler();
 			EffectHandlers[(int)AuraType.ToggleAura] = () => new ToggleAuraHandler();
 			EffectHandlers[(int)AuraType.ModAttackerSpellCritChance] = () => new ModAttackerSpellCritChanceHandler();
+            EffectHandlers[(int)AuraType.ModArmorByPercentOfIntellect] = () => new ModArmorByPercentOfIntellectHandler();
 			
 
 			// make sure, there are no missing handlers

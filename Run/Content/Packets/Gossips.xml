@@ -73,7 +73,7 @@
       <Simple>
         <Name>Status</Name>
         <Type>UInt</Type>
-        <SegmentType>Quests.QuestStatus</SegmentType>
+        <!--<SegmentType>Quests.QuestStatus</SegmentType>-->
       </Simple>
       <Simple>
         <Name>Level</Name>

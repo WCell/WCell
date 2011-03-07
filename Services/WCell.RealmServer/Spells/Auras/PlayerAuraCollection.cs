@@ -96,9 +96,9 @@ namespace WCell.RealmServer.Spells.Auras
 
 		}
 
-		protected internal override void Cancel(Aura aura)
+		protected internal override void Remove(Aura aura)
 		{
-			base.Cancel(aura);
+			base.Remove(aura);
 			OnAuraAddedOrRemoved();
 			if (aura.Spell.IsPassive)
 			{
@@ -121,6 +121,195 @@ namespace WCell.RealmServer.Spells.Auras
 			}
 		}
 		#endregion
+
+		#region Spell Modifiers
+		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount++;
+			}
+			SpellModifiersPct.Add(modifier);
+			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
+		}
+
+		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount++;
+			}
+			SpellModifiersFlat.Add(modifier);
+			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
+		}
+
+		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
+		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount--;
+			}
+			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
+			SpellModifiersPct.Remove(modifier);
+		}
+
+		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
+		{
+			if (modifier.Charges > 0)
+			{
+				ModifierWithChargesCount--;
+			}
+			OnModifierChange(modifier);
+			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
+			SpellModifiersFlat.Remove(modifier);
+		}
+
+		private void OnModifierChange(AddModifierEffectHandler modifier)
+		{
+			foreach (var aura in Owner.Auras)
+			{
+				if (aura.IsActivated && !aura.Spell.IsEnhancer && modifier.SpellEffect.MatchesSpell(aura.Spell))
+				{
+					// activated, passive Aura, affected by this modifier -> Needs to re-apply
+					aura.ReApplyNonPeriodicEffects();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
+		/// </summary>
+		public override int GetModifiedInt(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
+		}
+
+		/// <summary>
+		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
+		/// </summary>
+		public override int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
+		}
+
+		/// <summary>
+		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
+		/// </summary>
+		public override float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
+		{
+			var flatMod = GetModifierFlat(type, spell);
+			var percentMod = GetModifierPercent(type, spell);
+			return (value + flatMod) * (1 + (percentMod / 100f));
+		}
+
+		/// <summary>
+		/// Returns the percent modifier (through certain talents) of the given type for the given spell
+		/// </summary>
+		public int GetModifierPercent(SpellModifierType type, Spell spell)
+		{
+			var amount = 0;
+			for (var i = 0; i < SpellModifiersPct.Count; i++)
+			{
+				var modifier = SpellModifiersPct[i];
+				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
+					modifier.SpellEffect.MatchesSpell(spell))
+				{
+					amount += modifier.SpellEffect.ValueMin;
+				}
+			}
+			return amount;
+		}
+
+		/// <summary>
+		/// Returns the flat modifier (through certain talents) of the given type for the given spell
+		/// </summary>
+		public int GetModifierFlat(SpellModifierType type, Spell spell)
+		{
+			var amount = 0;
+			for (var i = 0; i < SpellModifiersFlat.Count; i++)
+			{
+				var modifier = SpellModifiersFlat[i];
+				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
+					modifier.SpellEffect.MatchesSpell(spell))
+				{
+					amount += modifier.SpellEffect.ValueMin;
+				}
+			}
+			return amount;
+		}
+		#endregion
+
+		#region OnCasted
+		public override void OnCasted(SpellCast cast)
+		{
+			// remove one of the stack of all stacking SpellModifiers (flat & percent)
+			var spell = cast.Spell;
+			if (ModifierWithChargesCount > 0)
+			{
+				List<IAura> toRemove = null;
+				foreach (var modifier in SpellModifiersFlat)
+				{
+					var effect = modifier.SpellEffect;
+					if (effect.MatchesSpell(spell) && 
+						cast.Spell != effect.Spell &&
+						(cast.TriggerEffect == null || cast.TriggerEffect.Spell != effect.Spell))
+					{
+						if (modifier.Charges > 0)
+						{
+							modifier.Charges--;
+							if (modifier.Charges < 1)
+							{
+								if (toRemove == null)
+								{
+									toRemove = SpellCast.AuraListPool.Obtain();
+								}
+								toRemove.Add(modifier.Aura);
+							}
+						}
+					}
+				}
+				foreach (var modifier in SpellModifiersPct)
+				{
+					var effect = modifier.SpellEffect;
+					if (effect.MatchesSpell(spell) &&
+						cast.Spell != effect.Spell &&
+						(cast.TriggerEffect == null || cast.TriggerEffect.Spell != effect.Spell))
+					{
+						if (modifier.Charges > 0)
+						{
+							modifier.Charges--;
+							if (modifier.Charges < 1)
+							{
+								if (toRemove == null)
+								{
+									toRemove = SpellCast.AuraListPool.Obtain();
+								}
+								toRemove.Add(modifier.Aura);
+							}
+						}
+					}
+				}
+
+				if (toRemove != null)
+				{
+					foreach (var aura in toRemove)
+					{
+						aura.Remove(false);
+					}
+					toRemove.Clear();
+					SpellCast.AuraListPool.Recycle(toRemove);
+				}
+			}
+		}
+		#endregion
+
 
 		#region Item Restrictions
 		List<Aura> ItemRestrictedAuras
@@ -229,6 +418,7 @@ namespace WCell.RealmServer.Spells.Auras
 		}
 		#endregion
 
+
 		#region Auras dependent on other Auras
 		List<Aura> AurasWithAuraDependentEffects
 		{
@@ -267,18 +457,19 @@ namespace WCell.RealmServer.Spells.Auras
 		/// </summary>
 		private bool MayActivate(Aura aura, bool inclItemCheck)
 		{
-			// ShapeShiftMask & Items & AuraState
-			if (!aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
-			{
-				return false;
-			}
 			if (inclItemCheck && aura.Spell.CheckItemRestrictions(((Character)m_owner).Inventory) != SpellFailedReason.Ok)
 			{
 				return false;
 			}
-			if (m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
+
+			// ShapeShiftMask & Items & AuraState
+			if (aura.Spell.RequiredShapeshiftMask != 0 && !aura.Spell.RequiredShapeshiftMask.HasAnyFlag(m_owner.ShapeshiftMask))
 			{
-				return true;
+				return false;
+			}
+			if (aura.Spell.RequiredCasterAuraState != 0 && !m_owner.AuraState.HasAnyFlag(aura.Spell.RequiredCasterAuraState))
+			{
+				return false;
 			}
 			return true;
 		}
@@ -303,176 +494,6 @@ namespace WCell.RealmServer.Spells.Auras
 				return true;
 			}
 			return base.MayActivate(handler);
-		}
-		#endregion
-
-		#region Spell Modifiers
-		public void AddSpellModifierPercent(AddModifierEffectHandler modifier)
-		{
-			if (modifier.Charges > 0)
-			{
-				ModifierWithChargesCount++;
-			}
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
-		}
-
-		public void AddSpellModifierFlat(AddModifierEffectHandler modifier)
-		{
-			if (modifier.Charges > 0)
-			{
-				ModifierWithChargesCount++;
-			}
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, true);
-		}
-
-		public void RemoveSpellModifierPercent(AddModifierEffectHandler modifier)
-		{
-			if (modifier.Charges > 0)
-			{
-				ModifierWithChargesCount--;
-			}
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
-		}
-
-		public void RemoveSpellModifierFlat(AddModifierEffectHandler modifier)
-		{
-			if (modifier.Charges > 0)
-			{
-				ModifierWithChargesCount--;
-			}
-			SpellModifiersFlat.Add(modifier);
-			OnModifierChange(modifier);
-			AuraHandler.SendModifierUpdate((Character)m_owner, modifier.SpellEffect, false);
-		}
-
-		private void OnModifierChange(AddModifierEffectHandler modifier)
-		{
-			foreach (var aura in Owner.Auras)
-			{
-				if (aura.IsActivated && !aura.Spell.IsEnhancer && modifier.SpellEffect.MatchesSpell(aura.Spell))
-				{
-					// activated, passive Aura, affected by this modifier -> Needs to re-apply
-					aura.ReApplyNonPeriodicEffects();
-				}
-			}
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talent bonusses) of the given type for the given spell (as int)
-		/// </summary>
-		public override int GetModifiedInt(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (((value + flatMod) * (100 + percentMod)) + 50) / 100;		// rounded
-		}
-
-		/// <summary>
-		/// Returns the given value minus bonuses through certain talents, of the given type for the given spell (as int)
-		/// </summary>
-		public override int GetModifiedIntNegative(SpellModifierType type, Spell spell, int value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (((value - flatMod) * (100 - percentMod)) + 50) / 100;		// rounded
-		}
-
-		/// <summary>
-		/// Returns the modified value (modified by certain talents) of the given type for the given spell (as float)
-		/// </summary>
-		public override float GetModifiedFloat(SpellModifierType type, Spell spell, float value)
-		{
-			var flatMod = GetModifierFlat(type, spell);
-			var percentMod = GetModifierPercent(type, spell);
-			return (value + flatMod) * (1 + (percentMod / 100f));
-		}
-
-		/// <summary>
-		/// Returns the percent modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierPercent(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersPct.Count; i++)
-			{
-				var modifier = SpellModifiersPct[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					modifier.SpellEffect.MatchesSpell(spell))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-
-		/// <summary>
-		/// Returns the flat modifier (through certain talents) of the given type for the given spell
-		/// </summary>
-		public int GetModifierFlat(SpellModifierType type, Spell spell)
-		{
-			var amount = 0;
-			for (var i = 0; i < SpellModifiersFlat.Count; i++)
-			{
-				var modifier = SpellModifiersFlat[i];
-				if ((SpellModifierType)modifier.SpellEffect.MiscValue == type &&
-					modifier.SpellEffect.MatchesSpell(spell))
-				{
-					amount += modifier.SpellEffect.ValueMin;
-				}
-			}
-			return amount;
-		}
-		#endregion
-
-		#region OnCasted
-		public override void OnCasted(SpellCast cast)
-		{
-			var spell = cast.Spell;
-			if (ModifierWithChargesCount > 0)
-			{
-				var toRemove = new List<Aura>(3);
-				for (var i = 0; i < SpellModifiersFlat.Count; i++)
-				{
-					var modifier = SpellModifiersFlat[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-				for (var i = 0; i < SpellModifiersPct.Count; i++)
-				{
-					var modifier = SpellModifiersPct[i];
-					if (modifier.SpellEffect.MatchesSpell(spell))
-					{
-						if (modifier.Charges > 0)
-						{
-							modifier.Charges--;
-							if (modifier.Charges < 1)
-							{
-								toRemove.Add(modifier.Aura);
-							}
-						}
-					}
-				}
-
-				foreach (var aura in toRemove)
-				{
-					aura.Remove(false);
-				}
-			}
 		}
 		#endregion
 

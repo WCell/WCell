@@ -116,7 +116,7 @@ namespace WCell.Addons.Default.Spells.Druid
 				spell.MaxTargetEffect = spell.GetEffect(SpellEffectType.None);
 
 				// fix target types of all effects
-				spell.ForeachEffect(effect => effect.ImplicitTargetA = ImplicitTargetType.PartyAroundCaster);
+				spell.ForeachEffect(effect => effect.ImplicitTargetA = ImplicitSpellTargetType.PartyAroundCaster);
 
 				// customize the healing process
 				var healEffect = spell.GetEffect(AuraType.PeriodicHeal);

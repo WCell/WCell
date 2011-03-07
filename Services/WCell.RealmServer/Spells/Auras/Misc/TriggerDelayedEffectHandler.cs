@@ -11,7 +11,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 	{
 		private static readonly Logger log = LogManager.GetCurrentClassLogger();
 
-		private OneShotUpdateObjectAction timer;
+		private OneShotObjectUpdateTimer timer;
 
 		protected internal override void CheckInitialize(SpellCast creatingCast, ObjectReference casterReference, Unit target, ref SpellFailedReason failReason)
 		{

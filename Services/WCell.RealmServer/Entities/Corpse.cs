@@ -239,13 +239,13 @@ namespace WCell.RealmServer.Entities
 		}
 
 
-		internal protected override void OnEnterRegion()
+		internal protected override void OnEnterMap()
 		{
 		}
 
-		internal protected override void OnLeavingRegion()
+		internal protected override void OnLeavingMap()
 		{
-			base.OnLeavingRegion();
+			base.OnLeavingMap();
 		}
 
 		public override void OnFinishedLooting()
@@ -297,7 +297,7 @@ namespace WCell.RealmServer.Entities
 				RemoveItems();
 				//Flags = CorpseFlags.Bones;
 				DynamicFlags = CorpseDynamicFlags.None;
-				m_region.CallDelayed(DecayTimeMillis, Delete);
+				m_Map.CallDelayed(DecayTimeMillis, Delete);
 			}
 			else
 			{

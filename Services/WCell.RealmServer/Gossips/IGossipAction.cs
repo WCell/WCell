@@ -5,6 +5,11 @@ namespace WCell.RealmServer.Gossips
 {
 	public delegate void GossipActionHandler(GossipConversation convo);
 
+	/// <summary>
+	/// Decides whether the item may be displayed/used, in the given convo
+	/// </summary>
+	public delegate bool GossipActionDecider(GossipConversation convo);
+
     /// <summary>
     /// A class determining whether an item should be shown to specific character and specifying reaction on
     /// item selection
@@ -12,16 +17,17 @@ namespace WCell.RealmServer.Gossips
     public interface IGossipAction
 	{
 		/// <summary>
-		/// Whether this Action determines the next Action
+		/// Whether this Action determines the next Action.
+		/// False, if it this Action does not send a GossipMenu.
+		/// True, if this Action determines the next GossipMenu to be sent, itself.
 		/// </summary>
 		bool Navigates { get; }
 
         /// <summary>
-        /// Should item be shown to this character?
+        /// Should item be shown to and used by this conversation's character?
         /// </summary>
-        /// <param name="character">character</param>
         /// <returns>true if yes</returns>
-        bool CanUse(Character character);
+		bool CanUse(GossipConversation convo);
 
         /// <summary>
         /// Handler of item selection
@@ -29,11 +35,26 @@ namespace WCell.RealmServer.Gossips
 		void OnSelect(GossipConversation convo);
 	}
 
-	public class DefaultGossipAction : IGossipAction
+	public class NonNavigatingDecidingGossipAction : NonNavigatingGossipAction
+	{
+		public GossipActionDecider Decider { get; set; }
+
+		public NonNavigatingDecidingGossipAction(GossipActionHandler handler, GossipActionDecider decider) : base(handler)
+		{
+			Decider = decider;
+		}
+
+		public override bool CanUse(GossipConversation convo)
+		{
+			return Decider(convo);
+		}
+	}
+
+	public class NonNavigatingGossipAction : IGossipAction
 	{
 		private GossipActionHandler m_Handler;
 
-		public DefaultGossipAction(GossipActionHandler handler)
+		public NonNavigatingGossipAction(GossipActionHandler handler)
 		{
 			m_Handler = handler;
 		}
@@ -44,12 +65,12 @@ namespace WCell.RealmServer.Gossips
 			set { m_Handler = value; }
 		}
 
-		public bool Navigates
+		public virtual bool Navigates
 		{
 			get { return false; }
 		}
 
-		public virtual bool CanUse(Character character)
+		public virtual bool CanUse(GossipConversation convo)
 		{
 			return true;
 		}
@@ -60,11 +81,11 @@ namespace WCell.RealmServer.Gossips
 		}
 	}
 
-	public class NavigationGossipAction : IGossipAction
+	public class NavigatingGossipAction : IGossipAction
 	{
 		private GossipActionHandler m_Handler;
 
-		public NavigationGossipAction(GossipActionHandler handler)
+		public NavigatingGossipAction(GossipActionHandler handler)
 		{
 			m_Handler = handler;
 		}
@@ -80,7 +101,7 @@ namespace WCell.RealmServer.Gossips
 			get { return true; }
 		}
 
-		public virtual bool CanUse(Character character)
+		public virtual bool CanUse(GossipConversation convo)
 		{
 			return true;
 		}
@@ -91,30 +112,54 @@ namespace WCell.RealmServer.Gossips
 		}
 	}
 
-    /// <summary>
-    /// Gossip action. Allows showing of the gossip item only to characters with level higher than specified
-    /// </summary>
-    public class LevelRequirementGossipAction : IGossipAction
-    {
-        readonly uint m_level;
+	/// <summary>
+	/// Gossip action. Allows showing of the gossip item only to characters with level higher than specified
+	/// </summary>
+	public class LevelRestrictedGossipAction : NonNavigatingGossipAction
+	{
+		readonly uint m_level;
 
-        public LevelRequirementGossipAction(uint level)
-        {
-            m_level = level;
-        }
+		public LevelRestrictedGossipAction(uint level, GossipActionHandler handler)
+			: base(handler)
+		{
+			m_level = level;
+		}
 
-    	public bool Navigates
-    	{
-			get { return false; }
-    	}
+		public override bool CanUse(GossipConversation convo)
+		{
+			return convo.Character.Level >= m_level;
+		}
+	}
 
-    	public bool CanUse(Character character)
-        {
-            return character.Level >= m_level;
-        }
+	/// <summary>
+	/// Gossip action. Associated Menu item can only be seen by staff members
+	/// </summary>
+	public class StaffRestrictedGossipAction : NonNavigatingGossipAction
+	{
+		public StaffRestrictedGossipAction(GossipActionHandler handler)
+			: base(handler)
+		{
+		}
 
-		public virtual void OnSelect(GossipConversation convo)
-        {
-        }
-    }
+		public override bool CanUse(GossipConversation convo)
+		{
+			return convo.Character.Role.IsStaff;
+		}
+	}
+
+	/// <summary>
+	/// Gossip action. Associated Menu item can only be seen by players that are not staff members
+	/// </summary>
+	public class PlayerRestrictedGossipAction : NonNavigatingGossipAction
+	{
+		public PlayerRestrictedGossipAction(GossipActionHandler handler)
+			: base(handler)
+		{
+		}
+
+		public override bool CanUse(GossipConversation convo)
+		{
+			return !convo.Character.Role.IsStaff;
+		}
+	}
 }

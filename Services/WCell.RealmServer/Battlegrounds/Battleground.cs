@@ -3,6 +3,7 @@ using NLog;
 using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
+using WCell.RealmServer.Chat;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
@@ -11,7 +12,7 @@ using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Battlegrounds
 {
-	public abstract class Battleground : InstancedRegion, IBattlegroundRange
+	public abstract class Battleground : InstancedMap, IBattlegroundRange
 	{
 		/// <summary>
 		/// Whether to add to a Team even if it already has more players
@@ -122,7 +123,7 @@ namespace WCell.RealmServer.Battlegrounds
 			protected set
 			{
 				_winner = value;
-				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)RegionId ,1));
+				value.ForeachCharacter( chr => chr.Achievements.CheckPossibleAchievementUpdates(Constants.Achievements.AchievementCriteriaType.CompleteBattleground, (uint)MapId ,1));
 			}
 		}
 
@@ -232,8 +233,16 @@ namespace WCell.RealmServer.Battlegrounds
 			get { return IsActive; }
 		}
 
+        /// <summary>
+        /// Whether to start the mode "Call To Arms" and change timers
+        /// </summary>
+        public virtual bool IsHolidayBG
+        {
+            get { return WorldEventMgr.IsHolidayActive(BattlegroundMgr.GetHolidayIdByBGId(Template.Id)); }
+        }
+
 		/// <summary>
-		/// Whether to start the Shutdown timer when <see cref="Region.PlayerCount"/> drops below the minimum
+		/// Whether to start the Shutdown timer when <see cref="Map.PlayerCount"/> drops below the minimum
 		/// </summary>
 		public bool CanShutdown { get; set; }
 
@@ -274,7 +283,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 			foreach (var chr in m_characters)
 			{
-				chr.Auras.Cancel(_preparationSpell);
+				chr.Auras.Remove(_preparationSpell);
 			}
 		}
 
@@ -313,7 +322,7 @@ namespace WCell.RealmServer.Battlegrounds
 					_status = BattlegroundStatus.Active;
 					foreach (var chr in m_characters)
 					{
-						chr.Auras.Cancel(_preparationSpell);
+						chr.Auras.Remove(_preparationSpell);
 					}
 					OnStart();
 				}
@@ -444,7 +453,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// and adds them to the Battleground.
 		/// </summary>
 		/// <param name="amount"></param>
-		/// <remarks>Region-Context required. Cannot be used once the Battleground is over.</remarks>
+		/// <remarks>Map-Context required. Cannot be used once the Battleground is over.</remarks>
 		/// <returns>The amount of remaining players</returns>
 		public int ProcessPendingPlayers(BattlegroundSide side, int amount)
 		{
@@ -497,8 +506,7 @@ namespace WCell.RealmServer.Battlegrounds
 
 		public override void DeleteNow()
 		{
-			BattlegroundMgr.GetInstances(Template.Id).Remove(InstanceId);
-			World.RemoveInstance(this);
+			BattlegroundMgr.Instances.RemoveInstance(Template.Id, InstanceId);
 			FinalizeBattleground(true); // make sure that things are cleaned up
 
 			base.DeleteNow();
@@ -539,21 +547,28 @@ namespace WCell.RealmServer.Battlegrounds
 
 		protected virtual void OnStart()
 		{
+            MiscHandler.SendPlaySoundToMap(this, (uint)BattlegroundSounds.BgStart);
 		}
 
 		protected virtual void OnFinish(bool disposing)
 		{
-		}
+            MiscHandler.SendPlaySoundToMap(this, Winner.Side == BattlegroundSide.Horde ? (uint)BattlegroundSounds.HordeWins 
+                                                                                           : (uint)BattlegroundSounds.AllianceWins);
+        }
+
+        public virtual void OnPlayerClickedOnflag(GameObject go, Character chr)
+        {
+        }
 
 		#endregion
 
 		#region Overrides
 		public virtual bool HasQueue { get { return true; } }
 
-		protected internal override void InitRegion()
+		protected internal override void InitMap()
 		{
-			base.InitRegion();
-			BattlegroundMgr.GetInstances(Template.Id).Add(InstanceId, this);
+			base.InitMap();
+			BattlegroundMgr.Instances.AddInstance(Template.Id, this);
 
 			_preparationSpell = SpellHandler.Get(PreparationSpellId);
 
@@ -664,7 +679,7 @@ namespace WCell.RealmServer.Battlegrounds
 			team.AddMember(chr);
 
 			if (_status == BattlegroundStatus.None &&
-			   PlayerCount >= (Template.RegionTemplate.MaxPlayerCount * StartPlayerPct) / 100)
+			   PlayerCount >= (Template.MapTemplate.MaxPlayerCount * StartPlayerPct) / 100)
 			{
 				StartPreparation();
 			}

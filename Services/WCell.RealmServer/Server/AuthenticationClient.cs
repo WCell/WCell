@@ -114,7 +114,7 @@ namespace WCell.RealmServer.Server
 			m_IsRunning = true;
 			if (lastUpdate == default(DateTime))
 			{
-				RealmServer.Instance.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
+				RealmServer.IOQueue.RegisterUpdatable(new SimpleUpdatable(MaintainConnectionCallback));
 				lastUpdate = DateTime.Now;
 			}
 		}
@@ -130,7 +130,7 @@ namespace WCell.RealmServer.Server
 				log.Info(Resources.ConnectingToAuthServer);
 			}
 
-			RealmServer.Instance.EnsureContext();
+			RealmServer.IOQueue.EnsureContext();
 
 			Disconnect(true);
 			
@@ -247,7 +247,7 @@ namespace WCell.RealmServer.Server
 
 		protected void Disconnect(bool notify)
 		{
-			RealmServer.Instance.EnsureContext();
+			RealmServer.IOQueue.EnsureContext();
 
 			if (m_ClientProxy != null &&
 				m_ClientProxy.State != CommunicationState.Closed &&

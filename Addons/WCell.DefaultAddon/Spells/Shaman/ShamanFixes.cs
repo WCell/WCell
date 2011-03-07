@@ -36,7 +36,7 @@ namespace WCell.Addons.Default.Spells.Shaman
 		{
 			SpellHandler.Apply(spell =>
 			{
-				var effect = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitTargetType.Self);
+				var effect = spell.AddAuraEffect(AuraType.ProcTriggerSpell, ImplicitSpellTargetType.Self);
 				effect.TriggerSpellId = triggerId;
 			},id);
 		}

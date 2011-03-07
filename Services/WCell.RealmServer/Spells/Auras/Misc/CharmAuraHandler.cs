@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Spells.Auras.Misc
 			{
 				if (!(target is NPC))
 				{
-					LogManager.GetCurrentClassLogger().Warn("{0} tried to Charm {1} which is not an NPC, but Player charming is not yet supported.");
+					LogManager.GetCurrentClassLogger().Warn("{0} tried to Charm {1} which is not an NPC, but Player charming is not yet supported.", caster, target);
 					failReason = SpellFailedReason.BadTargets;
 				}
 				if (caster.Charm != null)

@@ -152,7 +152,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Collection of all this Pet's Talents
 		/// </summary>
-		public TalentCollection Talents
+		public override TalentCollection Talents
 		{
 			get { return m_petTalents; }
 		}
@@ -213,13 +213,12 @@ namespace WCell.RealmServer.Entities
 			var spellList = new List<PetTalentSpellRecord>();
 			foreach (var spell in NPCSpells)
 			{
-				var cdTicks = NPCSpells.TicksUntilCooldown(spell);
-				var cdTime = DateTime.Now.AddMilliseconds(cdTicks * Region.UpdateDelay);
+				var cdMillis = NPCSpells.GetRemainingCooldownMillis(spell);
 				var spellRecord = new PetTalentSpellRecord
-									{
-										SpellId = spell.Id,
-										CooldownUntil = cdTime
-									};
+				{
+					SpellId = spell.Id,
+					CooldownUntil = DateTime.Now.AddMilliseconds(cdMillis)
+				};
 				spellList.Add(spellRecord);
 			}
 			// TODO: Implement
@@ -284,49 +283,52 @@ namespace WCell.RealmServer.Entities
 
 		protected override void OnLevelChanged()
 		{
-			// scale size, if necessary
-			UpdateSize();
-
-			// add/remove spell ranks
-			UpdateSpellRanks();
-
 			if (HasPlayerMaster)
 			{
-				var level = Level;
-				if (level >= PetMgr.MinPetTalentLevel)
+				// make sure to execute in context
+				AddMessage(() =>
 				{
-					// make sure, pet has talent collection
-					if (m_petTalents == null)
-					{
-						m_petTalents = new PetTalentCollection(this);
-					}
-				}
+					// add/remove spell ranks
+					UpdateSpellRanks();
 
-				if (m_petTalents != null)
-				{
-					// update talent points
-					var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
-					if (freeTalentPoints < 0)
+					// scale size, if necessary
+					UpdateSize();
+
+					var level = Level;
+
+					// update talents
+					if (level >= PetMgr.MinPetTalentLevel)
 					{
-						// Level was reduced: Remove talent points
-						if (!((Character)m_master).GodMode)
+						// make sure, pet has talent collection
+						if (m_petTalents == null)
 						{
-							Talents.RemoveTalents(-freeTalentPoints);
+							m_petTalents = new PetTalentCollection(this);
 						}
-						freeTalentPoints = 0;
-					}
-					FreeTalentPoints = freeTalentPoints;
-				}
 
-				var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
-				if (levelStatInfo != null)
-				{
+						// update talent points
+						var freeTalentPoints = Talents.GetFreeTalentPointsForLevel(level);
+						if (freeTalentPoints < 0)
+						{
+							// Level was reduced: Remove talent points
+							if (!((Character)m_master).GodMode)
+							{
+								Talents.RemoveTalents(-freeTalentPoints);
+							}
+							freeTalentPoints = 0;
+						}
+						FreeTalentPoints = freeTalentPoints;
+					}
+
 					// update pet stats
-					ModPetStatsPerLevel(levelStatInfo);
-					m_auras.ReapplyAllAuras();
-				}
-				m_entry.NotifyLeveledChanged(this);
+					var levelStatInfo = m_entry.GetPetLevelStatInfo(level);
+					if (levelStatInfo != null)
+					{
+						ModPetStatsPerLevel(levelStatInfo);
+						m_auras.ReapplyAllAuras();
+					}
+				});
 			}
+			m_entry.NotifyLeveledChanged(this);
 		}
 
 		internal void ModPetStatsPerLevel(PetLevelStatInfo levelStatInfo)
@@ -412,13 +414,13 @@ namespace WCell.RealmServer.Entities
 					}
 					break;
 				case PetAction.Follow:
-					HasOwnerPermissionToMove = true;
+					HasPermissionToMove = true;
 					break;
 				case PetAction.Stay:
-					HasOwnerPermissionToMove = false;
+					HasPermissionToMove = false;
 					break;
 				case PetAction.Attack:
-					HasOwnerPermissionToMove = true;
+					HasPermissionToMove = true;
 					var target = m_master.Target;
 					if (target != null && MayAttack(target))
 					{
@@ -464,7 +466,7 @@ namespace WCell.RealmServer.Entities
 		#endregion
 
 		#region Actions
-		public uint[] BuidPetActionBar()
+		public uint[] BuildPetActionBar()
 		{
 			var bar = new uint[PetConstants.PetActionCount];
 
@@ -488,26 +490,40 @@ namespace WCell.RealmServer.Entities
 				Type = PetActionType.SetAction
 			}.Raw;
 
-			var spells = m_spells.GetEnumerator();
-			for (byte j = 0; j < PetConstants.PetSpellCount; j++)
-			{
-				if (!spells.MoveNext())
-				{
-					bar[i++] = new PetActionEntry
-					{
-						Type = PetActionType.CastSpell2 + j
-					}.Raw;
-				}
-				else
-				{
-					var spell = spells.Current;
-					var actionEntry = new PetActionEntry();
-					actionEntry.SetSpell(spell.SpellId, PetActionType.DefaultSpellSetting);
-					bar[i++] = actionEntry.Raw;
-				}
-			}
+            if (Entry.Spells != null)
+            {
+                var spells = Entry.Spells.GetEnumerator();
 
-			bar[i++] = new PetActionEntry
+                for (byte j = 0; j < PetConstants.PetSpellCount; j++)
+                {
+                    if (!spells.MoveNext())
+                    {
+                        bar[i++] = new PetActionEntry
+                                       {
+                                           Type = PetActionType.CastSpell2 + j
+                                       }.Raw;
+                    }
+                    else
+                    {
+                        var spell = spells.Current;
+                        var actionEntry = new PetActionEntry();
+                        actionEntry.SetSpell(spell.Key, PetActionType.DefaultSpellSetting);
+                        bar[i++] = actionEntry.Raw;
+                    }
+                }
+            }
+		    else
+            {
+                for (byte j = 0; j < PetConstants.PetSpellCount; j++)
+                {
+                    bar[i++] = new PetActionEntry
+                                   {
+                                       Type = PetActionType.CastSpell2 + j
+                                   }.Raw;
+                }
+            }
+
+		    bar[i++] = new PetActionEntry
 			{
 				AttackMode = PetAttackMode.Aggressive,
 				Type = PetActionType.SetMode
@@ -551,7 +567,7 @@ namespace WCell.RealmServer.Entities
 		void DeletePetRecord()
 		{
 			var record = m_PetRecord;
-			RealmServer.Instance.AddMessage(record.Delete);
+			RealmServer.IOQueue.AddMessage(record.Delete);
 			m_PetRecord = null;
 		}
 	}

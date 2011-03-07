@@ -10,6 +10,7 @@ using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.Graphics;
 
+
 namespace WCell.RealmServer.Spells
 {
 	#region SpellSummonHandlers
@@ -27,6 +28,7 @@ namespace WCell.RealmServer.Spells
 		{
 			var caster = cast.CasterUnit;
 			var duration = cast.Spell.GetDuration(cast.CasterReference);
+
 			NPC minion;
 			if (caster != null)
 			{
@@ -41,8 +43,14 @@ namespace WCell.RealmServer.Spells
 				minion.Phase = cast.Phase;
 				cast.Map.AddObject(minion);
 			}
+
+			if (caster is Character)
+			{
+				minion.Level = caster.Level;
+			}
 			minion.Summoner = caster;
 			minion.Creator = cast.CasterReference.EntityId;
+
 			return minion;
 		}
 	}
@@ -79,10 +87,9 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var caster = cast.CasterUnit;
-			if (caster != null)
+			if (caster is Character)
 			{
-				var pet = ((Character) caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.SharedReference));
-				return pet;
+				return ((Character)caster).SpawnPet(entry, ref targetLoc, cast.Spell.GetDuration(caster.SharedReference));
 			}
 			else
 			{
@@ -96,7 +103,7 @@ namespace WCell.RealmServer.Spells
 		public override NPC Summon(SpellCast cast, ref Vector3 targetLoc, NPCEntry entry)
 		{
 			var npc = base.Summon(cast, ref targetLoc, entry);
-			npc.HasOwnerPermissionToMove = false;
+			npc.HasPermissionToMove = false;
 			return npc;
 		}
 	}
@@ -106,7 +113,6 @@ namespace WCell.RealmServer.Spells
 		public SpellSummonTotemHandler(uint index)
 		{
 			Index = index;
-			
 		}
 
 		public uint Index

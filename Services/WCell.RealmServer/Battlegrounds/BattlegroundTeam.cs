@@ -87,7 +87,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// </summary>
 		public bool IsFull
 		{
-			get { return Count + _reservedSlots >= _battleground.Template.MaxPlayersPerTeam; }
+			get { return CharacterCount + _reservedSlots >= _battleground.Template.MaxPlayersPerTeam; }
 		}
 
 		/// <summary>
@@ -107,11 +107,11 @@ namespace WCell.RealmServer.Battlegrounds
 			{
 				if (_battleground.AddPlayersToBiggerTeam)
 				{
-					return _battleground.Template.MaxPlayersPerTeam - Count - _reservedSlots;
+					return _battleground.Template.MaxPlayersPerTeam - CharacterCount - _reservedSlots;
 				}
 				else
 				{
-					return OpposingTeam.Count - Count - _reservedSlots;
+					return OpposingTeam.CharacterCount - CharacterCount - _reservedSlots;
 				}
 			}
 		}
@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Battlegrounds
 		/// <summary>
 		/// The amount of online Characters
 		/// </summary>
-		public int Count
+		public int CharacterCount
 		{
 			get { return _count; }
 		}
@@ -144,7 +144,7 @@ namespace WCell.RealmServer.Battlegrounds
 			}
 		}
 
-		public Character[] GetCharacters()
+		public Character[] GetAllCharacters()
 		{
 			_battleground.EnsureContext();
 
@@ -203,7 +203,7 @@ namespace WCell.RealmServer.Battlegrounds
 			_battleground.EnsureContext();
 
 			var relation = new BattlegroundRelation(Queue, chrs);
-			var shouldInvite = _battleground.IsAddingPlayers && chrs.Count <= OpenPlayerSlotCount;
+			var shouldInvite = _battleground.IsAddingPlayers && chrs.CharacterCount <= OpenPlayerSlotCount;
 
 			if (!shouldInvite)
 			{
@@ -211,7 +211,7 @@ namespace WCell.RealmServer.Battlegrounds
 			}
 			else
 			{
-				ReservedSlots += chrs.Count;
+				ReservedSlots += chrs.CharacterCount;
 				relation.IsEnqueued = false;
 			}
 
@@ -230,7 +230,7 @@ namespace WCell.RealmServer.Battlegrounds
 		public int Invite(ICharacterSet chrs)
 		{
 			var added = 0;
-			ReservedSlots += chrs.Count;
+			ReservedSlots += chrs.CharacterCount;
 
 			chrs.ForeachCharacter(chr =>
 			{

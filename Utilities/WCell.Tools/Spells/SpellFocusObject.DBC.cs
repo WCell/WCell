@@ -14,7 +14,7 @@ namespace WCell.Tools.Spells
 		public static Dictionary<uint, string> Read()
 		{
 			var reader = new MappedDBCReader<Spell.SpellFocusEntry, Spell.DBCSpellFocusConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLFOCUSOBJECT));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLFOCUSOBJECT));
 			var dict = new Dictionary<uint, string>(300);
 
 			foreach (var entry in reader.Entries.Values)

@@ -24,7 +24,7 @@ namespace WCell.RealmServer.Guilds
 
 		public GuildBankTab()
 		{
-			Items = new List<GuildBankTabItemMapping>(GuildMgr.MAX_BANK_TAB_SLOTS);
+			Items = new GuildBankTabItemMapping[GuildMgr.MAX_BANK_TAB_SLOTS];
 		}
 
 		public GuildBankTab(GuildBank bank) : this()
@@ -80,15 +80,16 @@ namespace WCell.RealmServer.Guilds
             set;
         }
 
-        private List<ItemRecord> _itemRecords;
+        private IList<ItemRecord> _itemRecords;
 
-        public List<ItemRecord> ItemRecords
+        public IList<ItemRecord> ItemRecords
         {
+            set { _itemRecords = value; }
             get
             {
                 if (_itemRecords == null)
                 {
-                    _itemRecords = new List<ItemRecord>(Items.Count);
+                    _itemRecords = new ItemRecord[GuildMgr.MAX_BANK_TAB_SLOTS];
                     foreach (var mapping in Items)
                     {
                         _itemRecords[mapping.TabSlot] = ItemRecord.GetRecordByID(mapping.Guid);

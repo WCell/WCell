@@ -13,31 +13,11 @@ namespace WCell.RealmServer.AI.Actions.Combat
 	/// </summary>
 	public class AIAttackAction : AITargetMoveAction
 	{
-		/// <summary>
-		/// Every x Region-Ticks shuffle Spells
-		/// </summary>
-		public static int SpellShuffleTicks = 50;
-
-		/// <summary>
-		/// Every x Region-Ticks try to cast a random active spell
-		/// </summary>
-		public static int SpellCastTicks = 1;
-
 		protected float maxDist, desiredDist;
 
 		public AIAttackAction(NPC owner)
 			: base(owner)
 		{
-		}
-
-		public bool UsesSpells
-		{
-			get { return m_owner.HasSpells; }
-		}
-
-		public bool HasSpellReady
-		{
-			get { return ((NPC)m_owner).NPCSpells.ReadyCount > 0; }
 		}
 
 		public override float DistanceMin
@@ -65,6 +45,7 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			{
 				((NPC)m_owner).NPCSpells.ShuffleReadySpells();
 			}
+
 			m_target = m_owner.Target;
 			if (m_target != null)
 			{
@@ -89,13 +70,10 @@ namespace WCell.RealmServer.AI.Actions.Combat
 			// Check for spells that we can cast
 			if (UsesSpells && HasSpellReady && m_owner.CanCastSpells)
 			{
-				if (!m_owner.CanMelee || m_owner.CheckTicks(SpellCastTicks))
+				if (TryCastSpell())
 				{
-					if (TryCastSpell())
-					{
-						m_owner.Movement.Stop();
-						return;
-					}
+					m_owner.Movement.Stop();
+					return;
 				}
 			}
 
@@ -123,91 +101,19 @@ namespace WCell.RealmServer.AI.Actions.Combat
 		{
 			var owner = (NPC)m_owner;
 
-			var spells = owner.NPCSpells;
-			if (owner.CheckTicks(SpellShuffleTicks))
-			{
-				spells.ShuffleReadySpells();
-			}
-
 			foreach (var spell in owner.NPCSpells.ReadySpells)
 			{
-				if (spell.CanCast(owner))
+				var err = spell.CheckCasterConstraints(owner);
+				if (err == SpellFailedReason.Ok)
 				{
-					if (!ShouldCast(spell))
-					{
-						continue;
-					}
-
-					if (Cast(spell))
-					{
-						return true;
-					}
+					return m_owner.SpellCast.Start(spell) == SpellFailedReason.Ok;
+				}
+				else if (err == SpellFailedReason.NoPower)
+				{
+					// add this for now -> need to think of a smarter way to handle this
+					owner.Say("Not enough " + owner.PowerType);
 				}
 			}
-			return false;
-		}
-
-		/// <summary>
-		/// Whether the unit should cast the given spell
-		/// </summary>
-		private bool ShouldCast(Spell spell)
-		{
-			if (spell.IsAura)
-			{
-				if (spell.CasterIsTarget)
-				{
-					if (m_owner.Auras.Contains(new AuraIndexId(spell.AuraUID, true)))
-					{
-						// caster already has Aura
-						return false;
-					}
-				}
-				else if (spell.HasTargets && !spell.IsAreaSpell)
-				{
-					if (m_target.Auras.Contains(spell))
-					{
-						// target already has Aura
-						return false;
-					}
-				}
-			}
-			return true;
-		}
-
-		private bool Cast(Spell spell)
-		{
-			if (spell.HasHarmfulEffects)
-			{
-				return CastHarmfulSpell(spell);
-			}
-			else
-			{
-				return CastBeneficialSpell(spell);
-			}
-		}
-
-		/// <summary>
-		/// Casts the given harmful Spell
-		/// </summary>
-		/// <param name="spell"></param>
-		protected bool CastHarmfulSpell(Spell spell)
-		{
-			if (m_owner.IsInSpellRange(spell, m_target))
-			{
-				m_owner.SpellCast.SourceLoc = m_owner.Position;
-				m_owner.SpellCast.TargetLoc = m_target.Position;
-				return m_owner.SpellCast.Start(spell, false) == SpellFailedReason.Ok;
-			}
-			return false;
-		}
-
-		/// <summary>
-		/// Casts the given beneficial spell on a friendly Target
-		/// </summary>
-		/// <param name="spell"></param>
-		protected bool CastBeneficialSpell(Spell spell)
-		{
-			// TODO: Cast beneficial spell
 			return false;
 		}
 

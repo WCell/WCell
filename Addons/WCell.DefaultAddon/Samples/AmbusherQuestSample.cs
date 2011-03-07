@@ -106,7 +106,7 @@ namespace WCell.Addons.Default.Samples
 		{
 			if (killer.IsInWorld &&
 						killer.IsAlive &&
-						killer.Region == ambusher.Region &&
+						killer.Map == ambusher.Map &&
 						killer.IsInRadius(ambusher, MaxForgivenessDistance))
 			{
 				// make sure we are using the right means of transportation

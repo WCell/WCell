@@ -19,6 +19,7 @@ using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Spells.Auras;
+using WCell.RealmServer.Spells.Targeting;
 using WCell.Util.Data;
 
 namespace WCell.RealmServer.Spells
@@ -53,8 +54,8 @@ namespace WCell.RealmServer.Spells
 
 		public SpellMechanic Mechanic;
 
-		public ImplicitTargetType ImplicitTargetA;
-		public ImplicitTargetType ImplicitTargetB;
+		public ImplicitSpellTargetType ImplicitTargetA;
+		public ImplicitSpellTargetType ImplicitTargetB;
 
 		/// <summary>
 		/// SpellRadius.dbc
@@ -190,6 +191,67 @@ namespace WCell.RealmServer.Spells
 		public SpellEffect EffectValueOverrideEffect;
 		#endregion
 
+		#region Targeting
+		/// <summary>
+		/// Used to determine the targets for this effect
+		/// </summary>
+		public TargetDefinition CustomTargetHandlerDefintion;
+
+		/// <summary>
+		/// Used only by AI to determine targets
+		/// </summary>
+		public TargetDefinition AITargetHandlerDefintion;
+
+		/// <summary>
+		/// Evaluates targets for non-AI spell casts
+		/// </summary>
+		public TargetEvaluator CustomTargetEvaluator;
+
+		/// <summary>
+		/// Evaluates targets for AI spell casts
+		/// </summary>
+		public TargetEvaluator AITargetEvaluator;
+
+
+		public TargetDefinition GetTargetDefinition(bool isAiCast)
+		{
+			return isAiCast && CustomTargetHandlerDefintion == null ? AITargetHandlerDefintion : CustomTargetHandlerDefintion;
+		}
+
+		public TargetEvaluator GetTargetEvaluator(bool isAiCast)
+		{
+			return isAiCast && CustomTargetEvaluator == null ? AITargetEvaluator : CustomTargetEvaluator;
+		}
+
+		public void SetCustomTargetDefinition(TargetAdder adder, params TargetFilter[] filters)
+		{
+			CustomTargetHandlerDefintion = new TargetDefinition(adder, filters);
+		}
+
+		public void SetCustomTargetDefinition(TargetAdder adder, TargetEvaluator eval, params TargetFilter[] filters)
+		{
+			CustomTargetHandlerDefintion = new TargetDefinition(adder, filters);
+			if (eval != null)
+			{
+				CustomTargetEvaluator = eval;
+			}
+		}
+
+		public void SetAITargetDefinition(TargetAdder adder, params TargetFilter[] filters)
+		{
+			AITargetHandlerDefintion = new TargetDefinition(adder, filters);
+		}
+
+		public void SetAITargetDefinition(TargetAdder adder, TargetEvaluator eval, params TargetFilter[] filters)
+		{
+			AITargetHandlerDefintion = new TargetDefinition(adder, filters);
+			if (eval != null)
+			{
+				CustomTargetEvaluator = eval;
+			}
+		}
+		#endregion
+
 		#region Auto generated Fields
 		/// <summary>
 		/// The spell to which this effect belongs
@@ -197,7 +259,7 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public Spell Spell;
 
-		public int EffectIndex;
+		public int EffectIndex = -1;
 
 		[NotPersistent]
 		public int ValueMin, ValueMax;
@@ -257,6 +319,12 @@ namespace WCell.RealmServer.Spells
 		public bool IsHealEffect;
 
 		/// <summary>
+		/// Whether this is a damage effect
+		/// </summary>
+		[NotPersistent]
+		public bool IsDamageEffect;
+
+		/// <summary>
 		/// Whether this Effect is triggered by Procs
 		/// </summary>
 		[NotPersistent]
@@ -280,6 +348,9 @@ namespace WCell.RealmServer.Spells
 		[NotPersistent]
 		public bool IsStrikeEffectPct;
 
+		/// <summary>
+		/// Whether this is an effect that applies damage on strike
+		/// </summary>
 		public bool IsStrikeEffect
 		{
 			get { return IsStrikeEffectFlat || IsStrikeEffectPct; }
@@ -316,6 +387,11 @@ namespace WCell.RealmServer.Spells
 		public bool IsTotem;
 
 		public bool HasAffectMask;
+
+		public bool HasAffectingSpells
+		{
+			get { return HasAffectMask || AffectSpellSet != null; }
+		}
 
 		public bool IsModifierEffect;
 

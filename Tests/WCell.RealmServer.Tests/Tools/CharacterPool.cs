@@ -41,13 +41,13 @@ namespace WCell.RealmServer.Tests.Misc
 
 		public static void RemoveAllChars()
 		{
-			foreach (var region in World.Regions)
+			foreach (var map in World.Maps)
 			{
-				if (region != null)
+				if (map != null)
 				{
-					region.AddMessageAndWait(() =>
+					map.AddMessageAndWait(() =>
 					{
-						foreach (var obj in region.CopyObjects())
+						foreach (var obj in map.CopyObjects())
 						{
 							if (obj is TestCharacter)
 							{
@@ -62,7 +62,7 @@ namespace WCell.RealmServer.Tests.Misc
 		TestCharacter[] m_chars;
 		int m_count;
 
-		bool m_living, m_inWorld, m_sameRegion;
+		bool m_living, m_inWorld, m_sameMap;
 
 		public CharacterPool(FactionGroup faction)
 		{
@@ -145,24 +145,24 @@ namespace WCell.RealmServer.Tests.Misc
 		/// <summary>
 		/// Ensures that all Characters are spawned in Kalimdor when created and when this is set to true
 		/// </summary>
-		public bool EnsureSameRegion
+		public bool EnsureSameMap
 		{
-			get { return m_sameRegion; }
+			get { return m_sameMap; }
 			set
 			{
-				if (m_sameRegion != value)
+				if (m_sameMap != value)
 				{
-					m_sameRegion = value;
+					m_sameMap = value;
 					if (value)
 					{
 						if (m_count > 0)
 						{
-							Region region = Setup.Kalimdor;
+							Map map = Setup.Kalimdor;
 
 							var lockObj = new object();
 							var count = 0;
 							bool allDone = false;
-							Action<Region, Character> onTeleported = (rgn, chr) =>
+							Action<Map, Character> onTeleported = (rgn, chr) =>
 							{
 								lock (lockObj)
 								{
@@ -173,12 +173,12 @@ namespace WCell.RealmServer.Tests.Misc
 									}
 								}
 							};
-							region.RegionTemplate.PlayerEntered += onTeleported;
+							map.MapTemplate.PlayerEntered += onTeleported;
 							foreach (var chr in this)
 							{
-								if (chr.Region != region)
+								if (chr.Map != map)
 								{
-									chr.TeleportTo(region, false);
+									chr.TeleportTo(map, false);
 									count++;
 								}
 							}
@@ -190,7 +190,7 @@ namespace WCell.RealmServer.Tests.Misc
 								{
 									Monitor.Wait(lockObj);
 								}
-								region.RegionTemplate.PlayerEntered -= onTeleported;
+								map.MapTemplate.PlayerEntered -= onTeleported;
 							}
 						}
 					}
@@ -256,7 +256,7 @@ namespace WCell.RealmServer.Tests.Misc
 				chr.EnsureLiving();
 			}
 
-			if (EnsureSameRegion)
+			if (EnsureSameMap)
 			{
 				chr.TeleportTo(Setup.Kalimdor, true);
 			}
@@ -276,7 +276,7 @@ namespace WCell.RealmServer.Tests.Misc
 		{
 			if (m_count > 0)
 			{
-				var regions = new HashSet<Region>();
+				var maps = new HashSet<Map>();
 				foreach (var chr in m_chars)
 				{
 					if (chr != null)
@@ -286,10 +286,10 @@ namespace WCell.RealmServer.Tests.Misc
 							character.Logout(true);
 						};
 
-						if (chr.Region != null && chr.Region.IsRunning)
+						if (chr.Map != null && chr.Map.IsRunning)
 						{
-							regions.Add(chr.Region);
-							chr.Region.AddMessage(new Message1<TestCharacter>(chr, action));
+							maps.Add(chr.Map);
+							chr.Map.AddMessage(new Message1<TestCharacter>(chr, action));
 						}
 						else
 						{
@@ -300,9 +300,9 @@ namespace WCell.RealmServer.Tests.Misc
 				}
 
 				// make sure all logout messages have been processed before exiting this method
-				foreach (var region in regions)
+				foreach (var map in maps)
 				{
-					region.WaitOneTick();
+					map.WaitOneTick();
 				}
 
 				m_count = 0;
@@ -341,7 +341,7 @@ namespace WCell.RealmServer.Tests.Misc
 		/// </summary>
 		public TestCharacter[] AddCharacters(int num)
 		{
-			var region = Setup.Kalimdor;
+			var map = Setup.Kalimdor;
 			var added = 0;
 
 			if (DefaultIsNew)
@@ -369,10 +369,10 @@ namespace WCell.RealmServer.Tests.Misc
 
 					chars[i] = chr;
 
-					region.AddMessage(new Message(() =>
+					map.AddMessage(new Message(() =>
 					{
 						var pos = Setup.DefaultPosition;
-						region.AddObjectNow(chr, ref pos);
+						map.AddObjectNow(chr, ref pos);
 
 						added++;
 
@@ -393,10 +393,10 @@ namespace WCell.RealmServer.Tests.Misc
 				Monitor.Wait(chars);
 			}
 
-			Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
+			Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
 
-			// wait three more ticks on the region to let all pending updates process
-			chars.Last().Region.WaitTicks(3);
+			// wait three more ticks on the map to let all pending updates process
+			chars.Last().Map.WaitTicks(3);
 
 			Setup.WriteRamUsage("Added {0} Characters", num);
 

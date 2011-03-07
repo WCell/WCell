@@ -37,7 +37,7 @@ namespace WCell.RealmServer.Entities
 			get { return ObjectTypeId.Unit; }
 		}
 
-		public override UpdateFieldFlags GetVisibilityFor(Character chr)
+		public override UpdateFieldFlags GetUpdateFieldVisibilityFor(Character chr)
 		{
 			if (chr == m_master)
 			{
@@ -209,7 +209,7 @@ namespace WCell.RealmServer.Entities
 			{
 				m_TaxiMovementTimer.Update(dt);
 			}
-
+			
 			foreach (var aura in m_auras)
 			{
 				aura.Update(dt);

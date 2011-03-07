@@ -112,18 +112,18 @@ namespace WCell.RealmServer.Tests
 			Assert.AreNotEqual((uint)0, longValue & longFlag, string.Format(msg, args));
 		}
 
-		#region Regions
+		#region Maps
 		/// <summary>
-		/// Adds the given Object to this Region in the next Region tick.
+		/// Adds the given Object to this Map in the next Map tick.
 		/// </summary>
-		/// <param name="region"></param>
+		/// <param name="map"></param>
 		/// <param name="obj"></param>
 		/// <param name="newPos"></param>
-		public static void TransferObject(this Region region, WorldObject obj, Vector3 newPos, bool wait)
+		public static void TransferObject(this Map map, WorldObject obj, Vector3 newPos, bool wait)
 		{
-			if (obj.Region == region)
+			if (obj.Map == map)
 			{
-				// already in that region
+				// already in that map
 				return;
 			}
 
@@ -132,7 +132,7 @@ namespace WCell.RealmServer.Tests
 
 			var transferMsg = new Message(() => {
 				moveTask.Callback = (worldObj, objLocation) => {
-					region.AddObjectNow(worldObj, objLocation);
+					map.AddObjectNow(worldObj, objLocation);
 					if (wait)
 					{
 						lock (moveTask)
@@ -141,38 +141,38 @@ namespace WCell.RealmServer.Tests
 						}
 					}
 
-					Assert.IsTrue(region.IsRunning);
+					Assert.IsTrue(map.IsRunning);
 				};
 
 				if (wait)
 				{
-					region.AddMessageAndWait(moveTask);
+					map.AddMessageAndWait(moveTask);
 				}
 				else
 				{
-					region.AddMessage(moveTask);
+					map.AddMessage(moveTask);
 				}
 
-				Assert.IsTrue(region.IsRunning);
+				Assert.IsTrue(map.IsRunning);
 
-				int delay = region.GetWaitDelay();
+				int delay = map.GetWaitDelay();
 				if (wait)
 				{
 					lock (moveTask)
 					{
 						Monitor.Wait(moveTask, delay);
-						Assert.AreEqual(region, obj.Region, "Object {0} was not added to Region after " + delay + " milliseconds.", obj);
+						Assert.AreEqual(map, obj.Map, "Object {0} was not added to Map after " + delay + " milliseconds.", obj);
 					}
-					Assert.AreEqual(obj.Region, region);
+					Assert.AreEqual(obj.Map, map);
 				}
 			});
 
-			var oldRegion = obj.Region;
-			if (oldRegion != null)
+			var oldMap = obj.Map;
+			if (oldMap != null)
 			{
-				// object is still in region -> Remove first
+				// object is still in map -> Remove first
 				Action removeTask = () => {
-					obj.Region.RemoveObjectNow(obj);
+					obj.Map.RemoveObjectNow(obj);
 					transferMsg.Execute();
 				};
 
@@ -180,7 +180,7 @@ namespace WCell.RealmServer.Tests
 				if (wait)
 				{
 					if (context != null)
-						oldRegion.AddMessageAndWait(new Message(removeTask));
+						oldMap.AddMessageAndWait(new Message(removeTask));
 				}
 				else
 				{
@@ -203,8 +203,8 @@ namespace WCell.RealmServer.Tests
 		public static void EnsureInWorld(this WorldObject obj)
 		{
 			Setup.EnsureInWorld(obj);
-			Assert.IsNotNull(obj.Region);
-			Assert.IsTrue(obj.Region.IsRunning);
+			Assert.IsNotNull(obj.Map);
+			Assert.IsTrue(obj.Map.IsRunning);
 		}
 
 		/// <summary>
@@ -251,36 +251,36 @@ namespace WCell.RealmServer.Tests
 			unit.EnsureLiving();
 		}
 
-		public static void CleanSweep(this Region region)
+		public static void CleanSweep(this Map map)
 		{
-			if (region.IsRunning)
+			if (map.IsRunning)
 			{
 				// if already running, make sure that all other objects get removed
-				region.AddMessageAndWait(new Message(() => {
-					foreach (var obj in region.CopyObjects())
+				map.AddMessageAndWait(new Message(() => {
+					foreach (var obj in map.CopyObjects())
 					{
-						region.RemoveObjectNow(obj);
-						Assert.IsNull(obj.Region.GetObject(obj.EntityId));
+						map.RemoveObjectNow(obj);
+						Assert.IsNull(obj.Map.GetObject(obj.EntityId));
 					}
 				}));
 			}
 		}
 
 		/// <summary>
-		///  Ensures that this Character is in the world and there is no one else in the same region
+		///  Ensures that this Character is in the world and there is no one else in the same map
 		/// </summary>
 		public static void EnsureAloneInWorld(this Unit unit)
 		{
-			if (unit.Region != null && unit.Region.IsRunning && unit.Region.ObjectCount > 1)
+			if (unit.Map != null && unit.Map.IsRunning && unit.Map.ObjectCount > 1)
 			{
-				unit.Region.CleanSweep();
+				unit.Map.CleanSweep();
 			}
 
 			unit.EnsureInWorld();
 		}
 
 		/// <summary>
-		///  Ensures that this Character is the only one in its region.
+		///  Ensures that this Character is the only one in its map.
 		///  Used for tests with update packets.
 		/// </summary>
 		public static void EnsureAloneInWorldAndLiving(this Unit unit)

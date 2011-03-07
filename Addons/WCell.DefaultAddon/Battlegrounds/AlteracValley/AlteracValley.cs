@@ -16,6 +16,7 @@ using WCell.RealmServer.GameObjects;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.NPCs;
 
+
 namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 {
 	public class AlteracValley : Battleground
@@ -39,9 +40,9 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
         }
 
-        protected override void InitRegion()
+        protected override void InitMap()
         {
-            base.InitRegion();
+            base.InitMap();
 
             //Factions[(int)BattlegroundSide.Alliance] = new StormpikeExpedition(this);
             //Factions[(int)BattlegroundSide.Horde] = new FrostwolfClan(this);
@@ -125,14 +126,14 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
             var allianceTeam = GetTeam(BattlegroundSide.Alliance);
             if (allianceTeam == Winner)
             {
-                foreach (var chr in allianceTeam.GetCharacters())
+                foreach (var chr in allianceTeam.GetAllCharacters())
                 {
                     chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorWInner);
                 }
             }
             else
             {
-                foreach (var chr in GetTeam(BattlegroundSide.Alliance).GetCharacters())
+                foreach (var chr in GetTeam(BattlegroundSide.Alliance).GetAllCharacters())
                 {
                     chr.SpellCast.TriggerSelf(SpellId.CreateWarsongMarkOfHonorLoser);
                 }
@@ -190,7 +191,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
             
             _vanndarStormpike.Died += (vann) =>
             {
-                var instance = vann.Region as AlteracValley;
+                var instance = vann.Map as AlteracValley;
                 if (instance != null)
                 {
                     instance.Factions[(int)BattlegroundSide.Horde].Win();
@@ -199,7 +200,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
             _drekThar.Died += (drek) =>
             {
-                var instance = drek.Region as AlteracValley;
+                var instance = drek.Map as AlteracValley;
                 if (instance != null)
                 {
                     instance.Factions[(int)BattlegroundSide.Alliance].Win();
@@ -208,7 +209,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
             _cptBalindaStonehearth.Died += (balinda) =>
             {
-                var instance = balinda.Region as AlteracValley;
+                var instance = balinda.Map as AlteracValley;
                 if (instance != null)
                 {
                     instance.Factions[(int)BattlegroundSide.Horde].Reinforcements -=
@@ -218,7 +219,7 @@ namespace WCell.Addons.Default.Battlegrounds.AlteracValley
 
             _cptGalvangar.Died += (galv) =>
             {
-                var instance = galv.Region as AlteracValley;
+                var instance = galv.Map as AlteracValley;
                 if (instance != null)
                 {
                     instance.Factions[(int)BattlegroundSide.Horde].Reinforcements -=

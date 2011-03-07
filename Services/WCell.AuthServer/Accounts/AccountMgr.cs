@@ -209,7 +209,7 @@ namespace WCell.AuthServer.Accounts
 			catch (Exception e)
 			{
 #if DEBUG
-				AuthDBUtil.OnDBError(e);
+				AuthDBMgr.OnDBError(e);
 				accounts = Account.FindAll();
 #else
 				throw e;
@@ -295,7 +295,7 @@ namespace WCell.AuthServer.Accounts
 				catch (Exception e)
 				{
 #if DEBUG
-					AuthDBUtil.OnDBError(e);
+					AuthDBMgr.OnDBError(e);
 					usr.CreateAndFlush();
 #else
 					throw e;
@@ -424,7 +424,7 @@ namespace WCell.AuthServer.Accounts
 				}
 				catch (Exception e)
 				{
-					AuthDBUtil.OnDBError(e);
+					AuthDBMgr.OnDBError(e);
 					return Account.FindOne(Restrictions.Eq("AccountId", id));
 				}
 			}
@@ -456,7 +456,7 @@ namespace WCell.AuthServer.Accounts
 			}
 			catch (Exception e)
 			{
-				AuthDBUtil.OnDBError(e);
+				AuthDBMgr.OnDBError(e);
 			}
 			return true;
 		}

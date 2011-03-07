@@ -9,6 +9,7 @@ using WCell.Constants.Factions;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.Core;
+using WCell.Core.Database;
 using WCell.RealmServer.Talents;
 using WCell.Util.Graphics;
 using WCell.Util.Threading;
@@ -27,12 +28,10 @@ namespace WCell.RealmServer.Tests.Misc
 	{
 		public static CharacterRecord PrepareRecord(TestAccount acc, CharacterRecord record, Archetype archetype, bool isNew)
 		{
-			var race = archetype.Race;
-
+			record.State = isNew ? RecordState.New : RecordState.Ok;
 			record.Name = "TestChar" + record.EntityLowId;
 			record.AccountId = acc.AccountId;
 			record.Created = DateTime.Now;
-			record.New = isNew;
 			record.TotalPlayTime = 0;
 			record.LevelPlayTime = 0;
 			record.TutorialFlags = new byte[32];
@@ -172,7 +171,7 @@ namespace WCell.RealmServer.Tests.Misc
 		public void EnsureXDistance(WorldObject obj, float distance, bool wait)
 		{
 			var pos = new Vector3(obj.Position.X + distance, obj.Position.Y, obj.Position.Z);
-			TeleportTo(obj.Region, ref pos, null, wait);
+			TeleportTo(obj.Map, ref pos, null, wait);
 			if (wait)
 			{
 				Assert.AreEqual(obj.GetDistance(this), distance, "Teleporting did not work correctly.");
@@ -186,7 +185,7 @@ namespace WCell.RealmServer.Tests.Misc
 		public void EnsureYDistance(WorldObject obj, float distance, bool wait)
 		{
 			var pos = new Vector3(obj.Position.X, obj.Position.Y + distance, obj.Position.Z);
-			TeleportTo(obj.Region, ref pos, null, wait);
+			TeleportTo(obj.Map, ref pos, null, wait);
 			if (wait)
 			{
 				Assert.AreEqual(obj.GetDistance(this), distance, "Teleporting did not work correctly.");
@@ -200,29 +199,29 @@ namespace WCell.RealmServer.Tests.Misc
 		public void EnsureZDistance(WorldObject obj, float distance, bool wait)
 		{
 			var pos = new Vector3(obj.Position.X, obj.Position.Y, obj.Position.Z + distance);
-			TeleportTo(obj.Region, ref pos, null, wait);
+			TeleportTo(obj.Map, ref pos, null, wait);
 			if (wait)
 			{
 				Assert.AreEqual(obj.GetDistance(this), distance, "Teleporting did not work correctly.");
 			}
 		}
 
-		public void TeleportTo(Region region, bool wait)
+		public void TeleportTo(Map map, bool wait)
 		{
-			TeleportTo(region, ref m_position, 3f, wait);
+			TeleportTo(map, ref m_position, 3f, wait);
 		}
 
-		public void TeleportTo(Region region, ref Vector3 pos, float? orientation, bool wait)
+		public void TeleportTo(Map map, ref Vector3 pos, float? orientation, bool wait)
 		{
 			if (!HasNode)
 			{
-				m_region = null;
+				m_Map = null;
 			}
 
-			Assert.IsNotNull(region);
-			if (Region == region)
+			Assert.IsNotNull(map);
+			if (Map == map)
 			{
-				Assert.IsTrue(Region.MoveObject(this, ref pos));
+				Assert.IsTrue(Map.MoveObject(this, ref pos));
 
 				if (orientation.HasValue)
 				{
@@ -231,7 +230,7 @@ namespace WCell.RealmServer.Tests.Misc
 			}
 			else
 			{
-				region.TransferObject(this, pos, wait);
+				map.TransferObject(this, pos, wait);
 
 				if (orientation != null)
 				{
@@ -315,20 +314,20 @@ namespace WCell.RealmServer.Tests.Misc
 		public void Remove()
 		{
 			CancelAllActions();
-			if (m_region != null)
+			if (m_Map != null)
 			{
-				m_region.RemoveObject(this);
+				m_Map.RemoveObject(this);
 			}
 			World.RemoveCharacter(this);
 		}
 
-		protected override void OnEnterRegion()
+		protected override void OnEnterMap()
 		{
 			if (!m_initialized)
 			{
 				InitializeCharacter();
 			}
-			base.OnEnterRegion();
+			base.OnEnterMap();
 		}
 
 		/// <summary>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DataHolders xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <DataHolder Name="GossipEntry">
+  <DataHolder Name="StaticGossipEntry">
     <DefaultTable>npc_text</DefaultTable>
     <Flat Name="GossipId" Column="ID" />
-    <NestedArray Name="GossipEntries">
+    <NestedArray Name="GossipTexts">
       <Flat Name="TextMale" Pattern="text{#}_0" Offset="0"/>
       <Flat Name="TextFemale" Pattern="text{#}_1" Offset="0"/>
       <Flat Name="Language" Pattern="lang{#}" Offset="0"/>
@@ -19,7 +19,7 @@
 
   <DataHolder Name="NPCGossipRelation">
     <DefaultTable>npc_gossip</DefaultTable>
-    <Flat Name="NPCId" Column="npc_guid" />
+    <Flat Name="NPCSpawnId" Column="npc_guid" />
     <Flat Name="GossipId" Column="textid" />
   </DataHolder>
 </DataHolders>

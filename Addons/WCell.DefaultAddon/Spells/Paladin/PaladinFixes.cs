@@ -76,18 +76,18 @@ namespace WCell.Addons.Default.Spells.Paladin
 
 				// Custom proc (target = the one who is blessed): 
 				// "When the target blocks, parries, or dodges a melee attack the target will gain $57319s1% of maximum displayed mana."
-				spell.AddProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.BlessingOfSanctuary),
 					ProcTriggerFlags.MeleeHitOther | ProcTriggerFlags.RangedHitOther,
-					ProcHandler.DodgeBlockOrParryValidator,
-					SpellHandler.Get(SpellId.BlessingOfSanctuary)
+					ProcHandler.DodgeBlockOrParryValidator
 					));
 
 				// add str & stam
-				var strEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitTargetType.SingleFriend);
+				var strEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitSpellTargetType.SingleFriend);
 				strEff.MiscValue = (int)StatType.Strength;
 				strEff.BasePoints = 10;
 
-				var stamEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitTargetType.SingleFriend);
+				var stamEff = spell.AddAuraEffect(AuraType.ModStatPercent, ImplicitSpellTargetType.SingleFriend);
 				stamEff.MiscValue = (int)StatType.Stamina;
 				stamEff.BasePoints = 10;
 			},

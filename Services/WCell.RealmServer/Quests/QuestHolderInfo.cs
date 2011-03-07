@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using WCell.Constants.Quests;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Gossips;
+using WCell.RealmServer.Lang;
+using WCell.Util;
 
 namespace WCell.RealmServer.Quests
 {
@@ -22,12 +24,12 @@ namespace WCell.RealmServer.Quests
 	public class QuestHolderInfo : IQuestHolderInfo
 	{
 		/// <summary>
-		/// 
+		/// Set of Quests that may start at this QuestHolder
 		/// </summary>
 		public List<QuestTemplate> QuestStarts;
 
 		/// <summary>
-		/// 
+		/// Set of Quests that may be turned in at this QuestHolder
 		/// </summary>
 		public List<QuestTemplate> QuestEnds;
 
@@ -116,7 +118,7 @@ namespace WCell.RealmServer.Quests
 				var quest = chr.QuestLog.GetQuestById(qt.Id);
 				if (quest != null)
 				{
-					items.Add(new QuestMenuItem(qt.Id, quest.GetPacketStatus(), qt.Level, qt.DefaultTitle));
+					items.Add(new QuestMenuItem(qt.Id, 4, qt.Level, qt.Titles.Localize(chr.Locale)));
 				}
 			}
 
@@ -125,10 +127,17 @@ namespace WCell.RealmServer.Quests
 				var qs = qt.GetStartStatus(this, chr);
 				if (qs.IsAvailable())
 				{
-					items.Add(new QuestMenuItem(qt.Id, (uint)qs, qt.Level, qt.DefaultTitle));
+					items.Add(new QuestMenuItem(qt.Id, qs == QuestStatus.Available ? 2u : 4u, qt.Level, qt.Titles.Localize(chr.Locale)));
 				}
 			}
 			return items;
+		}
+
+		public override string ToString()
+		{
+			return string.Format("QuestHolder - Starts: {0}; Ends: {1}", 
+				Utility.GetStringRepresentation(QuestStarts),
+				Utility.GetStringRepresentation(QuestEnds));
 		}
 	}
 }

@@ -50,11 +50,11 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			// Intimidating Shout should not have a single enemy target
 			SpellLineId.WarriorChallengingShout.Apply(spell => spell.ForeachEffect(
-				effect => { effect.ImplicitTargetA = ImplicitTargetType.AllEnemiesAroundCaster; }));
+				effect => { effect.ImplicitTargetA = ImplicitSpellTargetType.AllEnemiesAroundCaster; }));
 
 			// thunder clap should add about 15% AP to damage
 			SpellLineId.WarriorThunderClap.Apply(spell => {
-				var effect = spell.AddEffect(SpellEffectType.Dummy, ImplicitTargetType.AllEnemiesAroundCaster);
+				var effect = spell.AddEffect(SpellEffectType.Dummy, ImplicitSpellTargetType.AllEnemiesAroundCaster);
 				effect.Radius = 8;
 				effect.BasePoints = 15;
 				effect.SpellEffectHandlerCreator = (cast, effct) => new SchoolDamageByAPPctEffectHandler(cast, effct);

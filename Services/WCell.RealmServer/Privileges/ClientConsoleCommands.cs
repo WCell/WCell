@@ -34,10 +34,10 @@ namespace WCell.RealmServer.Chat
             var pos = packet.ReadVector3();
             float orientation = packet.ReadFloat();
 
-			var region = client.ActiveCharacter.Region;
-			if (region != null)
+			var map = client.ActiveCharacter.Map;
+			if (map != null)
 			{
-				client.ActiveCharacter.TeleportTo(region, ref pos);
+				client.ActiveCharacter.TeleportTo(map, ref pos);
 			}
         }
 
@@ -51,10 +51,10 @@ namespace WCell.RealmServer.Chat
 			var pos = packet.ReadVector3();
             float orientation = packet.ReadFloat(); // in client specified as degrees
 
-			var region = World.GetRegion(mapId);
-			if (region != null)
+			var map = World.GetNonInstancedMap(mapId);
+			if (map != null)
 			{
-				client.ActiveCharacter.TeleportTo(region, ref pos);
+				client.ActiveCharacter.TeleportTo(map, ref pos);
 			}
         }
 

@@ -207,13 +207,15 @@ namespace WCell.RealmServer.Guilds
 			_info = "Default info";
 
 			m_ranks = GuildMgr.CreateDefaultRanks(this);
-			m_leader = new GuildMember(leader, this, HighestRank);
-			Members.Add(m_leader.Id, m_leader);
-            m_leader.Create();
-		    
-			RealmServer.Instance.AddMessage(Create);
+			//m_leader = new GuildMember(leader, this, HighestRank);
 
-            Register();
+			Register();
+
+			m_leader = AddMember(leader);
+            //Set the leader as guild master rank
+		    m_leader.RankId = 0;
+		    
+			RealmServer.IOQueue.AddMessage(Create);
 		}
 		#endregion
 
@@ -359,13 +361,8 @@ namespace WCell.RealmServer.Guilds
 
 			if (update && member == m_leader)
 			{
-				OnLeaderDeleted();
-			}
-
-			if (m_leader == null)
-			{
-				// Guild has been disbanded
-				return true;
+                Disband();
+                return true;
 			}
 
 			m_syncRoot.Enter();
@@ -393,7 +390,7 @@ namespace WCell.RealmServer.Guilds
 				GuildHandler.SendEventToGuild(this, GuildEvents.LEFT, member);
 			}
 
-			RealmServer.Instance.AddMessage(() =>
+			RealmServer.IOQueue.AddMessage(() =>
 			{
 				member.Delete();
 				if (update)
@@ -421,6 +418,7 @@ namespace WCell.RealmServer.Guilds
 		private void OnLeaderDeleted()
 		{
 			// leader was deleted
+            /*
 			var highestRank = int.MaxValue;
 			GuildMember highestMember = null;
 			foreach (var member in Members.Values)
@@ -436,10 +434,7 @@ namespace WCell.RealmServer.Guilds
 			{
 				Disband();
 			}
-			else
-			{
-				ChangeLeader(highestMember);
-			}
+             */
 		}
 		#endregion
 
@@ -535,7 +530,7 @@ namespace WCell.RealmServer.Guilds
 
 				m_ranks.RemoveAt(lastRankId);
 
-				RealmServer.Instance.AddMessage(() => m_ranks[lastRankId].Delete());
+				RealmServer.IOQueue.AddMessage(() => m_ranks[lastRankId].Delete());
 			}
 			catch (Exception e)
 			{
@@ -677,7 +672,7 @@ namespace WCell.RealmServer.Guilds
 				}
 
 				GuildMgr.Instance.UnregisterGuild(this);
-				RealmServer.Instance.AddMessage(() => Delete());
+				RealmServer.IOQueue.AddMessage(() => Delete());
 			}
 			finally
 			{
@@ -704,7 +699,7 @@ namespace WCell.RealmServer.Guilds
 			newLeader.RankId = 0;
 			Leader = newLeader;
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				if (currentLeader != null)
 				{

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,7 +46,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 				spreadEffect.SpellEffectHandlerCreator = (cast, effct) => new SpreadPestilenceHandler(cast, effct);
 
 				// make sure we only have one Dummy effect, so we can access it unambiguously in the effect handler
-				spell.GetFirstEffectWith(effect => effect.ImplicitTargetA == ImplicitTargetType.DynamicObject).EffectType = SpellEffectType.None;
+				spell.GetFirstEffectWith(effect => effect.ImplicitTargetA == ImplicitSpellTargetType.DynamicObject).EffectType = SpellEffectType.None;
 
 				// make the dummy handler collect the single enemy target
 				spell.GetEffect(SpellEffectType.Dummy).SpellEffectHandlerCreator =

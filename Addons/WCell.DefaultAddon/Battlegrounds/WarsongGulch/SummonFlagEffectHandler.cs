@@ -18,7 +18,7 @@ namespace WCell.Addons.Default.Battlegrounds.WarsongGulch
 		public override void Apply()
 		{
 			var chr = (Character)m_cast.CasterUnit;
-			var wsg = chr.Region as WarsongGulch;
+			var wsg = chr.Map as WarsongGulch;
 			if (wsg != null)
 			{
 				wsg.GetFaction(chr.Battlegrounds.Team.Side).Opponent.SummonDroppedFlag(chr);

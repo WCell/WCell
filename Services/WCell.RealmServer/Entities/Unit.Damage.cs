@@ -132,14 +132,12 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Get total damage, after adding/subtracting all modifiers (is not used for DoT)
 		/// </summary>
-		public int GetTotalDamageDoneMod(DamageSchool school, int dmg, Spell spell = null)
+		public int GetFinalDamage(DamageSchool school, int dmg, Spell spell = null)
 		{
 			if (spell != null)
 			{
 				dmg = Auras.GetModifiedInt(SpellModifierType.SpellPower, spell, dmg);
 			}
-			dmg += GetDamageDoneMod(school);
-			dmg += (int)(GetDamageDoneFactor(school) * dmg + 0.5f);
 			return dmg;
 		}
 		#endregion
@@ -321,8 +319,26 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public bool CanMelee
 		{
+			get { return MeleePermissionCounter > 0 && m_canInteract; }
+		}
+
+		/// <summary>
+		/// If greater 0, may melee, else not
+		/// </summary>
+		public int MeleePermissionCounter
+		{
 			get;
-			set;
+			internal set;
+		}
+
+		public void IncMeleePermissionCounter()
+		{
+			++MeleePermissionCounter;
+		}
+
+		public void DecMeleePermissionCounter()
+		{
+			--MeleePermissionCounter;
 		}
 		#endregion
 
@@ -564,7 +580,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Deals environmental damage to this Unit (cannot be resisted)
 		/// </summary>
-		public virtual void DoEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
+		public virtual void DealEnvironmentalDamage(EnviromentalDamageType dmgType, int amount)
 		{
 			//if (dmgType == EnviromentalDamageType.Fall)
 			//{

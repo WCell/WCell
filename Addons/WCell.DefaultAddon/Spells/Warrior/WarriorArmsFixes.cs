@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using WCell.Constants.Spells;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
@@ -53,18 +54,18 @@ namespace WCell.Addons.Default.Spells.Warrior
 			// Second wind triggers a spell on the carrier if "struck by a Stun or Immobilize effect"
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1),
 					ProcTriggerFlags.SpellHit,
-					ProcHandler.StunValidator,
-					SpellHandler.Get(SpellId.ClassSkillSecondWindRank1)
+					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank1);
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddProcHandler(new TriggerSpellProcHandler(
+				spell.AddProcHandler(new TriggerSpellProcHandlerTemplate(
+					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2),
 					ProcTriggerFlags.SpellHit,
-					ProcHandler.StunValidator,
-					SpellHandler.Get(SpellId.ClassSkillSecondWindRank2)
+					ProcHandler.StunValidator
 				));
 			}, SpellId.WarriorArmsSecondWindRank2);
 
@@ -109,7 +110,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 	public class ProcStrikeAdditionalTargetHandler : AuraEffectHandler
 	{
-		public override void OnProc(RealmServer.Entities.Unit triggerer, IUnitAction action)
+		public override void OnProc(Unit triggerer, IUnitAction action)
 		{
 			var dmgAction = action as DamageAction;
 			if (dmgAction == null) return;
@@ -117,7 +118,7 @@ namespace WCell.Addons.Default.Spells.Warrior
 
 			Owner.AddMessage(() =>
 			{
-				var nextTarget = Owner.GetRandomUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != triggerer);
+				var nextTarget = Owner.GetRandomVisibleUnit(Owner.MaxAttackRange, unit => Owner.MayAttack(unit) && unit != triggerer);
 				if (nextTarget != null)
 				{
 					dmgAction.Victim = nextTarget;

@@ -20,9 +20,9 @@ namespace WCell.Collision.Addon
             var target = trigger.Args.Character;
             var position = target.Position;
 
-            WorldMap.DumpMapTileChunk(target.RegionId, position);
+            WorldMap.DumpMapTileChunk(target.MapId, position);
             
-            trigger.Reply(String.Format("Region: {0}", target.Region));
+            trigger.Reply(String.Format("Map: {0}", target.Map));
 
             var zone = target.Zone;
             string zoneStr;
@@ -67,12 +67,12 @@ namespace WCell.Collision.Addon
             float? dist;
             if (target != null)
             {
-                dist = curChar.Region.Terrain.QueryWMOCollision(curChar.Position, target.Position);
+                dist = curChar.Map.Terrain.QueryWMOCollision(curChar.Position, target.Position);
             }
             else
             {
                 var targetPos = new Vector3(curChar.Position.X + 10.0f, curChar.Position.Y + 10.0f, curChar.Position.Z);
-                dist = curChar.Region.Terrain.QueryWMOCollision(curChar.Position, targetPos);
+                dist = curChar.Map.Terrain.QueryWMOCollision(curChar.Position, targetPos);
             }
 
             if (dist == null)
@@ -102,7 +102,7 @@ namespace WCell.Collision.Addon
         public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
         {
             var curChar = trigger.Args.Character;
-            var height = curChar.Region.Terrain.QueryWMOHeight(curChar.Position);
+            var height = curChar.Map.Terrain.QueryWMOHeight(curChar.Position);
 
             if (height == null)
             {

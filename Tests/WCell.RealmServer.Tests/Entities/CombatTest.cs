@@ -100,7 +100,7 @@ namespace WCell.RealmServer.Tests.Entities
 
 		//        var health = 1000;
 
-		//        npc.Region.AddMessageAndWait(() => {
+		//        npc.Map.AddMessageAndWait(() => {
 		//            chr.Target = npc;
 		//            chr.IsInCombat = true;
 		//            chr.IsFighting = true;
@@ -144,10 +144,10 @@ namespace WCell.RealmServer.Tests.Entities
 
 		//        npc.Entry.HitReceived -= dmgHandler;
 
-		//        Thread.Sleep(Region.CharacterUpdateEnvironmentTicks * Region.DefaultUpdateDelay);
+		//        Thread.Sleep(Map.CharacterUpdateEnvironmentTicks * Map.DefaultUpdateDelay);
 
 		//        // wait 2 ticks
-		//        npc.Region.WaitTicks(3);
+		//        npc.Map.WaitTicks(3);
 
 		//        // get the damage packet
 		//        var damagePacket = client.DequeueSMSG(RealmServerOpCode.SMSG_ATTACKERSTATEUPDATE);

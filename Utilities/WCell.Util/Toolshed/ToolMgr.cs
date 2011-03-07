@@ -111,7 +111,7 @@ namespace WCell.Util.Toolshed
 						{
 							throw new ToolException("Found multiple static methods with ToolAttribute, called: {0}." +
 								"- Make sure that the names are unique.",
-								method.GetMemberName());
+								method.GetFullMemberName());
 						}
 					}
 					else if (toolAttr != null)
@@ -119,7 +119,7 @@ namespace WCell.Util.Toolshed
 						throw new ToolException("Static method {0} was marked with ToolAttribute" +
 							" but had non-simple Parameters. " +
 							"- Make sure to only give methods with simple parameters the ToolAttribute. You can exclude them with the NoToolAttribute.",
-							method.GetMemberName());
+							method.GetFullMemberName());
 					}
 				}
 			}

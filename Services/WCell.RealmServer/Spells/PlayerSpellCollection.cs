@@ -148,12 +148,9 @@ namespace WCell.RealmServer.Spells
 		internal void OnlyAdd(SpellRecord record)
 		{
 			var id = record.SpellId;
-			if (!m_byId.ContainsKey(id))
-			{
-				//DeleteFromDB(id);
-				var spell = SpellHandler.Get(id);
-				m_byId[id] = spell;
-			}
+			//DeleteFromDB(id);
+			var spell = SpellHandler.Get(id);
+			m_byId[id] = spell;
 		}
 
 
@@ -254,7 +251,7 @@ namespace WCell.RealmServer.Spells
 				if (record.SpellId == spell.SpellId)
 				{
 					// delete and remove
-					RealmServer.Instance.AddMessage(new Message(record.Delete));
+					RealmServer.IOQueue.AddMessage(new Message(record.Delete));
 					spells.RemoveAt(i);
 					return;
 				}
@@ -302,13 +299,26 @@ namespace WCell.RealmServer.Spells
 			var chr = OwnerChar;
 			foreach (var spell in m_byId.Values)
 			{
-				if (spell.IsPassive && !spell.HasHarmfulEffects)
-				{
-					chr.SpellCast.Start(spell, true, Owner);
-				}
 				if (spell.Talent != null)
 				{
+					// add talents silently to TalentCollection
 					chr.Talents.AddExisting(spell.Talent, spell.Rank);
+				}
+				else if (spell.IsPassive && !spell.HasHarmfulEffects)
+				{
+					// cast passive spells
+					chr.SpellCast.Start(spell, true, Owner);
+				}
+			}
+
+			// apply all highest ranks of all Talents
+			foreach (var talent in chr.Talents)
+			{
+				var spell = talent.Spell;
+				if (spell.IsPassive)
+				{
+					// cast passive Talent spells
+					chr.SpellCast.Start(spell, true, Owner);
 				}
 			}
 
@@ -362,11 +372,11 @@ namespace WCell.RealmServer.Spells
 					chr.Inventory.Ensure(tool.Template, 1);
 				}
 			}
-			if (spell.RequiredTotemCategories != null)
+			if (spell.RequiredToolCategories != null)
 			{
-				foreach (var cat in spell.RequiredTotemCategories)
+				foreach (var cat in spell.RequiredToolCategories)
 				{
-					var tool = ItemMgr.GetFirstTotemCat(cat);
+					var tool = ItemMgr.GetFirstItemOfToolCategory(cat);
 					if (tool != null)
 					{
 						chr.Inventory.Ensure(tool, 1);
@@ -385,7 +395,7 @@ namespace WCell.RealmServer.Spells
 			if (spell.RequiredSpellFocus != 0)
 			{
 				var range = Owner.GetSpellMaxRange(spell);
-				var go = chr.Region.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
+				var go = chr.Map.GetGOWithSpellFocus(chr.Position, spell.RequiredSpellFocus,
 					range > 0 ? (range) : 5f, chr.Phase);
 
 				if (go == null)
@@ -454,7 +464,7 @@ namespace WCell.RealmServer.Spells
 			{
 				var removedId = idCooldown as PersistentSpellIdCooldown;
 				var removedCat = catCooldown as PersistentSpellCategoryCooldown;
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (removedId != null)
 					{
@@ -483,14 +493,14 @@ namespace WCell.RealmServer.Spells
 				cd = spell.GetCooldown(Owner);
 			}
 
-			var catCd = 0;
+			int catCd;
 			if (itemSpell)
 			{
 				catCd = casterItem.Template.UseSpell.CategoryCooldown;
 			}
-			if (catCd == 0)
+			else
 			{
-				catCd = spell.CategoryCooldownTime;
+				catCd = spell.GetModifiedCooldown(Owner, spell.CategoryCooldownTime);
 			}
 
 			if (cd > 0)
@@ -559,7 +569,7 @@ namespace WCell.RealmServer.Spells
 			m_idCooldowns.Clear();
 			m_categoryCooldowns.Clear();
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				foreach (var cooldown in cds)
 				{
@@ -611,7 +621,7 @@ namespace WCell.RealmServer.Spells
 			// enqueue task
 			if (idCooldown is ActiveRecordBase || catCooldown is ActiveRecordBase)
 			{
-				RealmServer.Instance.AddMessage(new Message(() =>
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (idCooldown is ActiveRecordBase)
 					{
@@ -674,11 +684,12 @@ namespace WCell.RealmServer.Spells
 			}
 		}
 
-		internal void LoadSpells()
+		internal void LoadSpellsAndTalents()
 		{
 			var owner = OwnerChar;
 			var ownerRecord = owner.Record;
 
+			// add Spells from DB into the correct collections
 			var dbSpells = SpellRecord.LoadAllRecordsFor(owner.EntityId.Low);
 			var specs = owner.SpecProfiles;
 			foreach (var record in dbSpells)
@@ -709,7 +720,7 @@ namespace WCell.RealmServer.Spells
 				}
 			}
 
-			// add talent spells
+			// add talents
 			foreach (var spell in owner.CurrentSpecProfile.TalentSpells)
 			{
 				OnlyAdd(spell);

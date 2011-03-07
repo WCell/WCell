@@ -555,6 +555,16 @@ namespace WCell.RealmServer.Chat
 			SendSystemMessage(targets, item.Key, item.Args);
 		}
 
+		public static void SendSystemMessage(this IEnumerable<Character> targets, string[] texts, params object[] args)
+		{
+			foreach (var target in targets)
+			{
+				if (target != null)
+				{
+					target.SendSystemMessage(texts.Localize(target.Locale, args));
+				}
+			}
+		}
 		/// <summary>
 		/// Sends a system message.
 		/// </summary>
@@ -695,7 +705,7 @@ namespace WCell.RealmServer.Chat
 		/// <param name="chatType">the type of message</param>
 		/// <param name="language">the language to send the message in</param>
 		/// <param name="message">the message to send</param>
-		/// <param name="radius">The radius or -1 to be heard by everyone in the Region</param>
+		/// <param name="radius">The radius or -1 to be heard by everyone in the Map</param>
 		public static void SendMonsterMessage(WorldObject obj, ChatMsgType chatType, ChatLanguage language, string message, float radius)
 		{
 			if (obj == null || !obj.IsAreaActive)

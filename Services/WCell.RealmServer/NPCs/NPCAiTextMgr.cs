@@ -66,6 +66,16 @@ namespace WCell.RealmServer.NPCs
 				Entries.Where(entry => entry.Value.Texts.Any(text => text.StartsWith(str))).Select(entry => entry.Value)
 					.ToArray();
 		}
+
+        /// <summary>
+        /// Select entry by the id of the text
+        /// </summary>
+        /// <param name="id">Id of the text</param>
+        public static NPCAiText GetFirstTextById(int id)
+        {
+            return Entries.FirstOrDefault(entry => entry.Value.Id == id).Value;
+        }
+
 		#endregion
 
 		#region Fixing

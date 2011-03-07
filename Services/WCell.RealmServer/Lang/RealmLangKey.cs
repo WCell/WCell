@@ -14,7 +14,11 @@ namespace WCell.RealmServer.Lang
 		// Misc
 		None = 0,
 		Done,
+		PleaseWait,
+		GoBack,
 		Custom,
+		AreYouSure,
+
 		Addon,
 		Library,
 		NotConnectedToAuthServer,
@@ -102,27 +106,27 @@ namespace WCell.RealmServer.Lang
         CmdSkillTierError2,
 
         // ########################################################################
-        // Region Commands
-        CmdRegionDescription,
-        CmdRegionSpawnParamInfo,
-        CmdRegionSpawnDescription,
-        CmdRegionSpawnResponse,
-        CmdRegionSpawnResponse1,
-        CmdRegionSpawnError1,
-        CmdRegionSpawnError2,
-        CmdRegionSpawnError3,
-        CmdRegionSpawnResponse2,
-        CmdRegionSpawnError4,
-        CmdRegionSpawnError5,
-        CmdRegionSpawnResponse3,
-        CmdRegionClearParamInfo,
-        CmdRegionClearDescription,
-        CmdRegionClearError1,
-        CmdRegionClearError2,
-        CmdRegionClearResponse,
-        CmdRegionUpdateDescription,
-        CmdRegionListDescription,
-        CmdRegionListResponse,
+        // Map Commands
+        CmdMapDescription,
+        CmdMapSpawnParamInfo,
+        CmdMapSpawnDescription,
+        CmdMapSpawnResponse,
+        CmdMapSpawnResponse1,
+        CmdMapSpawnError1,
+        CmdMapSpawnError2,
+        CmdMapSpawnError3,
+        CmdMapSpawnResponse2,
+        CmdMapSpawnError4,
+        CmdMapSpawnError5,
+        CmdMapSpawnResponse3,
+        CmdMapClearParamInfo,
+        CmdMapClearDescription,
+        CmdMapClearError1,
+        CmdMapClearError2,
+        CmdMapClearResponse,
+        CmdMapUpdateDescription,
+        CmdMapListDescription,
+        CmdMapListResponse,
 
 		// ########################################################################
 		// Gossips
@@ -142,6 +146,27 @@ namespace WCell.RealmServer.Lang
         // ########################################################################
         // Error notifications
         FeatureNotYetImplemented,
-        InvalidClass
+        InvalidClass,
+
+		// Other
+		Goodbye,
+
+		// ########################################################################
+		// Editor
+		EditorMapMenuText,
+		EditorMapMenuStatusNoData,
+		EditorMapMenuStatusDataLoading,
+		EditorMapMenuStatusNotSpawned,
+		EditorMapMenuStatusSpawning,
+
+		EditorMapMenuLoadData,
+		EditorMapMenuSpawnMap,
+		EditorMapMenuClearMap,
+		EditorMapMenuShow,
+		EditorMapMenuHide,
+		EditorMapMenuEnableAllSpawnPoints,
+		EditorMapMenuDisableAllSpawnPoints,
+
+		EditorSpawnPointMenuMoveOverHere
 	}
 }

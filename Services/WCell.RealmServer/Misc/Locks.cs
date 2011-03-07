@@ -6,9 +6,11 @@ using WCell.Constants.GameObjects;
 using WCell.Constants.Items;
 using WCell.Constants.Looting;
 using WCell.Constants.Skills;
+using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.DBC;
 using WCell.Core.Initialization;
+using WCell.RealmServer.Battlegrounds;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Looting;
 using WCell.Util;
@@ -146,14 +148,12 @@ namespace WCell.RealmServer.Misc
 			InteractionHandlers[(int)LockInteractionType.QuickClose] = Close;
 			InteractionHandlers[(int)LockInteractionType.QuickOpen] = Open;
 			InteractionHandlers[(int)LockInteractionType.PvPClose] = Close;
-			InteractionHandlers[(int)LockInteractionType.PvPOpen] = Open;
 		}
 
 		private static void LoadLocks()
 		{
-			//DBCReader<LockEntry, LockConverter> reader =
 			new MappedDBCReader<LockEntry, LockConverter>(
-                RealmServerConfiguration.GetDBCFile(WCellDef.DBC_LOCKS));
+                RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_LOCKS));
 		}
 
 		class LockConverter : AdvancedDBCRecordConverter<LockEntry>
@@ -251,7 +251,7 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// Open an object
+		/// Close an object
 		/// </summary>
 		public static void Close(ILockable lockable, Character user)
 		{
@@ -259,7 +259,12 @@ namespace WCell.RealmServer.Misc
 			{
 				var go = lockable as GameObject;
 				go.State = GameObjectState.Disabled;
-			}
+                if (go.Map is Battleground)
+                {
+                    Battleground bg = go.Map as Battleground;
+                    bg.OnPlayerClickedOnflag(go, user);
+                }
+            }
 		}
 
 		/// <summary>
@@ -277,7 +282,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (lockable is Item)
 			{
-				LootMgr.CreateAndSendObjectLoot(lockable, user, LootEntryType.Item, user.Region.IsHeroic);
+				LootMgr.CreateAndSendObjectLoot(lockable, user, LootEntryType.Item, user.Map.IsHeroic);
 			}
 			else if (lockable is GameObject)
 			{
@@ -286,20 +291,23 @@ namespace WCell.RealmServer.Misc
 			else
 			{
 				log.Error("{0} tried to loot invalid object: " + lockable, user);
-				return;
 			}
 		}
 
 		/// <summary>
-		/// Open a GameObject.
+		/// Open a GameObject
 		/// </summary>
 		public static void Open(ILockable lockable, Character chr)
 		{
 			if (lockable is GameObject)
 			{
-				var go = lockable as GameObject;
-				//go.State = GameObjectState.Enabled;
+                var go = lockable as GameObject;
 				go.Use(chr);
+                if (go.Map is Battleground)
+                {
+                    var bg = go.Map as Battleground;
+                    bg.OnPlayerClickedOnflag(go, chr);
+                }
 			}
 		}
 		#endregion

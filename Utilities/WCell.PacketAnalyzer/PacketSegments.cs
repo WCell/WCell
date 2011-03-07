@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 using NLog;
+using WCell.Core;
 using WCell.Core.Network;
 using WCell.Util;
 
@@ -754,7 +755,7 @@ namespace WCell.PacketAnalysis
 		{
 			if (string.IsNullOrEmpty(EncodingName))
 			{
-				Encoding = Encoding.ASCII;
+				Encoding = WCellConstants.DefaultEncoding;
 			}
 			else
 			{

@@ -109,7 +109,7 @@ namespace WCell.Collision
                 else
                 {
                     // Create map tree
-                    var box = RegionBoundaries.GetRegionBoundaries()[(int)mapId];
+                    var box = MapBoundaries.GetMapBoundaries()[(int)mapId];
                     worldBuildings[mapId] = treeRef = new TreeReference<WMO>(new QuadTree<WMO>(box));
                 }
             }

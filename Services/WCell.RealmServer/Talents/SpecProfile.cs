@@ -38,7 +38,7 @@ namespace WCell.RealmServer.Talents
 				{
 					LogManager.GetCurrentClassLogger().Warn("Found SpecProfile for \"{0}\" with invalid SpecIndex {1} (should be {2})", spec.SpecIndex, i);
 					spec.SpecIndex = i;
-					spec.IsDirty = true;
+					spec.State = RecordState.Dirty;
 				}
 
 				// ensure correct ActionButtons
@@ -98,14 +98,7 @@ namespace WCell.RealmServer.Talents
 		{
 			_characterGuid = (int)lowId;
 			SpecIndex = specIndex;
-			New = true;
-			IsDirty = true;
-		}
-
-		public bool IsDirty
-		{
-			get;
-			internal set;
+			State = RecordState.New;
 		}
 
 		/// <summary>
@@ -116,7 +109,7 @@ namespace WCell.RealmServer.Talents
 		{
 			get
 			{
-				return _characterGuid | ((long)SpecIndex << 32);
+				return Utility.MakeLong(_characterGuid, SpecIndex);
 			}
 			set
 			{
@@ -165,18 +158,6 @@ namespace WCell.RealmServer.Talents
 		{
 			get;
 			internal set;
-		}
-
-		public override void Create()
-		{
-			IsDirty = false;
-			base.Create();
-		}
-
-		public override void Update()
-		{
-			IsDirty = false;
-			base.Update();
 		}
 	}
 }

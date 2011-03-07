@@ -11,6 +11,16 @@ namespace WCell.Util
 	public static class CollectionExtensions
 	{
 		#region Dictionary Extensions
+		public static V GetOrCreate<K, V>(this IDictionary<K, V> map, K key) where V : new()
+		{
+			V val;
+			if (!map.TryGetValue(key, out val))
+			{
+				map.Add(key, val = new V());
+			}
+			return val;
+		}
+
 		public static List<V> GetOrCreate<K, V>(this IDictionary<K, List<V>> map, K key)
 		{
 			List<V> list;
@@ -88,6 +98,14 @@ namespace WCell.Util
 			return output;
 		}
 		#endregion
+
+		public static void AddUnique<T>(this IList<T> items, T item)
+		{
+			if (!items.Contains(item))
+			{
+				items.Add(item);
+			}
+		}
 
 		public static bool Iterate<T>(this IEnumerable<T> items, Func<T, bool> action)
 		{
@@ -203,7 +221,7 @@ namespace WCell.Util
 			throw new Exception("Can only get VariableType of Fields and Properties");
 		}
 
-		public static string GetMemberName(this MemberInfo member)
+		public static string GetFullMemberName(this MemberInfo member)
 		{
 			var str = member.DeclaringType.FullName + "." + member.Name;
 			if (member is MethodInfo)
@@ -224,15 +242,14 @@ namespace WCell.Util
 			{
 				rawType = (Type)member;
 			}
-			var isArr = rawType.IsArray;
 
 			Type memberType;
-			if (isArr)
+			if (rawType.IsArray)
 			{
 				memberType = rawType.GetElementType();
 				if (memberType == null)
 				{
-					throw new Exception(string.Format("Unable to get Type of Array {0} ({1}).", rawType, member.GetMemberName()));
+					throw new Exception(string.Format("Unable to get Type of Array {0} ({1}).", rawType, member.GetFullMemberName()));
 				}
 			}
 			else

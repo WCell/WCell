@@ -2,6 +2,7 @@ using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
+using WCell.RealmServer.Entities;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Network;
 
@@ -51,21 +52,17 @@ namespace WCell.RealmServer.GameObjects
 			}
 		}
 
-		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_USE)]
-		public static void HandleGOUse(IRealmClient client, RealmPacketIn packet)
-		{
-			var goId = packet.ReadEntityId();
-
-			var go = client.ActiveCharacter.Region.GetGO(goId.Low);
-			if (go != null)
-			{
-				go.Use(client.ActiveCharacter);
-			}
-		}
-
 		[ClientPacketHandler(RealmServerOpCode.CMSG_GAMEOBJ_REPORT_USE)]
 		public static void HandleGOReportUse(IRealmClient client, RealmPacketIn packet)
 		{
+			var goId = packet.ReadEntityId();
+
+			var go = client.ActiveCharacter.Map.GetObject(goId) as GameObject;
+			var chr = client.ActiveCharacter;
+			if (go != null && go.CanUseInstantly(chr) && (chr.LooterEntry.Loot == null || !object.ReferenceEquals(chr.LooterEntry.Loot.Lootable, go) ))
+			{
+				go.Use(client.ActiveCharacter);
+			}
 		}
 
         public static void SendGameObjectInfo(IRealmClient client, GOEntry entry)
@@ -98,7 +95,7 @@ namespace WCell.RealmServer.GameObjects
                     i++;
                 }
 
-                packet.Write(entry.DefaultScale); // size
+                packet.Write(entry.Scale); // size
 
                 for (i = 0; i < 4; i++)
                 {

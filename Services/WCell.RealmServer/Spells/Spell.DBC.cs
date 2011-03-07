@@ -51,13 +51,13 @@ namespace WCell.RealmServer.Spells
 
 		internal static void InitDbcs()
 		{
-			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLDURATION));
-			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRADIUS));
-			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLCASTTIMES));
-			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRANGE));
+			mappeddbcDurationReader = new MappedDBCReader<DurationEntry, DBCDurationConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLDURATION));
+			mappeddbcRadiusReader = new MappedDBCReader<float, DBCRadiusConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRADIUS));
+			mappeddbcCastTimeReader = new MappedDBCReader<uint, DBCCastTimeConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLCASTTIMES));
+			mappeddbcRangeReader = new MappedDBCReader<SimpleRange, DBCRangeConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRANGE));
 			//DBCMechanicReader = new DBCReader<SpellMechanic, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
-			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLMECHANIC));
-			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellDef.DBC_SPELLRUNECOST));
+			mappeddbcMechanicReader = new MappedDBCReader<string, DBCMechanicConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLMECHANIC));
+			mappeddbcRuneCostReader = new MappedDBCReader<RuneCostEntry, DBCSpellRuneCostConverter>(RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_SPELLRUNECOST));
 		}
 
 		#region SpellDuration.dbc
@@ -228,10 +228,10 @@ namespace WCell.RealmServer.Spells
 					spell.RequiredTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);          // 21
 					spell.ExcludeCasterAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 22
 					spell.ExcludeTargetAuraState = (AuraState)GetUInt32(rawData, currentIndex++);           // 23
-					spell.RequiredCasterAuraId = GetUInt32(rawData, currentIndex++);                        // 24
-					spell.RequiredTargetAuraId = GetUInt32(rawData, currentIndex++);                        // 25
-					spell.ExcludeCasterAuraId = GetUInt32(rawData, currentIndex++);                         // 26
-					spell.ExcludeTargetAuraId = GetUInt32(rawData, currentIndex++);                         // 27
+					spell.RequiredCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 24
+					spell.RequiredTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                        // 25
+					spell.ExcludeCasterAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 26
+					spell.ExcludeTargetAuraId = (SpellId)GetUInt32(rawData, currentIndex++);                         // 27
 
 					int castTimeIndex = GetInt32(rawData, currentIndex++);                                  // 28
 					if (castTimeIndex > 0)
@@ -374,10 +374,10 @@ namespace WCell.RealmServer.Spells
 					spell.MinReputation = GetUInt32(rawData, currentIndex++);       // 143
 					spell.RequiredAuraVision = GetUInt32(rawData, currentIndex++);  // 144
 
-					spell.RequiredTotemCategories = new TotemCategory[2];       // 145-146
-					for (int i = 0; i < spell.RequiredTotemCategories.Length; i++)
+					spell.RequiredToolCategories = new ToolCategory[2];       // 145-146
+					for (int i = 0; i < spell.RequiredToolCategories.Length; i++)
 					{
-						spell.RequiredTotemCategories[i] = (TotemCategory)GetUInt32(rawData, currentIndex++);
+						spell.RequiredToolCategories[i] = (ToolCategory)GetUInt32(rawData, currentIndex++);
 					}
 
 					spell.AreaGroupId = GetUInt32(rawData, currentIndex++);
@@ -450,17 +450,17 @@ namespace WCell.RealmServer.Spells
 				effect.Mechanic = (SpellMechanic)GetUInt32(rawData, currentIndex);      // 83
 				currentIndex += 3;
 
-				effect.ImplicitTargetA = (ImplicitTargetType)GetUInt32(rawData, currentIndex);      // 86
+				effect.ImplicitTargetA = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 86
 				currentIndex += 3;
 
-				effect.ImplicitTargetB = (ImplicitTargetType)GetUInt32(rawData, currentIndex);      // 89
+				effect.ImplicitTargetB = (ImplicitSpellTargetType)GetUInt32(rawData, currentIndex);      // 89
 				currentIndex += 3;
 
 				// Fix: This is a default AoE effect, thus doesn't have a fact at destination
-				if (effect.ImplicitTargetA == ImplicitTargetType.AllEnemiesAroundCaster &&
-					effect.ImplicitTargetB == ImplicitTargetType.AllEnemiesInArea)
+				if (effect.ImplicitTargetA == ImplicitSpellTargetType.AllEnemiesAroundCaster &&
+					effect.ImplicitTargetB == ImplicitSpellTargetType.AllEnemiesInArea)
 				{
-					effect.ImplicitTargetB = ImplicitTargetType.None;
+					effect.ImplicitTargetB = ImplicitSpellTargetType.None;
 				}
 
 				int radiusIndex = GetInt32(rawData, currentIndex);                                  // 92

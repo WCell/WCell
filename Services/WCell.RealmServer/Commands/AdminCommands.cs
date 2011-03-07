@@ -161,11 +161,11 @@ namespace WCell.RealmServer.Commands
 			var chr = trigger.Args.Target as Character;
 			var banner = trigger.Args.User;
 
-			if (chr != null && chr == banner)
+			if (chr != null && ReferenceEquals(chr, banner))
 			{
 				chr = chr.Target as Character;
 			}
-			if (chr == null || chr == banner)
+			if (chr == null || ReferenceEquals(chr, banner))
 			{
 				trigger.Reply("Invalid Target.");
 				return;
@@ -189,11 +189,11 @@ namespace WCell.RealmServer.Commands
 				until = null;
 			}
 
-			var timeStr = until != null ? "until " + until : "(indefinitely)";
+			var timeStr = until != null ? ("until " + until) : "(indefinitely)";
 			trigger.Reply("Banning Account {0} ({1}) {2}...", chr.Account.Name, chr.Name,
 				timeStr);
 
-			RealmServer.Instance.AddMessage(new Message(() =>
+			RealmServer.IOQueue.AddMessage(new Message(() =>
 			{
 				var context = chr.ContextHandler;
 				var acc = chr.Account;
@@ -263,8 +263,8 @@ namespace WCell.RealmServer.Commands
 				var oldRole = chr.Account.Role;
 
 				// Since setting the role is a task sent to the Auth-Server, this is a blocking call
-				// and thus must not be executed within the Region context (which is the default context for Commands)
-				RealmServer.Instance.AddMessage(new Message(() =>
+				// and thus must not be executed within the Map context (which is the default context for Commands)
+				RealmServer.IOQueue.AddMessage(new Message(() =>
 				{
 					if (chr.Account.SetRole(role))
 					{
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Commands
 				if (chr.Role <= trigger.Args.Role)
 				{
 					if ((!playersOnly || chr.Role.Status == RoleStatus.Player) &&
-						(inclSelf || chr != trigger.Args.User))
+						(inclSelf || !object.ReferenceEquals(chr, trigger.Args.User)))
 					{
 						chrTrigger.Args.Target = chr;
 						RealmCommandHandler.Instance.Execute(chrTrigger, cmd, true);

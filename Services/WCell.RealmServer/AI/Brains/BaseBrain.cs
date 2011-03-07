@@ -5,6 +5,7 @@ using WCell.RealmServer.AI.Actions;
 using WCell.RealmServer.AI.Groups;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;
+using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.AI.Actions.States;
@@ -227,7 +228,7 @@ namespace WCell.RealmServer.AI.Brains
 		#endregion
 
 		/// <summary>
-		/// Updates the AIAction by calling Perform. Called every tick by the Region
+		/// Updates the AIAction by calling Perform. Called every tick by the Map
 		/// </summary>
 		/// <param name="dt">not used</param>
 		public virtual void Update(int dt)
@@ -277,6 +278,11 @@ namespace WCell.RealmServer.AI.Brains
 		public void Perform()
 		{
 			// update current Action if any
+			if (m_owner.IsUsingSpell)
+			{
+				return;
+			}
+
 			if (m_currentAction == null)
 			{
 				m_currentAction = m_actions[m_state];
@@ -365,7 +371,7 @@ namespace WCell.RealmServer.AI.Brains
 				return false;
 			}
 
-			if (!m_owner.IsAreaActive && !m_owner.Region.ScanInactiveAreas)
+			if (!m_owner.IsAreaActive && !m_owner.Map.ScanInactiveAreas)
 			{
 				// don't scan inactive Nodes
 				return false;
@@ -377,7 +383,7 @@ namespace WCell.RealmServer.AI.Brains
 			if ((owner.ThreatCollection.CurrentAggressor != null && owner.CanReachForCombat(owner.ThreatCollection.CurrentAggressor)) ||
 				 (m_IsAggressive && ScanAndAttack()))
 			{
-				owner.Brain.State = BrainState.Combat;
+				State = BrainState.Combat;
 				return true;
 			}
 
@@ -391,22 +397,22 @@ namespace WCell.RealmServer.AI.Brains
 
 		public void OnGroupChange(AIGroup newGroup)
 		{
-			if (newGroup != null)
-			{
-				// now in new/different group
-				DefaultState = newGroup.DefaultState;
-				EnterDefaultState();
-			}
-			else
-			{
-				// left Group
-				DefaultState = DefaultBrainState;
-				if (m_currentAction.IsGroupAction)
-				{
-					m_currentAction.Stop();
-					EnterDefaultState();
-				}
-			}
+			//if (newGroup != null)
+			//{
+			//    // now in new/different group
+			//    DefaultState = newGroup.DefaultState;
+			//    EnterDefaultState();
+			//}
+			//else
+			//{
+			//    // left Group
+			//    DefaultState = DefaultBrainState;
+			//    if (m_currentAction != null && m_currentAction.IsGroupAction)
+			//    {
+			//        m_currentAction.Stop();
+			//        EnterDefaultState();
+			//    }
+			//}
 		}
 
 		/// <summary>
@@ -422,7 +428,7 @@ namespace WCell.RealmServer.AI.Brains
 			var owner = (NPC)m_owner;
 
 			// look around for possible enemies to attack (inverted predicate)
-			return !owner.IterateEnvironment(Unit.AggroMaxRangeDefault, obj =>
+			return !owner.IterateEnvironment(NPCEntry.AggroRangeMaxDefault, obj =>
 			{
 				if (!(obj is Unit))
 				{
@@ -440,6 +446,7 @@ namespace WCell.RealmServer.AI.Brains
 						return true;
 					}
 				}
+
 				// targets must be hostile, visible, alive, in range etc
 				if (unit.CanGenerateThreat &&
 					m_owner.IsHostileWith(unit) &&

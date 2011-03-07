@@ -25,34 +25,24 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 	/// </summary>
 	public class PeriodicTriggerSpellHandler : AuraEffectHandler
 	{
-		protected Spell spell;
-
 		protected override void Apply()
 		{
-			var channel = m_aura.Controller as SpellChannel;
-			SpellCast origCast = null;
+			TriggerSpell(m_spellEffect.TriggerSpell);
+		}
+
+		protected void TriggerSpell(Spell spell)
+		{
+			SpellCast cast = m_aura.SpellCast;
+
 			if (spell == null)
 			{
-				if (channel != null)
-				{
-					origCast = channel.Cast;
-				}
-				else
-				{
-					origCast = m_aura.Auras.Owner.SpellCast;
-				}
-
-				spell = m_spellEffect.TriggerSpell;
-				if (spell == null)
-				{
-					LogManager.GetCurrentClassLogger().Warn("Found invalid periodic TriggerSpell in Spell {0} ({1}) ",
-						m_aura.Spell, 
-						(uint)m_spellEffect.TriggerSpellId);
-					return;
-				}
+				LogManager.GetCurrentClassLogger().Warn("Found invalid periodic TriggerSpell in Spell {0} ({1}) ",
+					m_aura.Spell,
+					(uint)m_spellEffect.TriggerSpellId);
+				return;
 			}
-
-			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner, channel, origCast != null ? origCast.UsedItem : null,
+			
+			SpellCast.ValidateAndTriggerNew(spell, m_aura.CasterReference, Owner, Owner,  m_aura.Controller as SpellChannel, cast != null ? cast.TargetItem : null,
 				null, m_spellEffect);
 		}
 

@@ -1,38 +1,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
 using NLog;
 using WCell.Constants;
 using WCell.Constants.Login;
+using WCell.Constants.NPCs;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
 using WCell.Core;
 using WCell.Core.Database;
-using WCell.RealmServer.Achievement;
-using WCell.RealmServer.NPCs.Pets;
-using WCell.RealmServer.Talents;
-using WCell.Util.Threading;
+using WCell.RealmServer.Achievements;
 using WCell.RealmServer.Entities;
+using WCell.RealmServer.Global;
+using WCell.RealmServer.Groups;
+using WCell.RealmServer.Guilds;
+using WCell.RealmServer.Instances;
 using WCell.RealmServer.Interaction;
+using WCell.RealmServer.Mail;
+using WCell.RealmServer.NPCs;
+using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.RacesClasses;
+using WCell.RealmServer.Talents;
 using WCell.Util;
 using WCell.Util.NLog;
-using WCell.RealmServer.Global;
-using WCell.RealmServer.Instances;
-using WCell.RealmServer.Groups;
-using WCell.Constants.NPCs;
-using WCell.RealmServer.NPCs;
-using WCell.RealmServer.Mail;
-using WCell.RealmServer.Guilds;
+using WCell.Util.Threading;
+
+using Alias = System.Collections.Generic.KeyValuePair<string, string>;
+
 
 namespace WCell.RealmServer.Database
 {
 	[ActiveRecord(Access = PropertyAccess.Property)]
-	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IRegionId, IActivePetSettings
+	public class CharacterRecord : WCellRecord<CharacterRecord>, ILivingEntity, IMapId, IActivePetSettings
 	{
 		#region Static
 		private static readonly Logger s_log = LogManager.GetCurrentClassLogger();
@@ -171,16 +175,16 @@ namespace WCell.RealmServer.Database
 		private int _watchedFaction;
 		[Field("ClassId", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
 		private int m_Class;
-		[Field("Region", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_Region;
-		[Field("CorpseRegion", Access = PropertyAccess.FieldCamelcase)]
-		private int m_CorpseRegion;
+		[Field("Map", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_Map;
+		[Field("CorpseMap", Access = PropertyAccess.FieldCamelcase)]
+		private int m_CorpseMap;
 		[Field("Zone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_zoneId;
 		[Field("BindZone", Access = PropertyAccess.FieldCamelcase)]
 		private int m_BindZone;
-		[Field("BindRegion", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
-		private int m_BindRegion;
+		[Field("BindMap", NotNull = true, Access = PropertyAccess.FieldCamelcase)]
+		private int m_BindMap;
 
 		private DateTime? m_lastLogin;
 
@@ -195,7 +199,7 @@ namespace WCell.RealmServer.Database
 		public CharacterRecord(long accountId)
 			: this()
 		{
-			New = true;
+			State = RecordState.New;
 			JustCreated = true;
 
 			AccountId = accountId;
@@ -464,10 +468,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId RegionId
+		public MapId MapId
 		{
-			get { return (MapId)m_Region; }
-			set { m_Region = (int)value; }
+			get { return (MapId)m_Map; }
+			set { m_Map = (int)value; }
 		}
 
 		public uint InstanceId
@@ -500,10 +504,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId CorpseRegion
+		public MapId CorpseMap
 		{
-			get { return (MapId)m_CorpseRegion; }
-			set { m_CorpseRegion = (int)value; }
+			get { return (MapId)m_CorpseMap; }
+			set { m_CorpseMap = (int)value; }
 		}
 
 		/// <summary>
@@ -560,10 +564,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public MapId BindRegion
+		public MapId BindMap
 		{
-			get { return (MapId)m_BindRegion; }
-			set { m_BindRegion = (int)value; }
+			get { return (MapId)m_BindMap; }
+			set { m_BindMap = (int)value; }
 		}
 
 		public ZoneId BindZone
@@ -1037,7 +1041,7 @@ namespace WCell.RealmServer.Database
 		#region Delete
 		public void DeleteLater()
 		{
-			RealmServer.Instance.AddMessage(new Message(Delete));
+			RealmServer.IOQueue.AddMessage(new Message(Delete));
 		}
 
 		public override void Delete()
@@ -1063,7 +1067,7 @@ namespace WCell.RealmServer.Database
 
 		public static void DeleteChar(uint charId)
 		{
-			RealmServer.Instance.ExecuteInContext(() =>
+			RealmServer.IOQueue.ExecuteInContext(() =>
 			{
 				var chr = World.GetCharacter(charId);
 				uint guildId;
@@ -1105,6 +1109,7 @@ namespace WCell.RealmServer.Database
 				AuraRecord.DeleteAll("OwnerId = " + charId);
 				ItemRecord.DeleteAll("OwnerId = " + charId);
 				SkillRecord.DeleteAll("OwnerId = " + charId);
+				SpecProfile.DeleteAll("CharacterId = " + charId);
 				ReputationRecord.DeleteAll("OwnerId = " + charId);
 				QuestRecord.DeleteAll("OwnerId = " + charId);
 				SummonedPetRecord.DeleteAll("OwnerLowId = " + charId);
@@ -1140,7 +1145,7 @@ namespace WCell.RealmServer.Database
 			PositionY = archetype.StartPosition.Y;
 			PositionZ = archetype.StartPosition.Z;
 			Orientation = archetype.StartOrientation;
-			RegionId = archetype.StartMapId;
+			MapId = archetype.StartMapId;
 			Zone = archetype.StartZoneId;
 			TotalPlayTime = 0;
 			LevelPlayTime = 0;
@@ -1211,6 +1216,67 @@ namespace WCell.RealmServer.Database
 				charId);
 			var query = new ScalarQuery<int>(typeof(CharacterRecord), QueryLanguage.Sql, sql);
 			return (uint)query.Execute();
+		}
+		#endregion
+
+		#region Aliases
+		//[Property]
+		public byte[] RawAliases
+		{
+			get;
+			set;
+		}
+
+		public void SetAliases(IEnumerable<Alias> aliases)
+		{
+			var bytes = new List<byte>(100);
+			foreach (var alias in aliases)
+			{
+				// todo: Use client locale to identify correct encoding
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Key));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+				bytes.AddRange(Encoding.UTF8.GetBytes(alias.Value));
+				bytes.Add(0);	// 0 is definitely neither in key, nor in value
+			}
+			RawAliases = bytes.ToArray();
+		}
+
+		public Dictionary<string, string> ParseAliases()
+		{
+			var map = new Dictionary<string, string>();
+			if (RawAliases != null)
+			{
+				var isKey = true;
+				var keyIndex = 0;
+				var valueIndex = -1;
+				for (var i = 0; i < RawAliases.Length; i++)
+				{
+					var b = RawAliases[i];
+					if (b == 0)
+					{
+						// found new key or value
+						isKey = !isKey;
+						if (isKey)
+						{
+							// new alias
+							if (valueIndex >= 0)
+							{
+								var key = Encoding.UTF8.GetString(RawAliases, keyIndex, valueIndex - keyIndex);
+								var value = Encoding.UTF8.GetString(RawAliases, valueIndex, i - valueIndex);
+								map[key] = value;
+							}
+							keyIndex = i;
+							valueIndex = -1;
+						}
+						else
+						{
+							// read key already, now read value
+							valueIndex = i;
+						}
+					}
+				}
+			}
+			return map;
 		}
 		#endregion
 

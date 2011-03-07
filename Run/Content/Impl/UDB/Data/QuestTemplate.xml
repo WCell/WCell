@@ -11,7 +11,7 @@
     <Flat Name="QuestType" Column="Type" />
     <Flat Name="RequiredRaces" Column="RequiredRaces" />
     <!--http://wiki.udbforums.org/index.php/Quest_template#SkillOrClass-->
-    <Flat Name="ReqSkillOrClass" Column="SkillOrClass" />
+    <Flat Name="ReqSkill" Column="RequiredSkill" />
     <Flat Name="RequiredSkillValue" Column="RequiredSkillValue" />
     <Nested Name="MinReqReputation">
       <Flat Name="FactionId" Column="RequiredMinRepFaction" />
@@ -26,6 +26,7 @@
     <Flat Name="Flags" Column="QuestFlags" />
     <Flat Name="SpecialFlags" Column="SpecialFlags" />
     <Flat Name="RewardTitleId" Column="CharTitleId" />
+	<Flat Name="PlayersSlain" Colums="PlayersSlain" />
     <Flat Name="RewardTalents" Column="BonusTalents" />
     <Flat Name="PreviousQuestId" Column="PrevQuestId" />
     <Flat Name="NextQuestId" Column="NextQuestId" />
@@ -38,11 +39,11 @@
       <Flat Name="ItemId" Pattern="ReqItemId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqItemCount{#}" Offset="1" />
     </NestedArray>
-    <NestedArray Name="ObjectInteractions">
-      <Flat Name="TemplateId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
+    <NestedArray Name="ObjectOrSpellInteractions">
+      <Flat Name="RawId" Pattern="ReqCreatureOrGOId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="ReqCreatureOrGOCount{#}" Offset="1" />
+      <Flat Name="RequiredSpellId" Pattern="ReqSpellCast{#}" Offset="1" />
     </NestedArray>
-    <FlatArray Name="SpellCastObjectives" Pattern="ReqSpellCast{#}" Offset="1" />
     <NestedArray Name="RewardChoiceItems">
       <Flat Name="ItemId" Pattern="RewChoiceItemId{#}" Offset="1" />
       <Flat Name="Amount" Pattern="RewChoiceItemCount{#}" Offset="1" />
@@ -60,7 +61,9 @@
     <Flat Name="RewMoney" Column="RewOrReqMoney" />
     <Flat Name="MoneyAtMaxLevel" Column="RewMoneyMaxLevel" />
     <Flat Name="RewSpell" Column="RewSpellCast" />
-
+	<Flat Name="RewHonorMultiplier" Column="RewHonorMultiplier" />
+	<Flat Name="RewHonorAddition" Column="RewHonorAddition" />
+	
     <Flat Name="MapId" Column="PointMapId" />
     <Flat Name="PointX" Column="PointX" />
     <Flat Name="PointY" Column="PointY" />
@@ -89,11 +92,8 @@
     RewRepValueId3
     RewRepValueId4
     RewRepValueId5
-    RewHonorMultiplier
-    RewHonorAddition
     RepObjectiveFaction
     RepObjectiveValue
-    PlayersSlain
     SrcItemCount
     RewMailTemplateId
     RewMailDelaySecs
@@ -172,7 +172,18 @@
       <Column Name="EndText_loc7" Table="locales_quest" />
       <!--<Column Name="EndText_loc8" Table="locales_quest" />-->
     </FlatArray>
-
+	
+	<FlatArray Name="CompletedTexts">
+	  <Column Name="CompletedText" />
+	  <Column Name="CompletedText_loc1" Table="locales_quest" />
+	  <Column Name="CompletedText_loc2" Table="locales_quest" />
+	  <Column Name="CompletedText_loc3" Table="locales_quest" />
+	  <Column Name="CompletedText_loc4" Table="locales_quest" />
+	  <Column Name="CompletedText_loc5" Table="locales_quest" />
+	  <Column Name="CompletedText_loc6" Table="locales_quest" />
+	  <Column Name="CompletedText_loc7" Table="locales_quest" />
+	</FlatArray>
+	
     <NestedArray Name="ObjectiveTexts">
       <Flat Name="Text1">
         <Column Name="ObjectiveText1" />

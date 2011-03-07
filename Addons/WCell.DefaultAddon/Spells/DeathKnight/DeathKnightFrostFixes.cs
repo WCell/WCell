@@ -241,8 +241,8 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			SpellLineId.DeathKnightFrostHungeringCold.Apply(spell =>
 			{
 				var effect = spell.GetEffect(SpellEffectType.Dummy);
-				effect.ImplicitTargetA = ImplicitTargetType.AllEnemiesAroundCaster;
-				effect.ImplicitTargetB = ImplicitTargetType.None;
+				effect.ImplicitTargetA = ImplicitSpellTargetType.AllEnemiesAroundCaster;
+				effect.ImplicitTargetB = ImplicitSpellTargetType.None;
 
 				effect.EffectType = SpellEffectType.TriggerSpell;
 				effect.TriggerSpellId = SpellId.HungeringColdRank1;
@@ -312,7 +312,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			// http://www.wowhead.com/spell=50152#comments
 			var triggerSpellId = (uint)SpellLineId.DeathKnightFrostAcclimation.GetLine().FirstRank.GetEffect(AuraType.ProcTriggerSpell).TriggerSpellId;
 			var triggerSpell = SpellHandler.AddCustomSpell(triggerSpellId, "DeathKnightFrostAcclimation Buff");
-			triggerSpell.AddAuraEffect(() => new FrostAcclimationBuffHandler(), ImplicitTargetType.AllParty);
+			triggerSpell.AddAuraEffect(() => new FrostAcclimationBuffHandler(), ImplicitSpellTargetType.AllParty);
 			triggerSpell.SetDuration(18000);	// "for 18 sec"
 
 			SpellLineId.DeathKnightFrostAcclimation.Apply(spell =>
@@ -370,7 +370,7 @@ namespace WCell.Addons.Default.Spells.DeathKnight
 			});
 			SpellHandler.Apply(spell =>
 			{
-				spell.AddEffect((cast, effct) => new RemoveCooldownEffectHandler(cast, effct), ImplicitTargetType.Self);
+				spell.AddEffect((cast, effct) => new RemoveCooldownEffectHandler(cast, effct), ImplicitSpellTargetType.Self);
 			}, SpellId.EffectFreezingFog);
 		}
 		#endregion

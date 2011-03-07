@@ -30,6 +30,16 @@ namespace WCell.RealmServer.AI.Actions
 			get { return m_owner; }
 		}
 
+		public bool UsesSpells
+		{
+			get { return m_owner.HasSpells; }
+		}
+
+		public bool HasSpellReady
+		{
+			get { return ((NPC)m_owner).NPCSpells.ReadyCount > 0; }
+		}
+
 		public virtual bool IsGroupAction
 		{
 			get { return false; }

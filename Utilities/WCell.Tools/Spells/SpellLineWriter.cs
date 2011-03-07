@@ -67,7 +67,7 @@ namespace WCell.Tools.Spells
 					var listCount = map.Count;
 					var s = 0;
 
-					writer.WriteRegion((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
+					writer.WriteMap((clss != 0 ? clss.ToString() : "Other") + " (" + listCount + ")");
 					writer.WriteLine("lines = new SpellLine[]");
 					writer.OpenBracket();
 
@@ -101,7 +101,7 @@ namespace WCell.Tools.Spells
 					}
 					writer.CloseBracket(true);
 					writer.WriteLine("AddSpellLines(ClassId.{0}, lines);", clss);
-					writer.WriteEndRegion();
+					writer.WriteEndMap();
 					writer.WriteLine();
 				}
 			}
@@ -150,7 +150,7 @@ namespace WCell.Tools.Spells
 			SpellHandler.Initialize2();
 
 			World.InitializeWorld();
-			World.LoadDefaultRegions();
+			World.LoadDefaultMaps();
 			ArchetypeMgr.EnsureInitialize();		// for default spells
 
 			NPCMgr.LoadNPCDefs();					// for trainers
@@ -224,21 +224,6 @@ namespace WCell.Tools.Spells
 					}
 				}
 			}
-
-			foreach (var npc in NPCMgr.GetAllEntries())
-			{
-				if (npc.TrainerEntry != null)
-				{
-					foreach (var spellEntry in npc.TrainerEntry.Spells.Values)
-					{
-						var spell = spellEntry.Spell;
-						if (spell.Ability != null && spell.Ability.Skill.Category == SkillCategory.ClassSkill)
-						{
-							AddSpell(spell);
-						}
-					}
-				}
-			}
 		}
 
 		/// <summary>
@@ -248,11 +233,6 @@ namespace WCell.Tools.Spells
 		{
 			foreach (var spell in SpellHandler.ById)
 			{
-				if (spell != null && spell.Id == 9799)
-				{
-					spell.ToString();
-				}
-
 				if (spell == null ||
 					((spell.Talent == null || spell.ClassId == 0) && (spell.Ability == null || spell.Rank == 0 || spell.Ability.Skill.Category != SkillCategory.Profession)) ||
 					spell.IsTriggeredSpell ||

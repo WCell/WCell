@@ -57,6 +57,7 @@ namespace WCell.RealmServer.Looting
 						{
 							m_owner.StandState = StandState.Stand;
 						}
+						
 						//loot.RemoveLooter(this);
 
 						//if (m_loot.UsesRoundRobin && 
@@ -76,6 +77,34 @@ namespace WCell.RealmServer.Looting
 						}
 					}
 				}
+			}
+		}
+
+		/// <summary>
+		/// Requires loot to already be generated
+		/// </summary>
+		/// <param name="lootable"></param>
+		public void TryLoot(ILootable lootable)
+		{
+			Release(); // make sure that the Character is not still looting something else
+
+			var loot = lootable.Loot;
+			if (loot == null)
+			{
+				LootHandler.SendLootFail(m_owner, lootable);
+				// TODO: Kneel and unkneel?
+			}
+			else if (MayLoot(loot))
+			{
+				// we are either already a looter or become a new one
+				m_owner.CancelAllActions();
+				Loot = loot;
+
+				LootHandler.SendLootResponse(m_owner, loot);
+			}
+			else
+			{
+				LootHandler.SendLootFail(m_owner, lootable);
 			}
 		}
 

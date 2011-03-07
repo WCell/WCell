@@ -51,7 +51,7 @@ namespace WCell.AuthServer.Firewall
 			Expires = expires;
 			BanMask = banmask;
 			Reason = reason;
-			New = true;
+			State = RecordState.New;
 		}
 
 		public BanEntry()
@@ -150,7 +150,7 @@ namespace WCell.AuthServer.Firewall
 			if (Expires != null && Expires.Value <= DateTime.Now)
 			{
 				// remove the expired bans
-				AuthenticationServer.Instance.AddMessage(new Message(DeleteAndFlush));
+				AuthenticationServer.IOQueue.AddMessage(new Message(DeleteAndFlush));
 				return false;
 			}
 			else

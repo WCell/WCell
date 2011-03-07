@@ -30,7 +30,7 @@ namespace WCell.RealmServer.Database
 		public static AuraRecord ObtainAuraRecord(Aura aura)
 		{
 			var record = AuraRecordPool.Obtain();
-			record.New = true;
+			record.State = RecordState.New;
 			record.RecordId = NextId();
 			record.SyncData(aura);
 
@@ -44,7 +44,7 @@ namespace WCell.RealmServer.Database
 
 		public AuraRecord(Aura aura)
 		{
-			New = true;
+			State = RecordState.New;
 			RecordId = NextId();
 
 			SyncData(aura);
@@ -144,10 +144,10 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		public ObjectReference GetCasterInfo(Region region)
+		public ObjectReference GetCasterInfo(Map map)
 		{
 			var id = new EntityId((ulong)CasterId);
-			var caster = region.GetObject(id);
+			var caster = map.GetObject(id);
 			if (caster != null)
 			{
 				return caster.SharedReference;

@@ -499,11 +499,11 @@ namespace WCell.Tools.Maps
 		#endregion
 	}
 
-	public class RegionWMOs : RegionObjects<WMO>
+	public class MapWmOs : MapObjects<WMO>
 	{
 	}
 
-	public class RegionObjects<O>
+	public class MapObjects<O>
 	{
 		public bool HasTiles = true;
 		public TileObjects<O>[,] ObjectsByTile;

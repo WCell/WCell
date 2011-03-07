@@ -182,7 +182,7 @@ namespace WCell.AuthServer
 			s_log.Debug(resources.AccountChallenge, accName);
 
 			client.AccountName = accName;
-			AuthenticationServer.Instance.AddMessage(new Message1<IAuthClient>(client, AuthChallengeRequestCallback));
+			AuthenticationServer.IOQueue.AddMessage(new Message1<IAuthClient>(client, AuthChallengeRequestCallback));
 		}
 
 		/// <summary>
@@ -213,7 +213,7 @@ namespace WCell.AuthServer
 					QueryAccountCallback(client, acc);
 				});
 
-				AuthenticationServer.Instance.AddMessage(acctQuery);
+				AuthenticationServer.IOQueue.AddMessage(acctQuery);
 			}
 		}
 
@@ -294,7 +294,7 @@ namespace WCell.AuthServer
 			{
 				if (client.Authenticator.IsClientProofValid(packet))
 				{
-					AuthenticationServer.Instance.AddMessage(() =>
+					AuthenticationServer.IOQueue.AddMessage(() =>
 					{
 						LoginClient(client);
 					});
