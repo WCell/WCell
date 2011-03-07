@@ -122,7 +122,7 @@ namespace WCell.Util
 #if __MonoCS__
 		    SignalHandler unixSignalHandler = obj => action();
             SetupSignalHandlers(unixSignalHandler);
-            SignalHandlers.Add(unixSignalHandler)
+            SignalHandlers.Add(unixSignalHandler);
 			
 #else
             ConsoleCtrlHandler ctrlConsoleCtrlHandler = type =>
