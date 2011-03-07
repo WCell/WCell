@@ -16,6 +16,31 @@ namespace WCell.Util
         #region System Helpers
 
         /// <summary>
+        /// Gets a value indicating if the operating system is a UNIX derivative.
+        /// </summary>
+        public static bool IsMONO
+        {
+            get
+            {
+                var t = Type.GetType("Mono.Runtime");
+                return t != null;
+            }
+
+        }
+
+        /// <summary>
+        /// Gets a value indicating if the operating system is a UNIX derivative.
+        /// </summary>
+        public static bool IsUNIX
+        {
+            get
+            {
+                var p = (int)Environment.OSVersion.Platform;
+                return ((p == 4) || (p == 6) || (p == 128));
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating if the operating system is a Windows 2000 or a newer one.
         /// </summary>
         public static bool IsWindows2000OrNewer
@@ -141,7 +166,7 @@ namespace WCell.Util
 #if __MonoCS__
 	    private static volatile bool _shutdownRequested;
 
-        public delegate void SignalHandler();
+        public delegate void SignalHandler(int signal);
 
         static readonly List<SignalHandler> SignalHandlers = new List<SignalHandler>();
 
@@ -170,7 +195,7 @@ namespace WCell.Util
                         continue;
 
                     _shutdownRequested = true;
-                    signal_handler();
+                    signal_handler((int)signal);
                 }
             });
 
