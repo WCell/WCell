@@ -118,6 +118,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\..\Libraries\Binaries\Mono\Mono.Posix.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
