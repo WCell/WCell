@@ -269,6 +269,9 @@ namespace WCell.RealmServer.Entities
 
 				SetExploredZones();
 
+                //Add existing talents to the character
+                ((PlayerSpellCollection)m_spells).PlayerInitialize();
+
 				// calculate amount of spent talent points per tree
 				m_talents.CalcSpentTalentPoints();
 
@@ -303,7 +306,8 @@ namespace WCell.RealmServer.Entities
 			}
 
 			// Set FreeTalentPoints, after SpecProfile was loaded
-			m_talents.UpdateFreeTalentPointsSilently(m_talents.GetFreeTalentPointsForLevel(m_record.Level));
+		    var freePointsForLevel = m_talents.GetFreeTalentPointsForLevel(m_record.Level);
+            m_talents.UpdateFreeTalentPointsSilently(freePointsForLevel);
 
 			// Load pets (if any)
 			LoadPets();

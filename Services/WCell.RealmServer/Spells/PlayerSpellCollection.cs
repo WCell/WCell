@@ -721,9 +721,10 @@ namespace WCell.RealmServer.Spells
 			}
 
 			// add talents
-			foreach (var spell in owner.CurrentSpecProfile.TalentSpells)
+			foreach (var spellRecord in owner.CurrentSpecProfile.TalentSpells)
 			{
-				OnlyAdd(spell);
+                // Add the talent spell to the character
+				OnlyAdd(spellRecord);
 			}
 		}
 
