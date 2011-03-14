@@ -206,6 +206,7 @@ namespace WCell.RealmServer.Handlers
 				{
 					if (chr.IsInGuild)
 					{
+                        GuildHandler.SendResult(chr, GuildCommandId.CREATE, name, GuildResult.ALREADY_IN_GUILD);
 						return;
 					}
 					if (!GuildMgr.IsValidGuildName(name))
@@ -298,6 +299,7 @@ namespace WCell.RealmServer.Handlers
 		{
             var petitionGuid = packet.ReadEntityId();
             var charter = client.ActiveCharacter.Inventory.GetItem(petitionGuid) as PetitionCharter;
+            if (charter == null) return;
             SendPetitionSignatures(client, charter); 
 		}
 
@@ -485,6 +487,8 @@ namespace WCell.RealmServer.Handlers
 
 		public static void SendPetitionSignatures(IPacketReceiver client, PetitionCharter charter)
 		{
+            if (charter.Petition == null) return;
+
             var signs = charter.Petition.SignedIds;
 			using (var packet = new RealmPacketOut(RealmServerOpCode.SMSG_PETITION_SHOW_SIGNATURES, 8+8+4+1+signs.Count*12))
 			{

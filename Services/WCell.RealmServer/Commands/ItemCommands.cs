@@ -86,14 +86,21 @@ namespace WCell.RealmServer.Commands
 			{
 				var mods = trigger.Text.NextModifiers();
 				var entry = trigger.Text.NextEnum(ItemId.None);
-				var templ = ItemMgr.GetTemplate(entry);
+			    var templ = ItemMgr.GetTemplate(entry);
+
 				if (templ == null)
 				{
 					trigger.Reply("Invalid ItemId.");
 					return;
 				}
 
-				var amount = trigger.Text.NextInt(1);
+                if (templ.IsCharter)
+                {
+                    trigger.Reply("Charters cannot be added by command.");
+                    return;
+                }
+
+			    var amount = trigger.Text.NextInt(1);
 				var stacks = trigger.Text.NextUInt(1);
 				var ensure = mods.Contains("e");
 				var autoEquip = mods.Contains("a");
