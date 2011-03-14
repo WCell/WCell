@@ -31,7 +31,9 @@ namespace WCell.RealmServer.Handlers
 		{
 			var chr = client.ActiveCharacter;
 			var auctioneerId = packet.ReadEntityId();
+		    var unknown = packet.ReadUInt32();
 			var itemId = packet.ReadEntityId();
+		    var stackSize = packet.ReadUInt32();
 			var bid = packet.ReadUInt32();
 			var buyout = packet.ReadUInt32();
 			var time = packet.ReadUInt32();
@@ -232,13 +234,13 @@ namespace WCell.RealmServer.Handlers
 			packet.Write(auction.ItemLowId);
 			packet.Write(item.Template.Id);
 
-			for (var i = 0; i < 6; i++)
+			for (var i = 0; i < 7; i++)
 			{
 				if (item.EnchantIds != null)
 				{
 					packet.Write(item.EnchantIds[i]);
-					packet.Write(i);					// enchant slot?
-					packet.Write(3);					// TODO: Fix enchant charges
+					packet.Write(i);					// enchant duration
+					packet.Write(item.GetEnchant((EnchantSlot)i).Charges);	// TODO: Fix enchant charges
 				}
 				else
 				{
@@ -248,23 +250,25 @@ namespace WCell.RealmServer.Handlers
 				}
 			}
 
-
-			//packet.Write(item.RandomPropertiesId);
-			packet.Write(0);
+			packet.Write(item.RandomProperty);
 			packet.Write(item.RandomSuffix);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
 			packet.Write(item.Amount);
-			packet.WriteUInt(0);
-			packet.WriteUInt(0);
-			packet.WriteULong(auction.OwnerLowId);
-			packet.Write(auction.CurrentBid); //auction start bid   
-			packet.Write(50);
-			packet.Write(auction.BuyoutPrice);
-			packet.Write(timeleft.Milliseconds);
-			packet.WriteULong(auction.BidderLowId);
-			packet.Write(auction.CurrentBid);
+			packet.Write((uint)item.Charges);
+            packet.WriteUInt(0);                    //Unknown
+            packet.WriteULong(auction.OwnerLowId);
+            packet.Write(auction.CurrentBid);       //auction start bid
+
+		    int outbid = 0;
+            if (auction.CurrentBid > 0)
+            {
+                outbid = ((int)auction.CurrentBid/100)*5;
+                outbid = Math.Max(1, outbid);
+            }
+		    packet.WriteUInt(outbid);                    //amount required to outbid
+            packet.Write(auction.BuyoutPrice);
+            packet.Write(timeleft.Milliseconds);
+            packet.WriteULong(auction.BidderLowId);
+            packet.Write(auction.CurrentBid);
 		}
 		#endregion
 	}
