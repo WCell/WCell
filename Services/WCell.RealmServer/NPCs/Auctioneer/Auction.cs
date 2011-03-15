@@ -151,17 +151,21 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
 		public void SendMail(string subject, uint money, ItemRecord item, string body)
 		{
-			var msg = new MailMessage
+			var msg = new MailMessage(subject, body)
 				{
 					SenderId = (uint)HouseFaction,
 					ReceiverId = OwnerLowId,
 					MessageStationary = MailStationary.Auction,
 					MessageType = MailType.Auction,
-					Subject = subject,
-					Body = body,
-					IncludedMoney = money
+					IncludedMoney = money,
+                    LastModifiedOn = null,
+                    SendTime = DateTime.Now,
+                    DeliveryTime = DateTime.Now
 				};
-			msg.AddItem(item);
+
+            if(item != null)
+			    msg.AddItem(item);
+
 			msg.Send();
 		}
 

@@ -195,7 +195,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			AuctionHandler.SendAuctionHello(chr.Client, auctioneer);
 		}
 
-		public void AuctionSellItem(Character chr, NPC auctioneer, EntityId itemId, uint bid, uint buyout, uint time)
+		public void AuctionSellItem(Character chr, NPC auctioneer, EntityId itemId, uint bid, uint buyout, uint time, uint stackSize)
 		{
 			if (!DoAuctioneerInteraction(chr, auctioneer))
 				return;
@@ -235,6 +235,9 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 
 				if (item != null)
 				{
+                    if (item.Amount > stackSize)
+                        item = item.Split((int)stackSize);
+
 					//save new auction to database and add item to items container
 					RealmServer.IOQueue.AddMessage(new Util.Threading.Message(() =>
 						{
@@ -414,13 +417,11 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			if (!DoAuctioneerInteraction(chr, auctioneer))
 				return;
 
-			chr.SendMessage("Auctions are currently disabled.");
-			// TODO: Causes an Exception, probably because of incorrectly initialized Items
-			//Auction[] auctions = searcher.RetrieveMatchedAuctions(auctioneer.AuctioneerEntry.Auctions).ToArray();
-			//AuctionHandler.SendAuctionListItems(chr.Client, auctions);
+			Auction[] auctions = searcher.RetrieveMatchedAuctions(auctioneer.AuctioneerEntry.Auctions).ToArray();
+			AuctionHandler.SendAuctionListItems(chr.Client, auctions);
 		}
 
-		private void SendOutbidMail(Auction auction, uint newBid)
+		private static void SendOutbidMail(Auction auction, uint newBid)
 		{
 			if (auction == null)
 				return;
@@ -438,7 +439,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			auction.SendMail(MailAuctionAnswers.Outbid, auction.CurrentBid);
 		}
 
-		private void SendAuctionSuccessfullMail(Auction auction)
+		private static void SendAuctionSuccessfullMail(Auction auction)
 		{
 			if (auction == null)
 				return;
@@ -454,7 +455,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			auction.SendMail(MailAuctionAnswers.Successful, profit, body);
 		}
 
-		private void SendAuctionWonMail(Auction auction)
+		private static void SendAuctionWonMail(Auction auction)
 		{
 			if (auction == null)
 				return;
@@ -467,7 +468,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			}
 		}
 
-		private bool DoAuctioneerInteraction(Character chr, NPC auctioneer)
+		private static bool DoAuctioneerInteraction(Character chr, NPC auctioneer)
 		{
 			if (!auctioneer.IsAuctioneer || !auctioneer.CheckVendorInteraction(chr))
 				return false;
@@ -559,7 +560,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return AuctionItems.ContainsKey(itemId);
 		}
 
-		private uint GetAuctionDeposit(Item item, AuctionHouseFaction houseFaction, uint timeInMin)
+		private static uint GetAuctionDeposit(Item item, AuctionHouseFaction houseFaction, uint timeInMin)
 		{
 			if (item == null)
 				return 0;
@@ -572,14 +573,14 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return ((sellPrice * percent) / 100) * (timeInMin / (12 * 60)); // deposit is per 12 hour interval
 		}
 
-		private uint GetMinimumNewBid(Auction auction, uint bid)
+		private static uint GetMinimumNewBid(Auction auction, uint bid)
 		{
 			// Bids must increase by the larger of 5% or 1 copper each time.
 			var minBidInc = Math.Max(((auction.CurrentBid / 100) * 5), 1);
 			return auction.CurrentBid + minBidInc;
 		}
 
-		private uint CalcAuctionCut(AuctionHouseFaction houseFaction, uint bid)
+		private static uint CalcAuctionCut(AuctionHouseFaction houseFaction, uint bid)
 		{
 			if (houseFaction == AuctionHouseFaction.Neutral && !AllowInterFactionAuctions)
 			{

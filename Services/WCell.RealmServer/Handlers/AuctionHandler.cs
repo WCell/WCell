@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Handlers
 			var time = packet.ReadUInt32();
 
 			var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
-			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time);
+			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time, stackSize);
 		}
 
 		[ClientPacketHandler(RealmServerOpCode.CMSG_AUCTION_PLACE_BID)]
@@ -220,16 +220,16 @@ namespace WCell.RealmServer.Handlers
 		#endregion
 
 		#region Packet Helper
-		public static void BuildAuctionPacket(Auction auction, RealmPacketOut packet)
+		public static bool BuildAuctionPacket(Auction auction, RealmPacketOut packet)
 		{
 			var item = AuctionMgr.Instance.AuctionItems[auction.ItemLowId];
 
 			if (item == null)
-				return;
+				return false;
 
 			var timeleft = auction.TimeEnds - DateTime.Now;
 			if (timeleft.Milliseconds < 0)
-				return;
+				return false;
 
 			packet.Write(auction.ItemLowId);
 			packet.Write(item.Template.Id);
@@ -258,17 +258,18 @@ namespace WCell.RealmServer.Handlers
             packet.WriteULong(auction.OwnerLowId);
             packet.Write(auction.CurrentBid);       //auction start bid
 
-		    int outbid = 0;
+		    int minimumIncreaseForNextBid = 0;
             if (auction.CurrentBid > 0)
             {
-                outbid = ((int)auction.CurrentBid/100)*5;
-                outbid = Math.Max(1, outbid);
+                minimumIncreaseForNextBid = ((int)auction.CurrentBid/100)*5;
+                minimumIncreaseForNextBid = Math.Max(1, minimumIncreaseForNextBid);
             }
-		    packet.WriteUInt(outbid);                    //amount required to outbid
+		    packet.WriteUInt(minimumIncreaseForNextBid);                    //amount required to outbid
             packet.Write(auction.BuyoutPrice);
             packet.Write(timeleft.Milliseconds);
             packet.WriteULong(auction.BidderLowId);
             packet.Write(auction.CurrentBid);
+		    return true;
 		}
 		#endregion
 	}
