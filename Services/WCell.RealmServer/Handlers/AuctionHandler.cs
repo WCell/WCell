@@ -228,7 +228,7 @@ namespace WCell.RealmServer.Handlers
 				return false;
 
 			var timeleft = auction.TimeEnds - DateTime.Now;
-			if (timeleft.Milliseconds < 0)
+			if (timeleft.TotalMilliseconds < 0)
 				return false;
 
 			packet.Write(auction.ItemLowId);
@@ -266,7 +266,7 @@ namespace WCell.RealmServer.Handlers
             }
 		    packet.WriteUInt(minimumIncreaseForNextBid);                    //amount required to outbid
             packet.Write(auction.BuyoutPrice);
-            packet.Write(timeleft.Milliseconds);
+            packet.Write((int)timeleft.TotalMilliseconds);
             packet.WriteULong(auction.BidderLowId);
             packet.Write(auction.CurrentBid);
 		    return true;
