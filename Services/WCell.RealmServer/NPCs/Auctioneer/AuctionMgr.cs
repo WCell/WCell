@@ -205,58 +205,63 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			var msg = AuctionCheatChecks(auctioneer, item, bid, time);
 			if (msg == AuctionError.Ok)
 			{
-				// Check that character has enough money to cover the deposit
-				var houseFaction = auctioneer.AuctioneerEntry.LinkedHouseFaction;
-				var deposit = GetAuctionDeposit(item, houseFaction, time);
-				if (chr.Money < deposit)
-				{
-					AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.NotEnoughMoney);
-					return;
-				}
+			    // Check that character has enough money to cover the deposit
+			    var houseFaction = auctioneer.AuctioneerEntry.LinkedHouseFaction;
+			    var deposit = GetAuctionDeposit(item, houseFaction, time);
+			    if (chr.Money < deposit)
+			    {
+			        AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.NotEnoughMoney);
+			        return;
+			    }
 
-				// Charge the deposit to the character
-				chr.Money -= deposit;
+			    if (item.Amount > stackSize)
+			        item = item.Split((int) stackSize);
 
-				// Create the new Auction and add it to the list.
+			    if (item == null)
+			    {
+			        AuctionHandler.SendAuctionCommandResult(chr.Client, null, AuctionAction.SellItem, AuctionError.ItemNotFound);
+			        return;
+			    }
 
-				var newAuction = new Auction
-				{
-					BidderLowId = 0,
-					BuyoutPrice = buyout,
-					CurrentBid = bid,
-					Deposit = deposit,
-					HouseFaction = houseFaction,
-					ItemLowId = item.EntityId.Low,
-					ItemTemplateId = item.Template.Id,
-					OwnerLowId = chr.EntityId.Low,
-					TimeEnds = DateTime.Now.AddMinutes(time),
-					IsNew = true
-				};
 
-				if (item != null)
-				{
-                    if (item.Amount > stackSize)
-                        item = item.Split((int)stackSize);
+			    // Charge the deposit to the character
+			    chr.Money -= deposit;
 
-					//save new auction to database and add item to items container
-					RealmServer.IOQueue.AddMessage(new Util.Threading.Message(() =>
-						{
-							ItemRecord record = item.Record;
-							record.IsAuctioned = true;
-							record.Save();
-							auctioneer.AuctioneerEntry.Auctions.AddAuction(newAuction);
-							AuctionItems.Add(newAuction.ItemLowId, record);
-							item.Remove(false);
-							AuctionListOwnerItems(chr, auctioneer);
-						}));
 
-					// Send the all-good message
-					AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.Ok);
-				}
-				else
-				{
-					AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.ItemNotFound);
-				}
+			    // Create the new Auction and add it to the list.
+
+			    var newAuction = new Auction
+			                         {
+			                             BidderLowId = 0,
+			                             BuyoutPrice = buyout,
+			                             CurrentBid = bid,
+			                             Deposit = deposit,
+			                             HouseFaction = houseFaction,
+			                             ItemLowId = item.EntityId.Low,
+			                             ItemTemplateId = item.Template.Id,
+			                             OwnerLowId = chr.EntityId.Low,
+			                             TimeEnds = DateTime.Now.AddMinutes(time),
+			                             IsNew = true
+			                         };
+
+
+
+			    //save new auction to database and add item to items container
+			    RealmServer.IOQueue.AddMessage(new Util.Threading.Message(() =>
+			                                                                  {
+			                                                                      ItemRecord record = item.Record;
+			                                                                      record.IsAuctioned = true;
+			                                                                      record.Save();
+			                                                                      auctioneer.AuctioneerEntry.Auctions.AddAuction(
+			                                                                          newAuction);
+			                                                                      AuctionItems.Add(newAuction.ItemLowId, record);
+			                                                                      item.Remove(false);
+			                                                                      AuctionListOwnerItems(chr, auctioneer);
+			                                                                  }));
+
+			    // Send the all-good message
+			    AuctionHandler.SendAuctionCommandResult(chr.Client, newAuction, AuctionAction.SellItem, AuctionError.Ok);
+
 			}
 			else
 			{

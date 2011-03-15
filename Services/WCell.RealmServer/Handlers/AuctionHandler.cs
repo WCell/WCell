@@ -42,6 +42,30 @@ namespace WCell.RealmServer.Handlers
 			AuctionMgr.Instance.AuctionSellItem(chr, auctioneer, itemId, bid, buyout, time, stackSize);
 		}
 
+        [ClientPacketHandler(RealmServerOpCode.CMSG_AUCTION_LIST_PENDING_SALES)]
+        public static void HandleAuctionListPendingSales(IRealmClient client, RealmPacketIn packet)
+        {
+            var chr = client.ActiveCharacter;
+            var auctioneerId = packet.ReadEntityId();
+            var auctioneer = chr.Map.GetObject(auctioneerId) as NPC;
+
+            var count = 1u;
+            using (var packetOut = new RealmPacketOut(RealmServerOpCode.SMSG_AUCTION_LIST_PENDING_SALES, 14 * (int)count))
+            {
+               
+                packetOut.Write(count);
+                for (var i = 0; i < count; ++i)
+                {
+                    packetOut.Write("");
+                    packetOut.Write("");
+                    packetOut.WriteUInt(0);
+                    packetOut.WriteUInt(0);
+                    packetOut.WriteFloat(0f);
+                    client.Send(packetOut);
+                }
+            }
+        }
+
 		[ClientPacketHandler(RealmServerOpCode.CMSG_AUCTION_PLACE_BID)]
 		public static void HandleAuctionPlaceBid(IRealmClient client, RealmPacketIn packet)
 		{
@@ -206,12 +230,15 @@ namespace WCell.RealmServer.Handlers
 			if (auctions == null || auctions.Length < 1)
 				return;
 			var packet = new RealmPacketOut(RealmServerOpCode.SMSG_AUCTION_LIST_RESULT, 7000);
-			packet.Write(auctions.Length);
+            var count = 0;
+            packet.Write(auctions.Length);
 			foreach (var auction in auctions)
 			{
-				BuildAuctionPacket(auction, packet);
+				if(BuildAuctionPacket(auction, packet))
+                    count++;
 			}
-			packet.Write(auctions.Length);
+            //packet.InsertIntAt(count, 0, true);
+			packet.Write(count);
 			packet.Write(300);
 			client.Send(packet);
 			packet.Close();
