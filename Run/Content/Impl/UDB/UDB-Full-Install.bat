@@ -17,7 +17,7 @@ REM #########################################
 set user=changeme
 set pass=changeme
 set wdb=wcellrealmserver
-set udbdir=changeme
+set udbdir="changeme"
 
 REM ############################################################################
 REM #
@@ -65,12 +65,13 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (394, 395, 396, 397)
+ECHO		 c = Install all Changesets (394, 395, 396, 397, 398)
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
 ECHO		 396 = Install Changeset 396
 ECHO		 397 = Install Changeset 397
+ECHO		 398 = Install Changeset 398
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -89,6 +90,7 @@ if "%l%"=="394" GOTO changeset394
 if "%l%"=="395" GOTO changeset395
 if "%l%"=="396" GOTO changeset396
 if "%l%"=="397" GOTO changeset397
+if "%l%"=="398" GOTO changeset398
 goto error
 
 :import
@@ -123,6 +125,10 @@ ECHO [Importing] UDB database changeset 397...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_corepatch_mangos_10905_to_11064.sql
 ECHO [Importing] UDB updatepack 397...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_updatepack_mangos.sql
+ECHO [Importing] UDB database changeset 398...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\398_corepatch_mangos_11065_to_11156.sql
+ECHO [Importing] UDB updatepack 398...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\398_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -177,6 +183,20 @@ ECHO [Importing] UDB database changeset 397...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_corepatch_mangos_10905_to_11064.sql
 ECHO [Importing] UDB updatepack 397...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\397_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
+:changeset398
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB database changeset 398...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\398_corepatch_mangos_11065_to_11156.sql
+ECHO [Importing] UDB updatepack 398...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\398_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE
