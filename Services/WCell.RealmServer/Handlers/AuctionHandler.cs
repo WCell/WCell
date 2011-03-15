@@ -284,14 +284,7 @@ namespace WCell.RealmServer.Handlers
             packet.WriteUInt(0);                    //Unknown
             packet.WriteULong(auction.OwnerLowId);
             packet.Write(auction.CurrentBid);       //auction start bid
-
-		    uint minimumIncreaseForNextBid = 0;
-            if (auction.CurrentBid > 0)
-            {
-                minimumIncreaseForNextBid = (auction.CurrentBid/100)*5;
-                minimumIncreaseForNextBid = Math.Max(1, minimumIncreaseForNextBid);
-            }
-		    packet.WriteUInt(minimumIncreaseForNextBid);                    //amount required to outbid
+		    packet.WriteUInt(AuctionMgr.GetMinimumNewBidIncrement(auction));                    //amount required to outbid
             packet.Write(auction.BuyoutPrice);
             packet.Write((int)timeleft.TotalMilliseconds);
             packet.WriteULong(auction.BidderLowId);

@@ -438,7 +438,7 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				AuctionHandler.SendAuctionOutbidNotification(oldBidder.Client,
 															 auction,
 															 newBid,
-															 GetMinimumNewBid(auction, newBid) - newBid);
+															 GetMinimumNewBidIncrement(auction));
 			}
 
 			auction.SendMail(MailAuctionAnswers.Outbid, auction.CurrentBid);
@@ -521,9 +521,9 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				return AuctionError.CannotBidOnOwnAuction;
 			}
 
-			if (bid < GetMinimumNewBid(auction, bid))
+			if (bid < GetMinimumNewBid(auction))
 			{
-				// the Client checks this so if you get here, your are a CHEATER!!!
+				// the Client checks this so if you get here, you are a CHEATER!!!
 				// CHEATER!!!
 				return AuctionError.InternalError;
 			}
@@ -578,12 +578,22 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 			return ((sellPrice * percent) / 100) * (timeInMin / (12 * 60)); // deposit is per 12 hour interval
 		}
 
-		private static uint GetMinimumNewBid(Auction auction, uint bid)
+		public static uint GetMinimumNewBid(Auction auction)
 		{
 			// Bids must increase by the larger of 5% or 1 copper each time.
-			var minBidInc = Math.Max(((auction.CurrentBid / 100) * 5), 1);
-			return auction.CurrentBid + minBidInc;
+            return auction.CurrentBid + GetMinimumNewBidIncrement(auction);
 		}
+
+        public static uint GetMinimumNewBidIncrement(Auction auction)
+        {
+            uint minimumIncreaseForNextBid = 0;
+            if (auction.CurrentBid > 0)
+            {
+                minimumIncreaseForNextBid = (auction.CurrentBid / 100) * 5;
+                minimumIncreaseForNextBid = Math.Max(1, minimumIncreaseForNextBid);
+            }
+            return minimumIncreaseForNextBid;
+        }
 
 		private static uint CalcAuctionCut(AuctionHouseFaction houseFaction, uint bid)
 		{
