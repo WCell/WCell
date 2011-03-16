@@ -170,25 +170,39 @@ namespace WCell.RealmServer.Mail
 			}
 
 			// Check that sender is good for the money.
-			if (MailMgr.ChargePostage && !m_chr.GodMode)
+			if (MailMgr.ChargePostage)
 			{
-				var requiredCash = money + MailMgr.PostagePrice;
+                if (!m_chr.GodMode)
+                {
+                    var requiredCash = money + MailMgr.PostagePrice;
 
-				var count = (items == null) ? 0u : (uint)items.Count;
-				if (count > 0)
-				{
-					requiredCash += ((count - 1) * MailMgr.PostagePrice);
-				}
+                    var count = (items == null) ? 0u : (uint) items.Count;
+                    if (count > 0)
+                    {
+                        requiredCash += ((count - 1)*MailMgr.PostagePrice);
+                    }
 
-				if (requiredCash > m_chr.Money)
-				{
-					MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.NOT_ENOUGH_MONEY);
-					return MailError.NOT_ENOUGH_MONEY;
-				}
+                    if (requiredCash > m_chr.Money)
+                    {
+                        MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.NOT_ENOUGH_MONEY);
+                        return MailError.NOT_ENOUGH_MONEY;
+                    }
 
-				// Charge for the letter (already checked, Character has enough)
-				m_chr.Money -= requiredCash;
+                    // Charge for the letter (already checked, Character has enough)
+                    m_chr.Money -= requiredCash;
+                }
 			}
+            else
+            {
+                if (money > m_chr.Money)
+                {
+                    MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.NOT_ENOUGH_MONEY);
+                    return MailError.NOT_ENOUGH_MONEY;
+                }
+
+                // Charge for the letter (already checked, Character has enough)
+                m_chr.Money -= money;
+            }
 
 			// All good, send an ok message
 			MailHandler.SendResult(m_chr.Client, 0u, MailResult.MailSent, MailError.OK);
