@@ -210,6 +210,12 @@ namespace WCell.Addons.Default.Spells.Druid
 			{
 				spell.RequiredShapeshiftMask = ShapeshiftMask.Cat;
 			});
+
+            SpellLineId.DruidRevive.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            });
 		}
 
 		private static void FixRegrowthAndRejuvenation(SpellLineId line)

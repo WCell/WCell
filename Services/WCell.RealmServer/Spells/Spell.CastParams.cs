@@ -420,11 +420,21 @@ namespace WCell.RealmServer.Spells
 						return SpellFailedReason.BadImplicitTargets;
 					}
 				}
-				else if (!(target is NPC) || ((NPC)target).IsAlive || target.Loot != null)
+				else if ((target is NPC))
 				{
 					// need to be dead and looted empty
-					return SpellFailedReason.TargetNotDead;
+                    if (((NPC)target).IsAlive || target.Loot != null)
+                    {
+                        return SpellFailedReason.TargetNotDead;
+                    }
 				}
+                else if((target is Character))
+                {
+                    if(((Character)target).IsAlive)
+                    {
+                        return SpellFailedReason.TargetNotDead;
+                    }
+                }
 			}
 			else
 			{

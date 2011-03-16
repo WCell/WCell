@@ -39,6 +39,11 @@ namespace WCell.Addons.Default.Spells.Shaman
 					eff.SpellEffectHandlerCreator = (cast, effect) => new LavaBursthandler(cast, effect);
 				});
 
+            SpellLineId.ShamanAncestralSpirit.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            });
 		}
 
 		static void AddProcTrigger(SpellId id, SpellId triggerId)

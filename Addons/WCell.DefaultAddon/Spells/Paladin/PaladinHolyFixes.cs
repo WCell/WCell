@@ -31,6 +31,12 @@ namespace WCell.Addons.Default.Spells.Paladin
 				effect.AuraEffectHandlerCreator = () => new IlluminationHandler();
 			});
 
+            SpellLineId.PaladinRedemption.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            });
+
 			// Improved Lay On Hands needs the lay on hands spell restriction and correct proc flags
 			SpellLineId.PaladinHolyImprovedLayOnHands.Apply(spell =>
 			{
