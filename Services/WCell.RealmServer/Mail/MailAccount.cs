@@ -427,7 +427,6 @@ namespace WCell.RealmServer.Mail
 			if (letter.CashOnDelivery > 0)
 			{
 				m_chr.Money -= letter.CashOnDelivery;
-				letter.CashOnDelivery = 0;
 
 				// item was sent COD. Send the payment back to the sender in a new mail.
 				var charRecord = CharacterRecord.GetRecord(letter.SenderEntityId.Low);
@@ -435,6 +434,7 @@ namespace WCell.RealmServer.Mail
 				{
 					SendMail(charRecord.Name, letter.Subject, "", MailStationary.Normal, null, letter.CashOnDelivery, 0);
 				}
+                letter.CashOnDelivery = 0;
 			}
 
 			RealmServer.IOQueue.AddMessage(new Message(() =>
