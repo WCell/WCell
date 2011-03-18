@@ -514,14 +514,17 @@ namespace WCell.RealmServer.NPCs.Auctioneer
 				return AuctionError.CannotBidOnOwnAuction;
 			}
 
-			// Cannot bid on your alt's auctions
-			var record = chr.Account.GetCharacterRecord(auction.OwnerLowId);
-			if (record == null)
-			{
-				return AuctionError.CannotBidOnOwnAuction;
-			}
+            if (!chr.GodMode)
+            {
+                // Cannot bid on your alt's auctions
+                var record = chr.Account.GetCharacterRecord(auction.OwnerLowId);
+                if (record != null)
+                {
+                    return AuctionError.CannotBidOnOwnAuction;
+                }
+            }
 
-			if (bid < GetMinimumNewBid(auction))
+		    if (bid < GetMinimumNewBid(auction))
 			{
 				// the Client checks this so if you get here, you are a CHEATER!!!
 				// CHEATER!!!
