@@ -81,9 +81,8 @@ namespace WCell.RealmServer.Formulas
 		public static int CalculateManaRegen(Unit unit)
 		{
 			// default mana generation
-			// see: http://www.wowwiki.com/Mana_regeneration // is for cata and is wrong
-            // ManaRegen = (0.001 + SPI * BASE_REGEN[LEVEL] * (INT^0.5)) * 5
-			var regen = (int)(0.001f + unit.Spirit * GameTables.BaseRegen[unit.Level] * Math.Pow(unit.Intellect, 0.5f) * 5);	// rounded up
+			// see: http://www.wowwiki.com/Mana_regeneration
+            var regen = (int)((0.001f + unit.Spirit * (float)Math.Sqrt(unit.Intellect) * GameTables.BaseRegen[unit.Level]) * 0.6f + 0.9f);  // rounded up
 			if (unit.IsManaRegenInterrupted)
 			{
 				regen = (regen * unit.ManaRegenPerTickInterruptedPct + 50) / 100;
