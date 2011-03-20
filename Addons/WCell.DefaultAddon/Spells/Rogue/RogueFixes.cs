@@ -37,16 +37,11 @@ namespace WCell.Addons.Default.Spells.Rogue
 			SpellLineId.RogueAssassinationRuthlessness.Apply(
 				spell => spell.Effects[0].AffectMask = new uint[] { 0x003A0000, 0x00000009, 0x00000000 });
 
-			#region Wrong Facing Requirements
+			// Wrong Facing Requirement
 			SpellLineId.RogueAssassinationMutilate.Apply(spell =>
 				{
 					spell.AttributesExB = SpellAttributesExB.None;
 				});
-			SpellHandler.Apply(spell =>
-				{
-					spell.AttributesExB = SpellAttributesExB.None;
-				}, SpellId.WeaponProficiencyThrow);
-			#endregion
 
 			SpellLineId.RogueAssassinationHungerForBlood.Apply(spell =>
 				{
