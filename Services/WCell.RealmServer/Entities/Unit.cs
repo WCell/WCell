@@ -690,6 +690,7 @@ namespace WCell.RealmServer.Entities
 
 
 			// Power is interpolated automagically
+		    this.UpdatePowerRegen();
 			UpdatePower(dt);
 		}
 
