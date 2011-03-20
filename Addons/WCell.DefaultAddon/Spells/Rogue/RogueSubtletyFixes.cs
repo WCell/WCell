@@ -43,6 +43,8 @@ namespace WCell.Addons.Default.Spells.Rogue
                 var effect = Spell.GetEffect(SpellEffectType.Dummy);
                 effect.SpellEffectHandlerCreator = (cast, eff) => new PreparationHandler(cast, eff);
             });
+
+
         }
     }
 
@@ -124,6 +126,24 @@ namespace WCell.Addons.Default.Spells.Rogue
     #region StealthHandler
 	class RogueStealthHandler : ModStealthHandler
     {
+		protected override void Apply()
+		{
+			base.Apply();
+			var chr = m_aura.Owner as Character;
+			if (chr != null)
+			{
+				if (chr.Spells.Contains(SpellId.RogueAssassinationOverkill))
+				{
+					if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
+					{
+						var overkill = chr.Auras.FindFirst(aura => aura.Spell.SpellId == SpellId.ClassSkillOverkill);
+						overkill.Remove(true);
+					}
+					chr.Auras.CreateAndStartAura(m_aura.CasterReference, SpellHandler.Get(SpellId.ClassSkillOverkill), true);
+				}
+			}
+		}
+
         protected override void Remove(bool cancelled)
         {
 			base.Remove(cancelled);
@@ -131,6 +151,14 @@ namespace WCell.Addons.Default.Spells.Rogue
             if(chr != null)
             {
             	chr.Auras.Remove(SpellLineId.RogueVanish);
+
+				if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
+				{
+					var overkill = chr.Auras.FindFirst(aura => aura.Spell.SpellId == SpellId.ClassSkillOverkill);
+					overkill.Duration = 20000;//20 sec
+					AuraHandler.SendAuraUpdate(m_aura.Owner, overkill);
+				}
+
             }
         }
     }

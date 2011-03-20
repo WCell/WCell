@@ -502,6 +502,7 @@ namespace WCell.RealmServer.Spells.Auras
 		public int Duration
 		{
 			get { return m_controller == null ? m_duration : m_controller.Duration; }
+			set { m_duration = value; TimeLeft = value; m_auraFlags |= AuraFlags.HasDuration; SetupTimer(); Start(); }
 		}
 
 		public int Until
