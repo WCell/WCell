@@ -486,7 +486,8 @@ namespace WCell.RealmServer.Guilds
 			if (toItem == null)
 			{
 				// unoccupied slot
-				bagItem = bag.Remove(slot, true);
+                bagItem = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
+
 				toBankTab[toTabSlot] = bagItem.Record;
                 BankLog.LogEvent(GuildBankLogEntryType.DepositItem, chr, bagItem.Record, toBankTab);
                 chr.Guild.SendGuildBankTabContentUpdateToAll(toBankTabId, toTabSlot);
@@ -519,7 +520,7 @@ namespace WCell.RealmServer.Guilds
                 }
 
                 // Take the Item from the player's bag
-                var item = bag.Remove(slot, true);
+                var item = bagItem.Amount > amount ? bagItem.Split(amount) : bag.Remove(slot, true);
 
                 // Take the bank Item and add it to the character.
                 var amtAdded = (int)amount;
@@ -649,7 +650,7 @@ namespace WCell.RealmServer.Guilds
 				Bank = this,
 				BankSlot = tabId,
                 Icon = "",
-                Name = "Slot " + tabId,
+                Name = "Slot " + (tabId + 1),
                 Text = ""
 			};
 			BankTabs.Add(tab);

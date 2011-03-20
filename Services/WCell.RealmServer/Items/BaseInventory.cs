@@ -174,7 +174,7 @@ namespace WCell.RealmServer.Items
 				m_count++;
 				value.Container = this;
 				value.Slot = slot;
-                SetContainerEntityId(value.EntityId, slot);
+                SetContainerEntityId(value.EntityId, slot, this);
 				
 				m_Items[slot] = value;
 
@@ -310,7 +310,7 @@ namespace WCell.RealmServer.Items
 
 				if (item1 != null)
 				{
-                    SetContainerEntityId(item1.EntityId, slot2, cont2.Container);
+                    SetContainerEntityId(item1.EntityId, slot2, cont2);
 					item1.Container = cont2;
 					if (handler2 != null)
 					{
@@ -319,12 +319,12 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-                    SetContainerEntityId(EntityId.Zero, slot2, cont2.Container);
+                    SetContainerEntityId(EntityId.Zero, slot2, cont2);
 				}
 
 				if (item2 != null)
 				{
-                    SetContainerEntityId(item2.EntityId, slot1, cont1.Container);
+                    SetContainerEntityId(item2.EntityId, slot1, cont1);
 					item2.Container = cont1;
 					if (handler1 != null)
 					{
@@ -333,7 +333,7 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-                    SetContainerEntityId(EntityId.Zero, slot1, cont1.Container);
+                    SetContainerEntityId(EntityId.Zero, slot1, cont1);
 				}
 			}
 		}
@@ -359,8 +359,8 @@ namespace WCell.RealmServer.Items
 			m_Items[slot1] = item2;
 			m_Items[slot2] = item1;
 
-		    SetContainerEntityId(item1 != null ? item1.EntityId : EntityId.Zero, slot2);
-		    SetContainerEntityId(item2 != null ? item2.EntityId : EntityId.Zero, slot1);
+		    SetContainerEntityId(item1 != null ? item1.EntityId : EntityId.Zero, slot2, this);
+		    SetContainerEntityId(item2 != null ? item2.EntityId : EntityId.Zero, slot1, this);
 		}
 
 		public bool IsValidSlot(int slot)
@@ -1020,7 +1020,7 @@ namespace WCell.RealmServer.Items
 			var cont = Container;
 			if (cont != null)
 			{
-                SetContainerEntityId(EntityId.Zero, slot, cont);
+                SetContainerEntityId(EntityId.Zero, slot, this);
 			}
 			item.Container = null;
 
@@ -1257,16 +1257,10 @@ namespace WCell.RealmServer.Items
 			return (amountLeft == 0);
 		}
 
-        public virtual void SetContainerEntityId(EntityId entityId, int slot, IContainer container = null)
+        public virtual void SetContainerEntityId(EntityId entityId, int slot, BaseInventory baseInventory)
         {
-            var field = m_baseField + (slot * 2);
-            if (container == null)
-            {
-                Container.SetEntityId(field, entityId);
-                return;
-            }
-
-            container.SetEntityId(field, entityId);
+            var field = baseInventory.m_baseField + (slot * 2);
+            baseInventory.Container.SetEntityId(field, entityId);
         }
 
 		/// <summary>
