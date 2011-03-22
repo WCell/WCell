@@ -143,6 +143,18 @@ namespace WCell.RealmServer.Entities
 			return action;
 		}
 
+        /// <summary>
+        /// Adds a new Action to the list of Actions to be executed every millis.
+        /// </summary>
+        /// <param name="callback"></param>
+        public ObjectUpdateTimer CallPeriodicallyUntil(int callIntervalMillis, int callUntilMillis, Action<WorldObject> callback)
+        {
+            var action = new ObjectUpdateTimer(callIntervalMillis, callback);
+            AddUpdateAction(action);
+            CallDelayed(callUntilMillis, obj => RemoveUpdateAction(action));
+            return action;
+        }
+
 		/// <summary>
 		/// Adds a new Action to the list of Actions to be executed every action.Delay milliseconds
 		/// </summary>
