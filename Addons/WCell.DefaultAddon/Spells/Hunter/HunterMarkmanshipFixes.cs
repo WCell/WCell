@@ -25,6 +25,7 @@ namespace WCell.Addons.Default.Spells.Hunter
             SpellLineId.HunterArcaneShot.Apply(spell =>
                 {
                     spell.Effects[0].APValueFactor = 0.15f;
+                    spell.CooldownTime = 6000;
                 });
 
             // Multi-Shot affects three targets
