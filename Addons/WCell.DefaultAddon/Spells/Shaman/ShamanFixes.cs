@@ -49,13 +49,13 @@ namespace WCell.Addons.Default.Spells.Shaman
             SpellHandler.Apply(spell =>
             {
                 var modMeleeHaste = spell.GetEffect(AuraType.ModMeleeHastePercent);
-                modMeleeHaste.ImplicitTargetB = ImplicitSpellTargetType.Self;
+                modMeleeHaste.ImplicitTargetB = ImplicitSpellTargetType.AllPartyAroundCaster;
 
                 var modScale = spell.GetEffect(AuraType.ModScale);
-                modScale.ImplicitTargetB = ImplicitSpellTargetType.Self;
+                modScale.ImplicitTargetB = ImplicitSpellTargetType.AllPartyAroundCaster;
 
                 var modCastingSpeed = spell.GetEffect(AuraType.ModCastingSpeed);
-                modCastingSpeed.ImplicitTargetB = ImplicitSpellTargetType.Self;
+                modCastingSpeed.ImplicitTargetA = ImplicitSpellTargetType.AllPartyAroundCaster;
             }, SpellLineId.ShamanBloodlust, SpellLineId.ShamanHeroism);
 		}
 
