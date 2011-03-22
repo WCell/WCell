@@ -500,7 +500,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((uint)item.Flags2);		// new 3.2.0
 				packet.Write(item.BuyPrice);
 				packet.Write(item.SellPrice);
-				packet.Write((int)item.InventorySlotType);
+				packet.Write((uint)item.InventorySlotType);
 				packet.Write((uint)item.RequiredClassMask);
 				packet.Write((uint)item.RequiredRaceMask);
 				packet.Write(item.Level);
@@ -511,7 +511,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.RequiredPvPRank);
 				packet.Write(item.UnknownRank);// PVP Medal
 				packet.Write(item.RequiredFaction != null ? (int)item.RequiredFaction.Id : 0);
-				packet.Write((int)item.RequiredFactionStanding);
+				packet.Write((uint)item.RequiredFactionStanding);
 				packet.Write(item.UniqueCount);
 				packet.Write(item.MaxAmount);
 				packet.Write(item.ContainerSlots);
@@ -519,7 +519,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.Mods.Length);
 				for (var m = 0; m < item.Mods.Length; m++)
 				{
-					packet.Write((int)item.Mods[m].Type);
+					packet.Write((uint)item.Mods[m].Type);
 					packet.Write(item.Mods[m].Value);
 				}
 
@@ -528,8 +528,16 @@ namespace WCell.RealmServer.Handlers
 
 
 				// In 3.1 there are only 2 damages instead of 5
-				for (var i = 0; i < item.Damages.Length && i < 2; i++)
+				for (var i = 0; i < 2; i++)
 				{
+                    if(i >= item.Damages.Length)
+                    {
+                        packet.WriteFloat(0f);
+                        packet.WriteFloat(0f);
+                        packet.WriteUInt(0u);
+                        continue;
+                    }
+
 					var dmg = item.Damages[i];
 
 					packet.Write(dmg.Minimum);
@@ -547,38 +555,27 @@ namespace WCell.RealmServer.Handlers
 				packet.Write((uint)item.ProjectileType);
 				packet.Write(item.RangeModifier);
 
-				var s = 0;
-				for (; s < item.Spells.Length; s++)
+				for (var s = 0; s < ItemConstants.MaxSpellCount; s++)
 				{
-					var spell = item.Spells[s];
-					if (spell != null)
-					{
-						packet.Write((uint)spell.Id);
-						packet.Write((uint)spell.Trigger);
-						packet.Write(spell.Charges);
-						packet.Write(spell.Cooldown);
-						packet.Write(spell.CategoryId);
-						packet.Write(spell.CategoryCooldown);
-					}
-					else
-					{
-						packet.WriteUInt(0u);
-						packet.WriteUInt(0u);
-						packet.WriteUInt(0u);
-						packet.Write(-1);
-						packet.WriteUInt(0u);
-						packet.Write(-1);
-					}
-				}
-
-				for (; s < ItemConstants.MaxSpellCount; s++)
-				{
-					packet.WriteUInt(0u);
-					packet.WriteUInt(0u);
-					packet.WriteUInt(0u);
-					packet.Write(-1);
-					packet.WriteUInt(0u);
-					packet.Write(-1);
+				    ItemSpell spell;
+                    if(s < item.Spells.Length && (spell = item.Spells[s]) != null)
+                    {
+                        packet.Write((uint)spell.Id);
+                        packet.Write((uint)spell.Trigger);
+                        packet.Write(spell.Charges);
+                        packet.Write(spell.Cooldown);
+                        packet.Write(spell.CategoryId);
+                        packet.Write(spell.CategoryCooldown);
+                    }
+                    else
+                    {
+                        packet.WriteUInt(0u);
+                        packet.WriteUInt(0u);
+                        packet.WriteUInt(0u);
+                        packet.Write(-1);
+                        packet.WriteUInt(0u);
+                        packet.Write(-1);
+                    }
 				}
 
 				packet.Write((uint)item.BondType);
@@ -590,7 +587,7 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(item.QuestId);
 				packet.Write(item.LockId);
 				packet.Write((int)item.Material);
-				packet.Write((int)item.SheathType);
+				packet.Write((uint)item.SheathType);
 				packet.Write(item.RandomPropertiesId);
 				packet.Write(item.RandomSuffixId);
 				packet.Write(item.BlockValue);
