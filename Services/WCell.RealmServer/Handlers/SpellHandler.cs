@@ -8,6 +8,7 @@ using WCell.Constants.Spells;
 using WCell.Core.Network;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Network;
+using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util;
 using WCell.RealmServer.NPCs;
 
@@ -786,9 +787,26 @@ namespace WCell.RealmServer.Spells
 			var chr = client.ActiveCharacter;
 			var guid = packet.ReadEntityId();
 			var mob = chr.Map.GetObject(guid) as NPC;
+
+            if (mob == null)
+                return;
+
+            if(mob.Entry.IsVehicle)
+            {
+                var vehicle = mob as Vehicle;
+                var seat = vehicle.GetSeatFor(chr);
+				if (seat == null)
+				{
+					// must never happen since Vehicle is unclickable when full
+					return;
+				}
+                seat.Enter(chr);
+                return;
+            }
+
 			SpellTriggerInfo spellInfo;
 
-			if (mob != null && (spellInfo = mob.Entry.SpellTriggerInfo) != null)
+			if ((spellInfo = mob.Entry.SpellTriggerInfo) != null)
 			{
 				chr.SpellCast.Start(spellInfo.Spell, false);
 			}
