@@ -1148,6 +1148,33 @@ namespace WCell.RealmServer.Entities
 			return false;
 		}
 
+        /// <summary>
+        /// Indicates whether the 2 units are neutral towards each other.
+        /// </summary>
+        /// <returns></returns>
+        public virtual bool IsNeutralWith(IFactionMember opponent)
+        {
+            if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))
+            {
+                return true;
+            }
+            if (opponent is Character)
+            {
+                return ((Character)opponent).IsNeutralWith(this);
+            }
+
+            var faction = Faction;
+            var opFaction = opponent.Faction;
+            if (faction == opponent.Faction)
+            {
+                return true;
+            }
+
+            if (faction != null && opponent.Faction != null)
+                return faction.IsFriendlyTowards(opFaction);
+            return false;
+        }
+
 		/// <summary>
 		/// Indicates whether the 2 units are hostile towards each other.
 		/// </summary>
