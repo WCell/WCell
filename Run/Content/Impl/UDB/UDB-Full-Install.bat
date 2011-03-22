@@ -65,7 +65,7 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (394, 395, 396, 397, 398)
+ECHO		 c = Install all Changesets (394, 395, 396, 397, 398,399)
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
