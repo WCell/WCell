@@ -236,7 +236,13 @@ namespace WCell.RealmServer.Spells.Targeting
 			}
 			else
 			{
-				limit = (int)spell.MaxTargets;
+				//if IsAllied (used by group/raid spell targeting) it's save to asume the limit is the raid max size (40 players) since some spells have wrong dbc values
+				if (targetFilter == DefaultTargetFilters.IsAllied)
+				{
+					limit = 40;
+				}
+				else
+					limit = (int)spell.MaxTargets;
 			}
 
 			if (limit < 1)

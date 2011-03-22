@@ -45,18 +45,8 @@ namespace WCell.Addons.Default.Spells.Shaman
                 effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
             });
 
-            // fixes bloodlust being applied to every party/raid member but yourself
-            SpellHandler.Apply(spell =>
-            {
-                var modMeleeHaste = spell.GetEffect(AuraType.ModMeleeHastePercent);
-                modMeleeHaste.ImplicitTargetB = ImplicitSpellTargetType.AllPartyAroundCaster;
-
-                var modScale = spell.GetEffect(AuraType.ModScale);
-                modScale.ImplicitTargetB = ImplicitSpellTargetType.AllPartyAroundCaster;
-
-                var modCastingSpeed = spell.GetEffect(AuraType.ModCastingSpeed);
-                modCastingSpeed.ImplicitTargetA = ImplicitSpellTargetType.AllPartyAroundCaster;
-            }, SpellLineId.ShamanBloodlust, SpellLineId.ShamanHeroism);
+			SpellLineId.ShamanBloodlust.Apply(spell => spell.AddCasterTriggerSpells(SpellId.Sated));
+			SpellLineId.ShamanHeroism.Apply(spell => spell.AddCasterTriggerSpells(SpellId.Exhaustion_3));
 		}
 
 		static void AddProcTrigger(SpellId id, SpellId triggerId)
