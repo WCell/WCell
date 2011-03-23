@@ -4,8 +4,8 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using WCell.Util.Logging;
 using WCell.Util.Xml;
-using WCell.Util.NLog;
 
 namespace WCell.Util.Strings
 {

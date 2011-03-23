@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Lang;
@@ -17,7 +17,6 @@ using WCell.Util.Commands;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Misc;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Commands
 {
@@ -774,22 +773,7 @@ namespace WCell.RealmServer.Commands
 
 			public override void Process(CmdTrigger<RealmServerCmdArgs> trigger)
 			{
-				var level = LogLevel.FromString(trigger.Text.NextWord());
-				var isSet = trigger.Text.HasNext && trigger.Text.NextBool();
-
-				foreach (var rule in LogManager.Configuration.LoggingRules)
-				{
-					bool enable = (isSet) || (!rule.IsLoggingEnabledForLevel(level));
-					if (enable)
-					{
-						rule.EnableLoggingForLevel(level);
-					}
-					else
-					{
-						rule.DisableLoggingForLevel(level);
-					}
-					trigger.Reply("{0}-Messages for \"{1}\" {2}.", level, rule.LoggerNamePattern, enable ? "enabled" : "disabled");
-				}
+				trigger.Reply("Not Implemented");
 			}
 		}
 		#endregion

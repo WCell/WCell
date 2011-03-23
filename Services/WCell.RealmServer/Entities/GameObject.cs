@@ -1,5 +1,6 @@
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
+using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Looting;
 using WCell.Constants.Updates;

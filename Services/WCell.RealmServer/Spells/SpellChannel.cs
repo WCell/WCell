@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.Core.Timers;
 using WCell.RealmServer.Entities;

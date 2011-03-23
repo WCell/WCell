@@ -4,9 +4,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Instances
 {

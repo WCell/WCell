@@ -20,7 +20,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using NLog;
+using WCell.Util.Logging;
 using WCell.AuthServer;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;

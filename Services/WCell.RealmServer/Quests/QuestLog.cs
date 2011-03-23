@@ -29,10 +29,10 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
-using NLog;
 using WCell.RealmServer.Items;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.Spells;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Quests

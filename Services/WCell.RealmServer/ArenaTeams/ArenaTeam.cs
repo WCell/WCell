@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.ArenaTeams;
 using WCell.Core.Database;
 using WCell.RealmServer.Chat;
@@ -11,7 +11,6 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.Util.Collections;
-using WCell.Util.NLog;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.ArenaTeams

@@ -5,7 +5,7 @@ using System.Text;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.NPCs;
@@ -27,11 +27,9 @@ using WCell.RealmServer.NPCs.Pets;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Talents;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.Util.Threading;
 
 using Alias = System.Collections.Generic.KeyValuePair<string, string>;
-
 
 namespace WCell.RealmServer.Database
 {

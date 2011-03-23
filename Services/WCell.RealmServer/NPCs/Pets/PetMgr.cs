@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.NPCs;
 using WCell.Constants.Pets;
 using WCell.Constants.Spells;

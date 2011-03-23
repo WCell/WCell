@@ -15,10 +15,9 @@
  *************************************************************************/
 
 using System;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Updates;
 using WCell.Core;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
 {

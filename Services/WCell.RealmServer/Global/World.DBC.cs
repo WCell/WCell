@@ -4,7 +4,7 @@ using WCell.Constants.World;
 using WCell.Core.DBC;
 using WCell.Util;
 using WCell.Util.Graphics;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Global
 {

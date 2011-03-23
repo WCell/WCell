@@ -15,7 +15,7 @@
  *************************************************************************/
 
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Misc;

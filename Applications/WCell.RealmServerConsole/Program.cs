@@ -15,7 +15,7 @@
  *************************************************************************/
 
 using System.Runtime.InteropServices;
-using NLog;
+using WCell.Util.Logging;
 using System.Runtime;
 using System.Threading;
 using WCell.Core.DBC;

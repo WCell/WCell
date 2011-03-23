@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Login;
@@ -22,7 +22,6 @@ using WCell.RealmServer.NPCs;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.RacesClasses;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Handlers
 {

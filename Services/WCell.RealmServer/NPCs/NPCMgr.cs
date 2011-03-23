@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Factions;
 using WCell.Constants.Looting;
 using WCell.Constants.NPCs;

@@ -16,13 +16,13 @@
 
 using System;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
+using WCell.Util.Logging;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;
 using WCell.Constants;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.AuthServer.Network
 {

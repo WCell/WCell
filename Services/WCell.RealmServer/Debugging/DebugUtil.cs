@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core.Initialization;
 using WCell.Core.Network;
 using WCell.Intercommunication.DataTypes;
@@ -10,7 +10,6 @@ using WCell.PacketAnalysis;
 using WCell.PacketAnalysis.Logs;
 using WCell.RealmServer.Network;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.Util.Variables;
 using WCell.RealmServer.Handlers;
 

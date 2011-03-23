@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Achievements;
 using WCell.Constants.Misc;

@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.RealmServer.Entities;

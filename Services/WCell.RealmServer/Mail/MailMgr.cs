@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Castle.ActiveRecord.Queries;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Core;

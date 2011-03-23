@@ -13,8 +13,8 @@ using WCell.Tools.Maps.Parsing.WMO;
 using WCell.Tools.Maps.Parsing.WMO.Components;
 using WCell.Tools.Maps.Utils;
 using WCell.Util.Graphics;
-using NLog;
 using MathHelper = WCell.Util.Graphics.MathHelper;
+using WCell.Util.Logging;
 
 namespace WCell.Tools.Maps
 {

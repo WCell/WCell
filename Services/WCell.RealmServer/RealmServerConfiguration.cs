@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Xml.Serialization;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Constants.Realm;
@@ -32,7 +32,7 @@ using WCell.Util;
 using WCell.Util.Variables;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using WCell.Util.NLog;
+using WCell.RealmServer.Addons;
 
 namespace WCell.RealmServer
 {

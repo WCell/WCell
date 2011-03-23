@@ -159,10 +159,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Release\MySql\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=04f2a0efba3ae860, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>

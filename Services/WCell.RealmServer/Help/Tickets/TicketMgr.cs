@@ -17,7 +17,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Help.Tickets
 {

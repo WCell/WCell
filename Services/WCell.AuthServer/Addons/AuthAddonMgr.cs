@@ -1,7 +1,7 @@
 using WCell.AuthServer.Commands;
 using WCell.Core.Addons;
 using WCell.Core.Initialization;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.AuthServer.Addons
 {

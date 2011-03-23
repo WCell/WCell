@@ -1,4 +1,4 @@
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.GameObjects;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;

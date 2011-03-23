@@ -13,8 +13,8 @@ using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Spells;
 using WCell.RealmServer.Spells.Effects;
 using WCell.Util;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Entities
 {

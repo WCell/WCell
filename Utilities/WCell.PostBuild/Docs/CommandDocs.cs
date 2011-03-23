@@ -10,7 +10,6 @@ using WCell.Util.Commands;
 using WCell.Tools.Commands;
 using WCell.Util;
 using WCell.AuthServer;
-using WCell.Util.NLog;
 using RealmServ = WCell.RealmServer.RealmServer;
 
 namespace WCell.PostBuild.Docs
@@ -24,7 +23,7 @@ namespace WCell.PostBuild.Docs
 			RealmServ.EntryLocation = Path.GetFullPath(ToolConfig.WCellRealmServerConsoleExe);
 			var realmServ = RealmServ.Instance; // make sure to create the RealmServ instance first
 
-			LogUtil.SetupConsoleLogging();
+			//LogUtil.SetupConsoleLogging();
 
 			Console.WriteLine("Output Directory: " + new DirectoryInfo(dir).FullName);
 

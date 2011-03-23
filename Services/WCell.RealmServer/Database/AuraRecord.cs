@@ -7,7 +7,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Spells.Auras;
 using WCell.RealmServer.Spells;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Database
 {

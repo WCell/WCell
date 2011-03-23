@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Quests;
 using WCell.Core.Initialization;
 using WCell.Core.Timers;

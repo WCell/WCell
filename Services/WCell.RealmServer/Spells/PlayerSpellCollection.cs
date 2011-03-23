@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using Castle.ActiveRecord;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.GameObjects;

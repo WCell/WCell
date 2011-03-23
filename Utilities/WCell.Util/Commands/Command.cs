@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using System.Reflection;
 using WCell.Util;
 

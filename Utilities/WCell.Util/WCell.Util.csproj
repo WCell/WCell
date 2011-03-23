@@ -121,10 +121,6 @@
     <Reference Include="Mono.Posix">
       <HintPath>..\..\Libraries\Binaries\Mono\Mono.Posix.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -216,6 +212,11 @@
     <Compile Include="Graphics\Ray2D.cs" />
     <Compile Include="Graphics\Rect.cs" />
     <Compile Include="Graphics\Size.cs" />
+    <Compile Include="Logging\ExplicitFileLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerBase.cs" />
+    <Compile Include="Logging\LogManager.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
@@ -254,8 +255,7 @@
     <Compile Include="Lang\Translation.cs" />
     <Compile Include="Lang\Localizer.cs" />
     <Compile Include="MathUtil.cs" />
-    <Compile Include="NLog\LogUtil.cs" />
-    <Compile Include="NLog\StreamLogger.cs" />
+    <Compile Include="Logging\LogUtil.cs" />
     <Compile Include="ReflectionUtils.cs" />
     <Compile Include="SortedTopN.cs" />
     <Compile Include="Strings\StringStream.cs" />

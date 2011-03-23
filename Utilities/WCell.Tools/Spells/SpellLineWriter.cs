@@ -13,7 +13,7 @@ using WCell.Constants;
 using WCell.Constants.Spells;
 using WCell.Tools.Domi;
 using WCell.Util.Toolshed;
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.NPCs;
 using WCell.RealmServer.RacesClasses;
 using WCell.RealmServer.Content;

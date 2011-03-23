@@ -5,7 +5,7 @@ using WCell.Util;
 using WCell.Util.Collections;
 using WCell.Constants.Updates;
 using WCell.Constants.World;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.Core.Timers;
 

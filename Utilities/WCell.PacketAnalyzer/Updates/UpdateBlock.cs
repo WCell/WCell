@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Updates;
 using WCell.Core;
 using WCell.Util;
 using WCell.Util.Graphics;
-using WCell.Util.NLog;
 
 namespace WCell.PacketAnalysis.Updates
 {

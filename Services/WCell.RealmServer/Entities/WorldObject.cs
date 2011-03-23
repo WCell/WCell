@@ -21,7 +21,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Looting;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Collections;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Misc;

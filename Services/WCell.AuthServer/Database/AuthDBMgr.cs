@@ -11,10 +11,10 @@ using Castle.ActiveRecord.Framework.Config;
 using System.Reflection;
 using WCell.Core.Database;
 using System.IO;
-using NLog;
 using Castle.ActiveRecord.Queries;
 using WCell.AuthServer.Accounts;
 using WCell.RealmServer.Database;
+using WCell.Util.Logging;
 
 namespace WCell.AuthServer.Database
 {

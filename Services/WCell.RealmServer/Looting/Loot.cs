@@ -9,7 +9,7 @@ using WCell.RealmServer.Groups;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Items;
 using WCell.Constants.Looting;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Looting
 {

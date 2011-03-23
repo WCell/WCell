@@ -6,7 +6,7 @@ using System.Threading;
 using Castle.ActiveRecord;
 using Castle.ActiveRecord.Queries;
 using NHibernate.Criterion;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;

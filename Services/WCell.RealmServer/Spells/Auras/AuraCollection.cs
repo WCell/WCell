@@ -18,12 +18,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.RealmServer.Chat;
 
 namespace WCell.RealmServer.Spells.Auras

@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using NLog;
+using WCell.Util.Logging;
 using System.Threading;
 using System.Diagnostics;
 using WCell.Util.Collections;

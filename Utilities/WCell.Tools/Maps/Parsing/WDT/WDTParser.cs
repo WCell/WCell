@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.World;
 using WCell.MPQTool;
 using WCell.Tools.Maps.Constants;

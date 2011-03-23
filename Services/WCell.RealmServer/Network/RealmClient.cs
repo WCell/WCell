@@ -20,7 +20,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Cryptography;
@@ -29,7 +29,6 @@ using WCell.RealmServer.Debugging;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Stats;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Network
 {

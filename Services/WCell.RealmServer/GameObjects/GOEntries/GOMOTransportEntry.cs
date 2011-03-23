@@ -1,4 +1,4 @@
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Taxi;
 using WCell.RealmServer.Transports;

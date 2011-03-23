@@ -1,5 +1,5 @@
 using System;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
@@ -10,7 +10,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
-using WCell.Util.NLog;
 using WCell.Util.Threading;
 using WCell.RealmServer.Network;
 using WCell.Util;
@@ -244,7 +243,7 @@ namespace WCell.RealmServer.Handlers
 			}
 			catch (Exception e)
 			{
-				log.Error(e);
+				log.ErrorException(e);
 				SendCharacterLoginFail(client, LoginErrorCode.CHAR_LOGIN_FAILED);
 			}
 		}

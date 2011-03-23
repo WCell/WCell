@@ -1,6 +1,6 @@
 using System;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.RealmServer;
 

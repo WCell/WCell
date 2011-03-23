@@ -1,5 +1,4 @@
 ﻿using System;
-using NLog;
 using WCell.Constants;
 using WCell.Constants.ArenaTeams;
 using WCell.Core;
@@ -8,6 +7,7 @@ using WCell.RealmServer.Network;
 using WCell.Util;
 using WCell.RealmServer.ArenaTeams;
 using WCell.RealmServer.Global;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Handlers
 {

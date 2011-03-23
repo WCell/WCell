@@ -14,7 +14,7 @@
  *
  *************************************************************************/
 
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.NPCs;
 using WCell.Util;
 

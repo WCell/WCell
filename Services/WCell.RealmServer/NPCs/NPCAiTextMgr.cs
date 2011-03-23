@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core.Initialization;
 using WCell.RealmServer.Content;
 using WCell.RealmServer.Lang;

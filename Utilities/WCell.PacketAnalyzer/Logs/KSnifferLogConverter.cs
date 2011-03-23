@@ -5,12 +5,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Core.Network;
 using WCell.PacketAnalysis.Updates;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.PacketAnalysis.Logs
 {

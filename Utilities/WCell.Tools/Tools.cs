@@ -17,7 +17,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.PacketAnalysis;
@@ -34,7 +34,6 @@ using WCell.RealmServer.Quests;
 using WCell.Tools.Commands;
 using WCell.Tools.PATools;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.Util.Strings;
 using WCell.Util.Toolshed;
 using RealmServ = WCell.RealmServer.RealmServer;
@@ -81,7 +80,7 @@ namespace WCell.Tools
 
 			ToolConfig.InitCfg();
 
-			LogUtil.SetupConsoleLogging();
+			//LogUtil.SetupConsoleLogging();
 
 			Console.WriteLine("Output Directory: " + new DirectoryInfo(ToolConfig.OutputDir).FullName);
 			if (!Directory.Exists(ToolConfig.OutputDir))

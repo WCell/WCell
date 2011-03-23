@@ -16,7 +16,7 @@
 
 using System.IO;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using System;
 using Cell.Core;
 

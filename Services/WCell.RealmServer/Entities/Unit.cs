@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -42,7 +42,6 @@ using WCell.RealmServer.Gossips;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
-using WCell.Util.NLog;
 using WCell.Constants.Chat;
 
 

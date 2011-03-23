@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
@@ -30,8 +30,6 @@ using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.Network;
 using WCell.RealmServer.Privileges;
-
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer
 {

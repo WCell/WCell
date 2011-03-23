@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util.Strings;
 using WCell.Util.Xml;
 using System.Diagnostics;

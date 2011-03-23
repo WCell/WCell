@@ -2,11 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Misc;
 using WCell.Util;
-using WCell.Util.NLog;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {

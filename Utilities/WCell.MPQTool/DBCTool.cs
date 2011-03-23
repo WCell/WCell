@@ -23,7 +23,7 @@ using Microsoft.Win32;
 using WCell.Constants;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.MPQTool.DBC.Compare;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 
 namespace WCell.MPQTool
 {
@@ -466,7 +466,7 @@ namespace WCell.MPQTool
     {
         static void Main(string[] args)
         {
-        	LogUtil.SetupConsoleLogging();
+        	//LogUtil.SetupConsoleLogging();
             var config = MPQToolConfig.Instance;
             NativeMethods.InitAPI();
             new DBCTool().Dump();

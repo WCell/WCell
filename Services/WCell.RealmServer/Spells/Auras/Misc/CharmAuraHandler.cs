@@ -7,7 +7,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.Handlers;
 using WCell.Constants;
 using WCell.Constants.Updates;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells.Auras.Misc
 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Misc;
 using WCell.Constants.Spells;
 using WCell.RealmServer.Spells;

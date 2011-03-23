@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.NPCs;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;

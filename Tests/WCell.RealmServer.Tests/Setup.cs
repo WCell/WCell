@@ -20,6 +20,7 @@ using WCell.RealmServer.NPCs;
 using System.IO;
 using WCell.RealmServer.Debugging;
 using WCell.Util.Graphics;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.Constants.World;
 using WCell.RealmServer.Tests.Entities;
@@ -28,7 +29,6 @@ using WCell.RealmServer.Tests.Tools;
 using System.Threading;
 using WCell.Constants.Items;
 using WCell.Util;
-using WCell.Util.NLog;
 using WCell.RealmServer.Addons;
 using System.Diagnostics;
 
@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Tests
 				Console.SetOut(m_output = new IndentTextWriter(LogFile) {
 					AutoFlush = true
 				});
-				LogUtil.SetupStreamLogging(m_output);
+				//LogUtil.SetupStreamLogging(m_output);
 
 				RealmServer.EntryLocation = WCellRealmServerConsoleExe;
 				var realmServ = RealmServer.Instance;				// make sure to create the RealmServer instance first

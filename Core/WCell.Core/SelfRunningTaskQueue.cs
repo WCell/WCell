@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using WCell.Core.Timers;
 using WCell.Util.Collections;
-using WCell.Util.NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.Core

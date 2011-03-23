@@ -166,10 +166,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\NHibernate.ByteCode.Castle.dll</HintPath>
     </Reference>
-    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Libraries\Source\NLog\bin\Debug\NLog.dll</HintPath>
-    </Reference>
     <Reference Include="ParallelExtensionsExtras, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e46dcf2234ff274d, processorArchitecture=MSIL">
       <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
     </Reference>

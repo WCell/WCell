@@ -22,7 +22,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
 using Cell.Core.Localization;
-using NLog;
+using WCell.Util.Logging;
 using System.Net.NetworkInformation;
 using Cell.Core.Exceptions;
 
