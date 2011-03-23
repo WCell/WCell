@@ -17,13 +17,13 @@ namespace WCell.RealmServer.Database
 	/// This feature allows players to store sets of equipment, easily swap between saved sets using hotkeys, 
 	/// and pull items directly from backpacks or bank slots (must be at the bank to equip inventory from the bank).
 	/// </summary>
-	[ActiveRecord("equipmentsets", Access = PropertyAccess.Property)]
+	[ActiveRecord("EquipmentSets", Access = PropertyAccess.Property)]
 	public class EquipmentSet : ActiveRecordBase<EquipmentSet>
 	{
 		public static readonly IList<EquipmentSet> EmptyList = new List<EquipmentSet>(1);
 
 		private static readonly NHIdGenerator m_idGenerator =
-			new NHIdGenerator(typeof(EquipmentSet), "equipmentsets", "EntityLowId");
+            new NHIdGenerator(typeof(EquipmentSet), "EntityLowId", "EquipmentSets");
 
 		[PrimaryKey(PrimaryKeyType.Assigned, "EntityLowId")]
 		private long lowId
