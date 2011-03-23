@@ -1,5 +1,5 @@
 using System;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.GameObjects;
 using WCell.Constants.World;
 using WCell.RealmServer.Content;

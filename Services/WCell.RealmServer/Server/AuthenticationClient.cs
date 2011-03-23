@@ -17,13 +17,12 @@
 using System;
 using System.ServiceModel;
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core.Timers;
 using WCell.Intercommunication.Client;
 using WCell.RealmServer.Lang;
 using WCell.RealmServer.Res;
 using WCell.Util;
-using WCell.Util.Logging;
 using WCell.Util.Variables;
 
 namespace WCell.RealmServer.Server

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using WCell.Util.Collections;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Factions;
 using WCell.Constants.Spells;

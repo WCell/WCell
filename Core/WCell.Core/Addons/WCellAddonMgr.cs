@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util;
 using WCell.Util.Variables;
 

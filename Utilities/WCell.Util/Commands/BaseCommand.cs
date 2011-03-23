@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util;
 using WCell.Util.Strings;
 
@@ -324,7 +324,7 @@ namespace WCell.Util.Commands
 
 		internal protected void FailNotify(CmdTrigger<C> trigger, Exception ex)
 		{
-			log.Warn(ex);
+			LogUtil.WarnException(ex);
 			OnFail(trigger, ex);
 		}
 

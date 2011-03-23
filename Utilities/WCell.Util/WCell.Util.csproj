@@ -202,6 +202,11 @@
     <Compile Include="DynamicAccess\IExecutable.cs" />
     <Compile Include="DynamicAccess\IGenericPropertyAccessor.cs" />
     <Compile Include="Collections\IdQueue.cs" />
+    <Compile Include="Logging\ExplicitFileLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\LoggerBase.cs" />
+    <Compile Include="Logging\LogManager.cs" />
     <Compile Include="ReflectionUtil\MemberAccessor.cs" />
     <Compile Include="ReflectionUtil\ReflectionMember.cs" />
     <Compile Include="ReflectionUtil\ReflectionMemberChain.cs" />
@@ -241,7 +246,6 @@
     <Compile Include="Lang\Localizer.cs" />
     <Compile Include="MathUtil.cs" />
     <Compile Include="Logging\LogUtil.cs" />
-    <Compile Include="Logging\StreamLogger.cs" />
     <Compile Include="ReflectionUtils.cs" />
     <Compile Include="SortedTopN.cs" />
     <Compile Include="Strings\StringStream.cs" />

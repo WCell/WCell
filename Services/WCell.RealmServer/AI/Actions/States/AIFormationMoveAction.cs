@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Constants.Updates;
 using WCell.RealmServer.AI.Actions.Movement;
 using WCell.RealmServer.Entities;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.AI.Actions.States
 {

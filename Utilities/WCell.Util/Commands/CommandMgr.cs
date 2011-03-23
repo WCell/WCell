@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util;
 using WCell.Util.DynamicAccess;
 using WCell.Util.Strings;
@@ -43,7 +43,7 @@ namespace WCell.Util.Commands
 		public delegate bool TriggerValidationHandler(CmdTrigger<C> trigger, BaseCommand<C> cmd, bool silent);
 		public delegate void UnknownCommandHandler(CmdTrigger<C> trigger);
 
-		protected static Logger log = LogManager.GetCurrentClassLogger();
+		static readonly Logger log = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
 		/// Is triggered whenever an unknown command has been used

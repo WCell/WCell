@@ -20,7 +20,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core.Cryptography;
 using WCell.Util;
 using WCell.Util.Graphics;

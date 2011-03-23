@@ -9,7 +9,7 @@ using WCell.RealmServer.Misc;
 using WCell.RealmServer.Quests;
 using WCell.Util;
 using WCell.Util.Data;
-using NLog;
+using WCell.Util.Logging;
 using System.Collections;
 using WCell.Constants;
 using System;

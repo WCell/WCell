@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Login;
@@ -11,7 +11,6 @@ using WCell.Core;
 using WCell.Core.Network;
 using WCell.RealmServer.Res;
 using WCell.Util.Graphics;
-using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.RealmServer.Chat;
 using WCell.RealmServer.Database;

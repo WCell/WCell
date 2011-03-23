@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Core.Network;
 using WCell.PacketAnalysis.Updates;

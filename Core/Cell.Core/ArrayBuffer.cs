@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Diagnostics;
-using NLog;
+using WCell.Util.Logging;
 
 namespace Cell.Core
 {

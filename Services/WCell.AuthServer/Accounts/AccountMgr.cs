@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using NHibernate.Criterion;
-using NLog;
+using WCell.Util.Logging;
 using WCell.AuthServer.Database;
 using WCell.Util.Logging;
 using resources = WCell.AuthServer.Res.WCell_AuthServer;

@@ -5,7 +5,7 @@ using System.Text;
 using WCell.Constants.Items;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Entities;
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.Handlers;
 
 namespace WCell.RealmServer.Spells.Effects

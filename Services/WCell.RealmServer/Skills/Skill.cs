@@ -15,7 +15,7 @@
  *************************************************************************/
 
 using System;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;

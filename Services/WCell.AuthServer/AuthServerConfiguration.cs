@@ -18,7 +18,7 @@ using System;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core;
 using WCell.Constants;
 using WCell.Core.Addons;

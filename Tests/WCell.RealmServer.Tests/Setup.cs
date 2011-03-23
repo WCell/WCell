@@ -242,7 +242,7 @@ namespace WCell.RealmServer.Tests
 				Console.SetOut(m_output = new IndentTextWriter(LogFile) {
 					AutoFlush = true
 				});
-				LogUtil.SetupStreamLogging(m_output);
+				//LogUtil.SetupStreamLogging(m_output);
 
 				RealmServer.EntryLocation = WCellRealmServerConsoleExe;
 				var realmServ = RealmServer.Instance;				// make sure to create the RealmServer instance first

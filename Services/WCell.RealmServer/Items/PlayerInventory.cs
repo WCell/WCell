@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
@@ -27,7 +27,6 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Util;
 using Castle.ActiveRecord;
-using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Items
 {

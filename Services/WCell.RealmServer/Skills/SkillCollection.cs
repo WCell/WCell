@@ -17,7 +17,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Skills;
 using WCell.Constants.Updates;

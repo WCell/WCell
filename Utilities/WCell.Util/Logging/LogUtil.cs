@@ -7,6 +7,9 @@ namespace WCell.Util.Logging
 
 	public static class LogUtil
 	{
+
+        static Logger log = LogManager.GetCurrentClassLogger();
+
 		private static int _streamNum;
 
 		public static Action<Action<string>> SystemInfoLogger;
@@ -136,11 +139,11 @@ namespace WCell.Util.Logging
             Error,
             Fatal
         }
-		public static void LogException(string msg,LogLevel logLevel = LogLevel.Info, Exception e = null,bool outputToConsole = true,bool addSystemInfo = false)
+        public static void LogException(Action<string> logger, Exception e, bool addSystemInfo, string msg, params object[] format)
 		{
 			if (!string.IsNullOrEmpty(msg))
 			{
-				msg = string.Format(msg);
+				msg = string.Format(msg, format);
 				logger(msg);
 			}
 

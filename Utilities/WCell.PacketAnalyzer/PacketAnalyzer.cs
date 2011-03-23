@@ -10,7 +10,7 @@ using WCell.PacketAnalysis.Updates;
 using WCell.PacketAnalysis.Xml;
 using WCell.RealmServer;
 using WCell.Util;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.PacketAnalysis
 {

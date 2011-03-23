@@ -10,6 +10,7 @@ using WCell.RealmServer.Lang;
 using WCell.RealmServer.Misc;
 using WCell.Util;
 using WCell.Util.Commands;
+using WCell.Util.Logging;
 using WCell.Util.Strings;
 using WCell.Util.Variables;
 
@@ -18,6 +19,8 @@ namespace WCell.RealmServer.Commands
 	public class RealmCommandHandler : CommandMgr<RealmServerCmdArgs>
 	{
 		public static readonly RealmCommandHandler Instance = new RealmCommandHandler();
+
+	    private static Logger log = LogManager.GetCurrentClassLogger();
 
 		/// <summary>
 		/// A directory containing a list of autoexec files, containing autoexec files similar to this:

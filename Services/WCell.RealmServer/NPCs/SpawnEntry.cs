@@ -16,7 +16,7 @@ using WCell.Util.Data;
 using WCell.RealmServer.Gossips;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.NPCs
 {

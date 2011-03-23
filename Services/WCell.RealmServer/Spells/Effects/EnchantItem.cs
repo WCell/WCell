@@ -14,7 +14,7 @@
  *
  *************************************************************************/
 
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Items;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;

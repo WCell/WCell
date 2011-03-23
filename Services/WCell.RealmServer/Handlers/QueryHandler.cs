@@ -1,4 +1,4 @@
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Core;
 using WCell.Core.Network;

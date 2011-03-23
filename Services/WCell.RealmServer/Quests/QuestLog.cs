@@ -26,7 +26,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.Constants.NPCs;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Quests

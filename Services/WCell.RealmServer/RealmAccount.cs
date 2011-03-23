@@ -16,13 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.RealmServer.Res;
-using WCell.Util.Logging;
 using WCell.Util.Threading;
 using WCell.Intercommunication.DataTypes;
 using WCell.RealmServer.Database;

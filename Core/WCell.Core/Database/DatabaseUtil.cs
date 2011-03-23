@@ -12,9 +12,8 @@ using NHibernate.Cfg;
 using NHibernate.Dialect;
 using NHibernate.Engine;
 using NHibernate.Tool.hbm2ddl;
-using NLog;
-using WCell.Util;
 using WCell.Util.Logging;
+using WCell.Util;
 using WCell.Util.Strings;
 using HibernateCfg = NHibernate.Cfg.Configuration;
 

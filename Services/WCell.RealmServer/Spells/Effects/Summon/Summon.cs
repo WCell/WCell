@@ -23,7 +23,7 @@ using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;
 using WCell.RealmServer.NPCs;
 using WCell.Util.Graphics;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells.Effects
 {

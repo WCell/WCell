@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Achievements;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Handlers;

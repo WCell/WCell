@@ -1,5 +1,5 @@
 using System.Xml;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Util.Variables;
 using WCell.Intercommunication.DataTypes;
 

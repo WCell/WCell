@@ -21,7 +21,7 @@ using System.Text;
 using System.ServiceModel;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Login;
 using WCell.Intercommunication.DataTypes;

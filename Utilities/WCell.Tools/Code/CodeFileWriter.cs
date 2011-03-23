@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using System.Collections;
 using WCell.Util;

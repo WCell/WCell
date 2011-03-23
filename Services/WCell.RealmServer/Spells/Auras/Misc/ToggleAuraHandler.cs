@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 
 namespace WCell.RealmServer.Spells.Auras.Misc

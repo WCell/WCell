@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core.Localization;
 using System.IO;
 

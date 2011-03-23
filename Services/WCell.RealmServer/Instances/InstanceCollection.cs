@@ -7,7 +7,7 @@ using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Handlers;
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.Chat;
 
 namespace WCell.RealmServer.Instances

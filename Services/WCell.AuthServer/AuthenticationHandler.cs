@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
 using WCell.AuthServer.Accounts;
 using WCell.AuthServer.Database;
 using WCell.AuthServer.Network;

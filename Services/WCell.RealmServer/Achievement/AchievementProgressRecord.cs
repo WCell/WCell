@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Castle.ActiveRecord;
 using NHibernate.Criterion;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Achievements;
 using WCell.Core.Database;
 using WCell.RealmServer.Database;

@@ -17,7 +17,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Items;
 using WCell.Constants.Misc;
@@ -33,7 +33,6 @@ using WCell.RealmServer.Network;
 using WCell.RealmServer.Looting;
 using WCell.Constants.Factions;
 using WCell.Constants.Looting;
-using WCell.Util.Logging;
 using WCell.Util.Threading;
 
 namespace WCell.RealmServer.Groups

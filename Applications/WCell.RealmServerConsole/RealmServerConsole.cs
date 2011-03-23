@@ -23,7 +23,7 @@ using WCell.Core.DBC;
 using WCell.RealmServer.Commands;
 using WCell.Core.Database;
 using System.IO;
-using NLog;
+using WCell.Util.Logging;
 using System.Threading;
 using WCell.RealmServer.Entities;
 using WCell.Util.Commands;

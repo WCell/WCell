@@ -14,7 +14,7 @@
  *
  *************************************************************************/
 
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer
 {

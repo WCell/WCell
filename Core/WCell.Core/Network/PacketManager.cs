@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using WCell.Core.Localization;
-using NLog;
+using WCell.Util.Logging;
 using Cell.Core;
 using WCell.Util;
 

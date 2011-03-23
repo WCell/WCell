@@ -18,7 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.GameObjects;
 using WCell.Constants.Items;

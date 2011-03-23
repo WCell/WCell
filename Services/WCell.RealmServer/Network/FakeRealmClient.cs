@@ -1,5 +1,5 @@
 using System;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Core;
 using WCell.Core.Cryptography;
 using WCell.Core.Network;

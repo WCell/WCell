@@ -18,14 +18,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Spells;
 using WCell.Constants.Updates;
 using WCell.RealmServer.Database;
 using WCell.RealmServer.Entities;
 using WCell.Util;
 using WCell.RealmServer.Chat;
-using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Spells.Auras
 {

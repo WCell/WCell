@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.Items;
 using WCell.Constants.Skills;
 using WCell.Core.DBC;

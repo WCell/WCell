@@ -4,7 +4,7 @@ using System.IO;
 using WCell.Constants;
 using WCell.PacketAnalysis.Updates;
 using WCell.RealmServer;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.PacketAnalysis.Logs
 {

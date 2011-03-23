@@ -16,7 +16,7 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants;
 using WCell.Constants.Misc;
 using WCell.Constants.NPCs;
@@ -43,7 +43,6 @@ using WCell.RealmServer.AI;
 using WCell.RealmServer.NPCs.Vehicles;
 using WCell.Util.Graphics;
 using WCell.Constants.Chat;
-using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Entities
 {

@@ -17,7 +17,7 @@
 using System;
 using System.IO;
 using System.Reflection;
-using NLog;
+using WCell.Util.Logging;
 using WCell.Constants.World;
 using WCell.Core.Initialization;
 using WCell.PacketAnalysis;
@@ -81,7 +81,7 @@ namespace WCell.Tools
 
 			ToolConfig.InitCfg();
 
-			LogUtil.SetupConsoleLogging();
+			//LogUtil.SetupConsoleLogging();
 
 			Console.WriteLine("Output Directory: " + new DirectoryInfo(ToolConfig.OutputDir).FullName);
 			if (!Directory.Exists(ToolConfig.OutputDir))

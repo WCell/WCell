@@ -26,7 +26,7 @@ using WCell.Constants.Spells;
 using WCell.RealmServer.AI.Brains;
 using WCell.RealmServer.AI;
 using WCell.RealmServer.Items;
-using NLog;
+using WCell.Util.Logging;
 using WCell.RealmServer.Global;
 using WCell.Util.Graphics;
 using WCell.Constants.World;

@@ -22,7 +22,7 @@ using WCell.Constants;
 using WCell.Core;
 using WCell.RealmServer.Global;
 using WCell.RealmServer.Network;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.UpdateFields
 {

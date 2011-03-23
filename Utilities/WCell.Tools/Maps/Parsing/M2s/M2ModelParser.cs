@@ -1,5 +1,5 @@
 using System.IO;
-using NLog;
+using WCell.Util.Logging;
 using WCell.MPQTool;
 using WCell.Tools.Maps.Parsing.M2s.Components;
 using WCell.Tools.Maps.Structures;

@@ -16,7 +16,7 @@
 
 using System;
 using Castle.ActiveRecord;
-using NLog;
+using WCell.Util.Logging;
 using WCell.AuthServer.Network;
 using WCell.Constants;
 using WCell.Core.Database;

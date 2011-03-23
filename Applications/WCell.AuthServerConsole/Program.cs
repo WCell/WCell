@@ -16,7 +16,7 @@
 
 using System.Threading;
 using Cell.Core;
-using NLog;
+using WCell.Util.Logging;
 using System.Runtime;
 using WCell.AuthServer;
 using System.Diagnostics;

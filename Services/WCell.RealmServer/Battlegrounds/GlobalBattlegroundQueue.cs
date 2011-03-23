@@ -6,7 +6,7 @@ using WCell.Util.Collections;
 using WCell.RealmServer.Entities;
 using WCell.Constants;
 using WCell.RealmServer.GameObjects;
-using NLog;
+using WCell.Util.Logging;
 
 namespace WCell.RealmServer.Battlegrounds
 {

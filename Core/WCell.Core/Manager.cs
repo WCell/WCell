@@ -15,10 +15,9 @@
  *************************************************************************/
 
 using System;
-using NLog;
+using WCell.Util.Logging;
 using Cell.Core;
 using WCell.Core.Localization;
-using WCell.Util.Logging;
 
 namespace WCell.Core
 {
@@ -205,7 +204,7 @@ namespace WCell.Core
 	/// <typeparam name="T">The <see cref="Type"/> of the class that we want to create a manager for.</typeparam>
 	public abstract class Manager<T> : Singleton<T> where T : class
 	{
-		protected static readonly Logger s_log = LogManager.GetLogger(typeof(T).FullName);
+		protected static readonly ExplicitFileLogger s_log = LogManager.GetLogger(typeof(T).FullName);
 		protected static readonly SpinWaitLock m_lock = new SpinWaitLock();
 		private ManagerStates m_state = ManagerStates.Stopped;
 		private uint m_startCounter = 0;
