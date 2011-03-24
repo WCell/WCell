@@ -23,7 +23,7 @@ namespace WCell.RealmServer.Database
 		public static readonly IList<EquipmentSet> EmptyList = new List<EquipmentSet>(1);
 
 		private static readonly NHIdGenerator m_idGenerator =
-            new NHIdGenerator(typeof(EquipmentSet), "EntityLowId", "EquipmentSets");
+            new NHIdGenerator(typeof(EquipmentSet), "EntityLowId");
 
 		[PrimaryKey(PrimaryKeyType.Assigned, "EntityLowId")]
 		private long lowId
