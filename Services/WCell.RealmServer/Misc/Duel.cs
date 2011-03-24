@@ -48,7 +48,7 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// The delay until a duel starts in seconds
+		/// The delay until a duel starts in milliseconds
 		/// </summary>
 		public static int DefaultStartDelayMillis = 3000;
 
@@ -191,7 +191,7 @@ namespace WCell.RealmServer.Misc
 		}
 
 		/// <summary>
-		/// Delay left in seconds until the Duel starts. 
+		/// Delay left in milliseconds until the Duel starts. 
 		/// If countdown did not start yet, will be set to the total delay.
 		/// If countdown is already over, this value is redundant.
 		/// </summary>
@@ -268,7 +268,7 @@ namespace WCell.RealmServer.Misc
 		{
 			if (m_challenger == acceptingCharacter) return;
 
-			var delay = (uint)(m_startDelay * 1000);
+			var delay = (uint)m_startDelay;
 
 			DuelHandler.SendCountdown(m_challenger, delay);
 			DuelHandler.SendCountdown(m_rival, delay);
@@ -334,7 +334,7 @@ namespace WCell.RealmServer.Misc
 		/// <summary>
 		/// Updates the Duel
 		/// </summary>
-		/// <param name="dt">the time since the last update in seconds</param>
+		/// <param name="dt">the time since the last update in milliseconds</param>
 		public void Update(int dt)
 		{
 			if (m_challenger == null || m_rival == null)
