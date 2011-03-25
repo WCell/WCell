@@ -235,6 +235,8 @@
     </Compile>
     <Compile Include="Gossips\GossipTextHelper.cs" />
     <Compile Include="Handlers\WorldStateHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\FearHandler.cs" />
+    <Compile Include="Spells\Auras\Misc\ModConfuseHandler.cs" />
     <Compile Include="Spells\Auras\Misc\ModPossessAuraHandler.cs" />
     <Compile Include="Spells\Auras\PeriodicallyUpdatedAuraEffectHandler.cs" />
     <Compile Include="Spells\Effects\Inebriate.cs" />
