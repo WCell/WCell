@@ -254,11 +254,7 @@ namespace WCell.RealmServer.Spells
 
 			init2 = true;
 
-			IsPassive = (Attributes.HasFlag(SpellAttributes.Passive)) ||
-			            // tracking spells are also passive		     
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+			IsPassive = Attributes.HasFlag(SpellAttributes.Passive);
 
 			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
 			              // don't use Enum.HasFlag!
