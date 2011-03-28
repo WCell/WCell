@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Castle.ActiveRecord.Web</name>
+    </assembly>
+    <members>
+        <member name="T:Castle.ActiveRecord.Framework.Scopes.HybridWebThreadScopeInfo">
+            <summary>
+            This <see cref="T:Castle.ActiveRecord.Framework.IThreadScopeInfo"/> implementation will first try to get the current scope from the current 
+            request, and if not found, will use a thread lcoal scope.
+            </summary>
+            <remarks>
+            This is used for scenarios where most of the you need per request scope, but you also does some work outside a 
+            request (in a thread pool thread, for instnace).
+            </remarks>
+        </member>
+        <member name="P:Castle.ActiveRecord.Framework.Scopes.HybridWebThreadScopeInfo.CurrentStack">
+            <summary>
+            Gets the current stack.
+            </summary>
+            <value>The current stack.</value>
+        </member>
+        <member name="T:Castle.ActiveRecord.Framework.Scopes.WebThreadScopeInfo">
+            <summary>
+            This <see cref="T:Castle.ActiveRecord.Framework.IThreadScopeInfo"/> implementation will first get the current scope from the current 
+            request, thus implementing a Session Per Request pattern.
+            </summary>
+        </member>
+        <member name="P:Castle.ActiveRecord.Framework.Scopes.WebThreadScopeInfo.CurrentStack">
+            <summary>
+            Gets the current stack.
+            </summary>
+            <value>The current stack.</value>
+        </member>
+        <member name="T:Castle.ActiveRecord.Framework.SessionScopeWebModule">
+            <summary>
+            HttpModule to set up a session for the request lifetime.
+            <seealso cref="T:Castle.ActiveRecord.SessionScope"/>
+            </summary>
+            <remarks>
+            To install the module, you must:
+            <para>
+               <list type="number">
+                 <item>
+                   <description>
+                   Add the module to the <c>httpModules</c> configuration section within <c>system.web</c>
+                   </description>
+                 </item>
+               </list>
+            </para>
+            </remarks>
+        </member>
+        <member name="F:Castle.ActiveRecord.Framework.SessionScopeWebModule.SessionKey">
+            <summary>
+            The key used to store the session in the context items
+            </summary>
+        </member>
+        <member name="F:Castle.ActiveRecord.Framework.SessionScopeWebModule.isWebConfigured">
+            <summary>
+            Used to check whether the ThreadScopeInfo being used is suitable for a web environment
+            </summary>
+        </member>
+        <member name="M:Castle.ActiveRecord.Framework.SessionScopeWebModule.Init(System.Web.HttpApplication)">
+            <summary>
+            Initialize the module.
+            </summary>
+            <param name="app">The app.</param>
+        </member>
+        <member name="M:Castle.ActiveRecord.Framework.SessionScopeWebModule.Dispose">
+            <summary>
+            Disposes of the resources (other than memory) used by the module that implements <see cref="T:System.Web.IHttpModule"></see>.
+            </summary>
+        </member>
+        <member name="M:Castle.ActiveRecord.Framework.SessionScopeWebModule.OnBeginRequest(System.Object,System.EventArgs)">
+            <summary>
+            Called when request is started, create a session for the request
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        </member>
+        <member name="M:Castle.ActiveRecord.Framework.SessionScopeWebModule.OnEndRequest(System.Object,System.EventArgs)">
+            <summary>
+            Called when the request ends, dipose of the scope
+            </summary>
+            <param name="sender">The sender.</param>
+            <param name="e">The <see cref="T:System.EventArgs"/> instance containing the event data.</param>
+        </member>
+    </members>
+</doc>

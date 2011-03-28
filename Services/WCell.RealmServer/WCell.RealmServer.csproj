@@ -127,9 +127,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime">
-      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Antlr3.Runtime.dll</HintPath>
-    </Reference>
     <Reference Include="Castle.ActiveRecord, Version=2.1.2.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Castle.ActiveRecord.dll</HintPath>
@@ -168,9 +165,6 @@
     </Reference>
     <Reference Include="ParallelExtensionsExtras, Version=1.2.0.0, Culture=neutral, PublicKeyToken=e46dcf2234ff274d, processorArchitecture=MSIL">
       <HintPath>..\..\Libraries\Binaries\ParallelExtensionsExtras\ParallelExtensionsExtras.dll</HintPath>
-    </Reference>
-    <Reference Include="Remotion.Data.Linq">
-      <HintPath>..\..\Libraries\Binaries\Castle.ActiveRecord\Remotion.Data.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />

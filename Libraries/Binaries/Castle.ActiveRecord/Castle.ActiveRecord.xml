@@ -770,6 +770,11 @@
             </summary>
             <value><c>true</c> if unique; otherwise, <c>false</c>.</value>
         </member>
+        <member name="P:Castle.ActiveRecord.FieldAttribute.Lazy">
+            <summary>
+            Set to <c>true</c> load this field lazily.
+            </summary>
+        </member>
         <member name="P:Castle.ActiveRecord.FieldAttribute.Formula">
             <summary>
             Gets or sets the formula used to calculate this field
@@ -969,6 +974,12 @@
         <member name="P:Castle.ActiveRecord.HasAndBelongsToManyAttribute.CollectionType">
             <summary>
             Provides a custom collection type.
+            </summary>
+        </member>
+        <member name="P:Castle.ActiveRecord.HasAndBelongsToManyAttribute.ForeignKey">
+            <summary>
+            Gets and sets the name of the foreign key constraint 
+            generated for an association.
             </summary>
         </member>
         <member name="T:Castle.ActiveRecord.HasManyAttribute">
@@ -1291,6 +1302,11 @@
             Gets or sets a value indicating whether this <see cref="T:Castle.ActiveRecord.PropertyAttribute"/> is unique.
             </summary>
             <value><c>true</c> if unique; otherwise, <c>false</c>.</value>
+        </member>
+        <member name="P:Castle.ActiveRecord.PropertyAttribute.Lazy">
+            <summary>
+            Set to <c>true</c> to load this property lazily.
+            </summary>
         </member>
         <member name="P:Castle.ActiveRecord.PropertyAttribute.Formula">
             <summary>
@@ -1865,6 +1881,21 @@
             </code>
             </example>
         </member>
+        <member name="F:Castle.ActiveRecord.PropertyAccess.FieldPascalcaseUnderscore">
+            <summary>
+            Use the field that is the backing store for this property to get/set the value of this property.
+            The field is using the same name as the property, in pascal case and with an initial m underscore.
+            _Name for the property Name.
+            </summary>
+            <example>
+            <code>
+            string _UserName;//this will be use to get or set the value
+            
+            [Property(Access=PropertyAccess.FieldPascalcaseMUnderscore)]
+            public string UserName { get {... } set { ... } }
+            </code>
+            </example>
+        </member>
         <member name="F:Castle.ActiveRecord.PropertyAccess.FieldPascalcaseMUnderscore">
             <summary>
             Use the field that is the backing store for this property to get/set the value of this property.
@@ -2079,6 +2110,31 @@
             Gets or sets the unsaved value for this column
             </summary>
             <value>The unsaved value.</value>
+        </member>
+        <member name="M:Castle.ActiveRecord.ByteCode.LazyInitializer.Initialize">
+            <summary>
+            Perform an ImmediateLoad of the actual object for the Proxy.
+            </summary>
+        </member>
+        <member name="M:Castle.ActiveRecord.ByteCode.ProxyFactory.GetProxy(System.Object,NHibernate.Engine.ISessionImplementor)">
+            <summary>
+            Build a proxy using the Castle.DynamicProxy library, that overrides the default <see cref="T:NHibernate.ByteCode.Castle.LazyInitializer"/>
+            </summary>
+            <param name="id">The value for the Id.</param>
+            <param name="session">The Session the proxy is in.</param>
+            <returns>A fully built <c>INHibernateProxy</c>.</returns>
+        </member>
+        <member name="M:Castle.ActiveRecord.ByteCode.ProxyFactory.GetFieldInterceptionProxy">
+            <summary>
+            Returns a proxy capable of field interception.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:Castle.ActiveRecord.ByteCode.ProxyFactoryFactory">
+            <summary>
+            The factory infrastructure used to build AR proxy objects.
+            Use this one if you want automatic session management durring proxy hydration.
+            </summary>
         </member>
         <member name="T:Castle.ActiveRecord.NHibernateDelegate">
             <summary>
@@ -9708,7 +9764,7 @@
         <member name="M:Castle.ActiveRecord.Framework.Config.FluentStorageConfiguration.ProxiedBy``1">
             <summary>
             The proxy factory to use. This value defaults to 
-            <see cref="T:NHibernate.ByteCode.Castle.ProxyFactoryFactory"/>.
+            <see cref="T:Castle.ActiveRecord.ByteCode.ProxyFactoryFactory"/>.
             </summary>
             <typeparam name="T"></typeparam>
             <returns></returns>
@@ -10145,7 +10201,7 @@
             </summary>
             <param name="statelessSession">The stateless session to delegate to.</param>
         </member>
-        <member name="M:Castle.ActiveRecord.Framework.StatelessSessionWrapper.QueryOver``1">
+        <member name="M:Castle.ActiveRecord.Framework.StatelessSessionWrapper.QueryOver``1(System.Linq.Expressions.Expression{System.Func{``0}})">
             <summary>
             Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
             </summary>
@@ -10154,7 +10210,7 @@
             An ICriteria&lt;T&gt; object
             </returns>
         </member>
-        <member name="M:Castle.ActiveRecord.Framework.StatelessSessionWrapper.QueryOver``1(System.Linq.Expressions.Expression{System.Func{``0}})">
+        <member name="M:Castle.ActiveRecord.Framework.StatelessSessionWrapper.QueryOver``1">
             <summary>
             Creates a new <c>IQueryOver&lt;T&gt;</c> for the entity class.
             </summary>
