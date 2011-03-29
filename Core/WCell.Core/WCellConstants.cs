@@ -62,13 +62,13 @@ namespace WCell.Core
 
 		public const string DBC_BARBERSHOPCOST = "gtBarberShopCostBase.dbc";
 
-        public const string DBC_OCTREGENHP = "GtOCTRegenHP.dbc";
+        public const string DBC_OCTREGENHP = "gtOCTRegenHP.dbc";
 
-        public const string DBC_OCTREGENMP = "GtOCTRegenMP.dbc";
+        public const string DBC_OCTREGENMP = "gtOCTRegenMP.dbc";
 
-	    public const string DBC_REGENHPPERSPIRIT = "GtRegenHPPerSpt.dbc";
+	    public const string DBC_REGENHPPERSPIRIT = "gtRegenHPPerSpt.dbc";
 
-        public const string DBC_REGENMPPERSPIRIT = "GtRegenMPPerSpt.dbc";
+        public const string DBC_REGENMPPERSPIRIT = "gtRegenMPPerSpt.dbc";
 
 		public const string DBC_BARBERSHOPSTYLE = "BarberShopStyle.dbc";
 
