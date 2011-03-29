@@ -93,6 +93,9 @@ namespace WCell.RealmServer.Talents
 			{
 				ArrayUtil.Set(ref TalentTrees, (uint)tree.Id, tree);
 
+                if((uint)tree.Class >= TreesByClass.Length)
+                    log.Error("Talent Tree out of range {1}:{0} TreeByClass.Length {2}", tree.Class, (uint)tree.Class, TreesByClass.Length);
+
 				var trees = TreesByClass[(uint)tree.Class];
 				if (trees == null)
 				{
