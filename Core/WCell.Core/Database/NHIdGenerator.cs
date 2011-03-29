@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using Castle.ActiveRecord.Queries;
 using WCell.Core.Initialization;
+using NHibernate;
 
 namespace WCell.RealmServer.Database
 {
@@ -55,7 +56,7 @@ namespace WCell.RealmServer.Database
 
 		private void Init()
 		{
-			var str = string.Format("SELECT max({0}) FROM {1}", m_idMember, m_table);
+			var str = string.Format("SELECT MAX({0}) FROM {1}", m_idMember, m_table);
 			var query = new ScalarQuery<object>(m_type, str);
 			object highestId;
 			try

@@ -22,10 +22,7 @@ namespace WCell.RealmServer.Database
 	{
 		public static readonly IList<EquipmentSet> EmptyList = new List<EquipmentSet>(1);
 
-		private static readonly NHIdGenerator m_idGenerator =
-            new NHIdGenerator(typeof(EquipmentSet), "EntityLowId");
-
-		[PrimaryKey(PrimaryKeyType.Assigned, "EntityLowId")]
+		[PrimaryKey(PrimaryKeyType.Increment, "EntityLowId")]
 		private long lowId
 		{
 			get;
@@ -52,43 +49,14 @@ namespace WCell.RealmServer.Database
 			set;
 		}
 
-		/// <summary>
-		/// Returns the next unique Id for a new Set
-		/// </summary>
-		public static long NextId()
-		{
-			return m_idGenerator.Next();
-		}
-
-		//[Initialization(InitializationPass.Fifth, "Initializing EquipmentSetRecords")]
-		//public static void InitializeEquipmentSetIds()
-		//{
-		//    try
-		//    {
-		//        const string hql = "SELECT max(r.EntityLowId) FROM EquipmentSets r";
-		//        var query = new ScalarQuery<long>(typeof(EquipmentSet), hql);
-		//        var val = query.Execute();
-		//        highestLowId = val > 0 ? val : 1;
-		//    }
-		//    catch (Exception)
-		//    {
-		//        highestLowId = 0;
-		//    }
-		//}
-
 		public static EquipmentSet CreateSet()
 		{
-			EquipmentSet newSet;
+		    var newSet = new EquipmentSet();
 
-			newSet = new EquipmentSet
-			{
-			         		lowId = NextId()
-			};
-
-			return newSet;
+		    return newSet;
 		}
 
-		public void Fill(int setId, string name, string icon, EquipmentSetItemMapping[] setItemMappings)
+	    public void Fill(int setId, string name, string icon, EquipmentSetItemMapping[] setItemMappings)
 		{
 			Id = setId;
 			Name = name;
