@@ -730,7 +730,7 @@ namespace WCell.RealmServer.Entities
 		/// </summary>
 		public void ModCombatRating(CombatRating rating, int delta)
 		{
-			var val = GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating);
+            var val = GetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating) + delta;
 			SetInt32(PlayerFields.COMBAT_RATING_1 - 1 + (int)rating, val);
 			UpdateChancesByCombatRating(rating);
 		}
