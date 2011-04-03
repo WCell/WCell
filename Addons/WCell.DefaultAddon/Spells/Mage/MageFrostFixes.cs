@@ -68,6 +68,12 @@ namespace WCell.Addons.Default.Spells.Mage
 				chillEffect.ImplicitTargetB = dmgEffect.ImplicitTargetB;
 				chillEffect.SpellEffectHandlerCreator = (cast, effect) => new ImprovedBlizzardHandler(cast, effect);
 			});
+
+			//IceLance deals tripple dmg to frozen targets
+			SpellLineId.MageIceLance.Apply(spell =>
+			{
+				spell.Effects[0].SpellEffectHandlerCreator = (cast, effect) => new IceLanceHandler(cast, effect);
+			});
 		}
 
 		#region ColdSnap
@@ -123,7 +129,7 @@ namespace WCell.Addons.Default.Spells.Mage
 		{
 			public override void OnAttack(DamageAction action)
 			{
-				if (action.SpellEffect != null && action.Victim.AuraState == AuraStateMask.Frozen)
+				if (action.SpellEffect != null && action.Victim.AuraState.HasAnyFlag(AuraStateMask.Frozen))
 				{
 					switch (m_aura.Spell.SpellId)
 					{
@@ -167,6 +173,28 @@ namespace WCell.Addons.Default.Spells.Mage
 						}
 					}
 				}
+			}
+		}
+		#endregion
+
+		#region IceLanceHandler
+		public class IceLanceHandler : SpellEffectHandler
+		{
+			public IceLanceHandler(SpellCast cast, SpellEffect effect)
+				: base(cast, effect)
+			{
+			}
+
+			protected override void Apply(WorldObject target)
+			{
+				var unit = target as Unit;
+
+				if (unit != null && unit.AuraState.HasAnyFlag(AuraStateMask.Frozen))
+				{
+					((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue() * 3);
+				}
+				else
+					((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
 			}
 		}
 		#endregion
