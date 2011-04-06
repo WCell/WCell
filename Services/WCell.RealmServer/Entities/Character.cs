@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Entities
 			if (Level >= ResurrectionSicknessStartLevel)
 			{
 				// Apply resurrection sickness and durability loss (see http://www.wowwiki.com/Death)
-				SpellCast.TriggerSelf(SpellId.ResurrectionSickness);
+				Auras.CreateSelf(SpellId.ResurrectionSickness, true);
 
 				if (PlayerInventory.SHResDurabilityLossPct != 0)
 				{

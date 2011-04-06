@@ -380,7 +380,7 @@ namespace WCell.RealmServer.Spells
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
-			if (IsPreventionDebuff || Mechanic.IsNegative())
+			if (AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) || IsPreventionDebuff || Mechanic.IsNegative())
 			{
 				HasHarmfulEffects = true;
 				HasBeneficialEffects = false;
