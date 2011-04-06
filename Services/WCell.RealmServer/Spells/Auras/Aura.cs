@@ -434,7 +434,13 @@ namespace WCell.RealmServer.Spells.Auras
 
 					m_ticks = 0;
 
-					m_timer.Start(time);
+					//stop timer if we set a negative duration
+					if (value < 0)
+					{
+						m_timer.Stop();
+					}
+					else
+						m_timer.Start(time);
 				}
 			}
 		}

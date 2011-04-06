@@ -142,10 +142,12 @@ namespace WCell.Addons.Default.Spells.Rogue
 				{
 					if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
 					{
-						var overkill = chr.Auras.FindFirst(aura => aura.Spell.SpellId == SpellId.ClassSkillOverkill);
-						overkill.Remove(true);
+						var ovk = chr.Auras[SpellId.ClassSkillOverkill];
+						ovk.Duration = -1; //no duration/last forever
+						AuraHandler.SendAuraUpdate(m_aura.Owner, ovk);
 					}
-					chr.Auras.CreateAndStartAura(m_aura.CasterReference, SpellHandler.Get(SpellId.ClassSkillOverkill), true);
+					else
+						chr.Auras.CreateAndStartAura(m_aura.CasterReference, SpellHandler.Get(SpellId.ClassSkillOverkill), true);
 				}
 				//Master of Subtlety
 				if (chr.Auras[SpellLineId.RogueSubtletyMasterOfSubtlety] != null)
@@ -169,7 +171,7 @@ namespace WCell.Addons.Default.Spells.Rogue
 				//Overkill
 				if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
 				{
-					var overkill = chr.Auras.FindFirst(aura => aura.Spell.SpellId == SpellId.ClassSkillOverkill);
+					var overkill = chr.Auras[SpellId.ClassSkillOverkill];
 					overkill.Duration = 20000;//20 sec
 					AuraHandler.SendAuraUpdate(m_aura.Owner, overkill);
 				}
