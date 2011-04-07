@@ -114,8 +114,8 @@ namespace WCell.Addons.Default.Spells.Mage
 				var chr = m_cast.CasterUnit as Character;
 				if (chr != null)
 				{
-					var charSpells = chr.PlayerSpells;
-					if (charSpells.Contains(SpellId.GlyphOfEternalWater))
+					var glyphaura = chr.Auras[SpellId.GlyphOfEternalWater];
+					if (glyphaura != null)
 						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_7, chr);
 					else
 						chr.SpellCast.Trigger(SpellId.SummonWaterElemental_6, chr);
@@ -188,13 +188,22 @@ namespace WCell.Addons.Default.Spells.Mage
 			protected override void Apply(WorldObject target)
 			{
 				var unit = target as Unit;
-
-				if (unit != null && unit.AuraState.HasAnyFlag(AuraStateMask.Frozen))
+				var chr = m_cast.CasterChar;
+				if (unit != null)
 				{
-					((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue() * 3);
+					if(unit.AuraState.HasAnyFlag(AuraStateMask.Frozen))
+					{
+						//Glyph of Ice Lance: Your Ice Lance now causes 4 times damage against frozen targets higher level than you instead of triple damage.
+						if (chr.Auras[SpellId.GlyphOfIceLance] != null && unit.Level > chr.Level)
+						{
+							unit.DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue() * 4);
+						}
+						else
+							unit.DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue() * 3);
+					}
+					else
+						unit.DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
 				}
-				else
-					((Unit)target).DealSpellDamage(m_cast.CasterUnit, Effect, CalcEffectValue());
 			}
 		}
 		#endregion

@@ -140,9 +140,9 @@ namespace WCell.Addons.Default.Spells.Rogue
 				//Overkill
 				if (chr.Spells.Contains(SpellId.RogueAssassinationOverkill))
 				{
-					if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
+					var ovk = chr.Auras[SpellId.ClassSkillOverkill];
+					if (ovk != null)
 					{
-						var ovk = chr.Auras[SpellId.ClassSkillOverkill];
 						ovk.Duration = -1; //no duration/last forever
 						AuraHandler.SendAuraUpdate(m_aura.Owner, ovk);
 					}
@@ -168,10 +168,11 @@ namespace WCell.Addons.Default.Spells.Rogue
             if(chr != null)
             {
             	chr.Auras.Remove(SpellLineId.RogueVanish);
+
 				//Overkill
-				if (chr.Auras.Contains(SpellId.ClassSkillOverkill))
+				var overkill = chr.Auras[SpellId.ClassSkillOverkill];
+				if (overkill != null)
 				{
-					var overkill = chr.Auras[SpellId.ClassSkillOverkill];
 					overkill.Duration = 20000;//20 sec
 					AuraHandler.SendAuraUpdate(m_aura.Owner, overkill);
 				}
