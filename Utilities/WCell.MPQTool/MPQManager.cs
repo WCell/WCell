@@ -35,9 +35,16 @@ namespace WCell.MPQTool
                 var locale = localeDir.Substring(localeDir.Length - 4, 4);
                 switch(locale)
                 {
-                        //TODO: Add all locales here
                     case "enUS":
                     case "enGB":
+                    case "koKR":
+                    case "frFR":
+                    case "deDE":
+                    case "zhCN":
+                    case "zhTW":
+                    case "esES":
+                    case "esMX":
+                    case "ruRU":
                         break;
                     default:
                         continue;
