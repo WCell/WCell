@@ -7,6 +7,7 @@ using TerrainDisplay.Recast;
 using TerrainDisplay.Util;
 using WCell.MPQTool.StormLibWrapper;
 using WCell.Util.Graphics;
+using WCell.Util.NLog;
 
 namespace TerrainDisplay
 {
@@ -21,6 +22,7 @@ namespace TerrainDisplay
 		static void Main(string[] args)
 		{
             TerrainDisplayConfig.Initialize();
+            LogUtil.SetupConsoleLogging();
             NativeMethods.StormLibFolder = TerrainDisplayConfig.LibDir;
 		    NativeMethods.InitAPI();
 

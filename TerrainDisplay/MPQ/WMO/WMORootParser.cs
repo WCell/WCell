@@ -539,7 +539,11 @@ namespace TerrainDisplay.MPQ.WMO
 
                 if (dd.NameIndex != -1)
                 {
-                    dd.FilePath = wmo.DoodadFiles[dd.NameIndex];
+                    if(!wmo.DoodadFiles.TryGetValue(dd.NameIndex, out dd.FilePath))
+                    {
+                        dd.FilePath = "";
+                        log.Error(String.Format("Doodad File Path for index: {0} missing from the Dictionary!", dd.NameIndex));
+                    }
                 }
 
                 wmo.DoodadDefinitions[i] = dd;

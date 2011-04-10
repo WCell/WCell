@@ -61,7 +61,7 @@ namespace TerrainExtractor.Parsers
             WDTParser.MpqManager = MpqManager;
             foreach (var mapEntry in entryList)
             {
-                if (mapEntry.Id != MapId.EasternKingdoms) continue;
+                //if (mapEntry.Id != MapId.EasternKingdoms) continue;
                 var wdt = WDTParser.Process(mapEntry);
                 if (wdt == null) continue;
                 
