@@ -151,7 +151,7 @@ namespace WCell.RealmServer.Handlers
 
 						if (item.Template.UseSpell.Id == spellId)
 						{
-							cast.Start(item.Template.UseSpell.Spell, packet, cast.Id, unkFlag);
+							cast.Start(item.Template.UseSpell.Spell, packet, cast.Id, unkFlag, glyphSlot);
 						}
 					}
 				}
