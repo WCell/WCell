@@ -524,6 +524,7 @@ namespace WCell.RealmServer.Spells
 			SpellEffectCreators[(int)SpellEffectType.CreateManaGem] = (cast, effect) => new CreateManaGemEffectHandler(cast, effect);
 			SpellEffectCreators[(int)SpellEffectType.Sanctuary] = (cast, effect) => new RemoveImpairingEffectsHandler(cast, effect);
             SpellEffectCreators[(int)SpellEffectType.Inebriate] = (cast, effect) => new Inebriate(cast, effect);
+			SpellEffectCreators[(int)SpellEffectType.ApplyGlyph] = (cast, effect) => new ApplyGlyphEffectHandler(cast, effect);
 
 			for (var i = 0; i < SpellEffectCreators.Length; i++)
 			{

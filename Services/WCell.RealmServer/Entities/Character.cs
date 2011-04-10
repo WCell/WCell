@@ -312,7 +312,7 @@ namespace WCell.RealmServer.Entities
 			if (Level >= ResurrectionSicknessStartLevel)
 			{
 				// Apply resurrection sickness and durability loss (see http://www.wowwiki.com/Death)
-				SpellCast.TriggerSelf(SpellId.ResurrectionSickness);
+				Auras.CreateSelf(SpellId.ResurrectionSickness, true);
 
 				if (PlayerInventory.SHResDurabilityLossPct != 0)
 				{
@@ -664,6 +664,9 @@ namespace WCell.RealmServer.Entities
 		protected override void OnLevelChanged()
 		{
 			base.OnLevelChanged();
+
+			//check if we unlocked new glyphslots on every levelup!
+			InitGlyphsForLevel();
 
 			var level = Level;
 			int freeTalentPoints = m_talents.GetFreeTalentPointsForLevel(level);
@@ -1407,6 +1410,33 @@ namespace WCell.RealmServer.Entities
 			{
 				// TODO: Change talent spec
 			}
+		}
+
+		public void InitGlyphsForLevel()
+		{
+			foreach (var slot in GlyphInfoHolder.GlyphSlots)
+			{
+				if (slot.Value.Order != 0)
+				{
+					SetGlyphSlot((byte)(slot.Value.Order - 1), slot.Value.Id);
+				}
+			}
+
+			var level = Level;
+			uint value = 0;
+
+			if (level >= 15)
+				value |= (0x01 | 0x02);
+			if (level >= 30)
+				value |= 0x08;
+			if (level >= 50)
+				value |= 0x04;
+			if (level >= 70)
+				value |= 0x10;
+			if (level >= 80)
+				value |= 0x20;
+
+			Glyphs_Enable = value;
 		}
 		#endregion
 

@@ -65,7 +65,7 @@ ECHO		Please type the letter for the option:
 ECHO.
 ECHO		 e = Extract UDB
 ECHO		 i = Install UDB
-ECHO		 c = Install all Changesets (394, 395, 396, 397, 398)
+ECHO		 c = Install all Changesets (394, 395, 396, 397, 398, 399, 400)
 ECHO.
 ECHO		 394 = Install Changeset 394
 ECHO		 395 = Install Changeset 395
@@ -73,6 +73,7 @@ ECHO		 396 = Install Changeset 396
 ECHO		 397 = Install Changeset 397
 ECHO		 398 = Install Changeset 398
 ECHO		 399 = Install Changeset 399
+ECHO		 400 = Install Changeset 400
 ECHO.
 ECHO.
 ECHO		 x - Exit
@@ -93,6 +94,7 @@ if "%l%"=="396" GOTO changeset396
 if "%l%"=="397" GOTO changeset397
 if "%l%"=="398" GOTO changeset398
 if "%l%"=="399" GOTO changeset399
+if "%l%"=="400" GOTO changeset400
 goto error
 
 :import
@@ -135,6 +137,8 @@ ECHO [Importing] UDB database changeset 399...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\399_corepatch_mangos_11157_to_11242.sql
 ECHO [Importing] UDB updatepack 399...
 mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\399_updatepack_mangos.sql
+ECHO [Importing] UDB updatepack 400...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\400_updatepack_mangos.sql
 ECHO [Importing] Finished
 ECHO.
 PAUSE    
@@ -221,6 +225,19 @@ ECHO [Importing] Finished
 ECHO.
 PAUSE
 GOTO menu
+
+:changeset400
+CLS
+ECHO.
+ECHO.
+ECHO Started...
+ECHO [Importing] UDB database changeset 400...
+mysql -h %server% --user=%user% --password=%pass% --port=%port% %wdb% < %udbdir%\Updates\0.12.1_additions\400_updatepack_mangos.sql
+ECHO [Importing] Finished
+ECHO.
+PAUSE
+GOTO menu
+
 :extract
 CLS
 ECHO.

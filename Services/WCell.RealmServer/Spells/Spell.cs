@@ -254,11 +254,7 @@ namespace WCell.RealmServer.Spells
 
 			init2 = true;
 
-			IsPassive = (Attributes.HasFlag(SpellAttributes.Passive)) ||
-			            // tracking spells are also passive		     
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackCreatures) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackResources) ||
-			            HasEffectWith(effect => effect.AuraType == AuraType.TrackStealthed);
+			IsPassive = Attributes.HasFlag(SpellAttributes.Passive);
 
 			IsChanneled = !IsPassive && AttributesEx.HasAnyFlag(SpellAttributesEx.Channeled_1 | SpellAttributesEx.Channeled_2) ||
 			              // don't use Enum.HasFlag!
@@ -384,7 +380,7 @@ namespace WCell.RealmServer.Spells
 			IsSkinning = HasEffectWith(effect => effect.EffectType == SpellEffectType.Skinning);
 			IsTameEffect = HasEffectWith(effect => effect.EffectType == SpellEffectType.TameCreature);
 
-			if (IsPreventionDebuff || Mechanic.IsNegative())
+			if (AttributesEx.HasAnyFlag(SpellAttributesEx.Negative) || IsPreventionDebuff || Mechanic.IsNegative())
 			{
 				HasHarmfulEffects = true;
 				HasBeneficialEffects = false;

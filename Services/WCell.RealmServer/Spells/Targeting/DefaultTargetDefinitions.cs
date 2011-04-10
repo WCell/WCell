@@ -200,7 +200,7 @@ namespace WCell.RealmServer.Spells.Targeting
 
 			DefaultTargetHandlers[(int)ImplicitSpellTargetType.PartyAroundCaster] = new TargetDefinition(
 					DefaultTargetAdders.AddAreaSource,
-					DefaultTargetFilters.IsFriendly);
+					DefaultTargetFilters.IsAllied);
 
 			DefaultTargetHandlers[(int)ImplicitSpellTargetType.ScriptedOrSingleTarget] = new TargetDefinition(
 					DefaultTargetAdders.AddSelection,

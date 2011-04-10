@@ -26,7 +26,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
 				m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Frozen);
 
-			m_aura.Auras.Owner.Stunned++;
+			m_aura.Auras.Owner.IncMechanicCount(SpellMechanic.Stunned);
 		}
 
 		protected override void Remove(bool cancelled)
@@ -34,7 +34,7 @@ namespace WCell.RealmServer.Spells.Auras.Handlers
 			if (m_aura.Spell.SchoolMask == Constants.DamageSchoolMask.Frost)
 				m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Frozen);
 
-			m_aura.Auras.Owner.Stunned--;
+			m_aura.Auras.Owner.DecMechanicCount(SpellMechanic.Stunned);
 		}
 
 		public override bool IsPositive
