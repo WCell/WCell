@@ -57,7 +57,7 @@ namespace WCell.Collision.Addon
 		public static void Init()
 		{
 			// TODO: Stream is read beyond end; memory inflation
-			//TerrainMgr.Provider = new FullTerrainProvider();
+			TerrainMgr.Provider = new FullTerrainProvider();
 		}
 	}
 }
