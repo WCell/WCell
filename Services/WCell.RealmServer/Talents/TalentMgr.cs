@@ -88,6 +88,8 @@ namespace WCell.RealmServer.Talents
 		{
 			var treeReader = new MappedDBCReader<TalentTree, TalentTreeConverter>(
                 RealmServerConfiguration.GetDBCFile(WCellConstants.DBC_TALENTTREES));
+			//Init our GlyphInfoHolder
+			GlyphInfoHolder.Init();
 
 			foreach (var tree in treeReader.Entries.Values)
 			{
