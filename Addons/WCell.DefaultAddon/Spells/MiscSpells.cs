@@ -44,6 +44,14 @@ namespace WCell.Addons.Default.Spells
 			FixDefaultInterrupt();
 
 		    FixMounts();
+
+			SpellHandler.Apply(spell =>
+			{
+				var eff = spell.Effects[0];
+				eff.AuraEffectHandlerCreator = () => new ResSicknessHandler();
+
+			}, SpellId.ResurrectionSickness);
+
 		}
 
 		#region Interrupt
@@ -202,6 +210,35 @@ namespace WCell.Addons.Default.Spells
                 }
             }
         }
+		#endregion
+
+		#region ResSicknessHandler
+		public class ResSicknessHandler : ModStatPercentHandler
+		{
+			protected override void Apply()
+			{
+				base.Apply();
+				var chr = (Character)m_aura.Owner;
+				if (chr != null)
+				{
+					var aura = chr.Auras[SpellId.ResurrectionSickness];
+					if (aura != null)
+					{
+						if (chr.Level < 20)
+						{
+							aura.Duration = (chr.Level - 10) * 60000;
+							AuraHandler.SendAuraUpdate(aura.Owner, aura);
+						}
+						else
+						{
+							aura.Duration = 600000;
+							AuraHandler.SendAuraUpdate(aura.Owner, aura);
+						}
+					}
+				}
+
+			}
+		}
 		#endregion
 	}
 }
