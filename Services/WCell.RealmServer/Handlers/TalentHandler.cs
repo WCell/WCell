@@ -155,7 +155,12 @@ namespace WCell.RealmServer.Handlers
 				if (glyphs != null)
 				{
 					// TODO: Glyphs
-					packet.Write((byte) 0);
+					//packet.Write((byte) 0);
+					packet.Write((byte) 6);//max_glyphs per spec
+					for (int k = 0; k < 6; k++)
+					{
+						packet.Write((short)glyphs[k]);
+					}
 					//packet.Write((byte)glyphList.Length);
 					//foreach (var record in glyphList)
 					//{

@@ -1387,7 +1387,7 @@ namespace WCell.RealmServer.Entities
 		}
 		#endregion
 
-		#region Talent Specs
+		#region Talent Specs / Glyphs
 		public SpecProfile CurrentSpecProfile
 		{
 			get { return SpecProfiles[m_talents.CurrentSpecIndex]; }
@@ -1437,6 +1437,26 @@ namespace WCell.RealmServer.Entities
 				value |= 0x20;
 
 			Glyphs_Enable = value;
+		}
+
+		public void ApplyGlyph(byte slot, GlyphPropertiesEntry gp)
+		{
+			var oldglyph = GetGlyph(slot);
+
+			if (oldglyph != 0)
+			{
+				//there is already a glyph in that slot, remove it before applying a new one.
+				var spelltoremove = GlyphInfoHolder.GetPropertiesEntryForGlyph(oldglyph).SpellId;
+				Auras.Remove(SpellHandler.Get(spelltoremove));
+				SetGlyph(slot, 0);
+			}
+			//slap in the new one
+			SpellCast.Trigger(SpellHandler.Get(gp.SpellId), this);
+			SetGlyph(slot, gp.Id);
+			CurrentSpecProfile.GlyphIds[slot] = gp.Id;
+			TalentHandler.SendTalentGroupList(m_talents);
+
+			//Todo: save it somewhere and dualspec related things!
 		}
 		#endregion
 
