@@ -69,6 +69,14 @@ namespace WCell.RealmServer.Handlers
 			//chr.SpecProfile.LearnTalentGroupTalents(list);
 		}
 
+		[ClientPacketHandler(RealmServerOpCode.CMSG_REMOVE_GLYPH)]
+		public static void HandleRemoveGlyph(IRealmClient client, RealmPacketIn packet)
+		{
+			var slot = packet.ReadUInt32();
+			var chr = client.ActiveCharacter;
+			chr.RemoveGlyph((byte)slot);
+			SendTalentGroupList(chr.Talents);
+		}
 		/// <summary>
 		/// Sends a request to wipe all talents, which must be confirmed by the player
 		/// </summary>

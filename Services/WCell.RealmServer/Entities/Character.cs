@@ -1441,15 +1441,9 @@ namespace WCell.RealmServer.Entities
 
 		public void ApplyGlyph(byte slot, GlyphPropertiesEntry gp)
 		{
-			var oldglyph = GetGlyph(slot);
+			//check if there is a already a glyph in there and remove it
+			RemoveGlyph(slot);
 
-			if (oldglyph != 0)
-			{
-				//there is already a glyph in that slot, remove it before applying a new one.
-				var spelltoremove = GlyphInfoHolder.GetPropertiesEntryForGlyph(oldglyph).SpellId;
-				Auras.Remove(SpellHandler.Get(spelltoremove));
-				SetGlyph(slot, 0);
-			}
 			//slap in the new one
 			SpellCast.Trigger(SpellHandler.Get(gp.SpellId), this);
 			SetGlyph(slot, gp.Id);
@@ -1457,6 +1451,18 @@ namespace WCell.RealmServer.Entities
 			TalentHandler.SendTalentGroupList(m_talents);
 
 			//Todo: save it somewhere and dualspec related things!
+		}
+		public void RemoveGlyph(byte slot)
+		{
+			var oldglyph = GetGlyph(slot);
+
+			if (oldglyph != 0)
+			{
+				var spelltoremove = GlyphInfoHolder.GetPropertiesEntryForGlyph(oldglyph).SpellId;
+				Auras.Remove(SpellHandler.Get(spelltoremove));
+				CurrentSpecProfile.GlyphIds[slot] = 0;
+				SetGlyph(slot, 0);
+			}
 		}
 		#endregion
 
