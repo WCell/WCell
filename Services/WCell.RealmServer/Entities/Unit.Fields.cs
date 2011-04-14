@@ -1419,7 +1419,12 @@ namespace WCell.RealmServer.Entities
 			get { return GetInt32(UnitFields.MAXHEALTH); }
 			internal set
 			{
-				SetInt32(UnitFields.MAXHEALTH, value);
+                if (Health > value)
+                {
+                    Health = value;
+                }
+
+			    SetInt32(UnitFields.MAXHEALTH, value);
 			}
 		}
 

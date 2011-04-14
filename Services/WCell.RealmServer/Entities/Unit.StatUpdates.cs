@@ -120,7 +120,7 @@ namespace WCell.RealmServer.Entities
 			var value = BaseHealth + stamBonus + MaxHealthModFlat;
 			value += (int)(value * MaxHealthModScalar + 0.5f);
 
-			SetInt32(UnitFields.MAXHEALTH, value);
+		    MaxHealth = value;
 
 			this.UpdateHealthRegen();
 		}
