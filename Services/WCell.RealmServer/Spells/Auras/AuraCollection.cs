@@ -466,6 +466,7 @@ namespace WCell.RealmServer.Spells.Auras
 				if (aura != null)
 				{
 					aura.Start(null, noTimeout);
+				    return aura;
 				}
 			}
 			catch (Exception ex)

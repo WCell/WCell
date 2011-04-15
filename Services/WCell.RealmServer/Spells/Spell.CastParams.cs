@@ -42,12 +42,6 @@ namespace WCell.RealmServer.Spells
 				return SpellFailedReason.OnlyShapeshift;
 			}
 
-			// Stealth Required			
-			if (Attributes.HasAnyFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
-			{
-				return SpellFailedReason.OnlyStealthed;
-			}
-
 			if (!caster.CanDoHarm && HasHarmfulEffects)
 			{
 				return SpellFailedReason.Pacified;
@@ -157,9 +151,9 @@ namespace WCell.RealmServer.Spells
 
 				if (Attributes.HasFlag(SpellAttributes.RequiresStealth) && caster.Stealthed < 1)
 				{
-					if (ignoreShapeshiftRequirement || caster.Auras.IsShapeshiftRequirementIgnored(this))
+					if (!caster.Auras.IsShapeshiftRequirementIgnored(this))
 					{
-						// Stealth Required, but not stealthed
+						// Stealth Required, but not stealthed and not ignored by a SPELL_AURA_MOD_IGNORE_SHAPESHIFT aura
 						return SpellFailedReason.OnlyStealthed;
 					}
 				}
@@ -420,11 +414,21 @@ namespace WCell.RealmServer.Spells
 						return SpellFailedReason.BadImplicitTargets;
 					}
 				}
-				else if (!(target is NPC) || ((NPC)target).IsAlive || target.Loot != null)
+				else if ((target is NPC))
 				{
 					// need to be dead and looted empty
-					return SpellFailedReason.TargetNotDead;
+                    if (((NPC)target).IsAlive || target.Loot != null)
+                    {
+                        return SpellFailedReason.TargetNotDead;
+                    }
 				}
+                else if((target is Character))
+                {
+                    if(((Character)target).IsAlive)
+                    {
+                        return SpellFailedReason.TargetNotDead;
+                    }
+                }
 			}
 			else
 			{

@@ -25,6 +25,7 @@ namespace WCell.RealmServer.Guilds
 		public GuildBankTab()
 		{
 			Items = new GuildBankTabItemMapping[GuildMgr.MAX_BANK_TAB_SLOTS];
+            ItemRecords = new ItemRecord[GuildMgr.MAX_BANK_TAB_SLOTS];
 		}
 
 		public GuildBankTab(GuildBank bank) : this()

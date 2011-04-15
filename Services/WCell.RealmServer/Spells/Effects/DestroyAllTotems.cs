@@ -17,6 +17,7 @@ namespace WCell.RealmServer.Spells.Effects
 		public override void Apply()
 		{
 			var chr = m_cast.CasterObject as Character;
+			int spellCost = 0;
 			if (chr != null)
 			{
 				if (chr.Totems != null)
@@ -29,11 +30,12 @@ namespace WCell.RealmServer.Spells.Effects
 						}
 						var spell = SpellHandler.Get(totem.CreationSpellId);
 						if (spell != null)
-						{
-							var spellCost = spell.PowerCost / 4;
-							chr.Energize(spellCost, chr, Effect);
+						{ 
+							spellCost += ((chr.BasePower * spell.PowerCostPercentage)/100) / 4;
+							totem.Delete();
 						}
 					}
+					chr.Energize(spellCost, chr, Effect);
 				}
 			}
 		}

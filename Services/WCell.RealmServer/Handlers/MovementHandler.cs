@@ -689,6 +689,13 @@ namespace WCell.RealmServer.Handlers
 				packet.Write(movingUnit.Position);
 				packet.Write(Utility.GetSystemTime());
 				packet.Write((byte)MonsterMoveType.Stop);
+
+                if(movingUnit is Character)
+                {
+                    ((Character)movingUnit).Send(packet);
+                    return;
+                }
+
 				movingUnit.SendPacketToArea(packet);
 			}
 		}

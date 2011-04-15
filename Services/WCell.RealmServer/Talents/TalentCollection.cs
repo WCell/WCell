@@ -50,11 +50,21 @@ namespace WCell.RealmServer.Talents
 
 		internal void CalcSpentTalentPoints()
 		{
+            for (var i = 0; i < Trees.Length; i++)
+            {
+                m_treePoints[i] = 0;
+            }
+
 			foreach (var talent in this)
 			{
-				m_treePoints[talent.Entry.Tree.TabIndex] += talent.Rank;
+                UpdateTreePoint(talent.Entry.Tree.TabIndex, talent.ActualRank);
 			}
 		}
+
+        internal void UpdateTreePoint(uint tabIndex, int diff)
+        {
+            m_treePoints[tabIndex] += diff;
+        }
 
 		#region Default Properties
 		public TalentTree[] Trees

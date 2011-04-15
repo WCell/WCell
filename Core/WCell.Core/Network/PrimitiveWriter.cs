@@ -310,7 +310,7 @@ namespace WCell.Core.Network
         #region WriteUInt
 
         /// <summary>
-        /// Writes an int to the stream
+        /// Writes an unsigned int to the stream
         /// </summary>
         /// <param name="val">the value to write</param>
         public virtual void WriteUInt(byte val)
@@ -319,7 +319,7 @@ namespace WCell.Core.Network
         }
 
         /// <summary>
-        /// Writes an int to the stream
+        /// Writes an unsigned int to the stream
         /// </summary>
         /// <param name="val">the value to write</param>
         public virtual void WriteUInt(ushort val)
@@ -328,7 +328,7 @@ namespace WCell.Core.Network
         }
 
         /// <summary>
-        /// Writes an int to the stream
+        /// Writes an unsigned int to the stream
         /// </summary>
         /// <param name="val">the value to write</param>
         public virtual void WriteUInt(short val)
@@ -337,7 +337,7 @@ namespace WCell.Core.Network
         }
 
         /// <summary>
-        /// Writes an int to the stream
+        /// Writes an unsigned int to the stream
         /// </summary>
         /// <param name="val">the value to write</param>
         public virtual void WriteUInt(uint val)
@@ -346,7 +346,7 @@ namespace WCell.Core.Network
         }
 
         /// <summary>
-        /// Writes an int to the stream
+        /// Writes an unsigned int to the stream
         /// </summary>
         /// <param name="val">the value to write</param>
         public virtual void WriteUInt(int val)
@@ -368,7 +368,7 @@ namespace WCell.Core.Network
 		#region WriteULong
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(byte val)
@@ -377,7 +377,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(ushort val)
@@ -386,7 +386,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(short val)
@@ -395,7 +395,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(uint val)
@@ -404,7 +404,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(int val)
@@ -413,7 +413,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(ulong val)
@@ -422,7 +422,7 @@ namespace WCell.Core.Network
 		}
 
 		/// <summary>
-		/// Writes an int to the stream
+        /// Writes an eight byte unsigned int to the stream
 		/// </summary>
 		/// <param name="val">the value to write</param>
 		public virtual void WriteULong(long val)
@@ -473,7 +473,7 @@ namespace WCell.Core.Network
         /// Writes a BigInteger to the stream
         /// </summary>
         /// <param name="bigInt">BigInteger to write</param>
-        /// <param name="length">maximum numbers of bytes to write for th BigInteger</param>
+        /// <param name="length">maximum numbers of bytes to write for the BigInteger</param>
         public virtual void WriteBigInt(BigInteger bigInt, int length)
         {
             byte[] data = bigInt.GetBytes(length);

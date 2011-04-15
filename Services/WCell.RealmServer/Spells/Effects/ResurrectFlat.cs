@@ -39,7 +39,7 @@ namespace WCell.RealmServer.Spells.Effects
 			else if (target is Corpse)
 			{
 				unit = ((Corpse)target).Owner;
-				if (unit == null || unit.IsGhost || unit.IsAlive)
+				if (unit == null  || unit.IsAlive)
 				{
 					return;
 				}

@@ -1413,6 +1413,8 @@ namespace WCell.RealmServer.Entities
 			CancelAllActions();
 			if (this is Character)
 			{
+			    MovementHandler.SendStopMovementPacket(this);
+
 				((Character)this).CancelLogout();
 			}
 

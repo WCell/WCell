@@ -16,7 +16,7 @@ namespace WCell.RealmServer.Items
 	{
 		public const int INVALID_SLOT = 0xff;
 
-		protected int m_baseField;
+        protected int m_baseField;
 		protected Item[] m_Items;
 		protected int m_count;
 
@@ -26,17 +26,17 @@ namespace WCell.RealmServer.Items
 		internal protected IContainer m_container;
 
 		protected BaseInventory(IContainer owner, UpdateFieldId baseField, int invSize) :
-			this(owner, baseField, new Item[invSize])
+            this(owner, baseField, new Item[invSize])
 		{
 		}
 
 		/// <summary>
 		/// Inventory for shared item-array
 		/// </summary>
-		protected BaseInventory(IContainer owner, UpdateFieldId baseField, Item[] items)
+        protected BaseInventory(IContainer owner, UpdateFieldId baseField, Item[] items)
 		{
 			m_container = owner;
-			m_baseField = baseField.RawId;
+            m_baseField = baseField.RawId;
 			m_Items = items;
 			m_count = 0;
 		}
@@ -170,12 +170,11 @@ namespace WCell.RealmServer.Items
 					return;
 				}
 
-				var field = m_baseField + (slot * 2);
-
 				m_count++;
 				value.Container = this;
 				value.Slot = slot;
-				m_container.SetEntityId(field, value.EntityId);
+                SetContainerEntityId(value.EntityId, slot, this);
+				
 				m_Items[slot] = value;
 
 				var handler = GetHandler(slot);
@@ -308,10 +307,9 @@ namespace WCell.RealmServer.Items
 				cont1.m_Items[slot1] = item2;
 				cont2.m_Items[slot2] = item1;
 
-				var field1 = cont2.m_baseField + (slot2 * 2);
 				if (item1 != null)
 				{
-					cont2.Container.SetEntityId(field1, item1.EntityId);
+                    SetContainerEntityId(item1.EntityId, slot2, cont2);
 					item1.Container = cont2;
 					if (handler2 != null)
 					{
@@ -320,13 +318,12 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-					cont2.Container.SetEntityId(field1, EntityId.Zero);
+                    SetContainerEntityId(EntityId.Zero, slot2, cont2);
 				}
 
-				var field2 = cont1.m_baseField + (slot1 * 2);
 				if (item2 != null)
 				{
-					cont1.Container.SetEntityId(field2, item2.EntityId);
+                    SetContainerEntityId(item2.EntityId, slot1, cont1);
 					item2.Container = cont1;
 					if (handler1 != null)
 					{
@@ -335,7 +332,7 @@ namespace WCell.RealmServer.Items
 				}
 				else
 				{
-					cont1.Container.SetEntityId(field2, EntityId.Zero);
+                    SetContainerEntityId(EntityId.Zero, slot1, cont1);
 				}
 			}
 		}
@@ -361,25 +358,8 @@ namespace WCell.RealmServer.Items
 			m_Items[slot1] = item2;
 			m_Items[slot2] = item1;
 
-			var field1 = m_baseField + (slot2 * 2);
-			if (item1 != null)
-			{
-				Container.SetEntityId(field1, item1.EntityId);
-			}
-			else
-			{
-				Container.SetEntityId(field1, EntityId.Zero);
-			}
-
-			var field2 = m_baseField + (slot1 * 2);
-			if (item2 != null)
-			{
-				Container.SetEntityId(field2, item2.EntityId);
-			}
-			else
-			{
-				Container.SetEntityId(field2, EntityId.Zero);
-			}
+		    SetContainerEntityId(item1 != null ? item1.EntityId : EntityId.Zero, slot2, this);
+		    SetContainerEntityId(item2 != null ? item2.EntityId : EntityId.Zero, slot1, this);
 		}
 
 		public bool IsValidSlot(int slot)
@@ -806,7 +786,7 @@ namespace WCell.RealmServer.Items
 			return err;
 		}
 
-		void OnAdded(Item item, ItemTemplate templ, int amount, ItemReceptionType reception = ItemReceptionType.Receive)
+		public virtual void OnAdded(Item item, ItemTemplate templ, int amount, ItemReceptionType reception = ItemReceptionType.Receive)
 		{
 			if (item == null || !item.IsBuyback)
 			{
@@ -1039,7 +1019,7 @@ namespace WCell.RealmServer.Items
 			var cont = Container;
 			if (cont != null)
 			{
-				cont.SetEntityId(m_baseField + (slot * 2), EntityId.Zero);
+                SetContainerEntityId(EntityId.Zero, slot, this);
 			}
 			item.Container = null;
 
@@ -1275,6 +1255,12 @@ namespace WCell.RealmServer.Items
 			amount -= amountLeft;
 			return (amountLeft == 0);
 		}
+
+        public virtual void SetContainerEntityId(EntityId entityId, int slot, BaseInventory baseInventory)
+        {
+            var field = baseInventory.m_baseField + (slot * 2);
+            baseInventory.Container.SetEntityId(field, entityId);
+        }
 
 		/// <summary>
 		/// Counts and returns the amount of items in between the given slots.

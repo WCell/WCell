@@ -26,6 +26,7 @@ namespace WCell.Addons.Default.NPCs
 				tank.VehicleId = 192;
 				tank.VehicleAimAdjustment = 3.455752f;
 				tank.HoverHeight = 1;
+                tank.InfoString = "vehichleCursor"; //This is not a typo, "vehichleCursor" denotes the vehicle icon
 			}
 
 			var mammoth = NPCMgr.GetEntry(NPCId.EnragedMammoth);

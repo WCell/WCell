@@ -989,6 +989,17 @@ namespace WCell.RealmServer.Entities
 			return rep != null && rep.Standing >= Standing.Friendly;
 		}
 
+        public override bool IsNeutralWith(IFactionMember opponent)
+        {
+            if (IsAlliedWith(opponent))
+            {
+                return true;
+            }
+
+            var rep = m_reputations[opponent.Faction.ReputationIndex];
+            return rep != null && rep.Standing >= Standing.Neutral;
+        }
+
 		public override bool IsHostileWith(IFactionMember opponent)
 		{
 			if (object.ReferenceEquals(opponent, this) || (opponent is Unit && ((Unit)opponent).Master == this))

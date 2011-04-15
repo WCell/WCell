@@ -52,9 +52,9 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 			if (IsDriverSeat)
 			{
-				//Vehicle.Charmer = passenger;
-				//passenger.Charm = Vehicle;
-				//Vehicle.UnitFlags |= UnitFlags.Possessed;
+				Vehicle.Charmer = passenger;
+				passenger.Charm = Vehicle;
+				Vehicle.UnitFlags |= UnitFlags.Possessed;
 			}
 
 			if (passenger is Character)
@@ -69,10 +69,10 @@ namespace WCell.RealmServer.NPCs.Vehicles
 				MovementHandler.SendEnterTransport(chr);
 				MiscHandler.SendCancelAutoRepeat(chr, Vehicle);
 				MovementHandler.SendMoveToPacket(Vehicle, ref pos, 0, 0, MonsterMoveFlags.Walk);
-				//PetHandler.SendVehicleSpells(chr, Vehicle);
+				PetHandler.SendVehicleSpells(chr, Vehicle);
 
 				chr.SetMover(Vehicle, IsDriverSeat);
-				//chr.FarSight = Vehicle.EntityId;
+				chr.FarSight = Vehicle.EntityId;
 			}
 
 			// TODO: Character is now inside the Vehicle but cant move
@@ -96,7 +96,6 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 			Vehicle.m_passengerCount--;
 			m_passenger.MovementFlags &= ~MovementFlags.OnTransport;
-			m_passenger.m_vehicleSeat = null;
 			m_passenger.Auras.RemoveFirstVisibleAura(aura => aura.Spell.IsVehicle);
 
 			if (m_passenger is Character)
@@ -111,6 +110,7 @@ namespace WCell.RealmServer.NPCs.Vehicles
 
 				//MovementHandler.SendEnterTransport(chr);
 			}
+            m_passenger.m_vehicleSeat = null;
 
 			m_passenger = null;
 		}

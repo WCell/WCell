@@ -35,6 +35,12 @@ namespace WCell.Addons.Default.Spells.Priest
                     SpellLineId.PriestPrayerOfHealing,
                     SpellLineId.PriestHolyCircleOfHealing);
             });
+
+            SpellLineId.PriestResurrection.Apply(spell =>
+            {
+                var effect = spell.GetEffect(SpellEffectType.ResurrectFlat);
+                effect.ImplicitTargetA = ImplicitSpellTargetType.SingleFriend;
+            });
         }
     }
 }

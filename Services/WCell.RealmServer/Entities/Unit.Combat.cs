@@ -416,7 +416,7 @@ namespace WCell.RealmServer.Entities
 		/// <summary>
 		/// Does spell-damage to this Unit
 		/// </summary>
-		public void DealSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true, bool mayCrit = true)
+		public void DealSpellDamage(Unit attacker, SpellEffect effect, int dmg, bool addDamageBonuses = true, bool mayCrit = true, bool forceCrit = false)
 		{
 			EnsureContext();
 			if (!IsAlive)
@@ -504,7 +504,7 @@ namespace WCell.RealmServer.Entities
 					// the damage is caused by someone else (i.e. not environmental damage etc)
 
 					// critical hits
-					if (action.CalcCritChance() > Utility.Random(0, 10000))
+					if (forceCrit || action.CalcCritChance() > Utility.Random(0, 10000))
 					{
 						action.IsCritical = true;
 						action.SetCriticalDamage();

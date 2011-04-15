@@ -131,6 +131,12 @@ namespace WCell.RealmServer.Entities
 		{
 			return m_master.IsFriendlyWith(opponent);
 		}
+
+        public override bool IsNeutralWith(IFactionMember opponent)
+		{
+            return m_master.IsNeutralWith(opponent);
+		}
+        
 		#endregion
 
 		public override ObjectTypeId ObjectTypeId

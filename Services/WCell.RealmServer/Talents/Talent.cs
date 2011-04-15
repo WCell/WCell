@@ -116,18 +116,18 @@ namespace WCell.RealmServer.Talents
 				{
 					return;
 				}
-				Talents.m_treePoints[Entry.Tree.TabIndex] += diff;
+                Talents.UpdateTreePoint(Entry.Tree.TabIndex, diff);
 				m_rank = value;
 			}
 		}
 
 		/// <summary>
 		/// Sets the rank without sending any packets or doing checks.
+		/// Also does not increment spent talent points
 		/// </summary>
 		internal void SetRankSilently(int rank)
 		{
 			m_rank = rank;
-			Talents.m_treePoints[Entry.Tree.TabIndex] += rank + 1;
 		}
 
 		public void Remove()

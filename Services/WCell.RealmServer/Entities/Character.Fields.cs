@@ -689,7 +689,25 @@ namespace WCell.RealmServer.Entities
 
 		public int KillExperienceGainModifierPercent { get; set; }
 
-		public int QuestExperienceGainModifierPercent { get; set; }
+		public int QuestExperienceGainModifierPercent {
+            get
+            {
+                if(Zone.MapId == Constants.World.MapId.Kalimdor || Zone.MapId == MapId.EasternKingdoms)
+                {
+                    return XpGenerator.DefaultXpBaseValueAzeroth;
+                }
+                if(Zone.MapId == Constants.World.MapId.Outland)
+                {
+                    if(Zone.Id == ZoneId.EversongWoods || Zone.Id == ZoneId.Ghostlands)
+                    {
+                        return XpGenerator.DefaultXpBaseValueAzeroth;
+                    }
+                    return XpGenerator.DefaultXpBaseValueOutland;
+                }
+                return XpGenerator.DefaultXpBaseValueNorthrend;
+            }
+		    set { QuestExperienceGainModifierPercent = value; }
+        }
 
 		#region CombatRatings
 
